@@ -18,7 +18,6 @@
 #include "game_engine/ecs/components/Health.hpp"
 #include "game_engine/ecs/components/Direction.hpp"
 #include "game_engine/ecs/components/Input.hpp"
-#include "game_engine/ecs/components/Metadata.hpp"
 #include "game_engine/ecs/components/Audio.hpp"
 #include "game_engine/ecs/systems/Render.hpp"
 #include "game_engine/ecs/Entity.hpp"

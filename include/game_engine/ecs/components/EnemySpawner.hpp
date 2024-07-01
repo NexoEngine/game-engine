@@ -76,14 +76,14 @@ namespace ecs::components::behaviour
 
             void onAttach(ecs::Entity entity) override
             {
-                addListener<EnemyDestroyEvent>(
-                    [this](EnemyDestroyEvent& event) {
-                    auto &metadata = engine::Engine::getInstance()->getComponent<ecs::components::metadata::metadata_t>(event.entity);
-                    if (metadata.type != server::entities::EntityType::ENEMY)
-                        return;
+                // addListener<EnemyDestroyEvent>(
+                //     [this](EnemyDestroyEvent& event) {
+                //     auto &metadata = engine::Engine::getInstance()->getComponent<ecs::components::metadata::metadata_t>(event.entity);
+                //     if (metadata.type != server::entities::EntityType::ENEMY)
+                //         return;
 
-                    removeEnemy(event.entity);
-                });
+                //     removeEnemy(event.entity);
+                // });
             }
 
             void addEnemy(Vector3 position, uint32_t healthPoints)
@@ -105,8 +105,8 @@ namespace ecs::components::behaviour
                 engine::addEntityToScene(entity, _sceneID);
                 auto &health = engine::Engine::getInstance()->getComponent<ecs::components::health::health_t>(entity);
                 health.healthPoints = healthPoints;
-                auto &metadata = engine::Engine::getInstance()->getComponent<ecs::components::metadata::metadata_t>(entity);
-                metadata.type = server::entities::EntityType::ENEMY;
+                // auto &metadata = engine::Engine::getInstance()->getComponent<ecs::components::metadata::metadata_t>(entity);
+                // metadata.type = server::entities::EntityType::ENEMY;
 
                 rtype::net::Message<common::NetworkMessage> resMsg;
                 resMsg.header.id = common::NetworkMessage::serverCreateEnemy;

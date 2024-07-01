@@ -69,7 +69,5 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
 # IMGUIZMO DOWNLOAD
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
 
-# SETUP CLIENT, SERVER AND GAME ENGINE GUI
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/client/CMakeLists.txt")
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/server/CMakeLists.txt")
+# SETUP GAME ENGINE GUI
 include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/CMakeLists.txt")
