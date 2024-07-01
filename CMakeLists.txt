@@ -71,3 +71,4 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
 
 # SETUP GAME ENGINE GUI
 include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/src/protoVR/CMakeLists.txt")
