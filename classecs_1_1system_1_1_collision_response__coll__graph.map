@@ -1,0 +1,3 @@
+<map id="ecs::system::CollisionResponse" name="ecs::system::CollisionResponse">
+<area shape="rect" id="node1" title="Handles the response to collisions between entities." alt="" coords="5,5,209,112"/>
+</map>

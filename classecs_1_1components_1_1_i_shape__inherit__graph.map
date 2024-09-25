@@ -1,0 +1,6 @@
+<map id="ecs::components::IShape" name="ecs::components::IShape">
+<area shape="rect" id="node1" title="Interface for shape components used in rendering entities." alt="" coords="191,5,357,127"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1_cube.html" title="Represents a cube shape with customizable dimensions and colors." alt="" coords="5,175,161,267"/>
+<area shape="rect" id="node3" href="$classecs_1_1components_1_1_model3_d.html" title="Represents a 3D model loaded from a file." alt="" coords="185,175,363,267"/>
+<area shape="rect" id="node4" href="$classecs_1_1components_1_1_skybox.html" title="Represents a skybox using a 3D model." alt="" coords="387,175,555,267"/>
+</map>

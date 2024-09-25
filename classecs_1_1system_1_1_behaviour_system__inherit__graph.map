@@ -1,0 +1,4 @@
+<map id="ecs::system::BehaviourSystem" name="ecs::system::BehaviourSystem">
+<area shape="rect" id="node1" title="System class responsible for handling and updating behaviour components in the ECS framework." alt="" coords="5,145,204,223"/>
+<area shape="rect" id="node2" href="$classecs_1_1system_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="34,5,175,97"/>
+</map>

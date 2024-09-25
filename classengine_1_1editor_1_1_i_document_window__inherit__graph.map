@@ -1,0 +1,9 @@
+<map id="engine::editor::IDocumentWindow" name="engine::editor::IDocumentWindow">
+<area shape="rect" id="node1" title=" " alt="" coords="463,5,630,200"/>
+<area shape="rect" id="node2" href="$classengine_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="461,248,633,428"/>
+<area shape="rect" id="node3" href="$classengine_1_1editor_1_1_console_window.html" title=" " alt="" coords="5,476,203,656"/>
+<area shape="rect" id="node4" href="$classengine_1_1editor_1_1_entity_properties_window.html" title=" " alt="" coords="227,476,429,656"/>
+<area shape="rect" id="node5" href="$classengine_1_1editor_1_1_main3_d_scene.html" title=" " alt="" coords="454,491,639,641"/>
+<area shape="rect" id="node6" href="$classengine_1_1editor_1_1_model_viewer_window.html" title=" " alt="" coords="664,483,843,649"/>
+<area shape="rect" id="node7" href="$classengine_1_1editor_1_1_scene_tree_window.html" title=" " alt="" coords="867,483,1034,649"/>
+</map>

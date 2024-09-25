@@ -1,0 +1,3 @@
+<map id="ecs::system::System" name="ecs::system::System">
+<area shape="rect" id="node1" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,5,147,97"/>
+</map>

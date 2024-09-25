@@ -1,0 +1,7 @@
+<map id="ecs::components::behaviour::Behaviour" name="ecs::components::behaviour::Behaviour">
+<area shape="rect" id="node1" title="Abstract class representing a behaviour component, akin to Unity&#39;s behaviour scripts." alt="" coords="249,5,432,200"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="5,248,188,472"/>
+<area shape="rect" id="node4" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="213,255,469,465"/>
+<area shape="rect" id="node5" href="$classinput.html" title=" " alt="" coords="493,321,573,399"/>
+<area shape="rect" id="node3" href="$classecs_1_1components_1_1behaviour_1_1_enemy_spawner.html" title=" " alt="" coords="5,520,188,671"/>
+</map>

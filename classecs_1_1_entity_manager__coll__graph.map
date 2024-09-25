@@ -1,0 +1,3 @@
+<map id="ecs::EntityManager" name="ecs::EntityManager">
+<area shape="rect" id="node1" title="Manages entities in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,5,136,141"/>
+</map>

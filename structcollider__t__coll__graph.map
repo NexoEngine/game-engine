@@ -1,0 +1,3 @@
+<map id="collider_t" name="collider_t">
+<area shape="rect" id="node1" title="Represents the collision boundaries and properties of an entity." alt="" coords="5,5,80,83"/>
+</map>

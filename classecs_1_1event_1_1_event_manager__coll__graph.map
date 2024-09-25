@@ -1,0 +1,3 @@
+<map id="ecs::event::EventManager" name="ecs::event::EventManager">
+<area shape="rect" id="node1" title="Manages event handling and dispatching in the ECS system." alt="" coords="5,5,176,141"/>
+</map>

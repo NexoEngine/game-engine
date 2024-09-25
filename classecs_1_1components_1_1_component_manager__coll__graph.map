@@ -1,0 +1,3 @@
+<map id="ecs::components::ComponentManager" name="ecs::components::ComponentManager">
+<area shape="rect" id="node1" title="Manages the registration and handling of components in an ECS architecture." alt="" coords="5,5,197,171"/>
+</map>
