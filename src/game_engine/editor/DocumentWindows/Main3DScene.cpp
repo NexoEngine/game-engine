@@ -48,14 +48,11 @@ void engine::editor::Main3DScene::show()
 
     if (ImGui::Begin("3D View", &_opened, ImGuiWindowFlags_NoScrollbar))
     {
-        //renderToolbar();
+        _viewPosition = ImGui::GetCursorScreenPos();
+        _viewSize = ImGui::GetContentRegionAvail();
         renderView();
+        renderToolbar();
         renderGizmo();
-
-
-
-
-
 
         // Draw the rest of the window contents
         _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
@@ -143,7 +140,7 @@ void engine::editor::Main3DScene::renderToolbar()
     float padding = 0.0f; // Set the desired padding between buttons
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(padding, padding));
-
+    ImGui::SetCursorScreenPos(ImVec2(_viewPosition.x + 10, _viewPosition.y + 10));
     if (ImGui::Button("Orthographic")) {
         // Switch to orthographic camera mode
         //engine::camera::setMode(CameraMode::ORTHOGRAPHIC);
@@ -308,9 +305,6 @@ void engine::editor::Main3DScene::renderGizmo()
 
 void engine::editor::Main3DScene::renderView()
 {
-
-    _viewPosition = ImGui::GetCursorScreenPos();
-    _viewSize = ImGui::GetContentRegionAvail();
     rlImGuiImageRenderTexture(&_camera.getRenderTexture());
 }
 
