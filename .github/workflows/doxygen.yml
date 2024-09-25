@@ -1,6 +1,8 @@
 name: Doxygen GitHub Pages Deploy Action
 
 on: push
+permissions:
+  contents: write
 
 jobs:
   deploy:
