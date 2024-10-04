@@ -30,7 +30,7 @@ namespace engine {
         Color wireColor)
     {
         auto cube = std::make_shared<ecs::components::Cube>(width, height, length, toggleWire, color, wireColor);
-        ecs::components::physics::transform_t transf = {pos, {0}};
+        ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
         ecs::components::render::render_t render = {ecs::components::ShapeType::CUBE, true, cube};
@@ -44,6 +44,7 @@ namespace engine {
             MatrixIdentity(),
             MatrixIdentity()};
         Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
         collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
         ecs::components::health::health_t health = {0};
         ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
@@ -125,7 +126,7 @@ namespace engine {
         rotation.x = rotation.x * DEG2RAD;
         rotation.y = rotation.y * DEG2RAD;
         rotation.z = rotation.z * DEG2RAD;
-        transform.rotation = Vector3Add(transform.rotation, rotation);
+        transform.rotation = rotation;
         Matrix matTemp = MatrixRotateXYZ(transform.rotation);
         render.data->getModel().transform = MatrixMultiply(render.data->getModel().transform, matTemp);
         collider.matRotate = MatrixMultiply(collider.matRotate, matTemp);
@@ -187,24 +188,21 @@ namespace engine {
 
     Matrix transformToMatrix(const ecs::components::physics::transform_t &transform) 
     {
-        //Matrix matScale = MatrixScale(1, 1, 1);
-        Matrix matRotation = MatrixRotateXYZ(Vector3{0, 0, 0});
+        Matrix matRotation = MatrixRotateXYZ(transform.rotation);
         Matrix matScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
-        //Matrix matRotation = MatrixRotateXYZ(Vector3{RAD2DEG * transform.rotation.x, RAD2DEG * transform.rotation.y, RAD2DEG * transform.rotation.z});
         Matrix matTranslation = MatrixTranslate(transform.pos.x, transform.pos.y, transform.pos.z);
 
-        // First scale, then rotate, and finally translate
-        Matrix transformMatrix = MatrixMultiply(matScale, matRotation); // Scale, then rotate
-        transformMatrix = MatrixMultiply(transformMatrix, matTranslation); // Then translate
+        Matrix transformMatrix = MatrixMultiply(matScale, matRotation);
+        transformMatrix = MatrixMultiply(transformMatrix, matTranslation);
 
         return transformMatrix;
     }
 
     Matrix entity::getTransformMatrix(ecs::Entity entity)
     {
-        const auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
+        const auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
 
-        return transformToMatrix(transform);
+        return render.data->getModel().transform;
     }
 
     Transform entity::getTransform(ecs::Entity entity)
@@ -218,13 +216,9 @@ namespace engine {
         };
     }
 
-    void entity::setTransform(ecs::Entity entity, const Vector3 &position,
-        const Vector3 &rotation, const Vector3 &scale)
+    void entity::setTransformMatrix(ecs::Entity entity, Matrix transform)
     {
-        auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
-        transform.pos = position;
-        //transform.rotation = rotation;
-        engine::rotate(entity, rotation);
-        //engine::setScale(entity, scale);
+        auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
+        render.data->getModel().transform = transform;
     }
 }
