@@ -1,5 +1,0 @@
-<map id="ecs::components::behaviour::EnemySpawner" name="ecs::components::behaviour::EnemySpawner">
-<area shape="rect" id="node1" title=" " alt="" coords="5,520,188,671"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="5,248,188,472"/>
-<area shape="rect" id="node3" href="$classecs_1_1components_1_1behaviour_1_1_behaviour.html" title="Abstract class representing a behaviour component, akin to Unity&#39;s behaviour scripts." alt="" coords="5,5,188,200"/>
-</map>
