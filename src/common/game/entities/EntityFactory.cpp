@@ -7,6 +7,7 @@
 
 #include "common/game/entities/EntityFactory.hpp"
 #include <string>
+#include <EntityHandling.hpp>
 
 ecs::Entity common::game::EntityFactory::createEntity(
     common::game::ObjectType type,

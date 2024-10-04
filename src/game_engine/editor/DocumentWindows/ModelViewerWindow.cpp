@@ -9,6 +9,9 @@
 #include "rlImGui.h"
 #include "game_engine/editor/DocumentWindows/ModelViewerWindow.hpp"
 
+#include <CameraHandling.hpp>
+#include <EntityHandling.hpp>
+
 #include <iostream>
 #include "tinyfiledialogs.h"
 

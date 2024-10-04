@@ -9,6 +9,9 @@
 #include "rlImGui.h"
 
 #include "game_engine/editor/DocumentWindows/Main3DScene.hpp"
+#include <CameraHandling.hpp>
+#include <EntityHandling.hpp>
+#include <Math.hpp>
 
 #include <ImGuizmo.h>
 #include <rlgl.h>
@@ -276,8 +279,8 @@ void engine::editor::Main3DScene::renderGizmo()
             case ImGuizmo::OPERATION::TRANSLATE: {
                 //LOG_F(INFO, "TRANSLATE");
                 auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(_selectedEntity);
-                engine::setScale(_selectedEntity, sca);
-                engine::setRotation(_selectedEntity, rot);
+                //engine::setScale(_selectedEntity, sca);
+                //engine::setRotation(_selectedEntity, rot);
                 transform.pos = pos;
                 break;
             }

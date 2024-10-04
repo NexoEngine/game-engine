@@ -1,6 +1,10 @@
 
 #include "protoVR/core/game.hpp"
 #include "common/game/entities/EntityFactory.hpp"
+#include <SceneHandling.hpp>
+#include <CameraHandling.hpp>
+#include <EventHandling.hpp>
+#include <EntityHandling.hpp>
 
 void Game::run()
 {

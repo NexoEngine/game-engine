@@ -15,6 +15,12 @@ set(SRCS
     src/game_engine/editor/DocumentWindows/EntityProperties/TransformProperty.cpp
     src/game_engine/editor/DocumentWindows/EntityProperties/RenderProperty.cpp
     src/game_engine/core/GameEngine.cpp
+    src/game_engine/core/AudioHandling.cpp
+    src/game_engine/core/CameraHandling.cpp
+    src/game_engine/core/EntityHandling.cpp
+    src/game_engine/core/EventHandling.cpp
+    src/game_engine/core/SceneHandling.cpp
+    src/game_engine/core/Math.cpp
     src/game_engine/core/window/Window.cpp
     src/game_engine/core/event/Event.cpp
     src/game_engine/ecs/components/Shapes.cpp
@@ -50,9 +56,9 @@ FetchContent_MakeAvailable(tinyfiledialogs)
 
 list(APPEND MY_PROJECT_SOURCES ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
 
-add_executable(game_engine ${SRCS} ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
+add_executable(game-engine ${SRCS} ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
 
-set_target_properties( game_engine
+set_target_properties( game-engine
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
@@ -101,26 +107,26 @@ include_directories(${imgui_INCLUDE_DIRS})
 # Find loguru package
 if (WIN32)
     find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(game_engine PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(game_engine PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
+    target_include_directories(game-engine PRIVATE ${LOGURU_INCLUDE_DIRS})
+    target_sources(game-engine PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
 else()
     find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(game_engine PRIVATE loguru)
+    target_link_libraries(game-engine PRIVATE loguru)
 endif()
 
 # Find ImGuizmo package
 find_package(imguizmo CONFIG QUIET)
-target_link_libraries(game_engine PRIVATE imguizmo)
+target_link_libraries(game-engine PRIVATE imguizmo)
 
 # Linking the libraries
-target_link_libraries(game_engine PRIVATE raylib imgui::imgui rlimgui)
+target_link_libraries(game-engine PRIVATE raylib imgui::imgui rlimgui)
 
-target_include_directories(game_engine PRIVATE ${tinyfiledialogs_SOURCE_DIR})
+target_include_directories(game-engine PRIVATE ${tinyfiledialogs_SOURCE_DIR})
 
 if(WIN32)
-    target_link_libraries(game_engine PRIVATE Boost::serialization Boost::system)
+    target_link_libraries(game-engine PRIVATE Boost::serialization Boost::system)
 else()
-    target_link_libraries(game_engine PRIVATE Boost::serialization)
+    target_link_libraries(game-engine PRIVATE Boost::serialization)
 endif(WIN32)
 
 # Compiler options for Unix
