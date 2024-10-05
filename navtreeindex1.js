@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"classrtype_1_1net_1_1_server_interface.html#a97d63a6071b67771c93dd529fe8355c9":[5,0,4,0,5,0],
 "classrtype_1_1net_1_1_server_interface.html#ab8651adcb1481cf43e1565a7035aaf25":[5,0,4,0,5,4],
 "classrtype_1_1net_1_1_server_interface.html#abcece60d70c51345a94cc8d1541236ce":[5,0,4,0,5,1],
 "classrtype_1_1net_1_1_server_interface.html#ad1d9109ea220ff8dad16f1a67404bdf3":[5,0,4,0,5,5],
@@ -57,8 +58,8 @@ var NAVTREEINDEX1 =
 "game__engine_2ecs_2components_2_network_8hpp_source.html":[6,0,0,1,1,0,6],
 "game_engine_parent_page.html":[2],
 "hierarchy.html":[5,2],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "install_parent_page.html":[3],
 "install_readme.html":[3,0],
 "my__raylib_8h_source.html":[6,0,0,0,4],
@@ -100,6 +101,7 @@ var NAVTREEINDEX1 =
 "structecs_1_1components_1_1health_1_1health__s.html":[5,0,1,0,3,0],
 "structecs_1_1components_1_1input_1_1_input.html":[5,0,1,0,4,0],
 "structecs_1_1components_1_1input_1_1key_state.html":[5,0,1,0,4,1],
+"structecs_1_1components_1_1input_1_1mouse_state.html":[5,0,1,0,4,2],
 "structecs_1_1components_1_1network_1_1network__s.html":[5,0,1,0,5,0],
 "structecs_1_1components_1_1physics_1_1collider__s.html":[5,0,1,0,6,0],
 "structecs_1_1components_1_1physics_1_1collider__s.html#a1103d3098a24026c4b09780cb9e48349":[5,0,1,0,6,0,0],

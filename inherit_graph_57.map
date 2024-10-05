@@ -1,11 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classecs_1_1system_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,195,147,221"/>
-<area shape="rect" id="node2" href="$classecs_1_1system_1_1_animation_system.html" title="System class responsible for handling and updating animations within the ECS framework." alt="" coords="195,5,393,32"/>
-<area shape="rect" id="node3" href="$classecs_1_1system_1_1_audio_system.html" title=" " alt="" coords="207,56,381,83"/>
-<area shape="rect" id="node4" href="$classecs_1_1system_1_1_behaviour_system.html" title="System class responsible for handling and updating behaviour components in the ECS framework." alt="" coords="195,107,393,133"/>
-<area shape="rect" id="node5" href="$classecs_1_1system_1_1_colision_detection_system.html" title=" " alt="" coords="195,158,393,199"/>
-<area shape="rect" id="node6" href="$classecs_1_1system_1_1_input_system.html" title=" " alt="" coords="209,224,379,251"/>
-<area shape="rect" id="node7" href="$classecs_1_1system_1_1_music_system.html" title=" " alt="" coords="206,275,382,301"/>
-<area shape="rect" id="node8" href="$classecs_1_1system_1_1_physics_system.html" title="System responsible for updating the positions of entities based on their physical properties." alt="" coords="201,325,387,352"/>
-<area shape="rect" id="node9" href="$classecs_1_1system_1_1_render_system.html" title="System responsible for rendering entities in the ECS framework." alt="" coords="203,376,385,403"/>
+<area shape="rect" id="node1" href="$classecs_1_1system_1_1_collision_response.html" title="Handles the response to collisions between entities." alt="" coords="5,5,209,32"/>
 </map>

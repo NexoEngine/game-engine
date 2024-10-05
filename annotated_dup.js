@@ -50,7 +50,8 @@ var annotated_dup =
         ] ],
         [ "input", null, [
           [ "Input", "structecs_1_1components_1_1input_1_1_input.html", null ],
-          [ "keyState", "structecs_1_1components_1_1input_1_1key_state.html", null ]
+          [ "keyState", "structecs_1_1components_1_1input_1_1key_state.html", null ],
+          [ "mouseState", "structecs_1_1components_1_1input_1_1mouse_state.html", null ]
         ] ],
         [ "network", null, [
           [ "network_s", "structecs_1_1components_1_1network_1_1network__s.html", null ]
@@ -106,6 +107,7 @@ var annotated_dup =
     [ "engine", null, [
       [ "core", null, [
         [ "EngineCamera", "classengine_1_1core_1_1_engine_camera.html", "classengine_1_1core_1_1_engine_camera" ],
+        [ "MovableCamera", "classengine_1_1core_1_1_movable_camera.html", null ],
         [ "Window", "classengine_1_1core_1_1_window.html", "classengine_1_1core_1_1_window" ]
       ] ],
       [ "editor", null, [

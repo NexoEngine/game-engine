@@ -1,3 +1,4 @@
 <map id="engine::core::EngineCamera" name="engine::core::EngineCamera">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,187,229"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,145,187,399"/>
+<area shape="rect" id="node2" href="$class_camera.html" title="Represents a camera in the graphics engine, providing control over camera properties and rendering." alt="" coords="63,5,129,83"/>
 </map>

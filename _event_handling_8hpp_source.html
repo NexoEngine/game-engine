@@ -112,18 +112,22 @@ $(document).ready(function(){initNavTree('_event_handling_8hpp_source.html','');
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">bool</span> isKeyUp(ecs::components::input::Keys key);</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> registerListener(std::function&lt;<span class="keywordtype">void</span>(T&amp;)&gt; listener)</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        engine::Engine::getInstance()-&gt;<a class="code hl_function" href="classengine_1_1_engine.html#a2761afac2517fb26ec4e6383cd862cfe">registerListener</a>&lt;T&gt;(listener);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> emitEvent(T &amp;event)</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        engine::Engine::getInstance()-&gt;emitEvent(event);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    Vector2 getMouseDelta(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> isMouseButtonDown(ecs::components::input::MouseButtons button);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> registerListener(std::function&lt;<span class="keywordtype">void</span>(T&amp;)&gt; listener)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        engine::Engine::getInstance()-&gt;<a class="code hl_function" href="classengine_1_1_engine.html#a2761afac2517fb26ec4e6383cd862cfe">registerListener</a>&lt;T&gt;(listener);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> emitEvent(T &amp;event)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        engine::Engine::getInstance()-&gt;emitEvent(event);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
 <div class="ttc" id="aclassengine_1_1_engine_html_a2761afac2517fb26ec4e6383cd862cfe"><div class="ttname"><a href="classengine_1_1_engine.html#a2761afac2517fb26ec4e6383cd862cfe">engine::Engine::registerListener</a></div><div class="ttdeci">void registerListener(std::function&lt; void(T &amp;)&gt; listener)</div><div class="ttdoc">Registers an event listener.</div><div class="ttdef"><b>Definition:</b> GameEngine.hpp:102</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

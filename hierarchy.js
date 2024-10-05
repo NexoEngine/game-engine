@@ -36,7 +36,9 @@ var hierarchy =
       [ "rtype::net::Connection< T >", "classrtype_1_1net_1_1_connection.html", null ]
     ] ],
     [ "engine::Engine", "classengine_1_1_engine.html", null ],
-    [ "engine::core::EngineCamera", "classengine_1_1core_1_1_engine_camera.html", null ],
+    [ "engine::core::EngineCamera", "classengine_1_1core_1_1_engine_camera.html", [
+      [ "engine::core::MovableCamera", "classengine_1_1core_1_1_movable_camera.html", null ]
+    ] ],
     [ "common::game::Entity", "classcommon_1_1game_1_1_entity.html", null ],
     [ "common::game::EntityFactory", "classcommon_1_1game_1_1_entity_factory.html", null ],
     [ "ecs::EntityManager", "classecs_1_1_entity_manager.html", null ],
@@ -81,6 +83,7 @@ var hierarchy =
     [ "engine::editor::LogMessage", "structengine_1_1editor_1_1_log_message.html", null ],
     [ "rtype::net::Message< T >", "structrtype_1_1net_1_1_message.html", null ],
     [ "rtype::net::MessageHeader< T >", "structrtype_1_1net_1_1_message_header.html", null ],
+    [ "ecs::components::input::mouseState", "structecs_1_1components_1_1input_1_1mouse_state.html", null ],
     [ "ecs::components::sound::MusicSource", "structecs_1_1components_1_1sound_1_1_music_source.html", null ],
     [ "ecs::components::network::network_s", "structecs_1_1components_1_1network_1_1network__s.html", null ],
     [ "ObjectLayerPairFilter", null, [
