@@ -27,7 +27,7 @@ namespace engine::editor {
             const char* _filterPatterns[1] = {"*.obj"};
             bool _modelLoaded = false;
             ImVec2 _currentwindowSize;
-            engine::core::EngineCamera _camera;
+            std::shared_ptr<engine::core::EngineCamera> _camera;
             ecs::SceneID _sceneID;
             ecs::Entity _importedEntity{};
 

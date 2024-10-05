@@ -37,4 +37,16 @@ namespace engine {
         auto &input = Engine::getInstance()->getSingletonComponent<ecs::components::input::Input>();
         return input.keys[static_cast<size_t>(key)].keyUp;
     }
+
+    Vector2 getMouseDelta(void)
+    {
+        auto &input = Engine::getInstance()->getSingletonComponent<ecs::components::input::Input>();
+        return input.mouseDelta;
+    }
+
+    bool isMouseButtonDown(ecs::components::input::MouseButtons button)
+    {
+        auto &input = Engine::getInstance()->getSingletonComponent<ecs::components::input::Input>();
+        return input.mouseButtons[static_cast<size_t>(button)].buttonDown;
+    }
 }

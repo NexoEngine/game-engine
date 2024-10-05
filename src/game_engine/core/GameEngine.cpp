@@ -124,6 +124,7 @@ namespace engine
         if (_coordinator->isScenePaused(sceneId) || !_coordinator->isSceneActive(sceneId))
             return;
         //activateScene(sceneId);
+        _inputSystem->handleInputs();
         _behaviourSystem->handleBehaviours();
         _physicSystem->updatePosition();
         _animationSystem->handleAnimations();
@@ -144,9 +145,11 @@ namespace engine
         bool isSceneActive = _coordinator->isSceneActive(sceneId);
         if (!isSceneActive)
             activateScene(sceneId);
+        auto &camera = _coordinator->getCamera(sceneId, cameraId);
+        camera->update();
         BeginDrawing();
         _window->clear(Color{41, 41, 41, 255});
-        BeginMode3D(_coordinator->getCamera(sceneId, cameraId).getCamera());
+        BeginMode3D(_coordinator->getCamera(sceneId, cameraId)->getCamera());
         _renderSystem->render();
         //DrawGrid(10000, 1.0f);
         EndMode3D();
@@ -160,9 +163,11 @@ namespace engine
         bool isSceneActive = _coordinator->isSceneActive(sceneId);
         if (!isSceneActive)
             activateScene(sceneId);
-        BeginTextureMode(_coordinator->getCamera(sceneId, cameraId).getRenderTexture());
+        auto &camera = _coordinator->getCamera(sceneId, cameraId);
+        camera->update();
+        BeginTextureMode(_coordinator->getCamera(sceneId, cameraId)->getRenderTexture());
         _window->clear(Color{41, 41, 41, 255});
-        BeginMode3D(_coordinator->getCamera(sceneId, cameraId).getCamera());
+        BeginMode3D(_coordinator->getCamera(sceneId, cameraId)->getCamera());
         _renderSystem->render();
         DrawGrid(10000, 1.0f);
         EndMode3D();
@@ -251,17 +256,22 @@ namespace engine
         return Engine::getInstance()->isScenePaused(id);
     }
 
-    engine::core::EngineCamera createCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)
+    std::shared_ptr<engine::core::EngineCamera> createCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)
     {
         return Engine::getInstance()->createCamera(pos, target, up, mode, fov);
     }
 
-    void attachCamera(ecs::SceneID sceneID, engine::core::EngineCamera &camera)
+    std::shared_ptr<engine::core::EngineCamera> createMovableCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)
+    {
+        return Engine::getInstance()->createMovableCamera(pos, target, up, mode, fov);
+    }
+
+    void attachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera)
     {
         Engine::getInstance()->attachCamera(sceneID, camera);
     }
 
-    void detachCamera(ecs::SceneID sceneID, engine::core::EngineCamera &camera)
+    void detachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera)
     {
         Engine::getInstance()->detachCamera(sceneID, camera);
     }

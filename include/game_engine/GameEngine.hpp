@@ -235,10 +235,11 @@ namespace engine {
                 _coordinator->removeEntityFromScene(entity, sceneID);
             }
 
-            engine::core::EngineCamera createCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov);
+            std::shared_ptr<engine::core::EngineCamera> createCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov);
+            std::shared_ptr<engine::core::EngineCamera> createMovableCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov);
 
-            void attachCamera(ecs::SceneID sceneID, engine::core::EngineCamera &camera);
-            void detachCamera(ecs::SceneID sceneID, engine::core::EngineCamera &camera);
+            void attachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera);
+            void detachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera);
 
         private:
             std::shared_ptr<ecs::Coordinator> _coordinator;

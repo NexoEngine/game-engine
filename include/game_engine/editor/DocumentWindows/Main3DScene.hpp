@@ -39,7 +39,7 @@ namespace engine::editor {
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
             ImGuizmo::OPERATION _lastGizmoOperationOver = ImGuizmo::SCALE;
 
-            engine::core::EngineCamera _camera;
+            std::shared_ptr<engine::core::EngineCamera> _camera;
             ecs::SceneID _sceneID;
 
 

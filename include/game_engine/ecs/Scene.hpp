@@ -37,23 +37,23 @@ namespace ecs {
                 entities.erase(entity);
             }
 
-            void attachCamera(engine::core::EngineCamera &camera)
+            void attachCamera(std::shared_ptr<engine::core::EngineCamera> &camera)
             {
-                _cameras.emplace(camera.getCameraID(), camera);
+                _cameras.emplace(camera->getCameraID(), camera);
             }
 
-            void detachCamera(engine::core::EngineCamera &camera)
+            void detachCamera(std::shared_ptr<engine::core::EngineCamera> &camera)
             {
-                _cameras.erase(camera.getCameraID());
+                _cameras.erase(camera->getCameraID());
             }
 
-            engine::core::EngineCamera &getCamera(engine::core::CameraID id)
+            std::shared_ptr<engine::core::EngineCamera> &getCamera(engine::core::CameraID id)
             {
                 return _cameras.at(id);
             }
 
         private:
-            std::unordered_map<engine::core::CameraID, engine::core::EngineCamera&> _cameras;
+            std::unordered_map<engine::core::CameraID, std::shared_ptr<engine::core::EngineCamera>> _cameras;
     };
 
     class SceneManager {
@@ -157,17 +157,17 @@ namespace ecs {
                 return activeEntities;
             }
 
-            void attachCamera(SceneID id, engine::core::EngineCamera &camera)
+            void attachCamera(SceneID id, std::shared_ptr<engine::core::EngineCamera> &camera)
             {
                 scenes.at(id).attachCamera(camera);
             }
 
-            void detachCamera(SceneID id, engine::core::EngineCamera &camera)
+            void detachCamera(SceneID id, std::shared_ptr<engine::core::EngineCamera> &camera)
             {
                 scenes.at(id).detachCamera(camera);
             }
 
-            engine::core::EngineCamera &getCamera(SceneID id, engine::core::CameraID cameraID)
+            std::shared_ptr<engine::core::EngineCamera> &getCamera(SceneID id, engine::core::CameraID cameraID)
             {
                 return scenes.at(id).getCamera(cameraID);
             }

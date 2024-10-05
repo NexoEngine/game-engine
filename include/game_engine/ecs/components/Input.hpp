@@ -136,8 +136,27 @@ namespace ecs {
                 bool keyUp = false;
             };
 
+            enum class MouseButtons {
+                MouseLeft = 0,
+                MouseRight = 1,
+                MouseMiddle = 2,
+                MouseButton4 = 3,
+                MouseButton5 = 4,
+            };
+
+            struct mouseState {
+                bool buttonPressed = false;
+                bool buttonReleased = false;
+                bool buttonDown = false;
+                bool buttonUp = false;
+            };
+
             struct Input : public ecs::ISingletonComponent {
                 std::array<keyState, 110> keys;
+                std::array<mouseState, 5> mouseButtons;
+                Vector2 mousePosition = {0.0f, 0.0f};
+                Vector2 mouseDelta = {0.0f, 0.0f};
+                Vector2 mouseScroll = {0.0f, 0.0f};
             };
         }
     }

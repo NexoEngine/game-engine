@@ -23,6 +23,7 @@ set(SRCS
     src/game_engine/core/Math.cpp
     src/game_engine/core/window/Window.cpp
     src/game_engine/core/event/Event.cpp
+    src/game_engine/core/camera/Camera.cpp
     src/game_engine/ecs/components/Shapes.cpp
     src/game_engine/ecs/components/Behaviour.cpp
     src/game_engine/ecs/systems/Render.cpp

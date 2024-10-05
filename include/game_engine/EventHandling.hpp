@@ -54,6 +54,10 @@ namespace engine {
      */
     bool isKeyUp(ecs::components::input::Keys key);
 
+    Vector2 getMouseDelta(void);
+
+    bool isMouseButtonDown(ecs::components::input::MouseButtons button);
+
     /**
      * @brief Registers an event listener.
      * @tparam T Type of the event.

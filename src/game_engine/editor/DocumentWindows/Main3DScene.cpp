@@ -23,7 +23,7 @@
 class input;
 
 engine::editor::Main3DScene::Main3DScene()
-    : _camera(engine::createCamera(Vector3{7.0f, 7.0f, 7.0f}, Vector3{0.0f, 0.0f, 0.0f})),
+    : _camera(engine::createMovableCamera(Vector3{7.0f, 7.0f, 7.0f}, Vector3{0.0f, 0.0f, 0.0f})),
     _sceneID(engine::createScene())
 {
     setupScene();
@@ -87,7 +87,7 @@ void engine::editor::Main3DScene::update()
     _sceneManagerBridge.deactivateAllScenes();
     engine::activateScene(_sceneID);
     engine::update(_sceneID);
-    engine::renderTextureMode(_sceneID, _camera.getCameraID());
+    engine::renderTextureMode(_sceneID, _camera->getCameraID());
     lastTime = currentTime;
 
 }
@@ -112,6 +112,7 @@ void engine::editor::Main3DScene::setupScene()
 void engine::editor::Main3DScene::setupCamera()
 {
     engine::attachCamera(_sceneID, _camera);
+    std::cout << "pos dans le setup camera : " << _camera->getCamera().position.x << " " << _camera->getCamera().position.y << " " << _camera->getCamera().position.z << std::endl;
 
     ImGuizmo::SetOrthographic(false);
 }
@@ -120,8 +121,6 @@ void engine::editor::Main3DScene::loadEntities()
 {
     ecs::Entity cube = engine::createCube({0, 2, 2}, 4, 4, 4, RED, true);
     _selectedEntity = cube;
-    auto behave = engine::createBehavior<input>();
-    engine::attachBehavior(cube, behave);
     engine::addEntityToScene(cube, _sceneID);
 }
 
@@ -129,7 +128,7 @@ void engine::editor::Main3DScene::handleWindowResize()
 {
     if (!isWindowResized())
         return;
-    _camera.updateRenderTextureSize(static_cast<int>(_viewSize.x), static_cast<int>(_viewSize.y));
+    _camera->updateRenderTextureSize(static_cast<int>(_viewSize.x), static_cast<int>(_viewSize.y));
     ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
 }
 
@@ -184,8 +183,8 @@ void engine::editor::Main3DScene::renderGizmo()
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetDrawlist();
     ImGuizmo::SetID(_selectedEntity);
-    Matrix viewMatrix = _camera.getViewMatrix();
-    Matrix projectionMatrix = _camera.getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
+    Matrix viewMatrix = _camera->getViewMatrix();
+    Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
     Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
     
     // LOG_F(INFO, "objectMatrix: %f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f",
@@ -199,15 +198,10 @@ void engine::editor::Main3DScene::renderGizmo()
     float16 objectMatrixFloats = MatrixToFloatV(objectMatrix);
 
     ImGuizmo::Enable(true);
-    if (!ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
+    ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
                          ImGuizmo::OPERATION::UNIVERSAL,
                          ImGuizmo::MODE::WORLD  ,
-                         objectMatrixFloats.v)) {
-    }
-    auto viewManipulateRight = _viewPosition.x + _viewSize.x;
-    auto viewManipulateTop = _viewPosition.y;
-    ImGuizmo::ViewManipulate(viewMatrixFloats.v, 100, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
-    _camera.setViewMatrix(engine::math::matrixFromFloat16(viewMatrixFloats));
+                         objectMatrixFloats.v);
 
     if (ImGuizmo::IsUsing())
     {
@@ -217,7 +211,7 @@ void engine::editor::Main3DScene::renderGizmo()
 
 void engine::editor::Main3DScene::renderView()
 {
-    rlImGuiImageRenderTexture(&_camera.getRenderTexture());
+    rlImGuiImageRenderTexture(&_camera->getRenderTexture());
 }
 
 bool engine::editor::Main3DScene::isWindowResized() const
