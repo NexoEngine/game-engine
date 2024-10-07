@@ -10,9 +10,27 @@
 
 namespace engine {
 
+    ecs::Entity Engine::addInvisibleEntity(void)
+    {
+        return _coordinator->createEntity();
+    }
+
+    ecs::Entity Engine::addEntity(ecs::components::physics::transform_t transf, ecs::components::render::render_t render)
+    {
+        ecs::Entity entity = _coordinator->createEntity();
+        _coordinator->addComponent<ecs::components::physics::transform_t>(entity, transf);
+        _coordinator->addComponent<ecs::components::render::render_t>(entity, render);
+        return entity;
+    }
+
     ecs::Entity createEntity(void)
     {
         return Engine::getInstance()->addInvisibleEntity();
+    }
+
+    std::vector<std::pair<std::type_index, std::any>> Engine::getAllComponents(ecs::Entity entity)
+    {
+        return _coordinator->getAllComponents(entity);
     }
 
     std::vector<std::pair<std::type_index, std::any>> getAllComponents(ecs::Entity entity)
@@ -93,6 +111,11 @@ namespace engine {
     void Engine::destroyEntity(ecs::Entity entity)
     {
         _entitiesToDestroy.push(entity);
+    }
+
+    void destroyEntity(ecs::Entity entity)
+    {
+        Engine::getInstance()->destroyEntity(entity);
     }
 
     void attachBehavior(

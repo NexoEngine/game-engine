@@ -17,6 +17,11 @@ namespace engine {
         PlaySound(sound);
     }
 
+    void triggerAudio(Sound sound)
+    {
+        Engine::getInstance()->triggerAudio(sound);
+    }
+
     ecs::Entity Engine::playMusic(const std::string &musicPath, bool looping)
     {
         ecs::Entity entity = _coordinator->createEntity();
@@ -31,6 +36,17 @@ namespace engine {
         return entity;
     }
 
+    ecs::Entity playMusic(const std::string &audioPath, bool looping)
+    {
+        return Engine::getInstance()->playMusic(audioPath, looping);
+    }
+
+    void Engine::stopMusic(ecs::Entity musicSource)
+    {
+        auto &music = _coordinator->getComponent<ecs::components::sound::MusicSource>(musicSource);
+        music.stop = true;
+    }
+
     void stopMusic(ecs::Entity musicSource)
     {
         Engine::getInstance()->stopMusic(musicSource);
@@ -42,10 +58,20 @@ namespace engine {
         music.isPaused = true;
     }
 
+    void pauseMusic(ecs::Entity musicSource)
+    {
+        Engine::getInstance()->pauseMusic(musicSource);
+    }
+
     void Engine::resumeMusic(ecs::Entity musicSource)
     {
         auto &music = _coordinator->getComponent<ecs::components::sound::MusicSource>(musicSource);
         music.resume = true;
         music.isPaused = false;
+    }
+
+    void resumeMusic(ecs::Entity musicSource)
+    {
+        Engine::getInstance()->resumeMusic(musicSource);
     }
 }
