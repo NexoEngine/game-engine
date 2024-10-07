@@ -1,4 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,161,32"/>
-<area shape="rect" id="node2" href="$class_my_body_activation_listener.html" title=" " alt="" coords="209,5,383,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,213,32"/>
+<area shape="rect" id="node2" href="$class_object_vs_broad_phase_layer_filter_impl.html" title="Class that determines if an object layer can collide with a broadphase layer." alt="" coords="261,5,495,32"/>
 </map>

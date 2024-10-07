@@ -1,0 +1,4 @@
+<map id="BulletShotEvent" name="BulletShotEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="5,131,140,208"/>
+<area shape="rect" id="node2" href="$classecs_1_1event_1_1_a_event.html" title="Interface class representing a generic event in the ECS system." alt="" coords="8,5,137,83"/>
+</map>

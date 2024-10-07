@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structecs_1_1components_1_1input_1_1key_state.html" title=" " alt="" coords="5,5,160,47"/>
+<area shape="rect" id="node1" href="$classecs_1_1components_1_1_i_component_array.html" title="Interface for a component array in the ECS framework." alt="" coords="5,5,201,47"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1_component_array.html" title=" " alt="" coords="249,5,441,47"/>
 </map>

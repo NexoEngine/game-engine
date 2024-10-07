@@ -1,4 +1,7 @@
 <map id="ecs::event::AEvent" name="ecs::event::AEvent">
-<area shape="rect" id="node1" title="Interface class representing a generic event in the ECS system." alt="" coords="5,5,135,83"/>
-<area shape="rect" id="node2" href="$class_collision_event.html" title=" " alt="" coords="9,131,131,281"/>
+<area shape="rect" id="node1" title="Interface class representing a generic event in the ECS system." alt="" coords="243,5,372,83"/>
+<area shape="rect" id="node2" href="$class_bullet_shot_event.html" title=" " alt="" coords="5,167,140,245"/>
+<area shape="rect" id="node3" href="$class_collision_event.html" title=" " alt="" coords="165,131,287,281"/>
+<area shape="rect" id="node4" href="$class_enemy_destroy_event.html" title=" " alt="" coords="311,167,469,245"/>
+<area shape="rect" id="node5" href="$class_player_destroy_event.html" title=" " alt="" coords="493,167,647,245"/>
 </map>

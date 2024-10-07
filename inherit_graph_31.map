@@ -1,5 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classecs_1_1components_1_1behaviour_1_1_behaviour.html" title="Abstract class representing a behaviour component, akin to Unity&#39;s behaviour scripts." alt="" coords="5,35,188,76"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="236,5,492,47"/>
-<area shape="rect" id="node3" href="$classinput.html" title=" " alt="" coords="339,71,389,98"/>
+<area shape="rect" id="node1" href="$classecs_1_1components_1_1behaviour_1_1_behaviour.html" title="Abstract class representing a behaviour component, akin to Unity&#39;s behaviour scripts." alt="" coords="5,85,188,126"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="273,5,455,61"/>
+<area shape="rect" id="node4" href="$classecs_1_1components_1_1behaviour_1_1_network_behaviour.html" title=" " alt="" coords="236,85,492,126"/>
+<area shape="rect" id="node5" href="$classinput.html" title=" " alt="" coords="339,151,389,177"/>
+<area shape="rect" id="node3" href="$classecs_1_1components_1_1behaviour_1_1_enemy_spawner.html" title=" " alt="" coords="540,13,723,54"/>
 </map>
