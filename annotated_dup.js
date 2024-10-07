@@ -107,6 +107,7 @@ var annotated_dup =
     [ "engine", null, [
       [ "core", null, [
         [ "EngineCamera", "classengine_1_1core_1_1_engine_camera.html", "classengine_1_1core_1_1_engine_camera" ],
+        [ "Light", "structengine_1_1core_1_1_light.html", null ],
         [ "MovableCamera", "classengine_1_1core_1_1_movable_camera.html", null ],
         [ "Window", "classengine_1_1core_1_1_window.html", "classengine_1_1core_1_1_window" ]
       ] ],
@@ -150,6 +151,8 @@ var annotated_dup =
     [ "CollisionEvent", "class_collision_event.html", null ],
     [ "ComponentArray< T >", "class_component_array_3_01_t_01_4.html", null ],
     [ "Game", "class_game.html", null ],
+    [ "ImGL3WProcs", "union_im_g_l3_w_procs.html", null ],
+    [ "ImGui_ImplOpenGL3_Data", "struct_im_gui___impl_open_g_l3___data.html", null ],
     [ "input", "classinput.html", "classinput" ],
     [ "MyBodyActivationListener", "class_my_body_activation_listener.html", null ],
     [ "MyContactListener", "class_my_contact_listener.html", null ],

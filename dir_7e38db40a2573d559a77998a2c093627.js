@@ -10,5 +10,6 @@ var dir_7e38db40a2573d559a77998a2c093627 =
     [ "NetworkBehaviour.hpp", "_network_behaviour_8hpp_source.html", null ],
     [ "Physics.hpp", "components_2_physics_8hpp_source.html", null ],
     [ "Render.hpp", "components_2_render_8hpp_source.html", null ],
+    [ "Shader.hpp", "_shader_8hpp_source.html", null ],
     [ "Shapes.hpp", "_shapes_8hpp_source.html", null ]
 ];

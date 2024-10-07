@@ -96,8 +96,8 @@ Inheritance diagram for engine::core::MovableCamera:</div>
 <div class="dyncontent">
 <div class="center"><img src="classengine_1_1core_1_1_movable_camera__inherit__graph.png" border="0" usemap="#aengine_1_1core_1_1_movable_camera_inherit__map" alt="Inheritance graph"/></div>
 <map name="aengine_1_1core_1_1_movable_camera_inherit__map" id="aengine_1_1core_1_1_movable_camera_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,321,196,413"/>
-<area shape="rect" href="classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,5,191,273"/>
+<area shape="rect" title=" " alt="" coords="5,351,196,443"/>
+<area shape="rect" href="classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,5,191,303"/>
 </map>
 </div>
 <div class="dynheader">
@@ -105,8 +105,8 @@ Collaboration diagram for engine::core::MovableCamera:</div>
 <div class="dyncontent">
 <div class="center"><img src="classengine_1_1core_1_1_movable_camera__coll__graph.png" border="0" usemap="#aengine_1_1core_1_1_movable_camera_coll__map" alt="Collaboration graph"/></div>
 <map name="aengine_1_1core_1_1_movable_camera_coll__map" id="aengine_1_1core_1_1_movable_camera_coll__map">
-<area shape="rect" title=" " alt="" coords="5,448,196,540"/>
-<area shape="rect" href="classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,145,191,399"/>
+<area shape="rect" title=" " alt="" coords="5,477,196,569"/>
+<area shape="rect" href="classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,145,191,428"/>
 <area shape="rect" href="class_camera.html" title="Represents a camera in the graphics engine, providing control over camera properties and rendering." alt="" coords="67,5,134,83"/>
 </map>
 </div>
@@ -173,6 +173,12 @@ const RenderTexture &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memitem:a961f8fc4aa65a1051e5ef002fcf0003a inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classengine_1_1core_1_1_engine_camera.html#a961f8fc4aa65a1051e5ef002fcf0003a">setViewMatrix</a> (Matrix matrix)</td></tr>
 <tr class="memdesc:a961f8fc4aa65a1051e5ef002fcf0003a inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the view matrix of the camera.  <a href="classengine_1_1core_1_1_engine_camera.html#a961f8fc4aa65a1051e5ef002fcf0003a">More...</a><br /></td></tr>
 <tr class="separator:a961f8fc4aa65a1051e5ef002fcf0003a inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe97389067a646301128ee23b3c98577 inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top"><a id="abe97389067a646301128ee23b3c98577" name="abe97389067a646301128ee23b3c98577"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderEnabled</b> (ecs::components::shader::ShaderType shaderType, bool enabled)</td></tr>
+<tr class="separator:abe97389067a646301128ee23b3c98577 inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4545e9c95fb039b219b7cc0494f06d0 inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top"><a id="ab4545e9c95fb039b219b7cc0494f06d0" name="ab4545e9c95fb039b219b7cc0494f06d0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isShaderEnabled</b> (ecs::components::shader::ShaderType shaderType) const</td></tr>
+<tr class="separator:ab4545e9c95fb039b219b7cc0494f06d0 inherit pub_methods_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -190,6 +196,12 @@ CameraID&#160;</td><td class="memItemRight" valign="bottom"><b>_id</b></td></tr>
 <tr class="memitem:ac8b0e1c4adc16832620d813fbfbe1915 inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top"><a id="ac8b0e1c4adc16832620d813fbfbe1915" name="ac8b0e1c4adc16832620d813fbfbe1915"></a>
 RenderTexture&#160;</td><td class="memItemRight" valign="bottom"><b>_viewTexture</b></td></tr>
 <tr class="separator:ac8b0e1c4adc16832620d813fbfbe1915 inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4366b10d8a53ba7ce4c8176db3c14c inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top"><a id="a7c4366b10d8a53ba7ce4c8176db3c14c" name="a7c4366b10d8a53ba7ce4c8176db3c14c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>_shaderStatus</b> [ecs::components::shader::SHADER_COUNT] = { false }</td></tr>
+<tr class="separator:a7c4366b10d8a53ba7ce4c8176db3c14c inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66708c7ed8895211840e4e6bc055fa75 inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memItemLeft" align="right" valign="top"><a id="a66708c7ed8895211840e4e6bc055fa75" name="a66708c7ed8895211840e4e6bc055fa75"></a>
+Shader&#160;</td><td class="memItemRight" valign="bottom"><b>lightShader</b> = ecs::components::shader::defaultLightingShader</td></tr>
+<tr class="separator:a66708c7ed8895211840e4e6bc055fa75 inherit pro_attribs_classengine_1_1core_1_1_engine_camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="af92b646b26aa98836b8a78805cc336c5" name="af92b646b26aa98836b8a78805cc336c5"></a>

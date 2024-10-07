@@ -9,6 +9,7 @@ var dir_c9301b1b2e685c959ae5d879a5d66d62 =
     [ "EntityHandling.hpp", "_entity_handling_8hpp_source.html", null ],
     [ "EventHandling.hpp", "_event_handling_8hpp_source.html", null ],
     [ "GameEngine.hpp", "_game_engine_8hpp_source.html", null ],
+    [ "LightHandling.hpp", "_light_handling_8hpp_source.html", null ],
     [ "Math.hpp", "_math_8hpp_source.html", null ],
     [ "SceneHandling.hpp", "_scene_handling_8hpp_source.html", null ]
 ];

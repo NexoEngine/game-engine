@@ -69,6 +69,8 @@ var hierarchy =
         [ "engine::editor::TransformProperty", "classengine_1_1editor_1_1_transform_property.html", null ]
       ] ]
     ] ],
+    [ "ImGL3WProcs", "union_im_g_l3_w_procs.html", null ],
+    [ "ImGui_ImplOpenGL3_Data", "struct_im_gui___impl_open_g_l3___data.html", null ],
     [ "ecs::components::IShape", "classecs_1_1components_1_1_i_shape.html", [
       [ "ecs::components::Cube", "classecs_1_1components_1_1_cube.html", null ],
       [ "ecs::components::Model3D", "classecs_1_1components_1_1_model3_d.html", null ],
@@ -79,6 +81,7 @@ var hierarchy =
       [ "ecs::components::input::Input", "structecs_1_1components_1_1input_1_1_input.html", null ]
     ] ],
     [ "ecs::components::input::keyState", "structecs_1_1components_1_1input_1_1key_state.html", null ],
+    [ "engine::core::Light", "structengine_1_1core_1_1_light.html", null ],
     [ "ecs::event::ListenerRecord", "structecs_1_1event_1_1_listener_record.html", null ],
     [ "engine::editor::LogMessage", "structengine_1_1editor_1_1_log_message.html", null ],
     [ "rtype::net::Message< T >", "structrtype_1_1net_1_1_message.html", null ],

@@ -1,5 +1,5 @@
 <map id="engine::core::MovableCamera" name="engine::core::MovableCamera">
-<area shape="rect" id="node1" title=" " alt="" coords="5,448,196,540"/>
-<area shape="rect" id="node2" href="$classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,145,191,399"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,477,196,569"/>
+<area shape="rect" id="node2" href="$classengine_1_1core_1_1_engine_camera.html" title=" " alt="" coords="10,145,191,428"/>
 <area shape="rect" id="node3" href="$class_camera.html" title="Represents a camera in the graphics engine, providing control over camera properties and rendering." alt="" coords="67,5,134,83"/>
 </map>
