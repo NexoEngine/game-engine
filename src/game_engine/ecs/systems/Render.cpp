@@ -8,6 +8,7 @@
 #include "game_engine/ecs/components/Render.hpp"
 #include "game_engine/ecs/systems/Render.hpp"
 #include "game_engine/ecs/Coordinator.hpp"
+#include "game_engine/ecs/components/Shader.hpp"
 
 extern ecs::Coordinator gCoordinator;
 
@@ -20,24 +21,11 @@ namespace ecs {
                 auto& collision = _coord->getComponent<components::physics::collider_t>(entity);
 
                 if (render.isRendered) {
-                    if (render.type == components::ShapeType::MODEL) {
-                        auto bb = GetMeshBoundingBox(render.data->getModel().meshes[0]);
-                        bb.min.x *= transf.scale.x;
-                        bb.min.y *= transf.scale.y;
-                        bb.min.z *= transf.scale.z;
-                        bb.max.x *= transf.scale.x;
-                        bb.max.y *= transf.scale.y;
-                        bb.max.z *= transf.scale.z;
-                        bb.min.x += transf.pos.x;
-                        bb.min.y += transf.pos.y;
-                        bb.min.z += transf.pos.z;
-                        bb.max.x += transf.pos.x;
-                        bb.max.y += transf.pos.y;
-                        bb.max.z += transf.pos.z;
-                        collision.box = bb;
-                        // DrawBoundingBox(bb, RED);
-                    }
+                    auto model = render.data->getModel();
+                    model.materials[0].shader = ecs::components::shader::defaultLightingShader;
+
                     render.data->draw(transf);
+
                 }
             }
         }

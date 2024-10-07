@@ -28,6 +28,7 @@
 #include "game_engine/ecs/systems/Audio.hpp"
 #include "common/utils/Chrono.hpp"
 #include "game_engine/core/Camera.hpp"
+#include "game_engine/core/Light.hpp"
 #include <memory>
 #include <mutex>
 #include <functional>
@@ -240,6 +241,11 @@ namespace engine {
 
             void attachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera);
             void detachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera);
+
+            engine::core::LightId createLight(engine::core::LightType type, Vector3 position, Vector3 target, Color color, Shader lightingShader = ecs::components::shader::defaultLightingShader);
+            void setLightEnabled(engine::core::LightId lightID, bool enabled, Shader lightingShader = ecs::components::shader::defaultLightingShader);
+            void setLightColor(engine::core::LightId lightID, Color newColor, Shader lightingShader = ecs::components::shader::defaultLightingShader);
+
 
         private:
             std::shared_ptr<ecs::Coordinator> _coordinator;

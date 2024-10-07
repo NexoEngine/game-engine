@@ -9,6 +9,8 @@
 
 #include "raylib.h"
 
+#include "game_engine/ecs/components/Shader.hpp"
+
 #include <cstddef>
 #include <raymath.h>
 #include <iostream>
@@ -216,16 +218,31 @@ namespace engine {
                     math::ExtractCameraViewComponents(matrix, _camera.position, _camera.target, _camera.up);
                 }
 
+                void setShaderEnabled(ecs::components::shader::ShaderType shaderType, bool enabled) 
+                {
+                    if (shaderType < ecs::components::shader::SHADER_COUNT) {
+                        _shaderStatus[shaderType] = enabled;
+                    }
+                }
+
+                bool isShaderEnabled(ecs::components::shader::ShaderType shaderType) const 
+                {
+                    if (shaderType < ecs::components::shader::SHADER_COUNT) {
+                        return _shaderStatus[shaderType];
+                    }
+                    return false;
+                }
+
                 bool isOn = true;
 
-                virtual void update(void) {
-                    std::cout << "on rentre" << std::endl;
-                };
+                virtual void update(void) {};
 
             protected:
                 CameraID _id;
                 Camera _camera;
                 RenderTexture _viewTexture;
+                bool _shaderStatus[ecs::components::shader::SHADER_COUNT] = { false };
+                Shader lightShader = ecs::components::shader::defaultLightingShader;
         };
 
         class MovableCamera : public EngineCamera {

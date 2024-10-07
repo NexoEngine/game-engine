@@ -11,6 +11,7 @@
 #include "game_engine/editor/DocumentWindows/Main3DScene.hpp"
 #include <CameraHandling.hpp>
 #include <EntityHandling.hpp>
+#include <LightHandling.hpp>
 #include <Math.hpp>
 
 #include <ImGuizmo.h>
@@ -112,16 +113,21 @@ void engine::editor::Main3DScene::setupScene()
 void engine::editor::Main3DScene::setupCamera()
 {
     engine::attachCamera(_sceneID, _camera);
-    std::cout << "pos dans le setup camera : " << _camera->getCamera().position.x << " " << _camera->getCamera().position.y << " " << _camera->getCamera().position.z << std::endl;
 
     ImGuizmo::SetOrthographic(false);
 }
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    ecs::Entity cube = engine::createCube({0, 2, 2}, 4, 4, 4, RED, true);
+    ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
+    ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
+    auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
+    auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
+    auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
+    auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
     _selectedEntity = cube;
     engine::addEntityToScene(cube, _sceneID);
+    engine::addEntityToScene(cube2, _sceneID);
 }
 
 void engine::editor::Main3DScene::handleWindowResize()

@@ -10,6 +10,7 @@
 #include <EntityHandling.hpp>
 
 #include "game_engine/ecs/components/Behaviour.hpp"
+#include "game_engine/ecs/components/Shader.hpp"
 #include "raymath.h"
 
 std::shared_ptr<ecs::Coordinator> ecs::components::behaviour::Behaviour::_coord = nullptr;
@@ -93,6 +94,13 @@ namespace engine
         _coordinator->setSystemSignature<ecs::system::AudioSystem>(signatureAudioSystem);
         _musicSystem = _coordinator->registerSystem<ecs::system::MusicSystem>();
         _coordinator->setSystemSignature<ecs::system::MusicSystem>(signatureMusicSystem);
+
+        ecs::components::shader::defaultLightingShader = LoadShader(DEFAULT_LIGHT_VS, DEFAULT_LIGHT_FS);
+        ecs::components::shader::defaultLightingShader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(ecs::components::shader::defaultLightingShader, "viewPos");
+
+        float col[4] = { 0.8f, 0.1f, 0.1f, 1.0f };
+        int ambientLoc = GetShaderLocation(ecs::components::shader::defaultLightingShader, "ambient");
+        SetShaderValue(ecs::components::shader::defaultLightingShader, ambientLoc, col, SHADER_UNIFORM_VEC4);
     }
 
     std::vector<std::pair<std::type_index, std::any>> Engine::getAllComponents(ecs::Entity entity)
@@ -126,9 +134,9 @@ namespace engine
         //activateScene(sceneId);
         _inputSystem->handleInputs();
         _behaviourSystem->handleBehaviours();
-        _physicSystem->updatePosition();
+        //_physicSystem->updatePosition();
         _animationSystem->handleAnimations();
-        _collisionDetectionSystem->detectCollision();
+        //_collisionDetectionSystem->detectCollision();
         _audioSystem->update();
         _musicSystem->update();
         _coordinator->dispatchEvents();
@@ -164,14 +172,80 @@ namespace engine
         if (!isSceneActive)
             activateScene(sceneId);
         auto &camera = _coordinator->getCamera(sceneId, cameraId);
+        auto screenTexture = _coordinator->getCamera(sceneId, cameraId)->getRenderTexture();
         camera->update();
-        BeginTextureMode(_coordinator->getCamera(sceneId, cameraId)->getRenderTexture());
+        float cameraPos[3] = { camera->getPosition().x, camera->getPosition().y, camera->getPosition().z };
+        SetShaderValue(ecs::components::shader::defaultLightingShader, ecs::components::shader::defaultLightingShader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
+        BeginTextureMode(screenTexture);
         _window->clear(Color{41, 41, 41, 255});
         BeginMode3D(_coordinator->getCamera(sceneId, cameraId)->getCamera());
         _renderSystem->render();
         DrawGrid(10000, 1.0f);
         EndMode3D();
+
+        //TODO: Add post process shaders
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_HDR))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_BLOOM))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_DOF))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_MOTION_BLUR))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_SSAO))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
+        if (camera->isShaderEnabled(ecs::components::shader::SHADER_GAMMA_CORRECTION))
+        {
+            //BeginShaderMode()
+            // DrawTextureRec(screenTexture.texture, 
+            //               (Rectangle){0, 0, screenTexture.texture.width, -screenTexture.texture.height}, 
+            //               (Vector2){0, 0}, 
+            //               WHITE);
+            //EndShaderMode()
+        }
+
         EndTextureMode();
+
         if (!isSceneActive)
             deactivateScene(sceneId);
     }
@@ -274,5 +348,90 @@ namespace engine
     void detachCamera(ecs::SceneID sceneID, std::shared_ptr<engine::core::EngineCamera> camera)
     {
         Engine::getInstance()->detachCamera(sceneID, camera);
+    }
+
+    engine::core::LightId Engine::createLight(engine::core::LightType type, Vector3 position, Vector3 target, Color color, Shader lightingShader)
+    {
+        if (engine::core::lights.size() >= MAX_LIGHTS) {
+            std::cout << "Max number of lights reached!" << std::endl;
+            return -1;
+        }
+
+        engine::core::Light newLight;
+        newLight.id = engine::core::nextLightID;
+        std::cout << engine::core::nextLightID << std::endl;
+        newLight.enabled = 1;
+        newLight.type = type;
+        newLight.position = position;
+        newLight.target = target;
+        newLight.color = color;
+
+        engine::core::lights.push_back(newLight);
+
+        newLight.enabledLoc = GetShaderLocation(lightingShader, TextFormat("lights[%i].enabled", engine::core::nextLightID));
+        newLight.typeLoc = GetShaderLocation(lightingShader, TextFormat("lights[%i].type", engine::core::nextLightID));
+        newLight.positionLoc = GetShaderLocation(lightingShader, TextFormat("lights[%i].position", engine::core::nextLightID));
+        newLight.targetLoc = GetShaderLocation(lightingShader, TextFormat("lights[%i].target", engine::core::nextLightID));
+        newLight.colorLoc = GetShaderLocation(lightingShader, TextFormat("lights[%i].color", engine::core::nextLightID));
+
+        int enabled = (newLight.enabled) ? 1 : 0;
+        int lightType = (newLight.type == engine::core::DIRECTIONAL) ? 0 : 1;
+        SetShaderValue(lightingShader, newLight.enabledLoc, &enabled, SHADER_UNIFORM_INT);
+        SetShaderValue(lightingShader, newLight.typeLoc, &lightType, SHADER_UNIFORM_INT);
+
+        float pos[3] = { newLight.position.x, newLight.position.y, newLight.position.z };
+        SetShaderValue(lightingShader, newLight.positionLoc, pos, SHADER_UNIFORM_VEC3);
+
+        float tar[3] = { newLight.target.x, newLight.target.y, newLight.target.z };
+        SetShaderValue(lightingShader, newLight.targetLoc, tar, SHADER_UNIFORM_VEC3);
+
+        float col[4] = { (float)newLight.color.r/(float)255, (float)newLight.color.g/(float)255, 
+                        (float)newLight.color.b/(float)255, (float)newLight.color.a/(float)255 };
+        SetShaderValue(lightingShader, newLight.colorLoc, col, SHADER_UNIFORM_VEC4);
+
+        engine::core::nextLightID++;
+        return newLight.id; 
+    }
+
+    void Engine::setLightEnabled(engine::core::LightId lightID, bool enabled, Shader lightingShader)
+    {
+        for (engine::core::Light& light : engine::core::lights) {
+            if (light.id == lightID) {
+                light.enabled = enabled ? 1 : 0;
+                for (int i = 0; i < engine::core::lights.size(); i++) {
+                    std::string enabledStr = "lights[" + std::to_string(i) + "].enabled";
+                    std::string typeStr = "lights[" + std::to_string(i) + "].type";
+                    std::string posStr = "lights[" + std::to_string(i) + "].position";
+                    std::string colorStr = "lights[" + std::to_string(i) + "].color";
+
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, enabledStr.c_str()), &engine::core::lights[i].enabled, SHADER_UNIFORM_INT);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, typeStr.c_str()), &engine::core::lights[i].type, SHADER_UNIFORM_INT);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, posStr.c_str()), &engine::core::lights[i].position, SHADER_UNIFORM_VEC3);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, colorStr.c_str()), &engine::core::lights[i].color, SHADER_UNIFORM_VEC4);
+                }
+                break;
+            }
+        }
+    }
+
+    void Engine::setLightColor(engine::core::LightId lightID, Color newColor, Shader lightingShader)
+    {
+        for (engine::core::Light& light : engine::core::lights) {
+            if (light.id == lightID) {
+                light.color = newColor;
+                for (int i = 0; i < engine::core::lights.size(); i++) {
+                    std::string enabledStr = "lights[" + std::to_string(i) + "].enabled";
+                    std::string typeStr = "lights[" + std::to_string(i) + "].type";
+                    std::string posStr = "lights[" + std::to_string(i) + "].position";
+                    std::string colorStr = "lights[" + std::to_string(i) + "].color";
+
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, enabledStr.c_str()), &engine::core::lights[i].enabled, SHADER_UNIFORM_INT);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, typeStr.c_str()), &engine::core::lights[i].type, SHADER_UNIFORM_INT);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, posStr.c_str()), &engine::core::lights[i].position, SHADER_UNIFORM_VEC3);
+                    SetShaderValue(lightingShader, GetShaderLocation(lightingShader, colorStr.c_str()), &engine::core::lights[i].color, SHADER_UNIFORM_VEC4);
+                }
+                break;
+            }
+        }
     }
 }
