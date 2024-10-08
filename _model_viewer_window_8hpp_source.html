@@ -117,14 +117,13 @@ $(document).ready(function(){initNavTree('_model_viewer_window_8hpp_source.html'
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keyword">const</span> <span class="keywordtype">char</span>* _filterPatterns[1] = {<span class="stringliteral">&quot;*.obj&quot;</span>};</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordtype">bool</span> _modelLoaded = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            ImVec2 _currentwindowSize;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <a class="code hl_class" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> _camera;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; _camera;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            ecs::SceneID _sceneID;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            ecs::Entity _importedEntity{};</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    };</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
-<div class="ttc" id="aclassengine_1_1core_1_1_engine_camera_html"><div class="ttname"><a href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a></div><div class="ttdef"><b>Definition:</b> Camera.hpp:32</div></div>
-<div class="ttc" id="aclassengine_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classengine_1_1editor_1_1_a_document_window.html">engine::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:16</div></div>
+<div class="ttc" id="aclassengine_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classengine_1_1editor_1_1_a_document_window.html">engine::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:17</div></div>
 <div class="ttc" id="aclassengine_1_1editor_1_1_model_viewer_window_html"><div class="ttname"><a href="classengine_1_1editor_1_1_model_viewer_window.html">engine::editor::ModelViewerWindow</a></div><div class="ttdef"><b>Definition:</b> ModelViewerWindow.hpp:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

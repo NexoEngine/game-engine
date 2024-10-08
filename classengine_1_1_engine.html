@@ -207,15 +207,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addEntityToScene</b> 
 <tr class="memitem:ab8d337d9a480e6a480dec9f6fa8336d7"><td class="memItemLeft" align="right" valign="top"><a id="ab8d337d9a480e6a480dec9f6fa8336d7" name="ab8d337d9a480e6a480dec9f6fa8336d7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeEntityFromScene</b> (ecs::Entity entity, ecs::SceneID sceneID)</td></tr>
 <tr class="separator:ab8d337d9a480e6a480dec9f6fa8336d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9a6af86f18ba65c7e48d24d8f99902e"><td class="memItemLeft" align="right" valign="top"><a id="ad9a6af86f18ba65c7e48d24d8f99902e" name="ad9a6af86f18ba65c7e48d24d8f99902e"></a>
-<a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a>&#160;</td><td class="memItemRight" valign="bottom"><b>createCamera</b> (Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)</td></tr>
-<tr class="separator:ad9a6af86f18ba65c7e48d24d8f99902e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15509843b61c44c51396cdc9eddfd017"><td class="memItemLeft" align="right" valign="top"><a id="a15509843b61c44c51396cdc9eddfd017" name="a15509843b61c44c51396cdc9eddfd017"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>attachCamera</b> (ecs::SceneID sceneID, <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &amp;camera)</td></tr>
-<tr class="separator:a15509843b61c44c51396cdc9eddfd017"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f23bf06616d386b7c40fa7d15daa88e"><td class="memItemLeft" align="right" valign="top"><a id="a3f23bf06616d386b7c40fa7d15daa88e" name="a3f23bf06616d386b7c40fa7d15daa88e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>detachCamera</b> (ecs::SceneID sceneID, <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &amp;camera)</td></tr>
-<tr class="separator:a3f23bf06616d386b7c40fa7d15daa88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a569ef97bbfcf3ac4e6135e8a7582407d"><td class="memItemLeft" align="right" valign="top"><a id="a569ef97bbfcf3ac4e6135e8a7582407d" name="a569ef97bbfcf3ac4e6135e8a7582407d"></a>
+std::shared_ptr&lt; <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createCamera</b> (Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)</td></tr>
+<tr class="separator:a569ef97bbfcf3ac4e6135e8a7582407d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d315733a9ba7079c1c8a0d970a8178a"><td class="memItemLeft" align="right" valign="top"><a id="a9d315733a9ba7079c1c8a0d970a8178a" name="a9d315733a9ba7079c1c8a0d970a8178a"></a>
+std::shared_ptr&lt; <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createMovableCamera</b> (Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)</td></tr>
+<tr class="separator:a9d315733a9ba7079c1c8a0d970a8178a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a0698e3e442b18f896f1ee3c5a97ff2"><td class="memItemLeft" align="right" valign="top"><a id="a2a0698e3e442b18f896f1ee3c5a97ff2" name="a2a0698e3e442b18f896f1ee3c5a97ff2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>attachCamera</b> (ecs::SceneID sceneID, std::shared_ptr&lt; <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &gt; camera)</td></tr>
+<tr class="separator:a2a0698e3e442b18f896f1ee3c5a97ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d0f6e1ccc8531c15b7ee88372e74dd"><td class="memItemLeft" align="right" valign="top"><a id="a57d0f6e1ccc8531c15b7ee88372e74dd" name="a57d0f6e1ccc8531c15b7ee88372e74dd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>detachCamera</b> (ecs::SceneID sceneID, std::shared_ptr&lt; <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &gt; camera)</td></tr>
+<tr class="separator:a57d0f6e1ccc8531c15b7ee88372e74dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a699675df6b8a3a77049be4ea845794ff"><td class="memItemLeft" align="right" valign="top"><a id="a699675df6b8a3a77049be4ea845794ff" name="a699675df6b8a3a77049be4ea845794ff"></a>
+engine::core::LightId&#160;</td><td class="memItemRight" valign="bottom"><b>createLight</b> (engine::core::LightType type, Vector3 position, Vector3 target, Color color, Shader lightingShader=ecs::components::shader::defaultLightingShader)</td></tr>
+<tr class="separator:a699675df6b8a3a77049be4ea845794ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb1f30a149dc0a31fda491396400c390"><td class="memItemLeft" align="right" valign="top"><a id="afb1f30a149dc0a31fda491396400c390" name="afb1f30a149dc0a31fda491396400c390"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setLightEnabled</b> (engine::core::LightId lightID, bool enabled, Shader lightingShader=ecs::components::shader::defaultLightingShader)</td></tr>
+<tr class="separator:afb1f30a149dc0a31fda491396400c390"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af199d968bd2237241d1ab6b20751b822"><td class="memItemLeft" align="right" valign="top"><a id="af199d968bd2237241d1ab6b20751b822" name="af199d968bd2237241d1ab6b20751b822"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setLightColor</b> (engine::core::LightId lightID, Color newColor, Shader lightingShader=ecs::components::shader::defaultLightingShader)</td></tr>
+<tr class="separator:af199d968bd2237241d1ab6b20751b822"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2067f5ea2c7936c09770610e85c6b02"><td class="memItemLeft" align="right" valign="top"><a id="af2067f5ea2c7936c09770610e85c6b02" name="af2067f5ea2c7936c09770610e85c6b02"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Engine</b> (<a class="el" href="classengine_1_1_engine.html">Engine</a> &amp;other)=delete</td></tr>
 <tr class="separator:af2067f5ea2c7936c09770610e85c6b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -733,7 +745,12 @@ template&lt;typename T &gt; </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>include/game_engine/<a class="el" href="_game_engine_8hpp_source.html">GameEngine.hpp</a></li>
+<li>src/game_engine/core/AudioHandling.cpp</li>
+<li>src/game_engine/core/CameraHandling.cpp</li>
+<li>src/game_engine/core/EntityHandling.cpp</li>
 <li>src/game_engine/core/GameEngine.cpp</li>
+<li>src/game_engine/core/LightHandling.cpp</li>
+<li>src/game_engine/core/SceneHandling.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

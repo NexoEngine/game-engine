@@ -298,17 +298,17 @@ $(document).ready(function(){initNavTree('_coordinator_8hpp_source.html',''); in
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>                updateSystemEntities();</div>
 <div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>            }</div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            <span class="keywordtype">void</span> attachCamera(ecs::SceneID <span class="keywordtype">id</span>, <a class="code hl_class" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &amp;camera)</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            <span class="keywordtype">void</span> attachCamera(ecs::SceneID <span class="keywordtype">id</span>, std::shared_ptr&lt;engine::core::EngineCamera&gt; &amp;camera)</div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            {</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                _sceneManager-&gt;attachCamera(<span class="keywordtype">id</span>, camera);</div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            }</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            <span class="keywordtype">void</span> detachCamera(ecs::SceneID <span class="keywordtype">id</span>, <a class="code hl_class" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &amp;camera)</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            <span class="keywordtype">void</span> detachCamera(ecs::SceneID <span class="keywordtype">id</span>, std::shared_ptr&lt;engine::core::EngineCamera&gt; &amp;camera)</div>
 <div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>            {</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>                _sceneManager-&gt;detachCamera(<span class="keywordtype">id</span>, camera);</div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>            }</div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            <a class="code hl_class" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &amp;getCamera(ecs::SceneID <span class="keywordtype">id</span>, engine::core::CameraID idCamera)</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; &amp;getCamera(ecs::SceneID <span class="keywordtype">id</span>, engine::core::CameraID idCamera)</div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            {</div>
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                <span class="keywordflow">return</span> _sceneManager-&gt;getCamera(<span class="keywordtype">id</span>, idCamera);</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            }</div>
@@ -364,7 +364,6 @@ $(document).ready(function(){initNavTree('_coordinator_8hpp_source.html',''); in
 <div class="ttc" id="aclassecs_1_1_coordinator_html_abcb0ee373e21be2dd4c6e1d388005a1d"><div class="ttname"><a href="classecs_1_1_coordinator.html#abcb0ee373e21be2dd4c6e1d388005a1d">ecs::Coordinator::dispatchEvents</a></div><div class="ttdeci">void dispatchEvents()</div><div class="ttdoc">Dispatch the event to the listeners.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:222</div></div>
 <div class="ttc" id="aclassecs_1_1_coordinator_html_abfa8b26113c1fdab820d730bc884cd61"><div class="ttname"><a href="classecs_1_1_coordinator.html#abfa8b26113c1fdab820d730bc884cd61">ecs::Coordinator::setSystemSignature</a></div><div class="ttdeci">void setSystemSignature(Signature signature)</div><div class="ttdoc">Sets the signature for a system, defining which entities it will process.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:197</div></div>
 <div class="ttc" id="aclassecs_1_1_coordinator_html_ad944fbd0b826be86889c5efa71f28aca"><div class="ttname"><a href="classecs_1_1_coordinator.html#ad944fbd0b826be86889c5efa71f28aca">ecs::Coordinator::removeSingletonComponent</a></div><div class="ttdeci">void removeSingletonComponent(void)</div><div class="ttdoc">Remove a singleton component.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:133</div></div>
-<div class="ttc" id="aclassengine_1_1core_1_1_engine_camera_html"><div class="ttname"><a href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a></div><div class="ttdef"><b>Definition:</b> Camera.hpp:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
