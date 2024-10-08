@@ -8,6 +8,7 @@
 #pragma once
 
 #include <GameEngine.hpp>
+#include <SceneHandling.hpp>
 
 #include "IDocumentWindow.hpp"
 #include "SceneManagerBridge.hpp"

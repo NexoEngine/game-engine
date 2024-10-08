@@ -308,17 +308,17 @@ namespace ecs {
                 updateSystemEntities();
             }
 
-            void attachCamera(ecs::SceneID id, engine::core::EngineCamera &camera)
+            void attachCamera(ecs::SceneID id, std::shared_ptr<engine::core::EngineCamera> &camera)
             {
                 _sceneManager->attachCamera(id, camera);
             }
 
-            void detachCamera(ecs::SceneID id, engine::core::EngineCamera &camera)
+            void detachCamera(ecs::SceneID id, std::shared_ptr<engine::core::EngineCamera> &camera)
             {
                 _sceneManager->detachCamera(id, camera);
             }
 
-            engine::core::EngineCamera &getCamera(ecs::SceneID id, engine::core::CameraID idCamera)
+            std::shared_ptr<engine::core::EngineCamera> &getCamera(ecs::SceneID id, engine::core::CameraID idCamera)
             {
                 return _sceneManager->getCamera(id, idCamera);
             }

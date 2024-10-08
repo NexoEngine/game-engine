@@ -9,6 +9,9 @@
 #include "rlImGui.h"
 #include "game_engine/editor/DocumentWindows/ModelViewerWindow.hpp"
 
+#include <CameraHandling.hpp>
+#include <EntityHandling.hpp>
+
 #include <iostream>
 #include "tinyfiledialogs.h"
 
@@ -34,7 +37,7 @@ namespace engine::editor {
     void ModelViewerWindow::setup()
     {
         engine::attachCamera(_sceneID, _camera);
-        _camera.updateRenderTextureSize(400, 400);
+        _camera->updateRenderTextureSize(400, 400);
     }
 
     void ModelViewerWindow::shutdown()
@@ -100,7 +103,7 @@ namespace engine::editor {
         _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
 
 
-        rlImGuiImageRenderTexture(&_camera.getRenderTexture());
+        rlImGuiImageRenderTexture(&_camera->getRenderTexture());
 
         /*// file input with a button on its right to directly search in windows
         static char buf[128] = "";
@@ -140,7 +143,7 @@ namespace engine::editor {
         _sceneManagerBridge.deactivateAllScenes();
         engine::activateScene(_sceneID);
         engine::update(_sceneID);
-        engine::renderTextureMode(_sceneID, _camera.getCameraID());
+        engine::renderTextureMode(_sceneID, _camera->getCameraID());
         //engine::update(_sceneID);
     }
 }

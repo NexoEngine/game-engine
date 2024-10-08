@@ -9,8 +9,11 @@
 
 #include "raylib.h"
 
+#include "game_engine/ecs/components/Shader.hpp"
+
 #include <cstddef>
 #include <raymath.h>
+#include <iostream>
 
 namespace engine {
     namespace math {
@@ -215,12 +218,49 @@ namespace engine {
                     math::ExtractCameraViewComponents(matrix, _camera.position, _camera.target, _camera.up);
                 }
 
+                void setShaderEnabled(ecs::components::shader::ShaderType shaderType, bool enabled) 
+                {
+                    if (shaderType < ecs::components::shader::SHADER_COUNT) {
+                        _shaderStatus[shaderType] = enabled;
+                    }
+                }
+
+                bool isShaderEnabled(ecs::components::shader::ShaderType shaderType) const 
+                {
+                    if (shaderType < ecs::components::shader::SHADER_COUNT) {
+                        return _shaderStatus[shaderType];
+                    }
+                    return false;
+                }
+
                 bool isOn = true;
 
-            private:
+                virtual void update(void) {};
+
+            protected:
                 CameraID _id;
                 Camera _camera;
                 RenderTexture _viewTexture;
+                bool _shaderStatus[ecs::components::shader::SHADER_COUNT] = { false };
+                Shader lightShader = ecs::components::shader::defaultLightingShader;
+        };
+
+        class MovableCamera : public EngineCamera {
+            public:
+                MovableCamera(
+                    CameraID id,
+                    Vector3 position = {0, 0, 0},
+                    Vector3 target = {0, 0, 0},
+                    Vector3 up = {0, 1, 0},
+                    int mode = CAMERA_PERSPECTIVE,
+                    float fov = 90.0f,
+                    int renderTextureWidth = 1920,
+                    int renderTextureHeight = 1080
+                    ) : EngineCamera(id, position, target, up, mode, fov, renderTextureWidth, renderTextureHeight)
+                {
+                };
+
+                void update(void) override;
         };
     }
 }

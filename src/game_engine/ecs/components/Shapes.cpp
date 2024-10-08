@@ -63,13 +63,14 @@ namespace ecs {
             _wireColor(wireColor)
         {
             _model = LoadModelFromMesh(GenMeshCube(_width, _height, _length));
+            _model.materials[0] = LoadMaterialDefault();
+            _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
         }
 
         void Cube::draw(physics::transform_t &transf) const
         {
             DrawModel(_model, transf.pos, 1, _color);
-            //DrawBoundingBox(getBoundingBox(transf), WHITE);
-            if (_toggleWire)
+            if (false)
                 DrawModelWires(_model, transf.pos, 1, _wireColor);
         }
 

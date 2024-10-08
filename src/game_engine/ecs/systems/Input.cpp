@@ -14,6 +14,7 @@ namespace ecs {
     namespace system {
 
         using components::input::Keys;
+        using components::input::MouseButtons;
 
         const std::map<ecs::components::input::Keys, KeyboardKey> keysToRlKeys = {
             { ecs::components::input::Keys::KeyNull, KEY_NULL },
@@ -136,6 +137,14 @@ namespace ecs {
                 input.keys[i].keyDown = false;
                 input.keys[i].keyUp = false;
             }
+
+            for (int i = 0; i < 5; i++) {
+                input.mouseButtons[i].buttonPressed = false;
+                input.mouseButtons[i].buttonReleased = false;
+                input.mouseButtons[i].buttonDown = false;
+                input.mouseButtons[i].buttonUp = false;
+            }
+
             for (int i = 0; i < 110; i++) {
                 if (IsKeyPressed(keysToRlKeys.at(static_cast<Keys>(i))))
                     input.keys[i].keyPressed = true;
@@ -146,6 +155,30 @@ namespace ecs {
                 if (IsKeyUp(keysToRlKeys.at(static_cast<Keys>(i))))
                     input.keys[i].keyUp = true;
             }
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseLeft)].buttonPressed = true;
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseLeft)].buttonReleased = true;
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseLeft)].buttonDown = true;
+            if (IsMouseButtonUp(MOUSE_LEFT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseLeft)].buttonUp = true;
+
+            if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseRight)].buttonPressed = true;
+            if (IsMouseButtonReleased(MOUSE_RIGHT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseRight)].buttonReleased = true;
+            if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseRight)].buttonDown = true;
+            if (IsMouseButtonUp(MOUSE_RIGHT_BUTTON))
+                input.mouseButtons[static_cast<int>(MouseButtons::MouseRight)].buttonUp = true;
+
+            Vector2 currentMousePosition = GetMousePosition();
+            input.mouseDelta = Vector2Subtract(currentMousePosition, input.mousePosition);
+            input.mousePosition = currentMousePosition;
+
+            input.mouseScroll = GetMouseWheelMoveV();
         }
     }
 }

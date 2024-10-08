@@ -7,6 +7,7 @@
 
 #include "imgui.h"
 #include "rlImGui.h"
+#include <EntityHandling.hpp>
 #include "game_engine/editor/DocumentWindows/SceneTreeWindow.hpp"
 
 #include "game_engine/ecs/components/Physics.hpp"

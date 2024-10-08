@@ -9,6 +9,8 @@
 #include "rlImGui.h"
 #include "game_engine/editor/DocumentWindows/EntityPropertiesWindow.hpp"
 
+#include <EntityHandling.hpp>
+
 #include "game_engine/ecs/components/Physics.hpp"
 #include "game_engine/GameEngine.hpp"
 #include "../../TestBehaviour.hpp"
