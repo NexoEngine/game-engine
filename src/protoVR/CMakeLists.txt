@@ -8,6 +8,12 @@ set(SRCS
     src/common/game/entities/EntityFactory.cpp
     src/common/game/entities/Entity.cpp
     src/game_engine/core/GameEngine.cpp
+    src/game_engine/core/AudioHandling.cpp
+    src/game_engine/core/CameraHandling.cpp
+    src/game_engine/core/EntityHandling.cpp
+    src/game_engine/core/EventHandling.cpp
+    src/game_engine/core/SceneHandling.cpp
+    src/game_engine/core/Math.cpp
     src/game_engine/core/window/Window.cpp
     src/game_engine/core/event/Event.cpp
     src/game_engine/ecs/components/Shapes.cpp

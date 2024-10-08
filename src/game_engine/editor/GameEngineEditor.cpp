@@ -21,6 +21,7 @@
 #include "game_engine/ecs/Coordinator.hpp"
 #include "game_engine/ecs/components/Shapes.hpp"
 #include "game_engine/GameEngine.hpp"
+#include "game_engine/EventHandling.hpp"
 
 #include "raylib.h"
 #include "loguru/loguru.hpp"

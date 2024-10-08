@@ -8,6 +8,7 @@
 #include <imgui.h>
 
 #include "game_engine/editor/DocumentWindows/EntityProperties/TransformProperty.hpp"
+#include <EntityHandling.hpp>
 
 #include <loguru/loguru.hpp>
 
