@@ -22,9 +22,9 @@ The editor interface is built using ImGui.
 
 It is composed of a menu bar, a scene view, and a hierarchy view.
 
-![Editor Interface](editor_interface.png)
+![Editor Interface](game_engine/editor_interface.png)
 
 ### Editor Windows UML
 
-![Editor Windows UML](editor_windows_uml.png)
+![Editor Windows UML](game_engine/editor_windows_uml.png)
 

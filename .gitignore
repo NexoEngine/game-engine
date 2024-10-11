@@ -169,3 +169,5 @@ Makefile
 .clangd
 
 *.tar
+
+html/
