@@ -133,5 +133,4 @@ The SystemManager uses these signatures to maintain an up-to-date list of entiti
 Each system processes its specific subset of entities, based on the components they possess.
 
 ### EC Systems UML Diagram
-
-![ECS Systems UML Diagram](ecs_systems_uml.png)
+![ECS Systems UML Diagram](game_engine/ecs_systems_uml.png)

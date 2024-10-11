@@ -138,4 +138,4 @@ These concepts are foundational to the network architecture of the R-TYPE server
 
 #### Network Implementation UML Diagram
 
-![Network UML](network_uml.png)
+![Network UML](network/network_uml.png)
