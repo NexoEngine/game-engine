@@ -26,7 +26,7 @@ namespace ecs {
              */
             typedef struct transform_s {
                 Vector3 pos{}; ///< Position of the entity in 3D space.
-                Vector3 rotation{}; ///< Rotation of the entity around the x, y, and z axes.
+                Quaternion rotation{}; ///< Rotation of the entity around the x, y, and z axes.
                 Vector3 scale = {1, 1 ,1}; ///< Scale of the entity in 3D space.
             } transform_t;
 

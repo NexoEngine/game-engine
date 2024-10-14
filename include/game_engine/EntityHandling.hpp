@@ -161,5 +161,7 @@ namespace engine {
          * @param transform The transformation matrix.
          */
         void setTransformMatrix(ecs::Entity entity, Matrix transform);
+
+        void updateEntityTransformMatrix(ecs::Entity entity, bool inDeg = true);
     }
 }

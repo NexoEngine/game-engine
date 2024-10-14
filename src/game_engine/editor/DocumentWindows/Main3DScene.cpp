@@ -119,14 +119,15 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
+    //ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
+    ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
     ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
-    _selectedEntity = cube;
-    engine::addEntityToScene(cube, _sceneID);
+    _selectedEntity = model;
+    engine::addEntityToScene(model, _sceneID);
     engine::addEntityToScene(cube2, _sceneID);
 }
 
@@ -192,6 +193,7 @@ void engine::editor::Main3DScene::renderGizmo()
     Matrix viewMatrix = _camera->getViewMatrix();
     Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
     Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
+    auto &transf = engine::entity::getComponent<ecs::components::physics::transform_t>(_selectedEntity);
     
     // LOG_F(INFO, "objectMatrix: %f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f",
     //         objectMatrix.m0, objectMatrix.m4, objectMatrix.m8, objectMatrix.m12,
@@ -208,6 +210,17 @@ void engine::editor::Main3DScene::renderGizmo()
                          ImGuizmo::OPERATION::UNIVERSAL,
                          ImGuizmo::MODE::WORLD  ,
                          objectMatrixFloats.v);
+
+    Vector3 translation = {0};
+    Quaternion rotation = {0};
+    Vector3 scale = {0};
+
+    math::decomposeTransformMatrix(engine::math::matrixFromFloat16(objectMatrixFloats), translation, rotation, scale);
+
+    transf.pos = translation;
+    Quaternion deltaRotation = QuaternionSubtract(rotation, transf.rotation);
+    transf.rotation = QuaternionAdd(transf.rotation, deltaRotation);
+    transf.scale = scale;
 
     if (ImGuizmo::IsUsing())
     {

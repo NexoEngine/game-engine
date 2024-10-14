@@ -7,6 +7,7 @@
 
 #include "game_engine/GameEngine.hpp"
 #include "game_engine/EntityHandling.hpp"
+#include "game_engine/Math.hpp"
 
 namespace engine {
 
@@ -128,32 +129,32 @@ namespace engine {
 
     void rotate(ecs::Entity entity, Vector3 rotation)
     {
-        auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
-        auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
-        auto &collider = Engine::getInstance()->getComponent<ecs::components::physics::collider_t>(entity);
-        rotation.x = rotation.x * DEG2RAD;
-        rotation.y = rotation.y * DEG2RAD;
-        rotation.z = rotation.z * DEG2RAD;
-        transform.rotation = Vector3Add(transform.rotation, rotation);
-        Matrix matTemp = MatrixRotateXYZ(rotation);
-        render.data->getModel().transform = MatrixMultiply(render.data->getModel().transform, matTemp);
-        collider.matRotate = MatrixMultiply(collider.matRotate, matTemp);
-        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        // auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
+        // auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
+        // auto &collider = Engine::getInstance()->getComponent<ecs::components::physics::collider_t>(entity);
+        // rotation.x = rotation.x * DEG2RAD;
+        // rotation.y = rotation.y * DEG2RAD;
+        // rotation.z = rotation.z * DEG2RAD;
+        // transform.rotation = Vector3Add(transform.rotation, rotation);
+        // Matrix matTemp = MatrixRotateXYZ(rotation);
+        // render.data->getModel().transform = MatrixMultiply(render.data->getModel().transform, matTemp);
+        // collider.matRotate = MatrixMultiply(collider.matRotate, matTemp);
+        // ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
     }
 
     void setRotation(ecs::Entity entity, Vector3 rotation)
     {
-        auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
-        auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
-        auto &collider = Engine::getInstance()->getComponent<ecs::components::physics::collider_t>(entity);
-        rotation.x = rotation.x * DEG2RAD;
-        rotation.y = rotation.y * DEG2RAD;
-        rotation.z = rotation.z * DEG2RAD;
-        transform.rotation = rotation;
-        Matrix matTemp = MatrixRotateXYZ(transform.rotation);
-        render.data->getModel().transform = MatrixMultiply(render.data->getModel().transform, matTemp);
-        collider.matRotate = MatrixMultiply(collider.matRotate, matTemp);
-        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        // auto &transform = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
+        // auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
+        // auto &collider = Engine::getInstance()->getComponent<ecs::components::physics::collider_t>(entity);
+        // rotation.x = rotation.x * DEG2RAD;
+        // rotation.y = rotation.y * DEG2RAD;
+        // rotation.z = rotation.z * DEG2RAD;
+        // transform.rotation = rotation;
+        // Matrix matTemp = MatrixRotateXYZ(transform.rotation);
+        // render.data->getModel().transform = MatrixMultiply(render.data->getModel().transform, matTemp);
+        // collider.matRotate = MatrixMultiply(collider.matRotate, matTemp);
+        // ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
     }
 
     void scale(ecs::Entity entity, Vector3 scale)
@@ -211,7 +212,7 @@ namespace engine {
 
     Matrix transformToMatrix(const ecs::components::physics::transform_t &transform) 
     {
-        Matrix matRotation = MatrixRotateXYZ(transform.rotation);
+        Matrix matRotation = MatrixRotateXYZ(QuaternionToEuler(transform.rotation));
         Matrix matScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
         Matrix matTranslation = MatrixTranslate(transform.pos.x, transform.pos.y, transform.pos.z);
 
@@ -243,5 +244,37 @@ namespace engine {
     {
         auto &render = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
         render.data->getModel().transform = transform;
+    }
+
+    void decomposeTransformMatrix(Matrix mat, Vector3 &translation, Quaternion &rotation, Vector3 &scale) 
+    {
+        translation = { mat.m12, mat.m13, mat.m14 };
+
+        scale.x = Vector3Length({ mat.m0, mat.m1, mat.m2 });
+        scale.y = Vector3Length({ mat.m4, mat.m5, mat.m6 });
+        scale.z = Vector3Length({ mat.m8, mat.m9, mat.m10 });
+
+        Matrix rotationMatrix = mat;
+
+        rotationMatrix.m0 /= scale.x;
+        rotationMatrix.m1 /= scale.x;
+        rotationMatrix.m2 /= scale.x;
+
+        rotationMatrix.m4 /= scale.y;
+        rotationMatrix.m5 /= scale.y;
+        rotationMatrix.m6 /= scale.y;
+
+        rotationMatrix.m8 /= scale.z;
+        rotationMatrix.m9 /= scale.z;
+        rotationMatrix.m10 /= scale.z;
+
+        rotation = QuaternionFromMatrix(rotationMatrix);
+    }
+
+    void entity::updateEntityTransformMatrix(ecs::Entity entity, bool inDeg)
+    {
+        auto &transf = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
+        Matrix transformMatrix = math::createTransformMatrix(transf.pos, transf.rotation, transf.scale, inDeg);
+        setTransformMatrix(entity, transformMatrix);
     }
 }
