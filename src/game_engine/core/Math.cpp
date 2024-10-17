@@ -61,6 +61,22 @@ namespace engine {
         return transform;
     }
 
+    Matrix math::createTransformMatrixEuler(Vector3 translation, Vector3 rotation, Vector3 scale, bool inDeg)
+    {
+        Matrix transform = MatrixIdentity();
+
+        Matrix scaleMatrix = MatrixScale(scale.x, scale.y, scale.z);
+
+        Matrix rotationMatrix = MatrixRotateZYX(rotation);
+
+        Matrix translationMatrix = MatrixTranslate(translation.x, translation.y, translation.z);
+
+        transform = MatrixMultiply(scaleMatrix, rotationMatrix);
+        transform = MatrixMultiply(transform, translationMatrix);
+
+        return transform;
+    }
+
     void math::decomposeTransformMatrix(Matrix mat, Vector3 &translation, Quaternion &rotation, Vector3 &scale) 
     {
         translation = { mat.m12, mat.m13, mat.m14 };
@@ -118,4 +134,57 @@ namespace engine {
         eulerAngles.x = std::atan2(2 * q1.x * q1.w - 2 * q1.y * q1.z, -sqx + sqy - sqz + sqw);
         return eulerAngles;
     }
+
+    void math::decomposeTransformMatrixEuler(Matrix mat, Vector3 &outTranslation, Vector3 &outRotation, Vector3 &outScale)
+    {
+        // Extract translation
+        outTranslation = { mat.m12, mat.m13, mat.m14 };
+
+        // Extract scale (length of each row)
+        outScale.x = Vector3Length({ mat.m0, mat.m1, mat.m2 });
+        outScale.y = Vector3Length({ mat.m4, mat.m5, mat.m6 });
+        outScale.z = Vector3Length({ mat.m8, mat.m9, mat.m10 });
+
+        // Remove scale factor from each row to prepare for rotation extraction
+        Vector3 rowX = {mat.m0, mat.m1, mat.m2};
+        rowX = Vector3Scale(rowX, 1.0f / outScale.x);
+
+        Vector3 rowY = {mat.m4, mat.m5, mat.m6};
+        rowY = Vector3Scale(rowX, 1.0f / outScale.y);
+
+        Vector3 rowZ = {mat.m8, mat.m9, mat.m10};
+        rowZ = Vector3Scale(rowX, 1.0f / outScale.z);
+
+        // Reset projection
+        Vector3 tmp_z_axis = Vector3CrossProduct({mat.m0, mat.m1, mat.m2}, {mat.m4, mat.m5, mat.m6});
+        if (Vector3DotProduct(tmp_z_axis, {mat.m8, mat.m9, mat.m10}) < 0) {
+            outScale.x *= -1;
+            mat.m0 = -mat.m0;
+            mat.m1 = -mat.m1;
+            mat.m2 = -mat.m2;
+        }
+
+        // Extract rotation
+        outRotation.x = atan2(mat.m6, mat.m10);
+        float c2 = sqrt(mat.m0 * mat.m0 + mat.m1 * mat.m1);
+        outRotation.y = atan2(-mat.m2, c2);
+        float s1 = sin(outRotation.x);
+        float c1 = cos(outRotation.x);
+        outRotation.z = atan2(s1 * mat.m8 - c1 * mat.m4, c1 * mat.m5 - s1 * mat.m9);
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector3& vec) {
+    os << "Vector3(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Matrix& mat) {
+    os << "Matrix(\n";
+    os << "  [" << mat.m0  << ", " << mat.m1  << ", " << mat.m2  << ", " << mat.m3  << "]\n";
+    os << "  [" << mat.m4  << ", " << mat.m5  << ", " << mat.m6  << ", " << mat.m7  << "]\n";
+    os << "  [" << mat.m8  << ", " << mat.m9  << ", " << mat.m10 << ", " << mat.m11 << "]\n";
+    os << "  [" << mat.m12 << ", " << mat.m13 << ", " << mat.m14 << ", " << mat.m15 << "]\n";
+    os << ")";
+    return os;
 }

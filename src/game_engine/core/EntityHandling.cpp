@@ -212,7 +212,7 @@ namespace engine {
 
     Matrix transformToMatrix(const ecs::components::physics::transform_t &transform) 
     {
-        Matrix matRotation = MatrixRotateXYZ(QuaternionToEuler(transform.rotation));
+        Matrix matRotation = MatrixRotateXYZ(transform.rotation);
         Matrix matScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
         Matrix matTranslation = MatrixTranslate(transform.pos.x, transform.pos.y, transform.pos.z);
 
@@ -274,7 +274,7 @@ namespace engine {
     void entity::updateEntityTransformMatrix(ecs::Entity entity, bool inDeg)
     {
         auto &transf = Engine::getInstance()->getComponent<ecs::components::physics::transform_t>(entity);
-        Matrix transformMatrix = math::createTransformMatrix(transf.pos, transf.rotation, transf.scale, inDeg);
+        Matrix transformMatrix = math::createTransformMatrixEuler(transf.pos, transf.rotation, transf.scale, inDeg);
         setTransformMatrix(entity, transformMatrix);
     }
 }

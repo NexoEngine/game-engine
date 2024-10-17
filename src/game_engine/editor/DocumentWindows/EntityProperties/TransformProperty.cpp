@@ -33,30 +33,20 @@ namespace engine::editor {
     {
         if (AEntityProperty::show()) {
             auto &transform = engine::entity::getComponent<ecs::components::physics::transform_t>(_sceneManagerBridge.getSelectedEntity());
+            Matrix objectMatrix = engine::entity::getTransformMatrix(_sceneManagerBridge.getSelectedEntity());
+            Vector3 translation, rotation, scale;
+            math::decomposeTransformMatrixEuler(objectMatrix, translation, rotation, scale);
 
             ImGui::Text("Position");
             ImGui::SameLine();
             bool posChanged = ImGui::DragFloat3("##Position", &transform.pos.x, 0.1f);
 
-            Vector3 eulerRotation = math::quaternionToEulerSafe(transform.rotation);
-            Vector3 previousRotation = eulerRotation;
-            eulerRotation.x *= RAD2DEG;
-            eulerRotation.y *= RAD2DEG;
-            eulerRotation.z *= RAD2DEG;
-
+            Vector3 rotationInDegree = Vector3Scale(transform.rotation, RAD2DEG);
             ImGui::Text("Rotation");
             ImGui::SameLine();
-            bool rotChanged = ImGui::DragFloat3("##Rotation", &eulerRotation.x, 1.0f);
+            bool rotChanged = ImGui::DragFloat3("##Rotation", &rotationInDegree.x, 0.05f);
 
-            if (rotChanged && !Vector3Equals(eulerRotation, previousRotation)) {
-                eulerRotation.x *= DEG2RAD;
-                eulerRotation.y *= DEG2RAD;
-                eulerRotation.z *= DEG2RAD;
-                Vector3 deltaRotation = Vector3Subtract(eulerRotation, previousRotation);
-                eulerRotation = Vector3Add(previousRotation, deltaRotation);
-
-                transform.rotation = QuaternionFromEuler(eulerRotation.x, eulerRotation.y, eulerRotation.z);
-            }
+            transform.rotation = Vector3Scale(rotationInDegree, DEG2RAD);
 
             ImGui::Text("Scale");
             ImGui::SameLine();
