@@ -55,8 +55,13 @@ int main(int argc, char* argv[])
 	// Main game loop
 	while (editor.isOpen())    // Detect window close button or ESC key
 	{
-		editor.update();
+        auto start = std::chrono::high_resolution_clock::now();
+        editor.update();
 		editor.render();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
 	}
 
 	return 0;

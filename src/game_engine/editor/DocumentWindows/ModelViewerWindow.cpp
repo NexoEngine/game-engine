@@ -18,6 +18,7 @@
 #include <string>
 
 #include "game_engine/GameEngine.hpp"
+#include "loguru/loguru.hpp"
 
 namespace engine::editor {
     ModelViewerWindow::ModelViewerWindow()
@@ -26,6 +27,7 @@ namespace engine::editor {
     {
         _opened = false;
         _modelLoaded = false;
+        _prevWindowSize = ImVec2(0, 0);
     }
 
     ModelViewerWindow::~ModelViewerWindow()
@@ -38,10 +40,16 @@ namespace engine::editor {
     {
         engine::attachCamera(_sceneID, _camera);
         _camera->updateRenderTextureSize(400, 400);
+        _currentWindowSize = ImVec2(400, 400);
     }
 
     void ModelViewerWindow::shutdown()
     {
+    }
+
+    bool ModelViewerWindow::isWindowResized() const
+    {
+        return _currentWindowSize.x != _prevWindowSize.x || _currentWindowSize.y != _prevWindowSize.y;
     }
 
     std::string fileDialogButton(const char* label)
@@ -66,72 +74,66 @@ namespace engine::editor {
     }
 
    void ModelViewerWindow::show() {
+       ImGui::Begin("Import", &_opened, ImGuiWindowFlags_NoScrollbar);
+       ImGui::BeginChild("Preview", ImVec2(ImGui::GetContentRegionAvail().x * 0.6f, ImGui::GetContentRegionAvail().y), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
+       rlImGuiImageRenderTextureFit(&_camera->getRenderTexture(), true);
+       //rlImGuiImageRenderTexture(&_camera->getRenderTexture());
+       ImGui::EndChild();
+
+       ImGui::SameLine();
+
+       ImGui::BeginChild("Controls", ImVec2(0, 0), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
+
+       auto path = fileDialogButton("Import path");
+       if (!path.empty()) {
+           _assetPath = std::string(path);
+
+           _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
+           engine::addEntityToScene(_importedEntity, _sceneID);
+           _modelLoaded = true;
+       }
+       if (_modelLoaded) {
+           ImGui::SameLine(); ImGui::Text("%s", _assetPath.c_str());
+       }
+
+       _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
+       static int selected_scene_idx = 0;
+
+       if (ImGui::BeginCombo("Scene",
+           std::to_string(getSceneManager().getSceneIDs().at(0)).c_str(),
+           ImGuiComboFlags_HeightRegular | ImGuiComboFlags_PopupAlignLeft))
+       {
+           for (int n = 0; n < getSceneManager().getSceneIDs().size(); n++)
+           {
+               const auto current_scene_id = getSceneManager().getSceneIDs().at(n);
+               if (current_scene_id == _sceneID)
+                   continue;
+               const bool is_selected = (selected_scene_idx == n);
+               if (ImGui::Selectable(std::to_string(current_scene_id).c_str(), is_selected))
+                   selected_scene_idx = n;
+
+               // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+               if (is_selected)
+                   ImGui::SetItemDefaultFocus();
+           }
+           ImGui::EndCombo();
+       }
+
+       ImGui::NewLine();
+       if (ImGui::Button("Import")) {
+           engine::removeEntityFromScene(_importedEntity, _sceneID);
+           engine::addEntityToScene(_importedEntity, selected_scene_idx);
+           _assetPath = "";
+           _importedEntity = 0;
+           _modelLoaded = false;
+           _opened = false;
+       }
 
 
-        /*if (!_modelLoaded) {
-            const char* filePath = tinyfd_openFileDialog(
-                "Open File",
-                "",
-                0,
-                nullptr,
-                nullptr,
-                0
-            );
-
-            if (!filePath) {
-                _opened = false;
-                return;
-            }
-            _assetPath = std::string(filePath);
-            _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
-            engine::addEntityToScene(_sceneID, _importedEntity);
-            _modelLoaded = true;
-        }*/
-        /*ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Always);
-        ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Always);*/
-        ImGui::Begin("Import", &_opened, ImGuiWindowFlags_NoScrollbar);
-
-        auto path = fileDialogButton("Import path");
-        if (path != "") {
-            _assetPath = std::string(path);
-            _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
-            engine::addEntityToScene(_sceneID, _importedEntity);
-            _modelLoaded = true;
-        }
-
-
-        _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
-
-
-        rlImGuiImageRenderTexture(&_camera->getRenderTexture());
-
-        /*// file input with a button on its right to directly search in windows
-        static char buf[128] = "";
-        ImGui::InputText("File", buf, IM_ARRAYSIZE(buf));
-        ImGui::SameLine();
-        if (ImGui::Button("...")) {
-            const char* filePath = tinyfd_openFileDialog(
-                "Open File",
-                "",
-                0,
-                nullptr,
-                nullptr,
-                0
-            );
-
-            if (!filePath) {
-                _opened = false;
-                return;
-            }
-            _assetPath = std::string(filePath);
-            _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
-            engine::addEntityToScene(_sceneID, _importedEntity);
-            _modelLoaded = true;
-        }*/
-
-
-
-        ImGui::End();
+       ImGui::EndChild();
+       _currentWindowSize = ImGui::GetWindowSize();
+       ImGui::End();
    }
 
 
@@ -140,10 +142,15 @@ namespace engine::editor {
         if (!_opened)
             return;
 
+        if (isWindowResized()) {
+            _camera->updateRenderTextureSize(static_cast<int>(_currentWindowSize.x * 0.6f), static_cast<int>(_currentWindowSize.y));
+            _prevWindowSize = _currentWindowSize;
+            VLOG_F(loguru::Verbosity_INFO, "%f %f", _currentWindowSize.x, _currentWindowSize.y);
+        }
+
         _sceneManagerBridge.deactivateAllScenes();
         engine::activateScene(_sceneID);
         engine::update(_sceneID);
         engine::renderTextureMode(_sceneID, _camera->getCameraID());
-        //engine::update(_sceneID);
     }
 }
