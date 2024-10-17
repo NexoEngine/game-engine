@@ -119,14 +119,15 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
+    //ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
+    ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
     ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
-    _selectedEntity = cube;
-    engine::addEntityToScene(cube, _sceneID);
+    _selectedEntity = model;
+    engine::addEntityToScene(model, _sceneID);
     engine::addEntityToScene(cube2, _sceneID);
 }
 
@@ -192,12 +193,7 @@ void engine::editor::Main3DScene::renderGizmo()
     Matrix viewMatrix = _camera->getViewMatrix();
     Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
     Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
-    
-    // LOG_F(INFO, "objectMatrix: %f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f",
-    //         objectMatrix.m0, objectMatrix.m4, objectMatrix.m8, objectMatrix.m12,
-    //         objectMatrix.m1, objectMatrix.m5, objectMatrix.m9, objectMatrix.m13,
-    //         objectMatrix.m2, objectMatrix.m6, objectMatrix.m10, objectMatrix.m14,
-    //         objectMatrix.m3, objectMatrix.m7, objectMatrix.m11, objectMatrix.m15);
+    auto &transf = engine::entity::getComponent<ecs::components::physics::transform_t>(_selectedEntity);
 
     float16 viewMatrixFloats = MatrixToFloatV(viewMatrix);
     float16 projectionMatrixFloats = MatrixToFloatV(projectionMatrix);
@@ -205,12 +201,22 @@ void engine::editor::Main3DScene::renderGizmo()
 
     ImGuizmo::Enable(true);
     ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
-                         ImGuizmo::OPERATION::UNIVERSAL,
-                         ImGuizmo::MODE::WORLD  ,
+                         ImGuizmo::OPERATION::ROTATE,
+                         ImGuizmo::MODE::LOCAL  ,
                          objectMatrixFloats.v);
+
+    Vector3 translation = {0};
+    Vector3 rotation = {0};
+    Vector3 scale = {0};
+
+    math::decomposeTransformMatrixEuler(engine::math::matrixFromFloat16(objectMatrixFloats), translation, rotation, scale);
 
     if (ImGuizmo::IsUsing())
     {
+        transf.pos = translation;
+        Vector3 deltaRotation = Vector3Subtract(rotation, transf.rotation);
+        transf.rotation = Vector3Add(transf.rotation, deltaRotation);
+        transf.scale = scale;
         engine::entity::setTransformMatrix(_selectedEntity, engine::math::matrixFromFloat16(objectMatrixFloats));
     }
 }

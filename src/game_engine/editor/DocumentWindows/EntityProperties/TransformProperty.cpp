@@ -8,7 +8,8 @@
 #include <imgui.h>
 
 #include "game_engine/editor/DocumentWindows/EntityProperties/TransformProperty.hpp"
-#include <EntityHandling.hpp>
+#include "EntityHandling.hpp"
+#include "Math.hpp"
 
 #include <loguru/loguru.hpp>
 
@@ -32,16 +33,30 @@ namespace engine::editor {
     {
         if (AEntityProperty::show()) {
             auto &transform = engine::entity::getComponent<ecs::components::physics::transform_t>(_sceneManagerBridge.getSelectedEntity());
-            // Position
-            ImGui::Text("Position");
-            ImGui::SameLine(); ImGui::DragFloat3("##Position", &transform.pos.x, 0.1f);
+            Matrix objectMatrix = engine::entity::getTransformMatrix(_sceneManagerBridge.getSelectedEntity());
+            Vector3 translation, rotation, scale;
+            math::decomposeTransformMatrixEuler(objectMatrix, translation, rotation, scale);
 
-            // Rotation
+            ImGui::Text("Position");
+            ImGui::SameLine();
+            bool posChanged = ImGui::DragFloat3("##Position", &transform.pos.x, 0.1f);
+
+            Vector3 rotationInDegree = Vector3Scale(transform.rotation, RAD2DEG);
             ImGui::Text("Rotation");
-            ImGui::SameLine(); ImGui::DragFloat3("##Rotation", &transform.rotation.x, 0.1f);
-            // Scale
+            ImGui::SameLine();
+            bool rotChanged = ImGui::DragFloat3("##Rotation", &rotationInDegree.x, 0.05f);
+
+            transform.rotation = Vector3Scale(rotationInDegree, DEG2RAD);
+
             ImGui::Text("Scale");
-            ImGui::SameLine(); ImGui::DragFloat3("##Scale", &transform.scale.x, 0.1f);
+            ImGui::SameLine();
+            bool scaleChanged = ImGui::DragFloat3("##Scale", &transform.scale.x, 0.1f);
+
+            if (posChanged || rotChanged || scaleChanged) 
+            {
+                entity::updateEntityTransformMatrix(_sceneManagerBridge.getSelectedEntity());
+            }
+
             return true;
         }
         return false;

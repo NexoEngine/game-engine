@@ -19,7 +19,6 @@ namespace engine {
 
         engine::core::Light newLight;
         newLight.id = engine::core::nextLightID;
-        std::cout << engine::core::nextLightID << std::endl;
         newLight.enabled = 1;
         newLight.type = type;
         newLight.position = position;
