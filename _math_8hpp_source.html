@@ -100,20 +100,26 @@ $(document).ready(function(){initNavTree('_math_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;game_engine/ecs/Coordinator.hpp&quot;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>engine {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    Matrix matrixFromFloat16(<span class="keyword">const</span> float16&amp; matrix);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">namespace </span>math {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        Matrix matrixFromFloat16(<span class="keyword">const</span> float16&amp; matrix);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">namespace </span>math {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        Matrix matrixFromFloat16(<span class="keyword">const</span> float16&amp; matrix);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordtype">void</span> ExtractCameraViewComponents(Matrix viewMatrix, Vector3&amp; position, Vector3&amp; target, Vector3&amp; up);</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordtype">void</span> ExtractCameraViewComponents(Matrix viewMatrix, Vector3&amp; position, Vector3&amp; target, Vector3&amp; up);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        Matrix createTransformMatrix(Vector3 translation, Quaternion rotation, Vector3 scale, <span class="keywordtype">bool</span> inDeg = <span class="keyword">true</span>);</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        Matrix createTransformMatrix(Vector3 translation, Quaternion rotation, Vector3 scale, <span class="keywordtype">bool</span> inDeg = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        Matrix createTransformMatrixEuler(Vector3 translation, Vector3 rotation, Vector3 scale, <span class="keywordtype">bool</span> inDeg = <span class="keyword">true</span>);</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordtype">void</span> decomposeTransformMatrix(Matrix mat, Vector3 &amp;translation, Quaternion &amp;rotation, Vector3 &amp;scale); </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        Vector3 quaternionToEulerSafe(Quaternion q1);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordtype">void</span> decomposeTransformMatrixEuler(Matrix mat, Vector3 &amp;outTranslation, Vector3 &amp;outRotation, Vector3 &amp;outScale);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        Vector3 quaternionToEulerSafe(Quaternion q1);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> Vector3&amp; vec);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> Matrix&amp; mat);</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
