@@ -77,6 +77,7 @@ void engine::editor::Main3DScene::update()
         return;
     handleWindowResize();
     handleKeyEvents();
+    _selectedEntity = _sceneManagerBridge.getSelectedEntity();
 
     // limit fps to _targetFPS with clock, frameTime in ms
     auto frameTimeMs = static_cast<long long>(1.0 / _targetFPS * 1000.0);
@@ -135,14 +136,14 @@ void engine::editor::Main3DScene::loadEntities()
 {
     ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 2, 2, WHITE, true);
     //ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
-    //ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
+    ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
     _selectedEntity = cube;
     engine::addEntityToScene(cube, _sceneID);
-    //engine::addEntityToScene(cube2, _sceneID);
+    engine::addEntityToScene(cube2, _sceneID);
 }
 
 void engine::editor::Main3DScene::handleWindowResize()
