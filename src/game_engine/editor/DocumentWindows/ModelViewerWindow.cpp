@@ -22,8 +22,9 @@
 
 namespace engine::editor {
     ModelViewerWindow::ModelViewerWindow()
-        : _camera(engine::createCamera(Vector3{7.0f, 7.0f, 7.0f}, Vector3{0.0f, 2.0f, 0.0f})),
-        _sceneID(engine::createScene())
+        : _camera(engine::createCamera(Vector3{7.0f, 7.0f, 7.0f},Vector3{0.0f, 2.0f, 0.0f})),
+        _sceneID(engine::createScene()),
+        _selectedSceneIdx(0)
     {
         _opened = false;
         _modelLoaded = false;
@@ -73,68 +74,82 @@ namespace engine::editor {
         return "";
     }
 
-   void ModelViewerWindow::show() {
-       ImGui::Begin("Import", &_opened, ImGuiWindowFlags_NoScrollbar);
-       ImGui::BeginChild("Preview", ImVec2(ImGui::GetContentRegionAvail().x * 0.6f, ImGui::GetContentRegionAvail().y), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
-       rlImGuiImageRenderTextureFit(&_camera->getRenderTexture(), true);
-       //rlImGuiImageRenderTexture(&_camera->getRenderTexture());
-       ImGui::EndChild();
+    void ModelViewerWindow::show() {
+        ImGui::Begin("Import", &_opened, ImGuiWindowFlags_NoScrollbar);
 
-       ImGui::SameLine();
+        showPreviewSection();
+        ImGui::SameLine();
+        showControlsSection();
 
-       ImGui::BeginChild("Controls", ImVec2(0, 0), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
+        _currentWindowSize = ImGui::GetWindowSize();
+        ImGui::End();
+    }
 
-       auto path = fileDialogButton("Import path");
-       if (!path.empty()) {
-           _assetPath = std::string(path);
+    void ModelViewerWindow::showPreviewSection() {
+        ImGui::BeginChild("Preview", ImVec2(ImGui::GetContentRegionAvail().x * 0.6f, ImGui::GetContentRegionAvail().y), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
+        rlImGuiImageRenderTextureFit(&_camera->getRenderTexture(), true);
+        ImGui::EndChild();
+    }
 
-           _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
-           engine::addEntityToScene(_importedEntity, _sceneID);
-           _modelLoaded = true;
-       }
-       if (_modelLoaded) {
-           ImGui::SameLine(); ImGui::Text("%s", _assetPath.c_str());
-       }
+    void ModelViewerWindow::showControlsSection() {
+        ImGui::BeginChild("Controls", ImVec2(0, 0), true, ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY);
 
-       _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+        showImportPathButton();
+        showSceneComboBox();
+        showImportButton();
 
-       static int selected_scene_idx = 0;
+        ImGui::EndChild();
+    }
 
-       if (ImGui::BeginCombo("Scene",
-           std::to_string(getSceneManager().getSceneIDs().at(0)).c_str(),
-           ImGuiComboFlags_HeightRegular | ImGuiComboFlags_PopupAlignLeft))
-       {
-           for (int n = 0; n < getSceneManager().getSceneIDs().size(); n++)
-           {
-               const auto current_scene_id = getSceneManager().getSceneIDs().at(n);
-               if (current_scene_id == _sceneID)
-                   continue;
-               const bool is_selected = (selected_scene_idx == n);
-               if (ImGui::Selectable(std::to_string(current_scene_id).c_str(), is_selected))
-                   selected_scene_idx = n;
+    void ModelViewerWindow::showImportPathButton() {
+        auto path = fileDialogButton("Import path");
+        if (!path.empty()) {
+            if (_modelLoaded) {
+                engine::removeEntityFromScene(_importedEntity, _sceneID);
+                engine::destroyEntity(_importedEntity);
+            }
+            _assetPath = std::string(path);
+            _importedEntity = engine::createModel3D(_assetPath.c_str(), {0, 0, 0}, WHITE);
+            engine::addEntityToScene(_importedEntity, _sceneID);
+            _modelLoaded = true;
+        }
+        if (_modelLoaded) {
+            ImGui::SameLine(); ImGui::Text("%s", _assetPath.c_str());
+        }
+    }
 
-               // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-               if (is_selected)
-                   ImGui::SetItemDefaultFocus();
-           }
-           ImGui::EndCombo();
-       }
+    void ModelViewerWindow::showSceneComboBox() {
+        if (ImGui::BeginCombo("Scene",
+            std::to_string(getSceneManager().getSceneIDs().at(0)).c_str(),
+            ImGuiComboFlags_HeightRegular | ImGuiComboFlags_PopupAlignLeft))
+        {
+            for (int n = 0; n < getSceneManager().getSceneIDs().size(); n++)
+            {
+                const auto current_scene_id = getSceneManager().getSceneIDs().at(n);
+                if (current_scene_id == _sceneID)
+                    continue;
+                const bool is_selected = (_selectedSceneIdx == n);
+                if (ImGui::Selectable(std::to_string(current_scene_id).c_str(), is_selected))
+                    _selectedSceneIdx = n;
 
-       ImGui::NewLine();
-       if (ImGui::Button("Import")) {
-           engine::removeEntityFromScene(_importedEntity, _sceneID);
-           engine::addEntityToScene(_importedEntity, selected_scene_idx);
-           _assetPath = "";
-           _importedEntity = 0;
-           _modelLoaded = false;
-           _opened = false;
-       }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
 
-
-       ImGui::EndChild();
-       _currentWindowSize = ImGui::GetWindowSize();
-       ImGui::End();
-   }
+    void ModelViewerWindow::showImportButton() {
+        ImGui::NewLine();
+        if (ImGui::Button("Import")) {
+            engine::removeEntityFromScene(_importedEntity, _sceneID);
+            engine::addEntityToScene(_importedEntity, _selectedSceneIdx);
+            _assetPath = "";
+            _importedEntity = 0;
+            _modelLoaded = false;
+            _opened = false;
+        }
+    }
 
 
     void ModelViewerWindow::update()
@@ -145,7 +160,6 @@ namespace engine::editor {
         if (isWindowResized()) {
             _camera->updateRenderTextureSize(static_cast<int>(_currentWindowSize.x * 0.6f), static_cast<int>(_currentWindowSize.y));
             _prevWindowSize = _currentWindowSize;
-            VLOG_F(loguru::Verbosity_INFO, "%f %f", _currentWindowSize.x, _currentWindowSize.y);
         }
 
         _sceneManagerBridge.deactivateAllScenes();
