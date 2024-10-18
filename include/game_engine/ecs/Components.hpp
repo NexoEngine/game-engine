@@ -14,6 +14,11 @@
 #include <memory>
 
 #include "Entity.hpp"
+#include "game_engine/save/IOriginator.hpp"
+
+#include <rfl/json.hpp>
+#include <rfl.hpp>
+#include "loguru/loguru.hpp"
 
 namespace ecs {
     using Entity = std::uint32_t;
@@ -39,6 +44,14 @@ namespace ecs {
                 virtual void entityDestroyed(Entity entity) = 0;
         };
 
+        template<typename T>
+        struct ComponentArrayMemento : public engine::save::IMemento {
+            //std::array<T, MAX_ENTITIES> componentArray;
+            std::unordered_map<Entity, size_t> entityToIndexMap;
+            std::unordered_map<size_t, Entity> indexToEntityMap;
+            size_t size;
+        };
+
         /**
         * @class ComponentArray<T>
         *
@@ -50,8 +63,16 @@ namespace ecs {
         * @tparam T - The type of the component this array will manage.
         */
         template<typename T>
-        class ComponentArray : public IComponentArray {
+        class ComponentArray :
+            public IComponentArray,
+            public engine::save::IOriginator<ComponentArrayMemento<T>> {
             public:
+                ~ComponentArray() override {
+                    auto memento = saveMemento();
+                    const auto out = rfl::json::write("memento");
+                    LOG_F(INFO, "ComponentArray<T> destructor: %s", out.c_str());
+                }
+
                 /**
                 * @brief Inserts a component for a specific entity.
                 *
@@ -110,6 +131,22 @@ namespace ecs {
                     if (_entityToIndexMap.find(entity) != _entityToIndexMap.end())
                         removeData(entity);
                 }
+
+                void restoreMemento(const ComponentArrayMemento<T> &memento) override {
+                    //_componentArray = memento.componentArray;
+                    _entityToIndexMap = memento.entityToIndexMap;
+                    _indexToEntityMap = memento.indexToEntityMap;
+                    _size = memento.size;
+                }
+
+                ComponentArrayMemento<T> saveMemento() const override {
+                    ComponentArrayMemento<T> memento;
+                    //memento.componentArray = _componentArray;
+                    memento.entityToIndexMap = _entityToIndexMap;
+                    memento.indexToEntityMap = _indexToEntityMap;
+                    memento.size = _size;
+                    return memento;
+                }
             private:
                 std::array<T, MAX_ENTITIES> _componentArray;
 
@@ -117,7 +154,7 @@ namespace ecs {
 
                 std::unordered_map<size_t, Entity> _indexToEntityMap;
 
-                size_t _size;
+                size_t _size{};
         };
 
         /**

@@ -69,6 +69,13 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
 # IMGUIZMO DOWNLOAD
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
 
+# REFLECT-CPP DOWNLOAD
+include("${CMAKE_CURRENT_SOURCE_DIR}/external/reflect-cpp/CMakeLists.txt")
+
+
+
+
+
 # SETUP GAME ENGINE GUI
 include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/CMakeLists.txt")
 # include("${CMAKE_CURRENT_SOURCE_DIR}/src/protoVR/CMakeLists.txt")
