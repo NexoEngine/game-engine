@@ -25,9 +25,6 @@ elseif(APPLE)
     include_directories("${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/x64-osx/include")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS serialization system)
-include_directories(${Boost_INCLUDE_DIRS})
-
 if(WIN32)
     find_package(raylib CONFIG QUIET)
 else()
@@ -39,11 +36,7 @@ include_directories(${raylib_INCLUDE_DIRS})
 find_package(unofficial-joltphysics CONFIG REQUIRED)
 include_directories(${unofficial-joltphysics_INCLUDE_DIRS})
 
-if(WIN32)
-    target_link_libraries(sampleJolt PRIVATE raylib unofficial::joltphysics::Jolt Boost::serialization Boost::system)
-else()
-    target_link_libraries(sampleJolt PRIVATE raylib unofficial::joltphysics::Jolt Boost::serialization)
-endif(WIN32)
+target_link_libraries(sampleJolt PRIVATE raylib unofficial::joltphysics::Jolt)
 
 if (APPLE)
     include_directories(/usr/local/include)
