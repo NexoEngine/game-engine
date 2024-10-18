@@ -21,6 +21,7 @@ set(SRCS
     src/game_engine/core/EventHandling.cpp
     src/game_engine/core/SceneHandling.cpp
     src/game_engine/core/LightHandling.cpp
+    src/game_engine/core/Rendering.cpp
     src/game_engine/core/Math.cpp
     src/game_engine/core/window/Window.cpp
     src/game_engine/core/event/Event.cpp

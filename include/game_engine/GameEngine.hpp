@@ -246,6 +246,12 @@ namespace engine {
             void setLightEnabled(engine::core::LightId lightID, bool enabled, Shader lightingShader = ecs::components::shader::defaultLightingShader);
             void setLightColor(engine::core::LightId lightID, Color newColor, Shader lightingShader = ecs::components::shader::defaultLightingShader);
 
+            void startRendering(ecs::SceneID sceneID, core::CameraID cameraID);
+            void endRendering(ecs::SceneID sceneID);
+
+            void renderAllEntities(ecs::SceneID sceneId, core::CameraID cameraId);
+            void renderGrid(ecs::SceneID sceneID, core::CameraID cameraID);
+
 
         private:
             std::shared_ptr<ecs::Coordinator> _coordinator;
@@ -261,6 +267,7 @@ namespace engine {
 
             std::shared_ptr<core::Window> _window;
             bool _disableRender = false;
+            bool _rendering = false;
 
             common::utils::Chrono _chrono;
 

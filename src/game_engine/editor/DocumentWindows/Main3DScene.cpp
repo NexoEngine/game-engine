@@ -14,6 +14,7 @@
 #include "LightHandling.hpp"
 #include "Math.hpp"
 #include "EventHandling.hpp"
+#include "Rendering.hpp"
 
 #include <ImGuizmo.h>
 #include <rlgl.h>
@@ -38,6 +39,7 @@ engine::editor::Main3DScene::~Main3DScene()
 void engine::editor::Main3DScene::setup()
 {
     setupWindow();
+    setupGridShader();
 }
 
 void engine::editor::Main3DScene::shutdown()
@@ -90,7 +92,10 @@ void engine::editor::Main3DScene::update()
     _sceneManagerBridge.deactivateAllScenes();
     engine::activateScene(_sceneID);
     engine::update(_sceneID);
-    engine::renderTextureMode(_sceneID, _camera->getCameraID());
+    engine::startRendering(_sceneID, _camera->getCameraID());
+    engine::renderGrid(_sceneID, _camera->getCameraID());
+    engine::renderAllEntities(_sceneID, _camera->getCameraID());
+    engine::endRendering(_sceneID);
     lastTime = currentTime;
 
 }
@@ -103,6 +108,13 @@ void engine::editor::Main3DScene::setupWindow()
     ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
     _currentWindowSize = size;
     _viewSize = size;
+}
+
+void engine::editor::Main3DScene::setupGridShader()
+{
+    _gridShader = LoadShader("src/game_engine/ressources/shaders/grid_fading.vs", "src/game_engine/ressources/shaders/grid_fading.fs");
+    _matViewLoc = GetShaderLocation(_gridShader, "matView");
+    _matProjectionLoc = GetShaderLocation(_gridShader, "matProjection");
 }
 
 void engine::editor::Main3DScene::setupScene()
@@ -158,6 +170,37 @@ void engine::editor::Main3DScene::handleKeyEvents()
     {
         _currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
     }
+}
+
+void engine::editor::Main3DScene::renderGrid(void)
+{
+    Matrix view = GetCameraMatrix(_camera->getCamera());
+    Vector2 screenSize = _camera->getRenderTextureSize();
+    Matrix projection = MatrixPerspective(_camera->getFov() * DEG2RAD, screenSize.x / screenSize.y, _nearPlane, _farPlane);
+    SetShaderValueMatrix(_gridShader, _matViewLoc, view);
+    SetShaderValueMatrix(_gridShader, _matProjectionLoc, projection);
+    RenderTexture renderTexture = _camera->getRenderTexture();
+    BeginTextureMode(renderTexture);
+        BeginMode3D(_camera->getCamera());
+            rlDisableDepthTest();
+            BeginShaderMode(_gridShader);
+                rlPushMatrix();
+                rlTranslatef(0.0f, 0.0f, 0.0f);
+                rlScalef(1000.0f, 1.0f, 1000.0f);
+
+                rlBegin(RL_TRIANGLES);
+                    rlVertex3f(-1, 1, -0);
+                    rlVertex3f(-1, -1, 0);
+                    rlVertex3f(1, -1, 0);
+                    rlVertex3f(1, 1, 0);
+                    rlVertex3f(-1, 1, 0);
+                    rlVertex3f(1, -1, 0);
+                rlEnd();
+                rlPopMatrix();
+            EndShaderMode();
+            rlEnableDepthTest();
+        EndMode3D();
+    EndTextureMode();
 }
 
 void engine::editor::Main3DScene::renderToolbar()
