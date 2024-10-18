@@ -11,12 +11,6 @@
       ]
     },
     {
-      "name": "boost-asio"
-    },
-    {
-      "name": "boost-serialization"
-    },
-    {
       "name": "boost-multi-index"
     },
     {
