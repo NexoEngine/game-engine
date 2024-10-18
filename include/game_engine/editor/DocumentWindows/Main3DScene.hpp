@@ -37,7 +37,6 @@ namespace engine::editor {
             int _targetFPS = 60;
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
-            ImGuizmo::OPERATION _lastGizmoOperationOver = ImGuizmo::SCALE;
 
             std::shared_ptr<engine::core::EngineCamera> _camera;
             ecs::SceneID _sceneID;
@@ -53,6 +52,7 @@ namespace engine::editor {
 
             [[nodiscard]] bool isWindowResized() const;
             void handleWindowResize();
+            void handleKeyEvents();
 
             void renderToolbar();
             void renderGizmo();

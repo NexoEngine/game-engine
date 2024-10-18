@@ -9,10 +9,11 @@
 #include "rlImGui.h"
 
 #include "game_engine/editor/DocumentWindows/Main3DScene.hpp"
-#include <CameraHandling.hpp>
-#include <EntityHandling.hpp>
-#include <LightHandling.hpp>
-#include <Math.hpp>
+#include "CameraHandling.hpp"
+#include "EntityHandling.hpp"
+#include "LightHandling.hpp"
+#include "Math.hpp"
+#include "EventHandling.hpp"
 
 #include <ImGuizmo.h>
 #include <rlgl.h>
@@ -73,6 +74,7 @@ void engine::editor::Main3DScene::update()
     if (!_opened)
         return;
     handleWindowResize();
+    handleKeyEvents();
 
     // limit fps to _targetFPS with clock, frameTime in ms
     auto frameTimeMs = static_cast<long long>(1.0 / _targetFPS * 1000.0);
@@ -119,16 +121,16 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    //ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
-    ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
-    ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
+    ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 2, 2, WHITE, true);
+    //ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
+    //ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
-    _selectedEntity = model;
-    engine::addEntityToScene(model, _sceneID);
-    engine::addEntityToScene(cube2, _sceneID);
+    _selectedEntity = cube;
+    engine::addEntityToScene(cube, _sceneID);
+    //engine::addEntityToScene(cube2, _sceneID);
 }
 
 void engine::editor::Main3DScene::handleWindowResize()
@@ -137,6 +139,42 @@ void engine::editor::Main3DScene::handleWindowResize()
         return;
     _camera->updateRenderTextureSize(static_cast<int>(_viewSize.x), static_cast<int>(_viewSize.y));
     ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
+}
+
+
+
+void engine::editor::Main3DScene::handleKeyEvents()
+{
+    using ecs::components::input::Keys;
+    if (engine::isKeyPressed(Keys::KeyG))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+    }
+    else if (engine::isKeyPressed(Keys::KeyR))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+    }
+    else if (engine::isKeyPressed(Keys::KeyE))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+    }
+
+    if (engine::isKeyPressed(Keys::KeyX)) {
+        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
+            _axisLock = { false, true, true };
+        else
+            _axisLock = { true, false, false };
+    } else if (engine::isKeyPressed(Keys::KeyY)) {
+        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
+            _axisLock = { true, false, true };
+        else
+            _axisLock = { false, true, false };
+    } else if (engine::isKeyPressed(Keys::KeyZ)) {
+        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
+            _axisLock = { true, true, false };
+        else
+            _axisLock = { false, false, true };
+    }
 }
 
 void engine::editor::Main3DScene::renderToolbar()
@@ -201,8 +239,8 @@ void engine::editor::Main3DScene::renderGizmo()
 
     ImGuizmo::Enable(true);
     ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
-                         ImGuizmo::OPERATION::ROTATE,
-                         ImGuizmo::MODE::LOCAL  ,
+                         _currentGizmoOperation,
+                         ImGuizmo::MODE::LOCAL,
                          objectMatrixFloats.v);
 
     Vector3 translation = {0};
@@ -213,10 +251,17 @@ void engine::editor::Main3DScene::renderGizmo()
 
     if (ImGuizmo::IsUsing())
     {
-        transf.pos = translation;
-        Vector3 deltaRotation = Vector3Subtract(rotation, transf.rotation);
-        transf.rotation = Vector3Add(transf.rotation, deltaRotation);
-        transf.scale = scale;
+        transf.pos.x = _axisLock.x != 0.0f ? translation.x : transf.pos.x;
+        transf.pos.y = _axisLock.y != 0.0f ? translation.y : transf.pos.y;
+        transf.pos.z = _axisLock.z != 0.0f ? translation.z : transf.pos.z;
+
+        transf.rotation.x = _axisLock.x != 0.0f ? rotation.x : transf.rotation.x;
+        transf.rotation.y = _axisLock.y != 0.0f ? rotation.y : transf.rotation.y;
+        transf.rotation.z = _axisLock.z != 0.0f ? rotation.z : transf.rotation.z;
+
+        transf.scale.x = _axisLock.x != 0.0f ? scale.x : transf.scale.x;
+        transf.scale.y = _axisLock.y != 0.0f ? scale.y : transf.scale.y;
+        transf.scale.z = _axisLock.z != 0.0f ? scale.z : transf.scale.z;
         engine::entity::setTransformMatrix(_selectedEntity, engine::math::matrixFromFloat16(objectMatrixFloats));
     }
 }
