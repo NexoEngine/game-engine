@@ -4,6 +4,7 @@ project(game_engine)
 
 set(SRCS
     src/game_engine/Editor.cpp
+    src/game_engine/editor/save/Memento.cpp
     src/game_engine/editor/GameEngineEditor.cpp
     src/game_engine/editor/SceneManagerBridge.cpp
     src/game_engine/editor/DocumentWindows/Main3DScene.cpp
@@ -119,10 +120,16 @@ endif()
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(game-engine PRIVATE imguizmo)
 
+# Find reflect-cpp package
+find_package(reflectcpp CONFIG QUIET)
+target_link_libraries(game-engine PRIVATE reflectcpp)
+include_directories(${reflectcpp_INCLUDE_DIRS})
+
 # Linking the libraries
 target_link_libraries(game-engine PRIVATE raylib imgui::imgui rlimgui)
 
 target_include_directories(game-engine PRIVATE ${tinyfiledialogs_SOURCE_DIR})
+
 
 # Compiler options for Unix
 if(UNIX)
@@ -132,3 +139,7 @@ endif()
 include_directories(include)
 include_directories("./include/game_engine")
 include_directories("./include/common")
+
+set_target_properties(
+    game-engine PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}\..\..")
