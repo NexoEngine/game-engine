@@ -158,23 +158,6 @@ void engine::editor::Main3DScene::handleKeyEvents()
     {
         _currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
     }
-
-    if (engine::isKeyPressed(Keys::KeyX)) {
-        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
-            _axisLock = { false, true, true };
-        else
-            _axisLock = { true, false, false };
-    } else if (engine::isKeyPressed(Keys::KeyY)) {
-        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
-            _axisLock = { true, false, true };
-        else
-            _axisLock = { false, true, false };
-    } else if (engine::isKeyPressed(Keys::KeyZ)) {
-        if (engine::isKeyDown(Keys::KeyLeftShift) || engine::isKeyDown(Keys::KeyRightShift))
-            _axisLock = { true, true, false };
-        else
-            _axisLock = { false, false, true };
-    }
 }
 
 void engine::editor::Main3DScene::renderToolbar()
@@ -251,17 +234,9 @@ void engine::editor::Main3DScene::renderGizmo()
 
     if (ImGuizmo::IsUsing())
     {
-        transf.pos.x = _axisLock.x != 0.0f ? translation.x : transf.pos.x;
-        transf.pos.y = _axisLock.y != 0.0f ? translation.y : transf.pos.y;
-        transf.pos.z = _axisLock.z != 0.0f ? translation.z : transf.pos.z;
-
-        transf.rotation.x = _axisLock.x != 0.0f ? rotation.x : transf.rotation.x;
-        transf.rotation.y = _axisLock.y != 0.0f ? rotation.y : transf.rotation.y;
-        transf.rotation.z = _axisLock.z != 0.0f ? rotation.z : transf.rotation.z;
-
-        transf.scale.x = _axisLock.x != 0.0f ? scale.x : transf.scale.x;
-        transf.scale.y = _axisLock.y != 0.0f ? scale.y : transf.scale.y;
-        transf.scale.z = _axisLock.z != 0.0f ? scale.z : transf.scale.z;
+        transf.pos = translation;
+        transf.rotation = rotation;
+        transf.scale = scale;
         engine::entity::setTransformMatrix(_selectedEntity, engine::math::matrixFromFloat16(objectMatrixFloats));
     }
 }
