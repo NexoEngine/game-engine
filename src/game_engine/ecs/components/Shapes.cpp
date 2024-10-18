@@ -69,9 +69,9 @@ namespace ecs {
 
         void Cube::draw(physics::transform_t &transf) const
         {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (false)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Model3D::Model3D(const char *filename, Color color)
@@ -82,7 +82,7 @@ namespace ecs {
 
         void Model3D::draw(physics::transform_t &transf) const
         {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
         }
 
         Skybox::Skybox(const char *filename)

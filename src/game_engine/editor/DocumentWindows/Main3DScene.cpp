@@ -211,6 +211,7 @@ void engine::editor::Main3DScene::renderGizmo()
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetDrawlist();
     ImGuizmo::SetID(_selectedEntity);
+    ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
     Matrix viewMatrix = _camera->getViewMatrix();
     Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
     Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
