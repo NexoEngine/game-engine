@@ -91,6 +91,8 @@ namespace engine {
             std::cout << "Engine not rendering, call the startRendering function first" << std::endl;
             return;
         }
+        if (_debug)
+            _renderSystemDebug->render(sceneId, _coordinator->getCamera(sceneId, cameraId));
         _renderSystem->render();
     }
 
@@ -117,6 +119,4 @@ namespace engine {
     {
         Engine::getInstance()->endRendering(sceneID);
     }
-
-
 }
