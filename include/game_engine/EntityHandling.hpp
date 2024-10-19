@@ -54,6 +54,7 @@ namespace engine {
      */
     ecs::Entity createSkybox(const char *filename, Vector3 pos, Color color = WHITE);
 
+    BoundingBox getEntityBoundingBox(ecs::Entity entity);
 
     void destroyEntity(ecs::Entity entity);
 
