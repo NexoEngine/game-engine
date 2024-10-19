@@ -85,4 +85,24 @@ namespace engine {
     {
         return Engine::getInstance()->getSceneManager();
     }
+
+    void Engine::setSceneWindowOffset(ecs::SceneID id, Vector2 offset)
+    {
+        _coordinator->setSceneWindowOffset(id, offset);
+    }
+
+    [[nodiscard]] Vector2 Engine::getSceneWindowOffset(ecs::SceneID id) const
+    {
+        return _coordinator->getSceneWindowOffset(id);
+    }
+
+    void setSceneWindowOffset(ecs::SceneID id, Vector2 offset)
+    {
+        Engine::getInstance()->setSceneWindowOffset(id, offset);
+    }
+
+    [[nodiscard]] Vector2 getSceneWindowOffset(ecs::SceneID id)
+    {
+        return Engine::getInstance()->getSceneWindowOffset(id);
+    }
 }
