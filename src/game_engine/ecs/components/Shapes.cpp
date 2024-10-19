@@ -17,35 +17,47 @@ namespace ecs {
             return _model;
         }
 
-        BoundingBox IShape::getBoundingBox(physics::collider_t &collider) const
+        BoundingBox IShape::getBoundingBox() const
         {
-            return collider.box;
-            BoundingBox aabb = collider.box;
-            // BoundingBox aabb = GetMeshBoundingBox(_model.meshes[0]);
-            Vector3 corners[8] = {
-                aabb.min,
-                {aabb.max.x, aabb.min.y, aabb.min.z},
-                {aabb.min.x, aabb.max.y, aabb.min.z},
-                {aabb.min.x, aabb.min.y, aabb.max.z},
-                {aabb.min.x, aabb.max.y, aabb.max.z},
-                {aabb.max.x, aabb.min.y, aabb.max.z},
-                {aabb.max.x, aabb.max.y, aabb.min.z},
-                aabb.max
-            };
-            Matrix transformMatrix = MatrixMultiply(MatrixMultiply(collider.matScale, collider.matRotate), collider.matTranslate);
-            for (int i = 0; i < 8; i++) {
-                corners[i] = Vector3Transform(corners[i], transformMatrix);
-            }
+            return BoundingBox{boundingBoxCorners[0], boundingBoxCorners[1]};
+        }
 
-            Vector3 min = corners[0];
-            Vector3 max = corners[0];
-            for (int i = 1; i < 8; i++) {
-                min = Vector3Min(min, corners[i]);
-                max = Vector3Max(max, corners[i]);
+        void IShape::drawBoundingBox(void) const
+        {
+            Matrix transform = _model.transform;
+            Vector3 transformedCorners[8] = {};
+            int index = 0;
+            for (auto corner : boundingBoxCorners) {
+                transformedCorners[index] = Vector3Transform(corner, transform);
+                index++;
             }
+            DrawLine3D(transformedCorners[0], transformedCorners[1], RED);
+            DrawLine3D(transformedCorners[1], transformedCorners[2], RED);
+            DrawLine3D(transformedCorners[2], transformedCorners[3], RED);
+            DrawLine3D(transformedCorners[3], transformedCorners[0], RED);
+            
+            DrawLine3D(transformedCorners[4], transformedCorners[5], RED);
+            DrawLine3D(transformedCorners[5], transformedCorners[6], RED);
+            DrawLine3D(transformedCorners[6], transformedCorners[7], RED);
+            DrawLine3D(transformedCorners[7], transformedCorners[4], RED);
 
-            BoundingBox obb = {min, max};
-            return obb;
+            DrawLine3D(transformedCorners[0], transformedCorners[4], RED);
+            DrawLine3D(transformedCorners[1], transformedCorners[5], RED);
+            DrawLine3D(transformedCorners[2], transformedCorners[6], RED);
+            DrawLine3D(transformedCorners[3], transformedCorners[7], RED);
+        }
+
+        void IShape::initBoundingBox(void)
+        {
+            BoundingBox AABB = GetModelBoundingBox(_model);
+            boundingBoxCorners[0] = AABB.min;
+            boundingBoxCorners[1] = AABB.max;
+            boundingBoxCorners[2] = {AABB.min.x, AABB.min.y, AABB.max.z};
+            boundingBoxCorners[3] = {AABB.min.x, AABB.max.y, AABB.min.z};
+            boundingBoxCorners[4] = {AABB.max.x, AABB.min.y, AABB.min.z};
+            boundingBoxCorners[5] = {AABB.max.x, AABB.max.y, AABB.min.z};
+            boundingBoxCorners[6] = {AABB.max.x, AABB.min.y, AABB.max.z};
+            boundingBoxCorners[7] = {AABB.min.x, AABB.max.y, AABB.max.z};
         }
 
         Cube::Cube(
@@ -65,6 +77,7 @@ namespace ecs {
             _model = LoadModelFromMesh(GenMeshCube(_width, _height, _length));
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Cube::draw(physics::transform_t &transf) const
@@ -78,6 +91,7 @@ namespace ecs {
         {
             _model = LoadModel(filename);
             _color = color;
+            initBoundingBox();
         }
 
         void Model3D::draw(physics::transform_t &transf) const
@@ -91,6 +105,7 @@ namespace ecs {
             Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
             _model = LoadModelFromMesh(cube);
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+            initBoundingBox();
         }
 
         void Skybox::draw(physics::transform_t &transf) const
