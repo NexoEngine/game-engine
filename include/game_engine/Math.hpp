@@ -8,6 +8,7 @@
 #pragma once
 
 #include "game_engine/ecs/Coordinator.hpp"
+#include "CameraHandling.hpp"
 
 namespace engine {
     namespace math {
@@ -25,8 +26,14 @@ namespace engine {
 
         Vector3 quaternionToEulerSafe(Quaternion q1);
 
+        Ray castRayFromMouse(Vector2 mousePos, std::shared_ptr<engine::core::EngineCamera> engineCamera, float nearPlane = 0.01, float farPlane = 1000.0f);
+        Ray castRayFromMouse(Vector2 mousePos, engine::core::EngineCamera engineCamera, float nearPlane = 0.01f, float farPlane = 1000.0f);
+
+        bool rayOBBCollisionFromAABBTransformed(Vector3 rayOrigin, Vector3 rayDirection, Vector3 aabbMin, Vector3 aabbMax, Matrix modelMatrix, float &intersectionDistance);
+
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const Vector2& vec);
 std::ostream& operator<<(std::ostream& os, const Vector3& vec);
 std::ostream& operator<<(std::ostream& os, const Matrix& mat);
