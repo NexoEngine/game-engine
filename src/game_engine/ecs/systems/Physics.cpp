@@ -63,13 +63,13 @@ namespace ecs {
                     }
                     if (collider1.shapeType == ecs::components::ShapeType::SPHERE || collider2.shapeType == ecs::components::ShapeType::SPHERE) {
                     } else {
-                        BoundingBox box1 = collider1.data->getBoundingBox(collider1);
-                        BoundingBox box2 = collider2.data->getBoundingBox(collider2);
-                        bool colliding = CheckCollisionBoxes(box1, box2);
-                        if (colliding) {
-                            CollisionEvent event(*it1, box1, collider1.data->getModel().transform, *it2, box2, collider2.data->getModel().transform);
-                            _coord->emitEvent<CollisionEvent>(event);
-                        }
+                        // // BoundingBox box1 = collider1.data->getBoundingBox(collider1);
+                        // // BoundingBox box2 = collider2.data->getBoundingBox(collider2);
+                        // bool colliding = CheckCollisionBoxes(box1, box2);
+                        // if (colliding) {
+                        //     CollisionEvent event(*it1, box1, collider1.data->getModel().transform, *it2, box2, collider2.data->getModel().transform);
+                        //     _coord->emitEvent<CollisionEvent>(event);
+                        // }
                     }
                 }
             }
