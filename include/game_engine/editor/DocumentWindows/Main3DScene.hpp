@@ -64,6 +64,8 @@ namespace engine::editor {
             void renderToolbar();
             void renderGizmo();
             void renderView();
+
+            void rayPicking(void);
     };
 
 } // namespace engine::editor

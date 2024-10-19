@@ -19,6 +19,7 @@
 #include <ImGuizmo.h>
 #include <rlgl.h>
 #include <loguru/loguru.hpp>
+#include <limits>
 
 #include "game_engine/ecs/components/Physics.hpp"
 #include "../../TestBehaviour.hpp"
@@ -40,6 +41,7 @@ void engine::editor::Main3DScene::setup()
 {
     setupWindow();
     setupGridShader();
+    engine::enableDebug();
 }
 
 void engine::editor::Main3DScene::shutdown()
@@ -56,9 +58,14 @@ void engine::editor::Main3DScene::show()
     {
         _viewPosition = ImGui::GetCursorScreenPos();
         _viewSize = ImGui::GetContentRegionAvail();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        Vector2 offset = {windowPos.x, windowPos.y};
+        engine::setSceneWindowOffset(_sceneID, offset);
         renderView();
         renderToolbar();
         renderGizmo();
+        if (engine::isMouseButtonDown(ecs::components::input::MouseButtons::MouseLeft) && !ImGuizmo::IsUsing())
+            rayPicking();
 
         // Draw the rest of the window contents
         _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
@@ -71,12 +78,39 @@ void engine::editor::Main3DScene::show()
     ImGui::PopStyleVar();
 }
 
+void engine::editor::Main3DScene::rayPicking()
+{
+
+    ecs::Entity hitEntity = -1;
+    float minDistance = std::numeric_limits<float>::max();
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ImVec2 mousePos = ImGui::GetMousePos();
+    Vector2 mousePosRelative = {mousePos.x - windowPos.x, mousePos.y - windowPos.y};
+    Ray ray = math::castRayFromMouse(mousePosRelative, _camera);
+
+    for (auto entity : _sceneManagerBridge.getSceneEntities(_sceneID)) {
+        BoundingBox entityBox = engine::getEntityBoundingBox(entity);
+        Matrix transformMatrix = engine::entity::getTransformMatrix(entity);
+        float intersectionDistance = 0.0f;
+        bool hit = math::rayOBBCollisionFromAABBTransformed(ray.position, ray.direction, entityBox.min, entityBox.max, transformMatrix, intersectionDistance);
+        if (hit && intersectionDistance < minDistance) {
+            hitEntity = entity;
+            minDistance = intersectionDistance;
+        }   
+    }
+
+    if (hitEntity != -1) {
+        _sceneManagerBridge.setSelectedEntity(hitEntity);
+    }
+}
+
 void engine::editor::Main3DScene::update()
 {
     if (!_opened)
         return;
     handleWindowResize();
     handleKeyEvents();
+
     _selectedEntity = _sceneManagerBridge.getSelectedEntity();
 
     // limit fps to _targetFPS with clock, frameTime in ms
