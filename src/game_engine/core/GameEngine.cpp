@@ -77,6 +77,9 @@ namespace engine
         {
             _renderSystem = _coordinator->registerSystem<ecs::system::RenderSystem>();
             _coordinator->setSystemSignature<ecs::system::RenderSystem>(signatureRender);
+
+            _renderSystemDebug = _coordinator->registerSystem<ecs::system::RenderSystemDebug>();
+            _coordinator->setSystemSignature<ecs::system::RenderSystemDebug>(signatureRender);
         }
 
         _behaviourSystem = _coordinator->registerSystem<ecs::system::BehaviourSystem>();
@@ -278,5 +281,15 @@ namespace engine
     void renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId)
     {
         Engine::getInstance()->renderTextureMode(sceneId, cameraId);
+    }
+
+    void enableDebug(void)
+    {
+        Engine::getInstance()->enableDebug();
+    }
+
+    void disableDebug(void)
+    {
+        Engine::getInstance()->disableDebug();
     }
 }

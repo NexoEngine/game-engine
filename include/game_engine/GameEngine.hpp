@@ -236,6 +236,9 @@ namespace engine {
                 _coordinator->removeEntityFromScene(entity, sceneID);
             }
 
+            void setSceneWindowOffset(ecs::SceneID id, Vector2 offset);
+            [[nodiscard]] Vector2 getSceneWindowOffset(ecs::SceneID id) const;
+
             std::shared_ptr<engine::core::EngineCamera> createCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov);
             std::shared_ptr<engine::core::EngineCamera> createMovableCamera(Vector3 pos, Vector3 target, Vector3 up, int mode, float fov);
 
@@ -251,12 +254,15 @@ namespace engine {
 
             void renderAllEntities(ecs::SceneID sceneId, core::CameraID cameraId);
             void renderGrid(ecs::SceneID sceneID, core::CameraID cameraID);
+            void enableDebug(void) { _debug = true; };
+            void disableDebug(void) {_debug = false; };
 
 
         private:
             std::shared_ptr<ecs::Coordinator> _coordinator;
             std::shared_ptr<ecs::system::PhysicsSystem> _physicSystem;
             std::shared_ptr<ecs::system::RenderSystem> _renderSystem;
+            std::shared_ptr<ecs::system::RenderSystemDebug> _renderSystemDebug;
             std::shared_ptr<ecs::system::BehaviourSystem> _behaviourSystem;
             std::shared_ptr<ecs::system::AnimationSystem> _animationSystem;
             std::shared_ptr<ecs::system::CollisionResponse> _collisionResponseSystem;
@@ -274,6 +280,8 @@ namespace engine {
             std::queue<ecs::Entity> _entitiesToDestroy;
 
             engine::core::CameraID _nextId = 0;
+
+            bool _debug = false;
 
         private:
             static Engine *engine;
@@ -302,13 +310,6 @@ namespace engine {
     void initEngine(bool disableRender = false);
 
     /**
-     * @brief Runs the game engine.
-     */
-    void runEngine();
-
-    void runEngineTextureMode(RenderTexture& ViewTexture);
-
-    /**
      * @brief Update all the systems of the engine of the entites attached to the scene
      *
      * @param sceneId Id of the scene
@@ -323,6 +324,9 @@ namespace engine {
      * @note Renders to the window
      */
     void render(ecs::SceneID sceneId, engine::core::CameraID cameraId);
+
+    void enableDebug(void);
+    void disableDebug(void);
 
     /**
     * @brief Render the entities attached to the scene based on the specified camera

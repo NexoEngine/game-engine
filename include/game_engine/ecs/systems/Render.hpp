@@ -36,5 +36,10 @@ namespace ecs {
                  */
                 void render();
         };
+
+        class RenderSystemDebug : public System {
+            public:
+                void render(ecs::SceneID sceneId, std::shared_ptr<engine::core::EngineCamera> engineCamera);
+        };
     }
 }
