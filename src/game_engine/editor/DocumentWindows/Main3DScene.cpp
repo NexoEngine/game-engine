@@ -82,7 +82,6 @@ void engine::editor::Main3DScene::update()
 
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
 
-
     if (elapsedTime < frameTimeMs)
         return;
     _sceneManagerBridge.deactivateAllScenes();
@@ -90,7 +89,6 @@ void engine::editor::Main3DScene::update()
     engine::update(_sceneID);
     engine::renderTextureMode(_sceneID, _camera->getCameraID());
     lastTime = currentTime;
-
 }
 
 void engine::editor::Main3DScene::setupWindow()
@@ -119,16 +117,17 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    //ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 4, 2, WHITE, true);
-    ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
-    ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
+    ecs::Entity cube = engine::createCube({0, 0, 0}, 5, 0.5, 5, WHITE, true);
+    // ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
+    // ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
-    _selectedEntity = model;
-    engine::addEntityToScene(model, _sceneID);
-    engine::addEntityToScene(cube2, _sceneID);
+    // _selectedEntity = model;
+    engine::addEntityToScene(cube, _sceneID);
+    // engine::addEntityToScene(model, _sceneID);
+    // engine::addEntityToScene(cube2, _sceneID);
 }
 
 void engine::editor::Main3DScene::handleWindowResize()
@@ -139,10 +138,13 @@ void engine::editor::Main3DScene::handleWindowResize()
     ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
 }
 
+typedef void (engine::editor::Main3DScene::*PrimitiveFunction)();
+
 void engine::editor::Main3DScene::renderToolbar()
 {
-    ImVec2 buttonSize = ImVec2(40, 40); // Set the desired width and height
-    float padding = 0.0f; // Set the desired padding between buttons
+    static bool chose_primitive = false;
+    ImVec2 buttonSize = ImVec2(40, 40);
+    float padding = 0.0f;
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(padding, padding));
     ImGui::SetCursorScreenPos(ImVec2(_viewPosition.x + 10, _viewPosition.y + 10));
@@ -176,8 +178,41 @@ void engine::editor::Main3DScene::renderToolbar()
     }
 
     ImGui::SameLine();
-    // make the slider not too large
-    ImGui::PushItemWidth(100); // Set width for slider
+    if (ImGui::Button(ICON_FA_CUBE, buttonSize)) {
+        ImGui::OpenPopup("add_primitive");
+    }
+
+    ImGui::SameLine();
+    if (ImGui::BeginPopup("add_primitive"))
+    {
+        const char* primitives_names[] = { "  Cube", "  Plan", "  Sphere",\
+            "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",\
+            "  Hemisphere" };
+        PrimitiveFunction add_primitive_fct[] = {
+            &Main3DScene::add_cube,
+            &Main3DScene::add_plan,
+            &Main3DScene::add_sphere,
+            &Main3DScene::add_cylinder,
+            &Main3DScene::add_cone,
+            &Main3DScene::add_polygon,
+            &Main3DScene::add_torus,
+            &Main3DScene::add_knot,
+            &Main3DScene::add_hemisphere
+        };
+        ImGui::SeparatorText(" Add primitive ");
+        for (int i = 0; i < IM_ARRAYSIZE(primitives_names); i++)
+        {
+            if (ImGui::Selectable(primitives_names[i], &chose_primitive))
+            {
+                (this->*add_primitive_fct[i])();
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::SameLine();
+    ImGui::PushItemWidth(100);
     if (ImGui::DragInt("Target FPS", &_targetFPS, 1, 1, 120)) {
         // Set target FPS
     }
@@ -230,3 +265,4 @@ bool engine::editor::Main3DScene::isWindowResized() const
 {
     return _currentWindowSize.x != _prevWindowSize.x || _currentWindowSize.y != _prevWindowSize.y;
 }
+

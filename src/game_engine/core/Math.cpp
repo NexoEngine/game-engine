@@ -7,6 +7,9 @@
 
 #include "game_engine/GameEngine.hpp"
 #include "game_engine/Math.hpp"
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 namespace engine {
     Matrix math::matrixFromFloat16(const float16& matrix)
