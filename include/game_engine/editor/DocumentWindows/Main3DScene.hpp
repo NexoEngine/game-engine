@@ -60,50 +60,50 @@ namespace engine::editor {
 
             void add_plan()
             {
-                // ecs::Entity plan = engine::createPlan({0, 0, 0}, 1, 1, WHITE, true);
-                // engine::addEntityToScene(plan, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity plan = engine::createPlane({0, 0, 0}, 1, 1, WHITE, true);
+                engine::addEntityToScene(plan, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_sphere()
             {
-                // ecs::Entity sphere = engine::createSphere({0, 0, 0}, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(sphere, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity sphere = engine::createSphere({0, 0, 0}, 1, WHITE, true);
+                engine::addEntityToScene(sphere, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_cylinder()
             {
-                // ecs::Entity cylinder = engine::createCylinder({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(cylinder, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity cylinder = engine::createCylinder({0, 0, 0}, 1, 1, WHITE, true);
+                engine::addEntityToScene(cylinder, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_cone()
             {
-                // ecs::Entity cone = engine::createCone({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(cone, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity cone = engine::createCone({0, 0, 0}, 1, 1, 1, WHITE, true);
+                engine::addEntityToScene(cone, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_polygon()
             {
-                // ecs::Entity polygon = engine::createPolygon({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(polygon, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity polygon = engine::createPolygon({0, 0, 0}, 6, 1, 1, WHITE, true);
+                engine::addEntityToScene(polygon, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_torus()
             {
-                // ecs::Entity torus = engine::createTorus({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(torus, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity torus = engine::createTorus({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
+                engine::addEntityToScene(torus, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_knot()
             {
-                // ecs::Entity knot = engine::createKnot({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(knot, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity knot = engine::createKnot({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
+                engine::addEntityToScene(knot, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_hemisphere()
             {
-                // ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
-                // engine::addEntityToScene(hemisphere, engine::editor::Main3DScene::_sceneID);
+                ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 1, 1, 1, WHITE, true);
+                engine::addEntityToScene(hemisphere, engine::editor::Main3DScene::_sceneID);
             }
 
             [[nodiscard]] bool isWindowResized() const;

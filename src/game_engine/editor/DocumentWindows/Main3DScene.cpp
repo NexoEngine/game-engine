@@ -117,7 +117,13 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    ecs::Entity cube = engine::createCube({0, 0, 0}, 5, 0.5, 5, WHITE, true);
+    ecs::Entity knot = engine::createKnot({0, 0, 0}, 1.0f, 0.5f, 16, 16, WHITE, true, BLACK);
+    //ecs::Entity torus = engine::createTorus({0, 0, 0}, 1.0f, 0.5f, 16, 16, WHITE, true, BLACK);
+    //ecs::Entity cone = engine::createCone({0, 0, 0}, 1.0f, 2.0f, 16, WHITE, true, BLACK);
+    //ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 5.0f, 16, 16, WHITE, true, BLACK);
+    // ecs::Entity polygon = engine::createPolygon({0, 0, 0}, 8, 1.0f, 1.0f, WHITE, true, BLACK);
+    // ecs::Entity cylinder = engine::createCylinder({0, 0, 0}, 3.0f, 2.0f, WHITE, true, BLACK);
+    // ecs::Entity cube = engine::createCube({0, 0, 0}, 5, 0.5, 5, WHITE, true);
     // ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
     // ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
@@ -125,7 +131,8 @@ void engine::editor::Main3DScene::loadEntities()
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
     // _selectedEntity = model;
-    engine::addEntityToScene(cube, _sceneID);
+    engine::addEntityToScene(knot, _sceneID);
+    // engine::addEntityToScene(cube, _sceneID);
     // engine::addEntityToScene(model, _sceneID);
     // engine::addEntityToScene(cube2, _sceneID);
 }
