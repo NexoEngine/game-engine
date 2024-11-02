@@ -25,6 +25,9 @@ namespace ecs {
                 ModelAnimation *anims; ///< Pointer to an array of ModelAnimation objects.
                 int animFrameCounter; ///< Counter for the current frame of the animation.
                 Model model; ///< The model to which these animations apply.
+
+                // TODO: this serialization is incomplete, just temporary for tests
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(animation_s, animsCount, animFrameCounter)
             } animation_t;
 
         }

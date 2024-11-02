@@ -13,6 +13,8 @@ namespace ecs {
             typedef struct network_s {
                 uint32_t entityNetId;
                 uint32_t connectionId;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(network_s, entityNetId, connectionId)
             } network_t;
         }
     }

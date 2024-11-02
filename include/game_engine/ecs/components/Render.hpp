@@ -28,6 +28,9 @@ namespace ecs {
                 ShapeType type; ///< The type of the shape to be rendered.
                 bool isRendered; ///< Flag indicating if the entity should be rendered.
                 std::shared_ptr<components::IShape> data; ///< Shared pointer to the shape data used for rendering.
+
+                // TODO: this serialization is incomplete, just temporary for tests
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(render_s, type, isRendered)
             } render_t;
 
         }

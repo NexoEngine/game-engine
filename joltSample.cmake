@@ -1,3 +1,17 @@
+#### joltSample.cmake #########################################################
+#
+#  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+#  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+#  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+#  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+#  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+#
+#  Author:      Mehdy MORVAN
+#  Date:        19/10/2024
+#  Description: CMake script for the sampleJolt project.
+#
+###############################################################################
+
 cmake_minimum_required(VERSION 3.17)
 
 project(sampleJolt)

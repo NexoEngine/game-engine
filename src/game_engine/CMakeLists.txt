@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(game_engine)
 
 set(SRCS
+    src/common/raylib_json.cpp
     src/game_engine/Editor.cpp
     src/game_engine/editor/save/Memento.cpp
     src/game_engine/editor/GameEngineEditor.cpp
@@ -120,10 +121,10 @@ endif()
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(game-engine PRIVATE imguizmo)
 
-# Find reflect-cpp package
-find_package(reflectcpp CONFIG QUIET)
-target_link_libraries(game-engine PRIVATE reflectcpp)
-include_directories(${reflectcpp_INCLUDE_DIRS})
+# Find nlohmann-json package
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(game-engine PRIVATE nlohmann_json::nlohmann_json)
+include_directories(${nlohmann_json_INCLUDE_DIRS})
 
 # Linking the libraries
 target_link_libraries(game-engine PRIVATE raylib imgui::imgui rlimgui)

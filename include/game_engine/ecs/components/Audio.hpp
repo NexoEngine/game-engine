@@ -8,7 +8,6 @@
 #pragma once
 
 #include "my_raylib.h"
-#include <string>
 
 namespace ecs {
     namespace components {
@@ -16,6 +15,8 @@ namespace ecs {
             struct AudioSource {
                 Sound sound;
                 bool isLooping;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(AudioSource, sound, isLooping)
             };
 
             struct MusicSource {
@@ -24,6 +25,8 @@ namespace ecs {
                 bool isPaused;
                 bool resume;
                 bool stop;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(MusicSource, music, isLooping, isPaused, resume, stop)
             };
         }
     }

@@ -12,6 +12,8 @@ namespace ecs {
         namespace health {
             typedef struct health_s {
                 uint32_t healthPoints;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(health_s, healthPoints)
             } health_t;
         }
     }

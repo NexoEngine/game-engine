@@ -11,6 +11,9 @@
 #include "raymath.h"
 #include <iostream>
 #include <vector>
+#include <save/IOriginator.hpp>
+#include <nlohmann/json.hpp>
+#include <save/ASerializableMemento.hpp>
 
 namespace ecs {
     namespace components {
@@ -47,6 +50,32 @@ namespace ecs {
             MODEL,
         };
 
+        NLOHMANN_JSON_SERIALIZE_ENUM(ShapeType,
+        {
+            {ShapeType::CUBE, "CUBE"},
+            {ShapeType::LINE, "LINE"},
+            {ShapeType::POINT, "POINT"},
+            {ShapeType::CIRCLE, "CIRCLE"},
+            {ShapeType::TRIANGLE, "TRIANGLE"},
+            {ShapeType::TRIANGLE_STRIP, "TRIANGLE_STRIP"},
+            {ShapeType::SPHERE, "SPHERE"},
+            {ShapeType::CYLINDER, "CYLINDER"},
+            {ShapeType::CAPSULE, "CAPSULE"},
+            {ShapeType::PLANE, "PLANE"},
+            {ShapeType::GRID, "GRID"},
+            {ShapeType::MODEL, "MODEL"},
+        })
+
+        /*class IShape;
+        template <class ShapeMemento>
+        struct AShapeMemento : engine::save::ASerializableMemento {
+            ShapeType shapeType;
+             shape;
+
+            [[nodiscard]] engine::save::json serialize() const override;
+            void deserialize(const engine::save::json& data) override;
+        };*/
+
         /**
          * @class IShape
          * @brief Interface for shape components used in rendering entities.
@@ -55,7 +84,7 @@ namespace ecs {
          * used interchangeably in the rendering system. Each shape should implement its own
          * drawing logic.
          */
-        class IShape {
+        class IShape : public engine::save::IMemento {
             public:
                 ~IShape() = default;
                 /**

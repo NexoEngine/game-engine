@@ -35,6 +35,16 @@
 #include <utility>
 
 namespace engine {
+
+    struct ecs::CoordinatorMemento;
+    struct EngineMemento : save::ASerializableMemento {
+		std::shared_ptr<ecs::CoordinatorMemento> coordinatorMemento;
+
+		NEXO_SERIALIZABLE_FIELDS(
+			coordinatorMemento
+		)
+    };
+
     /**
      * @class Engine
      * @brief Main engine class responsible for initializing and managing game components.
@@ -43,7 +53,7 @@ namespace engine {
      * of various systems like physics, rendering, behaviors, and animations. It also manages entities
      * and provides interfaces to interact with the ECS Coordinator.
      */
-    class Engine {
+    class Engine : public save::IOriginator<EngineMemento> {
         public:
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
@@ -251,6 +261,17 @@ namespace engine {
 
             void startRendering(ecs::SceneID sceneID, core::CameraID cameraID);
             void endRendering(ecs::SceneID sceneID);
+            // Memento
+            [[nodiscard]] std::shared_ptr<EngineMemento> saveMemento() const override
+            {
+				auto memento = std::make_shared<EngineMemento>();
+				memento->coordinatorMemento = _coordinator->saveMemento();
+				return memento;
+            }
+            void restoreMemento(const EngineMemento& memento) override
+            {
+				_coordinator->restoreMemento(*memento.coordinatorMemento);
+            }
 
             void renderAllEntities(ecs::SceneID sceneId, core::CameraID cameraId);
             void renderGrid(ecs::SceneID sceneID, core::CameraID cameraID);
@@ -289,7 +310,7 @@ namespace engine {
 
         protected:
             Engine() {};
-            ~Engine() {};
+            ~Engine() = default;
 
         public:
             Engine(Engine &other) = delete;

@@ -1,9 +1,16 @@
-/*
-** EPITECH PROJECT, 2024
-** server
-** File description:
-** GameEngineEditor.cpp
-*/
+//// GameEngineEditor.cpp /////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Guillaume HEIN
+//  Date:        20/10/2024
+//  Description: GameEngineEditor class definition.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #define IMGUI_ENABLE_FREETYPE
 
@@ -25,12 +32,13 @@
 
 #include "raylib.h"
 #include "loguru/loguru.hpp"
-
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <ImGuizmo.h>
 #include <string>
+#include <ostream>
 
 std::string formatString(const char* format, va_list args) {
 	// Copy of va_list for the second pass, as va_list can't be reused
@@ -104,6 +112,18 @@ void engine::editor::GameEngineEditor::addLog(const engine::editor::LogMessage& 
 const std::vector<engine::editor::LogMessage>& engine::editor::GameEngineEditor::getLogs() const
 {
 	return _logs;
+}
+
+void engine::editor::GameEngineEditor::restoreMemento(const GameEngineEditorMemento& memento)
+{
+	_logs = memento.logs;
+}
+
+std::shared_ptr<engine::editor::GameEngineEditorMemento> engine::editor::GameEngineEditor::saveMemento() const
+{
+    auto memento = std::make_shared<GameEngineEditorMemento>();
+    memento->logs = _logs;
+	return memento;
 }
 
 void engine::editor::GameEngineEditor::loguruCallback([[maybe_unused]] void *user_data, const loguru::Message& message)
@@ -290,6 +310,15 @@ void engine::editor::GameEngineEditor::destroy()
 	for (const auto& [_, window]: _windows) {
 		window->shutdown();
 	}
+    // Save GameEngineEditor state to file
+
+    auto memento = saveMemento();
+    save::json data = memento;
+    std::ofstream file("GameEngineEditor.json", std::ios::out | std::ios::binary);
+    auto msg = save::json::to_msgpack(data);
+	file.write(reinterpret_cast<const char*>(msg.data()), msg.size());
+
+    file.close();
 }
 
 void engine::editor::GameEngineEditor::registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window)

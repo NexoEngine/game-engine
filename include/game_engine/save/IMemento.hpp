@@ -7,7 +7,18 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 namespace engine::save {
+
+	using json = nlohmann::json;
+
+	template <typename T>
+	concept JSONSerializable = requires(const T& t)
+	{
+		{ to_json(t) } -> std::same_as<json>;
+		{ from_json(t, json()) } -> std::same_as<T>;
+	};
 
     /**
 	 * @class IMemento

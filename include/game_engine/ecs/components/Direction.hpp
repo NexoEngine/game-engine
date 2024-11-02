@@ -14,6 +14,8 @@ namespace ecs {
         namespace direction {
             typedef struct direction_s {
                 Vector3 direction;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(direction_s, direction)
             } direction_t;
         }
     }

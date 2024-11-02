@@ -16,6 +16,14 @@
 #include "Scene.hpp"
 
 namespace ecs {
+
+    struct components::ComponentManagerMemento;
+    struct CoordinatorMemento : engine::save::ASerializableMemento {
+		std::shared_ptr<components::ComponentManagerMemento> componentManagerMemento;
+
+        NEXO_SERIALIZABLE_FIELDS(componentManagerMemento)
+    };
+
     /**
      * @class Coordinator
      *
@@ -25,7 +33,7 @@ namespace ecs {
      * ComponentManager, and SystemManager to facilitate the creation, management,
      * and interaction of entities, components, and systems within the ECS framework.
      */
-    class Coordinator {
+    class Coordinator : public engine::save::IOriginator<CoordinatorMemento> {
         public:
             /**
             * @brief Initializes the Coordinator, creating instances of EntityManager,
@@ -336,6 +344,18 @@ namespace ecs {
             [[nodicard]] Vector2 getSceneWindowOffset(ecs::SceneID id) const
             {
                 return _sceneManager->getWindowOffset(id);
+            }
+
+            [[nodiscard]] std::shared_ptr<CoordinatorMemento> saveMemento() const override
+            {
+				auto memento = std::make_shared<CoordinatorMemento>();
+				memento->componentManagerMemento = _componentManager->saveMemento();
+				return memento;
+            }
+
+            void restoreMemento(const CoordinatorMemento& memento) override
+            {
+				_componentManager->restoreMemento(*memento.componentManagerMemento);
             }
 
         private:

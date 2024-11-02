@@ -9,16 +9,19 @@
 
 #include <cstdint>
 #include <array>
+#include <iostream>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
 
 #include "Entity.hpp"
 #include "game_engine/save/IOriginator.hpp"
+#include "game_engine/save/ASerializableMemento.hpp"
 
-#include <rfl/json.hpp>
-#include <rfl.hpp>
 #include "loguru/loguru.hpp"
+#include <nlohmann/json.hpp>
+#include <fstream>
+
 
 namespace ecs {
     using Entity = std::uint32_t;
@@ -28,6 +31,58 @@ namespace ecs {
         using ComponentType = std::uint8_t;
 
         const ComponentType MAX_COMPONENT_TYPE = 32;
+
+        template<typename T>
+        struct ComponentArrayMemento : engine::save::ASerializableMemento {
+            std::array<T, MAX_ENTITIES> componentArray;
+            std::unordered_map<Entity, size_t> entityToIndexMap;
+            std::unordered_map<size_t, Entity> indexToEntityMap;
+            size_t size{};
+
+			[[nodiscard]] engine::save::json serialize() const final {
+			    if constexpr (!engine::save::JSONSerializable<T>) {
+			        //TODO: add warning log here
+			        std::cout << "ComponentArrayMemento<" << typeid(T).name() << "> serialize" << std::endl;
+			        return {};
+                } else {
+                    LOG_F(INFO, "ComponentArrayMemento<T> serialize");
+                    engine::save::json data = {
+                        { "size", size }
+                    };
+
+                    for (const auto& [key, value] : entityToIndexMap) {
+                        data["entityToIndexMap"][std::to_string(key)] = value;
+                    }
+
+                    for (const auto& [key, value] : indexToEntityMap) {
+                        data["indexToEntityMap"][key] = value;
+                    }
+
+                    // TODO: complete this
+                    for (size_t i = 0; i < size; i++) {
+                        data["componentArray"][i] = componentArray[i];
+                    }
+
+                    return data;
+                }
+			}
+
+			void deserialize(const engine::save::json& data) final {
+				data.at("size").get_to(size);
+
+				for (const auto& [key, value] : data.at("entityToIndexMap").items()) {
+					entityToIndexMap[std::stoul(key)] = value;
+				}
+
+				for (const auto& [key, value] : data.at("indexToEntityMap").items()) {
+					indexToEntityMap[std::stoul(key)] = value;
+				}
+
+				/*for (size_t i = 0; i < size; i++) {
+                    componentArray[i] = *data.at("componentArray").at(i).get<T>();
+				}*/
+			}
+		};
 
         /**
         * @class IComponentArray
@@ -44,14 +99,6 @@ namespace ecs {
                 virtual void entityDestroyed(Entity entity) = 0;
         };
 
-        template<typename T>
-        struct ComponentArrayMemento : public engine::save::IMemento {
-            //std::array<T, MAX_ENTITIES> componentArray;
-            std::unordered_map<Entity, size_t> entityToIndexMap;
-            std::unordered_map<size_t, Entity> indexToEntityMap;
-            size_t size;
-        };
-
         /**
         * @class ComponentArray<T>
         *
@@ -63,16 +110,8 @@ namespace ecs {
         * @tparam T - The type of the component this array will manage.
         */
         template<typename T>
-        class ComponentArray :
-            public IComponentArray,
-            public engine::save::IOriginator<ComponentArrayMemento<T>> {
+        class ComponentArray : public IComponentArray, public engine::save::IOriginator<ComponentArrayMemento<T>> {
             public:
-                ~ComponentArray() override {
-                    auto memento = saveMemento();
-                    const auto out = rfl::json::write("memento");
-                    LOG_F(INFO, "ComponentArray<T> destructor: %s", out.c_str());
-                }
-
                 /**
                 * @brief Inserts a component for a specific entity.
                 *
@@ -133,18 +172,18 @@ namespace ecs {
                 }
 
                 void restoreMemento(const ComponentArrayMemento<T> &memento) override {
-                    //_componentArray = memento.componentArray;
+                    _componentArray = memento.componentArray;
                     _entityToIndexMap = memento.entityToIndexMap;
                     _indexToEntityMap = memento.indexToEntityMap;
                     _size = memento.size;
                 }
 
-                ComponentArrayMemento<T> saveMemento() const override {
-                    ComponentArrayMemento<T> memento;
-                    //memento.componentArray = _componentArray;
-                    memento.entityToIndexMap = _entityToIndexMap;
-                    memento.indexToEntityMap = _indexToEntityMap;
-                    memento.size = _size;
+                std::shared_ptr<ComponentArrayMemento<T>> saveMemento() const override {
+                    auto memento = std::make_shared<ComponentArrayMemento<T>>();
+                    memento->componentArray = _componentArray;
+                    memento->entityToIndexMap = _entityToIndexMap;
+                    memento->indexToEntityMap = _indexToEntityMap;
+                    memento->size = _size;
                     return memento;
                 }
             private:
@@ -157,6 +196,32 @@ namespace ecs {
                 size_t _size{};
         };
 
+		struct ComponentManagerMemento : engine::save::ASerializableMemento {
+			std::unordered_map<std::type_index, ComponentType> componentTypes;
+			std::unordered_map<std::type_index, std::shared_ptr<ComponentArrayMemento<std::any>>> componentArrays;
+			ComponentType nextComponentType{};
+
+            [[nodiscard]] engine::save::json serialize() const final {
+                engine::save::json data = {
+                    { "nextComponentType", nextComponentType } 
+                }; 
+
+				for (const auto& [key, value] : componentTypes) {
+					data["componentTypes"][key.name()] = value;
+				}
+
+				for (const auto& [key, value] : componentArrays) {
+					data["componentArrays"][key.name()] = value->serialize();
+				}
+                return data;
+            }
+            void deserialize(const engine::save::json& data) final {
+
+
+                //data.at("componentTypes").get_to(componentTypes); data.at("componentArrays").get_to(componentArrays); data.at("nextComponentType").get_to(nextComponentType);
+            }
+		};
+
         /**
         * @class ComponentManager
         *
@@ -166,7 +231,7 @@ namespace ecs {
         * It allows the registration of component types, adding and removing components to entities, and 
         * accessing components of entities.
         */
-        class ComponentManager {
+        class ComponentManager : public engine::save::IOriginator<ComponentManagerMemento> {
             public:
                 /**
                 * @brief Registers a new component type in the system.
@@ -244,6 +309,24 @@ namespace ecs {
                         component->entityDestroyed(entity);
                     }
                 }
+
+                void restoreMemento(const ComponentManagerMemento& memento) override {
+                    _componentTypes = memento.componentTypes;
+                    _nextComponentType = memento.nextComponentType;
+                }
+
+				std::shared_ptr<ComponentManagerMemento> saveMemento() const override {
+					auto memento = std::make_shared<ComponentManagerMemento>();
+					memento->componentTypes = _componentTypes;
+                    memento->nextComponentType = _nextComponentType;
+                    for (const auto& [key, value] : _componentArrays) {
+                        const auto castedValue = std::static_pointer_cast<ComponentArray<std::any>>(value);
+						memento->componentArrays[key] = castedValue->saveMemento();
+                    }
+					return memento;
+				}
+
+
             private:
                 std::unordered_map<std::type_index, ComponentType> _componentTypes{};
                 std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> _componentArrays;
@@ -260,7 +343,7 @@ namespace ecs {
                     std::type_index typeName(typeid(T));
 
                     assert(_componentTypes.find(typeName) != _componentTypes.end() && "Component not registered before use.");
-
+                    
                     return std::static_pointer_cast<ComponentArray<T>>(_componentArrays[typeName]);
 
                 }

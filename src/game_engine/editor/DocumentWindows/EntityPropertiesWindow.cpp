@@ -13,7 +13,6 @@
 
 #include "game_engine/ecs/components/Physics.hpp"
 #include "game_engine/GameEngine.hpp"
-#include "../../TestBehaviour.hpp"
 
 #include "game_engine/editor/DocumentWindows/EntityProperties/TransformProperty.hpp"
 #include "game_engine/editor/DocumentWindows/EntityProperties/RenderProperty.hpp"

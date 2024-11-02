@@ -22,8 +22,6 @@
 #include <limits>
 
 #include "game_engine/ecs/components/Physics.hpp"
-#include "../../TestBehaviour.hpp"
-
 class input;
 
 engine::editor::Main3DScene::Main3DScene()

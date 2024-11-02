@@ -8,10 +8,12 @@
 #pragma once
 
 #include "my_raylib.h"
-
+#include "raylib_json.hpp"
 #include "./Shapes.hpp"
+#include "game_engine/save/ASerializableMemento.hpp"
 
 #include <memory>
+#include <save/IOriginator.hpp>
 
 namespace ecs {
     namespace components {
@@ -28,6 +30,8 @@ namespace ecs {
                 Vector3 pos{}; ///< Position of the entity in 3D space.
                 Vector3 rotation{}; ///< Rotation of the entity around the x, y, and z axes.
                 Vector3 scale = {1, 1 ,1}; ///< Scale of the entity in 3D space.
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(transform_s, pos, rotation, scale)
             } transform_t;
 
             /**
@@ -42,6 +46,8 @@ namespace ecs {
                 Vector3 velocity; ///< Current velocity of the entity.
                 Vector3 force; ///< Current force acting on the entity.
                 double velocityLastUpdate; ///< Timestamp of the last velocity update.
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(rigidBody_s, mass, velocity, force, velocityLastUpdate)
             } rigidBody_t;
 
             /**
@@ -53,6 +59,13 @@ namespace ecs {
                 LOOTABLE, ///< Item can be collected or interacted with.
                 NON_COLLIDE ///< Item does not collide with other entities.
             };
+
+            NLOHMANN_JSON_SERIALIZE_ENUM(CollisionType,
+            {
+                {CollisionType::COLLIDE, "COLLIDE"},
+                {CollisionType::LOOTABLE, "LOOTABLE"},
+                {CollisionType::NON_COLLIDE, "NON_COLLIDE"}
+            })
 
             /**
              * @struct collider_t
@@ -71,7 +84,11 @@ namespace ecs {
                 Matrix matRotate; ///< Matrix for rotation transformations.
                 Matrix matScale; ///< Matrix for scaling transformations.
                 Matrix matTranslate; ///< Matrix for translation transformations.
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE(collider_s, shapeType, collisionType, box, vertsGlobal, matRotate, matScale, matTranslate)
             } collider_t;
+
+
 
         }
     }

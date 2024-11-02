@@ -1,17 +1,16 @@
-/*** Editor.cpp ***************************************************************
-*
-*  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
-*  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
-*  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
-*  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
-*  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
-*
-*  Author:      Guillaume Hein
-*  Date:        03/01/2024
-*  Description: This is the main entry point for the game engine editor.
-*               It creates the editor and runs the main engine loop.
-*
-******************************************************************************/
+//// Editor.cpp ///////////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Guillaume HEIN
+//  Date:        19/10/2024
+//  Description: Main entry point for the game engine editor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #define IMGUI_ENABLE_FREETYPE
 
@@ -30,6 +29,8 @@
 
 #include <iostream>
 #include <thread>
+
+#include <fstream>
 
 int main(int argc, char* argv[])
 {
@@ -54,6 +55,9 @@ int main(int argc, char* argv[])
         std::chrono::duration<double, std::milli> elapsed = end - start;
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
 	}
-
+    editor.destroy();
+	auto engineMemento = engine::Engine::getInstance()->saveMemento();
+	std::ofstream file("engine.json");
+	file << engineMemento->serialize();
 	return 0;
 }

@@ -12,7 +12,6 @@
 
 #include "game_engine/ecs/components/Physics.hpp"
 #include "game_engine/GameEngine.hpp"
-#include "../../TestBehaviour.hpp"
 
 namespace engine::editor {
 
