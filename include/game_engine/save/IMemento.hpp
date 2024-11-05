@@ -14,10 +14,9 @@ namespace engine::save {
 	using json = nlohmann::json;
 
 	template <typename T>
-	concept JSONSerializable = requires(const T& t)
-	{
-		{ to_json(t) } -> std::same_as<json>;
-		{ from_json(t, json()) } -> std::same_as<T>;
+	concept JSONSerializable = requires(T obj, json& j) {
+		{ to_json(j, obj) } -> std::same_as<void>;
+		{ from_json(j, obj) } -> std::same_as<void>;
 	};
 
     /**

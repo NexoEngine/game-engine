@@ -36,15 +36,6 @@
 
 namespace engine {
 
-    struct ecs::CoordinatorMemento;
-    struct EngineMemento : save::ASerializableMemento {
-		std::shared_ptr<ecs::CoordinatorMemento> coordinatorMemento;
-
-		NEXO_SERIALIZABLE_FIELDS(
-			coordinatorMemento
-		)
-    };
-
     /**
      * @class Engine
      * @brief Main engine class responsible for initializing and managing game components.
@@ -53,7 +44,7 @@ namespace engine {
      * of various systems like physics, rendering, behaviors, and animations. It also manages entities
      * and provides interfaces to interact with the ECS Coordinator.
      */
-    class Engine : public save::IOriginator<EngineMemento> {
+    class Engine {
         public:
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
@@ -279,6 +270,10 @@ namespace engine {
             void disableDebug(void) {_debug = false; };
 
 
+        
+            // Save system
+            engine::save::json saveEntityComponents(ecs::Entity entity) const;
+			void loadEntityComponents(ecs::Entity entity, const engine::save::json& data);
         private:
             std::shared_ptr<ecs::Coordinator> _coordinator;
             std::shared_ptr<ecs::system::PhysicsSystem> _physicSystem;
@@ -358,4 +353,4 @@ namespace engine {
     * See camera.getRenderTexture()
     */
     void renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId);
-}
+} // namespace engine

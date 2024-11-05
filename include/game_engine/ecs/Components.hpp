@@ -40,31 +40,24 @@ namespace ecs {
             size_t size{};
 
 			[[nodiscard]] engine::save::json serialize() const final {
-			    if constexpr (!engine::save::JSONSerializable<T>) {
-			        //TODO: add warning log here
-			        std::cout << "ComponentArrayMemento<" << typeid(T).name() << "> serialize" << std::endl;
-			        return {};
-                } else {
-                    LOG_F(INFO, "ComponentArrayMemento<T> serialize");
-                    engine::save::json data = {
-                        { "size", size }
-                    };
+				//static_assert(engine::save::JSONSerializable<T>, "T must be JSONSerializable");
+                engine::save::json data = {
+                    { "size", size }
+                };
 
-                    for (const auto& [key, value] : entityToIndexMap) {
-                        data["entityToIndexMap"][std::to_string(key)] = value;
-                    }
-
-                    for (const auto& [key, value] : indexToEntityMap) {
-                        data["indexToEntityMap"][key] = value;
-                    }
-
-                    // TODO: complete this
-                    for (size_t i = 0; i < size; i++) {
-                        data["componentArray"][i] = componentArray[i];
-                    }
-
-                    return data;
+                for (const auto& [key, value] : entityToIndexMap) {
+                    data["entityToIndexMap"][std::to_string(key)] = value;
                 }
+
+                for (const auto& [key, value] : indexToEntityMap) {
+                    data["indexToEntityMap"][key] = value;
+                }
+
+                // TODO: remove this
+                //for (size_t i = 0; i < size; i++) {
+                //    data["componentArray"][i] = componentArray[i];
+                //}
+				return data;
 			}
 
 			void deserialize(const engine::save::json& data) final {
@@ -119,8 +112,12 @@ namespace ecs {
                 * @param component - The component to add.
                 */
                 void insertData(Entity entity, T component) {
-                    assert(_entityToIndexMap.find(entity) == _entityToIndexMap.end() && "Component added to same entity more than once.");
-
+                    // TODO: do we want to enable overriding?
+                    //assert(_entityToIndexMap.find(entity) == _entityToIndexMap.end() && "Component added to same entity more than once.");
+					if (_entityToIndexMap.find(entity) != _entityToIndexMap.end()) {
+						_componentArray[_entityToIndexMap[entity]] = component;
+						return;
+					}
                     size_t newIndex = _size;
                     _entityToIndexMap[entity] = newIndex;
                     _indexToEntityMap[newIndex] = entity;
@@ -231,7 +228,7 @@ namespace ecs {
         * It allows the registration of component types, adding and removing components to entities, and 
         * accessing components of entities.
         */
-        class ComponentManager : public engine::save::IOriginator<ComponentManagerMemento> {
+        class ComponentManager {
             public:
                 /**
                 * @brief Registers a new component type in the system.
@@ -265,6 +262,18 @@ namespace ecs {
 
                     return _componentTypes[typeName];
                 }
+
+                /**
+				* @brief Retrieves the ComponentType ID for a specific component type.
+                * 
+				* @param typeName - The type_index of the component type.
+				* @return ComponentType - The unique ID associated with the component type.
+                */
+				ComponentType getComponentType(std::type_index typeName) {
+					assert(_componentTypes.find(typeName) != _componentTypes.end() && "Component not registered before use.");
+
+					return _componentTypes[typeName];
+				}
 
                 /**
                 * @brief Adds a component of a specific type to an entity.
@@ -310,12 +319,14 @@ namespace ecs {
                     }
                 }
 
-                void restoreMemento(const ComponentManagerMemento& memento) override {
+				template <typename T>
+                void restoreMemento(const T& memento) {
                     _componentTypes = memento.componentTypes;
                     _nextComponentType = memento.nextComponentType;
                 }
 
-				std::shared_ptr<ComponentManagerMemento> saveMemento() const override {
+				template <typename T>
+				std::shared_ptr<T> saveMemento() const {
 					auto memento = std::make_shared<ComponentManagerMemento>();
 					memento->componentTypes = _componentTypes;
                     memento->nextComponentType = _nextComponentType;

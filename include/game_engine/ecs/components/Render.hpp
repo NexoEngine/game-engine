@@ -30,7 +30,7 @@ namespace ecs {
                 std::shared_ptr<components::IShape> data; ///< Shared pointer to the shape data used for rendering.
 
                 // TODO: this serialization is incomplete, just temporary for tests
-                NLOHMANN_DEFINE_TYPE_INTRUSIVE(render_s, type, isRendered)
+                //NLOHMANN_DEFINE_TYPE_INTRUSIVE(render_s, type, isRendered)
             } render_t;
 
         }

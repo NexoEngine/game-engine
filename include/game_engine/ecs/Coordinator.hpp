@@ -14,15 +14,9 @@
 #include "../core/event/Event.hpp"
 #include "SingletonComponent.hpp"
 #include "Scene.hpp"
+#include "game_engine/save/SaveManager.hpp"
 
 namespace ecs {
-
-    struct components::ComponentManagerMemento;
-    struct CoordinatorMemento : engine::save::ASerializableMemento {
-		std::shared_ptr<components::ComponentManagerMemento> componentManagerMemento;
-
-        NEXO_SERIALIZABLE_FIELDS(componentManagerMemento)
-    };
 
     /**
      * @class Coordinator
@@ -33,7 +27,7 @@ namespace ecs {
      * ComponentManager, and SystemManager to facilitate the creation, management,
      * and interaction of entities, components, and systems within the ECS framework.
      */
-    class Coordinator : public engine::save::IOriginator<CoordinatorMemento> {
+    class Coordinator {
         public:
             /**
             * @brief Initializes the Coordinator, creating instances of EntityManager,
@@ -47,6 +41,7 @@ namespace ecs {
                 _eventManager = std::make_shared<ecs::event::EventManager>();
                 _singletonComponentManager = std::make_shared<ecs::SingletonComponentManager>();
                 _sceneManager = std::make_shared<ecs::SceneManager>();
+				_saveManager = std::make_shared<engine::save::SaveManager>();
             }
 
             /**
@@ -83,6 +78,37 @@ namespace ecs {
 
                 _getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
                     return std::any(this->getComponent<T>(entity));
+                };
+
+              
+                _getComponentSerializer[typeid(T)] = ComponentSerializerWrapper<std::any> {
+                    [](const std::any& component) -> engine::save::json {
+						if constexpr (engine::save::JSONSerializable<T>) {
+							engine::save::json json;
+                            to_json(json, std::any_cast<T>(component));
+							return json;
+                        } else {
+							LOG_F(ERROR, "Component %s is not serializable", typeid(T).name());
+                            return {};
+                        }
+                    },
+                    [](const engine::save::json& json) -> std::shared_ptr<std::any> {
+						if constexpr (engine::save::JSONSerializable<T>) {
+							auto component = std::make_shared<T>();
+							from_json(json, *component);
+							return std::make_shared<std::any>(std::any(*component));
+                        } else {
+                            LOG_F(ERROR, "Component %s is not deserializable", typeid(T).name());
+							return nullptr;
+                        }
+                    },
+					[this](Entity entity, std::shared_ptr<std::any> component) {
+                        if (component == nullptr) {
+							LOG_F(ERROR, "Couldn't load %s", typeid(T).name());
+                            return;
+                        }
+						this->addComponent<T>(entity, std::any_cast<T>(*component));
+					}
                 };
             }
 
@@ -185,6 +211,16 @@ namespace ecs {
             components::ComponentType getComponentType() {
                 return _componentManager->getComponentType<T>();
             }
+
+            /**
+			* @brief Gets the component type ID for a specific component type.
+            * 
+			* @param type The type of the component
+			* @return components::ComponentType The ID of the component type
+            */
+			components::ComponentType getComponentType(std::type_index type) {
+				return _componentManager->getComponentType(type);
+			}
 
             /**
             * @brief Registers a new system within the SystemManager.
@@ -353,9 +389,41 @@ namespace ecs {
 				return memento;
             }
 
-            void restoreMemento(const CoordinatorMemento& memento) override
+            /**
+			* @brief Save an entity's components to JSON
+            * 
+			* @param entity The entity to save the components of
+			* @return engine::save::json The JSON object containing the entity's components
+            */
+			engine::save::json saveEntityComponents(Entity entity)
+			{
+				engine::save::json json;
+				for (auto& [type, func] : _hasComponentFunctions) {
+                    if (!func(entity))
+                        continue;
+					auto component = _getComponentFunctions[type](entity);
+					auto serializer = _getComponentSerializer[type];
+                    json[getComponentType(type)] = serializer.serialize(component);
+				}
+				return json;
+			}
+
+            /**
+			* @brief Load an entity's components from JSON
+            * 
+			* @param entity The entity to load the components of
+			* @param json The JSON object containing the entity's components
+            */
+            void loadEntityComponents(Entity entity, const engine::save::json& json)
             {
-				_componentManager->restoreMemento(*memento.componentManagerMemento);
+				for (auto& [type, func] : _hasComponentFunctions) {
+                    if (!func(entity))
+                        continue;
+                    auto componentJson = json.at(getComponentType(type));
+					auto serializer = _getComponentSerializer[type];
+					auto componentDeserialized = serializer.deserialize(componentJson);
+					serializer.updateEntityComponent(entity, componentDeserialized);
+				}
             }
 
         private:
@@ -377,11 +445,17 @@ namespace ecs {
             std::shared_ptr<ecs::event::EventManager> _eventManager;
             std::shared_ptr<ecs::SingletonComponentManager> _singletonComponentManager;
             std::shared_ptr<ecs::SceneManager> _sceneManager;
+			std::shared_ptr<engine::save::SaveManager> _saveManager;
 
             std::unordered_map<std::type_index, std::function<bool(Entity)>> _hasComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> _getComponentFunctions;
+
+			template <typename T>
+			struct ComponentSerializerWrapper {
+				std::function<engine::save::json (const T& component)> serialize;
+				std::function<std::shared_ptr<T> (const engine::save::json& json)> deserialize;
+				std::function<void(Entity entity, std::shared_ptr<T> component)> updateEntityComponent;
+			};
+			std::unordered_map<std::type_index, ComponentSerializerWrapper<std::any>> _getComponentSerializer;
     };
 }
-
-
-

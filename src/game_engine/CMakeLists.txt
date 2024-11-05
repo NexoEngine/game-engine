@@ -21,6 +21,7 @@ set(SRCS
     src/game_engine/core/CameraHandling.cpp
     src/game_engine/core/EntityHandling.cpp
     src/game_engine/core/EventHandling.cpp
+    src/game_engine/core/SaveHandling.cpp
     src/game_engine/core/SceneHandling.cpp
     src/game_engine/core/LightHandling.cpp
     src/game_engine/core/Rendering.cpp

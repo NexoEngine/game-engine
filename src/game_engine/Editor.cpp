@@ -26,6 +26,7 @@
 #include "game_engine/GameEngine.hpp"
 
 #include "game_engine/editor/GameEngineEditor.hpp"
+#include "game_engine/SaveHandling.hpp"
 
 #include <iostream>
 #include <thread>
@@ -45,6 +46,9 @@ int main(int argc, char* argv[])
 	editor.init();
 
 	// Main game loop
+	//std::ifstream file("save.json");
+	//engine::save::json json = engine::save::json::parse(file);
+	//engine::loadEntityComponents(0, json);
 	while (editor.isOpen())    // Detect window close button or ESC key
 	{
         auto start = std::chrono::high_resolution_clock::now();
@@ -56,8 +60,13 @@ int main(int argc, char* argv[])
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
 	}
     editor.destroy();
-	auto engineMemento = engine::Engine::getInstance()->saveMemento();
-	std::ofstream file("engine.json");
-	file << engineMemento->serialize();
+	//auto engineMemento = engine::Engine::getInstance()->saveMemento();
+	//std::ofstream file("engine.json");
+	//file << engineMemento->serialize();
+	
+	//engine::save::json save = engine::saveEntityComponents(0);
+	//auto msgpack = engine::save::json::to_msgpack(save);
+	//std::ofstream file("save.msgpack", std::ios::binary);
+	//file.write(reinterpret_cast<const char*>(msgpack.data()), msgpack.size());
 	return 0;
 }
