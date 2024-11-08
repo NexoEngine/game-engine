@@ -57,8 +57,8 @@ jobs:
           CC: gcc
           CXX: g++
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --config Release
+          cmake -B build
+          cmake --build build
 
       - name: Copy build artifacts
         run: |
