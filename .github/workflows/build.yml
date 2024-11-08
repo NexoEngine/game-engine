@@ -55,11 +55,11 @@ jobs:
 
       - name: Build the project with GCC
         env:
-          CC: gcc
-          CXX: g++
+            CC: gcc
+            CXX: g++
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Debug -DNO_RAYLIB_COLORS=ON
-          cmake --build build --config Debug
+            cmake -B build -DCMAKE_BUILD_TYPE=Debug -DNO_RAYLIB_COLORS=ON
+            cmake --build build --config Debug
 
       - name: Copy build artifacts
         run: |
