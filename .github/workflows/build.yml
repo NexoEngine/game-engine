@@ -19,7 +19,7 @@ jobs:
       - name: Install required system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev
+          sudo apt-get install -y libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev libxcursor-dev
 
       - name: Ensure vcpkg is initialized
         run: |
