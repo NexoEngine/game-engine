@@ -7,6 +7,7 @@
 
 #include "game_engine/GameEngine.hpp"
 #include "game_engine/Math.hpp"
+#include <numbers>
 
 namespace engine {
     Matrix math::matrixFromFloat16(const float16& matrix)
@@ -116,7 +117,7 @@ namespace engine {
         if (test > 0.499 * unit) 
         {
             eulerAngles.y = 2 * std::atan2(q1.x, q1.w);
-            eulerAngles.z = M_PI / 2;
+            eulerAngles.z = std::numbers::pi / 2;
             eulerAngles.x = 0;
             return eulerAngles;
         }
@@ -124,7 +125,7 @@ namespace engine {
         if (test < -0.499 * unit) 
         {
             eulerAngles.y = -2 * std::atan2(q1.x, q1.w);
-            eulerAngles.z = -M_PI / 2;
+            eulerAngles.z = -std::numbers::pi / 2;
             eulerAngles.x = 0;
             return eulerAngles;
         }
