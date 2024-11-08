@@ -16,18 +16,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Ensure vcpkg is initialized
+        run: |
+          if [ ! -d "./vcpkg" ]; then
+            git clone https://github.com/microsoft/vcpkg.git vcpkg
+          fi
+          ./vcpkg/bootstrap-vcpkg.sh
+
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
         with:
           cmake-version: "3.20"
-
-      - name: Install dependencies
-        run: |
-          if [ -d "./vcpkg" ]; then
-            ./vcpkg/bootstrap-vcpkg.sh
-          else
-            echo "vcpkg directory not found"
-          fi
 
       - name: Build the project
         run: |
