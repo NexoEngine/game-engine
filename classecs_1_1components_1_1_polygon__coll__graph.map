@@ -1,0 +1,4 @@
+<map id="ecs::components::Polygon" name="ecs::components::Polygon">
+<area shape="rect" id="node1" title="Represents a polygon shape with customizable number of sides, radius, height, and colors." alt="" coords="5,219,177,311"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="8,5,175,171"/>
+</map>

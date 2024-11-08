@@ -318,33 +318,43 @@ $(document).ready(function(){initNavTree('_coordinator_8hpp_source.html',''); in
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>                <span class="keywordflow">return</span> *_sceneManager;</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            }</div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            <span class="keywordtype">void</span> updateSystemEntities(<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            {</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>                _systemManager-&gt;updateSystemEntities(*_sceneManager);</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            }</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>            <span class="keywordtype">bool</span> entityHasComponent(Entity entity) {</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>                <span class="keyword">auto</span> signature = _entityManager-&gt;getSignature(entity);</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>                ecs::components::ComponentType componentType = _componentManager-&gt;getComponentType&lt;T&gt;();</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>                <span class="keywordflow">return</span> signature.test(componentType);</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            }</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            std::shared_ptr&lt;components::ComponentManager&gt; _componentManager;</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            std::shared_ptr&lt;EntityManager&gt; _entityManager;</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            std::shared_ptr&lt;system::SystemManager&gt; _systemManager;</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            std::shared_ptr&lt;ecs::event::EventManager&gt; _eventManager;</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            std::shared_ptr&lt;ecs::SingletonComponentManager&gt; _singletonComponentManager;</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            std::shared_ptr&lt;ecs::SceneManager&gt; _sceneManager;</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            std::unordered_map&lt;std::type_index, std::function&lt;bool(Entity)&gt;&gt; _hasComponentFunctions;</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            std::unordered_map&lt;std::type_index, std::function&lt;std::any(Entity)&gt;&gt; _getComponentFunctions;</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    };</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>}</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span> </div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            <span class="keywordtype">void</span> setSceneWindowOffset(ecs::SceneID <span class="keywordtype">id</span>, Vector2 offset)</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>                _sceneManager-&gt;setWindowOffset(<span class="keywordtype">id</span>, offset);</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            }</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            [[nodicard]] Vector2 getSceneWindowOffset(ecs::SceneID <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="keyword">            </span>{</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>                <span class="keywordflow">return</span> _sceneManager-&gt;getWindowOffset(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>            }</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            <span class="keywordtype">void</span> updateSystemEntities(<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            {</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                _systemManager-&gt;updateSystemEntities(*_sceneManager);</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            }</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            <span class="keywordtype">bool</span> entityHasComponent(Entity entity) {</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                <span class="keyword">auto</span> signature = _entityManager-&gt;getSignature(entity);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>                ecs::components::ComponentType componentType = _componentManager-&gt;getComponentType&lt;T&gt;();</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>                <span class="keywordflow">return</span> signature.test(componentType);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            }</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>            std::shared_ptr&lt;components::ComponentManager&gt; _componentManager;</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            std::shared_ptr&lt;EntityManager&gt; _entityManager;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>            std::shared_ptr&lt;system::SystemManager&gt; _systemManager;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            std::shared_ptr&lt;ecs::event::EventManager&gt; _eventManager;</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            std::shared_ptr&lt;ecs::SingletonComponentManager&gt; _singletonComponentManager;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>            std::shared_ptr&lt;ecs::SceneManager&gt; _sceneManager;</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span> </div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>            std::unordered_map&lt;std::type_index, std::function&lt;bool(Entity)&gt;&gt; _hasComponentFunctions;</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>            std::unordered_map&lt;std::type_index, std::function&lt;std::any(Entity)&gt;&gt; _getComponentFunctions;</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    };</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>}</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
 <div class="ttc" id="aclassecs_1_1_coordinator_html"><div class="ttname"><a href="classecs_1_1_coordinator.html">ecs::Coordinator</a></div><div class="ttdoc">Central orchestrator for the Entity-Component-System (ECS) architecture.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:28</div></div>
 <div class="ttc" id="aclassecs_1_1_coordinator_html_a1388912a7b8e3cb6e9a88613e9119bb9"><div class="ttname"><a href="classecs_1_1_coordinator.html#a1388912a7b8e3cb6e9a88613e9119bb9">ecs::Coordinator::addComponent</a></div><div class="ttdeci">void addComponent(Entity entity, T component)</div><div class="ttdoc">Adds a component to an entity, updates its signature, and notifies systems.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:99</div></div>
 <div class="ttc" id="aclassecs_1_1_coordinator_html_a33cfb7ebde4e9bce6ef84ccac89f4ca3"><div class="ttname"><a href="classecs_1_1_coordinator.html#a33cfb7ebde4e9bce6ef84ccac89f4ca3">ecs::Coordinator::destroyEntity</a></div><div class="ttdeci">void destroyEntity(Entity entity)</div><div class="ttdoc">Destroys an entity and cleans up its components and system references.</div><div class="ttdef"><b>Definition:</b> Coordinator.hpp:58</div></div>

@@ -1,0 +1,4 @@
+<map id="ecs::components::Knot" name="ecs::components::Knot">
+<area shape="rect" id="node1" title="Represents a knot shape with customizable radius, size, segments, and colors." alt="" coords="12,219,165,311"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="5,5,172,171"/>
+</map>

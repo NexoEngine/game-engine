@@ -230,75 +230,89 @@ $(document).ready(function(){initNavTree('_game_engine_8hpp_source.html',''); in
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                _coordinator-&gt;removeEntityFromScene(entity, sceneID);</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            }</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; createCamera(Vector3 pos, Vector3 target, Vector3 up, <span class="keywordtype">int</span> mode, <span class="keywordtype">float</span> fov);</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; createMovableCamera(Vector3 pos, Vector3 target, Vector3 up, <span class="keywordtype">int</span> mode, <span class="keywordtype">float</span> fov);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <span class="keywordtype">void</span> setSceneWindowOffset(ecs::SceneID <span class="keywordtype">id</span>, Vector2 offset);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            [[nodiscard]] Vector2 getSceneWindowOffset(ecs::SceneID <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            <span class="keywordtype">void</span> attachCamera(ecs::SceneID sceneID, std::shared_ptr&lt;engine::core::EngineCamera&gt; camera);</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            <span class="keywordtype">void</span> detachCamera(ecs::SceneID sceneID, std::shared_ptr&lt;engine::core::EngineCamera&gt; camera);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; createCamera(Vector3 pos, Vector3 target, Vector3 up, <span class="keywordtype">int</span> mode, <span class="keywordtype">float</span> fov);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            std::shared_ptr&lt;engine::core::EngineCamera&gt; createMovableCamera(Vector3 pos, Vector3 target, Vector3 up, <span class="keywordtype">int</span> mode, <span class="keywordtype">float</span> fov);</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            engine::core::LightId createLight(engine::core::LightType type, Vector3 position, Vector3 target, Color color, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keywordtype">void</span> setLightEnabled(engine::core::LightId lightID, <span class="keywordtype">bool</span> enabled, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            <span class="keywordtype">void</span> setLightColor(engine::core::LightId lightID, Color newColor, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            std::shared_ptr&lt;ecs::Coordinator&gt; _coordinator;</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            std::shared_ptr&lt;ecs::system::PhysicsSystem&gt; _physicSystem;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            std::shared_ptr&lt;ecs::system::RenderSystem&gt; _renderSystem;</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            std::shared_ptr&lt;ecs::system::BehaviourSystem&gt; _behaviourSystem;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            std::shared_ptr&lt;ecs::system::AnimationSystem&gt; _animationSystem;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            std::shared_ptr&lt;ecs::system::CollisionResponse&gt; _collisionResponseSystem;</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            std::shared_ptr&lt;ecs::system::ColisionDetectionSystem&gt; _collisionDetectionSystem;</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            std::shared_ptr&lt;ecs::system::InputSystem&gt; _inputSystem;</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            std::shared_ptr&lt;ecs::system::AudioSystem&gt; _audioSystem;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            std::shared_ptr&lt;ecs::system::MusicSystem&gt; _musicSystem;</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            std::shared_ptr&lt;core::Window&gt; _window;</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="keywordtype">bool</span> _disableRender = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <a class="code hl_class" href="classcommon_1_1utils_1_1_chrono.html">common::utils::Chrono</a> _chrono;</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            std::queue&lt;ecs::Entity&gt; _entitiesToDestroy;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            engine::core::CameraID _nextId = 0;</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keyword">static</span> Engine *engine;</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            <span class="keyword">static</span> std::mutex _mutex;</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            Engine() {};</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            ~Engine() {};</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            Engine(Engine &amp;other) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> Engine &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            <span class="keyword">static</span> Engine *getInstance() {</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                std::lock_guard&lt;std::mutex&gt; lock(_mutex);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                <span class="keywordflow">if</span> (engine == <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                    engine = <span class="keyword">new</span> Engine;</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                <span class="keywordflow">return</span> engine;</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            };</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    };</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keywordtype">void</span> initEngine(<span class="keywordtype">bool</span> disableRender = <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keywordtype">void</span> runEngine();</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">void</span> runEngineTextureMode(RenderTexture&amp; ViewTexture);</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <span class="keywordtype">void</span> update(ecs::SceneID sceneId);</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keywordtype">void</span> render(ecs::SceneID sceneId, engine::core::CameraID cameraId);</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordtype">void</span> renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId);</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>}</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            <span class="keywordtype">void</span> attachCamera(ecs::SceneID sceneID, std::shared_ptr&lt;engine::core::EngineCamera&gt; camera);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keywordtype">void</span> detachCamera(ecs::SceneID sceneID, std::shared_ptr&lt;engine::core::EngineCamera&gt; camera);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            engine::core::LightId createLight(engine::core::LightType type, Vector3 position, Vector3 target, Color color, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            <span class="keywordtype">void</span> setLightEnabled(engine::core::LightId lightID, <span class="keywordtype">bool</span> enabled, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            <span class="keywordtype">void</span> setLightColor(engine::core::LightId lightID, Color newColor, Shader lightingShader = ecs::components::shader::defaultLightingShader);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            <span class="keywordtype">void</span> startRendering(ecs::SceneID sceneID, core::CameraID cameraID);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            <span class="keywordtype">void</span> endRendering(ecs::SceneID sceneID);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            <span class="keywordtype">void</span> renderAllEntities(ecs::SceneID sceneId, core::CameraID cameraId);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordtype">void</span> renderGrid(ecs::SceneID sceneID, core::CameraID cameraID);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            <span class="keywordtype">void</span> enableDebug(<span class="keywordtype">void</span>) { _debug = <span class="keyword">true</span>; };</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            <span class="keywordtype">void</span> disableDebug(<span class="keywordtype">void</span>) {_debug = <span class="keyword">false</span>; };</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            std::shared_ptr&lt;ecs::Coordinator&gt; _coordinator;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            std::shared_ptr&lt;ecs::system::PhysicsSystem&gt; _physicSystem;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            std::shared_ptr&lt;ecs::system::RenderSystem&gt; _renderSystem;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            std::shared_ptr&lt;ecs::system::RenderSystemDebug&gt; _renderSystemDebug;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            std::shared_ptr&lt;ecs::system::BehaviourSystem&gt; _behaviourSystem;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            std::shared_ptr&lt;ecs::system::AnimationSystem&gt; _animationSystem;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            std::shared_ptr&lt;ecs::system::CollisionResponse&gt; _collisionResponseSystem;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            std::shared_ptr&lt;ecs::system::ColisionDetectionSystem&gt; _collisionDetectionSystem;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            std::shared_ptr&lt;ecs::system::InputSystem&gt; _inputSystem;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            std::shared_ptr&lt;ecs::system::AudioSystem&gt; _audioSystem;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            std::shared_ptr&lt;ecs::system::MusicSystem&gt; _musicSystem;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            std::shared_ptr&lt;core::Window&gt; _window;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keywordtype">bool</span> _disableRender = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordtype">bool</span> _rendering = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            <a class="code hl_class" href="classcommon_1_1utils_1_1_chrono.html">common::utils::Chrono</a> _chrono;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            std::queue&lt;ecs::Entity&gt; _entitiesToDestroy;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            engine::core::CameraID _nextId = 0;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="keywordtype">bool</span> _debug = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            <span class="keyword">static</span> Engine *engine;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keyword">static</span> std::mutex _mutex;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            Engine() {};</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            ~Engine() {};</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            Engine(Engine &amp;other) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> Engine &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            <span class="keyword">static</span> Engine *getInstance() {</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                std::lock_guard&lt;std::mutex&gt; lock(_mutex);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                <span class="keywordflow">if</span> (engine == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                    engine = <span class="keyword">new</span> Engine;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                <span class="keywordflow">return</span> engine;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            };</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    };</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordtype">void</span> initEngine(<span class="keywordtype">bool</span> disableRender = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keywordtype">void</span> update(ecs::SceneID sceneId);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordtype">void</span> render(ecs::SceneID sceneId, engine::core::CameraID cameraId);</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordtype">void</span> enableDebug(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="keywordtype">void</span> disableDebug(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keywordtype">void</span> renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId);</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>}</div>
 <div class="ttc" id="aclasscommon_1_1utils_1_1_chrono_html"><div class="ttname"><a href="classcommon_1_1utils_1_1_chrono.html">common::utils::Chrono</a></div><div class="ttdef"><b>Definition:</b> Chrono.hpp:16</div></div>
-<div class="ttc" id="aclassecs_1_1_scene_manager_html"><div class="ttname"><a href="classecs_1_1_scene_manager.html">ecs::SceneManager</a></div><div class="ttdef"><b>Definition:</b> Scene.hpp:59</div></div>
+<div class="ttc" id="aclassecs_1_1_scene_manager_html"><div class="ttname"><a href="classecs_1_1_scene_manager.html">ecs::SceneManager</a></div><div class="ttdef"><b>Definition:</b> Scene.hpp:64</div></div>
 <div class="ttc" id="aclassengine_1_1_engine_html"><div class="ttname"><a href="classengine_1_1_engine.html">engine::Engine</a></div><div class="ttdoc">Main engine class responsible for initializing and managing game components.</div><div class="ttdef"><b>Definition:</b> GameEngine.hpp:46</div></div>
 <div class="ttc" id="aclassengine_1_1_engine_html_a0399eb84d58a5b6a151065bd27c9165e"><div class="ttname"><a href="classengine_1_1_engine.html#a0399eb84d58a5b6a151065bd27c9165e">engine::Engine::isWindowOpen</a></div><div class="ttdeci">bool isWindowOpen(void)</div><div class="ttdoc">Checks if the window of the game engine is open.</div><div class="ttdef"><b>Definition:</b> GameEngine.hpp:128</div></div>
-<div class="ttc" id="aclassengine_1_1_engine_html_a05152770c0742ec74bc36dda04d0503c"><div class="ttname"><a href="classengine_1_1_engine.html#a05152770c0742ec74bc36dda04d0503c">engine::Engine::init</a></div><div class="ttdeci">void init(bool disableRender=false)</div><div class="ttdoc">Initializes the engine, setting up necessary components and systems.</div><div class="ttdef"><b>Definition:</b> GameEngine.cpp:23</div></div>
+<div class="ttc" id="aclassengine_1_1_engine_html_a05152770c0742ec74bc36dda04d0503c"><div class="ttname"><a href="classengine_1_1_engine.html#a05152770c0742ec74bc36dda04d0503c">engine::Engine::init</a></div><div class="ttdeci">void init(bool disableRender=false)</div><div class="ttdoc">Initializes the engine, setting up necessary components and systems.</div><div class="ttdef"><b>Definition:</b> GameEngine.cpp:24</div></div>
 <div class="ttc" id="aclassengine_1_1_engine_html_a056c77722227c8de3c79b887b0cca1a6"><div class="ttname"><a href="classengine_1_1_engine.html#a056c77722227c8de3c79b887b0cca1a6">engine::Engine::triggerAudio</a></div><div class="ttdeci">void triggerAudio(Sound sound)</div><div class="ttdoc">Allows to trigger an audio sound, creates a new audioEntity and adds it to the ecs.</div><div class="ttdef"><b>Definition:</b> AudioHandling.cpp:12</div></div>
 <div class="ttc" id="aclassengine_1_1_engine_html_a1b01783391f0d0a3142a15b15d1fa8de"><div class="ttname"><a href="classengine_1_1_engine.html#a1b01783391f0d0a3142a15b15d1fa8de">engine::Engine::createScene</a></div><div class="ttdeci">ecs::SceneID createScene()</div><div class="ttdoc">Create a Scene object.</div><div class="ttdef"><b>Definition:</b> SceneHandling.cpp:12</div></div>
 <div class="ttc" id="aclassengine_1_1_engine_html_a2353ce417243df1ce32b7bf489091f49"><div class="ttname"><a href="classengine_1_1_engine.html#a2353ce417243df1ce32b7bf489091f49">engine::Engine::playMusic</a></div><div class="ttdeci">ecs::Entity playMusic(const std::string &amp;audioPath, bool looping=false)</div><div class="ttdoc">Add a new audio that plays a music.</div><div class="ttdef"><b>Definition:</b> AudioHandling.cpp:25</div></div>

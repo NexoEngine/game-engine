@@ -207,6 +207,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addEntityToScene</b> 
 <tr class="memitem:ab8d337d9a480e6a480dec9f6fa8336d7"><td class="memItemLeft" align="right" valign="top"><a id="ab8d337d9a480e6a480dec9f6fa8336d7" name="ab8d337d9a480e6a480dec9f6fa8336d7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeEntityFromScene</b> (ecs::Entity entity, ecs::SceneID sceneID)</td></tr>
 <tr class="separator:ab8d337d9a480e6a480dec9f6fa8336d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6585ae90e8c0c315105362821a5f2efe"><td class="memItemLeft" align="right" valign="top"><a id="a6585ae90e8c0c315105362821a5f2efe" name="a6585ae90e8c0c315105362821a5f2efe"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setSceneWindowOffset</b> (ecs::SceneID id, Vector2 offset)</td></tr>
+<tr class="separator:a6585ae90e8c0c315105362821a5f2efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6917d95ed05daa54934ed10a59673a0"><td class="memItemLeft" align="right" valign="top"><a id="af6917d95ed05daa54934ed10a59673a0" name="af6917d95ed05daa54934ed10a59673a0"></a>
+Vector2&#160;</td><td class="memItemRight" valign="bottom"><b>getSceneWindowOffset</b> (ecs::SceneID id) const</td></tr>
+<tr class="separator:af6917d95ed05daa54934ed10a59673a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a569ef97bbfcf3ac4e6135e8a7582407d"><td class="memItemLeft" align="right" valign="top"><a id="a569ef97bbfcf3ac4e6135e8a7582407d" name="a569ef97bbfcf3ac4e6135e8a7582407d"></a>
 std::shared_ptr&lt; <a class="el" href="classengine_1_1core_1_1_engine_camera.html">engine::core::EngineCamera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createCamera</b> (Vector3 pos, Vector3 target, Vector3 up, int mode, float fov)</td></tr>
 <tr class="separator:a569ef97bbfcf3ac4e6135e8a7582407d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -228,6 +234,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setLightEnabled</b> (
 <tr class="memitem:af199d968bd2237241d1ab6b20751b822"><td class="memItemLeft" align="right" valign="top"><a id="af199d968bd2237241d1ab6b20751b822" name="af199d968bd2237241d1ab6b20751b822"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setLightColor</b> (engine::core::LightId lightID, Color newColor, Shader lightingShader=ecs::components::shader::defaultLightingShader)</td></tr>
 <tr class="separator:af199d968bd2237241d1ab6b20751b822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa01d9a3cf2be82689a7d6a02bd6c677"><td class="memItemLeft" align="right" valign="top"><a id="aaa01d9a3cf2be82689a7d6a02bd6c677" name="aaa01d9a3cf2be82689a7d6a02bd6c677"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>startRendering</b> (ecs::SceneID sceneID, core::CameraID cameraID)</td></tr>
+<tr class="separator:aaa01d9a3cf2be82689a7d6a02bd6c677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e40518bc7ad659fb013b3170bbd174"><td class="memItemLeft" align="right" valign="top"><a id="a76e40518bc7ad659fb013b3170bbd174" name="a76e40518bc7ad659fb013b3170bbd174"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>endRendering</b> (ecs::SceneID sceneID)</td></tr>
+<tr class="separator:a76e40518bc7ad659fb013b3170bbd174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d8593f1e257f63867a5b72e24c594bd"><td class="memItemLeft" align="right" valign="top"><a id="a1d8593f1e257f63867a5b72e24c594bd" name="a1d8593f1e257f63867a5b72e24c594bd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>renderAllEntities</b> (ecs::SceneID sceneId, core::CameraID cameraId)</td></tr>
+<tr class="separator:a1d8593f1e257f63867a5b72e24c594bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0db37ddf0423adcccf4b7f03c38f7359"><td class="memItemLeft" align="right" valign="top"><a id="a0db37ddf0423adcccf4b7f03c38f7359" name="a0db37ddf0423adcccf4b7f03c38f7359"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>renderGrid</b> (ecs::SceneID sceneID, core::CameraID cameraID)</td></tr>
+<tr class="separator:a0db37ddf0423adcccf4b7f03c38f7359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa45ce3f1ea550c5e0c3158e370f750d0"><td class="memItemLeft" align="right" valign="top"><a id="aa45ce3f1ea550c5e0c3158e370f750d0" name="aa45ce3f1ea550c5e0c3158e370f750d0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>enableDebug</b> (void)</td></tr>
+<tr class="separator:aa45ce3f1ea550c5e0c3158e370f750d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec0fa77734cecf62b14ea186c812fc1"><td class="memItemLeft" align="right" valign="top"><a id="adec0fa77734cecf62b14ea186c812fc1" name="adec0fa77734cecf62b14ea186c812fc1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>disableDebug</b> (void)</td></tr>
+<tr class="separator:adec0fa77734cecf62b14ea186c812fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2067f5ea2c7936c09770610e85c6b02"><td class="memItemLeft" align="right" valign="top"><a id="af2067f5ea2c7936c09770610e85c6b02" name="af2067f5ea2c7936c09770610e85c6b02"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Engine</b> (<a class="el" href="classengine_1_1_engine.html">Engine</a> &amp;other)=delete</td></tr>
 <tr class="separator:af2067f5ea2c7936c09770610e85c6b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -750,6 +774,7 @@ template&lt;typename T &gt; </div>
 <li>src/game_engine/core/EntityHandling.cpp</li>
 <li>src/game_engine/core/GameEngine.cpp</li>
 <li>src/game_engine/core/LightHandling.cpp</li>
+<li>src/game_engine/core/Rendering.cpp</li>
 <li>src/game_engine/core/SceneHandling.cpp</li>
 </ul>
 </div><!-- contents -->

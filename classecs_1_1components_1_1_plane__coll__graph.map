@@ -1,0 +1,4 @@
+<map id="ecs::components::Plane" name="ecs::components::Plane">
+<area shape="rect" id="node1" title="Represents a sphere shape with customizable radius and colors." alt="" coords="9,219,168,311"/>
+<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="5,5,172,171"/>
+</map>

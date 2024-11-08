@@ -72,9 +72,17 @@ var hierarchy =
     [ "ImGL3WProcs", "union_im_g_l3_w_procs.html", null ],
     [ "ImGui_ImplOpenGL3_Data", "struct_im_gui___impl_open_g_l3___data.html", null ],
     [ "ecs::components::IShape", "classecs_1_1components_1_1_i_shape.html", [
+      [ "ecs::components::Cone", "classecs_1_1components_1_1_cone.html", null ],
       [ "ecs::components::Cube", "classecs_1_1components_1_1_cube.html", null ],
+      [ "ecs::components::Cylinder", "classecs_1_1components_1_1_cylinder.html", null ],
+      [ "ecs::components::Hemisphere", "classecs_1_1components_1_1_hemisphere.html", null ],
+      [ "ecs::components::Knot", "classecs_1_1components_1_1_knot.html", null ],
       [ "ecs::components::Model3D", "classecs_1_1components_1_1_model3_d.html", null ],
-      [ "ecs::components::Skybox", "classecs_1_1components_1_1_skybox.html", null ]
+      [ "ecs::components::Plane", "classecs_1_1components_1_1_plane.html", null ],
+      [ "ecs::components::Polygon", "classecs_1_1components_1_1_polygon.html", null ],
+      [ "ecs::components::Skybox", "classecs_1_1components_1_1_skybox.html", null ],
+      [ "ecs::components::Sphere", "classecs_1_1components_1_1_sphere.html", null ],
+      [ "ecs::components::Torus", "classecs_1_1components_1_1_torus.html", null ]
     ] ],
     [ "ecs::ISingletonComponent", "classecs_1_1_i_singleton_component.html", [
       [ "ecs::SingletonComponent< T >", "classecs_1_1_singleton_component.html", null ],
@@ -131,7 +139,8 @@ var hierarchy =
       [ "ecs::system::InputSystem", "classecs_1_1system_1_1_input_system.html", null ],
       [ "ecs::system::MusicSystem", "classecs_1_1system_1_1_music_system.html", null ],
       [ "ecs::system::PhysicsSystem", "classecs_1_1system_1_1_physics_system.html", null ],
-      [ "ecs::system::RenderSystem", "classecs_1_1system_1_1_render_system.html", null ]
+      [ "ecs::system::RenderSystem", "classecs_1_1system_1_1_render_system.html", null ],
+      [ "ecs::system::RenderSystemDebug", "classecs_1_1system_1_1_render_system_debug.html", null ]
     ] ],
     [ "ecs::system::SystemManager", "classecs_1_1system_1_1_system_manager.html", null ],
     [ "ecs::components::physics::transform_s", "structecs_1_1components_1_1physics_1_1transform__s.html", null ],
