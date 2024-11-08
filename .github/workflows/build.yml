@@ -57,17 +57,19 @@ jobs:
           CC: gcc
           CXX: g++
         run: |
-          cmake -B build
-          cmake --build build
+          git submodule init
+          git pull --recurse-submodules
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg integrate install
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build --config Debug
 
       - name: Copy build artifacts
         run: |
-          if [ -d "./build/Release" ]; then
-            cp -r ./build/Release/* ./build/
-          elif [ -d "./build/Debug" ]; then
+          if [ -d "./build/Debug" ]; then
             cp -r ./build/Debug/* ./build/
           else
-            echo "Build output not found" && exit 1
+            echo "Debug build output not found" && exit 1
           fi
 
       - name: Copy resources
