@@ -75,6 +75,284 @@ namespace engine {
         return entity;
     }
 
+    ecs::Entity createSphere(
+        Vector3 pos,
+        float radius,
+        Color color,
+        bool toggleWire,
+        Color wireColor)
+    {
+        auto sphere = std::make_shared<ecs::components::Sphere>(radius, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::SPHERE, true, sphere};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::SPHERE,
+            ecs::components::physics::CollisionType::COLLIDE,
+            sphere,
+            GetModelBoundingBox(sphere->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createPlane(
+        Vector3 pos,
+        float width,
+        float length,
+        Color color,
+        bool toggleWire,
+        Color wireColor)
+    {
+        auto plane = std::make_shared<ecs::components::Plane>(width, length, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::PLANE, true, plane};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::PLANE,
+            ecs::components::physics::CollisionType::COLLIDE,
+            plane,
+            GetModelBoundingBox(plane->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createCylinder(
+        Vector3 pos,
+        float radius,
+        float height,
+        Color color,
+        bool toggleWire,
+        Color wireColor)
+    {
+        auto cylinder = std::make_shared<ecs::components::Cylinder>(radius, height, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::CYLINDER, true, cylinder};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::CYLINDER,
+            ecs::components::physics::CollisionType::COLLIDE,
+            cylinder,
+            GetModelBoundingBox(cylinder->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createPolygon(
+    Vector3 pos,
+    int sides,
+    float radius,
+    float height,
+    Color color,
+    bool toggleWire,
+    Color wireColor)
+    {
+        auto polygon = std::make_shared<ecs::components::Polygon>(sides, radius, height, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::POLYGON, true, polygon};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::POLYGON,
+            ecs::components::physics::CollisionType::COLLIDE,
+            polygon,
+            GetModelBoundingBox(polygon->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createHemisphere(
+    Vector3 pos,
+    float radius,
+    int rings,
+    int slices,
+    Color color,
+    bool toggleWire,
+    Color wireColor)
+    {
+        auto hemisphere = std::make_shared<ecs::components::Hemisphere>(radius, rings, slices, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::HEMISPHERE, true, hemisphere};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::HEMISPHERE,
+            ecs::components::physics::CollisionType::COLLIDE,
+            hemisphere,
+            GetModelBoundingBox(hemisphere->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createCone(
+    Vector3 pos,
+    float radius,
+    float height,
+    int slices,
+    Color color,
+    bool toggleWire,
+    Color wireColor)
+    {
+        auto cone = std::make_shared<ecs::components::Cone>(radius, height, slices, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::CONE, true, cone};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::CONE,
+            ecs::components::physics::CollisionType::COLLIDE,
+            cone,
+            GetModelBoundingBox(cone->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createTorus(
+    Vector3 pos,
+    float radius,
+    float size,
+    int radSeg,
+    int sides,
+    Color color,
+    bool toggleWire,
+    Color wireColor)
+    {
+        auto torus = std::make_shared<ecs::components::Torus>(radius, size, radSeg, sides, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::TORUS, true, torus};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::TORUS,
+            ecs::components::physics::CollisionType::COLLIDE,
+            torus,
+            GetModelBoundingBox(torus->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
+    ecs::Entity createKnot(
+    Vector3 pos,
+    float radius,
+    float size,
+    int radSeg,
+    int sides,
+    Color color,
+    bool toggleWire,
+    Color wireColor)
+    {
+        auto knot = std::make_shared<ecs::components::Knot>(radius, size, radSeg, sides, toggleWire, color, wireColor);
+        ecs::components::physics::transform_t transf = {{0}, {0}};
+        double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
+        ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
+        ecs::components::render::render_t render = {ecs::components::ShapeType::KNOT, true, knot};
+        ecs::components::physics::collider_t collider = {
+            ecs::components::ShapeType::KNOT,
+            ecs::components::physics::CollisionType::COLLIDE,
+            knot,
+            GetModelBoundingBox(knot->getModel()),
+            {0},
+            MatrixIdentity(),
+            MatrixIdentity(),
+            MatrixIdentity()};
+        Matrix matTranslate = MatrixTranslate(pos.x, pos.y, pos.z);
+        render.data->getModel().transform = matTranslate;
+        collider.matTranslate = MatrixMultiply(collider.matTranslate, matTranslate);
+        ecs::components::health::health_t health = {0};
+        ecs::system::CollisionResponse::updateColliderGlobalVerts(collider);
+        ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
+        Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
+        Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
+        Engine::getInstance()->addComponent<ecs::components::health::health_t>(entity, health);
+        return entity;
+    }
+
     ecs::Entity createModel3D(const char *filename, Vector3 pos, Color color)
     {
         auto model = std::make_shared<ecs::components::Model3D>(filename, color);
