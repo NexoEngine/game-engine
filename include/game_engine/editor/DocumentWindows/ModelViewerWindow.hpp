@@ -26,10 +26,22 @@ namespace engine::editor {
             std::string _assetPath = "";
             const char* _filterPatterns[1] = {"*.obj"};
             bool _modelLoaded = false;
-            ImVec2 _currentwindowSize;
             std::shared_ptr<engine::core::EngineCamera> _camera;
             ecs::SceneID _sceneID;
             ecs::Entity _importedEntity{};
 
+            int _selectedSceneIdx;
+
+            ImVec2 _prevWindowSize;
+
+            ImVec2 _currentWindowSize;
+
+            bool isWindowResized() const;
+
+            void showPreviewSection();
+            void showControlsSection();
+            void showImportPathButton();
+            void showSceneComboBox();
+            void showImportButton();
     };
 }

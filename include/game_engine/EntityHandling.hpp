@@ -37,6 +37,108 @@ namespace engine {
     ecs::Entity createCube(Vector3 pos, float width, float height, float length, Color color = RED, bool toggleWire = false, Color wireColor = BLACK);
 
     /**
+     * @brief Creates a sphere entity with specified parameters.
+     * @param pos Position of the sphere.
+     * @param radius Radius of the sphere.
+     * @param color Color of the sphere.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created sphere entity.
+     */
+    ecs::Entity createSphere(Vector3 pos, float radius, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+    /**
+    * @brief Creates a cylinder entity with specified parameters.
+    * @param pos Position of the cylinder.
+    * @param radius Radius of the top of the cylinder.
+    * @param height Height of the cylinder.
+    * @param color Color of the cylinder.
+    * @param toggleWire Flag to toggle wireframe mode.
+    * @param wireColor Color of the wireframe.
+    * @return The created cylinder entity.
+    */
+    ecs::Entity createCylinder(Vector3 pos, float radius, float height, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+    /**
+     * @brief Creates a plane entity with specified parameters.
+     * @param pos Position of the plane.
+     * @param width Width of the plane.
+     * @param length Length of the plane.
+     * @param color Color of the plane.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created plane entity.
+     */
+    ecs::Entity createPlane(Vector3 pos, float width, float length, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+     /**
+     * @brief Creates a polygon entity with specified parameters.
+     * @param pos Position of the polygon.
+     * @param sides Number of sides of the polygon.
+     * @param radius Radius of the polygon.
+     * @param height Height of the polygon extrusion (to make it 3D).
+     * @param color Color of the polygon.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created polygon entity.
+     */
+     ecs::Entity createPolygon(Vector3 pos, int sides, float radius, float height, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+     /**
+     * @brief Creates a hemisphere entity with specified parameters.
+     * @param pos Position of the hemisphere.
+     * @param radius Radius of the hemisphere.
+     * @param rings Number of rings for smoothness.
+     * @param slices Number of slices for smoothness.
+     * @param color Color of the hemisphere.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created hemisphere entity.
+     */
+     ecs::Entity createHemisphere(Vector3 pos, float radius, int rings, int slices, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+     /**
+     * @brief Creates a cone entity with specified parameters.
+     * @param pos Position of the cone.
+     * @param radius Radius of the cone's base.
+     * @param height Height of the cone.
+     * @param slices Number of slices for smoothness.
+     * @param color Color of the cone.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created cone entity.
+     */
+     ecs::Entity createCone(Vector3 pos, float radius, float height, int slices, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+     /**
+     * @brief Creates a torus entity with specified parameters.
+     * @param pos Position of the torus.
+     * @param radius Radius of the torus.
+     * @param size Size of the tube.
+     * @param radSeg Number of radial segments for smoothness.
+     * @param sides Number of sides for the tube's smoothness.
+     * @param color Color of the torus.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created torus entity.
+     */
+     ecs::Entity createTorus(Vector3 pos, float radius, float size, int radSeg, int sides, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+     /**
+     * @brief Creates a knot entity with specified parameters.
+     * @param pos Position of the knot.
+     * @param radius Radius of the knot.
+     * @param size Size of the tube.
+     * @param radSeg Number of radial segments for smoothness.
+     * @param sides Number of sides for the tube's smoothness.
+     * @param color Color of the knot.
+     * @param toggleWire Flag to toggle wireframe mode.
+     * @param wireColor Color of the wireframe.
+     * @return The created knot entity.
+     */
+     ecs::Entity createKnot(Vector3 pos, float radius, float size, int radSeg, int sides, Color color = WHITE, bool toggleWire = false, Color wireColor = BLACK);
+
+    /**
      * @brief Creates a 3D model entity from a file.
      * @param filename Path to the model file.
      * @param pos Position of the model.
@@ -54,6 +156,7 @@ namespace engine {
      */
     ecs::Entity createSkybox(const char *filename, Vector3 pos, Color color = WHITE);
 
+    BoundingBox getEntityBoundingBox(ecs::Entity entity);
 
     void destroyEntity(ecs::Entity entity);
 
@@ -161,5 +264,7 @@ namespace engine {
          * @param transform The transformation matrix.
          */
         void setTransformMatrix(ecs::Entity entity, Matrix transform);
+
+        void updateEntityTransformMatrix(ecs::Entity entity, bool inDeg = true);
     }
 }

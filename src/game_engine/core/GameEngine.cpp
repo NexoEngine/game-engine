@@ -12,6 +12,7 @@
 #include "game_engine/ecs/components/Behaviour.hpp"
 #include "game_engine/ecs/components/Shader.hpp"
 #include "raymath.h"
+#include <rlgl.h>
 
 std::shared_ptr<ecs::Coordinator> ecs::components::behaviour::Behaviour::_coord = nullptr;
 std::shared_ptr<ecs::Coordinator> ecs::system::System::_coord = nullptr;
@@ -76,6 +77,9 @@ namespace engine
         {
             _renderSystem = _coordinator->registerSystem<ecs::system::RenderSystem>();
             _coordinator->setSystemSignature<ecs::system::RenderSystem>(signatureRender);
+
+            _renderSystemDebug = _coordinator->registerSystem<ecs::system::RenderSystemDebug>();
+            _coordinator->setSystemSignature<ecs::system::RenderSystemDebug>(signatureRender);
         }
 
         _behaviourSystem = _coordinator->registerSystem<ecs::system::BehaviourSystem>();
@@ -142,6 +146,38 @@ namespace engine
             deactivateScene(sceneId);
     }
 
+    void renderGridInternal(std::shared_ptr<engine::core::EngineCamera> engineCamera)
+    {
+        Camera camera = engineCamera->getCamera();
+        Vector2 screenSize = engineCamera->getRenderTextureSize();
+        float screenWidth = screenSize.x;
+        float screenHeight = screenSize.y;
+        Shader shader = LoadShader("src/game_engine/ressources/shaders/grid_fading.vs", "src/game_engine/ressources/shaders/grid_fading.fs");
+        int matViewLoc = GetShaderLocation(shader, "matView");
+	    int matProjectionLoc = GetShaderLocation(shader, "matProjection");
+        Matrix view = GetCameraMatrix(camera);
+        Matrix projection = MatrixPerspective(camera.fovy * DEG2RAD, (float)screenWidth / (float)screenHeight, 0.01f, 1000.0f);
+        SetShaderValueMatrix(shader, matViewLoc, view);
+	    SetShaderValueMatrix(shader, matProjectionLoc, projection);
+        rlDisableDepthTest();
+            BeginShaderMode(shader);
+                rlPushMatrix();
+                    rlTranslatef(0.0f, 0.0f, 0.0f);
+                    rlScalef(1000.0f, 1.0f, 1000.0f);
+
+                    rlBegin(RL_TRIANGLES);
+                        rlVertex3f(-1, 1, -0);
+                        rlVertex3f(-1, -1, 0);
+                        rlVertex3f(1, -1, 0);
+                        rlVertex3f(1, 1, 0);
+                        rlVertex3f(-1, 1, 0);
+                        rlVertex3f(1, -1, 0);
+					rlEnd();
+				rlPopMatrix();
+            EndShaderMode();
+		rlEnableDepthTest();
+    }
+
     void Engine::renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId)
     {
         bool isSceneActive = _coordinator->isSceneActive(sceneId);
@@ -155,8 +191,9 @@ namespace engine
         BeginTextureMode(screenTexture);
         _window->clear(Color{41, 41, 41, 255});
         BeginMode3D(_coordinator->getCamera(sceneId, cameraId)->getCamera());
+        renderGridInternal(camera);
         _renderSystem->render();
-        DrawGrid(10000, 1.0f);
+        //DrawGrid(10000, 1.0f);
         EndMode3D();
 
         //TODO: Add post process shaders
@@ -244,5 +281,15 @@ namespace engine
     void renderTextureMode(ecs::SceneID sceneId, engine::core::CameraID cameraId)
     {
         Engine::getInstance()->renderTextureMode(sceneId, cameraId);
+    }
+
+    void enableDebug(void)
+    {
+        Engine::getInstance()->enableDebug();
+    }
+
+    void disableDebug(void)
+    {
+        Engine::getInstance()->disableDebug();
     }
 }

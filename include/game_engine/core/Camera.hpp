@@ -188,6 +188,11 @@ namespace engine {
                     _viewTexture = LoadRenderTexture(width, height);
                 }
 
+                Vector2 getRenderTextureSize(void) const
+                {
+                    return Vector2{static_cast<float>(_viewTexture.texture.width), static_cast<float>(_viewTexture.texture.height)};
+                }
+
                 /**
                  * @brief Gets the view matrix of the camera.
                  * @return The view matrix of the camera.
