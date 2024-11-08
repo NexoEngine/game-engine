@@ -18,9 +18,11 @@ jobs:
 
       - name: Ensure vcpkg is initialized
         run: |
-          if [ ! -d "./vcpkg" ]; then
+          if [ ! -f "./vcpkg/bootstrap-vcpkg.sh" ]; then
+            echo "Bootstrap script not found, cloning vcpkg repository."
             git clone https://github.com/microsoft/vcpkg.git vcpkg
           fi
+          chmod +x ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/bootstrap-vcpkg.sh
 
       - name: Set up CMake
