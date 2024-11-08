@@ -30,6 +30,23 @@ jobs:
           chmod +x ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/bootstrap-vcpkg.sh
 
+      - name: Install loguru using vcpkg (if available)
+        run: |
+          ./vcpkg/vcpkg install loguru
+        continue-on-error: true # Ignore error if loguru is not available
+
+      - name: Fetch and build loguru (if not available in vcpkg)
+        run: |
+          if [ ! -d "loguru" ]; then
+            git clone https://github.com/emilk/loguru.git
+            cd loguru
+            mkdir build && cd build
+            cmake ..
+            make -j$(nproc)
+            sudo make install
+            cd ../..
+          fi
+
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
         with:
