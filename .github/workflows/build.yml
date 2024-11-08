@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive # Ensures all submodules are fetched
 
       - name: Install required system dependencies
         run: |
@@ -24,16 +26,15 @@ jobs:
       - name: Ensure vcpkg is initialized
         run: |
           if [ ! -f "./vcpkg/bootstrap-vcpkg.sh" ]; then
-            echo "Bootstrap script not found, cloning vcpkg repository."
             git clone https://github.com/microsoft/vcpkg.git vcpkg
           fi
           chmod +x ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/bootstrap-vcpkg.sh
 
-      - name: Install loguru using vcpkg (if available)
+      - name: Install loguru using vcpkg
         run: |
           ./vcpkg/vcpkg install loguru
-        continue-on-error: true # Ignore error if loguru is not available
+        continue-on-error: true # Ignore if loguru installation fails
 
       - name: Fetch and build loguru (if not available in vcpkg)
         run: |
@@ -57,17 +58,15 @@ jobs:
           CC: gcc
           CXX: g++
         run: |
-          cmake -B build
-          cmake --build build
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build --config Debug
 
       - name: Copy build artifacts
         run: |
-          if [ -d "./build/Release" ]; then
-            cp -r ./build/Release/* ./build/
-          elif [ -d "./build/Debug" ]; then
+          if [ -d "./build/Debug" ]; then
             cp -r ./build/Debug/* ./build/
           else
-            echo "Build output not found" && exit 1
+            echo "Debug build output not found" && exit 1
           fi
 
       - name: Copy resources
