@@ -100,12 +100,13 @@ namespace ecs {
             _model = LoadModelFromMesh(GenMeshSphere(_radius, 32, 32));
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Sphere::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Plane::Plane(
@@ -123,12 +124,13 @@ namespace ecs {
             _model = LoadModelFromMesh(GenMeshPlane(_width, _length, 10, 10));
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Plane::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Cylinder::Cylinder(
@@ -145,12 +147,13 @@ namespace ecs {
             _model = LoadModelFromMesh(GenMeshCylinder(radius, _height, 32));
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Cylinder::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Mesh GenMeshPoly3D(int sides, float radius, float height)
@@ -228,12 +231,13 @@ namespace ecs {
 
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Polygon::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Hemisphere::Hemisphere(
@@ -255,30 +259,30 @@ namespace ecs {
 
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Hemisphere::draw(physics::transform_t &transf) const {
-            //rlDisableBackfaceCulling();
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Cone::Cone(float radius, float height, int slices, bool toggleWire, Color color, Color wireColor)
             : _radius(radius), _height(height), _slices(slices), _toggleWire(toggleWire), _color(color), _wireColor(wireColor)
         {
-            // Utilise la fonction native Raylib pour générer un cône
             Mesh mesh = GenMeshCone(_radius, _height, _slices);
             _model = LoadModelFromMesh(mesh);
 
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Cone::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Torus::Torus(
@@ -302,12 +306,13 @@ namespace ecs {
 
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Torus::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
         Knot::Knot(
@@ -331,12 +336,13 @@ namespace ecs {
 
             _model.materials[0] = LoadMaterialDefault();
             _model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = _color;
+            initBoundingBox();
         }
 
         void Knot::draw(physics::transform_t &transf) const {
-            DrawModel(_model, transf.pos, 1, _color);
+            DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
-                DrawModelWires(_model, transf.pos, 1, _wireColor);
+                DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
 
