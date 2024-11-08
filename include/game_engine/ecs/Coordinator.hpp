@@ -328,6 +328,16 @@ namespace ecs {
                 return *_sceneManager;
             }
 
+            void setSceneWindowOffset(ecs::SceneID id, Vector2 offset)
+            {
+                _sceneManager->setWindowOffset(id, offset);
+            }
+
+            [[nodicard]] Vector2 getSceneWindowOffset(ecs::SceneID id) const
+            {
+                return _sceneManager->getWindowOffset(id);
+            }
+
         private:
             void updateSystemEntities(void)
             {

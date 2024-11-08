@@ -28,6 +28,7 @@
 
 #include "game_engine/editor/GameEngineEditor.hpp"
 
+#include <iostream>
 #include <thread>
 
 int main(int argc, char* argv[])

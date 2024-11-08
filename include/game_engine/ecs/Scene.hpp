@@ -52,8 +52,13 @@ namespace ecs {
                 return _cameras.at(id);
             }
 
+            void setWindowOffset(Vector2 offset) {_windowOffset = offset;};
+
+            Vector2 getWindowOffset(void) const {return _windowOffset;};
+
         private:
             std::unordered_map<engine::core::CameraID, std::shared_ptr<engine::core::EngineCamera>> _cameras;
+            Vector2 _windowOffset = { 0 };
     };
 
     class SceneManager {
@@ -170,6 +175,16 @@ namespace ecs {
             std::shared_ptr<engine::core::EngineCamera> &getCamera(SceneID id, engine::core::CameraID cameraID)
             {
                 return scenes.at(id).getCamera(cameraID);
+            }
+
+            void setWindowOffset(SceneID id, Vector2 offset)
+            {
+                scenes.at(id).setWindowOffset(offset);
+            }
+
+            Vector2 getWindowOffset(SceneID id) const
+            {
+                return scenes.at(id).getWindowOffset();
             }
 
         private:

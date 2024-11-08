@@ -44,4 +44,7 @@ namespace engine {
 
 
     [[nodiscard]] ecs::SceneManager& getSceneManager();
+
+    void setSceneWindowOffset(ecs::SceneID id, Vector2 offset);
+    [[nodiscard]] Vector2 getSceneWindowOffset(ecs::SceneID id);
 }
