@@ -1,8 +1,8 @@
 /*
-** EPITECH PROJECT, 2023
-** B-CPP-500-STG-5-2-rtype-remi.mergen
+** EPITECH PROJECT, 2024
+** game-engine
 ** File description:
-** Shapes.hpp
+** Shapes
 */
 
 #pragma once
@@ -59,23 +59,23 @@ namespace ecs {
             public:
                 ~IShape() = default;
                 /**
-                 * @brief Calculates the bounding box of the shape based on the collider's properties.
-                 * @param collider Reference to the collider component.
-                 * @return The calculated bounding box.
-                 */
-                BoundingBox getBoundingBox(physics::collider_t &collider) const;
-                /**
                  * @brief Pure virtual function for drawing the shape.
                  * @param transf Reference to the transformation component.
                  */
                 virtual void draw(physics::transform_t &transf) const = 0;
+                BoundingBox getBoundingBox(void) const;
+                void drawBoundingBox(void) const;
                 /**
                  * @brief Gets the model associated with the shape.
                  * @return Reference to the Model object.
                  */
                 Model &getModel();
             protected:
+
+                void initBoundingBox(void);
+
                 Model _model;
+                Vector3 boundingBoxCorners[8];
         };
 
         /**

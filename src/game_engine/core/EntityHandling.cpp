@@ -392,6 +392,12 @@ namespace engine {
         _entitiesToDestroy.push(entity);
     }
 
+    BoundingBox getEntityBoundingBox(ecs::Entity entity)
+    {
+        auto &renderComponent = Engine::getInstance()->getComponent<ecs::components::render::render_t>(entity);
+        return renderComponent.data->getBoundingBox();
+    }
+
     void destroyEntity(ecs::Entity entity)
     {
         Engine::getInstance()->destroyEntity(entity);

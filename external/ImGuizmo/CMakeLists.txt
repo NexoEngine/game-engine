@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.17)
-project(YourProjectName)
 
 # Include FetchContent module
 include(FetchContent)

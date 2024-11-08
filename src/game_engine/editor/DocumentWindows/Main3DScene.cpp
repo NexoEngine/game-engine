@@ -9,14 +9,17 @@
 #include "rlImGui.h"
 
 #include "game_engine/editor/DocumentWindows/Main3DScene.hpp"
-#include <CameraHandling.hpp>
-#include <EntityHandling.hpp>
-#include <LightHandling.hpp>
-#include <Math.hpp>
+#include "CameraHandling.hpp"
+#include "EntityHandling.hpp"
+#include "LightHandling.hpp"
+#include "Math.hpp"
+#include "EventHandling.hpp"
+#include "Rendering.hpp"
 
 #include <ImGuizmo.h>
 #include <rlgl.h>
 #include <loguru/loguru.hpp>
+#include <limits>
 
 #include "game_engine/ecs/components/Physics.hpp"
 #include "../../TestBehaviour.hpp"
@@ -37,6 +40,8 @@ engine::editor::Main3DScene::~Main3DScene()
 void engine::editor::Main3DScene::setup()
 {
     setupWindow();
+    setupGridShader();
+    engine::enableDebug();
 }
 
 void engine::editor::Main3DScene::shutdown()
@@ -53,9 +58,14 @@ void engine::editor::Main3DScene::show()
     {
         _viewPosition = ImGui::GetCursorScreenPos();
         _viewSize = ImGui::GetContentRegionAvail();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        Vector2 offset = {windowPos.x, windowPos.y};
+        engine::setSceneWindowOffset(_sceneID, offset);
         renderView();
         renderToolbar();
         renderGizmo();
+        if (engine::isMouseButtonDown(ecs::components::input::MouseButtons::MouseLeft) && !ImGuizmo::IsUsing())
+            rayPicking();
 
         // Draw the rest of the window contents
         _focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
@@ -68,11 +78,40 @@ void engine::editor::Main3DScene::show()
     ImGui::PopStyleVar();
 }
 
+void engine::editor::Main3DScene::rayPicking()
+{
+
+    ecs::Entity hitEntity = -1;
+    float minDistance = std::numeric_limits<float>::max();
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ImVec2 mousePos = ImGui::GetMousePos();
+    Vector2 mousePosRelative = {mousePos.x - windowPos.x, mousePos.y - windowPos.y};
+    Ray ray = math::castRayFromMouse(mousePosRelative, _camera);
+
+    for (auto entity : _sceneManagerBridge.getSceneEntities(_sceneID)) {
+        BoundingBox entityBox = engine::getEntityBoundingBox(entity);
+        Matrix transformMatrix = engine::entity::getTransformMatrix(entity);
+        float intersectionDistance = 0.0f;
+        bool hit = math::rayOBBCollisionFromAABBTransformed(ray.position, ray.direction, entityBox.min, entityBox.max, transformMatrix, intersectionDistance);
+        if (hit && intersectionDistance < minDistance) {
+            hitEntity = entity;
+            minDistance = intersectionDistance;
+        }   
+    }
+
+    if (hitEntity != -1) {
+        _sceneManagerBridge.setSelectedEntity(hitEntity);
+    }
+}
+
 void engine::editor::Main3DScene::update()
 {
     if (!_opened)
         return;
     handleWindowResize();
+    handleKeyEvents();
+
+    _selectedEntity = _sceneManagerBridge.getSelectedEntity();
 
     // limit fps to _targetFPS with clock, frameTime in ms
     auto frameTimeMs = static_cast<long long>(1.0 / _targetFPS * 1000.0);
@@ -87,7 +126,10 @@ void engine::editor::Main3DScene::update()
     _sceneManagerBridge.deactivateAllScenes();
     engine::activateScene(_sceneID);
     engine::update(_sceneID);
-    engine::renderTextureMode(_sceneID, _camera->getCameraID());
+    engine::startRendering(_sceneID, _camera->getCameraID());
+    engine::renderGrid(_sceneID, _camera->getCameraID());
+    engine::renderAllEntities(_sceneID, _camera->getCameraID());
+    engine::endRendering(_sceneID);
     lastTime = currentTime;
 }
 
@@ -99,6 +141,13 @@ void engine::editor::Main3DScene::setupWindow()
     ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
     _currentWindowSize = size;
     _viewSize = size;
+}
+
+void engine::editor::Main3DScene::setupGridShader()
+{
+    _gridShader = LoadShader("src/game_engine/ressources/shaders/grid_fading.vs", "src/game_engine/ressources/shaders/grid_fading.fs");
+    _matViewLoc = GetShaderLocation(_gridShader, "matView");
+    _matProjectionLoc = GetShaderLocation(_gridShader, "matProjection");
 }
 
 void engine::editor::Main3DScene::setupScene()
@@ -117,24 +166,17 @@ void engine::editor::Main3DScene::setupCamera()
 
 void engine::editor::Main3DScene::loadEntities()
 {
-    ecs::Entity knot = engine::createKnot({0, 0, 0}, 1.0f, 0.5f, 16, 16, WHITE, true, BLACK);
-    //ecs::Entity torus = engine::createTorus({0, 0, 0}, 1.0f, 0.5f, 16, 16, WHITE, true, BLACK);
-    //ecs::Entity cone = engine::createCone({0, 0, 0}, 1.0f, 2.0f, 16, WHITE, true, BLACK);
-    //ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 5.0f, 16, 16, WHITE, true, BLACK);
-    // ecs::Entity polygon = engine::createPolygon({0, 0, 0}, 8, 1.0f, 1.0f, WHITE, true, BLACK);
-    // ecs::Entity cylinder = engine::createCylinder({0, 0, 0}, 3.0f, 2.0f, WHITE, true, BLACK);
-    // ecs::Entity cube = engine::createCube({0, 0, 0}, 5, 0.5, 5, WHITE, true);
-    // ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
-    // ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
+    ecs::Entity cube = engine::createCube({0, 0.5, 0}, 2, 2, 2, WHITE, true);
+    //ecs::Entity model = engine::createModel3D("src/game_engine/ressources/models/guy.iqm", {0, 0, 0});
+    ecs::Entity cube2 = engine::createCube({0, 0, 0}, 10, 1, 10, WHITE, true);
     auto light = engine::createLight(engine::core::POINT, {-2, 1, -2}, {0, 0, 0}, YELLOW);
     auto light2 = engine::createLight(engine::core::POINT, {2, 1, 2}, {0, 0, 0}, RED);
     auto light3 = engine::createLight(engine::core::POINT, {-2, 1, 2}, {0, 0, 0}, GREEN);
     auto light4 = engine::createLight(engine::core::POINT, {2, 1, -2}, {0, 0, 0}, BLUE);
-    // _selectedEntity = model;
-    engine::addEntityToScene(knot, _sceneID);
-    // engine::addEntityToScene(cube, _sceneID);
+    engine::addEntityToScene(cube, _sceneID);
     // engine::addEntityToScene(model, _sceneID);
-    // engine::addEntityToScene(cube2, _sceneID);
+    engine::addEntityToScene(cube2, _sceneID);
+    _selectedEntity = cube;
 }
 
 void engine::editor::Main3DScene::handleWindowResize()
@@ -146,6 +188,54 @@ void engine::editor::Main3DScene::handleWindowResize()
 }
 
 typedef void (engine::editor::Main3DScene::*PrimitiveFunction)();
+
+void engine::editor::Main3DScene::handleKeyEvents()
+{
+    using ecs::components::input::Keys;
+    if (engine::isKeyPressed(Keys::KeyG))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+    }
+    else if (engine::isKeyPressed(Keys::KeyR))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+    }
+    else if (engine::isKeyPressed(Keys::KeyE))
+    {
+        _currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+    }
+}
+
+void engine::editor::Main3DScene::renderGrid(void)
+{
+    Matrix view = GetCameraMatrix(_camera->getCamera());
+    Vector2 screenSize = _camera->getRenderTextureSize();
+    Matrix projection = MatrixPerspective(_camera->getFov() * DEG2RAD, screenSize.x / screenSize.y, _nearPlane, _farPlane);
+    SetShaderValueMatrix(_gridShader, _matViewLoc, view);
+    SetShaderValueMatrix(_gridShader, _matProjectionLoc, projection);
+    RenderTexture renderTexture = _camera->getRenderTexture();
+    BeginTextureMode(renderTexture);
+        BeginMode3D(_camera->getCamera());
+            rlDisableDepthTest();
+            BeginShaderMode(_gridShader);
+                rlPushMatrix();
+                rlTranslatef(0.0f, 0.0f, 0.0f);
+                rlScalef(1000.0f, 1.0f, 1000.0f);
+
+                rlBegin(RL_TRIANGLES);
+                    rlVertex3f(-1, 1, -0);
+                    rlVertex3f(-1, -1, 0);
+                    rlVertex3f(1, -1, 0);
+                    rlVertex3f(1, 1, 0);
+                    rlVertex3f(-1, 1, 0);
+                    rlVertex3f(1, -1, 0);
+                rlEnd();
+                rlPopMatrix();
+            EndShaderMode();
+            rlEnableDepthTest();
+        EndMode3D();
+    EndTextureMode();
+}
 
 void engine::editor::Main3DScene::renderToolbar()
 {
@@ -232,6 +322,7 @@ void engine::editor::Main3DScene::renderGizmo()
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetDrawlist();
     ImGuizmo::SetID(_selectedEntity);
+    ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
     Matrix viewMatrix = _camera->getViewMatrix();
     Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f, 1000.0f);
     Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
@@ -243,8 +334,8 @@ void engine::editor::Main3DScene::renderGizmo()
 
     ImGuizmo::Enable(true);
     ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
-                         ImGuizmo::OPERATION::ROTATE,
-                         ImGuizmo::MODE::LOCAL  ,
+                         _currentGizmoOperation,
+                         ImGuizmo::MODE::LOCAL,
                          objectMatrixFloats.v);
 
     Vector3 translation = {0};
@@ -256,8 +347,7 @@ void engine::editor::Main3DScene::renderGizmo()
     if (ImGuizmo::IsUsing())
     {
         transf.pos = translation;
-        Vector3 deltaRotation = Vector3Subtract(rotation, transf.rotation);
-        transf.rotation = Vector3Add(transf.rotation, deltaRotation);
+        transf.rotation = rotation;
         transf.scale = scale;
         engine::entity::setTransformMatrix(_selectedEntity, engine::math::matrixFromFloat16(objectMatrixFloats));
     }

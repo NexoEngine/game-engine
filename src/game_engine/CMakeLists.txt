@@ -21,6 +21,7 @@ set(SRCS
     src/game_engine/core/EventHandling.cpp
     src/game_engine/core/SceneHandling.cpp
     src/game_engine/core/LightHandling.cpp
+    src/game_engine/core/Rendering.cpp
     src/game_engine/core/Math.cpp
     src/game_engine/core/window/Window.cpp
     src/game_engine/core/event/Event.cpp
@@ -34,7 +35,6 @@ set(SRCS
     src/game_engine/ecs/systems/Input.cpp
     src/game_engine/ecs/systems/Audio.cpp
     src/game_engine/ecs/Entity.cpp
-
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -95,7 +95,6 @@ if(APPLE)
 endif()
 
 # Find Boost package
-find_package(Boost REQUIRED COMPONENTS serialization system)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Find raylib package
@@ -124,12 +123,6 @@ target_link_libraries(game-engine PRIVATE imguizmo)
 target_link_libraries(game-engine PRIVATE raylib imgui::imgui rlimgui)
 
 target_include_directories(game-engine PRIVATE ${tinyfiledialogs_SOURCE_DIR})
-
-if(WIN32)
-    target_link_libraries(game-engine PRIVATE Boost::serialization Boost::system)
-else()
-    target_link_libraries(game-engine PRIVATE Boost::serialization)
-endif(WIN32)
 
 # Compiler options for Unix
 if(UNIX)

@@ -10,6 +10,7 @@
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
+#include <numbers>
 
 namespace engine {
     Matrix math::matrixFromFloat16(const float16& matrix)
@@ -119,7 +120,7 @@ namespace engine {
         if (test > 0.499 * unit) 
         {
             eulerAngles.y = 2 * std::atan2(q1.x, q1.w);
-            eulerAngles.z = M_PI / 2;
+            eulerAngles.z = std::numbers::pi / 2;
             eulerAngles.x = 0;
             return eulerAngles;
         }
@@ -127,7 +128,7 @@ namespace engine {
         if (test < -0.499 * unit) 
         {
             eulerAngles.y = -2 * std::atan2(q1.x, q1.w);
-            eulerAngles.z = -M_PI / 2;
+            eulerAngles.z = -std::numbers::pi / 2;
             eulerAngles.x = 0;
             return eulerAngles;
         }
@@ -175,6 +176,163 @@ namespace engine {
         float c1 = cos(outRotation.x);
         outRotation.z = atan2(s1 * mat.m8 - c1 * mat.m4, c1 * mat.m5 - s1 * mat.m9);
     }
+
+    Ray math::castRayFromMouse(Vector2 mousePos, std::shared_ptr<engine::core::EngineCamera> engineCamera, float nearPlane, float farPlane)
+    {
+        Ray ray = { 0 };
+
+        Vector2 viewSize = engineCamera->getRenderTextureSize();
+        float x = (2.0f*mousePos.x)/(float)viewSize.x - 1.0f;
+        float y = 1.0f - (2.0f*mousePos.y)/(float)viewSize.y;
+        float z = 1.0f;
+
+        Vector3 deviceCoords = { x, y, z };
+        Camera camera = engineCamera->getCamera();
+
+        Matrix matView = MatrixLookAt(camera.position, camera.target, camera.up);
+
+        Matrix matProj = MatrixPerspective(camera.fovy*DEG2RAD, ((double)viewSize.x/(double)viewSize.y), nearPlane, farPlane);
+
+        Vector3 nearPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
+        Vector3 farPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
+
+        Vector3 direction = Vector3Normalize(Vector3Subtract(farPoint, nearPoint));
+        ray.position = camera.position;
+        ray.direction = direction;
+        return ray;
+    }
+
+    Ray math::castRayFromMouse(Vector2 mousePos, engine::core::EngineCamera engineCamera, float nearPlane, float farPlane)
+    {
+        Ray ray = { 0 };
+
+        Vector2 viewSize = engineCamera.getRenderTextureSize();
+        float x = (2.0f*mousePos.x)/(float)viewSize.x - 1.0f;
+        float y = 1.0f - (2.0f*mousePos.y)/(float)viewSize.y;
+        float z = 1.0f;
+
+        Vector3 deviceCoords = { x, y, z };
+        Camera camera = engineCamera.getCamera();
+
+        Matrix matView = MatrixLookAt(camera.position, camera.target, camera.up);
+
+        Matrix matProj = MatrixPerspective(camera.fovy*DEG2RAD, ((double)viewSize.x/(double)viewSize.y), nearPlane, farPlane);
+
+        Vector3 nearPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
+        Vector3 farPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
+
+        Vector3 direction = Vector3Normalize(Vector3Subtract(farPoint, nearPoint));
+        ray.position = camera.position;
+        ray.direction = direction;
+        return ray;
+    }
+    
+    bool math::rayOBBCollisionFromAABBTransformed(
+        Vector3 rayOrigin,         // Ray origin, in world space
+        Vector3 rayDirection,      // Ray direction (NOT target position!), in world space. Must be normalized.
+        Vector3 aabbMin,           // Minimum X,Y,Z coords of the mesh when not transformed at all.
+        Vector3 aabbMax,           // Maximum X,Y,Z coords. Often aabbMin*-1 if your mesh is centered, but it's not always the case.
+        Matrix modelMatrix,         // Transformation applied to the mesh (which will also be applied to its bounding box)
+        float &intersectionDistance // Output: distance between rayOrigin and the intersection with the OBB
+    ) {
+        // Intersection method from Real-Time Rendering and Essential Mathematics for Games
+
+        float tMin = 0.0f;
+        float tMax = 100000.0f;
+
+        // Extract OBB position from the transformation matrix
+        Vector3 OBBposition_worldspace = { modelMatrix.m12, modelMatrix.m13, modelMatrix.m14 };
+
+        Vector3 delta = Vector3Subtract(OBBposition_worldspace, rayOrigin);
+
+        // X-axis test
+        {
+            Vector3 xaxis = { modelMatrix.m0, modelMatrix.m1, modelMatrix.m2 };
+            float e = Vector3DotProduct(xaxis, delta);
+            float f = Vector3DotProduct(rayDirection, xaxis);
+
+            if (fabs(f) > 0.001f) {
+                float t1 = (e + aabbMin.x) / f;
+                float t2 = (e + aabbMax.x) / f;
+
+                if (t1 > t2) {
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                }
+
+                if (t2 < tMax) tMax = t2;
+                if (t1 > tMin) tMin = t1;
+
+                if (tMax < tMin) return false;
+
+            } else {  // Rare case: Ray is almost parallel to the planes
+                if (-e + aabbMin.x > 0.0f || -e + aabbMax.x < 0.0f) return false;
+            }
+        }
+
+        // Y-axis test (same as X-axis)
+        {
+            Vector3 yaxis = { modelMatrix.m4, modelMatrix.m5, modelMatrix.m6 };
+            float e = Vector3DotProduct(yaxis, delta);
+            float f = Vector3DotProduct(rayDirection, yaxis);
+
+            if (fabs(f) > 0.001f) {
+                float t1 = (e + aabbMin.y) / f;
+                float t2 = (e + aabbMax.y) / f;
+
+                if (t1 > t2) {
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                }
+
+                if (t2 < tMax) tMax = t2;
+                if (t1 > tMin) tMin = t1;
+
+                if (tMax < tMin) return false;
+
+            } else {
+                if (-e + aabbMin.y > 0.0f || -e + aabbMax.y < 0.0f) return false;
+            }
+        }
+
+        // Z-axis test (same as X-axis)
+        {
+            Vector3 zaxis = { modelMatrix.m8, modelMatrix.m9, modelMatrix.m10 };
+            float e = Vector3DotProduct(zaxis, delta);
+            float f = Vector3DotProduct(rayDirection, zaxis);
+
+            if (fabs(f) > 0.001f) {
+                float t1 = (e + aabbMin.z) / f;
+                float t2 = (e + aabbMax.z) / f;
+
+                if (t1 > t2) {
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                }
+
+                if (t2 < tMax) tMax = t2;
+                if (t1 > tMin) tMin = t1;
+
+                if (tMax < tMin) return false;
+
+            } else {
+                if (-e + aabbMin.z > 0.0f || -e + aabbMax.z < 0.0f) return false;
+            }
+        }
+
+        // Output intersection distance
+        intersectionDistance = tMin;
+        return true;
+    }
+
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
+    os << "Vector2(" << vec.x << ", " << vec.y << ")";
+    return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const Vector3& vec) {

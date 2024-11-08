@@ -39,10 +39,15 @@ namespace engine::editor {
             int _targetFPS = 60;
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
-            ImGuizmo::OPERATION _lastGizmoOperationOver = ImGuizmo::SCALE;
 
             std::shared_ptr<engine::core::EngineCamera> _camera;
+            float _nearPlane = 0.01f;
+            float _farPlane = 1000.0f;
             ecs::SceneID _sceneID;
+
+            Shader _gridShader;
+            int _matViewLoc;
+            int _matProjectionLoc;
 
             // ---------------------- //
             // --- Internal logic --- //
@@ -50,6 +55,7 @@ namespace engine::editor {
             void setupWindow();
             void setupScene();
             void setupCamera();
+            void setupGridShader();
             void loadEntities();
 
             void add_cube()
@@ -108,10 +114,14 @@ namespace engine::editor {
 
             [[nodiscard]] bool isWindowResized() const;
             void handleWindowResize();
+            void handleKeyEvents();
 
+            void renderGrid();
             void renderToolbar();
             void renderGizmo();
             void renderView();
+
+            void rayPicking(void);
     };
 
 } // namespace engine::editor
