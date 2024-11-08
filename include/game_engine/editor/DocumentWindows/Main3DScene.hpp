@@ -78,7 +78,7 @@ namespace engine::editor {
 
             void add_cone()
             {
-                ecs::Entity cone = engine::createCone({0, 0, 0}, 1, 1, 1, WHITE, true);
+                ecs::Entity cone = engine::createCone({0, 0, 0}, 1, 1, 16, WHITE, true);
                 engine::addEntityToScene(cone, engine::editor::Main3DScene::_sceneID);
             }
 
@@ -90,19 +90,19 @@ namespace engine::editor {
 
             void add_torus()
             {
-                ecs::Entity torus = engine::createTorus({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
+                ecs::Entity torus = engine::createTorus({0, 0, 0}, 1, 1, 16, 16, WHITE, true);
                 engine::addEntityToScene(torus, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_knot()
             {
-                ecs::Entity knot = engine::createKnot({0, 0, 0}, 1, 1, 1, 1, WHITE, true);
+                ecs::Entity knot = engine::createKnot({0, 0, 0}, 1, 1, 16, 16, WHITE, true);
                 engine::addEntityToScene(knot, engine::editor::Main3DScene::_sceneID);
             }
 
             void add_hemisphere()
             {
-                ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 1, 1, 1, WHITE, true);
+                ecs::Entity hemisphere = engine::createHemisphere({0, 0, 0}, 1, 16, 16, WHITE, true);
                 engine::addEntityToScene(hemisphere, engine::editor::Main3DScene::_sceneID);
             }
 
