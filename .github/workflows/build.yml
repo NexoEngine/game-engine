@@ -52,7 +52,10 @@ jobs:
         with:
           cmake-version: "3.20"
 
-      - name: Build the project
+      - name: Build the project with GCC
+        env:
+          CC: gcc
+          CXX: g++
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
