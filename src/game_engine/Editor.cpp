@@ -1,22 +1,21 @@
-/*******************************************************************************************
+/*** Editor.cpp ***************************************************************
 *
-*   raylib-extras [ImGui] example - editor
+*  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+*  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+*  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+*  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+*  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 *
-*	This is a more complex ImGui Integration
-*	It shows how to build windows on top of 2d and 3d views using a render texture
+*  Author:      Guillaume Hein
+*  Date:        03/01/2024
+*  Description: This is the main entry point for the game engine editor.
+*               It creates the editor and runs the main engine loop.
 *
-*   Copyright (c) 2021 Jeffery Myers
-*
-********************************************************************************************/
+******************************************************************************/
 
 #define IMGUI_ENABLE_FREETYPE
 
 #include "imgui.h"
-
-
-#include "rlImGui.h"
-//#include "rlImGuiColors.h"
-#include <imgui_impl_raylib.h>
 
 #include <editor/DocumentWindows/ConsoleWindow.hpp>
 #include <editor/DocumentWindows/EntityPropertiesWindow.hpp>
@@ -25,20 +24,11 @@
 #include <editor/DocumentWindows/ModelViewerWindow.hpp>
 #include <loguru/loguru.hpp>
 
-#include "game_engine/core/Window.hpp"
-#include "game_engine/ecs/Coordinator.hpp"
-#include "game_engine/ecs/components/Physics.hpp"
-#include "game_engine/ecs/components/Shapes.hpp"
 #include "game_engine/GameEngine.hpp"
-#include "TestBehaviour.hpp"
 
 #include "game_engine/editor/GameEngineEditor.hpp"
-#include "game_engine/editor/SceneManagerBridge.hpp"
 
-#include "raylib.h"
-#include "raymath.h"
-
-#include <iostream>
+#include <thread>
 
 int main(int argc, char* argv[])
 {

@@ -65,7 +65,6 @@ if(APPLE)
 endif()
 
 # Find Boost package
-find_package(Boost REQUIRED COMPONENTS serialization system)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Find raylib package
@@ -94,12 +93,6 @@ target_link_libraries(imgui-vr PRIVATE imguizmo)
 target_link_libraries(imgui-vr PRIVATE raylib imgui::imgui rlimgui)
 
 target_include_directories(imgui-vr PRIVATE ${tinyfiledialogs_SOURCE_DIR})
-
-if(WIN32)
-    target_link_libraries(imgui-vr PRIVATE Boost::serialization Boost::system)
-else()
-    target_link_libraries(imgui-vr PRIVATE Boost::serialization)
-endif(WIN32)
 
 # Compiler options for Unix
 if(UNIX)
