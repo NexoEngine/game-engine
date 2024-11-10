@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include "Listener.hpp"
+#include "core/Logger.hpp"
 
 namespace nexo::scene {
     class Scene;
@@ -43,7 +44,7 @@ namespace nexo::event {
             {
                 if (auto *p = dynamic_cast<Listener<T>*>(&listener))
                     return p->handleEvent(event);
-                std::cout << "Listener : " << listener.getListenerName() << " is missing a handler" << std::endl;
+                LOG(NEXO_WARN, "Event(triggerListener): Listener {} is missing a handler", listener.getListenerName());
             }
 
             #define LISTENABLE() \
@@ -69,6 +70,7 @@ namespace nexo::event {
             }
 
             m_listeners[typeIndex].push_back(listener);
+            LOG(NEXO_DEV, "EventManager(registerListeners): Registered listener {}", listener->getListenerName());
         }
 
         template <typename EventType>
@@ -80,15 +82,16 @@ namespace nexo::event {
 
                 if (const auto listenerIt = std::find(listeners.begin(), listeners.end(), listener); listenerIt != listeners.end()) {
                     listeners.erase(listenerIt);
+                    LOG(NEXO_DEV, "EventManager(unregisterListener): Unregistered listener {}", listener->getListenerName());
 
                     if (listeners.empty()) {
                         m_listeners.erase(it);
                     }
                 } else {
-                    std::cout << "EventManager::unregisterListener: Listener not found for this event type." << std::endl;
+                    LOG(NEXO_WARN, "EventManager(unregisterListener): Listener not found for this event type");
                 }
             } else {
-                std::cout << "EventManager::unregisterListener: No listeners found for this event type." << std::endl;
+                LOG(NEXO_WARN, "EventManager(unregisterListener): No listeners found for this event type");
             }
         }
 

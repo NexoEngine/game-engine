@@ -16,6 +16,7 @@
 #include "core/event/Input.hpp"
 #include "core/event/KeyCodes.hpp"
 #include "Application.hpp"
+#include "core/Logger.hpp"
 
 namespace nexo::camera {
 
@@ -24,6 +25,7 @@ namespace nexo::camera {
         m_camera(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel),
         m_rotation(rotation)
     {
+        LOG(NEXO_DEBUG, "OrthographicCameraController: new orthographic camera controller created");
         Application::getInstance().getEventManager()->registerListener<event::EventWindowResize>(this);
         Application::getInstance().getEventManager()->registerListener<event::EventMouseScroll>(this);
     }

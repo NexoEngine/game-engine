@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Window.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "renderer/opengl/OpenGlWindow.hpp"
 #endif
@@ -23,6 +24,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlWindow>(width, height, title);
         #endif
+        throw core::UnknownGraphicsApi("UNKNOWN");
     }
 
 }

@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlShader.hpp"
+#include "core/Logger.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
 #include <cstring>
 #include <array>
@@ -27,14 +29,14 @@ namespace nexo::renderer {
             return GL_VERTEX_SHADER;
         if (type == "fragment")
             return GL_FRAGMENT_SHADER;
-        std::cerr << "Unknown shader type: " << type << std::endl;
+
         return 0;
     }
 
     OpenGlShader::OpenGlShader(const std::string &path)
     {
         const std::string src = readFile(path);
-        auto shaderSources = preProcess(src);
+        auto shaderSources = preProcess(src, path);
         compile(shaderSources);
 
         auto lastSlash = path.find_last_of("/\\");
@@ -44,7 +46,8 @@ namespace nexo::renderer {
         m_name = path.substr(lastSlash, count);
     }
 
-    OpenGlShader::OpenGlShader(std::string name, const std::string &vertexSource, const std::string &fragmentSource) : m_name(std::move(name))
+    OpenGlShader::OpenGlShader(std::string name, const std::string &vertexSource,
+                               const std::string &fragmentSource) : m_name(std::move(name))
     {
         std::unordered_map<GLenum, std::string> preProcessedSource;
         preProcessedSource[GL_VERTEX_SHADER] = vertexSource;
@@ -57,40 +60,41 @@ namespace nexo::renderer {
         glDeleteProgram(m_id);
     }
 
-    std::unordered_map<GLenum, std::string> OpenGlShader::preProcess(const std::string &src)
+    std::unordered_map<GLenum, std::string> OpenGlShader::preProcess(const std::string &src,
+                                                                     const std::string &filePath)
     {
         std::unordered_map<GLenum, std::string> shaderSources;
 
         const char *typeToken = "#type";
         size_t typeTokenLength = strlen(typeToken);
         size_t pos = src.find(typeToken, 0);
+        int currentLine = 1;
         while (pos != std::string::npos)
         {
             size_t eol = src.find_first_of("\r\n", pos);
             if (eol == std::string::npos)
-            {
-                std::cerr << "Error parsing shader: " << src << std::endl;
-                return shaderSources;
-            }
+                throw core::ShaderCreationFailed("OPENGL", "Syntax error at line: " + std::to_string(currentLine),
+                                                 filePath);
+
             size_t begin = pos + typeTokenLength + 1;
             std::string type = src.substr(begin, eol - begin);
             if (!shaderTypeFromString(type))
-            {
-                std::cerr << "Invalid type" << type << std::endl;
-                return shaderSources;
-            }
+                throw core::ShaderCreationFailed(
+                    "OPENGL", "Invalid shader type encountered at line: " + std::to_string(currentLine),
+                    filePath);
 
             size_t nextLinePos = src.find_first_not_of("\r\n", eol);
             if (nextLinePos == std::string::npos)
-            {
-                std::cerr << "Error parsing shader: " << src << std::endl;
-                return shaderSources;
-            }
+                throw core::ShaderCreationFailed("OPENGL", "Syntax error at line: " + std::to_string(currentLine),
+                                                 filePath);
+
             pos = src.find(typeToken, nextLinePos);
 
             shaderSources[shaderTypeFromString(type)] = (pos == std::string::npos)
                                                             ? src.substr(nextLinePos)
                                                             : src.substr(nextLinePos, pos - nextLinePos);
+            currentLine += std::count(src.begin() + nextLinePos,
+                                      src.begin() + (pos == std::string::npos ? src.size() : pos), '\n');
         }
 
         return shaderSources;
@@ -102,10 +106,7 @@ namespace nexo::renderer {
         // Now time to link them together into a program.
         // Get a program object.
         if (shaderSources.size() > 2)
-        {
-            std::cerr << "Only 2 shaders are supported for now" << std::endl;
-            return;
-        }
+            throw core::ShaderCreationFailed("OPENGL", "Only two shader type (vertex/fragment) are supported for now");
         GLuint program = glCreateProgram();
         std::array<GLenum, 2> glShaderIds{};
         unsigned int shaderIndex = 0;
@@ -137,13 +138,8 @@ namespace nexo::renderer {
 
                 // We don't need the shader anymore.
                 glDeleteShader(shader);
-                std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog.data() << std::endl;
-
-
-                // Use the infoLog as you see fit.
-
-                // In this simple program, we'll just leave
-                return;
+                throw core::ShaderCreationFailed(
+                    "OPENGL", "Opengl failed to compile the shader: " + std::string(infoLog.data()));
             }
             glAttachShader(program, shader);
             glShaderIds[shaderIndex++] = shader;;
@@ -164,7 +160,6 @@ namespace nexo::renderer {
             // The maxLength includes the NULL character
             std::vector<GLchar> infoLog(maxLength);
             glGetProgramInfoLog(m_id, maxLength, &maxLength, &infoLog[0]);
-            std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog.data() << std::endl;
 
             // We don't need the program anymore.
             glDeleteProgram(m_id);
@@ -172,8 +167,8 @@ namespace nexo::renderer {
             for (auto id: glShaderIds)
                 glDeleteShader(id);
 
-            // In this simple program, we'll just leave
-            return;
+            throw core::ShaderCreationFailed(
+                    "OPENGL", "Opengl failed to compile the shader: " + std::string(infoLog.data()));
         }
 
         // Always detach shaders after a successful link.

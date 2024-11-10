@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "RenderCommand.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlRendererAPI.hpp"
 #endif
@@ -24,6 +25,8 @@ namespace nexo::renderer {
 
     void RenderCommand::init()
     {
+        if (!_rendererApi)
+            throw core::UnknownGraphicsApi("UNKNOWN");
         _rendererApi->init();
     }
 }

@@ -36,7 +36,7 @@ namespace nexo::renderer {
         private:
             std::string m_name;
             unsigned int m_id = 0;
-            std::unordered_map<GLenum, std::string> preProcess(const std::string &src);
+            std::unordered_map<GLenum, std::string> preProcess(const std::string &src, const std::string &filePath);
             void compile(const std::unordered_map<GLenum, std::string> &shaderSources);
     };
 

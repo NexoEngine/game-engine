@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "core/layer/LayerStack.hpp"
+#include "core/Logger.hpp"
 
 namespace nexo::scene {
     using SceneId = unsigned int;
@@ -25,7 +26,9 @@ namespace nexo::scene {
             Scene() : id(0), m_debugSceneName("default") {};
             explicit Scene(const SceneId id, std::string sceneName = "scene") : id(id),
                                                                                 m_debugSceneName(std::move(sceneName))
-            {};
+            {
+                LOG(NEXO_INFO, "Scene {} created with id: {}", m_debugSceneName, id);
+            };
 
             ~Scene() = default;
 
@@ -48,6 +51,7 @@ namespace nexo::scene {
                             return layer;
                     }
                 }
+                LOG(NEXO_WARN, "Scene(getLayer): Scene {} does not hold this layer type", m_debugSceneName);
                 return nullptr;
             }
 
@@ -62,11 +66,13 @@ namespace nexo::scene {
                     {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
+                            LOG(NEXO_DEV, "Scene(addEntity): entity {} added to scene({})'s layer {}", entity, m_debugSceneName, layer->getName());
                             layer->addEntity(entity);
                             return;
                         }
                     }
                 }
+                LOG(NEXO_WARN, "Scene(addEntity): Scene {} does not hold this layer type, entity added to global scene entities", m_debugSceneName);
                 m_globalEntities.insert(entity);
             }
 
@@ -82,10 +88,12 @@ namespace nexo::scene {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
                             layer->removeEntity(entity);
+                            LOG(NEXO_DEV, "Scene(removeEntity): entity {} removed from scene({})'s layer {}", entity, m_debugSceneName, layer->getName());
                             return;
                         }
                     }
                 }
+                LOG(NEXO_WARN, "Scene(removeEntity): Scene {} does not hold this layer type, entity removed from global scene entities", m_debugSceneName);
                 m_globalEntities.erase(entity);
             }
 
@@ -105,11 +113,12 @@ namespace nexo::scene {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
                             layer->attachCamera(camera);
+                            LOG(NEXO_DEV, "Scene(attachCamera): camera added to scene({})'s layer {}", m_debugSceneName, layer->getName());
                             return;
                         }
                     }
                 }
-                std::cout << "ERROR::SCENE::attachCamera: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(attachCamera): Scene {} does not hold this layer type", m_debugSceneName);
             }
 
             void attachCamera(const std::shared_ptr<camera::Camera> &camera, unsigned int layerIndex);
@@ -124,11 +133,12 @@ namespace nexo::scene {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
                             layer->detachCamera();
+                            LOG(NEXO_DEV, "Scene(detachCamera): camera removed from scene({})'s layer {}", m_debugSceneName, layer->getName());
                             return;
                         }
                     }
                 }
-                std::cout << "ERROR::SCENE::detachCamera: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(detachCamera): Scene {} does not hold this layer type", m_debugSceneName);
             }
 
             void detachCamera(unsigned int layerIndex);
@@ -146,7 +156,7 @@ namespace nexo::scene {
                         }
                     }
                 }
-                std::cout << "ERROR:SCENE::getCamera: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(getCamera): Scene {} does not hold this layer type", m_debugSceneName);
                 return nullptr;
             }
 
@@ -160,11 +170,13 @@ namespace nexo::scene {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
                             layer->setRenderStatus(status);
+                            std::string strStatus = status ? "rendered" : "not rendered";
+                            LOG(NEXO_DEV, "Scene(setLayerRenderStatus): scene({})'s layer {} is now {}", m_debugSceneName, layer->getName(), strStatus);
                             return;
                         }
                     }
                 }
-                std::cout << "ERROR:SCENE::setLayerRenderStatus: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(setLayerRenderStatus): Scene {} does not hold this layer type", m_debugSceneName);
             }
 
             void setLayerRenderStatus(bool status, unsigned int layerIndex);
@@ -179,11 +191,13 @@ namespace nexo::scene {
                         if (layer->getTypeIndex<DerivedLayer>() == std::type_index(typeid(DerivedLayer)))
                         {
                             layer->setActiveStatus(status);
+                            std::string strStatus = status ? "active" : "unactive";
+                            LOG(NEXO_DEV, "Scene(setLayerActiveStatus): scene({})'s layer {} is now {}", m_debugSceneName, layer->getName(), strStatus);
                             return;
                         }
                     }
                 }
-                std::cout << "ERROR:SCENE::setLayerActiveStatus: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(setLayerActiveStatus): Scene {} does not hold this layer type", m_debugSceneName);
             }
 
             void setLayerActiveStatus(bool status, unsigned int layerIndex);
@@ -199,7 +213,7 @@ namespace nexo::scene {
                             return layer->isRendered();
                     }
                 }
-                std::cout << "ERROR:SCENE:getLayerRenderStatus: scene does not hold layer type!" << std::endl;
+                LOG(NEXO_WARN, "Scene(getLayerRenderStatus): Scene {} does not hold this layer type", m_debugSceneName);
                 return false;
             }
 
@@ -216,7 +230,7 @@ namespace nexo::scene {
                             return layer->isActive();
                     }
                 }
-                std::cout << "ERROR:SCENE:getLayerActiveStatus: scene does not hold layer type" << std::endl;
+                LOG(NEXO_WARN, "Scene(getLayerActiveStatus): Scene {} does not hold this layer type", m_debugSceneName);
                 return false;
             }
 

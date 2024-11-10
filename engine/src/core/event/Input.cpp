@@ -12,6 +12,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Input.hpp"
+#include "core/exceptions/Exceptions.hpp"
+#ifdef GRAPHICS_API_OPENGL
+    #include "opengl/InputOpenGl.hpp"
+#endif
+
 
 namespace nexo::event {
 
@@ -20,30 +25,14 @@ namespace nexo::event {
     void Input::init(const std::shared_ptr<renderer::Window>& window)
     {
         if (!_instance)
-            _instance = std::make_shared<InputOpenGl>(window);
+        {
+            #ifdef GRAPHICS_API_OPENGL
+                _instance = std::make_shared<InputOpenGl>(window);
+                return;
+            #endif
+            throw core::UnknownGraphicsApi("UNKNOWN");
+        }
     }
 
-    bool InputOpenGl::isKeyPressed(const int keycode) const
-    {
-        return glfwGetKey(static_cast<GLFWwindow *>(m_window->window()), keycode) == GLFW_PRESS;
-    }
 
-    bool InputOpenGl::isKeyReleased(const int keycode) const
-    {
-        return glfwGetKey(static_cast<GLFWwindow *>(m_window->window()), keycode) == GLFW_RELEASE;
-    }
-
-    bool InputOpenGl::isKeyRepeat(const int keycode) const
-    {
-        return glfwGetKey(static_cast<GLFWwindow *>(m_window->window()), keycode) == GLFW_REPEAT;
-    }
-
-    bool InputOpenGl::isMouseDown(const int button) const
-    {
-        return glfwGetMouseButton(static_cast<GLFWwindow *>(m_window->window()), button) == GLFW_PRESS;
-    }
-    bool InputOpenGl::isMouseReleased(const int button) const
-    {
-        return glfwGetMouseButton(static_cast<GLFWwindow *>(m_window->window()), button) == GLFW_RELEASE;
-    }
 }

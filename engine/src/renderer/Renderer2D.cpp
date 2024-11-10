@@ -15,6 +15,8 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "RenderCommand.hpp"
+#include "core/Logger.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>
@@ -102,9 +104,13 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < Renderer2DStorage::maxTextureSlots; ++i)
             samplers[i] = i;
 
-        s_Renderer2DStorage->textureShader = Shader::create("../assets/shaders/texture.glsl");
-        s_Renderer2DStorage->textureShader->bind();
-        s_Renderer2DStorage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
+        try {
+            s_Renderer2DStorage->textureShader = Shader::create("../assets/shaders/texture.glsl");
+            s_Renderer2DStorage->textureShader->bind();
+            s_Renderer2DStorage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
+        } catch (const core::Exception &e) {
+            LOG_EXCEPTION(e);
+        }
 
         s_Renderer2DStorage->textureSlots[0] = s_Renderer2DStorage->whiteTexture;
 
@@ -112,10 +118,13 @@ namespace nexo::renderer {
         s_Renderer2DStorage->quadVertexPositions[1] = {0.5, -0.5f, 0.0f, 1.0f};
         s_Renderer2DStorage->quadVertexPositions[2] = {0.5, 0.5f, 0.0f, 1.0f};
         s_Renderer2DStorage->quadVertexPositions[3] = {-0.5, 0.5f, 0.0f, 1.0f};
+        LOG(NEXO_DEV, "Renderer2D quad renderer initialized");
+        LOG(NEXO_INFO, "Renderer2D initialized");
     }
 
     void Renderer2D::shutdown()
     {
+        delete s_Renderer2DStorage->quadVertexBufferBase;
         delete s_Renderer2DStorage;
     }
 

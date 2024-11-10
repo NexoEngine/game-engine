@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlVertexArray.hpp"
+#include "core/Logger.hpp"
 
 #include <glad/glad.h>
 
@@ -58,7 +59,7 @@ namespace nexo::renderer {
         vertexBuffer->bind();
 
         if (vertexBuffer->getLayout().getElements().empty()) {
-            std::cerr << "The vertex buffer has no layout" << std::endl;
+            LOG(NEXO_ERROR, "The vertex buffer has no layout");
             return;
         }
 

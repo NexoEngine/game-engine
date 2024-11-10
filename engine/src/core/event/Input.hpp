@@ -17,8 +17,6 @@
 
 namespace nexo::event {
 
-    class InputOpenGl;
-
     class Input {
         public:
             virtual ~Input() = default;
@@ -43,18 +41,6 @@ namespace nexo::event {
             std::shared_ptr<renderer::Window> m_window;
         private:
             static std::shared_ptr<Input> _instance;
-    };
-
-    class InputOpenGl final : public Input {
-        public:
-            explicit InputOpenGl(const std::shared_ptr<renderer::Window>& window) : Input(window) {};
-
-            [[nodiscard]] bool isKeyPressed(int keycode) const override;
-            [[nodiscard]] bool isKeyReleased(int keycode) const override;
-            [[nodiscard]] bool isKeyRepeat(int keycode) const override;
-
-            [[nodiscard]] bool isMouseDown(int button) const override;
-            [[nodiscard]] bool isMouseReleased(int button) const override;
     };
 
     inline bool isKeyPressed(const int keycode) { return Input::getInstance()->isKeyPressed(keycode); }

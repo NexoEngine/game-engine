@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "OrthographicCamera.hpp"
+#include "core/Logger.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,6 +21,7 @@ namespace nexo::camera {
 
     OrthographicCamera::OrthographicCamera(const float left, const float right, const float bottom, const float top)
     {
+        LOG(NEXO_DEBUG, "OrthographicCamera: new orthographic camera created");
         m_projectionMatrix = glm::ortho(left, right, bottom, top);
         m_viewMatrix = glm::mat4(1.0f);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;

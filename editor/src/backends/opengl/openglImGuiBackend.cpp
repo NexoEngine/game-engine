@@ -12,6 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "core/Logger.hpp"
+#include "exceptions/Exceptions.hpp"
 #include "openglImGuiBackend.hpp"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
@@ -20,8 +22,8 @@
 namespace nexo::editor {
     void OpenGLImGuiBackend::init(GLFWwindow *window)
     {
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 130");
+        if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 130"))
+            throw BackendRendererApiInitFailed("OPENGL");
     }
 
     void OpenGLImGuiBackend::shutdown()
@@ -33,7 +35,8 @@ namespace nexo::editor {
 
     void OpenGLImGuiBackend::initFontAtlas()
     {
-        ImGui_ImplOpenGL3_CreateFontsTexture();
+        if (!ImGui_ImplOpenGL3_CreateFontsTexture())
+            throw BackendRendererApiFontInitFailed("OPENGL");
     }
 
     void OpenGLImGuiBackend::begin()
@@ -58,44 +61,40 @@ namespace nexo::editor {
 
     void* OpenGLImGuiBackend::getErrorCallback()
     {
-        // Define the error callback
         static auto errorCallback = [](int error, const char* description) {
             switch (error) {
                 case GLFW_NOT_INITIALIZED:
                 case GLFW_NO_CURRENT_CONTEXT:
-                    LOG_F(FATAL, "[OPENGL ERROR] (%d): %s", error, description);
-                break;
+                    throw BackendRendererApiFatalFailure("OPENGL", "(" + std::to_string(error) + "): " + description);
 
                 case GLFW_INVALID_ENUM:
                 case GLFW_INVALID_VALUE:
-                    LOG_F(WARNING, "[OPENGL WARNING] (%d): %s", error, description);
+                    LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
                 break;
 
                 case GLFW_OUT_OF_MEMORY:
-                    LOG_F(FATAL, "[OPENGL FATAL ERROR] (%d): Out of memory - %s", error, description);
-                break;
+                    throw BackendRendererApiFatalFailure("OPENGL", "(" + std::to_string(error) + "): Out of memory - " + description);
 
                 case GLFW_API_UNAVAILABLE:
                 case GLFW_VERSION_UNAVAILABLE:
                 case GLFW_FORMAT_UNAVAILABLE:
-                    LOG_F(ERROR, "[OPENGL ERROR] (%d): %s", error, description);
+                    LOG(NEXO_ERROR, "[OPENGL ERROR] ({}): {}", error, description);
                 break;
 
                 case GLFW_PLATFORM_ERROR:
-                    LOG_F(ERROR, "[OPENGL PLATFORM ERROR] (%d): %s", error, description);
+                    LOG(NEXO_ERROR, "[OPENGL PLATFORM ERROR] ({}): {}", error, description);
                 break;
 
                 case GLFW_NO_WINDOW_CONTEXT:
-                    LOG_F(WARNING, "[OPENGL WARNING] (%d): %s", error, description);
+                    LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
                 break;
 
                 default:
-                    LOG_F(ERROR, "[OPENGL UNKNOWN ERROR] (%d): %s", error, description);
+                    LOG(NEXO_ERROR, "[OPENGL UNKNOWN ERROR] ({}): {}", error, description);
             }
         };
 
         return reinterpret_cast<void*>(+errorCallback);
     }
-
 }
 

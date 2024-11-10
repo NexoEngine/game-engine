@@ -14,6 +14,8 @@
 
 #include "OpenGlWindow.hpp"
 #include "renderer/Renderer.hpp"
+#include "core/exceptions/Exceptions.hpp"
+#include "core/Logger.hpp"
 
 
 namespace nexo::renderer {
@@ -118,23 +120,23 @@ namespace nexo::renderer {
 
     void OpenGlWindow::init(const std::shared_ptr<event::EventManager> eventManager)
     {
-        if (!glfwInit()) {
-            std::cerr << "Failed to initialize GLFW" << std::endl;
-            return;
-        }
+        if (!glfwInit())
+            throw core::GraphicsApiInitFailure("OPENGL");
         glfwSetErrorCallback(glfwErrorCallback);
-        // Telling openGL what we are using
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         _openGlWindow = glfwCreateWindow(_props.width, _props.height, _props.title, nullptr, nullptr);
+        if (!_openGlWindow)
+            throw core::GraphicsApiWindowInitFailure("OPENGL");
         glfwMakeContextCurrent(_openGlWindow);
         glfwSetWindowUserPointer(_openGlWindow, &_props);
         setVsync(true);
         _props.eventManager = eventManager;
         setupCallback();
+        LOG(NEXO_DEV, "Opengl window ({}, {}) initialized", _props.width, _props.height);
     }
     void OpenGlWindow::shutdown()
     {

@@ -23,6 +23,7 @@
 #include "core/Timestep.hpp"
 #include "ecs/Entity.hpp"
 #include "core/camera/Camera.hpp"
+#include "core/Logger.hpp"
 
 #define LAYER_LISTENS_TO(DerivedLayer, ...) public nexo::layer::LayerEventMixin<DerivedLayer, __VA_ARGS__>
 
@@ -110,7 +111,7 @@ namespace nexo::layer {
                 if (it != m_entities.end())
                     m_entities.erase(it);
                 else
-                    std::cout << "LAYER::addEntity: Entity " << entity << " does not exist." << std::endl;
+                    LOG(NEXO_WARN, "Layer(removeEntity): Entity {} does not exists", entity);
             };
 
             void entityDestroyed(const ecs::Entity entity)
@@ -136,7 +137,7 @@ namespace nexo::layer {
                     ecs::setRendered(modifiedEntity, status);
                     m_entities.insert(modifiedEntity);
                 } else {
-                    std::cout << "LAYER::setEntityRenderStatus: Entity " << entity << " does not exist." << std::endl;
+                    LOG(NEXO_WARN, "Layer(setEntityRenderStatus): Entity {} does not exists", entity);
                 }
             }
 
@@ -150,7 +151,7 @@ namespace nexo::layer {
                 if (it != m_entities.end()) {
                     return ecs::isRendered(*it);
                 }
-                std::cout << "LAYER::isEntityRendered: Entity " << entity << " does not exist." << std::endl;
+                LOG(NEXO_WARN, "Layer(isEntityRendered): Entity {} does not exists", entity);
                 return false;
             };
 
@@ -167,7 +168,7 @@ namespace nexo::layer {
                     ecs::setActive(modifiedEntity, status);
                     m_entities.insert(modifiedEntity);
                 } else {
-                    std::cout << "LAYER::setEntityActiveStatus: Entity " << entity << " does not exist." << std::endl;
+                    LOG(NEXO_WARN, "Layer(setEntityActiveStatus): Entity {} does not exists", entity);
                 }
             };
 
@@ -181,7 +182,7 @@ namespace nexo::layer {
                 if (it != m_entities.end()) {
                     return ecs::isActive(*it);
                 }
-                std::cout << "LAYER::isEntityActive: Entity " << entity << " does not exist." << std::endl;
+                LOG(NEXO_WARN, "Layer(isEntityActive): Entity {} does not exists", entity);
                 return false;
             }
 

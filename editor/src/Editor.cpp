@@ -31,6 +31,7 @@ namespace nexo::editor {
             case core::LogLevel::WARN: return loguru::Verbosity_WARNING;
             case core::LogLevel::INFO: return loguru::Verbosity_INFO;
             case core::LogLevel::DEBUG: return loguru::Verbosity_1;
+            case core::LogLevel::DEV: return loguru::Verbosity_2;
         }
         return loguru::Verbosity_INVALID;
     }
@@ -79,6 +80,9 @@ namespace nexo::editor {
         LOG(NEXO_INFO, "Style initialized");
         setupDockspace();
         LOG(NEXO_INFO, "Editor initialized");
+        //LOG(NEXO_FATAL, "Fatal error log test");
+        LOG(NEXO_ERROR, "Error log test");
+        LOG(NEXO_WARN, "Warning log test");
     }
 
     bool Editor::isOpen() const

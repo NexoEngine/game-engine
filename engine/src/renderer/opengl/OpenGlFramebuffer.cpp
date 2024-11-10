@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlFramebuffer.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
 #include <glad/glad.h>
 #include <iostream>
@@ -49,10 +50,7 @@ namespace nexo::renderer {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment, 0);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cerr << "Framebuffer is not complete!" << std::endl;
-            return;
-        }
+            throw core::FramebufferCreationFailed("OPENGL");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

@@ -21,6 +21,7 @@
 #include "SingletonComponent.hpp"
 #include "Entity.hpp"
 #include "core/scene/SceneManager.hpp"
+#include "core/Logger.hpp"
 
 
 namespace nexo::ecs {
@@ -46,6 +47,7 @@ namespace nexo::ecs {
                 m_systemManager = std::make_shared<SystemManager>();
                 m_singletonComponentManager = std::make_shared<ecs::SingletonComponentManager>();
                 m_sceneManager = std::make_shared<scene::SceneManager>();
+                LOG(NEXO_DEV, "[ECS]: Coordinator initialized");
             }
 
             /**

@@ -18,21 +18,25 @@ namespace nexo::scene {
     void Scene::addLayer(const std::shared_ptr<layer::Layer> &layer)
     {
         m_layerStack.pushLayer(layer);
+        LOG(NEXO_DEV, "Scene(addLayer): layer {} added to scene {}", layer->getName(), m_debugSceneName);
     }
 
     void Scene::addOverlay(const std::shared_ptr<layer::Layer> &overlay)
     {
         m_layerStack.pushOverlay(overlay);
+        LOG(NEXO_DEV, "Scene(addOverlay): overlay {} added to scene {}", overlay->getName(), m_debugSceneName);
     }
 
     void Scene::removeLayer(const std::shared_ptr<layer::Layer> &layer)
     {
         m_layerStack.popLayer(layer);
+        LOG(NEXO_DEV, "Scene(removeLayer): layer {} removed from scene {}", layer->getName(), m_debugSceneName);
     }
 
     void Scene::removeOverlay(const std::shared_ptr<layer::Layer> &overlay)
     {
         m_layerStack.popOverlay(overlay);
+        LOG(NEXO_DEV, "Scene(removeOverlay): overlay {} removed from scene {}", overlay->getName(), m_debugSceneName);
     }
 
     std::shared_ptr<layer::Layer> Scene::getLayerAt(const unsigned int index) const
@@ -47,13 +51,15 @@ namespace nexo::scene {
         if (layerIndex == -1)
         {
             m_globalEntities.insert(entity);
+            LOG(NEXO_DEV, "Scene(addEntity): entity {} added to scene {} global entities", entity, m_debugSceneName);
             return;
         }
         if (layerIndex >= 0 && static_cast<unsigned int>(layerIndex) < m_layerStack.size())
         {
             m_layerStack[layerIndex]->addEntity(entity);
+            LOG(NEXO_DEV, "Scene(addEntity): entity {} added to scene({})'s layer {}", entity, m_debugSceneName, m_layerStack[layerIndex]->getName());
         } else
-            std::cout << "ERROR::SCENE::addEntity: index out of bounds!" << std::endl;
+            LOG(NEXO_WARN, "Scene(addEntity): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     void Scene::removeEntity(const ecs::Entity entity, const int layerIndex)
@@ -61,13 +67,15 @@ namespace nexo::scene {
         if (layerIndex == -1)
         {
             m_globalEntities.erase(entity);
+            LOG(NEXO_DEV, "Scene(removeEntity): entity {} removed from scene {} global entities", entity, m_debugSceneName);
             return;
         }
         if (layerIndex >= 0 && static_cast<unsigned int>(layerIndex) < m_layerStack.size())
         {
             m_layerStack[layerIndex]->removeEntity(entity);
+            LOG(NEXO_DEV, "Scene(removeEntity): entity {} removed from scene({})'s layer {}", entity, m_debugSceneName, m_layerStack[layerIndex]->getName());
         } else
-            std::cout << "ERROR::SCENE::removeEntity: index out of bounds!" << std::endl;
+            LOG(NEXO_WARN, "Scene(addEntity): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     void Scene::entityDestroyed(const ecs::Entity entity)
@@ -90,9 +98,10 @@ namespace nexo::scene {
         if (layerIndex < m_layerStack.size())
         {
             m_layerStack[layerIndex]->attachCamera(camera);
+            LOG(NEXO_DEV, "Scene(attachCamera): camera added to scene({})'s layer {}", m_debugSceneName, m_layerStack[layerIndex]->getName());
             return;
         }
-        std::cout << "ERROR::SCENE::attachCamera: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(addEntity): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     void Scene::detachCamera(const unsigned int layerIndex)
@@ -100,9 +109,10 @@ namespace nexo::scene {
         if (layerIndex < m_layerStack.size())
         {
             m_layerStack[layerIndex]->detachCamera();
+            LOG(NEXO_DEV, "Scene(detachCamera): camera removed from scene({})'s layer {}", m_debugSceneName, m_layerStack[layerIndex]->getName());
             return;
         }
-        std::cout << "ERROR::SCENE::detachCamera: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(detachCamera): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     void Scene::setLayerRenderStatus(const bool status, const unsigned int layerIndex)
@@ -110,9 +120,11 @@ namespace nexo::scene {
         if (layerIndex < m_layerStack.size())
         {
             m_layerStack[layerIndex]->setRenderStatus(status);
+            std::string strStatus = status ? "rendered" : "not rendered";
+            LOG(NEXO_DEV, "Scene(setLayerRenderStatus): scene({})'s layer {} is now {}", m_debugSceneName, m_layerStack[layerIndex]->getName(), strStatus);
             return;
         }
-        std::cout << "ERROR:SCENE::setLayerRenderStatus: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(setLayerRenderStatus): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     void Scene::setLayerActiveStatus(const bool status, const unsigned int layerIndex)
@@ -120,9 +132,11 @@ namespace nexo::scene {
         if (layerIndex < m_layerStack.size())
         {
             m_layerStack[layerIndex]->setActiveStatus(status);
+            std::string strStatus = status ? "active" : "unactive";
+            LOG(NEXO_DEV, "Scene(setLayerActiveStatus): scene({})'s layer {} is now {}", m_debugSceneName, m_layerStack[layerIndex]->getName(), strStatus);
             return;
         }
-        std::cout << "ERROR:SCENE::setLayerActiveStatus: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(setLayerActiveStatus): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
     }
 
     bool Scene::getLayerRenderStatus(const unsigned int layerIndex) const
@@ -131,7 +145,7 @@ namespace nexo::scene {
         {
             return m_layerStack[layerIndex]->isRendered();
         }
-        std::cout << "ERROR::SCENE::getLayerRenderStatus: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(getLayerRenderStatus): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
         return false;
     }
 
@@ -139,7 +153,7 @@ namespace nexo::scene {
     {
         if (layerIndex < m_layerStack.size())
             return m_layerStack[layerIndex]->isActive();
-        std::cout << "ERROR::SCENE::getLayerActiveStatus: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(getLayerActiveStatus): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
         return false;
     }
 
@@ -148,7 +162,7 @@ namespace nexo::scene {
         static std::shared_ptr<nexo::camera::Camera> nullCamera = nullptr;
         if (layerIndex < m_layerStack.size())
             return m_layerStack[layerIndex]->getCamera();
-        std::cout << "ERROR::SCENE::getCamera: layer index out of bounds" << std::endl;
+        LOG(NEXO_WARN, "Scene(getCamera): Scene {}: index {} out of bounds", m_debugSceneName, layerIndex);
         return nullCamera;
     }
 

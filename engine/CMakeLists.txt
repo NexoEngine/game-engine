@@ -17,6 +17,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Window.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
+        engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
@@ -34,6 +35,7 @@ set(COMMON_SOURCES
         engine/src/core/layer/LayerStack.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
+        engine/src/core/exceptions/Exceptions.cpp
         engine/src/ecs/Entity.cpp
 )
 

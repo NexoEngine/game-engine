@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "OpenGlRendererAPI.hpp"
+#include "core/Logger.hpp"
 
 #include <glad/glad.h>
 
@@ -23,6 +24,7 @@ namespace nexo::renderer {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glEnable(GL_DEPTH_TEST);
+        LOG(NEXO_DEV, "Opengl renderer api initialized");
     }
 
     void OpenGlRendererApi::setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)

@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlTexture2D.hpp"
+#include "core/Logger.hpp"
 #include "stb/stb_image.h"
 
 namespace nexo::renderer {
@@ -38,7 +39,7 @@ namespace nexo::renderer {
         stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         if (!data) {
-            std::cerr << "Failed to load texture: " << path << std::endl;
+            LOG(NEXO_ERROR, "[OPENGL] File not found: {}", path);
             return;
         }
         m_width = width;
@@ -59,7 +60,7 @@ namespace nexo::renderer {
         }
         else
         {
-            std::cerr << "Unsupported image format with " << channels << " channels in " << path << std::endl;
+            LOG(NEXO_ERROR, "[OPENGL] Unsupported image format with {} channels in {}", channels, path);
             stbi_image_free(data);
             return;
         }
@@ -87,7 +88,7 @@ namespace nexo::renderer {
     void OpenGlTexture2D::setData(void *data, const unsigned int size)
     {
         if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize) {
-            std::cerr << "Error: Data size does not match the texture size!" << std::endl;
+            LOG(NEXO_ERROR, "[OPENGL] Data size does not match the texture size: {} != {}", size, expectedSize);
             return;
         }
         glBindTexture(GL_TEXTURE_2D, m_id);

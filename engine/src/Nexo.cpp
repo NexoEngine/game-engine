@@ -21,7 +21,7 @@ namespace nexo {
         app.init();
         LOG(NEXO_INFO, "Nexo engine initialized");
         app.registerAllDebugListeners();
-        LOG(NEXO_DEBUG, "Debug listeners registered");
+        LOG(NEXO_DEV, "Debug listeners registered");
         return app;
     }
 
