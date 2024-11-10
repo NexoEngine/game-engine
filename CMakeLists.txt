@@ -11,6 +11,7 @@ endif()
 # PROJECT
 project(client CXX)
 
+set(GRAPHICS_API "OpenGL")
 
 # SETUP GIT SUBMODULES
 
@@ -70,7 +71,8 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
 
 # SETUP GAME ENGINE GUI
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 # include("${CMAKE_CURRENT_SOURCE_DIR}/src/protoVR/CMakeLists.txt")
 
 # IMGuiVR example

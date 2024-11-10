@@ -18,6 +18,9 @@
     },
     {
       "name": "loguru"
+    },
+    {
+      "name": "glm"
     }
   ]
 }
