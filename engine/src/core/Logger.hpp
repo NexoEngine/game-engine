@@ -60,9 +60,7 @@ namespace nexo::core {
     {
         std::string path(file);
         if (const auto lastSlash = path.find_last_of("/\\"); lastSlash != std::string::npos)
-        {
             return path.substr(lastSlash + 1);
-        }
         return path;
     }
 
@@ -91,6 +89,7 @@ namespace nexo::core {
                         return std::vformat(fmt, std::make_format_args(transformedArgs...));
                     },
                     transformed);
+
                 if (level == LogLevel::INFO)
                     logString(level, message);
                 else
@@ -104,12 +103,9 @@ namespace nexo::core {
             static void logString(const LogLevel level, const std::string &message)
             {
                 if (logCallback)
-                {
                     logCallback(level, message);
-                } else
-                {
+                else
                     defaultCallback(level, message);
-                }
             }
             static inline std::function<void(LogLevel, const std::string &)> logCallback = nullptr;
     };
