@@ -68,6 +68,7 @@ namespace nexo::camera {
 
     void OrthographicCameraController::handleEvent(event::EventWindowResize &event)
     {
+        std::cout << "ALLLLLLLLLO" << std::endl;
         m_aspectRatio = static_cast<float>(event.width) / static_cast<float>(event.height);
         m_camera.setProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
         event.consumed = true;

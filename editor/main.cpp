@@ -14,6 +14,7 @@
 
 #include "src/Editor.hpp"
 #include "src/DocumentWindows/ConsoleWindow.hpp"
+#include "src/DocumentWindows/MainScene.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
@@ -24,18 +25,19 @@ int main(int argc, char **argv)
         loguru::init(argc, argv);
         loguru::g_stderr_verbosity = loguru::Verbosity_1;
         nexo::editor::Editor editor;
-        editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
+        //editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
+        editor.registerWindow("MainScene", std::make_shared<nexo::editor::MainScene>());
         editor.init();
 
         while (editor.isOpen())
         {
-            auto start = std::chrono::high_resolution_clock::now();
+            //auto start = std::chrono::high_resolution_clock::now();
             editor.update();
             editor.render();
 
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = end - start;
-            std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+            // auto end = std::chrono::high_resolution_clock::now();
+            // std::chrono::duration<double, std::milli> elapsed = end - start;
+            // std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
         }
 
         return 0;

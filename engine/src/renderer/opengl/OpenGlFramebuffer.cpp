@@ -27,11 +27,19 @@ namespace nexo::renderer {
     OpenGlFramebuffer::~OpenGlFramebuffer()
     {
         glDeleteFramebuffers(1, &m_id);
+        glDeleteTextures(1, &m_colorAttachments);
+        glDeleteTextures(1, &m_depthAttachment);
     }
 
 
     void OpenGlFramebuffer::invalidate()
     {
+        if (m_id)
+        {
+            glDeleteFramebuffers(1, &m_id);
+            glDeleteTextures(1, &m_colorAttachments);
+            glDeleteTextures(1, &m_depthAttachment);
+        }
         glGenFramebuffers(1, &m_id);
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
@@ -57,11 +65,30 @@ namespace nexo::renderer {
 
     void OpenGlFramebuffer::bind()
     {
+        if (toResize)
+        {
+            glBindTexture(GL_TEXTURE_2D, m_colorAttachments);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_specs.width, m_specs.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_specs.width, m_specs.height, 0, GL_DEPTH_STENCIL,
+                         GL_UNSIGNED_INT_24_8, nullptr);
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+        glViewport(0, 0, m_specs.width , m_specs.height);
     }
 
     void OpenGlFramebuffer::unbind()
     {
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
+
+    void OpenGlFramebuffer::resize(unsigned int width, unsigned int height)
+    {
+        m_specs.width = width;
+        m_specs.height = height;
+        toResize = true;
+    }
+
 }

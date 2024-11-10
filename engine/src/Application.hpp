@@ -69,6 +69,7 @@ namespace nexo {
 
             void handleEvent(event::EventWindowResize &event) override
             {
+                std::cout << "on recoit" << std::endl;
                 if (event.height == 0 || event.width == 0)
                     m_isMinimized = true;
                 if (m_isMinimized && event.width != 0 && event.height != 0)
@@ -121,12 +122,16 @@ namespace nexo {
 
             scene::SceneManager &getSceneManager() { return m_sceneManager; };
 
+            scene::SceneId createScene(const std::string& name = "default") { m_sceneManager.createScene(m_nextSceneId, name); return m_nextSceneId++;}
+
         protected:
             Application();
             std::shared_ptr<event::EventManager> m_eventManager;
 
         private:
             static std::unique_ptr<Application> _instance;
+
+            scene::SceneId m_nextSceneId = 0;
 
             bool m_isRunning = true;
             bool m_isMinimized = false;

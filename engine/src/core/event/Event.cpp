@@ -27,6 +27,7 @@ namespace nexo::event {
             if (m_listeners.find(typeIndex) != m_listeners.end()) {
                 for (auto *listener : m_listeners[typeIndex]) {
                     event->trigger(*listener);
+                    std::cout << "sent event to trigger" << std::endl;
                     if (event->consumed)
                         break;
                 }

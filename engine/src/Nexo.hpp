@@ -41,4 +41,6 @@ namespace nexo {
     }
 
     Application &init();
+
+    Application &getApp();
 }

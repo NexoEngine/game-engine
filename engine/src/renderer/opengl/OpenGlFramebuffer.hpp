@@ -26,14 +26,17 @@ namespace nexo::renderer {
         void bind() override;
         void unbind() override;
 
+        void resize(unsigned int width, unsigned int height) override;
+
         FramebufferSpecs &getSpecs() override {return m_specs;};
         [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
 
         [[nodiscard]] unsigned int getColorAttachmentId() const override {return m_colorAttachments;};
         private:
-        unsigned int m_id;
-        unsigned int m_colorAttachments;
-        unsigned int m_depthAttachment;
+        unsigned int m_id = 0;
+        unsigned int m_colorAttachments = 0;
+        unsigned int m_depthAttachment = 0;
+        bool toResize = false;
         FramebufferSpecs m_specs;
     };
 }

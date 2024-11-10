@@ -46,39 +46,36 @@ namespace nexo {
 
     void Application::registerAllDebugListeners()
     {
-        m_eventManager->registerListener<event::EventKey>(this);
+        //m_eventManager->registerListener<event::EventKey>(this);
         m_eventManager->registerListener<event::EventWindowResize>(this);
-        m_eventManager->registerListener<event::EventWindowClose>(this);
-        m_eventManager->registerListener<event::EventMouseClick>(this);
-        m_eventManager->registerListener<event::EventMouseScroll>(this);
-        m_eventManager->registerListener<event::EventMouseMove>(this);
+        // m_eventManager->registerListener<event::EventWindowClose>(this);
+        // m_eventManager->registerListener<event::EventMouseClick>(this);
+        // m_eventManager->registerListener<event::EventMouseScroll>(this);
+        // m_eventManager->registerListener<event::EventMouseMove>(this);
     }
 
     void Application::run()
     {
-        while (m_isRunning)
+        const auto time = static_cast<float>(glfwGetTime());
+        const core::Timestep timestep = time - m_lastFrameTime;
+        m_lastFrameTime = time;
+
+        if (!m_isMinimized)
         {
-            const auto time = static_cast<float>(glfwGetTime());
-            const core::Timestep timestep = time - m_lastFrameTime;
-            m_lastFrameTime = time;
+            // Clear
+            renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+            renderer::RenderCommand::clear();
 
-            if (!m_isMinimized)
+            if (m_actualScene != -1)
             {
-                // Clear
-                renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-                renderer::RenderCommand::clear();
-
-                if (m_actualScene != -1)
-                {
-                    m_scenes[m_actualScene].onUpdate(timestep);
-                    m_scenes[m_actualScene].onRender();
-                }
+                m_scenes[m_actualScene].onUpdate(timestep);
+                m_scenes[m_actualScene].onRender();
             }
-
-            // Update (swap buffers and poll events)
-            m_window->onUpdate();
-            m_eventManager->dispatchEvents(&m_scenes[m_actualScene]);
         }
+
+        // Update (swap buffers and poll events)
+        //m_window->onUpdate();
+        m_eventManager->dispatchEvents(&m_scenes[m_actualScene]);
     }
 
     void Application::addScene(scene::Scene &scene)

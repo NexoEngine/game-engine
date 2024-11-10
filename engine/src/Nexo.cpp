@@ -25,6 +25,11 @@ namespace nexo {
         return app;
     }
 
+    Application &getApp()
+    {
+        return Application::getInstance();
+    }
+
     void run()
     {
         Application &app = Application::getInstance();

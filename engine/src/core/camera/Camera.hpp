@@ -35,7 +35,6 @@ namespace nexo::camera {
             [[nodiscard]] const glm::mat4 &getViewProjectionMatrix() const { return m_viewProjectionMatrix; };
 
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
-
         protected:
             CameraId m_id{};
 

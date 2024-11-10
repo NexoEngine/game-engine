@@ -15,13 +15,13 @@
 #pragma once
 
 #include "IDocumentWindow.hpp"
+#include "SceneManagerBridge.hpp"
 #include "Nexo.hpp"
 
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
-            ADocumentWindow() = default;
-            explicit ADocumentWindow(Application app) : m_sceneManagerBridge(app.getSceneManager()) {};
+            explicit ADocumentWindow() : m_sceneManagerBridge(SceneManagerBridge::getInstance(getApp().getSceneManager())) {};
             ~ADocumentWindow() override = default;
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
@@ -41,6 +41,6 @@ namespace nexo::editor {
              * @brief Ref to singleton SceneManagerBridge
              * Responsible of the communication between the editor and the engine
              */
-            scene::SceneManager m_sceneManagerBridge;
+            SceneManagerBridge &m_sceneManagerBridge;
     };
 }

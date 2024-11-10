@@ -32,6 +32,11 @@ namespace nexo::scene {
             [[nodiscard]] std::vector<ecs::Entity> getAllRenderedEntities(SceneId sceneId) const;
             [[nodiscard]] std::vector<ecs::Entity> getAllUnrenderedEntities(SceneId sceneId) const;
 
+            Scene &getScene(SceneId sceneId);
+
+            void addLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer);
+            void removeLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer);
+
             void addEntityToScene(ecs::Entity entity, SceneId sceneId, int layerIndex = -1, bool active = true, bool rendered = true);
             template<typename DerivedLayer = void>
             void addEntityToScene(const ecs::Entity entity, const SceneId sceneId, const bool active = true, const bool rendered = true)

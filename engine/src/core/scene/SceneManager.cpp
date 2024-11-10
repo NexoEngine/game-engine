@@ -18,6 +18,33 @@
 #include <vector>
 
 namespace nexo::scene {
+
+    Scene &SceneManager::getScene(SceneId sceneId)
+    {
+        if (!scenes.contains(sceneId)) {
+            LOG(NEXO_ERROR, "SceneManager(getScene): SceneId {} does not exist", sceneId);
+        }
+        return scenes.at(sceneId);
+    }
+
+    void SceneManager::addLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer)
+    {
+        if (!scenes.contains(sceneId)) {
+            LOG(NEXO_ERROR, "SceneManager(addLayer): SceneId {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).addLayer(layer);
+    }
+
+    void SceneManager::removeLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer)
+    {
+        if (!scenes.contains(sceneId)) {
+            LOG(NEXO_ERROR, "SceneManager(removeLayer): SceneId {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).removeLayer(layer);
+    }
+
     std::vector<SceneId> SceneManager::getSceneIDs() const
     {
         const std::size_t totalScenes = scenes.size();
