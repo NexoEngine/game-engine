@@ -15,13 +15,13 @@ namespace engine::editor {
 
     static constexpr const char* verbosityToString(loguru::Verbosity level) {
         switch (level) {
-            case loguru::Verbosity_FATAL:   return "FATAL";
-            case loguru::Verbosity_ERROR:   return "ERROR";
-            case loguru::Verbosity_WARNING: return "WARNING";
-            case loguru::Verbosity_INFO:    return "INFO";
-            case loguru::Verbosity_INVALID:   return "INVALID";
+            case loguru::Verbosity_FATAL:   return "[FATAL]";
+            case loguru::Verbosity_ERROR:   return "[ERROR]";
+            case loguru::Verbosity_WARNING: return "[WARNING]";
+            case loguru::Verbosity_INFO:    return "[INFO]";
+            case loguru::Verbosity_INVALID:   return "[INVALID]";
             // Add more cases if there are other verbosity levels you use.
-            default:                        return "UNKNOWN";
+            default:                        return "[UNKNOWN]";
         }
     }
 
@@ -104,15 +104,9 @@ namespace engine::editor {
                 ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Set border size to 0
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0)); // Set item spacing to 0
 
-                ImVec4 color = getVerbosityColor(item.verbosity);
-
-                // Split the message into verbosity tag and actual message
-                std::string tag = "[" + std::string(verbosityToString(item.verbosity)) + "]";
-                //std::string message = item.message.substr(tag.length());  // assuming item.message starts with the tag
-
                 // Render the verbosity tag with color
-                ImGui::PushStyleColor(ImGuiCol_Text, color);
-                ImGui::TextUnformatted(tag.c_str());
+                ImGui::PushStyleColor(ImGuiCol_Text, getVerbosityColor(item.verbosity));
+                ImGui::TextUnformatted(verbosityToString(item.verbosity));
                 ImGui::PopStyleColor();
                 //ImGui::PushStyleColor(ImGuiCol_Text, color);
 

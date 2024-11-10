@@ -16,6 +16,9 @@
 #include "game_engine/save/IOriginator.hpp"
 #include "game_engine/save/ASerializableMemento.hpp"
 
+#include "game_engine/save/filesystem/SaveFolder.hpp"
+#include "game_engine/save/filesystem/SaveFile.hpp"
+#include "game_engine/editor/save/Editor.hpp"
 
 namespace engine::editor {
     constexpr auto LOGURU_CALLBACK_NAME = "GEE";
@@ -28,16 +31,7 @@ namespace engine::editor {
     };
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LogMessage, verbosity, message, prefix);
 
-    struct GameEngineEditorMemento : save::ASerializableMemento {
-        std::vector<LogMessage> logs;
-        std::string name = "GameEngineEditorMemento";
-        int test = 12;
-
-        NEXO_SERIALIZABLE_FIELDS(logs, name, test)
-    };
-    //NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GameEngineEditorMemento, logs, name);
-
-    class GameEngineEditor : public save::IOriginator<GameEngineEditorMemento> {
+    class GameEngineEditor {
         public:
             GameEngineEditor();
             ~GameEngineEditor();
@@ -58,9 +52,9 @@ namespace engine::editor {
             void addLog(const LogMessage& message);
             [[nodiscard]] const std::vector<LogMessage>& getLogs() const;
 
-			// Memento pattern
-			void restoreMemento(const GameEngineEditorMemento& memento) final;
-			[[nodiscard]] std::shared_ptr<GameEngineEditorMemento> saveMemento() const final;
+            // Save system
+            void saveEditor();
+            void loadEditor();
         private:
             void setupLogs();
             void setupEngine();
@@ -76,8 +70,7 @@ namespace engine::editor {
             std::unordered_map<std::string, std::shared_ptr<IDocumentWindow>> _windows;
 
             std::vector<LogMessage> _logs;
-
-
+            EditorSaveFolder _editorSaveFolder;
     };
 }
 

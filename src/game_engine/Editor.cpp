@@ -45,10 +45,8 @@ int main(int argc, char* argv[])
 	editor.registerWindow("Console", std::make_shared<engine::editor::ConsoleWindow>(editor));
 	editor.init();
 
-	// Main game loop
-	//std::ifstream file("save.json");
-	//engine::save::json json = engine::save::json::parse(file);
-	//engine::loadEntityComponents(0, json);
+	editor.loadEditor();
+
 	while (editor.isOpen())    // Detect window close button or ESC key
 	{
         auto start = std::chrono::high_resolution_clock::now();
@@ -59,14 +57,8 @@ int main(int argc, char* argv[])
         std::chrono::duration<double, std::milli> elapsed = end - start;
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
 	}
+
+	editor.saveEditor();
     editor.destroy();
-	//auto engineMemento = engine::Engine::getInstance()->saveMemento();
-	//std::ofstream file("engine.json");
-	//file << engineMemento->serialize();
-	
-	//engine::save::json save = engine::saveEntityComponents(0);
-	//auto msgpack = engine::save::json::to_msgpack(save);
-	//std::ofstream file("save.msgpack", std::ios::binary);
-	//file.write(reinterpret_cast<const char*>(msgpack.data()), msgpack.size());
 	return 0;
 }

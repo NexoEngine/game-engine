@@ -3,6 +3,9 @@ src/server/Makefile
 src/client/client
 src/client/Makefile
 
+# Nexo Save
+.nexo/
+
 # Prerequisites
 *.d
 

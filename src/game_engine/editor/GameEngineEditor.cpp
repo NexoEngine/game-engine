@@ -87,10 +87,8 @@ static constexpr loguru::Verbosity ConvertToLoguruLevel(int level) {
 void traceLogCallBack(int logLevel, const char* text, va_list args)
 {
 	auto result = formatString(text, args);
-	VLOG_F(ConvertToLoguruLevel(logLevel), "%s", result.c_str());
+	loguru::log(ConvertToLoguruLevel(logLevel), "[raylib]", 0, "%s", result.c_str());
 }
-
-
 
 void engine::editor::GameEngineEditor::setupLogs()
 {
@@ -101,7 +99,6 @@ void engine::editor::GameEngineEditor::setupLogs()
 
 
 	LOG_F(INFO, "GameEngineEditor initialized");
-	VLOG_F(loguru::Verbosity_ERROR, "GameEngineEditor initialized");
 }
 
 void engine::editor::GameEngineEditor::addLog(const engine::editor::LogMessage& message)
@@ -112,18 +109,6 @@ void engine::editor::GameEngineEditor::addLog(const engine::editor::LogMessage& 
 const std::vector<engine::editor::LogMessage>& engine::editor::GameEngineEditor::getLogs() const
 {
 	return _logs;
-}
-
-void engine::editor::GameEngineEditor::restoreMemento(const GameEngineEditorMemento& memento)
-{
-	_logs = memento.logs;
-}
-
-std::shared_ptr<engine::editor::GameEngineEditorMemento> engine::editor::GameEngineEditor::saveMemento() const
-{
-    auto memento = std::make_shared<GameEngineEditorMemento>();
-    memento->logs = _logs;
-	return memento;
 }
 
 void engine::editor::GameEngineEditor::loguruCallback([[maybe_unused]] void *user_data, const loguru::Message& message)
@@ -174,7 +159,7 @@ void engine::editor::GameEngineEditor::setupStyle()
 	// Retrieve DPI scale
 	Vector2 scale = GetWindowScaleDPI();
 	if (scale.x > 1.0f || scale.y > 1.0f)
-		std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another scaling factor." << std::endl;
+		LOG_F(WARNING, "High DPI detected! If you have rendering issues please try another scaling factor.");
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplayFramebufferScale = ImVec2(scale.x, scale.y); // Apply the DPI scale to ImGui rendering
@@ -226,6 +211,9 @@ void engine::editor::GameEngineEditor::setupFonts()
 
 void engine::editor::GameEngineEditor::setupDockspace()
 {
+	// To prevent autosave by ImGui
+	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = nullptr;
 	//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_None);
 
 }
@@ -253,6 +241,26 @@ void engine::editor::GameEngineEditor::drawMenuBar()
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
+	}
+}
+
+void engine::editor::GameEngineEditor::saveEditor()
+{
+	try {
+		_editorSaveFolder.save();
+		LOG_F(INFO, "Editor save folder saved successfully");
+	} catch (const std::runtime_error& e) {
+		LOG_F(FATAL, "Failed to save editor save folder: %s", e.what());
+	}
+}
+
+void engine::editor::GameEngineEditor::loadEditor()
+{
+	try {
+		_editorSaveFolder.load();
+		LOG_F(INFO, "Editor save folder loaded successfully");
+	} catch (const std::runtime_error& e) {
+		LOG_F(ERROR, "Failed to load editor save folder: %s", e.what());
 	}
 }
 
@@ -310,15 +318,6 @@ void engine::editor::GameEngineEditor::destroy()
 	for (const auto& [_, window]: _windows) {
 		window->shutdown();
 	}
-    // Save GameEngineEditor state to file
-
-    auto memento = saveMemento();
-    save::json data = memento;
-    std::ofstream file("GameEngineEditor.json", std::ios::out | std::ios::binary);
-    auto msg = save::json::to_msgpack(data);
-	file.write(reinterpret_cast<const char*>(msg.data()), msg.size());
-
-    file.close();
 }
 
 void engine::editor::GameEngineEditor::registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window)
