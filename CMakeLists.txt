@@ -61,11 +61,8 @@ endif()
 # RAYLIB DOWNLOAD
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
 
-# ADOBE IMGUI DOWNLOAD
-#include("${CMAKE_CURRENT_SOURCE_DIR}/external/adobe_imgui/CMakeLists.txt")
-
 # RLIMGUI DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
+# include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
 
 # IMGUIZMO DOWNLOAD
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")

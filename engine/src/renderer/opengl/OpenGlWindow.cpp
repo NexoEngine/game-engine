@@ -17,12 +17,13 @@
 
 
 namespace nexo::renderer {
-        static void glfwErrorCallback(const int errorCode, const char *errorStr)
+    static void glfwErrorCallback(const int errorCode, const char *errorStr)
     {
         std::cerr << "[GLFW ERROR] Code : " << errorCode << " / Description : " << errorStr << std::endl;
     }
 
-    void OpenGlWindow::setupCallback() const {
+    void OpenGlWindow::setupCallback() const
+    {
         // Resize event
         glfwSetWindowSizeCallback(_openGlWindow, [](GLFWwindow *window, int width, int height)
         {
@@ -44,7 +45,7 @@ namespace nexo::renderer {
         });
 
         // Keyboard events
-        glfwSetKeyCallback(_openGlWindow, [](GLFWwindow *window, const int key, int scancode, const int action, const int mods)
+        glfwSetKeyCallback(_openGlWindow, [](GLFWwindow *window, const int key, [[maybe_unused]]int scancode, const int action, const int mods)
         {
             const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
 
@@ -166,4 +167,8 @@ namespace nexo::renderer {
         glfwGetWindowContentScale(_openGlWindow, x, y);
     }
 
+    void OpenGlWindow::setErrorCallback(void *fctPtr)
+    {
+        glfwSetErrorCallback(reinterpret_cast<GLFWerrorfun>(fctPtr));
+    }
 }

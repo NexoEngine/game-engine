@@ -13,67 +13,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Editor.hpp"
+#include "backends/ImGuiBackend.hpp"
 
-#include <imgui.h>
+#include "imgui.h"
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
-
-    std::string formatString(const char *format, va_list args)
-    {
-        // Copy of va_list for the second pass, as va_list can't be reused
-        va_list argsCopy;
-        va_copy(argsCopy, args);
-
-        // Calculate the length of the formatted string
-        const int length = std::vsnprintf(nullptr, 0, format, args);
-        if (length <= 0)
-        {
-            va_end(argsCopy);
-            return ""; // Formatting error
-        }
-
-        // Allocate memory for the formatted string
-        char *buffer = static_cast<char *>(std::malloc(length + 1)); // +1 for null terminator
-        if (!buffer)
-        {
-            va_end(argsCopy);
-            return ""; // Allocation failure
-        }
-
-        // Format the string
-        std::vsnprintf(buffer, length + 1, format, argsCopy);
-        va_end(argsCopy);
-
-        // Create a std::string from the buffer
-        std::string formattedString(buffer);
-
-        // Free the buffer
-        std::free(buffer);
-
-        return formattedString;
-    }
-
-    static constexpr loguru::Verbosity ConvertToLoguruLevel(int level)
-    {
-        switch (level)
-        {
-            case 0: return loguru::Verbosity_MAX;
-            case 1: return loguru::Verbosity_1;
-            case 2: return loguru::Verbosity_INFO;
-            case 3: return loguru::Verbosity_WARNING;
-            case 4: return loguru::Verbosity_ERROR;
-            default: return loguru::Verbosity_INFO;
-        }
-    }
-
-    // raylib TraceLogCallback
-    void traceLogCallBack(const int logLevel, const char *text, va_list args)
-    {
-        const auto result = formatString(text, args);
-        VLOG_F(ConvertToLoguruLevel(logLevel), "%s", result.c_str());
-    }
-
 
     void Editor::setupLogs()
     {
@@ -121,7 +66,10 @@ namespace nexo::editor {
 
     void Editor::setupEngine()
     {
-        *m_app = nexo::init();
+        m_app = std::make_shared<Application>(nexo::init());
+        ImGuiBackend::setErrorCallback(m_app->getWindow());
+
+        ImGui::CreateContext();
 
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -134,30 +82,35 @@ namespace nexo::editor {
         ImGui::Spectrum::StyleColorsSpectrum();
 
         // Retrieve DPI scale
-        float xScale, yScale = 0.0f;
-        m_app->getWindow()->getDpiScale(&xScale, &yScale);
-        if (xScale > 1.0f || yScale > 1.0f)
-            std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another scaling factor."
-                    << std::endl;
+        // float xScale, yScale = 0.0f;
+        // m_app->getWindow()->getDpiScale(&xScale, &yScale);
+        // if (xScale > 1.0f || yScale > 1.0f)
+        //     std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another scaling factor."
+        //             << std::endl;
 
+        //std::cout << "xScale " << xScale << " yScale " << yScale << std::endl;
         ImGuiIO &io = ImGui::GetIO();
-        io.DisplayFramebufferScale = ImVec2(xScale, yScale); // Apply the DPI scale to ImGui rendering
+        io.DisplaySize = ImVec2(static_cast<float>(m_app->getWindow()->getWidth()),
+                            static_cast<float>(m_app->getWindow()->getHeight()));
+        //io.DisplayFramebufferScale = ImVec2(xScale, yScale); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 
         ImGuiStyle *style = &ImGui::GetStyle();
-        //style->CircleTessellationMaxError = 0.10f;
+        style->CircleTessellationMaxError = 0.10f;
         style->WindowRounding = 10.0f;
         style->ChildRounding = 6.0f;
         style->PopupRounding = 4.0f;
-        style->ScaleAllSizes(xScale);
+        //style->ScaleAllSizes(xScale);
 
         ImVec4 *colors = ImGui::GetStyle().Colors;
         colors[ImGuiCol_Tab] = ImVec4(0.26f, 0.52f, 0.83f, 0.93f);
         colors[ImGuiCol_TabHovered] = ImVec4(0.12f, 0.52f, 0.99f, 0.80f);
         colors[ImGuiCol_TabActive] = ImVec4(0.06f, 0.32f, 0.63f, 1.00f);
-        //colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
+        colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
+
+        ImGuiBackend::init(m_app->getWindow());
     }
 
     void Editor::setupFonts()
@@ -172,15 +125,17 @@ namespace nexo::editor {
 
         constexpr float fontSize = 18.0f;
 
-        ImFont *font = io.Fonts->AddFontFromFileTTF("assets/fonts/SourceSans3-Regular.ttf", fontSize,
+        ImFont *font = io.Fonts->AddFontFromFileTTF("../assets/fonts/SourceSans3-Regular.ttf", fontSize,
                                                     &fontConfig);
         IM_ASSERT(font != nullptr);
         io.FontDefault = font;
+
+        ImGuiBackend::initFontAtlas();
     }
 
     void Editor::setupDockspace()
     {
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_None);
+        //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_None);
     }
 
     void Editor::drawMenuBar()
@@ -212,6 +167,8 @@ namespace nexo::editor {
 
     Editor::~Editor()
     {
+        ImGuiBackend::shutdown();
+
         loguru::remove_callback(LOGURU_CALLBACK_NAME);
     }
 
@@ -233,27 +190,23 @@ namespace nexo::editor {
 
     void Editor::render()
     {
-        // BeginDrawing();
-        // ClearBackground(DARKGRAY);
-        //
-        // rlImGuiBegin();
+        ImGuiBackend::begin();
+
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
 
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
         drawMenuBar();
         ImGui::ShowDemoWindow();
 
-        for (const auto &[_, window]: m_windows)
+        for (const auto &[_, window] : m_windows)
         {
             if (window->isOpened())
                 window->show();
         }
 
-        // rlImGuiEnd();
-        //
-        // EndDrawing();
+        ImGui::Render();
+        ImGuiBackend::end(m_app->getWindow());
     }
 
     void Editor::destroy()

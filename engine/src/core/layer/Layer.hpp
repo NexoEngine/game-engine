@@ -78,7 +78,7 @@ namespace nexo::layer {
 
             virtual void onAttach() {};
             virtual void onDetach() {};
-            virtual void onUpdate(core::Timestep timestep) {};
+            virtual void onUpdate([[maybe_unused]] core::Timestep timestep) {};
             virtual void onRender() {};
 
             virtual std::unordered_set<std::type_index> getListenedEventTypes() const

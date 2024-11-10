@@ -57,5 +57,7 @@ namespace nexo::renderer {
             [[nodiscard]] virtual void *window() const = 0;
 
             static std::shared_ptr<Window> create(int width = 1920, int height = 1080, const char *title = "Nexo window");
+
+            virtual void setErrorCallback(void *fctPtr) = 0;
     };
 }

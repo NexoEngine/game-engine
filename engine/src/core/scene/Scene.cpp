@@ -49,7 +49,7 @@ namespace nexo::scene {
             m_globalEntities.insert(entity);
             return;
         }
-        if (layerIndex >= 0 && layerIndex < m_layerStack.size())
+        if (layerIndex >= 0 && static_cast<unsigned int>(layerIndex) < m_layerStack.size())
         {
             m_layerStack[layerIndex]->addEntity(entity);
         } else
@@ -63,7 +63,7 @@ namespace nexo::scene {
             m_globalEntities.erase(entity);
             return;
         }
-        if (layerIndex >= 0 && layerIndex < m_layerStack.size())
+        if (layerIndex >= 0 && static_cast<unsigned int>(layerIndex) < m_layerStack.size())
         {
             m_layerStack[layerIndex]->removeEntity(entity);
         } else

@@ -18,8 +18,11 @@ namespace nexo {
     Application &init()
     {
         Application &app = Application::getInstance();
+        std::cout << "ca passe la" << std::endl;
         app.init();
+        std::cout << "mais pas la" << std::endl;
         app.registerAllDebugListeners();
+        std::cout << "ah si en fait" << std::endl;
         return app;
     }
 

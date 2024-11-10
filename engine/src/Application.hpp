@@ -61,7 +61,7 @@ namespace nexo {
                     std::cout << event << std::endl;
             }
 
-            void handleEvent(event::EventWindowClose &event) override
+            void handleEvent([[maybe_unused]] event::EventWindowClose &event) override
             {
                 m_isRunning = false;
             }
@@ -134,7 +134,7 @@ namespace nexo {
             scene::SceneManager m_sceneManager;
 
             std::vector<scene::Scene> m_scenes;
-            unsigned int m_actualScene = -1;
+            int m_actualScene = -1;
 
             float m_lastFrameTime = 0.0f;
 

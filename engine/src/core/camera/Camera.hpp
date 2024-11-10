@@ -18,7 +18,6 @@
 namespace nexo::camera {
 
     using CameraId = unsigned int;
-    static inline CameraId NextId = 0;
 
     class Camera {
         public:

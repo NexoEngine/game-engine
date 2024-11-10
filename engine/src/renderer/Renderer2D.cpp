@@ -99,7 +99,7 @@ namespace nexo::renderer {
         s_Renderer2DStorage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
 
         int samplers[Renderer2DStorage::maxTextureSlots];
-        for (int i = 0; i < Renderer2DStorage::maxTextureSlots; ++i)
+        for (unsigned int i = 0; i < Renderer2DStorage::maxTextureSlots; ++i)
             samplers[i] = i;
 
         s_Renderer2DStorage->textureShader = Shader::create("../assets/shaders/texture.glsl");

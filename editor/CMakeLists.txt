@@ -9,16 +9,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
         editor/main.cpp
+        editor/external/imgui_impl_opengl3.cpp
+        editor/external/imgui_impl_glfw.cpp
+        editor/src/backends/ImGuiBackend.cpp
+        editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/Editor.cpp
+        editor/src/SceneManagerBridge.cpp
+        editor/src/DocumentWindows/ConsoleWindow.cpp
 )
-
-include(FetchContent)
-FetchContent_Declare(
-        rlimgui
-        GIT_REPOSITORY https://github.com/raylib-extras/rlImGui.git
-        GIT_TAG main
-)
-FetchContent_MakeAvailable(rlimgui)
 
 FetchContent_Declare(
         tinyfiledialogs
@@ -40,6 +38,7 @@ set_target_properties( nexoEditor
 
 include_directories("./editor/src")
 include_directories("./engine/src")
+include_directories("./editor/external")
 
 if(WIN32)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/include")
@@ -64,9 +63,6 @@ endif()
 find_package(raylib 5.0 CONFIG QUIET)
 include_directories(${raylib_INCLUDE_DIRS})
 
-find_package(imgui QUIET)
-include_directories(${imgui_INCLUDE_DIRS})
-
 if (WIN32)
     find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
     target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
@@ -79,7 +75,7 @@ endif()
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(nexoEditor PRIVATE imguizmo)
 
-target_link_libraries(nexoEditor PRIVATE nexoRenderer raylib imgui::imgui rlimgui)
+target_link_libraries(nexoEditor PRIVATE nexoRenderer raylib imgui::imgui)
 
 target_include_directories(nexoEditor PRIVATE ${tinyfiledialogs_SOURCE_DIR})
 
@@ -88,3 +84,7 @@ if(UNIX)
 endif()
 
 include_directories(include)
+
+if(GRAPHICS_API STREQUAL "OpenGL")
+    target_compile_definitions(nexoEditor PRIVATE GRAPHICS_API_OPENGL)
+endif()
