@@ -40,7 +40,8 @@ namespace nexo::core {
         ERROR,
         WARN,
         INFO,
-        DEBUG
+        DEBUG,
+        DEV
     };
 
     inline std::string toString(const LogLevel level)
@@ -52,6 +53,7 @@ namespace nexo::core {
             case LogLevel::WARN: return "WARN";
             case LogLevel::INFO: return "INFO";
             case LogLevel::DEBUG: return "DEBUG";
+            case LogLevel::DEV: return "DEV";
         }
         return "UNKNOWN";
     }
@@ -115,8 +117,12 @@ namespace nexo::core {
 #define LOG(level, fmt, ...) \
     nexo::core::Logger::logWithFormat(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
+#define LOG_EXCEPTION(exception) \
+    LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage());
+
 #define NEXO_FATAL nexo::core::LogLevel::FATAL
 #define NEXO_ERROR nexo::core::LogLevel::ERROR
 #define NEXO_WARN nexo::core::LogLevel::WARN
 #define NEXO_INFO nexo::core::LogLevel::INFO
 #define NEXO_DEBUG nexo::core::LogLevel::DEBUG
+#define NEXO_DEV nexo::core::LogLevel::DEV
