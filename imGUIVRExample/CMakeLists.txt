@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.17)
 project(game_engine)
 
 set(SRCS
-    src/game_engine/ImGUIVRExample/main.cpp
-    src/game_engine/ImGUIVRExample/imgui_impl_opengl3.cpp
+    imGUIVRExample/main.cpp
+    imGUIVRExample/imgui_impl_opengl3.cpp
 )   
 
 set(CMAKE_CXX_STANDARD 20)
@@ -40,8 +40,6 @@ set_target_properties( imgui-vr
 
 # Setup include directories
 include_directories(include)
-include_directories("./include/game_engine")
-include_directories("./include/common")
 
 if(WIN32)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/include")
@@ -100,5 +98,3 @@ if(UNIX)
 endif()
 
 include_directories(include)
-include_directories("./include/game_engine")
-include_directories("./include/common")

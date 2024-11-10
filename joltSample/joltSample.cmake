@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(sampleJolt)
 
 set(SRCS
-    joltSample.cpp
+    joltSample/joltSample.cpp
 )
 
 set(CMAKE_CXX_STANDARD 20)

@@ -70,10 +70,13 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
 # IMGUIZMO DOWNLOAD
 include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
 
-# SETUP GAME ENGINE GUI
+# SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
+# SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
-# include("${CMAKE_CURRENT_SOURCE_DIR}/src/protoVR/CMakeLists.txt")
+
+# SETUP JOLT SAMPLE
+include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
 
 # IMGuiVR example
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/ImGUIVRExample/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")

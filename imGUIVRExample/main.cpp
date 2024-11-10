@@ -1,9 +1,9 @@
-#include "raylib.h"
-#include "raymath.h"
-#include "rlgl.h"
 #include "imgui.h"
 #include "imgui_impl_raylib.h"
 #include "imgui_impl_opengl3.h"
+#include "raylib.h"
+#include "raymath.h"
+#include "rlgl.h"
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
