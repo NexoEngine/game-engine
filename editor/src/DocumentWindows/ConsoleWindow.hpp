@@ -40,6 +40,13 @@ namespace nexo::editor {
         bool scrollToBottom = true;
         std::vector<std::string> commands; // History of executed commands.
 
+        std::set<loguru::Verbosity> selectedVerbosityLevels = {
+            loguru::Verbosity_FATAL,
+            loguru::Verbosity_ERROR,
+            loguru::Verbosity_WARNING,
+            loguru::Verbosity_INFO,
+        };
+
         // Command and variables handling (optional)
         // std::map<std::string, std::function<void(const std::string&)>> commandsMap;
 

@@ -16,17 +16,18 @@
 #include "ConsoleWindow.hpp"
 
 namespace nexo::editor {
-    static constexpr const char *verbosityToString(const loguru::Verbosity level)
+    static constexpr std::string verbosityToString(const loguru::Verbosity level)
     {
         switch (level)
         {
-            case loguru::Verbosity_FATAL: return "FATAL";
-            case loguru::Verbosity_ERROR: return "ERROR";
-            case loguru::Verbosity_WARNING: return "WARNING";
-            case loguru::Verbosity_INFO: return "INFO";
-            case loguru::Verbosity_INVALID: return "INVALID";
-            case loguru::Verbosity_1: return "DEBUG";
-            default: return "UNKNOWN";
+            case loguru::Verbosity_FATAL: return "[FATAL]";
+            case loguru::Verbosity_ERROR: return "[ERROR]";
+            case loguru::Verbosity_WARNING: return "[WARNING]";
+            case loguru::Verbosity_INFO: return "[INFO]";
+            case loguru::Verbosity_INVALID: return "[INVALID]";
+            case loguru::Verbosity_1: return "[DEBUG]";
+            case loguru::Verbosity_2: return "[DEV]";
+            default: return "[UNKNOWN]";
         }
     }
 
@@ -45,6 +46,8 @@ namespace nexo::editor {
                 break; // Blue
             case loguru::Verbosity_1: color = ImVec4(0.898, 0, 1, 1); // Debug
                 break; // Pink
+            case loguru::Verbosity_2: color = ImVec4(0.388, 0.055, 0.851, 1); // Debug
+                break; // Purple
             default: color = ImVec4(1, 1, 1, 1); // White
         }
         return color;
@@ -56,8 +59,7 @@ namespace nexo::editor {
     }
 
     void ConsoleWindow::setup()
-    {
-    }
+    {}
 
     void ConsoleWindow::shutdown()
     {}
@@ -95,28 +97,44 @@ namespace nexo::editor {
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);
 
+        static float messageStartX = 0.0f;
+
+        if (messageStartX == 0.0f)
+        {
+            for (const auto &[verbosity, message, prefix]: _editor.getLogs())
+            {
+                if (!selectedVerbosityLevels.contains(verbosity))
+                    continue;
+
+                const std::string tag = verbosityToString(verbosity);
+                const ImVec2 textSize = ImGui::CalcTextSize(tag.c_str());
+                if (textSize.x > messageStartX)
+                {
+                    messageStartX = textSize.x;
+                }
+            }
+            messageStartX += ImGui::GetStyle().ItemSpacing.x * 2;
+        }
+
         auto id = 0;
         for (const auto &[verbosity, message, prefix]: _editor.getLogs())
         {
-            if (verbosity > loguru::g_stderr_verbosity)
+            if (!selectedVerbosityLevels.contains(verbosity))
                 continue;
-            ImGui::PushID(id++);
-            {
-                const float availableWidth = ImGui::GetContentRegionAvail().x;
 
+            ImGui::PushID(id++); {
                 ImVec4 color = getVerbosityColor(verbosity);
                 ImGui::PushStyleColor(ImGuiCol_Text, color);
 
-                std::string tag = "[" + std::string(verbosityToString(verbosity)) + "]";
+                const std::string tag = verbosityToString(verbosity);
                 ImGui::TextUnformatted(tag.c_str());
                 ImGui::PopStyleColor();
 
                 ImGui::SameLine();
+                ImGui::SetCursorPosX(messageStartX);
 
-                ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + availableWidth);
-
+                ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
                 ImGui::TextWrapped("%s", message.c_str());
-
                 ImGui::PopTextWrapPos();
             }
             ImGui::PopID();
@@ -141,10 +159,8 @@ namespace nexo::editor {
 
         if (ImGui::BeginPopup("VerbositySettings"))
         {
-            ImGui::Text("Set Verbosity Level");
+            ImGui::Text("Select Verbosity Levels");
             ImGui::Separator();
-
-            static loguru::Verbosity currentVerbosity = loguru::Verbosity_INFO;
 
             const struct {
                 loguru::Verbosity level;
@@ -155,20 +171,21 @@ namespace nexo::editor {
                         {loguru::Verbosity_WARNING, "WARNING"},
                         {loguru::Verbosity_INFO, "INFO"},
                         {loguru::Verbosity_1, "DEBUG"},
+                        {loguru::Verbosity_2, "DEV"},
                     };
 
             for (const auto &[level, name]: levels)
             {
-                const bool selected = (currentVerbosity == level);
-                if (ImGui::Selectable(name, selected))
+                bool selected = (selectedVerbosityLevels.find(level) != selectedVerbosityLevels.end());
+                if (ImGui::Checkbox(name, &selected))
                 {
-                    currentVerbosity = level;
-                    loguru::g_stderr_verbosity = currentVerbosity;
-                }
-
-                if (selected)
-                {
-                    ImGui::SetItemDefaultFocus();
+                    if (selected)
+                    {
+                        selectedVerbosityLevels.insert(level);
+                    } else
+                    {
+                        selectedVerbosityLevels.erase(level);
+                    }
                 }
             }
 
@@ -177,6 +194,7 @@ namespace nexo::editor {
 
         ImGui::End();
     }
+
 
     void ConsoleWindow::update()
     {}
