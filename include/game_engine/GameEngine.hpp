@@ -252,17 +252,6 @@ namespace engine {
 
             void startRendering(ecs::SceneID sceneID, core::CameraID cameraID);
             void endRendering(ecs::SceneID sceneID);
-            // Memento
-            [[nodiscard]] std::shared_ptr<EngineMemento> saveMemento() const override
-            {
-				auto memento = std::make_shared<EngineMemento>();
-				memento->coordinatorMemento = _coordinator->saveMemento();
-				return memento;
-            }
-            void restoreMemento(const EngineMemento& memento) override
-            {
-				_coordinator->restoreMemento(*memento.coordinatorMemento);
-            }
 
             void renderAllEntities(ecs::SceneID sceneId, core::CameraID cameraId);
             void renderGrid(ecs::SceneID sceneID, core::CameraID cameraID);

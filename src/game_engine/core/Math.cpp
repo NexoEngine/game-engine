@@ -193,8 +193,8 @@ namespace engine {
 
         Matrix matProj = MatrixPerspective(camera.fovy*DEG2RAD, ((double)viewSize.x/(double)viewSize.y), nearPlane, farPlane);
 
-        Vector3 nearPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
-        Vector3 farPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
+        Vector3 nearPoint = Vector3Unproject(Vector3{ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
+        Vector3 farPoint = Vector3Unproject(Vector3{ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
 
         Vector3 direction = Vector3Normalize(Vector3Subtract(farPoint, nearPoint));
         ray.position = camera.position;
@@ -218,8 +218,8 @@ namespace engine {
 
         Matrix matProj = MatrixPerspective(camera.fovy*DEG2RAD, ((double)viewSize.x/(double)viewSize.y), nearPlane, farPlane);
 
-        Vector3 nearPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
-        Vector3 farPoint = Vector3Unproject((Vector3){ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
+        Vector3 nearPoint = Vector3Unproject(Vector3{ deviceCoords.x, deviceCoords.y, 0.0f }, matProj, matView);
+        Vector3 farPoint = Vector3Unproject(Vector3{ deviceCoords.x, deviceCoords.y, 1.0f }, matProj, matView);
 
         Vector3 direction = Vector3Normalize(Vector3Subtract(farPoint, nearPoint));
         ray.position = camera.position;

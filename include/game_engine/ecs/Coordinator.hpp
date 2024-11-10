@@ -382,13 +382,6 @@ namespace ecs {
                 return _sceneManager->getWindowOffset(id);
             }
 
-            [[nodiscard]] std::shared_ptr<CoordinatorMemento> saveMemento() const override
-            {
-				auto memento = std::make_shared<CoordinatorMemento>();
-				memento->componentManagerMemento = _componentManager->saveMemento();
-				return memento;
-            }
-
             /**
 			* @brief Save an entity's components to JSON
             * 
