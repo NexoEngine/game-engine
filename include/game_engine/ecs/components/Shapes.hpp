@@ -15,6 +15,8 @@
 #include <nlohmann/json.hpp>
 #include <save/ASerializableMemento.hpp>
 
+#include "common/raylib_json.hpp"
+
 namespace ecs {
     namespace components {
         namespace physics {
@@ -47,11 +49,17 @@ namespace ecs {
             CAPSULE,
             PLANE,
             GRID,
-            MODEL,
+            MODEL3D,
+            SKYBOX,
         };
 
         NLOHMANN_JSON_SERIALIZE_ENUM(ShapeType,
         {
+            {ShapeType::POLYGON, "POLYGON"},
+            {ShapeType::HEMISPHERE, "HEMISPHERE"},
+            {ShapeType::CONE, "CONE"},
+            {ShapeType::TORUS, "TORUS"},
+            {ShapeType::KNOT, "KNOT"},
             {ShapeType::CUBE, "CUBE"},
             {ShapeType::LINE, "LINE"},
             {ShapeType::POINT, "POINT"},
@@ -63,7 +71,8 @@ namespace ecs {
             {ShapeType::CAPSULE, "CAPSULE"},
             {ShapeType::PLANE, "PLANE"},
             {ShapeType::GRID, "GRID"},
-            {ShapeType::MODEL, "MODEL"},
+            {ShapeType::MODEL3D, "MODEL3D"},
+            {ShapeType::SKYBOX, "SKYBOX"},
         })
 
         /*class IShape;
@@ -77,16 +86,16 @@ namespace ecs {
         };*/
 
         /**
-         * @class IShape
+         * @class AShape
          * @brief Interface for shape components used in rendering entities.
          *
          * Provides a common interface for different types of shapes, allowing them to be
          * used interchangeably in the rendering system. Each shape should implement its own
          * drawing logic.
          */
-        class IShape : public engine::save::IMemento {
+        class AShape {
             public:
-                ~IShape() = default;
+                ~AShape() = default;
                 /**
                  * @brief Pure virtual function for drawing the shape.
                  * @param transf Reference to the transformation component.
@@ -99,12 +108,17 @@ namespace ecs {
                  * @return Reference to the Model object.
                  */
                 Model &getModel();
+
+                [[nodiscard]] ShapeType getShapeType() const { return _shapeType; }
             protected:
+                AShape(ShapeType shapeType) : _shapeType(shapeType) {};
 
                 void initBoundingBox(void);
 
                 Model _model;
                 Vector3 boundingBoxCorners[8];
+
+                ShapeType _shapeType;
         };
 
         /**
@@ -114,7 +128,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a cube. It allows for
          * the specification of dimensions, color, and an option to toggle wireframe rendering.
          */
-        class Cube : public IShape {
+        class Cube : public AShape {
             public:
                 /**
                  * @brief Constructs a Cube object with specified dimensions and colors.
@@ -144,6 +158,9 @@ namespace ecs {
                 bool _toggleWire;
                 Color _color;
                 Color _wireColor;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Cube, _width, _height, _length, _toggleWire, _color, _wireColor);
+                friend void from_json(const nlohmann::json& j, std::shared_ptr<Cube>& cube);
         };
 
         /**
@@ -153,7 +170,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a sphere. It allows for
          * the specification of the radius, color, and an option to toggle wireframe rendering.
          */
-        class Sphere : public IShape {
+        class Sphere : public AShape {
         public:
             /**
              * @brief Constructs a Sphere object with specified radius and colors.
@@ -178,6 +195,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Sphere, _radius, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Sphere>& sphere);
         };
 
         /**
@@ -187,7 +207,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a plane. It allows for
          * the specification of the width, length, color and an option to toggle wireframe rendering.
          */
-        class Plane : public IShape {
+        class Plane : public AShape {
         public:
             /**
              * @brief Constructs a Plane object with specified width, length, and colors.
@@ -197,7 +217,7 @@ namespace ecs {
              * @param color Color of the plane.
              * @param wireColor Color of the wireframe.
              */
-            Plane(float width = 10.0f, float length = 10.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Plane(float width = 10.0f, float length = 10.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the plane with the specified transformations.
@@ -211,6 +231,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Plane, _width, _length, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Plane>& plane);
         };
 
         /**
@@ -220,7 +243,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a cylinder. It allows for
          * the specification of the radiusTop, radiusBottom, height, color and an option to toggle wireframe rendering.
          */
-        class Cylinder : public IShape {
+        class Cylinder : public AShape {
         public:
             /**
              * @brief Constructs a Cylinder object with specified dimensions and colors.
@@ -230,7 +253,7 @@ namespace ecs {
              * @param color Color of the cylinder.
              * @param wireColor Color of the wireframe.
              */
-            Cylinder(float radius = 1.0f, float height = 2.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Cylinder(float radius = 1.0f, float height = 2.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the cylinder with the specified transformations.
@@ -244,6 +267,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Cylinder, _radius, _height, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Cylinder>& cylinder);
         };
 
         /**
@@ -253,7 +279,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a polygon. It allows for
          * the specification of the number of sides, radius, height, color, and an option to toggle wireframe rendering.
          */
-        class Polygon : public IShape {
+        class Polygon : public AShape {
         public:
             /**
              * @brief Constructs a Polygon object with specified parameters.
@@ -264,7 +290,7 @@ namespace ecs {
              * @param color Color of the polygon.
              * @param wireColor Color of the wireframe.
              */
-            Polygon(int sides = 6, float radius = 1.0f, float height = 1.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Polygon(int sides = 6, float radius = 1.0f, float height = 1.0f, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the polygon with the specified transformations.
@@ -279,6 +305,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Polygon, _sides, _radius, _height, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Polygon>& polygon);
         };
 
         /**
@@ -288,7 +317,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a hemisphere. It allows for
          * the specification of the radius, number of rings and slices (for smoothness), color, and an option to toggle wireframe rendering.
          */
-        class Hemisphere : public IShape {
+        class Hemisphere : public AShape {
         public:
             /**
              * @brief Constructs a Hemisphere object with specified radius and colors.
@@ -299,7 +328,7 @@ namespace ecs {
              * @param color Color of the hemisphere.
              * @param wireColor Color of the wireframe.
              */
-            Hemisphere(float radius = 1.0f, int rings = 16, int slices = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Hemisphere(float radius = 1.0f, int rings = 16, int slices = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the hemisphere with the specified transformations.
@@ -314,6 +343,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Hemisphere, _radius, _rings, _slices, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Hemisphere>& hemisphere);
         };
 
         /**
@@ -323,7 +355,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a cone. It allows for
          * the specification of the radius, height, number of slices (for smoothness), color, and an option to toggle wireframe rendering.
          */
-        class Cone : public IShape {
+        class Cone : public AShape {
         public:
             /**
              * @brief Constructs a Cone object with specified radius, height, and colors.
@@ -349,6 +381,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Cone, _radius, _height, _slices, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Cone>& cone);
         };
 
         /**
@@ -358,7 +393,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a cone. It allows for
          * the specification of the radius, size, radSeg, sides, color, and an option to toggle wireframe rendering.
          */
-        class Torus : public IShape {
+        class Torus : public AShape {
         public:
             /**
              * @brief Constructs a Torus object with specified radius, size, and colors.
@@ -370,7 +405,7 @@ namespace ecs {
              * @param color Color of the torus.
              * @param wireColor Color of the wireframe.
              */
-            Torus(float radius = 1.0f, float size = 0.5f, int radSeg = 16, int sides = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Torus(float radius = 1.0f, float size = 0.5f, int radSeg = 16, int sides = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the torus with the specified transformations.
@@ -386,6 +421,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Torus, _radius, _size, _radSeg, _sides, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Torus>& torus);
         };
 
         /**
@@ -395,7 +433,7 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a knot. It allows for
          * the specification of the radius, size, number of radial segments, number of sides, color, and an option to toggle wireframe rendering.
          */
-        class Knot : public IShape {
+        class Knot : public AShape {
         public:
             /**
              * @brief Constructs a Knot object with specified radius, size, and colors.
@@ -407,7 +445,7 @@ namespace ecs {
              * @param color Color of the knot.
              * @param wireColor Color of the wireframe.
              */
-            Knot(float radius = 1.0f, float size = 0.5f, int radSeg = 16, int sides = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
+            explicit Knot(float radius = 1.0f, float size = 0.5f, int radSeg = 16, int sides = 16, bool toggleWire = false, Color color = WHITE, Color wireColor = BLACK);
 
             /**
              * @brief Draws the knot with the specified transformations.
@@ -423,6 +461,9 @@ namespace ecs {
             bool _toggleWire;
             Color _color;
             Color _wireColor;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Knot, _radius, _size, _radSeg, _sides, _toggleWire, _color, _wireColor);
+            friend void from_json(const nlohmann::json& j, std::shared_ptr<Knot>& knot);
         };
 
         /**
@@ -432,14 +473,14 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a 3D model. It allows for
          * loading a model from a file and specifying its color.
          */
-        class Model3D : public IShape {
+        class Model3D : public AShape {
             public:
                 /**
                  * @brief Constructs a Model3D object from a file.
                  * @param filename Path to the file from which the model is loaded.
                  * @param color Color to apply to the model.
                  */
-                Model3D(const char *filename, Color color = WHITE);
+                explicit Model3D(const char *filename, Color color = WHITE);
                 /**
                  * @brief Draws the 3D model with the specified transformations.
                  * @param transf Reference to the transformation component.
@@ -447,6 +488,10 @@ namespace ecs {
                 void draw(physics::transform_t &transf) const override;
             private:
                 Color _color;
+                std::string _filename;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Model3D, _color, _filename);
+                friend void from_json(const nlohmann::json& j, std::shared_ptr<Model3D>& model);
         };
 
         /**
@@ -456,20 +501,23 @@ namespace ecs {
          * Inherits from IShape and implements the drawing logic for a skybox. It allows for
          * loading a skybox from a file.
          */
-        class Skybox : public IShape {
+        class Skybox : public AShape {
             public:
                 /**
                  * @brief Constructs a Skybox object from a file.
                  * @param filename Path to the file from which the skybox is loaded.
                  */
-                Skybox(const char *filename);
+                explicit Skybox(const char *filename);
                 /**
                  * @brief Draws the skybox with the specified transformations.
                  * @param transf Reference to the transformation component.
                  */
                 void draw(physics::transform_t &transf) const override;
             private:
-                Color _color;
+                std::string _filename;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Skybox, _filename);
+                friend void from_json(const nlohmann::json& j, std::shared_ptr<Skybox>& skybox);
         };
     }
 }

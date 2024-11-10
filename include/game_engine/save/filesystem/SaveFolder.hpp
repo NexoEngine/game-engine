@@ -32,13 +32,14 @@ namespace engine::save {
     private:
         class InputSaveElement {
         public:
-            // Constructors for SaveFiles
-            template <typename T, typename = std::enable_if_t<std::derived_from<T, SaveFile>>>
-            InputSaveElement(std::string name, const T& file)
-                : m_element(std::make_shared<T>(file)), m_name(std::move(name)) {}
-            template <typename T, typename = std::enable_if_t<std::derived_from<T, SaveFile>>>
-            InputSaveElement(std::string name, std::shared_ptr<T> file)
-                : m_element(file), m_name(std::move(name)) {}
+            // Constructors for SaveFiles and SaveFolders (derived classes)
+            template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFile, T> || std::is_base_of_v<SaveFolder, T>>>
+            InputSaveElement(std::string name, const T& element)
+                : m_element(std::make_shared<T>(element)), m_name(std::move(name)) {}
+
+            template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFile, T> || std::is_base_of_v<SaveFolder, T>>>
+            InputSaveElement(std::string name, std::shared_ptr<T> element)
+                : m_element(std::move(element)), m_name(std::move(name)) {}
 
 
             // Constructors for SaveFolders
@@ -72,6 +73,8 @@ namespace engine::save {
             std::string m_name;
         };
     public:
+        virtual ~SaveFolder() = default;
+
         SaveFolder() = default;
 
         explicit SaveFolder(std::filesystem::path folderPath) : m_folderPath(std::move(folderPath)) {}
@@ -95,13 +98,15 @@ namespace engine::save {
             m_files[name] = filePtr;
         }
 
-        void addFolder(const std::string& name, std::shared_ptr<SaveFolder> folder) {
+        template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFolder, T>>>
+        void addFolder(const std::string& name, std::shared_ptr<T> folder) {
             folder->setPath(m_folderPath / name);
             m_folders[name] = std::move(folder);
         }
 
-        void addFolder(const std::string& name, const SaveFolder& folder) {
-            auto folderPtr = std::make_shared<SaveFolder>(folder);
+        template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFolder, T>>>
+        void addFolder(const std::string& name, const T& folder) {
+            auto folderPtr = std::make_shared<T>(folder);
             folderPtr->setPath(m_folderPath / name);
             m_folders[name] = folderPtr;
         }
@@ -110,7 +115,8 @@ namespace engine::save {
          * @brief Recursively saves the folder and all its contents
          * @warning Be careful of infinite recursion if there are circular references
          */
-        void save() const {
+        virtual void save()
+        {
             _createFolder();
 
             for (const auto& [_, file] : m_files) {
@@ -121,7 +127,8 @@ namespace engine::save {
             }
         }
 
-        void load() const {
+        virtual void load()
+        {
             for (const auto& [_, file] : m_files) {
                 file->load();
             }
@@ -133,6 +140,10 @@ namespace engine::save {
         void setPath(std::filesystem::path path) {
             m_folderPath = std::move(path);
             _updatePaths();
+        }
+
+        [[nodiscard]] const std::filesystem::path& getPath() const {
+            return m_folderPath;
         }
 
     private:

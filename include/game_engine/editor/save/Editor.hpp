@@ -18,6 +18,7 @@
 #include "game_engine/save/filesystem/SaveFile.hpp"
 
 #include "game_engine/editor/save/EditorLayout.hpp"
+#include "game_engine/editor/save/Scenes.hpp"
 
 namespace engine::editor {
     class EditorSaveFolder : public save::SaveFolder {
@@ -26,24 +27,11 @@ namespace engine::editor {
         {
             setPath(".");
 
-            save::EmptySaveFile entities;
-
+            // TODO: fix slicing issues when copy instead of shared_ptr
+            //std::shared_ptr<save::ScenesSaveFolder> scenesSaveFolder = std::make_shared<save::ScenesSaveFolder>();
+            save::ScenesSaveFolder scenesSaveFolder;
             SaveFolder engineSaveFolder = {
-                {"entities", {
-                    {"entities.json", entities}
-                }},
-                {"scenes", {
-                    {"mainMenu", {
-                        {"entities.json", save::EmptySaveFile()},
-                        {"config.json", save::EmptySaveFile()},
-                        {"assets.nbin", save::EmptySaveFile()},
-                    }},
-                    {"level1", {
-                        {"entities.json", save::EmptySaveFile()},
-                        {"config.json", save::EmptySaveFile()},
-                        {"assets.nbin", save::EmptySaveFile()},
-                    }}
-                }},
+                {"scenes", scenesSaveFolder},
                 {"assets", {
                     {"models.nbin", save::EmptySaveFile()},
                     {"textures.nbin", save::EmptySaveFile()},

@@ -52,7 +52,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::CUBE, true, cube};
+        ecs::components::render::render_t render = {true, cube};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::CUBE,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -86,7 +86,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::SPHERE, true, sphere};
+        ecs::components::render::render_t render = { true, sphere};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::SPHERE,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -120,7 +120,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::PLANE, true, plane};
+        ecs::components::render::render_t render = {true, plane};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::PLANE,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -154,7 +154,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::CYLINDER, true, cylinder};
+        ecs::components::render::render_t render = {true, cylinder};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::CYLINDER,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -189,7 +189,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::POLYGON, true, polygon};
+        ecs::components::render::render_t render = {true, polygon};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::POLYGON,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -224,7 +224,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::HEMISPHERE, true, hemisphere};
+        ecs::components::render::render_t render = {true, hemisphere};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::HEMISPHERE,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -259,7 +259,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::CONE, true, cone};
+        ecs::components::render::render_t render = {true, cone};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::CONE,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -295,7 +295,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::TORUS, true, torus};
+        ecs::components::render::render_t render = {true, torus};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::TORUS,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -331,7 +331,7 @@ namespace engine {
         ecs::components::physics::transform_t transf = {{0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::KNOT, true, knot};
+        ecs::components::render::render_t render = {true, knot};
         ecs::components::physics::collider_t collider = {
             ecs::components::ShapeType::KNOT,
             ecs::components::physics::CollisionType::COLLIDE,
@@ -359,9 +359,9 @@ namespace engine {
         ecs::components::physics::transform_t transf = {pos, {0}, {0}};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::MODEL, true, model};
+        ecs::components::render::render_t render = {true, model};
         ecs::components::health::health_t health = {0};
-        ecs::components::physics::collider_t collider = {ecs::components::ShapeType::MODEL, ecs::components::physics::CollisionType::COLLIDE, model};
+        ecs::components::physics::collider_t collider = {ecs::components::ShapeType::MODEL3D, ecs::components::physics::CollisionType::COLLIDE, model};
         ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
         Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
         Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);
@@ -375,10 +375,10 @@ namespace engine {
     {
         auto model = std::make_shared<ecs::components::Skybox>(filename);
         ecs::components::physics::transform_t transf = {pos, {0}, {1,1,1}};
-        ecs::components::render::render_t render = {ecs::components::ShapeType::MODEL, true, model};
+        ecs::components::render::render_t render = {true, model};
         double now = engine::Engine::getInstance()->getElapsedTime() / 1000;
         ecs::components::physics::rigidBody_t body = {0.0, {0}, {0}, now};
-        ecs::components::physics::collider_t collider = {ecs::components::ShapeType::MODEL, ecs::components::physics::CollisionType::NON_COLLIDE, model};
+        ecs::components::physics::collider_t collider = {ecs::components::ShapeType::MODEL3D, ecs::components::physics::CollisionType::NON_COLLIDE, model};
         ecs::Entity entity = Engine::getInstance()->addEntity(transf, render);
         Engine::getInstance()->addComponent<ecs::components::physics::collider_t>(entity, collider);
         Engine::getInstance()->addComponent<ecs::components::physics::rigidBody_t>(entity, body);

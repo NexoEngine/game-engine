@@ -15,6 +15,7 @@
 #include "SingletonComponent.hpp"
 #include "Scene.hpp"
 #include "game_engine/save/SaveManager.hpp"
+#include "game_engine/ecs/Signature.hpp"
 
 namespace ecs {
 
@@ -390,14 +391,18 @@ namespace ecs {
             */
 			engine::save::json saveEntityComponents(Entity entity)
 			{
-				engine::save::json json;
+                engine::save::json json;
+
+				engine::save::json components;
 				for (auto& [type, func] : _hasComponentFunctions) {
                     if (!func(entity))
                         continue;
 					auto component = _getComponentFunctions[type](entity);
 					auto serializer = _getComponentSerializer[type];
-                    json[getComponentType(type)] = serializer.serialize(component);
+                    components[getComponentType(type)] = serializer.serialize(component);
 				}
+                json["entitySignature"] = _entityManager->getSignature(entity).to_string();
+                json["components"] = components;
 				return json;
 			}
 
@@ -409,15 +414,20 @@ namespace ecs {
             */
             void loadEntityComponents(Entity entity, const engine::save::json& json)
             {
+                auto signature = Signature(json.at("entitySignature").get<std::string>());
+                _entityManager->setSignature(entity, signature);
+                auto& components = json.at("components");
 				for (auto& [type, func] : _hasComponentFunctions) {
                     if (!func(entity))
                         continue;
-                    auto componentJson = json.at(getComponentType(type));
+                    auto componentJson = components.at(getComponentType(type));
 					auto serializer = _getComponentSerializer[type];
 					auto componentDeserialized = serializer.deserialize(componentJson);
 					serializer.updateEntityComponent(entity, componentDeserialized);
 				}
             }
+
+
 
         private:
             void updateSystemEntities(void)

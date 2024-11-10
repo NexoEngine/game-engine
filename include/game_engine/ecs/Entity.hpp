@@ -59,7 +59,7 @@ namespace ecs {
             * @param entity - The ID of the entity.
             * @return Signature - The signature of the entity.
             */
-            Signature getSignature(Entity entity) const;
+            [[nodiscard]] Signature getSignature(Entity entity) const;
         private:
             std::queue<Entity> _availableEntities{};
 

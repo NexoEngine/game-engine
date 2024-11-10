@@ -78,7 +78,7 @@ namespace ecs {
             typedef struct  collider_s {
                 ShapeType shapeType; ///< Type of the shape used for collision.
                 CollisionType collisionType; ///< Type of collision interaction.
-                std::shared_ptr<IShape> data; ///< Shared pointer to the shape data.
+                std::shared_ptr<AShape> data; ///< Shared pointer to the shape data.
                 BoundingBox box; ///< Bounding box for collision detection.
                 Vector3 vertsGlobal[8]; ///< Global vertices for the collider.
                 Matrix matRotate; ///< Matrix for rotation transformations.

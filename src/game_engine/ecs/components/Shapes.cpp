@@ -12,17 +12,17 @@
 
 namespace ecs {
     namespace components {
-        Model &IShape::getModel()
+        Model &AShape::getModel()
         {
             return _model;
         }
 
-        BoundingBox IShape::getBoundingBox() const
+        BoundingBox AShape::getBoundingBox() const
         {
             return BoundingBox{boundingBoxCorners[0], boundingBoxCorners[1]};
         }
 
-        void IShape::drawBoundingBox(void) const
+        void AShape::drawBoundingBox(void) const
         {
             Matrix transform = _model.transform;
             Vector3 transformedCorners[8] = {};
@@ -47,7 +47,7 @@ namespace ecs {
             DrawLine3D(transformedCorners[3], transformedCorners[7], RED);
         }
 
-        void IShape::initBoundingBox(void)
+        void AShape::initBoundingBox(void)
         {
             BoundingBox AABB = GetModelBoundingBox(_model);
             boundingBoxCorners[0] = AABB.min;
@@ -67,6 +67,7 @@ namespace ecs {
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::CUBE),
             _width(width),
             _height(height),
             _length(length),
@@ -87,11 +88,24 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Cube>& cube)
+        {
+            cube = std::make_shared<Cube>(
+                j.at("_width").get<float>(),
+                j.at("_height").get<float>(),
+                j.at("_length").get<float>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Sphere::Sphere(
             float radius,
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::SPHERE),
             _radius(radius),
             _toggleWire(toggleWire),
             _color(color),
@@ -109,12 +123,23 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Sphere>& sphere)
+        {
+            sphere = std::make_shared<Sphere>(
+                j.at("_radius").get<float>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Plane::Plane(
             float width,
             float length,
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::PLANE),
             _width(width),
             _length(length),
             _toggleWire(toggleWire),
@@ -133,12 +158,24 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Plane>& plane)
+        {
+            plane = std::make_shared<Plane>(
+                j.at("_width").get<float>(),
+                j.at("_length").get<float>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Cylinder::Cylinder(
             float radius,
             float height,
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::CYLINDER),
             _radius(radius),
             _height(height), _toggleWire(toggleWire),
             _color(color),
@@ -154,6 +191,17 @@ namespace ecs {
             DrawModel(_model, {0}, 1, _color);
             if (_toggleWire)
                 DrawModelWires(_model, {0}, 1, _wireColor);
+        }
+
+        void from_json(const nlohmann::json& j, std::shared_ptr<Cylinder>& cylinder)
+        {
+            cylinder = std::make_shared<Cylinder>(
+                j.at("_radius").get<float>(),
+                j.at("_height").get<float>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
         }
 
         Mesh GenMeshPoly3D(int sides, float radius, float height)
@@ -218,6 +266,7 @@ namespace ecs {
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::POLYGON),
             _sides(sides),
             _radius(radius),
             _height(height),
@@ -240,6 +289,18 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Polygon>& polygon)
+        {
+            polygon = std::make_shared<Polygon>(
+                j.at("_sides").get<int>(),
+                j.at("_radius").get<float>(),
+                j.at("_height").get<float>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Hemisphere::Hemisphere(
             float radius,
             int rings,
@@ -247,6 +308,7 @@ namespace ecs {
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::HEMISPHERE),
             _radius(radius),
             _rings(rings),
             _slices(slices),
@@ -268,8 +330,20 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Hemisphere>& hemisphere)
+        {
+            hemisphere = std::make_shared<Hemisphere>(
+                j.at("_radius").get<float>(),
+                j.at("_rings").get<int>(),
+                j.at("_slices").get<int>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Cone::Cone(float radius, float height, int slices, bool toggleWire, Color color, Color wireColor)
-            : _radius(radius), _height(height), _slices(slices), _toggleWire(toggleWire), _color(color), _wireColor(wireColor)
+            : AShape(ShapeType::CONE), _radius(radius), _height(height), _slices(slices), _toggleWire(toggleWire), _color(color), _wireColor(wireColor)
         {
             Mesh mesh = GenMeshCone(_radius, _height, _slices);
             _model = LoadModelFromMesh(mesh);
@@ -285,6 +359,18 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Cone>& cone)
+        {
+            cone = std::make_shared<Cone>(
+                j.at("_radius").get<float>(),
+                j.at("_height").get<float>(),
+                j.at("_slices").get<int>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Torus::Torus(
             float radius,
             float size,
@@ -293,6 +379,7 @@ namespace ecs {
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::TORUS),
             _radius(radius),
             _size(size),
             _radSeg(radSeg),
@@ -315,6 +402,19 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Torus>& torus)
+        {
+            torus = std::make_shared<Torus>(
+                j.at("_radius").get<float>(),
+                j.at("_size").get<float>(),
+                j.at("_radSeg").get<int>(),
+                j.at("_sides").get<int>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
+
         Knot::Knot(
             float radius,
             float size,
@@ -323,6 +423,7 @@ namespace ecs {
             bool toggleWire,
             Color color,
             Color wireColor) :
+            AShape(ShapeType::KNOT),
             _radius(radius),
             _size(size),
             _radSeg(radSeg),
@@ -345,11 +446,25 @@ namespace ecs {
                 DrawModelWires(_model, {0}, 1, _wireColor);
         }
 
+        void from_json(const nlohmann::json& j, std::shared_ptr<Knot>& knot)
+        {
+            knot = std::make_shared<Knot>(
+                j.at("_radius").get<float>(),
+                j.at("_size").get<float>(),
+                j.at("_radSeg").get<int>(),
+                j.at("_sides").get<int>(),
+                j.at("_toggleWire").get<bool>(),
+                j.at("_color").get<Color>(),
+                j.at("_wireColor").get<Color>()
+            );
+        }
 
-        Model3D::Model3D(const char *filename, Color color)
+        Model3D::Model3D(const char *filename, Color color) :
+            AShape(ShapeType::MODEL3D),
+            _filename(filename),
+            _color(color)
         {
             _model = LoadModel(filename);
-            _color = color;
             initBoundingBox();
         }
 
@@ -358,7 +473,17 @@ namespace ecs {
             DrawModel(_model, {0}, 1, _color);
         }
 
-        Skybox::Skybox(const char *filename)
+        void from_json(const nlohmann::json& j, std::shared_ptr<Model3D>& model)
+        {
+            model = std::make_shared<Model3D>(
+                j.at("_filename").get<std::string>().c_str(),
+                j.at("_color").get<Color>()
+            );
+        }
+
+        Skybox::Skybox(const char *filename) :
+            AShape(ShapeType::SKYBOX),
+            _filename(filename)
         {
             Texture2D texture = LoadTexture(filename);
             Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
@@ -374,6 +499,13 @@ namespace ecs {
             DrawModel(_model, transf.pos, 50.0f, WHITE);
             rlEnableBackfaceCulling();
             rlEnableDepthMask();
+        }
+
+        void from_json(const nlohmann::json& j, std::shared_ptr<Skybox>& skybox)
+        {
+            skybox = std::make_shared<Skybox>(
+                j.at("_filename").get<std::string>().c_str()
+            );
         }
     }
 }

@@ -86,6 +86,11 @@ namespace engine {
         return Engine::getInstance()->getSceneManager();
     }
 
+    ecs::Coordinator &getCoordinator()
+    {
+        return Engine::getInstance()->getCoordinator();
+    }
+
     void Engine::setSceneWindowOffset(ecs::SceneID id, Vector2 offset)
     {
         _coordinator->setSceneWindowOffset(id, offset);

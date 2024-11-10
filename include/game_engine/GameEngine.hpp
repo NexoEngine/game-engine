@@ -59,7 +59,7 @@ namespace engine {
              * @return The created entity.
              */
             ecs::Entity addEntity(ecs::components::physics::transform_t transf = {{0, 1, 0}, {0}, {0}},
-                                    ecs::components::render::render_t render = {ecs::components::ShapeType::CUBE, true, std::make_shared<ecs::components::Cube>()}
+                                    ecs::components::render::render_t render = { true, std::make_shared<ecs::components::Cube>()}
             );
 
             ecs::Entity addInvisibleEntity(void);
@@ -110,6 +110,11 @@ namespace engine {
             [[nodiscard]] ecs::SceneManager& getSceneManager() const
             {
                 return _coordinator->getSceneManager();
+            }
+
+            [[nodiscard]] ecs::Coordinator &getCoordinator() const
+            {
+                return *_coordinator;
             }
 
             /**
