@@ -8,6 +8,7 @@
 int main(int argc, char **argv)
 {
     loguru::init(argc, argv);
+    loguru::g_stderr_verbosity = loguru::Verbosity_1;
     nexo::editor::Editor editor;
     editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
     editor.init();

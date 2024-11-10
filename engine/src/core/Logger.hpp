@@ -8,19 +8,32 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        10/11/2024
-//  Description: Header file for the logger utilities
+//  Description: Header file for the logger utils functions
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include <functional>
 #include <string>
 #include <iostream>
-#include <utility>
 #include <sstream>
+#include <format>
+#include <string_view>
 
 namespace nexo::core {
+
+    template<typename T>
+    auto toFormatFriendly(const T &value)
+    {
+        if constexpr (std::is_convertible_v<T, std::string_view>)
+            return std::string_view(value);
+        else
+        {
+            std::stringstream ss;
+            ss << value;
+            return ss.str();
+        }
+    }
 
     enum class LogLevel {
         FATAL,
@@ -30,6 +43,37 @@ namespace nexo::core {
         DEBUG
     };
 
+    inline std::string toString(const LogLevel level)
+    {
+        switch (level)
+        {
+            case LogLevel::FATAL: return "FATAL";
+            case LogLevel::ERROR: return "ERROR";
+            case LogLevel::WARN: return "WARN";
+            case LogLevel::INFO: return "INFO";
+            case LogLevel::DEBUG: return "DEBUG";
+        }
+        return "UNKNOWN";
+    }
+
+    inline std::string getFileName(const char *file)
+    {
+        std::string path(file);
+        if (const auto lastSlash = path.find_last_of("/\\"); lastSlash != std::string::npos)
+        {
+            return path.substr(lastSlash + 1);
+        }
+        return path;
+    }
+
+    inline void defaultCallback(const LogLevel level, const std::string &message)
+    {
+        if (level == LogLevel::FATAL || level == LogLevel::ERROR)
+            std::cerr << "[" << toString(level) << "] " << message << std::endl;
+        else
+            std::cout << "[" << toString(level) << "] " << message << std::endl;
+    }
+
     class Logger {
         public:
             static void setCallback(std::function<void(LogLevel, const std::string &)> callback)
@@ -37,54 +81,27 @@ namespace nexo::core {
                 logCallback = std::move(callback);
             }
 
-            template<typename T>
-            static void logFatal(const T &message)
+            template<typename... Args>
+            static void logWithFormat(const LogLevel level, const char *file, const int line, const std::string_view fmt, Args &&... args)
             {
-                log(LogLevel::FATAL, message);
-            }
+                auto transformed = std::tuple{toFormatFriendly(std::forward<Args>(args))...};
 
-            template<typename T>
-            static void logError(const T &message)
-            {
-                log(LogLevel::ERROR, message);
-            }
-
-            template<typename T>
-            static void logWarn(const T &message)
-            {
-                log(LogLevel::WARN, message);
-            }
-
-            template<typename T>
-            static void logInfo(const T &message)
-            {
-                log(LogLevel::INFO, message);
-            }
-
-            template<typename T>
-            static void logDebug(const T &message)
-            {
-                log(LogLevel::DEBUG, message);
-            }
-
-            template<typename T>
-            static void log(LogLevel level, const T &message)
-            {
-                std::stringstream ss;
-                ss << message;
-                logString(level, ss.str());
-            }
-
-        private:
-            static void defaultCallback(const LogLevel level, const std::string &message)
-            {
-                if (level == LogLevel::FATAL || level == LogLevel::ERROR)
-                    std::cerr << "[" << toString(level) << "] " << message << std::endl;
+                const std::string message = std::apply(
+                    [&](auto &&... transformedArgs) {
+                        return std::vformat(fmt, std::make_format_args(transformedArgs...));
+                    },
+                    transformed);
+                if (level == LogLevel::INFO)
+                    logString(level, message);
                 else
-                    std::cout << "[" << toString(level) << "] " << message << std::endl;
+                {
+                    std::stringstream ss;
+                    ss << getFileName(file) << ":" << line << " - " << message;
+                    logString(level, ss.str());
+                }
             }
-
-            static void logString(LogLevel level, const std::string &message)
+        private:
+            static void logString(const LogLevel level, const std::string &message)
             {
                 if (logCallback)
                 {
@@ -94,39 +111,13 @@ namespace nexo::core {
                     defaultCallback(level, message);
                 }
             }
-
-            static std::string toString(const LogLevel level)
-            {
-                switch (level)
-                {
-                    case LogLevel::FATAL: return "FATAL";
-                    case LogLevel::ERROR: return "ERROR";
-                    case LogLevel::WARN: return "WARN";
-                    case LogLevel::INFO: return "INFO";
-                    case LogLevel::DEBUG: return "DEBUG";
-                }
-                return "UNKNOWN";
-            }
-
-            // Static member to store the callback function
             static inline std::function<void(LogLevel, const std::string &)> logCallback = nullptr;
     };
 
-} // namespace nexo::core
+}
 
-// Macro for logging
-#define LOG(level, message) \
-    do { \
-        switch (level) { \
-            case nexo::core::LogLevel::FATAL: nexo::core::Logger::logFatal(message); break; \
-            case nexo::core::LogLevel::ERROR: nexo::core::Logger::logError(message); break; \
-            case nexo::core::LogLevel::WARN: nexo::core::Logger::logWarn(message); break; \
-            case nexo::core::LogLevel::INFO: nexo::core::Logger::logInfo(message); break; \
-            case nexo::core::LogLevel::DEBUG: nexo::core::Logger::logDebug(message); break; \
-            default: break; \
-        } \
-    } while (0)
-
+#define LOG(level, fmt, ...) \
+    nexo::core::Logger::logWithFormat(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #define NEXO_FATAL nexo::core::LogLevel::FATAL
 #define NEXO_ERROR nexo::core::LogLevel::ERROR

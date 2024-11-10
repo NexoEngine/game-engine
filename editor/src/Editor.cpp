@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "Nexo.hpp"
 #include "Editor.hpp"
 #include "core/Logger.hpp"
 #include "backends/ImGuiBackend.hpp"
@@ -45,7 +46,6 @@ namespace nexo::editor {
         };
         core::Logger::setCallback(engineLogCallback);
 
-        LOG_F(INFO, "GameEngineEditor initialized");
     }
 
     void Editor::addLog(const LogMessage &message)
@@ -73,11 +73,12 @@ namespace nexo::editor {
     Editor::Editor()
     {
         setupLogs();
-        LOG_F(INFO, "Logs initialized");
+        LOG(NEXO_INFO, "Logs initialized");
         setupEngine();
         setupStyle();
-        LOG_F(INFO, "Style initialized");
+        LOG(NEXO_INFO, "Style initialized");
         setupDockspace();
+        LOG(NEXO_INFO, "Editor initialized");
     }
 
     bool Editor::isOpen() const
@@ -152,7 +153,7 @@ namespace nexo::editor {
         io.FontDefault = font;
 
         ImGuiBackend::initFontAtlas();
-        LOG_F(1, "Fonts initialized");
+        LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
     void Editor::setupDockspace()
@@ -189,7 +190,7 @@ namespace nexo::editor {
 
     Editor::~Editor()
     {
-        LOG_F(INFO, "Closing editor");
+        LOG(NEXO_INFO, "Closing editor");
         ImGuiBackend::shutdown();
 
         loguru::remove_callback(LOGURU_CALLBACK_NAME);
@@ -238,13 +239,13 @@ namespace nexo::editor {
         {
             window->shutdown();
         }
-        LOG_F(INFO, "All windows destroyed");
+        LOG(NEXO_INFO, "All windows destroyed");
     }
 
     void Editor::registerWindow(const std::string &name,
                                 std::shared_ptr<IDocumentWindow> window)
     {
         m_windows[name] = std::move(window);
-        LOG_F(INFO, "Registered window %s", name.c_str());
+        LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }
 }

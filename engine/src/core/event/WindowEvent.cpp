@@ -61,7 +61,7 @@ namespace nexo::event {
                 mod.append(" + ");
             mod.append("SHIFT");
         }
-        std::cout << "[KEYBOARD EVENT] : " << event.keycode << " with action : " << event.action << " " << mod;
+        os << "[KEYBOARD EVENT] : " << event.keycode << " with action : " << event.action << " " << mod;
         return os;
     }
 
@@ -92,19 +92,19 @@ namespace nexo::event {
                 mod.append(" + ");
             mod.append("SHIFT");
         }
-        std::cout << "[MOUSE BUTTON EVENT] : " << event.button << " with action : " << event.action << " " << mod;
+        os << "[MOUSE BUTTON EVENT] : " << event.button << " with action : " << event.action << " " << mod;
         return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const EventMouseScroll& scroll)
     {
-        std::cout << "[MOUSE SCROLL EVENT] xOffset : " << scroll.x << " yOffset : " << scroll.y;
+        os << "[MOUSE SCROLL EVENT] xOffset : " << scroll.x << " yOffset : " << scroll.y;
         return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const EventMouseMove& mouse)
     {
-        std::cout << "[MOUSE MOVE EVENT] x : " << mouse.x << " y : " << mouse.y;
+        os << "[MOUSE MOVE EVENT] x : " << mouse.x << " y : " << mouse.y;
         return os;
     }
 }

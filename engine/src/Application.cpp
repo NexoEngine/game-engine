@@ -90,9 +90,9 @@ namespace nexo {
 
         if (it == m_scenes.end()) {
             m_scenes.push_back(scene);
-        } else {
-            std::cout << "Scene with ID " << scene.id << " already exists." << std::endl;
-        }
+            LOG(NEXO_DEBUG, "Added new scene with id: {}", scene.id);
+        } else
+            LOG(NEXO_WARN, "Scene with id: {} already exists", scene.id);
     }
 
     void Application::removeScene(scene::Scene &scene)
@@ -104,9 +104,9 @@ namespace nexo {
 
         if (it == m_scenes.end()) {
             m_scenes.erase(it, m_scenes.end());
-        } else {
-            std::cout << "Scene with ID " << scene.id << " not found." << std::endl;
-        }
+            LOG(NEXO_DEBUG, "Removed new scene with id: {}", scene.id);
+        } else
+            LOG(NEXO_WARN, "Scene with id: {} not found", scene.id);
     }
 
     void Application::switchScene(scene::Scene &scene)
@@ -118,8 +118,8 @@ namespace nexo {
 
         if (it != m_scenes.end()) {
             m_actualScene = std::distance(m_scenes.begin(), it);
-        } else {
-            std::cout << "Scene with ID " << scene.id << " not found." << std::endl;
-        }
+            LOG(NEXO_DEBUG, "Switched to scene: {}", scene.id);
+        } else
+            LOG(NEXO_WARN, "Scene with id: {} not found", scene.id);
     }
 }
