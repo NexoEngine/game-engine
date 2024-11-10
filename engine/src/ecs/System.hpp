@@ -73,19 +73,7 @@ namespace nexo::ecs {
              *
              * @param sceneManager
              */
-            void updateSystemEntities(const scene::SceneManager &sceneManager)
-            {
-                const auto &activeEntities = sceneManager.getAllActiveEntities();
-
-                for (auto &[type, system] : m_systems) {
-                    std::set<Entity> updatedEntities;
-                    for (auto entity : system->entities) {
-                        if (std::find(activeEntities.begin(), activeEntities.end(), entity) != activeEntities.end())
-                            updatedEntities.insert(entity);
-                    }
-                    system->entities = std::move(updatedEntities);
-                }
-            }
+            void updateSystemEntities(const scene::SceneManager &sceneManager);
 
             /**
             * @brief Sets the signature for a system.
@@ -108,13 +96,7 @@ namespace nexo::ecs {
             *
             * @param entity - The ID of the destroyed entity.
             */
-            void entityDestroyed(const Entity entity) const
-            {
-                for (const auto &[fst, snd] : m_systems) {
-                    auto const &system = snd;
-                    system->entities.erase(entity);
-                }
-            }
+            void entityDestroyed(Entity entity) const;
 
             /**
             * @brief Updates the systems with an entity when its signature changes.
@@ -123,17 +105,7 @@ namespace nexo::ecs {
             * @param entity - The ID of the entity whose signature has changed.
             * @param entitySignature - The new signature of the entity.
             */
-            void entitySignatureChanged(const Entity entity, const Signature entitySignature) {
-                for (const auto &[fst, snd] : m_systems) {
-                    auto const &type = fst;
-                    auto const &system = snd;
-
-                    if (auto const &systemSignature = m_signatures[type]; (entitySignature & systemSignature) == systemSignature)
-                        system->entities.insert(entity);
-                    else
-                        system->entities.erase(entity);
-                }
-            }
+            void entitySignatureChanged(Entity entity, Signature entitySignature);
         private:
             std::unordered_map<std::type_index, Signature> m_signatures{};
             std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems{};

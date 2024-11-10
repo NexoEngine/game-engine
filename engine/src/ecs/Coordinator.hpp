@@ -41,37 +41,21 @@ namespace nexo::ecs {
             * ComponentManager, SystemManager, EventManager, SingletonComponentManager
             * and SceneManager.
             */
-            void init() {
-                m_componentManager = std::make_shared<ComponentManager>();
-                m_entityManager = std::make_shared<EntityManager>();
-                m_systemManager = std::make_shared<SystemManager>();
-                m_singletonComponentManager = std::make_shared<ecs::SingletonComponentManager>();
-                m_sceneManager = std::make_shared<scene::SceneManager>();
-                LOG(NEXO_DEV, "[ECS]: Coordinator initialized");
-            }
+            void init();
 
             /**
             * @brief Creates a new entity.
             *
             * @return Entity - The newly created entity's ID.
             */
-            Entity createEntity() const
-            {
-                return m_entityManager->createEntity();
-            }
+            Entity createEntity() const;
 
             /**
             * @brief Destroys an entity and cleans up its components and system references.
             *
             * @param entity - The ID of the entity to destroy.
             */
-            void destroyEntity(const Entity entity) {
-                m_entityManager->destroyEntity(entity);
-                m_componentManager->entityDestroyed(entity);
-                m_systemManager->entityDestroyed(entity);
-                m_sceneManager->entityDestroyed(entity);
-                updateSystemEntities();
-            }
+            void destroyEntity(Entity entity) const;
 
             /**
             * @brief Registers a new component type within the ComponentManager.
@@ -167,17 +151,7 @@ namespace nexo::ecs {
                 return m_singletonComponentManager->getSingletonComponent<T>();
             }
 
-            std::vector<std::pair<std::type_index, std::any>> getAllComponents(const Entity entity) {
-                std::vector<std::pair<std::type_index, std::any>> components;
-
-                for (auto& [type, func] : m_hasComponentFunctions) {
-                    if (func(entity)) {
-                        components.emplace_back(type, m_getComponentFunctions[type](entity));
-                    }
-                }
-
-                return components;
-            }
+            std::vector<std::pair<std::type_index, std::any>> getAllComponents(const Entity entity);
 
             /**
             * @brief Gets the component type ID for a specific component type.
@@ -216,81 +190,41 @@ namespace nexo::ecs {
              *
              * @param id The id of the scene to be created
              */
-            void createScene(const scene::SceneId id) const
-            {
-                m_sceneManager->createScene(id);
-            }
+            void createScene(scene::SceneId id) const;
 
             /**
              * @brief Delete a scene object
              *
              * @param id The id of the scene to be deleted
              */
-            void deleteScene(const scene::SceneId id) const
-            {
-                m_sceneManager->deleteScene(id);
-            }
+            void deleteScene(scene::SceneId id) const;
 
             /**
              * @brief Activate a scene
              *
              * @param id The id of the scene
              */
-            void activateScene(const scene::SceneId id)
-            {
-                m_sceneManager->setSceneActiveStatus(id, true);
-                updateSystemEntities();
-                for (const auto& entity : m_sceneManager->getAllActiveEntities()) {
-                    const auto signature = m_entityManager->getSignature(entity);
-                    m_systemManager->entitySignatureChanged(entity, signature);
-                }
-            }
+            void activateScene(scene::SceneId id) const;
 
             /**
              * @brief Deactivate a scene
              *
              * @param id The id of the scene
              */
-            void deactivateScene(const scene::SceneId id)
-            {
-                m_sceneManager->setSceneActiveStatus(id, false);
-                updateSystemEntities();
-                for (const auto& entity : m_sceneManager->getAllActiveEntities()) {
-                    const auto signature = m_entityManager->getSignature(entity);
-                    m_systemManager->entitySignatureChanged(entity, signature);
-                }
-            }
+            void deactivateScene(scene::SceneId id) const;
 
-            bool isSceneActive(const scene::SceneId id) const
-            {
-                return m_sceneManager->isSceneActive(id);
-            }
+            bool isSceneActive(scene::SceneId id) const;
 
-            bool isSceneRendered(const scene::SceneId sceneID) const
-            {
-                return m_sceneManager->isSceneRendered(sceneID);
-            }
+            bool isSceneRendered(scene::SceneId sceneID) const;
 
-            void setSceneRenderStatus(const scene::SceneId sceneID, const bool status) const
-            {
-                m_sceneManager->setSceneRenderStatus(sceneID, status);
-            }
+            void setSceneRenderStatus(scene::SceneId sceneID, bool status) const;
 
-            void setSceneActiveStatus(const scene::SceneId sceneID, const bool status) const
-            {
-                m_sceneManager->setSceneActiveStatus(sceneID, status);
-            }
+            void setSceneActiveStatus(scene::SceneId sceneID, bool status) const;
 
-            void addEntityToScene(const Entity entity, const scene::SceneId sceneID, const int layerIndex = -1, const bool active = true, const bool rendered = true)
-            {
-                m_sceneManager->addEntityToScene(entity, sceneID, layerIndex, active, rendered);
-                const auto signature = m_entityManager->getSignature(entity);
-                m_systemManager->entitySignatureChanged(entity, signature);
-                updateSystemEntities();
-            }
+            void addEntityToScene(Entity entity, scene::SceneId sceneID, int layerIndex = -1, bool active = true, bool rendered = true) const;
 
             template<typename DerivedLayer>
-            void addEntityToScene(const Entity entity, const scene::SceneId sceneID, const bool active = true, const bool rendered = true)
+            void addEntityToScene(const Entity entity, const scene::SceneId sceneID, const bool active = true, const bool rendered = true) const
             {
                 m_sceneManager->addEntityToScene<DerivedLayer>(entity, sceneID, active, rendered);
                 const auto signature = m_entityManager->getSignature(entity);
@@ -298,23 +232,16 @@ namespace nexo::ecs {
                 updateSystemEntities();
             }
 
-            void removeEntityFromScene(const Entity entity, const scene::SceneId sceneID, const int layerIndex = -1)
-            {
-                m_sceneManager->removeEntityFromScene(entity, sceneID, layerIndex);
-                updateSystemEntities();
-            }
+            void removeEntityFromScene(Entity entity, scene::SceneId sceneID, int layerIndex = -1) const;
 
             template<typename DerivedLayer>
-            void removeEntityFromScene(const Entity entity, const scene::SceneId sceneID)
+            void removeEntityFromScene(const Entity entity, const scene::SceneId sceneID) const
             {
                 m_sceneManager->removeEntityFromScene<DerivedLayer>(entity, sceneID);
                 updateSystemEntities();
             }
 
-            void attachCamera(const scene::SceneId id, std::shared_ptr<camera::Camera> &camera, const unsigned int layerIndex) const
-            {
-                m_sceneManager->attachCamera(id, camera, layerIndex);
-            }
+            void attachCamera(scene::SceneId id, std::shared_ptr<camera::Camera> &camera, unsigned int layerIndex) const;
 
             template<typename DerivedLayer>
             void attachCamera(const scene::SceneId id, std::shared_ptr<camera::Camera> &camera) const
@@ -322,10 +249,7 @@ namespace nexo::ecs {
                 m_sceneManager->attachCamera<DerivedLayer>(id, camera);
             }
 
-            void detachCamera(const scene::SceneId id, const unsigned int layerIndex) const
-            {
-                m_sceneManager->detachCamera(id, layerIndex);
-            }
+            void detachCamera(scene::SceneId id, unsigned int layerIndex) const;
 
             template<typename DerivedLayer>
             void detachCamera(const scene::SceneId id) const
@@ -333,10 +257,7 @@ namespace nexo::ecs {
                 m_sceneManager->detachCamera<DerivedLayer>(id);
             }
 
-            std::shared_ptr<camera::Camera> getCamera(const scene::SceneId id, const unsigned int layerIndex) const
-            {
-                return m_sceneManager->getCamera(id, layerIndex);
-            }
+            std::shared_ptr<camera::Camera> getCamera(scene::SceneId id, unsigned int layerIndex) const;
 
             template<typename DerivedLayer>
             std::shared_ptr<camera::Camera> getCamera(const scene::SceneId id) const
@@ -344,26 +265,14 @@ namespace nexo::ecs {
                 return m_sceneManager->getCamera<DerivedLayer>(id);
             }
 
-            [[nodiscard]] scene::SceneManager& getSceneManager() const
-            {
-                return *m_sceneManager;
-            }
+            [[nodiscard]] scene::SceneManager& getSceneManager() const { return *m_sceneManager; }
 
-            void setSceneWindowOffset(const scene::SceneId id, const glm::vec2 offset) const
-            {
-                m_sceneManager->setWindowOffset(id, offset);
-            }
+            void setSceneWindowOffset(const scene::SceneId id, const glm::vec2 offset) const { m_sceneManager->setWindowOffset(id, offset); }
 
-            [[nodiscard]] glm::vec2 getSceneWindowOffset(const scene::SceneId id) const
-            {
-                return m_sceneManager->getWindowOffset(id);
-            }
+            [[nodiscard]] glm::vec2 getSceneWindowOffset(const scene::SceneId id) const { return m_sceneManager->getWindowOffset(id); }
 
         private:
-            void updateSystemEntities() const
-            {
-                m_systemManager->updateSystemEntities(*m_sceneManager);
-            }
+            void updateSystemEntities() const;
 
             template<typename T>
             bool entityHasComponent(const Entity entity) const

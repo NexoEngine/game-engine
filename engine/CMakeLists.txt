@@ -37,6 +37,9 @@ set(COMMON_SOURCES
         engine/src/core/scene/SceneManager.cpp
         engine/src/core/exceptions/Exceptions.cpp
         engine/src/ecs/Entity.cpp
+        engine/src/ecs/Components.cpp
+        engine/src/ecs/Coordinator.cpp
+        engine/src/ecs/System.cpp
 )
 
 # Add API-specific sources

@@ -230,14 +230,7 @@ namespace nexo::ecs {
                 *
                 * @param entity - The entity that has been destroyed.
                 */
-            void entityDestroyed(const Entity entity) const
-            {
-                for (const auto &[fst, snd]: m_componentArrays)
-                {
-                    auto const &component = snd;
-                    component->entityDestroyed(entity);
-                }
-            }
+            void entityDestroyed(Entity entity) const;
 
         private:
             std::unordered_map<std::type_index, ComponentType> m_componentTypes{};
