@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Editor.hpp"
+#include "core/Logger.hpp"
 #include "backends/ImGuiBackend.hpp"
 
 #include "imgui.h"
@@ -20,13 +21,31 @@
 
 namespace nexo::editor {
 
+    static loguru::Verbosity nexoLevelToLoguruLevel(const core::LogLevel level)
+    {
+        switch (level)
+        {
+            case core::LogLevel::FATAL: return loguru::Verbosity_FATAL;
+            case core::LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case core::LogLevel::WARN: return loguru::Verbosity_WARNING;
+            case core::LogLevel::INFO: return loguru::Verbosity_INFO;
+            case core::LogLevel::DEBUG: return loguru::Verbosity_1;
+        }
+        return loguru::Verbosity_INVALID;
+    }
+
     void Editor::setupLogs()
     {
         loguru::add_callback(LOGURU_CALLBACK_NAME, &Editor::loguruCallback,
                              this, loguru::Verbosity_MAX);
 
+        auto engineLogCallback = [](const core::LogLevel level, const std::string& message) {
+            const auto loguruLevel = nexoLevelToLoguruLevel(level);
+            VLOG_F(loguruLevel, "%s", message.c_str());
+        };
+        core::Logger::setCallback(engineLogCallback);
+
         LOG_F(INFO, "GameEngineEditor initialized");
-        VLOG_F(loguru::Verbosity_ERROR, "GameEngineEditor initialized");
     }
 
     void Editor::addLog(const LogMessage &message)
@@ -54,8 +73,10 @@ namespace nexo::editor {
     Editor::Editor()
     {
         setupLogs();
+        LOG_F(INFO, "Logs initialized");
         setupEngine();
         setupStyle();
+        LOG_F(INFO, "Style initialized");
         setupDockspace();
     }
 
@@ -131,6 +152,7 @@ namespace nexo::editor {
         io.FontDefault = font;
 
         ImGuiBackend::initFontAtlas();
+        LOG_F(1, "Fonts initialized");
     }
 
     void Editor::setupDockspace()
@@ -167,6 +189,7 @@ namespace nexo::editor {
 
     Editor::~Editor()
     {
+        LOG_F(INFO, "Closing editor");
         ImGuiBackend::shutdown();
 
         loguru::remove_callback(LOGURU_CALLBACK_NAME);
@@ -215,11 +238,13 @@ namespace nexo::editor {
         {
             window->shutdown();
         }
+        LOG_F(INFO, "All windows destroyed");
     }
 
     void Editor::registerWindow(const std::string &name,
                                 std::shared_ptr<IDocumentWindow> window)
     {
         m_windows[name] = std::move(window);
+        LOG_F(INFO, "Registered window %s", name.c_str());
     }
 }

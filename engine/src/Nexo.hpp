@@ -18,6 +18,7 @@
 #include "core/event/KeyCodes.hpp"
 #include "core/Timestep.hpp"
 #include "core/Timer.hpp"
+#include "core/Logger.hpp"
 
 // Renderer
 #include "renderer/Renderer.hpp"

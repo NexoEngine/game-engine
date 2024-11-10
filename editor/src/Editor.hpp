@@ -14,6 +14,7 @@
 
 #pragma once
 
+#define L_DEBUG 1
 #include <vector>
 #include <loguru/loguru.hpp>
 #include <memory>
@@ -21,6 +22,7 @@
 
 #include "IDocumentWindow.hpp"
 #include "Nexo.hpp"
+
 
 namespace nexo::editor {
     constexpr auto LOGURU_CALLBACK_NAME = "GEE";

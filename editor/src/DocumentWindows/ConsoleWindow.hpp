@@ -35,7 +35,7 @@ namespace nexo::editor {
         void executeCommand(const char* command_line);
 
         private:
-        char inputBuf[256] = {};
+        char inputBuf[512] = {};
         std::deque<std::string> items;
         bool scrollToBottom = true;
         std::vector<std::string> commands; // History of executed commands.

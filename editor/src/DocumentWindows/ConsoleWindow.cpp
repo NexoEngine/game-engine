@@ -25,6 +25,7 @@ namespace nexo::editor {
             case loguru::Verbosity_WARNING: return "WARNING";
             case loguru::Verbosity_INFO: return "INFO";
             case loguru::Verbosity_INVALID: return "INVALID";
+            case loguru::Verbosity_1: return "DEBUG";
             default: return "UNKNOWN";
         }
     }
@@ -42,8 +43,8 @@ namespace nexo::editor {
                 break; // Yellow
             case loguru::Verbosity_INFO: color = ImVec4(0, 0.5f, 1, 1);
                 break; // Blue
-            case loguru::Verbosity_MAX: color = ImVec4(0, 1, 0, 1);
-                break; // Green
+            case loguru::Verbosity_1: color = ImVec4(0.898, 0, 1, 1); // Debug
+                break; // Pink
             default: color = ImVec4(1, 1, 1, 1); // White
         }
         return color;
@@ -56,13 +57,10 @@ namespace nexo::editor {
 
     void ConsoleWindow::setup()
     {
-        VLOG_F(loguru::Verbosity_INFO,
-               "ConsoleWindow setup\nLorem ipsum dolor sit amet\nconsectetur adipiscing elit\nsed do eiusmod tempor incididunt\nut labore et dolore magna aliqua\nUt enim ad minim veniam\nquis nostrud exercitation ullamco\nlaboris nisi ut aliquip ex ea commodo consequat\nDuis aute irure dolor in reprehenderit\nin voluptate velit esse cillum dolore eu fugiat nulla pariatur\nExcepteur sint occaecat cupidatat non proident\nsunt in culpa qui officia deserunt mollit anim id est laborum");
     }
 
     void ConsoleWindow::shutdown()
-    {
-    }
+    {}
 
     void ConsoleWindow::clearLog()
     {
@@ -94,49 +92,32 @@ namespace nexo::editor {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin("Console", &m_opened, ImGuiWindowFlags_NoCollapse);
 
-        // Reserve enough space for input box
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);
 
         auto id = 0;
         for (const auto &[verbosity, message, prefix]: _editor.getLogs())
         {
-            ImGui::PushID(id++); {
-                auto &msgtext = message;
-                ImVec2 text_size = ImGui::CalcTextSize(msgtext.c_str(), msgtext.c_str() + msgtext.size());
-                text_size.x = -FLT_MIN; // fill width (suppresses label)
-                text_size.y += ImGui::GetStyle().FramePadding.y; // single pad
-
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {0, 0}); // make align with text height
-                ImGui::PushStyleColor(ImGuiCol_FrameBg, {0.f, 0.f, 0.f, 0.f}); // remove text input box
-                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0)); // Set border color to transparent
-                ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Set border size to 0
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0)); // Set item spacing to 0
+            if (verbosity > loguru::g_stderr_verbosity)
+                continue;
+            ImGui::PushID(id++);
+            {
+                const float availableWidth = ImGui::GetContentRegionAvail().x;
 
                 ImVec4 color = getVerbosityColor(verbosity);
-
-                // Split the message into verbosity tag and actual message
-                std::string tag = "[" + std::string(verbosityToString(verbosity)) + "]";
-                //std::string message = item.message.substr(tag.length());  // assuming item.message starts with the tag
-
                 ImGui::PushStyleColor(ImGuiCol_Text, color);
+
+                std::string tag = "[" + std::string(verbosityToString(verbosity)) + "]";
                 ImGui::TextUnformatted(tag.c_str());
                 ImGui::PopStyleColor();
 
                 ImGui::SameLine();
-                ImGui::InputTextMultiline(
-                    "",
-                    const_cast<char *>(msgtext.c_str()), // ugly const cast
-                    msgtext.size() + 1, // needs to include '\0'
-                    text_size,
-                    ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoHorizontalScroll
-                );
 
-                ImGui::PopStyleVar();
-                ImGui::PopStyleColor();
-                ImGui::PopStyleVar();
-                ImGui::PopStyleColor();
-                ImGui::PopStyleVar();
+                ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + availableWidth);
+
+                ImGui::TextWrapped("%s", message.c_str());
+
+                ImGui::PopTextWrapPos();
             }
             ImGui::PopID();
         }
@@ -146,6 +127,7 @@ namespace nexo::editor {
         scrollToBottom = false;
 
         ImGui::EndChild();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 60.0f);
 
         if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), ImGuiInputTextFlags_EnterReturnsTrue))
         {
@@ -153,10 +135,49 @@ namespace nexo::editor {
             strcpy(inputBuf, "");
         }
 
+        ImGui::SameLine();
+        if (ImGui::Button("..."))
+            ImGui::OpenPopup("VerbositySettings");
+
+        if (ImGui::BeginPopup("VerbositySettings"))
+        {
+            ImGui::Text("Set Verbosity Level");
+            ImGui::Separator();
+
+            static loguru::Verbosity currentVerbosity = loguru::Verbosity_INFO;
+
+            const struct {
+                loguru::Verbosity level;
+                const char *name;
+            } levels[] = {
+                        {loguru::Verbosity_FATAL, "FATAL"},
+                        {loguru::Verbosity_ERROR, "ERROR"},
+                        {loguru::Verbosity_WARNING, "WARNING"},
+                        {loguru::Verbosity_INFO, "INFO"},
+                        {loguru::Verbosity_1, "DEBUG"},
+                    };
+
+            for (const auto &[level, name]: levels)
+            {
+                const bool selected = (currentVerbosity == level);
+                if (ImGui::Selectable(name, selected))
+                {
+                    currentVerbosity = level;
+                    loguru::g_stderr_verbosity = currentVerbosity;
+                }
+
+                if (selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
     }
 
     void ConsoleWindow::update()
-    {
-    }
+    {}
 }

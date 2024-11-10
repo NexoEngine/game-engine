@@ -24,6 +24,7 @@
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
+#include "core/Logger.hpp"
 
 namespace nexo {
 

@@ -18,11 +18,10 @@ namespace nexo {
     Application &init()
     {
         Application &app = Application::getInstance();
-        std::cout << "ca passe la" << std::endl;
         app.init();
-        std::cout << "mais pas la" << std::endl;
+        LOG(NEXO_INFO, "Nexo engine initialized");
         app.registerAllDebugListeners();
-        std::cout << "ah si en fait" << std::endl;
+        LOG(NEXO_DEBUG, "Debug listeners registered");
         return app;
     }
 
