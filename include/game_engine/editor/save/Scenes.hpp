@@ -26,10 +26,13 @@ namespace engine::save {
 
     class ScenesSaveFolder : public SaveFolder {
     public:
+        const char *INDEX_FILE_MAGIC = "nindx";
+
         void save() override
         {
             SaveFolder::save();
             auto sceneIDs = engine::getSceneManager().getSceneIDs();
+            _saveSceneIndex(sceneIDs);
             for (const auto &sceneID : sceneIDs) {
                 _saveScene(sceneID);
             }
@@ -38,15 +41,22 @@ namespace engine::save {
         void load() override
         {
             SaveFolder::load();
+
         }
     private:
 
-        void _saveSceneIndex()
+        void _saveSceneIndex(const std::vector<ecs::SceneID>& sceneIDs)
         {
-            json sceneIndex;
-            for (const auto &sceneID : engine::getSceneManager().getSceneIDs()) {
-                sceneIndex.push_back({"scene" + std::to_string(sceneID), sceneID});
+            json sceneIndices;
+            for (const auto &sceneID : sceneIDs) {
+                sceneIndices.push_back({"scene" + std::to_string(sceneID), sceneID});
             }
+            json sceneIndex = json::array({
+                INDEX_FILE_MAGIC,
+                sceneIndices
+            });
+            std::ofstream sceneIndexFile(getPath() / "scene_index.bin", std::ios::binary);
+            json::to_msgpack(sceneIndex, sceneIndexFile);
         }
 
         void _saveScene(ecs::SceneID sceneID)
@@ -54,7 +64,7 @@ namespace engine::save {
             std::filesystem::path scenePath = getPath() / ("scene" + std::to_string(sceneID));
             std::filesystem::create_directory(scenePath);
 
-            json entitiesData;
+            json entitiesData = json::array();
             auto sceneEntities = engine::getSceneManager().getSceneEntities(sceneID);
             for (const auto &entity : sceneEntities) {
                 entitiesData.push_back({
@@ -62,8 +72,9 @@ namespace engine::save {
                     {"data", engine::saveEntityComponents(entity)}
                 });
             }
-            std::ofstream entitiesFile(scenePath / "entities.json");
-            entitiesFile << entitiesData.dump(4) << std::endl;
+            std::ofstream entitiesFile(scenePath / "entities.json", std::ios::binary);
+            entitiesFile << entitiesData.dump(4);
+            entitiesFile.close();
         }
         
 
