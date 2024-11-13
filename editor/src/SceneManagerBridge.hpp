@@ -31,6 +31,10 @@ namespace nexo::editor {
             }
 
             [[nodiscard]] std::vector<scene::SceneId> getSceneIDs() const;
+            [[nodiscard]] const layer::LayerStack &getSceneLayers(scene::SceneId sceneId) const;
+
+            [[nodiscard]] const std::string &getSceneName(scene::SceneId sceneId) const;
+            [[nodiscard]] std::set<ecs::Entity> getLayerEntities(scene::SceneId sceneId, const std::string &layerName) const;
             [[nodiscard]] std::vector<ecs::Entity> getSceneEntities(scene::SceneId sceneId) const;
             [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
             [[nodiscard]] int getSelectedEntity() const;

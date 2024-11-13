@@ -19,6 +19,7 @@ set(SRCS
         editor/src/SceneManagerBridge.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
         editor/src/DocumentWindows/MainScene.cpp
+        editor/src/DocumentWindows/SceneTreeWindow.cpp
 )
 
 FetchContent_Declare(

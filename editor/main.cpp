@@ -15,6 +15,7 @@
 #include "src/Editor.hpp"
 #include "src/DocumentWindows/ConsoleWindow.hpp"
 #include "src/DocumentWindows/MainScene.hpp"
+#include "src/DocumentWindows/SceneTreeWindow.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
@@ -25,8 +26,9 @@ int main(int argc, char **argv)
         loguru::init(argc, argv);
         loguru::g_stderr_verbosity = loguru::Verbosity_1;
         nexo::editor::Editor editor;
-        //editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
-        editor.registerWindow("MainScene", std::make_shared<nexo::editor::MainScene>());
+        editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
+        editor.registerWindow("Default Scene", std::make_shared<nexo::editor::MainScene>("Default scene"));
+        editor.registerWindow("SceneTree", std::make_shared<nexo::editor::SceneTreeWindow>());
         editor.init();
 
         while (editor.isOpen())

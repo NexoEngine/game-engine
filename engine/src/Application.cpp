@@ -192,10 +192,7 @@ namespace nexo {
             m_window->onUpdate();
         // Dispatch events to active scenes
         for (auto id : scenesIds)
-        {
-            if (m_sceneManager.isSceneActive(id))
-                m_eventManager->dispatchEvents(m_sceneManager.getScene(id));
-        }
+            m_eventManager->dispatchEvents(m_sceneManager.getScene(id), m_sceneManager.isSceneActive(id));
     }
 
     ecs::Entity Application::createEntity()

@@ -22,6 +22,7 @@
 
 #include "IDocumentWindow.hpp"
 #include "Nexo.hpp"
+#include "DocumentWindows/MainScene.hpp"
 
 
 namespace nexo::editor {

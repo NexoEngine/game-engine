@@ -16,6 +16,7 @@
 #include "Editor.hpp"
 #include "Logger.hpp"
 #include "backends/ImGuiBackend.hpp"
+#include "IconsFontAwesome.h"
 
 #include "imgui.h"
 #include <ImGuizmo.h>
@@ -157,6 +158,14 @@ namespace nexo::editor {
         io.FontDefault = font;
 
         ImGuiBackend::initFontAtlas();
+
+        ImFontConfig fontawesome_config;
+        fontawesome_config.MergeMode = true;
+        fontawesome_config.OversampleH = 3; // Horizontal oversampling
+        fontawesome_config.OversampleV = 3; // Vertical oversampling
+        static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        io.Fonts->AddFontFromFileTTF("../assets/fonts/fontawesome4.ttf", fontSize, &fontawesome_config, icon_ranges);
+
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
