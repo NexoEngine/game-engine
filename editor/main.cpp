@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         }
 
         return 0;
-    } catch (const nexo::core::Exception &e) {
+    } catch (const nexo::Exception &e) {
         LOG_EXCEPTION(e);
         return 1;
     }

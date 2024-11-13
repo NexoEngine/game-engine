@@ -15,7 +15,7 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "RenderCommand.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 #include "core/exceptions/Exceptions.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -108,7 +108,7 @@ namespace nexo::renderer {
             s_Renderer2DStorage->textureShader = Shader::create("../assets/shaders/texture.glsl");
             s_Renderer2DStorage->textureShader->bind();
             s_Renderer2DStorage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
-        } catch (const core::Exception &e) {
+        } catch (const Exception &e) {
             LOG_EXCEPTION(e);
         }
 
@@ -128,10 +128,10 @@ namespace nexo::renderer {
         delete s_Renderer2DStorage;
     }
 
-    void Renderer2D::beginScene(const camera::OrthographicCamera &camera)
+    void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
         s_Renderer2DStorage->textureShader->bind();
-        s_Renderer2DStorage->textureShader->setUniformMatrix("viewProjection", camera.getViewProjectionMatrix());
+        s_Renderer2DStorage->textureShader->setUniformMatrix("viewProjection", viewProjection);
         s_Renderer2DStorage->quadIndexCount = 0;
         s_Renderer2DStorage->quadVertexBufferPtr = s_Renderer2DStorage->quadVertexBufferBase;
 

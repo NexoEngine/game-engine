@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 #include "exceptions/Exceptions.hpp"
 #include "openglImGuiBackend.hpp"
 #include "imgui_impl_opengl3.h"

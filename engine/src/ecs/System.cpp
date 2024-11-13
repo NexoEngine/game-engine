@@ -15,19 +15,6 @@
 #include "System.hpp"
 
 namespace nexo::ecs {
-    void SystemManager::updateSystemEntities(const scene::SceneManager &sceneManager)
-    {
-        const auto &activeEntities = sceneManager.getAllActiveEntities();
-
-        for (auto &[type, system] : m_systems) {
-            std::set<Entity> updatedEntities;
-            for (auto entity : system->entities) {
-                if (std::find(activeEntities.begin(), activeEntities.end(), entity) != activeEntities.end())
-                    updatedEntities.insert(entity);
-            }
-            system->entities = std::move(updatedEntities);
-        }
-    }
 
     void SystemManager::entityDestroyed(const Entity entity) const
     {

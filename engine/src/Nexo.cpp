@@ -18,10 +18,7 @@ namespace nexo {
     Application &init()
     {
         Application &app = Application::getInstance();
-        app.init();
         LOG(NEXO_INFO, "Nexo engine initialized");
-        app.registerAllDebugListeners();
-        LOG(NEXO_DEV, "Debug listeners registered");
         return app;
     }
 
@@ -30,10 +27,10 @@ namespace nexo {
         return Application::getInstance();
     }
 
-    void run()
+    void runEngine(bool renderToFrameBuffer)
     {
         Application &app = Application::getInstance();
-        app.run();
+        app.run(renderToFrameBuffer);
     }
 
 }

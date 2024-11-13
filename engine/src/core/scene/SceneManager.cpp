@@ -12,7 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "SceneManager.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
+#include "core/layer/Layer.hpp"
 
 #include <numeric>
 #include <vector>
@@ -21,28 +22,64 @@ namespace nexo::scene {
 
     Scene &SceneManager::getScene(SceneId sceneId)
     {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getScene): SceneId {} does not exist", sceneId);
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getScene: id {} does not exist", sceneId);
+            static Scene defaultScene;
+            return defaultScene;
         }
         return scenes.at(sceneId);
     }
 
-    void SceneManager::addLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer)
+    std::set<ecs::Entity> SceneManager::getLayerEntities(SceneId sceneId, const std::string &layerName) const
     {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(addLayer): SceneId {} does not exist", sceneId);
-            return;
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getLayerEntities: id {} does not exist", sceneId);
+            return {};
         }
-        scenes.at(sceneId).addLayer(layer);
+        auto layer = scenes.at(sceneId).getLayer(layerName);
+        return layer->getEntities();
     }
 
-    void SceneManager::removeLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer)
+    void SceneManager::addLayer(SceneId sceneId, const std::string &layerName)
     {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(removeLayer): SceneId {} does not exist", sceneId);
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::addLayer: id {} does not exist", sceneId);
             return;
         }
-        scenes.at(sceneId).removeLayer(layer);
+        scenes.at(sceneId).addLayer(layerName);
+    }
+
+    void SceneManager::removeLayer(SceneId sceneId, const std::string &layerName)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::removeLayer: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).removeLayer(layerName);
+    }
+
+    void SceneManager::addOverlay(SceneId sceneId, const std::string &overlayName)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::addOverlay: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).addOverlay(overlayName);
+    }
+
+    void SceneManager::removeOverlay(SceneId sceneId, const std::string &overlayName)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::removeOverlay: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).removeOverlay(overlayName);
     }
 
     std::vector<SceneId> SceneManager::getSceneIDs() const
@@ -67,10 +104,11 @@ namespace nexo::scene {
         std::vector<ecs::Entity> entityIds;
         entityIds.reserve(totalEntities);
 
-        for (const auto &[id, scene] : scenes) {
-            auto sceneEntities = scene.getEntities();
-            for (const auto &entity : sceneEntities) {
-                entityIds.push_back(ecs::getEntityId(entity));
+        for (const auto &[id, scene]: scenes)
+        {
+            for (auto sceneEntities = scene.getEntities(); const auto &entity: sceneEntities)
+            {
+                entityIds.push_back(entity);
             }
         }
         return entityIds;
@@ -78,88 +116,26 @@ namespace nexo::scene {
 
     std::vector<ecs::Entity> SceneManager::getAllActiveEntities() const
     {
-        const std::size_t totalEntities = std::accumulate(scenes.begin(), scenes.end(), 0,
-                                                  [](std::size_t sum, const auto &scenePair) {
-                                                      return sum + scenePair.second.getEntities().size();
-                                                  });
+        const std::size_t totalEntities = std::accumulate(m_activeScenes.begin(), m_activeScenes.end(), 0,
+                                                          [this](std::size_t sum, const auto &sceneId) {
+                                                              return sum + scenes.at(sceneId).getEntities().size();
+                                                          });
 
         std::vector<ecs::Entity> entityIds;
         entityIds.reserve(totalEntities);
 
-        for (const auto &[id, scene] : scenes) {
-            auto sceneEntities = scene.getEntities();
-            for (const auto &entity : sceneEntities) {
-                if (ecs::isActive(entity))
-                    entityIds.push_back(ecs::getEntityId(entity));
-            }
+        for (const auto &sceneId : m_activeScenes) {
+            const auto &sceneEntities = scenes.at(sceneId).getEntities();
+            entityIds.insert(entityIds.end(), sceneEntities.begin(), sceneEntities.end());
         }
         return entityIds;
     }
 
-    std::vector<ecs::Entity> SceneManager::getAllUnactiveEntities() const
+    std::vector<ecs::Entity> SceneManager::getAllSceneEntities(const SceneId sceneId) const
     {
-        const std::size_t totalEntities = std::accumulate(scenes.begin(), scenes.end(), 0,
-                                                  [](std::size_t sum, const auto &scenePair) {
-                                                      return sum + scenePair.second.getEntities().size();
-                                                  });
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &[id, scene] : scenes) {
-            auto sceneEntities = scene.getEntities();
-            for (const auto &entity : sceneEntities) {
-                if (!ecs::isActive(entity))
-                    entityIds.push_back(ecs::getEntityId(entity));
-            }
-        }
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllRenderedEntities() const
-    {
-        const std::size_t totalEntities = std::accumulate(scenes.begin(), scenes.end(), 0,
-                                          [](std::size_t sum, const auto &scenePair) {
-                                              return sum + scenePair.second.getEntities().size();
-                                          });
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &[id, scene] : scenes) {
-            auto sceneEntities = scene.getEntities();
-            for (const auto &entity : sceneEntities) {
-                if (ecs::isRendered(entity))
-                    entityIds.push_back(ecs::getEntityId(entity));
-            }
-        }
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllUnrenderedEntities() const
-    {
-        const std::size_t totalEntities = std::accumulate(scenes.begin(), scenes.end(), 0,
-                                          [](std::size_t sum, const auto &scenePair) {
-                                              return sum + scenePair.second.getEntities().size();
-                                          });
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &[id, scene] : scenes) {
-            auto sceneEntities = scene.getEntities();
-            for (const auto &entity : sceneEntities) {
-                if (!ecs::isRendered(entity))
-                    entityIds.push_back(ecs::getEntityId(entity));
-            }
-        }
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllEntities(const SceneId sceneId) const
-    {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getAllEntities): SceneId {} does not exist", sceneId);
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getAllSceneEntities: id {} does not exist", sceneId);
             return {};
         }
         const auto sceneEntities = scenes.at(sceneId).getEntities();
@@ -168,169 +144,126 @@ namespace nexo::scene {
         std::vector<ecs::Entity> entityIds;
         entityIds.reserve(totalEntities);
 
-        for (const auto &entity : sceneEntities) {
-            entityIds.push_back(ecs::getEntityId(entity));
-        }
+        for (const auto &entity: sceneEntities)
+            entityIds.push_back(entity);
 
         return entityIds;
     }
 
-    std::vector<ecs::Entity> SceneManager::getAllActiveEntities(const SceneId sceneId) const
+
+    void SceneManager::addEntityToLayer(const ecs::Entity entity, SceneId sceneId, const std::string &name)
     {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getAllActiveEntities): SceneId {} does not exist", sceneId);
-            return {};
-        }
-        const auto sceneEntities = scenes.at(sceneId).getEntities();
-        const std::size_t totalEntities = sceneEntities.size();
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &entity : sceneEntities) {
-            if (ecs::isActive(entity))
-                entityIds.push_back(ecs::getEntityId(entity));
-        }
-
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllUnactiveEntities(const SceneId sceneId) const
-    {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getAllUnactiveEntities): SceneId {} does not exist", sceneId);
-            return {};
-        }
-        const auto sceneEntities = scenes.at(sceneId).getEntities();
-        const std::size_t totalEntities = sceneEntities.size();
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &entity : sceneEntities) {
-            if (!ecs::isActive(entity))
-                entityIds.push_back(ecs::getEntityId(entity));
-        }
-
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllRenderedEntities(const SceneId sceneId) const
-    {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getAllRenderedEntities): SceneId {} does not exist", sceneId);
-            return {};
-        }
-        const auto sceneEntities = scenes.at(sceneId).getEntities();
-        const std::size_t totalEntities = sceneEntities.size();
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &entity : sceneEntities) {
-            if (ecs::isRendered(entity))
-                entityIds.push_back(ecs::getEntityId(entity));
-        }
-
-        return entityIds;
-    }
-
-    std::vector<ecs::Entity> SceneManager::getAllUnrenderedEntities(const SceneId sceneId) const
-    {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(getAllUnrenderedEntities): SceneId {} does not exist", sceneId);
-            return {};
-        }
-        const auto sceneEntities = scenes.at(sceneId).getEntities();
-        const std::size_t totalEntities = sceneEntities.size();
-
-        std::vector<ecs::Entity> entityIds;
-        entityIds.reserve(totalEntities);
-
-        for (const auto &entity : sceneEntities) {
-            if (!ecs::isRendered(entity))
-                entityIds.push_back(ecs::getEntityId(entity));
-        }
-
-        return entityIds;
-    }
-
-    void SceneManager::addEntityToScene(const ecs::Entity entity, const SceneId sceneId, const int layerIndex, const bool active, const bool rendered)
-    {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(addEntityToScene): SceneId {} does not exist", sceneId);
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::addEntityToLayerByName: id {} does not exist", sceneId);
             return;
         }
-        ecs::Entity newEntityId = entity;
-        ecs::setActive(newEntityId, active);
-        ecs::setRendered(newEntityId, rendered);
-        scenes.at(sceneId).addEntity(newEntityId, layerIndex);
+        scenes.at(sceneId).addEntityToLayer(entity, name);
     }
 
-    void SceneManager::removeEntityFromScene(const ecs::Entity entity, const SceneId sceneId, const int layerIndex)
+    void SceneManager::addGlobalEntity(const ecs::Entity entity, SceneId sceneId)
     {
-        if (!scenes.contains(sceneId)) {
-            LOG(NEXO_ERROR, "SceneManager(removeEntityFromScene): SceneId {} does not exist", sceneId);
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::addGlobalEntity: id {} does not exist", sceneId);
             return;
         }
-        scenes.at(sceneId).removeEntity(entity, layerIndex);
+        scenes.at(sceneId).addGlobalEntity(entity);
     }
+
+    void SceneManager::removeEntityFromLayer(const ecs::Entity entity, SceneId sceneId, const std::string &name)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager::removeEntityFromLayerByName: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).removeEntityFromLayer(entity, name);
+    }
+
+    void SceneManager::removeGlobalEntity(const ecs::Entity entity, SceneId sceneId)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager::removeEntityFromScene: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).removeGlobalEntity(entity);
+    }
+
     void SceneManager::entityDestroyed(const ecs::Entity entity)
     {
-        for (auto &[_, scene] : scenes)
-            scene.removeEntity(entity);
-    }
-    void SceneManager::createScene(SceneId id, const std::string sceneName)
-    {
-        if (scenes.contains(id)) {
-            LOG(NEXO_WARN, "SceneManager: SceneId {} already exists, skipping creation", id);
-            return;
-        }
-        scenes.emplace(id, Scene{id, sceneName});
-    }
-    void SceneManager::deleteScene(const SceneId id)
-    {
-        if (scenes.erase(id) == 0) {
-            LOG(NEXO_ERROR, "SceneManager(deleteScene): SceneId {} does not exist, cannot delete", id);
-        }
-    }
-    void SceneManager::attachCamera(SceneId id, std::shared_ptr<nexo::camera::Camera> &camera, unsigned int layerIndex)
-    {
-        if (!scenes.contains(id)) {
-            LOG(NEXO_ERROR, "SceneManager(attachCamera): SceneId {} does not exist", id);
-            return;
-        }
-        scenes.at(id).attachCamera(camera, layerIndex);
-    }
-    void SceneManager::detachCamera(const SceneId id, const unsigned int layerIndex)
-    {
-        if (!scenes.contains(id)) {
-            LOG(NEXO_ERROR, "SceneManager(detachCamera): SceneId {} does not exist", id);
-            return;
-        }
-        scenes.at(id).detachCamera(layerIndex);
+        for (auto &[_, scene]: scenes)
+            scene.entityDestroyed(entity);
     }
 
-    std::shared_ptr<camera::Camera> SceneManager::getCamera(const SceneId id, const unsigned int layerIndex)
+    SceneId SceneManager::createScene(const std::string &sceneName, bool active)
     {
-        if (!scenes.contains(id)) {
-            LOG(NEXO_ERROR, "SceneManager(getCamera): SceneId {} does not exist", id);
+        auto sceneId = m_nextSceneId++;
+        Scene newScene(sceneId, sceneName);
+        scenes.emplace(sceneId, newScene);
+        if (active)
+            m_activeScenes.insert(sceneId);
+        return sceneId;
+    }
+
+    void SceneManager::deleteScene(const SceneId id)
+    {
+        if (scenes.erase(id) == 0)
+        {
+            LOG(NEXO_ERROR, "SceneManager::deleteScene: id {} does not exist, cannot delete", id);
+            return;
+        }
+        if (const auto it = m_activeScenes.find(id); it != m_activeScenes.end())
+            m_activeScenes.erase(it);
+    }
+
+    void SceneManager::attachCameraToLayer(SceneId id, const std::shared_ptr<camera::Camera> &camera,
+                                           const std::string &layerName)
+    {
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::attachCameraToLayer: id {} does not exist", id);
+            return;
+        }
+        scenes.at(id).attachCameraToLayer(camera, layerName);
+    }
+
+    void SceneManager::detachCameraFromLayer(SceneId id, const std::string &layerName)
+    {
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::detachCameraFromLayer: id {} does not exist", id);
+            return;
+        }
+        scenes.at(id).detachCameraFromLayer(layerName);
+    }
+
+    std::shared_ptr<camera::Camera> SceneManager::getCameraLayer(SceneId id, const std::string &layerName)
+    {
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::getCameraLayer: id {} does not exist", id);
             return nullptr;
         }
-        return scenes.at(id).getCamera(layerIndex);
+        return scenes.at(id).getCameraLayer(layerName);
     }
+
     void SceneManager::setWindowOffset(const SceneId id, const glm::vec2 offset)
     {
-        if (!scenes.contains(id)) {
-            LOG(NEXO_ERROR, "SceneManager(setWindowOffset): SceneId {} does not exist", id);
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::setWindowOffset: id {} does not exist", id);
             return;
         }
         scenes.at(id).setWindowOffset(offset);
     }
+
     glm::vec2 SceneManager::getWindowOffset(const SceneId id)
     {
-        if (!scenes.contains(id)) {
-            LOG(NEXO_ERROR, "SceneManager(getWindowOffset): SceneId {} does not exist", id);
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::getWindowOffset: id {} does not exist", id);
             return {0, 0};
         }
         return scenes.at(id).getWindowOffset();

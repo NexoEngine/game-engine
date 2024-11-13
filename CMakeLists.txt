@@ -77,3 +77,5 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
 
 # IMGuiVR example
 include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")
+
+include_directories("./common")

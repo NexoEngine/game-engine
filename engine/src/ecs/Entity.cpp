@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Entity.hpp"
+#include "ECSExceptions.hpp"
 
 namespace nexo::ecs {
 
@@ -23,7 +24,8 @@ namespace nexo::ecs {
 
     Entity EntityManager::createEntity()
     {
-        assert(m_livingEntityCount < MAX_ENTITIES && "Too many living entities");
+        if (m_livingEntityCount >= MAX_ENTITIES)
+            THROW_EXCEPTION(TooManyEntities);
 
         const Entity id = m_availableEntities.front();
         m_availableEntities.pop();
@@ -34,7 +36,8 @@ namespace nexo::ecs {
 
     void EntityManager::destroyEntity(const Entity entity)
     {
-        assert(entity < MAX_ENTITIES && "Entity out of range");
+        if (entity >= MAX_ENTITIES)
+            THROW_EXCEPTION(OutOfRange, entity);
 
         m_signatures[entity].reset();
 
@@ -45,14 +48,16 @@ namespace nexo::ecs {
 
     void EntityManager::setSignature(const Entity entity, const Signature signature)
     {
-        assert(entity < MAX_ENTITIES && "Entity out of range");
+        if (entity >= MAX_ENTITIES)
+            THROW_EXCEPTION(OutOfRange, entity);
 
         m_signatures[entity] = signature;
     }
 
     Signature EntityManager::getSignature(const Entity entity) const
     {
-        assert(entity < MAX_ENTITIES && "Entity out of range.");
+        if (entity >= MAX_ENTITIES)
+            THROW_EXCEPTION(OutOfRange, entity);
 
         return m_signatures[entity];
     }

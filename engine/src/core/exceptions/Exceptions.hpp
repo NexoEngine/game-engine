@@ -13,33 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <exception>
 #include <string>
-#include <sstream>
-#include <stdexcept>
+
+#include "Exception.hpp"
 
 namespace nexo::core {
-    class Exception : public std::exception {
-        public:
-            explicit Exception(std::string message, const char *file = __FILE__, const int line = __LINE__)
-                : message(std::move(message)), file(file), line(line) {}
-
-            const char *what() const noexcept override;
-
-            const std::string &getMessage() const noexcept { return message; }
-            const char *getFile() const noexcept { return file; }
-            int getLine() const noexcept { return line; }
-
-        protected:
-            std::string formatMessage() const;
-
-        private:
-            std::string message;
-            const char *file;
-            int line;
-            mutable std::string formattedMessage;
-    };
-
     class UnknownGraphicsApi final : public Exception {
         public:
             explicit UnknownGraphicsApi(const std::string &backendApiName, const char *file = __FILE__,

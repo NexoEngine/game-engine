@@ -22,7 +22,7 @@ namespace nexo::editor {
 
     std::vector<ecs::Entity> SceneManagerBridge::getSceneEntities(const scene::SceneId sceneId) const
     {
-        return std::move(m_sceneManager.getAllEntities(sceneId));
+        return std::move(m_sceneManager.getAllSceneEntities(sceneId));
     }
 
     std::vector<ecs::Entity> SceneManagerBridge::getAllEntities() const

@@ -14,7 +14,7 @@
 #pragma once
 
 #include "core/event/Input.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 namespace nexo::event {
     class InputOpenGl final : public Input {

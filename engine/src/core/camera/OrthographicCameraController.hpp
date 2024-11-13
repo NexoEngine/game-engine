@@ -21,20 +21,24 @@
 
 namespace nexo::camera {
 
-    class OrthographicCameraController : LISTENS_TO(
+    class OrthographicCameraController : public Camera,  LISTENS_TO(
         event::EventMouseScroll,
         event::EventWindowResize
     ) {
         public:
             explicit OrthographicCameraController(float aspectRatio, bool rotation = false);
 
-            void onUpdate(core::Timestep ts);
+            void onUpdate(core::Timestep ts) override;
 
             OrthographicCamera &getCamera() { return m_camera; }
             [[nodiscard]] const OrthographicCamera &getCamera() const { return m_camera; }
 
             void handleEvent(event::EventMouseScroll &event) override;
             void handleEvent(event::EventWindowResize &event) override;
+
+            [[nodiscard]] const glm::mat4 &getProjectionMatrix() const override { return m_camera.getProjectionMatrix(); };
+            [[nodiscard]] const glm::mat4 &getViewMatrix() const override { return m_camera.getViewMatrix(); };
+            [[nodiscard]] const glm::mat4 &getViewProjectionMatrix() const override { return m_camera.getViewProjectionMatrix(); }
         private:
             float m_aspectRatio;
             float m_zoomLevel = 1.0f;

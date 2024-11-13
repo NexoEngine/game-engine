@@ -13,109 +13,65 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <utility>
+
 #include "Scene.hpp"
+#include "ecs/Coordinator.hpp"
 
 namespace nexo::scene {
+    using SceneId = unsigned int;
 
     class SceneManager {
         public:
+            void setCoordinator(std::shared_ptr<ecs::Coordinator> coordinator) { m_coordinator = std::move(coordinator); };
             [[nodiscard]] std::vector<SceneId> getSceneIDs() const;
 
             [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
             [[nodiscard]] std::vector<ecs::Entity> getAllActiveEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllUnactiveEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllRenderedEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllUnrenderedEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllEntities(SceneId sceneId) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllActiveEntities(SceneId sceneId) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllUnactiveEntities(SceneId sceneId) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllRenderedEntities(SceneId sceneId) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllUnrenderedEntities(SceneId sceneId) const;
+            [[nodiscard]] std::vector<ecs::Entity> getAllSceneEntities(SceneId sceneId) const;
+            std::set<ecs::Entity> getLayerEntities(SceneId sceneId, const std::string &layerName) const;
+
 
             Scene &getScene(SceneId sceneId);
 
-            void addLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer);
-            void removeLayer(SceneId sceneId, const std::shared_ptr<layer::Layer>& layer);
+            void addLayer(SceneId sceneId, const std::string &layerName);
+            void removeLayer(SceneId sceneId, const std::string &layerName);
+            void addOverlay(SceneId sceneId, const std::string &overlayName);
+            void removeOverlay(SceneId sceneId, const std::string &overlayName);
 
-            void addEntityToScene(ecs::Entity entity, SceneId sceneId, int layerIndex = -1, bool active = true, bool rendered = true);
-            template<typename DerivedLayer = void>
-            void addEntityToScene(const ecs::Entity entity, const SceneId sceneId, const bool active = true, const bool rendered = true)
-            {
-                ecs::Entity newEntityId = entity;
-                ecs::setActive(newEntityId, active);
-                ecs::setRendered(newEntityId, rendered);
-                scenes[sceneId].addEntity<DerivedLayer>(entity);
-            }
+            void addEntityToLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
+            void addGlobalEntity(ecs::Entity entity, SceneId sceneId);
 
-            template<typename DerivedLayer = void>
-            void removeEntityFromScene(const ecs::Entity entity, const SceneId sceneId)
-            {
-                scenes[sceneId].removeEntity<DerivedLayer>(entity);
-            }
-            void removeEntityFromScene(ecs::Entity entity, SceneId sceneId, int layerIndex = -1);
+            void removeEntityFromLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
+            void removeGlobalEntity(ecs::Entity entity, SceneId sceneId);
 
             void entityDestroyed(ecs::Entity entity);
 
-            void createScene(SceneId id, std::string sceneName = "scene");
-
+            SceneId createScene(const std::string& sceneName, bool active = true);
             void deleteScene(SceneId id);
 
-            void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes[sceneId].setRenderStatus(status); };
-            void setLayerRenderStatus(const SceneId sceneId, const bool status, const unsigned int layerIndex) { scenes[sceneId].setLayerRenderStatus(status, layerIndex); };
-            template<typename DerivedLayer = void>
-            void setLayerRenderStatus(const SceneId sceneId, const bool status)
-            {
-                scenes[sceneId].setLayerRenderStatus<DerivedLayer>(status);
-            }
-            bool isSceneRendered(const SceneId sceneId) { return scenes[sceneId].isRendered(); };
-            bool isLayerRendered(const SceneId sceneId, const unsigned int layerIndex) { return scenes[sceneId].getLayerRenderStatus(layerIndex); };
-            template<typename DerivedLayer = void>
-            bool isLayerRendered(const SceneId sceneId)
-            {
-                return scenes[sceneId].getLayerRenderStatus<DerivedLayer>();
-            }
+            void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes.at(sceneId).isRendered = status;; };
+            void setLayerRenderStatus(const SceneId sceneId, const std::string &layerName, const bool status) {scenes[sceneId].setLayerRenderStatus(status, layerName); };
+            bool isSceneRendered(const SceneId sceneId) { return scenes[sceneId].isRendered; };
+            bool isLayerRendered(const SceneId sceneId, const std::string &layerName) {return scenes[sceneId].getLayerRenderStatus(layerName); };
 
-            void setSceneActiveStatus(const SceneId sceneId, const bool status) { scenes[sceneId].setActiveStatus(status); };
-            void setLayerActiveStatus(const SceneId sceneId, const bool status, const unsigned int layerIndex) { scenes[sceneId].setLayerActiveStatus(status, layerIndex); };
-            template<typename DerivedLayer = void>
-            void setLayerActiveStatus(const SceneId sceneId, const bool status)
-            {
-                scenes[sceneId].setLayerActiveStatus<DerivedLayer>(status);
-            }
-            bool isSceneActive(const SceneId sceneId) { return scenes[sceneId].isActive(); };
-            bool isLayerActive(const SceneId sceneId, const unsigned int layerIndex) { return scenes[sceneId].getLayerActiveStatus(layerIndex); };
-            template<typename DerivedLayer = void>
-            bool isLayerActive(const SceneId sceneId)
-            {
-                return scenes[sceneId].getLayerActiveStatus<DerivedLayer>();
-            }
+            void setSceneActiveStatus(const SceneId sceneId, const bool status) { scenes[sceneId].isActive = status; };
+            void setLayerActiveStatus(const SceneId sceneId, const std::string &layerName, const bool status) { scenes[sceneId].setLayerActiveStatus(status, layerName); };
+            bool isSceneActive(const SceneId sceneId) { return scenes[sceneId].isActive; };
+            bool isLayerActive(const SceneId sceneId, const std::string &layerName) {return scenes[sceneId].getLayerActiveStatus(layerName); };
 
-            void attachCamera(SceneId id, std::shared_ptr<camera::Camera> &camera, unsigned int layerIndex);
-            template <typename DerivedLayer = void>
-            void attachCamera(const SceneId id, std::shared_ptr<camera::Camera> &camera)
-            {
-                scenes.at(id).attachCamera<DerivedLayer>(camera);
-            }
-
-            void detachCamera(SceneId id, unsigned int layerIndex);
-            template <typename DerivedLayer = void>
-            void detachCamera(const SceneId id)
-            {
-                scenes.at(id).detachCamera<DerivedLayer>();
-            }
-
-            std::shared_ptr<camera::Camera> getCamera(SceneId id, unsigned int layerIndex);
-            template <typename DerivedLayer = void>
-            std::shared_ptr<camera::Camera> getCamera(const SceneId id)
-            {
-                return scenes.at(id).getCamera<DerivedLayer>();
-            }
+            void attachCameraToLayer(SceneId id, const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
+            void detachCameraFromLayer(SceneId id, const std::string &layerName);
+            std::shared_ptr<camera::Camera> getCameraLayer(SceneId id, const std::string &layerName);
 
             void setWindowOffset(SceneId id, glm::vec2 offset);
             glm::vec2 getWindowOffset(SceneId id);
         private:
+            std::shared_ptr<ecs::Coordinator> m_coordinator;
             std::unordered_map<SceneId, Scene> scenes;
             std::set<SceneId> m_activeScenes;
+
+            SceneId m_nextSceneId = 0;
     };
 
 }

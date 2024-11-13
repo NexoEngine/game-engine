@@ -14,6 +14,7 @@
 
 #include "Texture.hpp"
 #include "Renderer.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlTexture2D.hpp"
 #endif
@@ -25,6 +26,8 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlTexture2D>(width, height);
         #endif
+        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+
     }
 
     std::shared_ptr<Texture2D> Texture2D::create(const std::string &path)
@@ -32,6 +35,8 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlTexture2D>(path);
         #endif
+        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+
     }
 
 }

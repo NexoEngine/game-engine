@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Framebuffer.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlFramebuffer.hpp"
@@ -24,6 +25,8 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlFramebuffer>(specs);
         #endif
+        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+
     }
 
 }

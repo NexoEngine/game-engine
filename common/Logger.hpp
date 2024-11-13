@@ -20,7 +20,7 @@
 #include <format>
 #include <string_view>
 
-namespace nexo::core {
+namespace nexo {
 
     template<typename T>
     auto toFormatFriendly(const T &value)
@@ -115,14 +115,14 @@ namespace nexo::core {
 }
 
 #define LOG(level, fmt, ...) \
-    nexo::core::Logger::logWithFormat(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+    nexo::Logger::logWithFormat(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #define LOG_EXCEPTION(exception) \
     LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage());
 
-#define NEXO_FATAL nexo::core::LogLevel::FATAL
-#define NEXO_ERROR nexo::core::LogLevel::ERROR
-#define NEXO_WARN nexo::core::LogLevel::WARN
-#define NEXO_INFO nexo::core::LogLevel::INFO
-#define NEXO_DEBUG nexo::core::LogLevel::DEBUG
-#define NEXO_DEV nexo::core::LogLevel::DEV
+#define NEXO_FATAL nexo::LogLevel::FATAL
+#define NEXO_ERROR nexo::LogLevel::ERROR
+#define NEXO_WARN nexo::LogLevel::WARN
+#define NEXO_INFO nexo::LogLevel::INFO
+#define NEXO_DEBUG nexo::LogLevel::DEBUG
+#define NEXO_DEV nexo::LogLevel::DEV

@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlTexture2D.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 #include "stb/stb_image.h"
 
 namespace nexo::renderer {

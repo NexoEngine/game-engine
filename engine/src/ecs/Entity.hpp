@@ -21,47 +21,6 @@
 
 namespace nexo::ecs {
 
-    inline Entity getEntityId(const Entity entity)
-    {
-        return entity & ENTITY_ID_MASK;
-    }
-
-    // Set the active status flag
-    inline void setActive(Entity &entity, const bool isActive)
-    {
-        if (isActive)
-        {
-            entity |= ACTIVE_FLAG_MASK;
-        } else
-        {
-            entity &= ~ACTIVE_FLAG_MASK;
-        }
-    }
-
-    // Set the rendered status flag
-    inline void setRendered(Entity &entity, const bool isRendered)
-    {
-        if (isRendered)
-        {
-            entity |= RENDERED_FLAG_MASK;
-        } else
-        {
-            entity &= ~RENDERED_FLAG_MASK;
-        }
-    }
-
-    // Check if the entity is active
-    inline bool isActive(const Entity entity)
-    {
-        return (entity & ACTIVE_FLAG_MASK) != 0;
-    }
-
-    // Check if the entity is rendered
-    inline bool isRendered(const Entity entity)
-    {
-        return (entity & RENDERED_FLAG_MASK) != 0;
-    }
-
     /**
     * @class EntityManager
     *

@@ -18,7 +18,7 @@
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents(scene::Scene *scene) {
+    void EventManager::dispatchEvents(scene::Scene &scene) {
         while (!m_eventQueue.empty()) {
             auto event = m_eventQueue.front();
             m_eventQueue.pop();
@@ -27,14 +27,13 @@ namespace nexo::event {
             if (m_listeners.find(typeIndex) != m_listeners.end()) {
                 for (auto *listener : m_listeners[typeIndex]) {
                     event->trigger(*listener);
-                    std::cout << "sent event to trigger" << std::endl;
                     if (event->consumed)
                         break;
                 }
             }
 
-            if (scene != nullptr && !event->consumed)
-                scene->dispatchEventToLayers(*event);
+            if (!event->consumed)
+                scene.dispatchEventToLayers(*event);
         }
     }
 }

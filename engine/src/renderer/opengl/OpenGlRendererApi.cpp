@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "OpenGlRendererAPI.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 #include <glad/glad.h>
 

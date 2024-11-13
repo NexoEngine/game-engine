@@ -30,7 +30,7 @@ namespace nexo::event {
                 _instance = std::make_shared<InputOpenGl>(window);
                 return;
             #endif
-            throw core::UnknownGraphicsApi("UNKNOWN");
+            THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
         }
     }
 

@@ -21,13 +21,12 @@
 #include <typeindex>
 #include <memory>
 
+#include "Logger.hpp"
+#include "ECSExceptions.hpp"
+
 namespace nexo::ecs {
 
     using Entity = std::uint32_t;
-
-    constexpr Entity ENTITY_ID_MASK = 0x1FFF; // Lower 13 bits for ID (0b00000000000000000001111111111111)
-    constexpr Entity ACTIVE_FLAG_MASK = 1 << 13; // 1 bit at position 13 for active status
-    constexpr Entity RENDERED_FLAG_MASK = 1 << 14; // 1 bit at position 14 for rendered status
 
     // Maximum entity count, given that 13 bits are used for ID
     constexpr Entity MAX_ENTITIES = 8191;
@@ -72,9 +71,11 @@ namespace nexo::ecs {
                 */
             void insertData(const Entity entity, T component)
             {
-                assert(
-                    m_entityToIndexMap.find(entity) == m_entityToIndexMap.end() &&
-                    "Component added to same entity more than once.");
+                if (m_entityToIndexMap.find(entity) != m_entityToIndexMap.end())
+                {
+                    LOG(NEXO_WARN, "ECS::ComponentArray::insertData: Component already added to entity {}", entity);
+                    return;
+                }
 
                 size_t newIndex = m_size;
                 m_entityToIndexMap[entity] = newIndex;
@@ -90,7 +91,8 @@ namespace nexo::ecs {
                 */
             void removeData(const Entity entity)
             {
-                assert(m_entityToIndexMap.find(entity) != m_entityToIndexMap.end() && "Removing non-existent component.");
+                if (m_entityToIndexMap.find(entity) == m_entityToIndexMap.end())
+                    THROW_EXCEPTION(ComponentNotFound, entity);
 
                 size_t indexOfRemovedEntity = m_entityToIndexMap[entity];
                 size_t indexOfLastElement = m_size - 1;
@@ -114,8 +116,8 @@ namespace nexo::ecs {
                 */
             T &getData(const Entity entity)
             {
-                assert(
-                    m_entityToIndexMap.find(entity) != m_entityToIndexMap.end() && "Retrieving non-existent component.");
+                if (m_entityToIndexMap.find(entity) == m_entityToIndexMap.end())
+                    THROW_EXCEPTION(ComponentNotFound, entity);
 
                 return m_componentArray[m_entityToIndexMap[entity]];
             }
@@ -129,6 +131,11 @@ namespace nexo::ecs {
             {
                 if (m_entityToIndexMap.find(entity) != m_entityToIndexMap.end())
                     removeData(entity);
+            }
+
+            bool hasComponent(const Entity entity)
+            {
+                return m_entityToIndexMap.find(entity) != m_entityToIndexMap.end();
             }
 
         private:
@@ -162,10 +169,11 @@ namespace nexo::ecs {
             void registerComponent()
             {
                 std::type_index typeName(typeid(T));
-
-                assert(
-                    m_componentTypes.find(typeName) == m_componentTypes.end() &&
-                    "Registering component type more than once.");
+                if (m_componentTypes.find(typeName) != m_componentTypes.end())
+                {
+                    LOG(NEXO_WARN, "ECS::ComponentManager::registerComponent: Component already registered");
+                    return;
+                }
 
                 m_componentTypes.insert({typeName, _nextComponentType});
 
@@ -183,9 +191,8 @@ namespace nexo::ecs {
             ComponentType getComponentType()
             {
                 const std::type_index typeName(typeid(T));
-
-                assert(
-                    m_componentTypes.find(typeName) != m_componentTypes.end() && "Component not registered before use.");
+                if (m_componentTypes.find(typeName) == m_componentTypes.end())
+                    THROW_EXCEPTION(ComponentNotRegistered);
 
                 return m_componentTypes[typeName];
             }
@@ -213,6 +220,15 @@ namespace nexo::ecs {
                 getComponentArray<T>()->removeData(entity);
             }
 
+            template<typename T>
+            bool tryRemoveComponent(Entity entity)
+            {
+                if (!getComponentArray<T>()->hasComponent(entity))
+                    return false;
+                getComponentArray<T>()->removeData(entity);
+                return true;
+            }
+
             /**
                 * @brief Retrieves a reference to a component of a specific type from an entity.
                 *
@@ -222,6 +238,14 @@ namespace nexo::ecs {
             template<typename T>
             T &getComponent(Entity entity)
             {
+                return getComponentArray<T>()->getData(entity);
+            }
+
+            template<typename T>
+            std::optional<std::reference_wrapper<T>> tryGetComponent(Entity entity)
+            {
+                if (!getComponentArray<T>()->hasComponent(entity))
+                    return std::nullopt;
                 return getComponentArray<T>()->getData(entity);
             }
 
@@ -248,8 +272,8 @@ namespace nexo::ecs {
             {
                 const std::type_index typeName(typeid(T));
 
-                assert(
-                    m_componentTypes.find(typeName) != m_componentTypes.end() && "Component not registered before use.");
+                if (m_componentArrays.find(typeName) == m_componentArrays.end())
+                    THROW_EXCEPTION(ComponentNotRegistered);
 
                 return std::static_pointer_cast<ComponentArray<T> >(m_componentArrays[typeName]);
             }

@@ -14,41 +14,39 @@
 
 #pragma once
 
-#include "core/exceptions/Exceptions.hpp"
-
-#include <iostream>
+#include "Exception.hpp"
 
 namespace nexo::editor {
 
-    class FileNotFoundException final : public core::Exception {
+    class FileNotFoundException final : public Exception {
         public:
             explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
                                            const int line = __LINE__)
                 : Exception("File not found: " + filePath, file, line) {}
     };
 
-    class BackendRendererApiNotSupported final : public core::Exception {
+    class BackendRendererApiNotSupported final : public Exception {
         public:
             explicit BackendRendererApiNotSupported(const std::string &backendApiName, const char *file = __FILE__,
                                                     const int line = __LINE__)
                 : Exception("Backend render API not supported: " + backendApiName, file, line) {}
     };
 
-    class BackendRendererApiInitFailed final : public core::Exception {
+    class BackendRendererApiInitFailed final : public Exception {
         public:
             explicit BackendRendererApiInitFailed(const std::string &backendApiName, const char *file = __FILE__,
                                                   const int line = __LINE__)
                 : Exception("Backend render API init failed: " + backendApiName, file, line) {}
     };
 
-    class BackendRendererApiFontInitFailed final : public core::Exception {
+    class BackendRendererApiFontInitFailed final : public Exception {
         public:
             explicit BackendRendererApiFontInitFailed(const std::string &backendApiName, const char *file = __FILE__,
                                                       const int line = __LINE__)
                 : Exception("Backend render API font init failed: " + backendApiName, file, line) {}
     };
 
-    class BackendRendererApiFatalFailure final : public core::Exception {
+    class BackendRendererApiFatalFailure final : public Exception {
         public:
             explicit BackendRendererApiFatalFailure(const std::string &backendApiName, const std::string &message,
                                                     const char *file = __FILE__,

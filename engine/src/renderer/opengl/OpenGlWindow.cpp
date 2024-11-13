@@ -15,7 +15,7 @@
 #include "OpenGlWindow.hpp"
 #include "renderer/Renderer.hpp"
 #include "core/exceptions/Exceptions.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 
 namespace nexo::renderer {
@@ -33,95 +33,55 @@ namespace nexo::renderer {
             props->width = width;
             props->height = height;
             Renderer::onWindowResize(width, height);
-
-            auto event = event::EventWindowResize(width, height);
-            props->eventManager->emitEvent<nexo::event::EventWindowResize>(std::make_shared<nexo::event::EventWindowResize>(event));
+            if (props->resizeCallback)
+                props->resizeCallback(width, height);
         });
 
         // Close event
         glfwSetWindowCloseCallback(_openGlWindow, [](GLFWwindow *window)
         {
             auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
-            nexo::event::EventWindowClose event;
-            props->eventManager->emitEvent<nexo::event::EventWindowClose>(std::make_shared<nexo::event::EventWindowClose>(event));
+            if (props->closeCallback)
+                props->closeCallback();
         });
 
         // Keyboard events
         glfwSetKeyCallback(_openGlWindow, [](GLFWwindow *window, const int key, [[maybe_unused]]int scancode, const int action, const int mods)
         {
             const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
-
-            event::EventKey eventKey;
-            eventKey.keycode = key;
-            eventKey.mods = mods;
-            switch (action)
-            {
-                case GLFW_PRESS:
-                {
-                    eventKey.action = event::KeyAction::PRESSED;
-                    break;
-                }
-                case GLFW_RELEASE:
-                {
-                    eventKey.action = event::KeyAction::RELEASED;
-                    break;
-                }
-                case GLFW_REPEAT:
-                {
-                    eventKey.action = event::KeyAction::REPEAT;
-                    break;
-                }
-                default: return;
-            }
-            props->eventManager->emitEvent<event::EventKey>(std::make_shared<event::EventKey>(eventKey));
+            if (props->keyCallback)
+                props->keyCallback(key, action, mods);
         });
 
         // Mouse click callback
         glfwSetMouseButtonCallback(_openGlWindow, [](GLFWwindow *window, int button, const int action, const int mods)
         {
             const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
-
-            event::EventMouseClick event;
-            event.button = static_cast<nexo::event::MouseButton>(button);
-            event.mods = mods;
-            switch (action)
-            {
-                case GLFW_PRESS:
-                {
-                    event.action = event::KeyAction::PRESSED;
-                    break;
-                }
-                case GLFW_RELEASE:
-                    event.action = event::KeyAction::RELEASED;
-                    break;
-                default: return;
-            }
-            props->eventManager->emitEvent<event::EventMouseClick>(std::make_shared<event::EventMouseClick>(event));
+            if (props->mouseClickCallback)
+                props->mouseClickCallback(button, action, mods);
         });
 
         // Mouse scroll event
         glfwSetScrollCallback(_openGlWindow, [](GLFWwindow *window, const double xOffset, const double yOffset)
         {
             auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
-
-            event::EventMouseScroll event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-            props->eventManager->emitEvent<event::EventMouseScroll>(std::make_shared<event::EventMouseScroll>(event));
+            if (props->mouseScrollCallback)
+                props->mouseScrollCallback(xOffset, yOffset);
         });
 
         // Mouse move event
         glfwSetCursorPosCallback(_openGlWindow, [](GLFWwindow *window, const double xpos, const double ypos)
         {
             const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
-
-            event::EventMouseMove event(xpos, ypos);
-            props->eventManager->emitEvent<event::EventMouseMove>(std::make_shared<event::EventMouseMove>(event));
+            if (props->mouseMoveCallback)
+                props->mouseMoveCallback(xpos, ypos);
         });
     }
 
-    void OpenGlWindow::init(const std::shared_ptr<event::EventManager> eventManager)
+    void OpenGlWindow::init()
     {
         if (!glfwInit())
-            throw core::GraphicsApiInitFailure("OPENGL");
+            THROW_EXCEPTION(core::GraphicsApiInitFailure, "OPENGL");
         glfwSetErrorCallback(glfwErrorCallback);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -130,11 +90,10 @@ namespace nexo::renderer {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         _openGlWindow = glfwCreateWindow(_props.width, _props.height, _props.title, nullptr, nullptr);
         if (!_openGlWindow)
-            throw core::GraphicsApiWindowInitFailure("OPENGL");
+            THROW_EXCEPTION(core::GraphicsApiWindowInitFailure, "OPENGL");
         glfwMakeContextCurrent(_openGlWindow);
         glfwSetWindowUserPointer(_openGlWindow, &_props);
         setVsync(true);
-        _props.eventManager = eventManager;
         setupCallback();
         LOG(NEXO_DEV, "Opengl window ({}, {}) initialized", _props.width, _props.height);
     }

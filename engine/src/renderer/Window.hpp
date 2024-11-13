@@ -21,6 +21,13 @@
 
 namespace nexo::renderer {
 
+    using ResizeCallback = std::function<void(int, int)>;
+    using CloseCallback = std::function<void()>;
+    using KeyCallback = std::function<void(int, int, int)>;
+    using MouseClickCallback = std::function<void(int, int, int)>;
+    using MouseScrollCallback = std::function<void(double, double)>;
+    using MouseMoveCallback = std::function<void(double, double)>;
+
     struct WindowProperty
     {
         unsigned int width;
@@ -28,7 +35,12 @@ namespace nexo::renderer {
         const char *title;
         bool vsync{};
 
-        std::shared_ptr<event::EventManager> eventManager;
+        ResizeCallback resizeCallback;
+        CloseCallback closeCallback;
+        KeyCallback keyCallback;
+        MouseClickCallback mouseClickCallback;
+        MouseScrollCallback mouseScrollCallback;
+        MouseMoveCallback mouseMoveCallback;
 
         WindowProperty(const unsigned int w, const unsigned h, const char * t) : width(w), height(h), title(t) {}
     };
@@ -39,7 +51,7 @@ namespace nexo::renderer {
 
             virtual ~Window() = default;
 
-            virtual void init(std::shared_ptr<nexo::event::EventManager> eventManager) = 0;
+            virtual void init() = 0;
             virtual void shutdown() = 0;
             virtual void onUpdate() = 0;
 
@@ -59,5 +71,11 @@ namespace nexo::renderer {
             static std::shared_ptr<Window> create(int width = 1920, int height = 1080, const char *title = "Nexo window");
 
             virtual void setErrorCallback(void *fctPtr) = 0;
+            virtual void setResizeCallback(ResizeCallback callback) = 0;
+            virtual void setCloseCallback(CloseCallback callback) = 0;
+            virtual void setKeyCallback(KeyCallback callback) = 0;
+            virtual void setMouseClickCallback(MouseClickCallback callback) = 0;
+            virtual void setMouseScrollCallback(MouseScrollCallback callback) = 0;
+            virtual void setMouseMoveCallback(MouseMoveCallback callback) = 0;
     };
 }

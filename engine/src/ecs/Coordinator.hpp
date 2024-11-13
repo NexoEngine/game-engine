@@ -20,9 +20,7 @@
 #include "System.hpp"
 #include "SingletonComponent.hpp"
 #include "Entity.hpp"
-#include "core/scene/SceneManager.hpp"
-#include "core/Logger.hpp"
-
+#include "Logger.hpp"
 
 namespace nexo::ecs {
     /**
@@ -98,7 +96,6 @@ namespace nexo::ecs {
                 m_entityManager->setSignature(entity, signature);
 
                 m_systemManager->entitySignatureChanged(entity, signature);
-                updateSystemEntities();
             }
 
             /**
@@ -107,7 +104,8 @@ namespace nexo::ecs {
             * @param entity - The ID of the entity.
             */
             template<typename T>
-            void removeComponent(const Entity entity) {
+            void removeComponent(const Entity entity) const
+            {
                 m_componentManager->removeComponent<T>(entity);
 
                 auto signature = m_entityManager->getSignature(entity);
@@ -115,7 +113,19 @@ namespace nexo::ecs {
                 m_entityManager->setSignature(entity, signature);
 
                 m_systemManager->entitySignatureChanged(entity, signature);
-                updateSystemEntities();
+            }
+
+            template<typename T>
+            void tryRemoveComponent(const Entity entity) const
+            {
+                if (m_componentManager->tryRemoveComponent<T>(entity))
+                {
+                    auto signature = m_entityManager->getSignature(entity);
+                    signature.set(m_componentManager->getComponentType<T>(), false);
+                    m_entityManager->setSignature(entity, signature);
+
+                    m_systemManager->entitySignatureChanged(entity, signature);
+                }
             }
 
             /**
@@ -140,6 +150,12 @@ namespace nexo::ecs {
                 return m_componentManager->getComponent<T>(entity);
             }
 
+            template<typename T>
+            std::optional<std::reference_wrapper<T>> tryGetComponent(const Entity entity)
+            {
+                return m_componentManager->tryGetComponent<T>(entity);
+            }
+
             /**
              * @brief Get the Singleton Component object
              *
@@ -151,7 +167,7 @@ namespace nexo::ecs {
                 return m_singletonComponentManager->getSingletonComponent<T>();
             }
 
-            std::vector<std::pair<std::type_index, std::any>> getAllComponents(const Entity entity);
+            std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
             /**
             * @brief Gets the component type ID for a specific component type.
@@ -185,95 +201,6 @@ namespace nexo::ecs {
                 m_systemManager->setSignature<T>(signature);
             }
 
-            /**
-             * @brief Create a Scene object
-             *
-             * @param id The id of the scene to be created
-             */
-            void createScene(scene::SceneId id) const;
-
-            /**
-             * @brief Delete a scene object
-             *
-             * @param id The id of the scene to be deleted
-             */
-            void deleteScene(scene::SceneId id) const;
-
-            /**
-             * @brief Activate a scene
-             *
-             * @param id The id of the scene
-             */
-            void activateScene(scene::SceneId id) const;
-
-            /**
-             * @brief Deactivate a scene
-             *
-             * @param id The id of the scene
-             */
-            void deactivateScene(scene::SceneId id) const;
-
-            bool isSceneActive(scene::SceneId id) const;
-
-            bool isSceneRendered(scene::SceneId sceneID) const;
-
-            void setSceneRenderStatus(scene::SceneId sceneID, bool status) const;
-
-            void setSceneActiveStatus(scene::SceneId sceneID, bool status) const;
-
-            void addEntityToScene(Entity entity, scene::SceneId sceneID, int layerIndex = -1, bool active = true, bool rendered = true) const;
-
-            template<typename DerivedLayer>
-            void addEntityToScene(const Entity entity, const scene::SceneId sceneID, const bool active = true, const bool rendered = true) const
-            {
-                m_sceneManager->addEntityToScene<DerivedLayer>(entity, sceneID, active, rendered);
-                const auto signature = m_entityManager->getSignature(entity);
-                m_systemManager->entitySignatureChanged(entity, signature);
-                updateSystemEntities();
-            }
-
-            void removeEntityFromScene(Entity entity, scene::SceneId sceneID, int layerIndex = -1) const;
-
-            template<typename DerivedLayer>
-            void removeEntityFromScene(const Entity entity, const scene::SceneId sceneID) const
-            {
-                m_sceneManager->removeEntityFromScene<DerivedLayer>(entity, sceneID);
-                updateSystemEntities();
-            }
-
-            void attachCamera(scene::SceneId id, std::shared_ptr<camera::Camera> &camera, unsigned int layerIndex) const;
-
-            template<typename DerivedLayer>
-            void attachCamera(const scene::SceneId id, std::shared_ptr<camera::Camera> &camera) const
-            {
-                m_sceneManager->attachCamera<DerivedLayer>(id, camera);
-            }
-
-            void detachCamera(scene::SceneId id, unsigned int layerIndex) const;
-
-            template<typename DerivedLayer>
-            void detachCamera(const scene::SceneId id) const
-            {
-                m_sceneManager->detachCamera<DerivedLayer>(id);
-            }
-
-            std::shared_ptr<camera::Camera> getCamera(scene::SceneId id, unsigned int layerIndex) const;
-
-            template<typename DerivedLayer>
-            std::shared_ptr<camera::Camera> getCamera(const scene::SceneId id) const
-            {
-                return m_sceneManager->getCamera<DerivedLayer>(id);
-            }
-
-            [[nodiscard]] scene::SceneManager& getSceneManager() const { return *m_sceneManager; }
-
-            void setSceneWindowOffset(const scene::SceneId id, const glm::vec2 offset) const { m_sceneManager->setWindowOffset(id, offset); }
-
-            [[nodiscard]] glm::vec2 getSceneWindowOffset(const scene::SceneId id) const { return m_sceneManager->getWindowOffset(id); }
-
-        private:
-            void updateSystemEntities() const;
-
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {
@@ -281,12 +208,14 @@ namespace nexo::ecs {
                 const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }
+            void updateSystemEntities() const;
+        private:
+
 
             std::shared_ptr<ComponentManager> m_componentManager;
             std::shared_ptr<EntityManager> m_entityManager;
             std::shared_ptr<SystemManager> m_systemManager;
             std::shared_ptr<SingletonComponentManager> m_singletonComponentManager;
-            std::shared_ptr<scene::SceneManager> m_sceneManager;
 
             std::unordered_map<std::type_index, std::function<bool(Entity)>> m_hasComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;

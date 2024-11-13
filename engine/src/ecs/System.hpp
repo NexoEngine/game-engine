@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "Signature.hpp"
-#include "core/scene/SceneManager.hpp"
 
 namespace nexo::ecs {
     class Coordinator;
@@ -38,7 +37,7 @@ namespace nexo::ecs {
     class System {
         public:
             std::set<Entity> entities;
-            static std::shared_ptr<ecs::Coordinator> coord;
+            static std::shared_ptr<Coordinator> coord;
     };
 
     /**
@@ -61,19 +60,16 @@ namespace nexo::ecs {
             std::shared_ptr<T> registerSystem() {
                 std::type_index typeName(typeid(T));
 
-                assert(m_systems.find(typeName) == m_systems.end() && "Registering system more than once.");
+                if (m_systems.find(typeName) != m_systems.end())
+                {
+                    LOG(NEXO_WARN, "ECS::SystemManager::registerSystem: trying to register a system more than once");
+                    return nullptr;
+                }
 
                 auto system = std::make_shared<T>();
                 m_systems.insert({typeName, system});
                 return system;
             }
-
-            /**
-             * @brief Updates systems entites based on the scenes that are active
-             *
-             * @param sceneManager
-             */
-            void updateSystemEntities(const scene::SceneManager &sceneManager);
 
             /**
             * @brief Sets the signature for a system.
@@ -86,7 +82,8 @@ namespace nexo::ecs {
             void setSignature(Signature signature) {
                 std::type_index typeName(typeid(T));
 
-                assert(m_systems.find(typeName) != m_systems.end() && "System used before registered.");
+                if (m_systems.find(typeName) == m_systems.end())
+                    THROW_EXCEPTION(SystemNotRegistered);
 
                 m_signatures.insert({typeName, signature});
             }

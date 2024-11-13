@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
+        common/Exception.cpp
+        common/math/Matrix.cpp
         editor/main.cpp
         editor/external/imgui_impl_opengl3.cpp
         editor/external/imgui_impl_glfw.cpp
@@ -40,6 +42,7 @@ set_target_properties( nexoEditor
 include_directories("./editor/src")
 include_directories("./engine/src")
 include_directories("./editor/external")
+include_directories("./common")
 
 if(WIN32)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/include")

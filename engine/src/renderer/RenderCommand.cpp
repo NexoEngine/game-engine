@@ -26,7 +26,7 @@ namespace nexo::renderer {
     void RenderCommand::init()
     {
         if (!_rendererApi)
-            throw core::UnknownGraphicsApi("UNKNOWN");
+            THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
         _rendererApi->init();
     }
 }

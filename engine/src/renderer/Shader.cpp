@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Shader.hpp"
-
+#include "core/exceptions/Exceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
@@ -26,6 +26,8 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlShader>(path);
         #endif
+        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+
     }
 
     std::shared_ptr<Shader> Shader::create(std::string name, const std::string &vertexSource, const std::string &fragmentSource)
@@ -33,6 +35,8 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlShader>(name, vertexSource, fragmentSource);
         #endif
+        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+
     }
 
     std::string Shader::readFile(const std::string &filepath)

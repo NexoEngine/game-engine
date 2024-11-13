@@ -11,35 +11,65 @@
 //  Description: Source file for the layer stack class
 //
 ///////////////////////////////////////////////////////////////////////////////
+#include "Layer.hpp"
 #include "LayerStack.hpp"
+#include "Logger.hpp"
 
 #include <algorithm>
 
 namespace nexo::layer {
-    LayerStack::LayerStack() {
+    LayerStack::LayerStack()
+    {
         m_layerInsert = m_layers.begin();
     }
 
     LayerStack::~LayerStack()
     = default;
 
-    void LayerStack::pushLayer(const std::shared_ptr<layer::Layer> &layer) {
+    void LayerStack::pushLayer(const std::shared_ptr<layer::Layer> &layer)
+    {
         m_layers.emplace_back(layer);
     }
 
-    void LayerStack::pushOverlay(const std::shared_ptr<layer::Layer> &overlay) {
+    void LayerStack::pushOverlay(const std::shared_ptr<layer::Layer> &overlay)
+    {
         m_layerInsert = m_layers.emplace(m_layerInsert, overlay);
     }
 
-    void LayerStack::popLayer(const std::shared_ptr<layer::Layer> &layer) {
+    void LayerStack::popLayer(const std::shared_ptr<layer::Layer> &layer)
+    {
         if (const auto it = std::find(m_layers.begin(), m_layers.end(), layer); it != m_layers.end())
             m_layers.erase(it);
     }
 
-    void LayerStack::popOverlay(const std::shared_ptr<layer::Layer> &overlay) {
-        if (const auto it = std::find(m_layers.begin(), m_layers.end(), overlay); it != m_layers.end()) {
+    void LayerStack::popOverlay(const std::shared_ptr<layer::Layer> &overlay)
+    {
+        if (const auto it = std::find(m_layers.begin(), m_layers.end(), overlay); it != m_layers.end())
+        {
             m_layers.erase(it);
             --m_layerInsert;
         }
+    }
+
+    std::shared_ptr<Layer> LayerStack::operator[](const std::string &name)
+    {
+        for (auto &layer: m_layers)
+        {
+            if (layer->name == name)
+                return layer;
+        }
+        LOG(NEXO_WARN, "LayerStack: Layer {} not found", name);
+        return nullptr;
+    }
+
+    std::shared_ptr<Layer> LayerStack::operator[](const std::string &name) const
+    {
+        for (const auto &layer: m_layers)
+        {
+            if (layer->name == name)
+                return layer;
+        }
+        LOG(NEXO_WARN, "LayerStack: Layer {} not found", name);
+        return nullptr;
     }
 }

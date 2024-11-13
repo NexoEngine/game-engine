@@ -15,6 +15,8 @@
 
 #include <glm/glm.hpp>
 
+#include "core/Timestep.hpp"
+
 namespace nexo::camera {
 
     using CameraId = unsigned int;
@@ -30,11 +32,13 @@ namespace nexo::camera {
             void setRotation(const float rotation) { m_rotation = rotation; recalculateViewMatrix(); };
             [[nodiscard]] float getRotation() const { return m_rotation; };
 
-            [[nodiscard]] const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; };
-            [[nodiscard]] const glm::mat4 &getViewMatrix() const { return m_viewMatrix; };
-            [[nodiscard]] const glm::mat4 &getViewProjectionMatrix() const { return m_viewProjectionMatrix; };
+            [[nodiscard]] virtual const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; };
+            [[nodiscard]] virtual const glm::mat4 &getViewMatrix() const { return m_viewMatrix; };
+            [[nodiscard]] virtual const glm::mat4 &getViewProjectionMatrix() const { return m_viewProjectionMatrix; };
 
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
+
+            virtual void onUpdate([[maybe_unused]] core::Timestep ts) {};
         protected:
             CameraId m_id{};
 

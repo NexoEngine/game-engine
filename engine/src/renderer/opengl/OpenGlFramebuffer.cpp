@@ -58,7 +58,7 @@ namespace nexo::renderer {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment, 0);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            throw core::FramebufferCreationFailed("OPENGL");
+            THROW_EXCEPTION(core::FramebufferCreationFailed, "OPENGL");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

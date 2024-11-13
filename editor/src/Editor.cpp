@@ -14,7 +14,7 @@
 
 #include "Nexo.hpp"
 #include "Editor.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 #include "backends/ImGuiBackend.hpp"
 
 #include "imgui.h"
@@ -22,16 +22,16 @@
 
 namespace nexo::editor {
 
-    static loguru::Verbosity nexoLevelToLoguruLevel(const core::LogLevel level)
+    static loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
     {
         switch (level)
         {
-            case core::LogLevel::FATAL: return loguru::Verbosity_FATAL;
-            case core::LogLevel::ERROR: return loguru::Verbosity_ERROR;
-            case core::LogLevel::WARN: return loguru::Verbosity_WARNING;
-            case core::LogLevel::INFO: return loguru::Verbosity_INFO;
-            case core::LogLevel::DEBUG: return loguru::Verbosity_1;
-            case core::LogLevel::DEV: return loguru::Verbosity_2;
+            case LogLevel::FATAL: return loguru::Verbosity_FATAL;
+            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case LogLevel::WARN: return loguru::Verbosity_WARNING;
+            case LogLevel::INFO: return loguru::Verbosity_INFO;
+            case LogLevel::DEBUG: return loguru::Verbosity_1;
+            case LogLevel::DEV: return loguru::Verbosity_2;
         }
         return loguru::Verbosity_INVALID;
     }
@@ -41,11 +41,11 @@ namespace nexo::editor {
         loguru::add_callback(LOGURU_CALLBACK_NAME, &Editor::loguruCallback,
                              this, loguru::Verbosity_MAX);
 
-        auto engineLogCallback = [](const core::LogLevel level, const std::string& message) {
+        auto engineLogCallback = [](const LogLevel level, const std::string& message) {
             const auto loguruLevel = nexoLevelToLoguruLevel(level);
             VLOG_F(loguruLevel, "%s", message.c_str());
         };
-        core::Logger::setCallback(engineLogCallback);
+        Logger::setCallback(engineLogCallback);
 
     }
 

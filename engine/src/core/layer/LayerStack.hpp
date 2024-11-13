@@ -12,11 +12,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
-
-#include "Layer.hpp"
-
 #include <vector>
 #include <memory>
+
+namespace nexo::layer {
+    class Layer;
+}
 
 namespace nexo::layer {
     class LayerStack {
@@ -39,6 +40,9 @@ namespace nexo::layer {
 
             std::shared_ptr<Layer> &operator[](const unsigned int index) { return m_layers[index]; };
             const std::shared_ptr<Layer> &operator[](const unsigned int index) const {return m_layers[index]; };
+
+            std::shared_ptr<Layer> operator[](const std::string &name);
+            std::shared_ptr<Layer> operator[](const std::string &name) const;
 
         private:
             std::vector<std::shared_ptr<Layer>> m_layers;

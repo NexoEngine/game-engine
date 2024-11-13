@@ -1,4 +1,4 @@
-//// Exceptions.cpp ///////////////////////////////////////////////////////////
+//// Exception.cpp ////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,15 +7,16 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        10/11/2024
-//  Description: Source file for the nexo exceptions abstract classes
+//  Date:        12/11/2024
+//  Description: Source for the nexo exception base class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Exceptions.hpp"
+#include "Exception.hpp"
 
-namespace nexo::core {
+#include <sstream>
 
+namespace nexo {
     const char * Exception::what() const noexcept
     {
         formattedMessage = formatMessage();

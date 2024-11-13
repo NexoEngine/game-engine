@@ -24,7 +24,9 @@
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
+
+#include "systems/OnSceneDeletedSystem.hpp"
 
 namespace nexo {
 
@@ -47,14 +49,7 @@ namespace nexo {
         public:
             ~Application() override = default;
 
-            virtual int init() { return 1; };
-            virtual void run();
-
-            void addScene(scene::Scene &scene);
-            void removeScene(scene::Scene &scene);
-            void switchScene(scene::Scene &scene);
-
-            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
+            void run(bool renderToFramebuffer = false);
 
             void handleEvent(event::EventKey &event) override
             {
@@ -69,7 +64,6 @@ namespace nexo {
 
             void handleEvent(event::EventWindowResize &event) override
             {
-                std::cout << "on recoit" << std::endl;
                 if (event.height == 0 || event.width == 0)
                     m_isMinimized = true;
                 if (m_isMinimized && event.width != 0 && event.height != 0)
@@ -96,12 +90,35 @@ namespace nexo {
                     std::cout << event << std::endl;
             }
 
-            void registerAllDebugListeners();
-
+            [[nodiscard]] std::shared_ptr<event::EventManager> getEventManager() const { return m_eventManager; };
             void setEventDebugFlags(const int flags) {m_eventDebugFlags = flags; };
             void removeEventDebugFlags(const int flag) {m_eventDebugFlags &= flag; };
             void addEventDebugFlag(const int flag) {m_eventDebugFlags |= flag; };
             void resetEventDebugFlags() {m_eventDebugFlags = 0; };
+
+            ecs::Entity createEntity();
+            void destroyEntity(ecs::Entity entity);
+
+            scene::SceneId createScene(const std::string &sceneName, bool active = true);
+            void deleteScene(scene::SceneId sceneId);
+            void addNewLayer(scene::SceneId sceneId, const std::string &layerName);
+            void addNewOverlay(scene::SceneId sceneId, const std::string &overlayName);
+            void removeLayer(scene::SceneId sceneId, const std::string &layerName);
+            void removeOverlay(scene::SceneId sceneId, const std::string &overlayName);
+            void activateScene(scene::SceneId sceneId);
+            void activateLayer(scene::SceneId, const std::string &layerName);
+            void deactivateScene(scene::SceneId sceneId);
+            void deactivateLayer(scene::SceneId sceneId, const std::string &layerName);
+            void setSceneRenderStatus(scene::SceneId sceneId, bool status);
+            void setLayerRenderStatus(scene::SceneId sceneId, const std::string &layerName, bool status);
+            bool isSceneActive(scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
+            bool isSceneRendered(scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
+            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, std::string layerName = "");
+            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, std::string layerName = "");
+            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
+            void detachCamera(scene::SceneId sceneId, const std::string &layerName);
+            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, const std::string &layerName);
+
 
             static Application &getInstance()
             {
@@ -116,34 +133,42 @@ namespace nexo {
                 _instance = std::make_unique<DerivedApp>(std::forward<Args>(args)...);
             }
 
-            [[nodiscard]] std::shared_ptr<event::EventManager> getEventManager() const { return m_eventManager; };
-
-            [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
+            template<typename T>
+            static T &getEntityComponent(const ecs::Entity entity)
+            {
+                return m_coordinator->getComponent<T>(entity);
+            }
 
             scene::SceneManager &getSceneManager() { return m_sceneManager; };
 
-            scene::SceneId createScene(const std::string& name = "default") { m_sceneManager.createScene(m_nextSceneId, name); return m_nextSceneId++;}
+            [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
+            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
 
+            static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:
             Application();
             std::shared_ptr<event::EventManager> m_eventManager;
 
         private:
+            void registerAllDebugListeners();
+            void registerEcsComponents();
+            void registerWindowCallbacks();
+            void registerSystems();
             static std::unique_ptr<Application> _instance;
 
             scene::SceneId m_nextSceneId = 0;
+            scene::SceneManager m_sceneManager;
 
             bool m_isRunning = true;
             bool m_isMinimized = false;
             std::shared_ptr<renderer::Window> m_window;
-            std::shared_ptr<ecs::Coordinator> m_coordinator;
-            scene::SceneManager m_sceneManager;
-
-            std::vector<scene::Scene> m_scenes;
-            int m_actualScene = -1;
 
             float m_lastFrameTime = 0.0f;
 
             int m_eventDebugFlags{};
+
+            std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
     };
 }
+
+

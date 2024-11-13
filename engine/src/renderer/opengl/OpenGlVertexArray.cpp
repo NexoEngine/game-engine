@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlVertexArray.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 #include <glad/glad.h>
 

@@ -18,7 +18,7 @@
 #include "core/event/KeyCodes.hpp"
 #include "core/Timestep.hpp"
 #include "core/Timer.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 // Renderer
 #include "renderer/Renderer.hpp"
@@ -33,6 +33,8 @@
 #include "core/camera/OrthographicCamera.hpp"
 #include "core/camera/OrthographicCameraController.hpp"
 
+#include "components/Components.hpp"
+
 namespace nexo {
     template<typename DerivedApp, typename ...Args>
     void useApp(Args &&... args)
@@ -43,4 +45,6 @@ namespace nexo {
     Application &init();
 
     Application &getApp();
+
+    void runEngine(bool renderToFrameBuffer = false);
 }

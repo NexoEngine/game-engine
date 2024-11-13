@@ -9,7 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add source files
 set(COMMON_SOURCES
+        common/Exception.cpp
         engine/src/Nexo.cpp
+        engine/src/EntityFactory2D.cpp
         engine/src/external/glad.c
         engine/src/external/stb_image.cpp
         engine/src/Application.cpp
@@ -32,14 +34,15 @@ set(COMMON_SOURCES
         engine/src/core/camera/OrthographicCamera.cpp
         engine/src/core/camera/OrthographicCameraController.cpp
         engine/src/core/camera/Camera.cpp
+        engine/src/core/layer/Layer.cpp
         engine/src/core/layer/LayerStack.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
-        engine/src/core/exceptions/Exceptions.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Components.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
+        engine/src/systems/OnSceneDeletedSystem.cpp
 )
 
 # Add API-specific sources
@@ -69,7 +72,7 @@ else()
 endif()
 
 # Add include directories for this target
-target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/engine/src)
+target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/engine/src ${CMAKE_SOURCE_DIR}/common)
 
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)

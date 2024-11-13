@@ -24,7 +24,7 @@ namespace nexo::renderer {
             static void init();
             static void shutdown();
 
-            static void beginScene(const camera::OrthographicCamera &camera);
+            static void beginScene(const glm::mat4 &viewProjection);
             static void endScene();
             static void flush();
 

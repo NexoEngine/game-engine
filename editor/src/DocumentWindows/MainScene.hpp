@@ -42,6 +42,7 @@ namespace nexo::editor {
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
 
+            std::shared_ptr<camera::OrthographicCameraController> m_camera;
             //std::shared_ptr<engine::core::EngineCamera> _camera;
             float _nearPlane = 0.01f;
             float _farPlane = 1000.0f;
@@ -116,7 +117,6 @@ namespace nexo::editor {
             // }
 
             [[nodiscard]] bool isWindowResized() const;
-            void handleWindowResize();
             void handleKeyEvents();
 
             void renderGrid();

@@ -19,10 +19,9 @@
 #include <functional>
 #include <queue>
 #include <memory>
-#include <iostream>
 
 #include "Listener.hpp"
-#include "core/Logger.hpp"
+#include "Logger.hpp"
 
 namespace nexo::scene {
     class Scene;
@@ -100,7 +99,7 @@ namespace nexo::event {
             m_eventQueue.push(event);
         }
 
-        void dispatchEvents(scene::Scene *scene = nullptr);
+        void dispatchEvents(scene::Scene &scene);
 
     private:
         std::unordered_map<std::type_index, std::vector<BaseListener *>> m_listeners;

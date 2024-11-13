@@ -13,83 +13,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MainScene.hpp"
+
+#include <EntityFactory2D.hpp>
+
 #include "Nexo.hpp"
+#include "math/Matrix.hpp"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace nexo::editor {
 
-    class ExampleLayer final : LAYER_LISTENS_TO(
-                ExampleLayer,
-                event::EventKey,
-                event::EventMouseClick
-            ) {
-        public:
-            ExampleLayer() : Layer("EXAMPLE"),
-                             m_camera(1920.0f / 1080.0f, true)
-            {
-                // Texture init
-                m_texture = renderer::Texture2D::create("../assets/textures/Checkerboard.png");
-                m_nexoLogo = renderer::Texture2D::create("../assets/textures/logo_nexo.png");
-            };
-
-            void onUpdate(const core::Timestep timeStep) override
-            {
-                m_camera.onUpdate(timeStep);
-                m_rotation += timeStep * 50.0f;
-            }
-
-            void onRender() override
-            {
-                renderer::Renderer2D::beginScene(m_camera.getCamera());
-                //renderer::Renderer2D::drawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f});
-                renderer::Renderer2D::drawQuad({-2.0f, 0.0f}, {1.0f, 1.0f}, m_rotation, m_texture);
-                renderer::Renderer2D::drawQuad({0.0f, 0.0f, 0.1f}, {1.0f, 1.0f}, m_nexoLogo);
-                renderer::Renderer2D::endScene();
-            }
-
-            void onAttach() override
-            {}
-
-            void onDetach() override
-            {}
-
-            void handleEvent(event::EventKey &event) override
-            {
-                std::cout << "[Layer: " << m_debugName << "]" << event << std::endl;
-            }
-
-            void handleEvent(event::EventMouseClick &event) override
-            {
-                std::cout << "[Layer: " << m_debugName << "]" << event << std::endl;
-            }
-
-        private:
-            renderer::ShaderLibrary m_shaderLibrary;
-
-            std::shared_ptr<renderer::Texture2D> m_texture;
-            std::shared_ptr<renderer::Texture2D> m_nexoLogo;
-
-            camera::OrthographicCameraController m_camera;
-
-            float m_rotation = 0.0f;
-
-            struct ProfileResult {
-                std::string name;
-                float time;
-            };
-
-            std::vector<ProfileResult> m_profileResults;
-
-    };
-
-    MainScene::MainScene() : ADocumentWindow(), _sceneID(getApp().createScene("Default editor scene"))
+    MainScene::MainScene()
     {
-        auto &app = getApp();
-        auto &sceneManager = app.getSceneManager();
-        auto &scene = sceneManager.getScene(_sceneID);
-        const auto layer = std::make_shared<ExampleLayer>();
-        sceneManager.addLayer(_sceneID, layer);
-        app.addScene(scene);
-        app.switchScene(scene);
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.width = 1280;
         framebufferSpecs.height = 720;
@@ -109,16 +45,24 @@ namespace nexo::editor {
 
     void MainScene::setupCamera()
     {
-        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetOrthographic(true);
     }
 
     void MainScene::loadEntities()
-    {}
+    {
+        auto &app = getApp();
+        _sceneID = app.createScene("Default editor scene");
+        app.addNewLayer(_sceneID, "Default layer editor");
+        ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
+        _selectedEntity = basicQuad;
+        m_camera = std::make_shared<camera::OrthographicCameraController>(1280.0f / 720.0f, true);
+        app.attachCamera(_sceneID, m_camera, "Default layer editor");
+        app.addEntityToScene(basicQuad, _sceneID, "Default layer editor");}
 
     void MainScene::setupWindow()
     {
         ImVec2 pos = ImVec2(118, 24);
-        ImVec2 size = ImVec2(1389, 804);
+        ImVec2 size = ImVec2(1280, 720);
         ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         _currentWindowSize = size;
@@ -142,13 +86,12 @@ namespace nexo::editor {
         if (ImGui::Begin("3D View", &m_opened, ImGuiWindowFlags_NoScrollbar))
         {
             _viewPosition = ImGui::GetCursorScreenPos();
-            //_viewSize = ImGui::GetContentRegionAvail();
             ImVec2 windowPos = ImGui::GetWindowPos();
             // Vector2 offset = {windowPos.x, windowPos.y};
             // engine::setSceneWindowOffset(_sceneID, offset);
             renderView();
             //renderToolbar();
-            //renderGizmo();
+            renderGizmo();
             // if (engine::isMouseButtonDown(ecs::components::input::MouseButtons::MouseLeft) && !ImGuizmo::IsUsing())
             //     rayPicking();
 
@@ -165,23 +108,12 @@ namespace nexo::editor {
     {
         if (!m_opened)
             return;
-        //handleWindowResize();
         handleKeyEvents();
 
         _selectedEntity = m_sceneManagerBridge.getSelectedEntity();
 
-        // limit fps to _targetFPS with clock, frameTime in ms
-        // auto frameTimeMs = static_cast<long long>(1.0 / _targetFPS * 1000.0);
-        //
-        // static auto lastTime = std::chrono::high_resolution_clock::now();
-        // auto currentTime = std::chrono::high_resolution_clock::now();
-        //
-        // auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
-        //
-        // if (elapsedTime < frameTimeMs)
-        //     return;
         m_framebuffer->bind();
-        getApp().run();
+        runEngine(true);
         m_framebuffer->unbind();
         //m_sceneManagerBridge.deactivateAllScenes();
         //engine::activateScene(_sceneID);
@@ -191,19 +123,6 @@ namespace nexo::editor {
         // engine::renderAllEntities(_sceneID, _camera->getCameraID());
         // engine::endRendering(_sceneID);
         //lastTime = currentTime;
-    }
-
-    bool MainScene::isWindowResized() const
-    {
-        return _currentWindowSize.x != _prevWindowSize.x || _currentWindowSize.y != _prevWindowSize.y;
-    }
-
-    void MainScene::handleWindowResize()
-    {
-        if (!isWindowResized())
-            return;
-        //_camera->updateRenderTextureSize(static_cast<int>(_viewSize.x), static_cast<int>(_viewSize.y));
-        //ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
     }
 
     void MainScene::handleKeyEvents()
@@ -303,60 +222,55 @@ namespace nexo::editor {
 
     void MainScene::renderGizmo()
     {
-        // ImGuizmo::SetOrthographic(false);
-        // ImGuizmo::SetDrawlist();
-        // ImGuizmo::SetID(_selectedEntity);
-        // ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
-        // Matrix viewMatrix = _camera->getViewMatrix();
-        // Matrix projectionMatrix = _camera->getProjectionMatrix(_currentWindowSize.x / _currentWindowSize.y, 0.1f,
-        //                                                        1000.0f);
-        // Matrix objectMatrix = engine::entity::getTransformMatrix(_selectedEntity);
-        // auto &transf = engine::entity::getComponent<ecs::components::physics::transform_t>(_selectedEntity);
-        //
-        // float16 viewMatrixFloats = MatrixToFloatV(viewMatrix);
-        // float16 projectionMatrixFloats = MatrixToFloatV(projectionMatrix);
-        // float16 objectMatrixFloats = MatrixToFloatV(objectMatrix);
-        //
-        // ImGuizmo::Enable(true);
-        // ImGuizmo::Manipulate(viewMatrixFloats.v, projectionMatrixFloats.v,
-        //                      _currentGizmoOperation,
-        //                      ImGuizmo::MODE::LOCAL,
-        //                      objectMatrixFloats.v);
-        //
-        // Vector3 translation = {0};
-        // Vector3 rotation = {0};
-        // Vector3 scale = {0};
-        //
-        // math::decomposeTransformMatrixEuler(engine::math::matrixFromFloat16(objectMatrixFloats), translation, rotation,
-        //                                     scale);
-        //
-        // if (ImGuizmo::IsUsing())
-        // {
-        //     transf.pos = translation;
-        //     transf.rotation = rotation;
-        //     transf.scale = scale;
-        //     engine::entity::setTransformMatrix(_selectedEntity, engine::math::matrixFromFloat16(objectMatrixFloats));
-        // }
+        auto coord = nexo::Application::m_coordinator;
+        ImGuizmo::SetOrthographic(true);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetID(_selectedEntity);
+        ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
+        glm::mat4 viewMatrix = m_camera->getViewMatrix();
+        glm::mat4 projectionMatrix = m_camera->getProjectionMatrix();
+        auto transf = coord->tryGetComponent<components::TransformComponent>(_selectedEntity);
+        if (!transf)
+            return;
+        glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
+                                    glm::rotate(glm::mat4(1.0f), glm::radians(transf->get().rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                                    glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, 1.0f});
+        ImGuizmo::Enable(true);
+        ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projectionMatrix),
+                              _currentGizmoOperation,
+                              ImGuizmo::MODE::LOCAL,
+                              glm::value_ptr(transformMatrix));
+
+        glm::vec3 translation(0);
+        glm::vec3 rotation(0);
+        glm::vec3 scale(0);
+
+        math::decomposeTransformEuler(transformMatrix, translation, rotation, scale);
+
+        if (ImGuizmo::IsUsing())
+        {
+            transf->get().pos = translation;
+            transf->get().rotation = glm::degrees(rotation);
+            transf->get().size = scale;
+        }
     }
 
     void MainScene::renderView()
     {
+        // Resize handling
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         if (_viewSize.x != viewportPanelSize.x || _viewSize.y != viewportPanelSize.y)
         {
-            std::cout << _viewSize.x << " " << viewportPanelSize.x << std::endl;
-            std::cout << _viewSize.y << " " << viewportPanelSize.y << std::endl;
             m_framebuffer->resize(viewportPanelSize.x, viewportPanelSize.y);
             _viewSize.x = viewportPanelSize.x;
             _viewSize.y = viewportPanelSize.y;
             const auto event = std::make_shared<event::EventWindowResize>(viewportPanelSize.x, viewportPanelSize.y);
             getApp().getEventManager()->emitEvent<event::EventWindowResize>(event);
         }
+
+        // Render framebuffer
         unsigned int textureId = m_framebuffer->getColorAttachmentId();
         ImGui::Image((void *)textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
-
-        //ImGui::End();
-        //rlImGuiImageRenderTexture(&_camera->getRenderTexture());
     }
 
     void MainScene::rayPicking()
