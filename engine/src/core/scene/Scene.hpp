@@ -34,12 +34,15 @@ namespace nexo::scene {
             };
             ~Scene() = default;
 
+            [[nodiscard]] const std::string &getName() const { return name; }
+
             void addLayer(const std::string &layerName);
             void addOverlay(const std::string &overlayName);
             void removeLayer(const std::string &layerName);
             void removeOverlay(const std::string &overlayName);
 
             [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(const std::string &layerName) const;
+            [[nodiscard]] const layer::LayerStack &getLayerStack() const {return m_layerStack; };
 
             void addEntityToLayer(ecs::Entity entity, const std::string &layerName);
             void addGlobalEntity(ecs::Entity entity);

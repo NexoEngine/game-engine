@@ -33,11 +33,13 @@ namespace nexo::scene {
 
 
             Scene &getScene(SceneId sceneId);
+            const std::string &getSceneName(SceneId sceneId) const;
 
             void addLayer(SceneId sceneId, const std::string &layerName);
             void removeLayer(SceneId sceneId, const std::string &layerName);
             void addOverlay(SceneId sceneId, const std::string &overlayName);
             void removeOverlay(SceneId sceneId, const std::string &overlayName);
+            const layer::LayerStack &getSceneLayers(SceneId sceneId) const;
 
             void addEntityToLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
             void addGlobalEntity(ecs::Entity entity, SceneId sceneId);

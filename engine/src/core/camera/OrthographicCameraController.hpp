@@ -44,6 +44,8 @@ namespace nexo::camera {
             [[nodiscard]] const glm::mat4 &getProjectionMatrix() const override { return m_camera.getProjectionMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewMatrix() const override { return m_camera.getViewMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewProjectionMatrix() const override { return m_camera.getViewProjectionMatrix(); }
+
+            bool zoomOn = true;
         private:
             float m_aspectRatio;
             float m_zoomLevel = 1.0f;

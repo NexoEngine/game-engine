@@ -60,6 +60,8 @@ namespace nexo::camera {
 
     void OrthographicCameraController::handleEvent(event::EventMouseScroll &event)
     {
+        if (!zoomOn)
+            return;
         m_zoomLevel -= event.y * 0.5f;
         m_zoomLevel = std::max(m_zoomLevel, 0.25f);
         m_camera.setProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);

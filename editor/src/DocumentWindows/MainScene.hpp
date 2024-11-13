@@ -20,10 +20,12 @@
 #include <imgui.h>
 #include <ImGuizmo.h>
 
+#include <utility>
+
 namespace nexo::editor {
         class MainScene : public ADocumentWindow {
         public:
-            MainScene();
+            MainScene(std::string sceneName);
             ~MainScene() override;
 
             void setup() override;
@@ -31,8 +33,10 @@ namespace nexo::editor {
             void show() override;
             void update() override;
 
+            const std::string &getName() const {return m_sceneName;};
 
         private:
+            std::string m_sceneName;
             ImVec2 _viewSize = {0, 0};
             ImVec2 _viewPosition = {0, 0};
             int _targetFPS = 60;

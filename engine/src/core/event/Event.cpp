@@ -18,7 +18,7 @@
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents(scene::Scene &scene) {
+    void EventManager::dispatchEvents(scene::Scene &scene, bool isActive) {
         while (!m_eventQueue.empty()) {
             auto event = m_eventQueue.front();
             m_eventQueue.pop();
@@ -32,7 +32,7 @@ namespace nexo::event {
                 }
             }
 
-            if (!event->consumed)
+            if (!event->consumed && isActive)
                 scene.dispatchEventToLayers(*event);
         }
     }

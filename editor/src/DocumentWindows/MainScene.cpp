@@ -24,7 +24,7 @@
 
 namespace nexo::editor {
 
-    MainScene::MainScene()
+    MainScene::MainScene(std::string sceneName) : m_sceneName(std::move(sceneName))
     {
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.width = 1280;
@@ -51,14 +51,13 @@ namespace nexo::editor {
     void MainScene::loadEntities()
     {
         auto &app = getApp();
-        _sceneID = app.createScene("Default editor scene");
-        app.addNewLayer(_sceneID, "Default layer editor");
+        _sceneID = app.createScene(m_sceneName);
+        app.addNewLayer(_sceneID, "Layer 1");
         ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         m_sceneManagerBridge.setSelectedEntity(basicQuad);
-        //_selectedEntity = basicQuad;
         m_camera = std::make_shared<camera::OrthographicCameraController>(1280.0f / 720.0f, true);
-        app.attachCamera(_sceneID, m_camera, "Default layer editor");
-        app.addEntityToScene(basicQuad, _sceneID, "Default layer editor");}
+        app.attachCamera(_sceneID, m_camera, "Layer 1");
+        app.addEntityToScene(basicQuad, _sceneID, "Layer 1");}
 
     void MainScene::setupWindow()
     {
@@ -81,12 +80,9 @@ namespace nexo::editor {
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270),
                                             ImVec2(1920, 1080));
 
-        if (ImGui::Begin("3D View", &m_opened, ImGuiWindowFlags_NoScrollbar))
+        if (ImGui::Begin(m_sceneName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar))
         {
             _viewPosition = ImGui::GetCursorScreenPos();
-            ImVec2 windowPos = ImGui::GetWindowPos();
-            // Vector2 offset = {windowPos.x, windowPos.y};
-            // engine::setSceneWindowOffset(_sceneID, offset);
             renderView();
             //renderToolbar();
             renderGizmo();
@@ -98,6 +94,7 @@ namespace nexo::editor {
             {
                 m_focused = focused;
                 m_sceneManagerBridge.setSceneActiveStatus(_sceneID, m_focused);
+                m_camera->zoomOn = focused;
             }
         }
         ImGui::End();
@@ -280,6 +277,15 @@ namespace nexo::editor {
 
     void MainScene::rayPicking()
     {
+        ImVec2 mousePos = ImGui::GetMousePos();
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 windowSize = ImGui::GetWindowSize();
+
+        bool insideWindow = mousePos.x >= windowPos.x && mousePos.x <= (windowPos.x + windowSize.x) &&
+                            mousePos.y >= windowPos.y && mousePos.y <= (windowPos.y + windowSize.y);
+
+        if (!insideWindow)
+            return;
         auto coord = Application::m_coordinator;
         std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge.getSceneEntities(_sceneID);
         auto mouseWorldPosition = getMouseWorldPosition();

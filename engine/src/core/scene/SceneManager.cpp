@@ -31,6 +31,16 @@ namespace nexo::scene {
         return scenes.at(sceneId);
     }
 
+    const std::string &SceneManager::getSceneName(SceneId sceneId) const
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getSceneName: id {} does not exist", sceneId);
+            return "";
+        }
+        return scenes.at(sceneId).getName();
+    }
+
     std::set<ecs::Entity> SceneManager::getLayerEntities(SceneId sceneId, const std::string &layerName) const
     {
         if (!scenes.contains(sceneId))
@@ -80,6 +90,16 @@ namespace nexo::scene {
             return;
         }
         scenes.at(sceneId).removeOverlay(overlayName);
+    }
+
+    const layer::LayerStack &SceneManager::getSceneLayers(SceneId sceneId) const
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getSceneLayers: id {} does not exist", sceneId);
+            return {};
+        }
+        return scenes.at(sceneId).getLayerStack();
     }
 
     std::vector<SceneId> SceneManager::getSceneIDs() const

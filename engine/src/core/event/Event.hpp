@@ -99,7 +99,7 @@ namespace nexo::event {
             m_eventQueue.push(event);
         }
 
-        void dispatchEvents(scene::Scene &scene);
+        void dispatchEvents(scene::Scene &scene, bool isActive);
 
     private:
         std::unordered_map<std::type_index, std::vector<BaseListener *>> m_listeners;
