@@ -23,7 +23,7 @@ namespace nexo::editor {
     void OpenGLImGuiBackend::init(GLFWwindow *window)
     {
         if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 130"))
-            throw BackendRendererApiInitFailed("OPENGL");
+            THROW_EXCEPTION(BackendRendererApiInitFailed, "OPENGL");
     }
 
     void OpenGLImGuiBackend::shutdown()
@@ -36,7 +36,7 @@ namespace nexo::editor {
     void OpenGLImGuiBackend::initFontAtlas()
     {
         if (!ImGui_ImplOpenGL3_CreateFontsTexture())
-            throw BackendRendererApiFontInitFailed("OPENGL");
+            THROW_EXCEPTION(BackendRendererApiFontInitFailed, "OPENGL");
     }
 
     void OpenGLImGuiBackend::begin()
@@ -64,8 +64,8 @@ namespace nexo::editor {
         static auto errorCallback = [](int error, const char* description) {
             switch (error) {
                 case GLFW_NOT_INITIALIZED:
-                case GLFW_NO_CURRENT_CONTEXT:
-                    throw BackendRendererApiFatalFailure("OPENGL", "(" + std::to_string(error) + "): " + description);
+                    case GLFW_NO_CURRENT_CONTEXT:
+                    THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "(" + std::to_string(error) + "): " + description);
 
                 case GLFW_INVALID_ENUM:
                 case GLFW_INVALID_VALUE:
@@ -73,7 +73,7 @@ namespace nexo::editor {
                 break;
 
                 case GLFW_OUT_OF_MEMORY:
-                    throw BackendRendererApiFatalFailure("OPENGL", "(" + std::to_string(error) + "): Out of memory - " + description);
+                    THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "(" + std::to_string(error) + "): Out of memory - " + description);
 
                 case GLFW_API_UNAVAILABLE:
                 case GLFW_VERSION_UNAVAILABLE:

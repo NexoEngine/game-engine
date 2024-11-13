@@ -26,7 +26,7 @@ namespace nexo::editor {
             OpenGLImGuiBackend::init(static_cast<GLFWwindow*>(window->window()));
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::shutdown()
@@ -35,7 +35,7 @@ namespace nexo::editor {
             OpenGLImGuiBackend::shutdown();
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::initFontAtlas()
@@ -44,7 +44,7 @@ namespace nexo::editor {
             OpenGLImGuiBackend::initFontAtlas();
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::begin()
@@ -53,7 +53,7 @@ namespace nexo::editor {
             OpenGLImGuiBackend::begin();
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::end(const std::shared_ptr<renderer::Window>& window)
@@ -62,7 +62,7 @@ namespace nexo::editor {
             OpenGLImGuiBackend::end(static_cast<GLFWwindow*>(window->window()));
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::setErrorCallback(const std::shared_ptr<renderer::Window> &window)
@@ -72,7 +72,7 @@ namespace nexo::editor {
             window->setErrorCallback(callback);
             return;
         #endif
-        throw BackendRendererApiNotSupported("UNKNOWN");
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");;
     }
 
 }
