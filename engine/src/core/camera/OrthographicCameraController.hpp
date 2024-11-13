@@ -36,6 +36,11 @@ namespace nexo::camera {
             void handleEvent(event::EventMouseScroll &event) override;
             void handleEvent(event::EventWindowResize &event) override;
 
+            void setPosition(const glm::vec3 &position) override {m_camera.setPosition(position);};
+            void setRotation(const float rotation) override {m_camera.setRotation(rotation);};
+            [[nodiscard]] const glm::vec3 &getPosition() const override { return m_camera.getPosition(); };
+            [[nodiscard]] float getRotation() const override { return m_camera.getRotation(); };
+
             [[nodiscard]] const glm::mat4 &getProjectionMatrix() const override { return m_camera.getProjectionMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewMatrix() const override { return m_camera.getViewMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewProjectionMatrix() const override { return m_camera.getViewProjectionMatrix(); }

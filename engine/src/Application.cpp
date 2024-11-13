@@ -189,10 +189,7 @@ namespace nexo {
 
         // Update (swap buffers and poll events)
         if (!renderToFramebuffer)
-        {
-            std::cout << "on update la window" << std::endl;
             m_window->onUpdate();
-        }
         // Dispatch events to active scenes
         for (auto id : scenesIds)
         {
@@ -389,13 +386,4 @@ namespace nexo {
     {
         return m_sceneManager.getCameraLayer(sceneId, layerName);
     }
-
-
-
-
-
-
-
-
-
 }

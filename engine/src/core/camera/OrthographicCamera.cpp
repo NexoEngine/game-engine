@@ -25,6 +25,7 @@ namespace nexo::camera {
         m_projectionMatrix = glm::ortho(left, right, bottom, top);
         m_viewMatrix = glm::mat4(1.0f);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
+        m_mode = CameraMode::ORTHOGRAPHIC;
     }
 
     void OrthographicCamera::setProjection(const float left, const float right, const float bottom, const float top)

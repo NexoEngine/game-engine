@@ -21,20 +21,28 @@ namespace nexo::camera {
 
     using CameraId = unsigned int;
 
+    enum class CameraMode {
+        ORTHOGRAPHIC,
+        PERSPECTIVE
+    };
+
     class Camera {
         public:
             Camera() = default;
-            ~Camera() = default;
 
-            void setPosition(const glm::vec3 &position) { m_position = position; recalculateViewMatrix(); };
-            [[nodiscard]] const glm::vec3 &getPosition() const { return m_position; };
+            virtual ~Camera() = default;
 
-            void setRotation(const float rotation) { m_rotation = rotation; recalculateViewMatrix(); };
-            [[nodiscard]] float getRotation() const { return m_rotation; };
+            virtual void setPosition(const glm::vec3 &position) { m_position = position; recalculateViewMatrix(); };
+            [[nodiscard]] virtual const glm::vec3 &getPosition() const { return m_position; };
+
+            virtual void setRotation(const float rotation) { m_rotation = rotation; recalculateViewMatrix(); };
+            [[nodiscard]] virtual float getRotation() const { return m_rotation; };
 
             [[nodiscard]] virtual const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; };
             [[nodiscard]] virtual const glm::mat4 &getViewMatrix() const { return m_viewMatrix; };
             [[nodiscard]] virtual const glm::mat4 &getViewProjectionMatrix() const { return m_viewProjectionMatrix; };
+
+            [[nodiscard]] CameraMode getMode() const { return m_mode; };
 
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
 
@@ -48,6 +56,7 @@ namespace nexo::camera {
 
             glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
             float m_rotation = 0.0f;
+            CameraMode m_mode{};
         private:
             void recalculateViewMatrix();
     };
