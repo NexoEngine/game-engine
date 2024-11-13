@@ -33,24 +33,14 @@ namespace nexo::editor {
 
 
         private:
-            ImVec2 _currentWindowSize = {0, 0};
-            ImVec2 _prevWindowSize = {0, 0};
             ImVec2 _viewSize = {0, 0};
             ImVec2 _viewPosition = {0, 0};
-            ecs::Entity _selectedEntity = 0;
             int _targetFPS = 60;
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
 
             std::shared_ptr<camera::OrthographicCameraController> m_camera;
-            //std::shared_ptr<engine::core::EngineCamera> _camera;
-            float _nearPlane = 0.01f;
-            float _farPlane = 1000.0f;
             scene::SceneId _sceneID;
-
-            //Shader _gridShader;
-            int _matViewLoc;
-            int _matProjectionLoc;
 
             std::shared_ptr<renderer::Framebuffer> m_framebuffer;
 
@@ -116,13 +106,13 @@ namespace nexo::editor {
             //     engine::addEntityToScene(hemisphere, engine::editor::Main3DScene::_sceneID);
             // }
 
-            [[nodiscard]] bool isWindowResized() const;
             void handleKeyEvents();
 
-            void renderGrid();
             void renderToolbar();
             void renderGizmo();
             void renderView();
+
+            glm::vec2 getMouseWorldPosition() const;
 
             void rayPicking(void);
     };

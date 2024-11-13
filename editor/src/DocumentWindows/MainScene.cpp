@@ -54,7 +54,8 @@ namespace nexo::editor {
         _sceneID = app.createScene("Default editor scene");
         app.addNewLayer(_sceneID, "Default layer editor");
         ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
-        _selectedEntity = basicQuad;
+        m_sceneManagerBridge.setSelectedEntity(basicQuad);
+        //_selectedEntity = basicQuad;
         m_camera = std::make_shared<camera::OrthographicCameraController>(1280.0f / 720.0f, true);
         app.attachCamera(_sceneID, m_camera, "Default layer editor");
         app.addEntityToScene(basicQuad, _sceneID, "Default layer editor");}
@@ -65,7 +66,6 @@ namespace nexo::editor {
         ImVec2 size = ImVec2(1280, 720);
         ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-        _currentWindowSize = size;
         _viewSize = size;
     }
 
@@ -77,11 +77,9 @@ namespace nexo::editor {
 
     void MainScene::show()
     {
-        float width = static_cast<float>(m_framebuffer->getSpecs().width);
-        float height = static_cast<float>(m_framebuffer->getSpecs().height);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        //ImGui::SetNextWindowSizeConstraints(ImVec2(400, 400),
-                                            //ImVec2(width, height));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270),
+                                            ImVec2(1920, 1080));
 
         if (ImGui::Begin("3D View", &m_opened, ImGuiWindowFlags_NoScrollbar))
         {
@@ -92,13 +90,15 @@ namespace nexo::editor {
             renderView();
             //renderToolbar();
             renderGizmo();
-            // if (engine::isMouseButtonDown(ecs::components::input::MouseButtons::MouseLeft) && !ImGuizmo::IsUsing())
-            //     rayPicking();
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
+                rayPicking();
 
-            // Draw the rest of the window contents
-            m_focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
-            _prevWindowSize = _currentWindowSize;
-            _currentWindowSize = ImGui::GetWindowSize();
+            bool focused = ImGui::IsWindowFocused();
+            if (focused != m_focused)
+            {
+                m_focused = focused;
+                m_sceneManagerBridge.setSceneActiveStatus(_sceneID, m_focused);
+            }
         }
         ImGui::End();
         ImGui::PopStyleVar();
@@ -110,25 +110,12 @@ namespace nexo::editor {
             return;
         handleKeyEvents();
 
-        _selectedEntity = m_sceneManagerBridge.getSelectedEntity();
-
         m_framebuffer->bind();
         runEngine(true);
         m_framebuffer->unbind();
-        //m_sceneManagerBridge.deactivateAllScenes();
-        //engine::activateScene(_sceneID);
-        //engine::update(_sceneID);
-        // engine::startRendering(_sceneID, _camera->getCameraID());
-        // engine::renderGrid(_sceneID, _camera->getCameraID());
-        // engine::renderAllEntities(_sceneID, _camera->getCameraID());
-        // engine::endRendering(_sceneID);
-        //lastTime = currentTime;
     }
 
     void MainScene::handleKeyEvents()
-    {}
-
-    void MainScene::renderGrid()
     {}
 
     void MainScene::renderToolbar()
@@ -223,13 +210,16 @@ namespace nexo::editor {
     void MainScene::renderGizmo()
     {
         auto coord = nexo::Application::m_coordinator;
-        ImGuizmo::SetOrthographic(true);
+        int selectedEntity = m_sceneManagerBridge.getSelectedEntity();
+        if (selectedEntity == -1)
+            return;
+        ImGuizmo::SetOrthographic(m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
-        ImGuizmo::SetID(_selectedEntity);
+        ImGuizmo::SetID(selectedEntity);
         ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
         glm::mat4 viewMatrix = m_camera->getViewMatrix();
         glm::mat4 projectionMatrix = m_camera->getProjectionMatrix();
-        auto transf = coord->tryGetComponent<components::TransformComponent>(_selectedEntity);
+        auto transf = coord->tryGetComponent<components::TransformComponent>(selectedEntity);
         if (!transf)
             return;
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
@@ -273,6 +263,40 @@ namespace nexo::editor {
         ImGui::Image((void *)textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
     }
 
+    glm::vec2 MainScene::getMouseWorldPosition() const
+    {
+        ImVec2 mousePos = ImGui::GetMousePos();
+        float mouseX = mousePos.x - _viewPosition.x;
+        float mouseY = mousePos.y - _viewPosition.y;
+
+        glm::vec2 ndc = {
+            (mouseX / _viewSize.x) * 2.0f - 1.0f,
+            1.0f - (mouseY / _viewSize.y) * 2.0f
+        };
+
+        glm::vec4 worldPos = glm::inverse(m_camera->getViewProjectionMatrix()) * glm::vec4(ndc, 0.0f, 1.0f);
+        return glm::vec2(worldPos.x, worldPos.y);
+    }
+
     void MainScene::rayPicking()
-    {}
+    {
+        auto coord = Application::m_coordinator;
+        std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge.getSceneEntities(_sceneID);
+        auto mouseWorldPosition = getMouseWorldPosition();
+        for (auto entity : sceneEntities)
+        {
+            auto transformComponent = coord->tryGetComponent<components::TransformComponent>(entity);
+            auto renderComponent = coord->tryGetComponent<components::RenderComponent>(entity);
+
+            if (renderComponent && transformComponent)
+            {
+                if (renderComponent->get().renderable->isClicked(transformComponent->get(), mouseWorldPosition))
+                {
+                    m_sceneManagerBridge.setSelectedEntity(entity);
+                    return;
+                }
+            }
+        }
+        m_sceneManagerBridge.setSelectedEntity(-1);
+    }
 }

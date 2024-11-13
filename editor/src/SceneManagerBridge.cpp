@@ -30,9 +30,14 @@ namespace nexo::editor {
         return std::move(m_sceneManager.getAllEntities());
     }
 
-    ecs::Entity SceneManagerBridge::getSelectedEntity() const
+    int SceneManagerBridge::getSelectedEntity() const
     {
         return m_selectedEntity;
+    }
+
+    void SceneManagerBridge::setSceneActiveStatus(scene::SceneId sceneId, bool status) const
+    {
+        m_sceneManager.setSceneActiveStatus(sceneId, status);
     }
 
     bool SceneManagerBridge::isEntitySelected() const

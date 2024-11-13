@@ -28,6 +28,7 @@ namespace nexo::components {
         bool isRendered = true;
 
         virtual void draw(const TransformComponent &transf) const = 0;
+        virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
     struct Renderable2D final : Renderable {
@@ -41,6 +42,11 @@ namespace nexo::components {
         void draw(const TransformComponent &transform) const override
         {
             shape->draw(transform, sprite);
+        }
+
+        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        {
+            return shape->isClicked(transf, mouseWorldPos);
         }
     };
 

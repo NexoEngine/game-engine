@@ -18,12 +18,15 @@
 #include "Render2D.hpp"
 #include "renderer/Renderer2D.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace nexo::components {
 
     struct Shape2D {
         virtual ~Shape2D() = default;
 
         virtual void draw(const TransformComponent &transf, const SpriteComponent &sprite) const = 0;
+        virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
     struct Quad final : Shape2D {
@@ -39,5 +42,22 @@ namespace nexo::components {
                 renderer::Renderer2D::drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
                                                sprite.color);
         }
+
+        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        {
+            const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(transf.pos.x, transf.pos.y, 0.0f)) *
+                                        glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                                        glm::scale(glm::mat4(1.0f), glm::vec3(transf.size.x, transf.size.y, 1.0f));
+
+            glm::mat4 inverseTransform = glm::inverse(transform);
+
+            glm::vec4 localMousePos = inverseTransform * glm::vec4(mouseWorldPos, 0.0f, 1.0f);
+
+            glm::vec2 halfSize = glm::vec2(0.5f);
+            return localMousePos.x >= -halfSize.x && localMousePos.x <= halfSize.x &&
+                   localMousePos.y >= -halfSize.y && localMousePos.y <= halfSize.y;
+        }
+
+
     };
 }

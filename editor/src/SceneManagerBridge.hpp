@@ -33,12 +33,11 @@ namespace nexo::editor {
             [[nodiscard]] std::vector<scene::SceneId> getSceneIDs() const;
             [[nodiscard]] std::vector<ecs::Entity> getSceneEntities(scene::SceneId sceneId) const;
             [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
-            [[nodiscard]] ecs::Entity getSelectedEntity() const;
+            [[nodiscard]] int getSelectedEntity() const;
+            void setSceneActiveStatus(scene::SceneId sceneId, bool status) const;
             [[nodiscard]] bool isEntitySelected() const;
 
             void deactivateAllScenes() const;
-
-
 
             void setSelectedEntity(ecs::Entity entity);
             void unselectEntity();
@@ -48,7 +47,7 @@ namespace nexo::editor {
             ~SceneManagerBridge() = default;
 
             scene::SceneManager& m_sceneManager;
-            ecs::Entity m_selectedEntity = 0;
+            int m_selectedEntity = -1;
             bool m_isEntitySelected = false;
     };
 }
