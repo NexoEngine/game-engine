@@ -17,7 +17,7 @@ std::vector<ecs::Entity> engine::editor::SceneManagerBridge::getSceneEntities(ec
     return std::move(_sceneManager.getSceneEntities(sceneID));
 }
 
-std::vector<ecs::Entity> engine::editor::SceneManagerBridge::getAllEntities() const
+std::set<ecs::Entity> engine::editor::SceneManagerBridge::getAllEntities() const
 {
     return std::move(_sceneManager.getAllEntities());
 }

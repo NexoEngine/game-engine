@@ -25,10 +25,11 @@
 
 #include "SaveExceptions.hpp"
 #include "SaveFile.hpp"
+#include "ISaveBase.hpp"
 
 namespace engine::save {
 
-    class SaveFolder {
+    class SaveFolder : public ISaveBase {
     private:
         class InputSaveElement {
         public:
@@ -88,59 +89,60 @@ namespace engine::save {
         template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFile, T>>>
         void addFile(const std::string& name, std::shared_ptr<T> file) {
             file->setPath(m_folderPath / name);
-            m_files[name] = file;
+            m_saves[name] = file;
+			m_orderedSaves.push_back(file);
         }
 
         template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFile, T>>>
         void addFile(const std::string& name, const T& file) {
             auto filePtr = std::make_shared<T>(file);
-            filePtr->setPath(m_folderPath / name);
-            m_files[name] = filePtr;
+			addFile(name, filePtr);
         }
 
         template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFolder, T>>>
         void addFolder(const std::string& name, std::shared_ptr<T> folder) {
             folder->setPath(m_folderPath / name);
-            m_folders[name] = std::move(folder);
+            m_saves[name] = folder;
+			m_orderedSaves.push_back(folder);
         }
 
         template <typename T, typename = std::enable_if_t<std::is_base_of_v<SaveFolder, T>>>
         void addFolder(const std::string& name, const T& folder) {
             auto folderPtr = std::make_shared<T>(folder);
-            folderPtr->setPath(m_folderPath / name);
-            m_folders[name] = folderPtr;
+			addFolder(name, folderPtr);
         }
 
         /**
          * @brief Recursively saves the folder and all its contents
          * @warning Be careful of infinite recursion if there are circular references
          */
-        virtual void save()
+		virtual void save() override
         {
             _createFolder();
 
-            for (const auto& [_, file] : m_files) {
-                file->save();
-            }
-            for (const auto& [_, folder] : m_folders) {
-                folder->save();
-            }
+			for (const auto& [_, file] : m_saves) {
+				file->save();
+			}
         }
 
-        virtual void load()
+        virtual void load() override
         {
-            for (const auto& [_, file] : m_files) {
-                file->load();
-            }
-            for (const auto& [_, folder] : m_folders) {
-                folder->load();
-            }
+			for (const auto& [_, file] : m_saves) {
+				file->load();
+			}
         }
 
-        void setPath(std::filesystem::path path) {
+        void setPath(std::filesystem::path path) override {
             m_folderPath = std::move(path);
             _updatePaths();
         }
+
+		void resetPath() override {
+			m_folderPath.clear();
+			for (const auto& [_, save] : m_saves) {
+				save->resetPath();
+			}
+		}
 
         [[nodiscard]] const std::filesystem::path& getPath() const {
             return m_folderPath;
@@ -162,12 +164,9 @@ namespace engine::save {
         }
 
         void _updatePaths() {
-            for (const auto& [name, file] : m_files) {
-                file->setPath(m_folderPath / name);
-            }
-            for (const auto& [name, folder] : m_folders) {
-                folder->setPath(m_folderPath / name);
-            }
+			for (auto& [name, save] : m_saves) {
+				save->setPath(m_folderPath / name);
+			}
         }
 
         void _createFolder() const {
@@ -182,8 +181,8 @@ namespace engine::save {
             }
         }
 
-        std::unordered_map<std::string, std::shared_ptr<SaveFolder>> m_folders;
-        std::unordered_map<std::string, std::shared_ptr<SaveFile>> m_files;
+		std::unordered_map<std::string, std::shared_ptr<ISaveBase>> m_saves;
+		std::vector<std::shared_ptr<ISaveBase>> m_orderedSaves;
         std::filesystem::path m_folderPath;
     };
 

@@ -19,6 +19,8 @@
 
 #include "game_engine/editor/save/EditorLayout.hpp"
 #include "game_engine/editor/save/Scenes.hpp"
+#include "game_engine/editor/save/Entities.hpp"
+#include "game_engine/editor/save/Cameras.hpp"
 
 namespace engine::editor {
     class EditorSaveFolder : public save::SaveFolder {
@@ -27,10 +29,13 @@ namespace engine::editor {
         {
             setPath(".");
 
-            // TODO: fix slicing issues when copy instead of shared_ptr
-            //std::shared_ptr<save::ScenesSaveFolder> scenesSaveFolder = std::make_shared<save::ScenesSaveFolder>();
+
             save::ScenesSaveFolder scenesSaveFolder;
             SaveFolder engineSaveFolder = {
+				{"objects", {
+					{"entities.json", save::EntitiesSaveFile()},
+                    {"cameras.json", save::CamerasSaveFile()},
+				}},
                 {"scenes", scenesSaveFolder},
                 {"assets", {
                     {"models.nbin", save::EmptySaveFile()},
@@ -44,7 +49,7 @@ namespace engine::editor {
                 {"editor_layout.ini", save::EditorLayoutSaveFile()},
                 {"README.md", save::PlaceholderSaveFile(
                     "Most of these folders and files are placeholders, "
-                    "only entities are loaded for now.")}
+                    "only scenes and entities are loaded for now.")}
             };
 
             addFolder(".nexo", engineSaveFolder);

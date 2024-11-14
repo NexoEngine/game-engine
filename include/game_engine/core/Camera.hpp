@@ -247,7 +247,8 @@ namespace engine {
                 Camera _camera;
                 RenderTexture _viewTexture;
                 bool _shaderStatus[ecs::components::shader::SHADER_COUNT] = { false };
-                Shader lightShader = ecs::components::shader::defaultLightingShader;
+
+
         };
 
         class MovableCamera : public EngineCamera {

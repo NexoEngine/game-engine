@@ -47,7 +47,7 @@ namespace engine::editor {
     void ConsoleWindow::setup() {
         // setup code (if any)
         // create a multiline lorem ipsum string
-        VLOG_F(loguru::Verbosity_INFO, "ConsoleWindow setup\nLorem ipsum dolor sit amet\nconsectetur adipiscing elit\nsed do eiusmod tempor incididunt\nut labore et dolore magna aliqua\nUt enim ad minim veniam\nquis nostrud exercitation ullamco\nlaboris nisi ut aliquip ex ea commodo consequat\nDuis aute irure dolor in reprehenderit\nin voluptate velit esse cillum dolore eu fugiat nulla pariatur\nExcepteur sint occaecat cupidatat non proident\nsunt in culpa qui officia deserunt mollit anim id est laborum");
+        VLOG_F(loguru::Verbosity_INFO, "ConsoleWindow setup");
     }
 
     void ConsoleWindow::shutdown() {

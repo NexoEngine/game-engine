@@ -24,16 +24,17 @@
 #include <cerrno>
 
 #include "SaveExceptions.hpp"
+#include "ISaveBase.hpp"
 
 namespace engine::save {
 
     class SaveFolder;
 
-    class SaveFile {
+    class SaveFile : public ISaveBase {
     public:
         virtual ~SaveFile() = default;
 
-        void save() const {
+        void save() override {
             if (m_filePath.empty()) {
                 throw SaveFileException("SaveFile has no path set."
                     " You could set it manually or use a SaveFolder "
@@ -53,7 +54,7 @@ namespace engine::save {
             }
         }
 
-        void load() {
+        void load() override {
             if (m_filePath.empty()) {
                 throw SaveFileException("SaveFile has no path set."
                     " You could set it manually or use a SaveFolder "
@@ -68,11 +69,11 @@ namespace engine::save {
             return m_filePath;
         }
 
-        void setPath(std::filesystem::path path) {
+        void setPath(std::filesystem::path path) override {
             this->m_filePath = std::move(path);
         }
 
-        void resetPath() {
+        void resetPath() override {
             m_filePath.clear();
         }
 

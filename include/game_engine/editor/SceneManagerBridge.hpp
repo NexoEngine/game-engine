@@ -24,7 +24,7 @@ namespace engine::editor {
 
             [[nodiscard]] std::vector<ecs::SceneID> getSceneIDs() const;
             [[nodiscard]] std::vector<ecs::Entity> getSceneEntities(ecs::SceneID sceneID) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
+            [[nodiscard]] std::set<ecs::Entity> getAllEntities() const;
             [[nodiscard]] ecs::Entity getSelectedEntity() const;
             [[nodiscard]] bool isEntitySelected() const;
 

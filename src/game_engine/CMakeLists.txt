@@ -6,6 +6,7 @@ set(SRCS
     src/common/raylib_json.cpp
     src/game_engine/Editor.cpp
     src/game_engine/editor/save/Memento.cpp
+    src/game_engine/editor/save/json.cpp
     src/game_engine/editor/GameEngineEditor.cpp
     src/game_engine/editor/SceneManagerBridge.cpp
     src/game_engine/editor/DocumentWindows/Main3DScene.cpp

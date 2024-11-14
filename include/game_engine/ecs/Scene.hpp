@@ -79,11 +79,11 @@ namespace ecs {
                 return sceneEntities;
             }
 
-            [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const
+            [[nodiscard]] std::set<ecs::Entity> getAllEntities() const
             {
-                std::vector<ecs::Entity> allEntities;
+                std::set<ecs::Entity> allEntities;
                 for (const auto &[_, scene] : scenes)
-                    allEntities.insert(allEntities.end(), scene.entities.begin(), scene.entities.end());
+					allEntities.insert(scene.entities.begin(), scene.entities.end());
                 return allEntities;
             }
 

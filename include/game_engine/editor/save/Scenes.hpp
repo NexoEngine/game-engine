@@ -8,7 +8,7 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        10/11/2024
-//  Description: SaveFile to save ECS entities
+//  Description: SaveFile to save ECS scenes
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,14 +19,15 @@
 #include "game_engine/save/filesystem/SaveFolder.hpp"
 
 #include <imgui.h>
-#include <SaveHandling.hpp>
-#include <SceneHandling.hpp>
+#include "SaveHandling.hpp"
+#include "SceneHandling.hpp"
 
 namespace engine::save {
 
     class ScenesSaveFolder : public SaveFolder {
     public:
         const char *INDEX_FILE_MAGIC = "nindx";
+		const char* ENTITIES_FILE_MAGIC = "nentt";
 
         void save() override
         {
@@ -51,10 +52,10 @@ namespace engine::save {
             for (const auto &sceneID : sceneIDs) {
                 sceneIndices.push_back({"scene" + std::to_string(sceneID), sceneID});
             }
-            json sceneIndex = json::array({
+            json sceneIndex = createJsonWithMagic(
                 INDEX_FILE_MAGIC,
                 sceneIndices
-            });
+            );
             std::ofstream sceneIndexFile(getPath() / "scene_index.bin", std::ios::binary);
             json::to_msgpack(sceneIndex, sceneIndexFile);
         }
@@ -64,21 +65,25 @@ namespace engine::save {
             std::filesystem::path scenePath = getPath() / ("scene" + std::to_string(sceneID));
             std::filesystem::create_directory(scenePath);
 
-            json entitiesData = json::array();
-            auto sceneEntities = engine::getSceneManager().getSceneEntities(sceneID);
-            for (const auto &entity : sceneEntities) {
-                entitiesData.push_back({
-                    {"entityId", entity},
-                    {"data", engine::saveEntityComponents(entity)}
-                });
-            }
-            std::ofstream entitiesFile(scenePath / "entities.json", std::ios::binary);
-            entitiesFile << entitiesData.dump(4);
-            entitiesFile.close();
+            _saveEntities(sceneID, scenePath);
+
         }
-        
 
+        void _saveEntities(ecs::SceneID sceneID, std::filesystem::path& scenePath)
+        {
+            json entitiesData = createJsonWithMagic(
+				ENTITIES_FILE_MAGIC,
+                engine::getSceneManager().getSceneEntities(sceneID)
+			);
+            std::ofstream entitiesFile(scenePath / "entities.bin", std::ios::binary);
+			json::to_msgpack(entitiesData, entitiesFile);
+        }
 
+		void _saveCameras(ecs::SceneID sceneID, std::filesystem::path& scenePath)
+		{
+			/*json camerasData = engine::getSceneManager().getSceneCameras(sceneID);
+			std::ofstream camerasFile(scenePath / "cameras.bin", std::ios::binary);*/
+        }
     };
 
 } // namespace engine::editor
