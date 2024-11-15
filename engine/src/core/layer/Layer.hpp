@@ -59,7 +59,10 @@ namespace nexo::layer {
         public:
             explicit Layer(const std::string &name) : BaseListener(name), name(name) {};
 
-            ~Layer() override = default;
+            ~Layer() override
+            {
+                LOG(NEXO_DEBUG, "Layer {} deleted", name);
+            };
 
             template<typename DerivedLayer = void>
             std::optional<std::type_index> getTypeIndex() const
@@ -90,7 +93,7 @@ namespace nexo::layer {
             std::set<ecs::Entity> &getEntities() { return m_entities; };
 
             void attachCamera(const std::shared_ptr<camera::Camera> &camera);
-            void detachCamera() { m_camera.reset(); };
+            void detachCamera();
             std::shared_ptr<camera::Camera> &getCamera() { return m_camera; };
 
             std::string name;

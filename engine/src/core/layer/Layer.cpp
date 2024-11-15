@@ -20,6 +20,12 @@ namespace nexo::layer {
 
     void Layer::onRender()
     {
+        if (!m_camera)
+        {
+            LOG(NEXO_WARN, "Layer::onRender(): no camera is found, disabling render");
+            isRendered = false;
+            return;
+        }
         renderer::Renderer2D::beginScene(m_camera->getViewProjectionMatrix());
         for (const auto entity : m_entities)
         {
@@ -75,6 +81,13 @@ namespace nexo::layer {
             return;
         }
         m_camera = camera;
+        isRendered = true;
+    }
+
+    void Layer::detachCamera()
+    {
+        m_camera.reset();
+        isRendered = false;
     }
 
 }
