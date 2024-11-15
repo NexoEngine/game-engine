@@ -11,7 +11,7 @@
       ]
     },
     {
-      "name": "boost-multi-index"
+      "name": "boost-preprocessor"
     },
     {
       "name": "joltphysics"
@@ -21,6 +21,15 @@
     },
     {
       "name": "glm"
+    },
+    {
+      "name": "glfw3"
+    },
+    {
+      "name": "glad"
+    },
+    {
+      "name": "stb"
     }
   ]
 }

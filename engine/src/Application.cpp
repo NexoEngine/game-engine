@@ -13,6 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Application.hpp"
+
+#include <glad/glad.h>
+
 #include "components/Components.hpp"
 #include "core/event/Input.hpp"
 

@@ -1,15 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
 
+# PROJECT
+project(client CXX)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" -Wmissing-field-initializers)
+    add_compile_options(--std=c++20 -g -Wmissing-field-initializers)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "MSVC detected, adding compile flags")
+    add_compile_options(/std:c++20 /W4 /Zi /Zc:preprocessor)
+else()
+    message(FATAL_ERROR "Unsupported compiler ${CMAKE_CXX_COMPILER_ID}")
 endif()
-
-# PROJECT
-project(client CXX)
 
 set(GRAPHICS_API "OpenGL")
 

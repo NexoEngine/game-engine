@@ -14,7 +14,7 @@
 
 #include "OpenGlTexture2D.hpp"
 #include "Logger.hpp"
-#include "stb/stb_image.h"
+#include <stb_image.h>
 
 namespace nexo::renderer {
 
