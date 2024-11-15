@@ -29,8 +29,8 @@ namespace nexo::scene {
             [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
             [[nodiscard]] std::vector<ecs::Entity> getAllActiveEntities() const;
             [[nodiscard]] std::vector<ecs::Entity> getAllSceneEntities(SceneId sceneId) const;
+            std::set<ecs::Entity> getSceneGlobalEntities(SceneId sceneId) const;
             std::set<ecs::Entity> getLayerEntities(SceneId sceneId, const std::string &layerName) const;
-
 
             Scene &getScene(SceneId sceneId);
             const std::string &getSceneName(SceneId sceneId) const;
@@ -40,6 +40,7 @@ namespace nexo::scene {
             void addOverlay(SceneId sceneId, const std::string &overlayName);
             void removeOverlay(SceneId sceneId, const std::string &overlayName);
             const layer::LayerStack &getSceneLayers(SceneId sceneId) const;
+            void setLayerName(SceneId sceneId, const std::string &layerName, const std::string &newName) const;
 
             void addEntityToLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
             void addGlobalEntity(ecs::Entity entity, SceneId sceneId);

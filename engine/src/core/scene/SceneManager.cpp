@@ -102,6 +102,16 @@ namespace nexo::scene {
         return scenes.at(sceneId).getLayerStack();
     }
 
+    void SceneManager::setLayerName(SceneId sceneId, const std::string &layerName, const std::string &newName) const
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::setLayerName: id {} does not exist", sceneId);
+            return;
+        }
+        scenes.at(sceneId).getLayer(layerName)->name = newName;
+    }
+
     std::vector<SceneId> SceneManager::getSceneIDs() const
     {
         const std::size_t totalScenes = scenes.size();
@@ -170,6 +180,15 @@ namespace nexo::scene {
         return entityIds;
     }
 
+    std::set<ecs::Entity> SceneManager::getSceneGlobalEntities(SceneId sceneId) const
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager:::getAllSceneGlobalEntity: id {} does not exist", sceneId);
+            return {};
+        }
+        return scenes.at(sceneId).getGlobalEntities();
+    }
 
     void SceneManager::addEntityToLayer(const ecs::Entity entity, SceneId sceneId, const std::string &name)
     {
