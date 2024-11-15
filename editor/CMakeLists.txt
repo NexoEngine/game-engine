@@ -50,12 +50,8 @@ if(WIN32)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/bin")
     include_directories("${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/x64-windows/include")
 elseif(UNIX AND NOT APPLE)
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/raylib-subbuild")
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/raylib-build/raylib/include")
     include_directories("${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/x64-linux/include")
 elseif(APPLE)
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/raylib-subbuild")
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}/_deps/raylib-build/raylib/include")
     include_directories("${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/x64-osx/include")
 endif()
 
@@ -64,18 +60,20 @@ if(APPLE)
     link_directories(/usr/local/lib)
 endif()
 
-find_package(raylib 5.0 CONFIG QUIET)
-include_directories(${raylib_INCLUDE_DIRS})
-
 # LOGURU
-find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
-target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
+if (WIN32)
+    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
+    target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
+    target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
+else()
+    find_package(loguru CONFIG REQUIRED)
+    target_link_libraries(nexoEditor PRIVATE loguru)
+endif()
 
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(nexoEditor PRIVATE imguizmo)
 
-target_link_libraries(nexoEditor PRIVATE nexoRenderer raylib imgui::imgui)
+target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 
 target_include_directories(nexoEditor PRIVATE ${tinyfiledialogs_SOURCE_DIR})
 
