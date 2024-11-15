@@ -229,11 +229,17 @@ namespace nexo {
 
     void Application::removeLayer(scene::SceneId sceneId, const std::string &layerName)
     {
+        std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, layerName);
+        for (auto entity : layerEntities)
+            removeEntityFromScene(entity, sceneId, layerName);
         m_sceneManager.removeLayer(sceneId, layerName);
     }
 
     void Application::removeOverlay(scene::SceneId sceneId, const std::string &overlayName)
     {
+        std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, overlayName);
+        for (auto entity : layerEntities)
+            removeEntityFromScene(entity, sceneId, overlayName);
         m_sceneManager.removeOverlay(sceneId, overlayName);
     }
 
