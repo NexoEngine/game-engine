@@ -50,7 +50,6 @@ namespace nexo::editor {
 
     void MainScene::loadEntities()
     {
-        std::cout << "aled" << std::endl;
         auto &app = getApp();
         _sceneID = app.createScene(m_sceneName);
         app.addNewLayer(_sceneID, "Layer 1");
