@@ -50,6 +50,7 @@ namespace nexo::editor {
 
     void MainScene::loadEntities()
     {
+        std::cout << "aled" << std::endl;
         auto &app = getApp();
         _sceneID = app.createScene(m_sceneName);
         app.addNewLayer(_sceneID, "Layer 1");
@@ -206,9 +207,9 @@ namespace nexo::editor {
 
     void MainScene::renderGizmo()
     {
-        auto coord = nexo::Application::m_coordinator;
+        auto &coord = nexo::Application::m_coordinator;
         int selectedEntity = m_sceneManagerBridge.getSelectedEntity();
-        if (selectedEntity == -1)
+        if (selectedEntity == -1 || m_sceneManagerBridge.getSelectionType() != SelectionType::ENTITY)
             return;
         ImGuizmo::SetOrthographic(m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
@@ -286,7 +287,7 @@ namespace nexo::editor {
 
         if (!insideWindow)
             return;
-        auto coord = Application::m_coordinator;
+        auto &coord = Application::m_coordinator;
         std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge.getSceneEntities(_sceneID);
         auto mouseWorldPosition = getMouseWorldPosition();
         for (auto entity : sceneEntities)
