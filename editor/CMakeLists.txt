@@ -24,18 +24,9 @@ set(SRCS
         editor/src/DocumentWindows/SceneViewManager.cpp
 )
 
-FetchContent_Declare(
-        tinyfiledialogs
-        GIT_REPOSITORY https://github.com/native-toolkit/libtinyfiledialogs.git
-        GIT_TAG master
-)
-FetchContent_MakeAvailable(tinyfiledialogs)
+add_executable(nexoEditor ${SRCS})
 
-list(APPEND MY_PROJECT_SOURCES ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
-
-add_executable(nexoEditor ${SRCS} ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
-
-set_target_properties( nexoEditor
+set_target_properties(nexoEditor
         PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
@@ -72,12 +63,16 @@ else()
     target_link_libraries(nexoEditor PRIVATE loguru)
 endif()
 
+# ImGuizmo
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(nexoEditor PRIVATE imguizmo)
 
+# ImGui
 target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 
-target_include_directories(nexoEditor PRIVATE ${tinyfiledialogs_SOURCE_DIR})
+# TinyFileDialogs
+find_package(tinyfiledialogs CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 
 include_directories(include)
 

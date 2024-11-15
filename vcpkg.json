@@ -11,6 +11,9 @@
       ]
     },
     {
+      "name": "imguizmo"
+    },
+    {
       "name": "boost-preprocessor"
     },
     {
@@ -30,6 +33,9 @@
     },
     {
       "name": "stb"
+    },
+    {
+      "name": "tinyfiledialogs"
     }
   ]
 }

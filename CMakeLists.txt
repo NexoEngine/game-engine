@@ -63,15 +63,6 @@ else()
     include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 endif()
 
-# RAYLIB DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
-
-# RLIMGUI DOWNLOAD
-# include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
-
-# IMGUIZMO DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
-
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
@@ -83,4 +74,5 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
 # IMGuiVR example
 include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")
 
-include_directories("./common")
+include_directories("./common"
+)
