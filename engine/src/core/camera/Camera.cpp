@@ -16,6 +16,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+nexo::camera::CameraId nexo::camera::Camera::nextCameraId = 0;
+
 namespace nexo::camera {
 
     void Camera::recalculateViewMatrix()

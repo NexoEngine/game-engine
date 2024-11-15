@@ -47,6 +47,7 @@ namespace nexo::camera {
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
 
             virtual void onUpdate([[maybe_unused]] core::Timestep ts) {};
+            static CameraId nextCameraId;
         protected:
             CameraId m_id{};
 

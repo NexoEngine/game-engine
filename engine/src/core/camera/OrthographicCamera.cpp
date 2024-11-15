@@ -16,7 +16,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-
 namespace nexo::camera {
 
     OrthographicCamera::OrthographicCamera(const float left, const float right, const float bottom, const float top)
@@ -26,6 +25,7 @@ namespace nexo::camera {
         m_viewMatrix = glm::mat4(1.0f);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
         m_mode = CameraMode::ORTHOGRAPHIC;
+        m_id = nextCameraId++;
     }
 
     void OrthographicCamera::setProjection(const float left, const float right, const float bottom, const float top)
