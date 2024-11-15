@@ -298,6 +298,7 @@ namespace nexo::editor {
             {
                 if (renderComponent->get().renderable->isClicked(transformComponent->get(), mouseWorldPosition))
                 {
+                    std::cout << "on clique "<< std::endl;
                     m_sceneManagerBridge.setSelectedEntity(entity);
                     m_sceneManagerBridge.setSelectionType(SelectionType::ENTITY);
                     return;

@@ -16,6 +16,7 @@
 #include "IconsFontAwesome.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <raylib.h>
 
 namespace nexo::editor {
@@ -191,34 +192,84 @@ void SceneTreeWindow::ShowNode(SceneObject& object)
     }
 }
 
-    void SceneTreeWindow::show()
+bool createNewSceneOpen = false; // Add this flag as a class or local variable
+
+void SceneTreeWindow::show()
+{
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
+
+    ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse);
+
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
-        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
-
-        ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse);
-        ImVec2 winPos = ImGui::GetWindowPos();
-        ImVec2 winSize = ImGui::GetWindowSize();
-        ImVec2 winMin = winPos;
-        ImVec2 winMax = ImVec2(winPos.x + winSize.x, winPos.y + winSize.y);
-
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
         {
-            if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
-                m_sceneManagerBridge.unselectEntity();
+            ImGui::OpenPopup("Scene Tree Context Menu");
+        }
+    }
+
+    ShowNode(root_);
+
+    if (ImGui::BeginPopup("Scene Tree Context Menu"))
+    {
+        if (ImGui::MenuItem("Create Scene"))
+        {
+            createNewSceneOpen = true;
+        }
+        ImGui::EndPopup();
+    }
+
+    // Handle the modal popup
+    if (createNewSceneOpen)
+    {
+        ImGui::OpenPopup("Create New Scene"); // Ensure the popup is opened
+        createNewSceneOpen = false;          // Reset the flag
+    }
+
+    if (ImGui::BeginPopupModal("Create New Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        static char sceneNameBuffer[256] = ""; // Buffer for scene name input
+
+        ImGui::Text("Enter Scene Name:");
+        ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
+
+        if (ImGui::Button("Create"))
+        {
+            std::string newSceneName(sceneNameBuffer);
+
+            if (!newSceneName.empty())
+            {
+                // DEBUG: Add a message to confirm the function call
+                std::cout << "Creating scene with name: " << newSceneName << std::endl;
+
+                // Clear the buffer for the next input
+                memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+
+                // Close the popup
+                ImGui::CloseCurrentPopup();
+            }
             else
             {
-                ImVec2 mousePos = ImGui::GetMousePos();
-                bool outsideWindow = mousePos.x < winMin.x || mousePos.x > winMax.x ||
-                                     mousePos.y < winMin.y || mousePos.y > winMax.y;
-
-                if (outsideWindow)
-                    m_sceneManagerBridge.unselectEntity();
+                // DEBUG: Empty name entered
+                std::cout << "Scene name is empty!" << std::endl;
             }
         }
-        ShowNode(root_);
-        ImGui::End();
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
     }
+
+    ImGui::End();
+}
+
+
+
 
     void SceneTreeWindow::update()
     {

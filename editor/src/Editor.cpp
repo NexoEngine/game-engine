@@ -101,7 +101,6 @@ namespace nexo::editor {
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::Enable(true);
-        setupFonts();
     }
 
     void Editor::setupStyle()
@@ -138,6 +137,7 @@ namespace nexo::editor {
         colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
 
         ImGuiBackend::init(m_app->getWindow());
+        setupFonts();
     }
 
     void Editor::setupFonts()
