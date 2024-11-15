@@ -20,6 +20,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
+#include <optional>
 
 #include "Logger.hpp"
 #include "ECSExceptions.hpp"

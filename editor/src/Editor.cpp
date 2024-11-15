@@ -94,9 +94,11 @@ namespace nexo::editor {
     void Editor::setupEngine()
     {
         m_app = std::make_shared<Application>(nexo::init());
+
         ImGuiBackend::setErrorCallback(m_app->getWindow());
 
         ImGui::CreateContext();
+        ImGuiBackend::init(m_app->getWindow());
 
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -107,18 +109,17 @@ namespace nexo::editor {
     {
         ImGui::Spectrum::StyleColorsSpectrum();
 
-        // Retrieve DPI scale
-        // float xScale, yScale = 0.0f;
-        // m_app->getWindow()->getDpiScale(&xScale, &yScale);
-        // if (xScale > 1.0f || yScale > 1.0f)
-        //     std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another scaling factor."
-        //             << std::endl;
+         // Retrieve DPI scale
+         float xScale, yScale = 0.0f;
+         m_app->getWindow()->getDpiScale(&xScale, &yScale);
+         if (xScale > 1.0f || yScale > 1.0f)
+             std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another system-wide scaling factor."
+                     << std::endl;
 
-        //std::cout << "xScale " << xScale << " yScale " << yScale << std::endl;
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(m_app->getWindow()->getWidth()),
                             static_cast<float>(m_app->getWindow()->getHeight()));
-        //io.DisplayFramebufferScale = ImVec2(xScale, yScale); // Apply the DPI scale to ImGui rendering
+        io.DisplayFramebufferScale = ImVec2(xScale, yScale); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
@@ -135,8 +136,6 @@ namespace nexo::editor {
         colors[ImGuiCol_TabHovered] = ImVec4(0.12f, 0.52f, 0.99f, 0.80f);
         colors[ImGuiCol_TabActive] = ImVec4(0.06f, 0.32f, 0.63f, 1.00f);
         colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
-
-        ImGuiBackend::init(m_app->getWindow());
         setupFonts();
     }
 

@@ -12,8 +12,6 @@ set(COMMON_SOURCES
         common/Exception.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
-        engine/src/external/glad.c
-        engine/src/external/stb_image.cpp
         engine/src/Application.cpp
         engine/src/Application.cpp
         engine/src/renderer/Window.cpp
@@ -72,11 +70,25 @@ else()
 endif()
 
 # Add include directories for this target
-target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/engine/src ${CMAKE_SOURCE_DIR}/common)
+target_include_directories(nexoRenderer PUBLIC
+                           ${CMAKE_SOURCE_DIR}/engine/include
+                           ${CMAKE_SOURCE_DIR}/engine/src
+                           ${CMAKE_SOURCE_DIR}/common)
+
+# loguru
+find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
+target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
+target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
+
+# Stb
+find_package(Stb REQUIRED)
+target_include_directories(nexoRenderer PRIVATE ${Stb_INCLUDE_DIR})
+target_sources(nexoRenderer PRIVATE ${CMAKE_SOURCE_DIR}/engine/src/external/stb_image.cpp)
 
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)
     find_package(glfw3 3.3 REQUIRED)
-    target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw)
+    find_package(glad CONFIG REQUIRED)
+    target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
 endif()

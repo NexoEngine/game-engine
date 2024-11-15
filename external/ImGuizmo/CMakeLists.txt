@@ -26,8 +26,6 @@ add_library(imguizmo STATIC
             ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
 )
 
-target_compile_options(imguizmo PRIVATE "-std=c++11")
-
 # Include directories for ImGuizmo
 target_include_directories(imguizmo PUBLIC
                            $<BUILD_INTERFACE:${imguizmo_SOURCE_DIR}>

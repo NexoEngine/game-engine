@@ -62,20 +62,15 @@ endif()
 if(APPLE)
     include_directories(/usr/local/include)
     link_directories(/usr/local/lib)
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra --std=c++20 -O3 -g")
 endif()
 
 find_package(raylib 5.0 CONFIG QUIET)
 include_directories(${raylib_INCLUDE_DIRS})
 
-if (WIN32)
-    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
-else()
-    find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(nexoEditor PRIVATE loguru)
-endif()
+# LOGURU
+find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
+target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
+target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
 
 find_package(imguizmo CONFIG QUIET)
 target_link_libraries(nexoEditor PRIVATE imguizmo)
@@ -83,10 +78,6 @@ target_link_libraries(nexoEditor PRIVATE imguizmo)
 target_link_libraries(nexoEditor PRIVATE nexoRenderer raylib imgui::imgui)
 
 target_include_directories(nexoEditor PRIVATE ${tinyfiledialogs_SOURCE_DIR})
-
-if(UNIX)
-    set(CMAKE_CXX_FLAGS "--std=c++20 -Wall -Wextra -O3 -g")
-endif()
 
 include_directories(include)
 
