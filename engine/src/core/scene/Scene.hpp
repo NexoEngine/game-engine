@@ -32,7 +32,10 @@ namespace nexo::scene {
             {
                 LOG(NEXO_INFO, "Scene {} created with id: {}", name, id);
             };
-            ~Scene() = default;
+            ~Scene()
+            {
+                LOG(NEXO_DEBUG, "Scene {} deleted", name);
+            };
 
             [[nodiscard]] const std::string &getName() const { return name; }
 
@@ -53,6 +56,7 @@ namespace nexo::scene {
             void entityDestroyed(ecs::Entity entity);
 
             [[nodiscard]] std::set<ecs::Entity> getEntities() const;
+            [[nodiscard]] std::set<ecs::Entity> getGlobalEntities() const {return m_globalEntities; };
 
             void attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
             void detachCameraFromLayer(const std::string &layerName);
