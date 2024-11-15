@@ -15,34 +15,45 @@
 #include "SceneManagerBridge.hpp"
 
 namespace nexo::editor {
+
     std::vector<scene::SceneId> SceneManagerBridge::getSceneIDs() const
     {
-        return std::move(m_sceneManager.getSceneIDs());
+        return std::move(getSceneManager().getSceneIDs());
     }
 
     const layer::LayerStack &SceneManagerBridge::getSceneLayers(scene::SceneId sceneId) const
     {
-        return m_sceneManager.getSceneLayers(sceneId);
+        return getSceneManager().getSceneLayers(sceneId);
     }
 
-    const std::string &SceneManagerBridge::getSceneName(scene::SceneId sceneId) const
+    std::shared_ptr<camera::Camera> SceneManagerBridge::getCameraLayer(scene::SceneId sceneId, const std::string &layerName) const
     {
-        return m_sceneManager.getSceneName(sceneId);
+        return getSceneManager().getCameraLayer(sceneId, layerName);
+    }
+
+    const std::string SceneManagerBridge::getSceneName(scene::SceneId sceneId) const
+    {
+        return getSceneManager().getSceneName(sceneId);
     }
 
     std::set<ecs::Entity> SceneManagerBridge::getLayerEntities(scene::SceneId sceneId, const std::string &layerName) const
     {
-        return m_sceneManager.getLayerEntities(sceneId, layerName);
+        return getSceneManager().getLayerEntities(sceneId, layerName);
     }
 
     std::vector<ecs::Entity> SceneManagerBridge::getSceneEntities(const scene::SceneId sceneId) const
     {
-        return std::move(m_sceneManager.getAllSceneEntities(sceneId));
+        return std::move(getSceneManager().getAllSceneEntities(sceneId));
+    }
+
+    std::set<ecs::Entity> SceneManagerBridge::getSceneGlobalEntities(scene::SceneId sceneId) const
+    {
+        return getSceneManager().getSceneGlobalEntities(sceneId);
     }
 
     std::vector<ecs::Entity> SceneManagerBridge::getAllEntities() const
     {
-        return std::move(m_sceneManager.getAllEntities());
+        return std::move(getSceneManager().getAllEntities());
     }
 
     int SceneManagerBridge::getSelectedEntity() const
@@ -50,9 +61,14 @@ namespace nexo::editor {
         return m_selectedEntity;
     }
 
+    SelectionType SceneManagerBridge::getSelectionType() const
+    {
+        return m_selectionType;
+    }
+
     void SceneManagerBridge::setSceneActiveStatus(scene::SceneId sceneId, bool status) const
     {
-        m_sceneManager.setSceneActiveStatus(sceneId, status);
+        getSceneManager().setSceneActiveStatus(sceneId, status);
     }
 
     bool SceneManagerBridge::isEntitySelected() const
@@ -62,8 +78,8 @@ namespace nexo::editor {
 
     void SceneManagerBridge::deactivateAllScenes() const
     {
-        for (const auto sceneId : m_sceneManager.getSceneIDs()) {
-            m_sceneManager.setSceneActiveStatus(sceneId, false);
+        for (const auto sceneId : getSceneManager().getSceneIDs()) {
+            getSceneManager().setSceneActiveStatus(sceneId, false);
         }
     }
 
@@ -76,6 +92,26 @@ namespace nexo::editor {
     void SceneManagerBridge::unselectEntity()
     {
         m_selectedEntity = -1;
+        m_selectionData.emplace<std::monostate>();
+        m_selectionType = SelectionType::NONE;
         m_isEntitySelected = false;
     }
+
+    void SceneManagerBridge::renameObject(int id, SelectionType type, VariantData &data, const std::string &newName)
+    {
+        if (type == SelectionType::SCENE)
+        {
+            getSceneManager().getScene(id).name = newName;
+        }
+        else if (type == SelectionType::LAYER)
+        {
+            if (std::holds_alternative<std::string>(data))
+            {
+                auto layerName = std::get<std::string>(data);
+                getSceneManager().setLayerName(id, layerName, newName);
+            }
+        }
+
+    }
+
 }

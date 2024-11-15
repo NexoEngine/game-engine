@@ -14,25 +14,18 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "core/camera/Camera.hpp"
+#include "IconsFontAwesome.h"
+
+#include <unordered_map>
 
 namespace nexo::editor {
-    enum SceneObjectType {
-        SCENE_OBJECT_TYPE_ENTITY,
-        SCENE_OBJECT_TYPE_SCENE,
-        SCENE_OBJECT_TYPE_LAYER,
-        SCENE_OBJECT_TYPE_FOLDER,
-        SCENE_OBJECT_TYPE_UNKNOWN
-    };
 
-    struct SceneObject {
-        std::string name;
-        std::vector<SceneObject> children;
-        ecs::Entity id; // For entities, use their ID; for scenes, use the SceneID
-        SceneObjectType type;
-
-        SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, ecs::Entity id = 0,
-                    SceneObjectType type = SCENE_OBJECT_TYPE_ENTITY)
-            : name(name), children(std::move(children)), id(id), type(type) {}
+    const std::unordered_map<SelectionType, std::string> ObjectTypeToIcon = {
+        {SelectionType::SCENE, ICON_FA_MAP_O " "},
+        {SelectionType::LAYER, ICON_FA_BARS " "},
+        {SelectionType::CAMERA, ICON_FA_CAMERA " "},
+        {SelectionType::ENTITY, ICON_FA_CUBES " "},
     };
 
     class SceneTreeWindow : public ADocumentWindow {
@@ -53,12 +46,20 @@ namespace nexo::editor {
             struct SceneObject {
                 std::string name;
                 std::vector<SceneObject> children;
-                uint32_t id;
-                SceneObjectType type = SCENE_OBJECT_TYPE_UNKNOWN;
+                int id;
+                SelectionType type;
+                VariantData data;
+
+                SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, int id = 0,
+                            SelectionType type = SelectionType::NONE, VariantData data = {})
+                    : name(name), children(std::move(children)), id(id), type(type), data(std::move(data)) {}
             };
 
             SceneObject root_;
+            std::optional<std::pair<SelectionType, int>> m_renameTarget;
+            std::string m_renameBuffer;
 
+            void handleRename(SceneObject &obj);
             void ShowNode(SceneObject &object);
     };
 }
