@@ -21,6 +21,7 @@
 #include "imgui.h"
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
+#include <algorithm>
 
 namespace nexo::editor {
 
@@ -140,17 +141,19 @@ namespace nexo::editor {
     {
         ImGui::Spectrum::StyleColorsSpectrum();
 
-         // Retrieve DPI scale
-         float xScale, yScale = 0.0f;
-         m_app->getWindow()->getDpiScale(&xScale, &yScale);
-         if (xScale > 1.0f || yScale > 1.0f)
-             std::cerr << "WARNING: High DPI detected! If you have rendering issues please try another system-wide scaling factor."
-                     << std::endl;
+        // Retrieve DPI scale
+
+        float scaleFactorX, scaleFactorY = 0.0f;
+        m_app->getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
+            LOG(NEXO_WARN, "Scale factor is greater than 1.0, if you have any issue try adjusting the system's scale factor");
+            LOG(NEXO_INFO, "DPI scale: x: {}, y: {}", scaleFactorX, scaleFactorY);
+        }
 
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(m_app->getWindow()->getWidth()),
                             static_cast<float>(m_app->getWindow()->getHeight()));
-        io.DisplayFramebufferScale = ImVec2(xScale, yScale); // Apply the DPI scale to ImGui rendering
+        io.DisplayFramebufferScale = ImVec2(scaleFactorX, scaleFactorY); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
@@ -160,17 +163,17 @@ namespace nexo::editor {
         style->WindowRounding = 10.0f;
         style->ChildRounding = 6.0f;
         style->PopupRounding = 4.0f;
-        //style->ScaleAllSizes(xScale);
+        style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
         ImVec4 *colors = ImGui::GetStyle().Colors;
         colors[ImGuiCol_Tab] = ImVec4(0.26f, 0.52f, 0.83f, 0.93f);
         colors[ImGuiCol_TabHovered] = ImVec4(0.12f, 0.52f, 0.99f, 0.80f);
         colors[ImGuiCol_TabActive] = ImVec4(0.06f, 0.32f, 0.63f, 1.00f);
         colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
-        setupFonts();
+        setupFonts(scaleFactorX, scaleFactorY);
     }
 
-    void Editor::setupFonts()
+    void Editor::setupFonts(float scaleFactorX, float scaleFactorY)
     {
         ImFontConfig fontConfig;
         fontConfig.OversampleH = 3; // Horizontal oversampling
@@ -181,7 +184,11 @@ namespace nexo::editor {
 
         io.Fonts->AddFontDefault();
 
-        constexpr float fontSize = 18.0f;
+        float fontSize = 18.0f;
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
+            fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
+            LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
+        }
 
         ImFont *font = io.Fonts->AddFontFromFileTTF("../assets/fonts/SourceSans3-Regular.ttf", fontSize,
                                                     &fontConfig);
