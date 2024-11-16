@@ -23,25 +23,23 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
 
 ### Game Engine
 
-Quick video of the game engine in action with Jolt Physics
-
-https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
-
-
 Interface screenshot
 
 ![Editor interface](docs/game_engine/editor_interface.png)
 
-### Client
+Quick video of the game engine in action with Jolt Physics
 
-https://github.com/Thyodas/rtype/assets/53176398/2d6a7a5f-9ad2-435a-88c5-36cfdcd72b80
+https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
+
+> [!WARNING]
+> This video is from a prototype version of the engine. The final version does not currently integrate physics.
 
 ## External Dependencies
 
 To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source.
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **X11**: Required for Linux and MacOS.
+- **X11**: Required for Linux and macOS.
 
 ## Installation
 
