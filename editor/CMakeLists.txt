@@ -60,6 +60,7 @@ find_package(imguizmo CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE imguizmo::imguizmo)
 
 # ImGui
+find_package(imgui CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 
 # TinyFileDialogs

@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.20)
 project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
@@ -63,11 +62,5 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
-
-# SETUP JOLT SAMPLE
-include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
-
-# IMGuiVR example
-include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")
 
 include_directories("./common")
