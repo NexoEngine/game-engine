@@ -168,7 +168,7 @@ namespace nexo {
         m_sceneManager.setCoordinator(m_coordinator);
     }
 
-    void Application::run(const bool renderToFramebuffer)
+    void Application::run(scene::SceneId sceneId, const bool renderToFramebuffer)
     {
         const auto time = static_cast<float>(glfwGetTime());
         const core::Timestep timestep = time - m_lastFrameTime;
@@ -181,21 +181,17 @@ namespace nexo {
             renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
             renderer::RenderCommand::clear();
 
-            for (auto id : scenesIds)
-            {
-                if (m_sceneManager.isSceneActive(id))
-                    m_sceneManager.getScene(id).onUpdate(timestep);
-                if (m_sceneManager.isSceneRendered(id))
-                    m_sceneManager.getScene(id).onRender();
-            }
+            if (m_sceneManager.isSceneActive(sceneId))
+                m_sceneManager.getScene(sceneId).onUpdate(timestep);
+            if (m_sceneManager.isSceneRendered(sceneId))
+                m_sceneManager.getScene(sceneId).onRender();
         }
 
         // Update (swap buffers and poll events)
         if (!renderToFramebuffer)
             m_window->onUpdate();
         // Dispatch events to active scenes
-        for (auto id : scenesIds)
-            m_eventManager->dispatchEvents(m_sceneManager.getScene(id), m_sceneManager.isSceneActive(id));
+        m_eventManager->dispatchEvents(m_sceneManager.getScene(sceneId), m_sceneManager.isSceneActive(sceneId));
     }
 
     ecs::Entity Application::createEntity()

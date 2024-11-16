@@ -16,11 +16,6 @@
 
 namespace nexo::editor {
 
-    std::vector<scene::SceneId> SceneManagerBridge::getSceneIDs() const
-    {
-        return std::move(getSceneManager().getSceneIDs());
-    }
-
     const layer::LayerStack &SceneManagerBridge::getSceneLayers(scene::SceneId sceneId) const
     {
         return getSceneManager().getSceneLayers(sceneId);

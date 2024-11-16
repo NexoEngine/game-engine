@@ -20,12 +20,10 @@
 #include <imgui.h>
 #include <ImGuizmo.h>
 
-#include <utility>
-
 namespace nexo::editor {
         class MainScene : public ADocumentWindow {
         public:
-            MainScene(std::string sceneName);
+            MainScene(std::string sceneName, bool defaultScene = false);
             ~MainScene() override;
 
             void setup() override;
@@ -34,9 +32,15 @@ namespace nexo::editor {
             void update() override;
 
             const std::string &getName() const {return m_sceneName;};
+            void setName(const std::string &name) {m_sceneName = name; };
 
+            scene::SceneId getSceneId() {return _sceneID;};
+
+            // Strictly used for display purposes when having multiple view of one scene
+            unsigned int idView = 0;
         private:
             std::string m_sceneName;
+            bool m_defaultScene = false;
             ImVec2 _viewSize = {0, 0};
             ImVec2 _viewPosition = {0, 0};
             int _targetFPS = 60;
@@ -52,9 +56,9 @@ namespace nexo::editor {
             // --- Internal logic --- //
             // ---------------------- //
             void setupWindow();
-            void setupCamera();
-            void setupGridShader();
-            void loadEntities();
+            void setupImguizmo();
+            void setupScene();
+            void loadDefaultEntities();
 
             // void add_cube()
             // {

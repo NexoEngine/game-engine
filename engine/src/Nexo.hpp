@@ -46,5 +46,5 @@ namespace nexo {
 
     Application &getApp();
 
-    void runEngine(bool renderToFrameBuffer = false);
+    void runEngine(scene::SceneId id, bool renderToFrameBuffer = false);
 }

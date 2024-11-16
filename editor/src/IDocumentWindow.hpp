@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "SceneManagerBridge.hpp"
+
 namespace nexo::editor {
     class IDocumentWindow {
         public:
@@ -22,6 +24,8 @@ namespace nexo::editor {
         virtual void shutdown() = 0;
         virtual void show() = 0;
         virtual void update() = 0;
+
+        virtual void setSceneManager(std::shared_ptr<SceneManagerBridge> bridge) = 0;
 
         [[nodiscard]] virtual bool isFocused() const = 0;
         [[nodiscard]] virtual bool isOpened() const = 0;

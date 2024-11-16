@@ -62,7 +62,7 @@ namespace nexo::editor {
             std::string m_renameBuffer;
             PopupManager m_popupManager;
 
-            SceneObject newSceneNode(scene::SceneId id);
+            SceneObject newSceneNode(scene::SceneId id, const std::string &uiName);
             SceneObject newLayerNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
             SceneObject newCameraNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
             SceneObject newEntityNode(ecs::Entity entity);

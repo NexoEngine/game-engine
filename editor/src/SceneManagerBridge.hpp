@@ -33,6 +33,11 @@ namespace nexo::editor {
         std::string layerName;
     };
 
+    struct SceneProperties {
+        scene::SceneId sceneId;
+        std::string uiName;
+    };
+
     using VariantData = std::variant<std::monostate, LayerProperties, CameraProperties, std::string, int>;
 
     enum class SelectionType {
@@ -47,19 +52,10 @@ namespace nexo::editor {
 
     class SceneManagerBridge {
     public:
-        SceneManagerBridge(const SceneManagerBridge&) = delete;
-        SceneManagerBridge& operator=(const SceneManagerBridge&) = delete;
-
-        // Singleton accessor
-        static SceneManagerBridge& getInstance()
-        {
-            static SceneManagerBridge instance;
-            return instance;
-        }
+        SceneManagerBridge()  = default;
 
         scene::SceneManager &getSceneManager() const {return getApp().getSceneManager();};
 
-        [[nodiscard]] std::vector<scene::SceneId> getSceneIDs() const;
         [[nodiscard]] const layer::LayerStack& getSceneLayers(scene::SceneId sceneId) const;
         [[nodiscard]] std::shared_ptr<camera::Camera> getCameraLayer(scene::SceneId sceneId, const std::string& layerName) const;
 
@@ -82,9 +78,10 @@ namespace nexo::editor {
         void unselectEntity();
         void renameObject(int id, SelectionType type, VariantData& data, const std::string& newName);
 
-    private:
-        SceneManagerBridge()  = default;
         ~SceneManagerBridge() = default;
+    private:
+        std::vector<SceneProperties> m_openScenes{};
+
 
         VariantData m_selectionData{};
         SelectionType m_selectionType = SelectionType::NONE;

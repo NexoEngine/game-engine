@@ -21,7 +21,7 @@
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
-            explicit ADocumentWindow() : m_sceneManagerBridge(SceneManagerBridge::getInstance()) {};
+            explicit ADocumentWindow() {};
             ~ADocumentWindow() override = default;
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
@@ -33,14 +33,15 @@ namespace nexo::editor {
              * @return ref to bool _opened
              */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
+
+            void setSceneManager(std::shared_ptr<SceneManagerBridge> bridge) override
+            {
+                m_sceneManagerBridge = bridge;
+            };
         protected:
             bool m_opened = true;
             bool m_focused = false;
 
-            /**
-             * @brief Ref to singleton SceneManagerBridge
-             * Responsible of the communication between the editor and the engine
-             */
-            SceneManagerBridge &m_sceneManagerBridge;
+            std::shared_ptr<SceneManagerBridge> m_sceneManagerBridge;
     };
 }

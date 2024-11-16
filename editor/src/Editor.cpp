@@ -19,6 +19,7 @@
 #include "IconsFontAwesome.h"
 
 #include "imgui.h"
+#include <imgui_internal.h>
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
@@ -71,6 +72,35 @@ namespace nexo::editor {
         });
     }
 
+    void SetupDockspace() {
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+        // Optional: If you need to initialize a layout
+        ImGuiID dockspaceID = ImGui::GetMainViewport()->ID;
+
+        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+            ImGui::DockBuilderRemoveNode(dockspaceID); // Clear any existing layout
+            ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
+
+            ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+
+            // Set the size of the root dock node to match the viewport
+            ImGui::DockBuilderSetNodeSize(dockspaceID, viewportSize);
+
+            // Split the dockspace into left (70%) and right (30%)
+            ImGuiID leftNode, rightNode;
+            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.3f, &leftNode, &rightNode);
+
+            // Dock windows into the split nodes
+            ImGui::DockBuilderDockWindow("Left left Window", leftNode);
+            ImGui::DockBuilderDockWindow("Left Window", rightNode);
+            ImGui::DockBuilderDockWindow("Right Window", rightNode);
+
+            ImGui::DockBuilderFinish(dockspaceID);
+        }
+    }
+
+
 
     Editor::Editor()
     {
@@ -84,6 +114,7 @@ namespace nexo::editor {
         //LOG(NEXO_FATAL, "Fatal error log test");
         LOG(NEXO_ERROR, "Error log test");
         LOG(NEXO_WARN, "Warning log test");
+        m_sceneManagerBridge = std::make_shared<SceneManagerBridge>();
     }
 
     bool Editor::isOpen() const
@@ -146,6 +177,7 @@ namespace nexo::editor {
         fontConfig.OversampleV = 3; // Vertical oversampling
 
         ImGuiIO &io = ImGui::GetIO();
+        io.IniFilename = nullptr;
 
         io.Fonts->AddFontDefault();
 
@@ -210,6 +242,7 @@ namespace nexo::editor {
 
     void Editor::init()
     {
+
         for (const auto &[_, window]: m_windows)
         {
             window->setup();
@@ -224,14 +257,24 @@ namespace nexo::editor {
         }
     }
 
+    ImGuiDockNode* GetDockNodeForWindow(const char* windowName) {
+        ImGuiWindow* window = ImGui::FindWindowByName(windowName);
+        if (window && window->DockNode) {
+            return window->DockNode;
+        }
+        return nullptr;
+    }
+
+bool showWindow = false;
+
     void Editor::render()
     {
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
+        SetupDockspace();
 
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         drawMenuBar();
         ImGui::ShowDemoWindow();
 
@@ -257,6 +300,7 @@ namespace nexo::editor {
     void Editor::registerWindow(const std::string &name,
                                 std::shared_ptr<IDocumentWindow> window)
     {
+        window->setSceneManager(m_sceneManagerBridge);
         m_windows[name] = std::move(window);
         LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }

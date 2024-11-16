@@ -13,58 +13,57 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MainScene.hpp"
-
-#include <EntityFactory2D.hpp>
-
+#include "EntityFactory2D.hpp"
 #include "Nexo.hpp"
 #include "math/Matrix.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "SceneViewManager.hpp"
+
 namespace nexo::editor {
 
-    MainScene::MainScene(std::string sceneName) : m_sceneName(std::move(sceneName))
-    {
-        renderer::FramebufferSpecs framebufferSpecs;
-        framebufferSpecs.width = 1280;
-        framebufferSpecs.height = 720;
-        m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
-    }
+    MainScene::MainScene(std::string sceneName, bool defaultScene) : m_sceneName(std::move(sceneName)),
+                                                                     m_defaultScene(defaultScene) {}
 
     MainScene::~MainScene()
     {}
 
     void MainScene::setup()
     {
-        setupCamera();
-        loadEntities();
+        renderer::FramebufferSpecs framebufferSpecs;
+        framebufferSpecs.width = 1280;
+        framebufferSpecs.height = 720;
+        m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
+        setupImguizmo();
+        setupScene();
+        if (m_defaultScene)
+            loadDefaultEntities();
         setupWindow();
-        setupGridShader();
-
-        ImVec2 pos = ImVec2(118, 24);
-        ImVec2 size = ImVec2(1280, 720);
-        ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-        _viewSize = size;
-
     }
 
-    void MainScene::setupCamera()
-    {
-        ImGuizmo::SetOrthographic(true);
-    }
-
-    void MainScene::loadEntities()
+    void MainScene::setupScene()
     {
         auto &app = getApp();
         _sceneID = app.createScene(m_sceneName);
         app.addNewLayer(_sceneID, "Layer 1");
-        ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
-        m_sceneManagerBridge.setSelectedEntity(basicQuad);
         m_camera = std::make_shared<camera::OrthographicCameraController>(1280.0f / 720.0f, true);
         app.attachCamera(_sceneID, m_camera, "Layer 1");
-        app.addEntityToScene(basicQuad, _sceneID, "Layer 1");}
+    }
+
+    void MainScene::setupImguizmo()
+    {
+        ImGuizmo::SetOrthographic(true);
+    }
+
+    void MainScene::loadDefaultEntities()
+    {
+        auto &app = getApp();
+        ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
+        m_sceneManagerBridge->setSelectedEntity(basicQuad);
+        app.addEntityToScene(basicQuad, _sceneID, "Layer 1");
+    }
 
     void MainScene::setupWindow()
     {
@@ -75,48 +74,8 @@ namespace nexo::editor {
         _viewSize = size;
     }
 
-    void MainScene::setupGridShader()
-    {}
-
     void MainScene::shutdown()
     {}
-
-    void MainScene::show()
-    {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
-
-        if (ImGui::Begin(m_sceneName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse))
-        {
-            _viewPosition = ImGui::GetCursorScreenPos();
-            renderView();
-            renderGizmo();
-
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
-                rayPicking();
-
-            bool focused = ImGui::IsWindowFocused();
-            if (focused != m_focused)
-            {
-                m_focused = focused;
-                m_sceneManagerBridge.setSceneActiveStatus(_sceneID, m_focused);
-                m_camera->zoomOn = focused;
-            }
-        }
-        ImGui::End();
-        ImGui::PopStyleVar();
-    }
-
-    void MainScene::update()
-    {
-        if (!m_opened)
-            return;
-        handleKeyEvents();
-
-        m_framebuffer->bind();
-        runEngine(true);
-        m_framebuffer->unbind();
-    }
 
     void MainScene::handleKeyEvents()
     {}
@@ -213,8 +172,10 @@ namespace nexo::editor {
     void MainScene::renderGizmo()
     {
         auto &coord = nexo::Application::m_coordinator;
-        int selectedEntity = m_sceneManagerBridge.getSelectedEntity();
-        if (selectedEntity == -1 || m_sceneManagerBridge.getSelectionType() != SelectionType::ENTITY || !m_sceneManagerBridge.isSceneRendered(_sceneID))
+        int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
+        auto &viewManager = SceneViewManager::getInstance();
+        if (selectedEntity == -1 || m_sceneManagerBridge->getSelectionType() != SelectionType::ENTITY ||
+            viewManager->getSelectedScene() != _sceneID)
             return;
         ImGuizmo::SetOrthographic(m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
@@ -226,13 +187,14 @@ namespace nexo::editor {
         if (!transf)
             return;
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
-                                    glm::rotate(glm::mat4(1.0f), glm::radians(transf->get().rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                                    glm::rotate(glm::mat4(1.0f), glm::radians(transf->get().rotation.z),
+                                                glm::vec3(0.0f, 0.0f, 1.0f)) *
                                     glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, 1.0f});
         ImGuizmo::Enable(true);
         ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projectionMatrix),
-                              _currentGizmoOperation,
-                              ImGuizmo::MODE::LOCAL,
-                              glm::value_ptr(transformMatrix));
+                             _currentGizmoOperation,
+                             ImGuizmo::MODE::LOCAL,
+                             glm::value_ptr(transformMatrix));
 
         glm::vec3 translation(0);
         glm::vec3 rotation(0);
@@ -263,7 +225,7 @@ namespace nexo::editor {
 
         // Render framebuffer
         unsigned int textureId = m_framebuffer->getColorAttachmentId();
-        ImGui::Image((void *)textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image((void *) textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
     }
 
     glm::vec2 MainScene::getMouseWorldPosition() const
@@ -293,9 +255,9 @@ namespace nexo::editor {
         if (!insideWindow)
             return;
         auto &coord = Application::m_coordinator;
-        std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge.getSceneEntities(_sceneID);
+        std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge->getSceneEntities(_sceneID);
         auto mouseWorldPosition = getMouseWorldPosition();
-        for (auto entity : sceneEntities)
+        for (auto entity: sceneEntities)
         {
             auto transformComponent = coord->tryGetComponent<components::TransformComponent>(entity);
             auto renderComponent = coord->tryGetComponent<components::RenderComponent>(entity);
@@ -304,12 +266,50 @@ namespace nexo::editor {
             {
                 if (renderComponent->get().renderable->isClicked(transformComponent->get(), mouseWorldPosition))
                 {
-                    m_sceneManagerBridge.setSelectedEntity(entity);
-                    m_sceneManagerBridge.setSelectionType(SelectionType::ENTITY);
+                    m_sceneManagerBridge->setSelectedEntity(entity);
+                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
                     return;
                 }
             }
         }
-        m_sceneManagerBridge.setSelectedEntity(-1);
+        m_sceneManagerBridge->setSelectedEntity(-1);
+    }
+
+    void MainScene::show()
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
+
+        if (ImGui::Begin(m_sceneName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+        {
+            _viewPosition = ImGui::GetCursorScreenPos();
+            renderView();
+            renderGizmo();
+
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
+                rayPicking();
+
+            m_focused = ImGui::IsWindowFocused();
+            m_sceneManagerBridge->setSceneActiveStatus(_sceneID, m_focused);
+            m_camera->zoomOn = m_focused;
+            if (m_focused)
+            {
+                auto &viewManager = SceneViewManager::getInstance();
+                viewManager->setSelectedScene(_sceneID);
+            }
+        }
+        ImGui::End();
+        ImGui::PopStyleVar();
+    }
+
+    void MainScene::update()
+    {
+        if (!m_opened)
+            return;
+        handleKeyEvents();
+
+        m_framebuffer->bind();
+        runEngine(_sceneID, true);
+        m_framebuffer->unbind();
     }
 }

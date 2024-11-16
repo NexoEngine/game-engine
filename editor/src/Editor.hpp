@@ -21,6 +21,8 @@
 #include <unordered_map>
 
 #include "IDocumentWindow.hpp"
+#include "DocumentWindows/SceneViewManager.hpp"
+#include "SceneManagerBridge.hpp"
 #include "Nexo.hpp"
 #include "DocumentWindows/MainScene.hpp"
 
@@ -71,5 +73,6 @@ namespace nexo::editor {
             std::vector<LogMessage> m_logs;
 
             std::shared_ptr<Application>  m_app;
+            std::shared_ptr<SceneManagerBridge> m_sceneManagerBridge;
     };
 }

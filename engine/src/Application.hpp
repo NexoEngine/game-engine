@@ -49,7 +49,7 @@ namespace nexo {
         public:
             ~Application() override = default;
 
-            void run(bool renderToFramebuffer = false);
+            void run(scene::SceneId sceneId, bool renderToFramebuffer = false);
 
             void handleEvent(event::EventKey &event) override
             {
