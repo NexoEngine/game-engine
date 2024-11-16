@@ -5,7 +5,14 @@
   "documentation": "https://nexoengine.github.io/game-engine/",
   "builtin-baseline": "39abf7ee35fc12a6dffca1bee2d10da417a8c7eb",
   "dependencies": [
-    {"name": "imgui", "features": ["docking-experimental"]},
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        "glfw-binding",
+        "opengl3-binding"
+      ]
+    },
     {"name": "imguizmo", "version>=": "2024-05-29"},
     {"name": "boost-preprocessor", "version>=": "1.76.0"},
     {"name": "joltphysics", "version>=": "5.0.0"},

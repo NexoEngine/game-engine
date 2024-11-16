@@ -57,11 +57,7 @@ else()
 endif()
 
 # RUNNING VCPKG
-if(WIN32)
-    include("${CMAKE_CURRENT_SOURCE_DIR}\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
-else()
-    include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
@@ -74,5 +70,4 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
 # IMGuiVR example
 include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")
 
-include_directories("./common"
-)
+include_directories("./common")

@@ -11,8 +11,6 @@ set(SRCS
         common/Exception.cpp
         common/math/Matrix.cpp
         editor/main.cpp
-        editor/external/imgui_impl_opengl3.cpp
-        editor/external/imgui_impl_glfw.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/Editor.cpp
