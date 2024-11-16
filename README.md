@@ -25,7 +25,7 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
 
 Quick video of the game engine in action with Jolt Physics
 
-![Editor interface video](docs/game_engine/editor_interface_video.mp4)
+https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
 
 
 Interface screenshot
