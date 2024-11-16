@@ -225,7 +225,7 @@ namespace nexo::editor {
 
         // Render framebuffer
         unsigned int textureId = m_framebuffer->getColorAttachmentId();
-        ImGui::Image((void *) textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(textureId, _viewSize, ImVec2(0, 1), ImVec2(1, 0));
     }
 
     glm::vec2 MainScene::getMouseWorldPosition() const

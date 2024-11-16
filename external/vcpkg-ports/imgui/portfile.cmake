@@ -2,20 +2,14 @@ vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
 if ("docking-experimental" IN_LIST FEATURES)
     vcpkg_from_github(
-       OUT_SOURCE_PATH SOURCE_PATH
-       REPO adobe/imgui
-       REF 49d3ce20dfecc25919dfd6ca4cb4b10cd6e30690
-       SHA512 c6faf47e2efdd839b234a3c7dadc203a74abbf9f7a87757311914f4ba5d2f2ba0800449d1de9a668195e8b27cb15786453457f5627235b530f8e426e160c0e4a
-       HEAD_REF docking_v1.90
-       )
-else()
-    vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
-        REPO ocornut/imgui
-        REF "v${VERSION}"
-        SHA512 8cdec45c8b58b3768a2216af2a1cba3d0e772ac48420b57057a4a8eda5766c121b4a8457a81b5896defe00b822c40d6aac6ee2b31f4133f2b9a02b231b1529d2
-        HEAD_REF master
+        REPO adobe/imgui
+        REF dff188effaa59c5c4d502868b96bd717207adb9c
+        SHA512 1243ca81e8278e3919c189d9944596c5fed369bba9cb2b242c8bb1810f36bfca1d3f31f4b4566ab623ac9a998cab500f6f902b354ee27f5a3a890b74058f06d8
+        HEAD_REF "docking_v${VERSION}"
     )
+else()
+    message(FATAL_ERROR "This port only supports the docking-experimental feature")
 endif()
 
 file(COPY "${CMAKE_CURRENT_LIST_DIR}/imgui-config.cmake.in" DESTINATION "${SOURCE_PATH}")
@@ -24,6 +18,7 @@ file(COPY "${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES 
     allegro5-binding            IMGUI_BUILD_ALLEGRO5_BINDING
+    android-binding             IMGUI_BUILD_ANDROID_BINDING
     dx9-binding                 IMGUI_BUILD_DX9_BINDING
     dx10-binding                IMGUI_BUILD_DX10_BINDING
     dx11-binding                IMGUI_BUILD_DX11_BINDING
@@ -62,7 +57,7 @@ if ("test-engine" IN_LIST FEATURES)
         OUT_SOURCE_PATH TEST_ENGINE_SOURCE_PATH
         REPO ocornut/imgui_test_engine
         REF "v${VERSION}"
-        SHA512 0c3b11f46f7ed259e0bf2b0634848aee1fe0b34609349b30f445dd774c739690df4cf12498895f0734b16084be4d32ae80e9e2ada291dd88f7d4fad8fda49a2b
+        SHA512 4c4d7fd32504c1a56a5f1816f5032e4390ea9eb5d56c1ee2293950c808e23c1b94df9edf524fcc4122d27fa86d749454862ddb0d1a83633c014fe33f900836b5
         HEAD_REF master
     )
 
@@ -85,7 +80,7 @@ vcpkg_cmake_configure(
 vcpkg_cmake_install()
 
 if ("freetype" IN_LIST FEATURES)
-    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/imconfig.h" "//#define IMGUI_ENABLE_FREETYPE" "#define IMGUI_ENABLE_FREETYPE")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/imconfig.h" "//#define IMGUI_ENABLE_FREETYPE\n" "#define IMGUI_ENABLE_FREETYPE\n")
 endif()
 if ("freetype-lunasvg" IN_LIST FEATURES)
     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/imconfig.h" "//#define IMGUI_ENABLE_FREETYPE_LUNASVG" "#define IMGUI_ENABLE_FREETYPE_LUNASVG")
