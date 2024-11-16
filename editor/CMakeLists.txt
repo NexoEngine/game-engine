@@ -64,8 +64,8 @@ else()
 endif()
 
 # ImGuizmo
-find_package(imguizmo CONFIG QUIET)
-target_link_libraries(nexoEditor PRIVATE imguizmo)
+find_package(unofficial-imguizmo CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE unofficial::imguizmo::imguizmo)
 
 # ImGui
 target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
