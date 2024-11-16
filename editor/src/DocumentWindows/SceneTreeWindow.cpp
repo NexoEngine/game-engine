@@ -13,60 +13,42 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "EntityFactory2D.hpp"
 #include "IconsFontAwesome.h"
 
-#include <imgui.h>
 #include <imgui_internal.h>
 #include <raylib.h>
 
 namespace nexo::editor {
     SceneTreeWindow::SceneTreeWindow()
-    {
-        // Initialize the scene with some random objects
-
-        /*root_.children = {
-            {ICON_FA_CAMERA " Camera"},
-            {ICON_FA_LIGHTBULB " Lights", {
-                {ICON_FA_SUN " Directional Light"},
-                {ICON_FA_BOLT " Spot Light"}
-            }},
-            {"Static Meshes", {{"Cube"}, {"Sphere"}, {"Plane"}}},
-            {"Dynamic Objects", {{"Player"}, {"Enemy #1"}, {"Enemy #2"}}},
-            // ... add more as needed
-        };*/
-    }
+    {}
 
     SceneTreeWindow::~SceneTreeWindow()
-    {
-        // Destructor
-    }
+    {}
 
     void SceneTreeWindow::setup()
-    {
-        // setup code
-    }
+    {}
 
     void SceneTreeWindow::shutdown()
-    {
-        // shutdown code
-    }
+    {}
 
     void SceneTreeWindow::handleRename(SceneObject &obj)
     {
-        ImGui::BeginGroup(); // Group the icon and input text
+        ImGui::BeginGroup();
         ImGui::TextUnformatted(ObjectTypeToIcon.at(obj.type).c_str());
         ImGui::SameLine();
 
         char buffer[256];
         std::string editableName = obj.name.substr(strlen(ObjectTypeToIcon.at(obj.type).c_str()));
         strncpy(buffer, editableName.c_str(), sizeof(buffer));
-        buffer[sizeof(buffer) - 1] = '\0'; // Ensure null-termination
+        buffer[sizeof(buffer) - 1] = '\0';
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Remove border
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);   // Optional: No rounding
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f); // No rounding
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        if (ImGui::InputText("##Rename", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+        if (ImGui::InputText("##Rename", buffer, sizeof(buffer),
+                             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
         {
             obj.name = ObjectTypeToIcon.at(obj.type) + std::string(buffer);
             m_sceneManagerBridge.renameObject(obj.id, obj.type, obj.data, std::string(buffer));
@@ -78,250 +60,327 @@ namespace nexo::editor {
         ImGui::EndGroup();
     }
 
-
-void SceneTreeWindow::ShowNode(SceneObject& object)
-{
-    ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-                                    ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool leaf = object.children.empty();
-    if (leaf)
+    bool SceneTreeWindow::handleSelection(SceneObject &obj, std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags)
     {
-        base_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-    }
-
-    if (m_sceneManagerBridge.isEntitySelected() && object.id ==
-        m_sceneManagerBridge.getSelectedEntity() && object.type == m_sceneManagerBridge.getSelectionType())
-    {
-        base_flags |= ImGuiTreeNodeFlags_Selected;
-    }
-
-    bool nodeOpen = false;
-    std::string uniqueLabel = object.name + "##" + std::to_string(object.id);
-    if (m_renameTarget && m_renameTarget->first == object.type && m_renameTarget->second == object.id)
-        handleRename(object);
-    else
-    {
-        nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), base_flags);
+        bool nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), baseFlags);
         if (ImGui::IsItemClicked())
         {
-            if (object.type == SelectionType::ENTITY)
+            if (obj.type == SelectionType::ENTITY)
             {
-                m_sceneManagerBridge.setSelectedEntity(object.id);
+                m_sceneManagerBridge.setSelectedEntity(obj.id);
                 m_sceneManagerBridge.setSelectionType(SelectionType::ENTITY);
-            }
-            else if (object.type == SelectionType::CAMERA)
+            } else if (obj.type == SelectionType::CAMERA)
             {
-                m_sceneManagerBridge.setSelectedEntity(object.id);
-                m_sceneManagerBridge.setData(object.data);
+                m_sceneManagerBridge.setSelectedEntity(obj.id);
+                m_sceneManagerBridge.setData(obj.data);
                 m_sceneManagerBridge.setSelectionType(SelectionType::CAMERA);
-            }
-            else if (object.type == SelectionType::LAYER)
+            } else if (obj.type == SelectionType::LAYER)
             {
-                m_sceneManagerBridge.setSelectedEntity(object.id);
-                m_sceneManagerBridge.setData(object.data);
+                m_sceneManagerBridge.setSelectedEntity(obj.id);
+                m_sceneManagerBridge.setData(obj.data);
                 m_sceneManagerBridge.setSelectionType(SelectionType::LAYER);
-            }
-            else if (object.type == SelectionType::SCENE)
+            } else if (obj.type == SelectionType::SCENE)
             {
-                m_sceneManagerBridge.setSelectedEntity(object.id);
+                m_sceneManagerBridge.setSelectedEntity(obj.id);
                 m_sceneManagerBridge.setSelectionType(SelectionType::SCENE);
             }
         }
+        return nodeOpen;
     }
 
-
-    if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
+    void SceneTreeWindow::sceneSelected(SceneObject &obj)
     {
-        if (object.type != SelectionType::ENTITY && object.type != SelectionType::CAMERA  && ImGui::MenuItem("Rename"))
+        if (ImGui::MenuItem("Delete Scene"))
         {
-            m_renameTarget = {object.type, object.id};
-            m_renameBuffer = object.name;
+            m_sceneManagerBridge.unselectEntity();
+            auto &app = nexo::getApp();
+            app.deleteScene(obj.id);
         }
-        if (object.type == SelectionType::SCENE)
+        if (ImGui::MenuItem("Add layer"))
         {
-            if (ImGui::MenuItem("Delete Scene"))
+            m_popupManager.openPopup("Add New Layer");
+            m_popupManager.setUserData("Add New Layer", obj.id);
+        }
+    }
+
+    void SceneTreeWindow::layerSelected(SceneObject &obj)
+    {
+        if (ImGui::MenuItem("Delete Layer"))
+        {
+            auto &app = nexo::getApp();
+            if (std::holds_alternative<LayerProperties>(obj.data))
             {
+                LayerProperties props = std::get<LayerProperties>(obj.data);
+                app.removeLayer(props.sceneId, props.layerName);
                 m_sceneManagerBridge.unselectEntity();
-                auto &app = nexo::getApp();
-                app.deleteScene(object.id);
             }
         }
-        else if (object.type == SelectionType::LAYER)
+        if (ImGui::MenuItem("Add entity"))
         {
-            if (ImGui::MenuItem("Delete Layer"))
+            if (std::holds_alternative<LayerProperties>(obj.data))
             {
-                m_sceneManagerBridge.unselectEntity();
-                auto &app = nexo::getApp();
-                std::string layerName = object.name.substr(strlen(ObjectTypeToIcon.at(SelectionType::LAYER).c_str()));
-                app.removeLayer(object.id, layerName);
+                ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 0.0f, {0.0f, 1.0f, 0.0f, 1.0f});
+                LayerProperties props = std::get<LayerProperties>(obj.data);
+                auto &app = getApp();
+                app.addEntityToScene(basicQuad, props.sceneId, props.layerName);
+                m_sceneManagerBridge.setSelectedEntity(basicQuad);
+                m_sceneManagerBridge.setSelectionType(SelectionType::ENTITY);
             }
         }
-        else if (object.type == SelectionType::CAMERA)
+    }
+
+    void SceneTreeWindow::cameraSelected(SceneObject &obj)
+    {
+        if (ImGui::MenuItem("Delete Camera"))
         {
-            if (ImGui::MenuItem("Delete Camera"))
+            if (std::holds_alternative<CameraProperties>(obj.data))
             {
-                if (std::holds_alternative<CameraProperties>(object.data))
+                CameraProperties props = std::get<CameraProperties>(obj.data);
+                m_sceneManagerBridge.unselectEntity();
+                auto &app = nexo::getApp();
+                app.detachCamera(props.sceneId, props.layerName);
+            }
+        }
+    }
+
+    void SceneTreeWindow::entitySelected(SceneObject &obj)
+    {
+        if (ImGui::MenuItem("Delete Entity"))
+        {
+            m_sceneManagerBridge.unselectEntity();
+            auto &app = nexo::getApp();
+            app.destroyEntity(obj.id);
+        }
+    }
+
+    void SceneTreeWindow::showNode(SceneObject &object)
+    {
+        ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+                                       ImGuiTreeNodeFlags_SpanAvailWidth;
+        bool leaf = object.children.empty();
+        if (leaf)
+            baseFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+        if (m_sceneManagerBridge.isEntitySelected() && object.id ==
+                m_sceneManagerBridge.getSelectedEntity() && object.type == m_sceneManagerBridge.getSelectionType())
+            baseFlags |= ImGuiTreeNodeFlags_Selected;
+
+        bool nodeOpen = false;
+        std::string uniqueLabel = object.name + "##" + std::to_string(object.id);
+
+        if (m_renameTarget && m_renameTarget->first == object.type && m_renameTarget->second == object.id)
+            handleRename(object);
+        else
+            nodeOpen = handleSelection(object, uniqueLabel, baseFlags);
+
+        if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
+        {
+            if (object.type != SelectionType::ENTITY && object.type != SelectionType::CAMERA &&
+                ImGui::MenuItem("Rename"))
+            {
+                m_renameTarget = {object.type, object.id};
+                m_renameBuffer = object.name;
+            }
+            if (object.type == SelectionType::SCENE)
+                sceneSelected(object);
+            else if (object.type == SelectionType::LAYER)
+                layerSelected(object);
+            else if (object.type == SelectionType::CAMERA)
+                cameraSelected(object);
+            else if (object.type == SelectionType::ENTITY)
+                entitySelected(object);
+            ImGui::EndPopup();
+        }
+
+        if (nodeOpen && !leaf)
+        {
+            for (auto &child: object.children)
+            {
+                showNode(child);
+            }
+            ImGui::TreePop();
+        }
+    }
+
+    void SceneTreeWindow::sceneContextMenu()
+    {
+        if (m_popupManager.showPopup("Scene Tree Context Menu"))
+        {
+            if (ImGui::MenuItem("Create Scene"))
+            {
+                m_popupManager.openPopup("Create New Scene");
+            }
+            m_popupManager.closePopup();
+        }
+    }
+
+    void SceneTreeWindow::sceneCreationMenu()
+    {
+        if (m_popupManager.showPopupModal("Create New Scene"))
+        {
+            static char sceneNameBuffer[256] = "";
+
+            ImGui::Text("Enter Scene Name:");
+            ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
+
+            if (ImGui::Button("Create"))
+            {
+                std::string newSceneName(sceneNameBuffer);
+
+                if (!newSceneName.empty())
                 {
-                    std::string layerName = std::get<CameraProperties>(object.data).layerName;
-                    m_sceneManagerBridge.unselectEntity();
-                    auto &app = nexo::getApp();
-                    app.detachCamera(object.id, layerName);
+                    auto &app = getApp();
+                    app.createScene(newSceneName);
+                    memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+
+                    m_popupManager.closePopupInContext();
+                } else
+                {
+                    LOG(NEXO_WARN, "Scene name is empty !");
                 }
             }
-        }
-        else if (object.type == SelectionType::ENTITY)
-        {
-            if (ImGui::MenuItem("Delete Entity"))
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel"))
             {
-                m_sceneManagerBridge.unselectEntity();
-                auto &app = nexo::getApp();
-                app.destroyEntity(object.id);
+                m_popupManager.closePopupInContext();
             }
-        }
-        ImGui::EndPopup();
 
-    }
-
-    if (nodeOpen && !leaf)
-    {
-        for (auto& child : object.children)
-        {
-            ShowNode(child);
-        }
-        ImGui::TreePop();
-    }
-}
-
-bool createNewSceneOpen = false; // Add this flag as a class or local variable
-
-void SceneTreeWindow::show()
-{
-    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
-
-    ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse);
-
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-    {
-        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
-        {
-            ImGui::OpenPopup("Scene Tree Context Menu");
+            m_popupManager.closePopup();
         }
     }
 
-    ShowNode(root_);
-
-    if (ImGui::BeginPopup("Scene Tree Context Menu"))
+    void SceneTreeWindow::layerCreationMenu()
     {
-        if (ImGui::MenuItem("Create Scene"))
+        if (m_popupManager.showPopupModal("Add New Layer"))
         {
-            createNewSceneOpen = true;
-        }
-        ImGui::EndPopup();
-    }
+            static char layerNameBuffer[256] = "";
 
-    // Handle the modal popup
-    if (createNewSceneOpen)
-    {
-        ImGui::OpenPopup("Create New Scene"); // Ensure the popup is opened
-        createNewSceneOpen = false;          // Reset the flag
-    }
+            ImGui::Text("Enter layer Name:");
+            ImGui::InputText("##LayerName", layerNameBuffer, sizeof(layerNameBuffer));
 
-    if (ImGui::BeginPopupModal("Create New Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        static char sceneNameBuffer[256] = ""; // Buffer for scene name input
-
-        ImGui::Text("Enter Scene Name:");
-        ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
-
-        if (ImGui::Button("Create"))
-        {
-            std::string newSceneName(sceneNameBuffer);
-
-            if (!newSceneName.empty())
+            if (ImGui::Button("Create"))
             {
-                // DEBUG: Add a message to confirm the function call
-                std::cout << "Creating scene with name: " << newSceneName << std::endl;
+                std::string newLayerName(layerNameBuffer);
 
-                // Clear the buffer for the next input
-                memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+                if (!newLayerName.empty())
+                {
+                    if (std::holds_alternative<int>(m_popupManager.getUserData("Add New Layer")))
+                    {
+                        int sceneId = std::get<int>(m_popupManager.getUserData("Add New Layer"));
+                        auto &app = getApp();
+                        app.addNewLayer(sceneId, layerNameBuffer);
+                        memset(layerNameBuffer, 0, sizeof(layerNameBuffer));
+                    }
 
-                // Close the popup
-                ImGui::CloseCurrentPopup();
+                    m_popupManager.closePopupInContext();
+                } else
+                {
+                    LOG(NEXO_WARN, "Layer name is empty !");
+                }
             }
-            else
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel"))
             {
-                // DEBUG: Empty name entered
-                std::cout << "Scene name is empty!" << std::endl;
+                m_popupManager.closePopupInContext();
             }
-        }
 
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel"))
-        {
-            ImGui::CloseCurrentPopup();
+            m_popupManager.closePopup();
         }
-
-        ImGui::EndPopup();
     }
 
-    ImGui::End();
-}
+    void SceneTreeWindow::show()
+    {
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
+        ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse);
 
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        {
+            if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
+                m_popupManager.openPopup("Scene Tree Context Menu");
+        }
 
+        showNode(root_);
+        sceneContextMenu();
+        sceneCreationMenu();
+        layerCreationMenu();
+
+        ImGui::End();
+    }
+
+    SceneObject SceneTreeWindow::newSceneNode(scene::SceneId id)
+    {
+        SceneObject sceneNode;
+        sceneNode.name = ObjectTypeToIcon.at(SelectionType::SCENE) + m_sceneManagerBridge.getSceneName(id);
+        sceneNode.id = id;
+        sceneNode.type = SelectionType::SCENE;
+        return sceneNode;
+    }
+
+    SceneObject SceneTreeWindow::newLayerNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer)
+    {
+        SceneObject layerNode;
+        layerNode.name = ObjectTypeToIcon.at(SelectionType::LAYER) + layer->name;
+        layerNode.id = layer->id;
+        layerNode.type = SelectionType::LAYER;
+        layerNode.data = LayerProperties(id, layer->name);
+        return layerNode;
+    }
+
+    SceneObject SceneTreeWindow::newCameraNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer)
+    {
+        SceneObject cameraNode;
+        cameraNode.name = ObjectTypeToIcon.at(SelectionType::CAMERA) + std::string("Camera");
+        auto camera = m_sceneManagerBridge.getCameraLayer(id, layer->name);
+        if (camera)
+        {
+            cameraNode.id = camera->getCameraID();
+            cameraNode.type = SelectionType::CAMERA;
+            cameraNode.data = CameraProperties(id, layer->name, camera);
+            return cameraNode;
+        }
+        return SceneObject();
+    }
+
+    SceneObject SceneTreeWindow::newEntityNode(ecs::Entity entity)
+    {
+        SceneObject entityNode;
+        entityNode.name = ObjectTypeToIcon.at(SelectionType::ENTITY) + std::to_string(entity);
+        entityNode.id = entity;
+        entityNode.type = SelectionType::ENTITY;
+        return entityNode;
+    }
 
     void SceneTreeWindow::update()
     {
         root_.name = "Scenes";
         root_.children.clear();
 
-        auto sceneIDs = m_sceneManagerBridge.getSceneIDs();
+        auto ids = m_sceneManagerBridge.getSceneIDs();
 
-        for (const auto &sceneID: sceneIDs)
+        for (const auto &sceneID: ids)
         {
-            SceneObject sceneNode;
-            sceneNode.name = ObjectTypeToIcon.at(SelectionType::SCENE) + m_sceneManagerBridge.getSceneName(sceneID);
-            sceneNode.id = sceneID;
-            sceneNode.type = SelectionType::SCENE;
+            SceneObject sceneNode = newSceneNode(sceneID);
             auto sceneEntities = m_sceneManagerBridge.getSceneGlobalEntities(sceneID);
-            for (auto entity : sceneEntities)
-            {
-                SceneObject entityNode;
-                entityNode.name = ObjectTypeToIcon.at(SelectionType::ENTITY) +  std::to_string(entity);
-                entityNode.id = entity;
-                entityNode.type = SelectionType::ENTITY;
-
-                sceneNode.children.push_back(entityNode);
-            }
+            for (auto entity: sceneEntities)
+                sceneNode.children.push_back(newEntityNode(entity));
 
             auto layers = m_sceneManagerBridge.getSceneLayers(sceneID);
-            for (const auto &layer : layers)
+            for (const auto &layer: layers)
             {
-                SceneObject layerNode;
-                layerNode.name = ObjectTypeToIcon.at(SelectionType::LAYER) + layer->name;
-                layerNode.id = sceneID;
-                layerNode.type = SelectionType::LAYER;
-                layerNode.data = layer->name;
+                SceneObject layerNode = newLayerNode(sceneID, layer);
 
-                SceneObject cameraNode;
-                cameraNode.name = ObjectTypeToIcon.at(SelectionType::CAMERA) + std::string("Camera");
-                auto camera = m_sceneManagerBridge.getCameraLayer(sceneID, layer->name);
-                if (camera)
-                {
-                    cameraNode.id = camera->getCameraID();
-                    cameraNode.type = SelectionType::CAMERA;
-                    cameraNode.data = CameraProperties(sceneID, layer->name, camera);;
-
+                SceneObject cameraNode = newCameraNode(sceneID, layer);
+                if (std::holds_alternative<CameraProperties>(cameraNode.data))
                     layerNode.children.push_back(cameraNode);
-                }
+
                 auto entities = m_sceneManagerBridge.getLayerEntities(sceneID, layer->name);
                 for (const auto &entity: entities)
                 {
-                    SceneObject entityNode;
-                    entityNode.name = ObjectTypeToIcon.at(SelectionType::ENTITY) +  std::to_string(entity);
-                    entityNode.id = entity;
-                    entityNode.type = SelectionType::ENTITY;
+                    SceneObject entityNode = newEntityNode(entity);
 
                     layerNode.children.push_back(entityNode);
                 }

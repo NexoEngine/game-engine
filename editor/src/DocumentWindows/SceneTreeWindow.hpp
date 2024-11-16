@@ -16,8 +16,10 @@
 #include "ADocumentWindow.hpp"
 #include "core/camera/Camera.hpp"
 #include "IconsFontAwesome.h"
+#include "PopupManager.hpp"
 
 #include <unordered_map>
+#include <imgui.h>
 
 namespace nexo::editor {
 
@@ -26,6 +28,18 @@ namespace nexo::editor {
         {SelectionType::LAYER, ICON_FA_BARS " "},
         {SelectionType::CAMERA, ICON_FA_CAMERA " "},
         {SelectionType::ENTITY, ICON_FA_CUBES " "},
+    };
+
+    struct SceneObject {
+        std::string name;
+        std::vector<SceneObject> children;
+        int id;
+        SelectionType type;
+        VariantData data;
+
+        SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, int id = 0,
+                    SelectionType type = SelectionType::NONE, VariantData data = {})
+            : name(name), children(std::move(children)), id(id), type(type), data(std::move(data)) {}
     };
 
     class SceneTreeWindow : public ADocumentWindow {
@@ -43,23 +57,25 @@ namespace nexo::editor {
             void update() override;
 
         private:
-            struct SceneObject {
-                std::string name;
-                std::vector<SceneObject> children;
-                int id;
-                SelectionType type;
-                VariantData data;
-
-                SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, int id = 0,
-                            SelectionType type = SelectionType::NONE, VariantData data = {})
-                    : name(name), children(std::move(children)), id(id), type(type), data(std::move(data)) {}
-            };
-
             SceneObject root_;
             std::optional<std::pair<SelectionType, int>> m_renameTarget;
             std::string m_renameBuffer;
+            PopupManager m_popupManager;
+
+            SceneObject newSceneNode(scene::SceneId id);
+            SceneObject newLayerNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
+            SceneObject newCameraNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
+            SceneObject newEntityNode(ecs::Entity entity);
 
             void handleRename(SceneObject &obj);
-            void ShowNode(SceneObject &object);
+            bool handleSelection(SceneObject &obj, std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags);
+            void sceneSelected(SceneObject &obj);
+            void layerSelected(SceneObject &obj);
+            void cameraSelected(SceneObject &obj);
+            void entitySelected(SceneObject &obj);
+            void showNode(SceneObject &object);
+            void sceneContextMenu();
+            void sceneCreationMenu();
+            void layerCreationMenu();
     };
 }
