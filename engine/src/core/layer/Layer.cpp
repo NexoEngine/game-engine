@@ -39,7 +39,8 @@ namespace nexo::layer {
 
     void Layer::onUpdate(core::Timestep ts)
     {
-        m_camera->onUpdate(ts);
+        if (m_camera)
+            m_camera->onUpdate(ts);
     }
 
     void Layer::handleEvent(const event::Event &event)

@@ -30,6 +30,8 @@
 
 namespace nexo::layer {
 
+    using LayerId = unsigned int;
+
     template<typename DerivedLayer, typename EventType>
     static constexpr bool isListenerOf()
     {
@@ -57,7 +59,7 @@ namespace nexo::layer {
 
     class Layer : public event::BaseListener {
         public:
-            explicit Layer(const std::string &name) : BaseListener(name), name(name) {};
+            explicit Layer(LayerId id, const std::string &name) : BaseListener(name), id(id), name(name) {};
 
             ~Layer() override
             {
@@ -96,6 +98,7 @@ namespace nexo::layer {
             void detachCamera();
             std::shared_ptr<camera::Camera> &getCamera() { return m_camera; };
 
+            LayerId id;
             std::string name;
             bool isRendered = true;
             bool isActive = true;

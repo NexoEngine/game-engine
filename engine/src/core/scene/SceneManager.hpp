@@ -20,6 +20,7 @@
 
 namespace nexo::scene {
     using SceneId = unsigned int;
+    using LayerId = unsigned int;
 
     class SceneManager {
         public:
@@ -75,6 +76,7 @@ namespace nexo::scene {
             std::set<SceneId> m_activeScenes;
 
             SceneId m_nextSceneId = 0;
+            LayerId m_nextLayerId = 0;
     };
 
 }

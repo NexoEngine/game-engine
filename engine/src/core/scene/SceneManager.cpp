@@ -59,7 +59,7 @@ namespace nexo::scene {
             LOG(NEXO_ERROR, "SceneManager:::addLayer: id {} does not exist", sceneId);
             return;
         }
-        scenes.at(sceneId).addLayer(layerName);
+        scenes.at(sceneId).addLayer(m_nextLayerId++, layerName);
     }
 
     void SceneManager::removeLayer(SceneId sceneId, const std::string &layerName)
@@ -79,7 +79,7 @@ namespace nexo::scene {
             LOG(NEXO_ERROR, "SceneManager:::addOverlay: id {} does not exist", sceneId);
             return;
         }
-        scenes.at(sceneId).addOverlay(overlayName);
+        scenes.at(sceneId).addOverlay(m_nextLayerId++, overlayName);
     }
 
     void SceneManager::removeOverlay(SceneId sceneId, const std::string &overlayName)

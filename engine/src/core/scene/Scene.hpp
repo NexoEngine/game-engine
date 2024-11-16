@@ -23,6 +23,7 @@
 
 namespace nexo::scene {
     using SceneId = unsigned int;
+    using LayerId = unsigned int;
 
     class Scene {
         public:
@@ -39,12 +40,15 @@ namespace nexo::scene {
 
             [[nodiscard]] const std::string &getName() const { return name; }
 
-            void addLayer(const std::string &layerName);
-            void addOverlay(const std::string &overlayName);
+            void addLayer(LayerId id, const std::string &layerName);
+            void addOverlay(LayerId id, const std::string &overlayName);
             void removeLayer(const std::string &layerName);
+            void removeLayer(LayerId id);
             void removeOverlay(const std::string &overlayName);
+            void removeOverlay(LayerId id);
 
             [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(const std::string &layerName) const;
+            [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(LayerId id) const;
             [[nodiscard]] const layer::LayerStack &getLayerStack() const {return m_layerStack; };
 
             void addEntityToLayer(ecs::Entity entity, const std::string &layerName);

@@ -16,16 +16,16 @@
 
 namespace nexo::scene {
 
-    void Scene::addLayer(const std::string &layerName)
+    void Scene::addLayer(LayerId id, const std::string &layerName)
     {
-        auto newLayer = std::make_shared<layer::Layer>(layerName);
+        auto newLayer = std::make_shared<layer::Layer>(id, layerName);
         m_layerStack.pushLayer(newLayer);
         LOG(NEXO_DEV, "Scene::{}::addLayer: layer {} added", name, layerName);
     }
 
-    void Scene::addOverlay(const std::string &overlayName)
+    void Scene::addOverlay(LayerId id, const std::string &overlayName)
     {
-        auto newOverlay = std::make_shared<layer::Layer>(overlayName);
+        auto newOverlay = std::make_shared<layer::Layer>(id, overlayName);
         m_layerStack.pushOverlay(newOverlay);
         LOG(NEXO_DEV, "Scene::{}::addOverlay: overlay {} added", name, overlayName);
     }
@@ -37,6 +37,13 @@ namespace nexo::scene {
         LOG(NEXO_DEV, "Scene::{}::removeLayer: layer {} removed", name, layerName);
     }
 
+    void Scene::removeLayer(LayerId id)
+    {
+        auto layer = getLayer(id);
+        m_layerStack.popLayer(layer);
+        LOG(NEXO_DEV, "Scene::{}::removeLayer: layer {} removed", name, id);
+    }
+
     void Scene::removeOverlay(const std::string &overlayName)
     {
         auto overlay = getLayer(overlayName);
@@ -44,9 +51,21 @@ namespace nexo::scene {
         LOG(NEXO_DEV, "Scene::{}::removeOverlay: overlay {} removed", name, overlayName);
     }
 
+    void Scene::removeOverlay(LayerId id)
+    {
+        auto overlay = getLayer(id);
+        m_layerStack.popOverlay(overlay);
+        LOG(NEXO_DEV, "Scene::{}::removeOverlay: overlay {} removed", name, id);
+    }
+
     std::shared_ptr<layer::Layer> Scene::getLayer(const std::string &layerName) const
     {
         return m_layerStack[layerName];
+    }
+
+    std::shared_ptr<layer::Layer> Scene::getLayer(LayerId id) const
+    {
+        return m_layerStack[id];
     }
 
     void Scene::addEntityToLayer(const ecs::Entity entity, const std::string &layerName)

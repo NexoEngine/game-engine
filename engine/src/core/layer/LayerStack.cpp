@@ -72,4 +72,26 @@ namespace nexo::layer {
         LOG(NEXO_WARN, "LayerStack: Layer {} not found", name);
         return nullptr;
     }
+
+    std::shared_ptr<Layer> LayerStack::operator[](unsigned int id)
+    {
+        for (auto &layer: m_layers)
+        {
+            if (layer->id == id)
+                return layer;
+        }
+        LOG(NEXO_WARN, "LayerStack: Layer {} not found", id);
+        return nullptr;
+    }
+
+    const std::shared_ptr<Layer> LayerStack::operator[](unsigned int id) const
+    {
+        for (const auto &layer: m_layers)
+        {
+            if (layer->id == id)
+                return layer;
+        }
+        LOG(NEXO_WARN, "LayerStack: Layer {} not found", id);
+        return nullptr;
+    }
 }
