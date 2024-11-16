@@ -3,7 +3,7 @@
   "version-string": "0.1.0",
   "description": "Nexo Engine",
   "documentation": "https://nexoengine.github.io/game-engine/",
-  "builtin-baseline": "39abf7ee35fc12a6dffca1bee2d10da417a8c7eb",
+  "builtin-baseline": "c247b81088dbe46c159be6157944d5db8bf76b4a",
   "dependencies": [
     {
       "name": "imgui",
