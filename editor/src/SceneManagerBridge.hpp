@@ -28,7 +28,12 @@ namespace nexo::editor {
         std::shared_ptr<camera::Camera> camera;
     };
 
-    using VariantData = std::variant<std::monostate, CameraProperties, std::string>;
+    struct LayerProperties {
+        scene::SceneId sceneId;
+        std::string layerName;
+    };
+
+    using VariantData = std::variant<std::monostate, LayerProperties, CameraProperties, std::string, int>;
 
     enum class SelectionType {
         NONE,
@@ -65,6 +70,7 @@ namespace nexo::editor {
         [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
         [[nodiscard]] int getSelectedEntity() const;
         [[nodiscard]] SelectionType getSelectionType() const;
+        bool isSceneRendered(scene::SceneId id) { return getApp().getSceneManager().isSceneRendered(id); };
         void setSceneActiveStatus(scene::SceneId sceneId, bool status) const;
         [[nodiscard]] bool isEntitySelected() const;
 
