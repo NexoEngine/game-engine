@@ -41,6 +41,13 @@ namespace nexo::editor {
         loadEntities();
         setupWindow();
         setupGridShader();
+
+        ImVec2 pos = ImVec2(118, 24);
+        ImVec2 size = ImVec2(1280, 720);
+        ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
+        _viewSize = size;
+
     }
 
     void MainScene::setupCamera()
@@ -77,15 +84,14 @@ namespace nexo::editor {
     void MainScene::show()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270),
-                                            ImVec2(1920, 1080));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
 
-        if (ImGui::Begin(m_sceneName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar))
+        if (ImGui::Begin(m_sceneName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse))
         {
             _viewPosition = ImGui::GetCursorScreenPos();
             renderView();
-            //renderToolbar();
             renderGizmo();
+
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
                 rayPicking();
 
@@ -208,7 +214,7 @@ namespace nexo::editor {
     {
         auto &coord = nexo::Application::m_coordinator;
         int selectedEntity = m_sceneManagerBridge.getSelectedEntity();
-        if (selectedEntity == -1 || m_sceneManagerBridge.getSelectionType() != SelectionType::ENTITY)
+        if (selectedEntity == -1 || m_sceneManagerBridge.getSelectionType() != SelectionType::ENTITY || !m_sceneManagerBridge.isSceneRendered(_sceneID))
             return;
         ImGuizmo::SetOrthographic(m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
