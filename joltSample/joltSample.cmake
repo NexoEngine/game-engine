@@ -33,10 +33,10 @@ endif(WIN32)
 
 include_directories(${raylib_INCLUDE_DIRS})
 
-find_package(unofficial-joltphysics CONFIG REQUIRED)
-include_directories(${unofficial-joltphysics_INCLUDE_DIRS})
+find_package(Jolt CONFIG REQUIRED)
+target_link_libraries(sampleJolt PRIVATE Jolt::Jolt)
 
-target_link_libraries(sampleJolt PRIVATE raylib unofficial::joltphysics::Jolt)
+target_link_libraries(sampleJolt PRIVATE raylib Jolt::Jolt)
 
 if (APPLE)
     include_directories(/usr/local/include)

@@ -51,19 +51,13 @@ if(APPLE)
     link_directories(/usr/local/lib)
 endif()
 
-# LOGURU
-if (WIN32)
-    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
-else()
-    find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(nexoEditor PRIVATE loguru)
-endif()
+# loguru
+find_package(loguru CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE loguru::loguru)
 
 # ImGuizmo
-find_package(unofficial-imguizmo CONFIG REQUIRED)
-target_link_libraries(nexoEditor PRIVATE unofficial::imguizmo::imguizmo)
+find_package(imguizmo CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE imguizmo::imguizmo)
 
 # ImGui
 target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
