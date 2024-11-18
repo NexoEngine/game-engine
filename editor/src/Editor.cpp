@@ -74,7 +74,7 @@ namespace nexo::editor {
     }
 
     void SetupDockspace() {
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
 
         // Optional: If you need to initialize a layout
         ImGuiID dockspaceID = ImGui::GetMainViewport()->ID;
