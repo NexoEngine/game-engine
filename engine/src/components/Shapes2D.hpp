@@ -25,21 +25,22 @@ namespace nexo::components {
     struct Shape2D {
         virtual ~Shape2D() = default;
 
-        virtual void draw(const TransformComponent &transf, const SpriteComponent &sprite) const = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite) const = 0;
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
     struct Quad final : Shape2D {
-        void draw(const TransformComponent &transf, const SpriteComponent &sprite) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite) const override
         {
+            auto renderer2D = context->renderer2D;
             if (sprite.sprite != nullptr)
-                renderer::Renderer2D::drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
                                                sprite.sprite);
             else if (sprite.texture != nullptr)
-                renderer::Renderer2D::drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
                                                sprite.texture);
             else
-                renderer::Renderer2D::drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
                                                sprite.color);
         }
 

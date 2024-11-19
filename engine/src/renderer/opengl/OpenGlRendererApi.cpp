@@ -24,6 +24,7 @@ namespace nexo::renderer {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
         LOG(NEXO_DEV, "Opengl renderer api initialized");
     }
 

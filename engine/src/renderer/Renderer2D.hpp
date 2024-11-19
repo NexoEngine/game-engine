@@ -16,55 +16,100 @@
 #include "core/camera/OrthographicCamera.hpp"
 #include "Texture.hpp"
 #include "SubTexture2D.hpp"
+#include "Shader.hpp"
+#include "VertexArray.hpp"
+
+#include <array>
 
 namespace nexo::renderer {
 
+    struct QuadVertex {
+        glm::vec3 position;
+        glm::vec4 color;
+        glm::vec2 texCoord;
+
+        float texIndex;
+    };
+
+    struct RendererStats {
+        unsigned int drawCalls = 0;
+        unsigned int quadCount = 0;
+
+        [[nodiscard]] unsigned int getTotalVertexCount() const { return quadCount * 4; }
+        [[nodiscard]] unsigned int getTotalIndexCount() const { return quadCount * 6; }
+    };
+
+    struct Renderer2DStorage {
+        const unsigned int maxQuads = 10000;
+        const unsigned int maxVertices = maxQuads * 4;
+        const unsigned int maxIndices = maxQuads * 6;
+        static const unsigned int maxTextureSlots = 32;
+
+        std::shared_ptr<Shader> textureShader;
+        std::shared_ptr<VertexArray> quadVertexArray;
+        std::shared_ptr<VertexBuffer> quadVertexBuffer;
+        std::shared_ptr<Texture2D> whiteTexture;
+
+        unsigned int quadIndexCount = 0;
+        QuadVertex *quadVertexBufferBase = nullptr;
+        QuadVertex *quadVertexBufferPtr = nullptr;
+
+        std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
+        unsigned int textureSlotIndex = 1;
+
+        glm::vec4 quadVertexPositions[4];
+
+        RendererStats stats;
+    };
+
     class Renderer2D {
         public:
-            static void init();
-            static void shutdown();
+            void init();
+            void shutdown();
 
-            static void beginScene(const glm::mat4 &viewProjection);
-            static void endScene();
-            static void flush();
+            void beginScene(const glm::mat4 &viewProjection);
+            void endScene();
+            void flush();
 
             // Without rotation
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color);
             // With texture
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
             // With subtexture (sprites)
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
 
 
             // With rotation
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
             // With texture
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
             // With subtexture (sprites)
-            static void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
-            static void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
 
-            struct RendererStats {
-                unsigned int drawCalls = 0;
-                unsigned int quadCount = 0;
 
-                [[nodiscard]] unsigned int getTotalVertexCount() const { return quadCount * 4; }
-                [[nodiscard]] unsigned int getTotalIndexCount() const { return quadCount * 6; }
-            };
-            static void resetStats();
-            static RendererStats getStats();
+            void resetStats();
+            RendererStats getStats();
 
         private:
-            static void flushAndReset();
+            Renderer2DStorage *m_storage = nullptr;
+
+            void flushAndReset();
 
             // Helper functions
-            static void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords);
-            static float getTextureIndex(const std::shared_ptr<Texture2D> &texture);
+            void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords);
+            float getTextureIndex(const std::shared_ptr<Texture2D> &texture);
+    };
+
+    class RendererContext {
+        public:
+            RendererContext() = default;
+            Renderer2D renderer2D;
     };
 }
 

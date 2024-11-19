@@ -21,7 +21,6 @@ namespace nexo::renderer {
     void Renderer::init()
     {
         RenderCommand::init();
-        Renderer2D::init();
     }
 
     void Renderer::onWindowResize(unsigned int width, unsigned int height)

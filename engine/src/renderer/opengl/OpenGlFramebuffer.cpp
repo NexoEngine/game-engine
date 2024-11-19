@@ -40,6 +40,7 @@ namespace nexo::renderer {
             glDeleteTextures(1, &m_colorAttachments);
             glDeleteTextures(1, &m_depthAttachment);
         }
+
         glGenFramebuffers(1, &m_id);
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
@@ -73,8 +74,11 @@ namespace nexo::renderer {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_specs.width, m_specs.height, 0, GL_DEPTH_STENCIL,
                          GL_UNSIGNED_INT_24_8, nullptr);
         }
+
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, m_specs.width , m_specs.height);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()
@@ -82,6 +86,11 @@ namespace nexo::renderer {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    }
+
+    unsigned int OpenGlFramebuffer::getFramebufferId() const
+    {
+        return m_id;
     }
 
     void OpenGlFramebuffer::resize(unsigned int width, unsigned int height)
