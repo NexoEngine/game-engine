@@ -20,6 +20,7 @@
 #include "ecs/Coordinator.hpp"
 #include "core/event/Event.hpp"
 #include "Logger.hpp"
+#include "renderer/Renderer2D.hpp"
 
 namespace nexo::scene {
     using SceneId = unsigned int;
@@ -28,10 +29,12 @@ namespace nexo::scene {
     class Scene {
         public:
             Scene() : id(0), name("default") {};
-            explicit Scene(const SceneId id, std::string sceneName = "scene") : id(id),
+            explicit Scene(const SceneId id, std::string sceneName = "Defaut scene") : id(id),
                                                                                 name(std::move(sceneName))
             {
                 LOG(NEXO_INFO, "Scene {} created with id: {}", name, id);
+                m_rendererContext = std::make_shared<renderer::RendererContext>();
+                m_rendererContext->renderer2D.init();
             };
             ~Scene()
             {
@@ -42,36 +45,34 @@ namespace nexo::scene {
 
             void addLayer(LayerId id, const std::string &layerName);
             void addOverlay(LayerId id, const std::string &overlayName);
-            void removeLayer(const std::string &layerName);
             void removeLayer(LayerId id);
-            void removeOverlay(const std::string &overlayName);
             void removeOverlay(LayerId id);
 
-            [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(const std::string &layerName) const;
             [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(LayerId id) const;
             [[nodiscard]] const layer::LayerStack &getLayerStack() const {return m_layerStack; };
 
-            void addEntityToLayer(ecs::Entity entity, const std::string &layerName);
+            void addEntityToLayer(ecs::Entity entity, LayerId id);
             void addGlobalEntity(ecs::Entity entity);
 
-            void removeEntityFromLayer(ecs::Entity entity, const std::string &layerName);
+            void removeEntityFromLayer(ecs::Entity entity, LayerId id);
             void removeGlobalEntity(ecs::Entity entity);
 
             void entityDestroyed(ecs::Entity entity);
 
             [[nodiscard]] std::set<ecs::Entity> getEntities() const;
+            [[nodiscard]] std::set<ecs::Entity> getRenderedEntities() const;
             [[nodiscard]] std::set<ecs::Entity> getGlobalEntities() const {return m_globalEntities; };
 
-            void attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
-            void detachCameraFromLayer(const std::string &layerName);
+            void attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, LayerId id);
+            void detachCameraFromLayer(LayerId id);
 
-            std::shared_ptr<camera::Camera> getCameraLayer(const std::string &layerName);
+            std::shared_ptr<camera::Camera> getCameraLayer(LayerId id);
 
-            void setLayerRenderStatus(bool status, const std::string &layerName);
-            void setLayerActiveStatus(bool status, const std::string &layerName);
+            void setLayerRenderStatus(bool status, LayerId id);
+            void setLayerActiveStatus(bool status, LayerId id);
 
-            [[nodiscard]] bool getLayerRenderStatus(const std::string &layerName) const;
-            [[nodiscard]] bool getLayerActiveStatus(const std::string &layerName) const;
+            [[nodiscard]] bool getLayerRenderStatus(LayerId id) const;
+            [[nodiscard]] bool getLayerActiveStatus(LayerId id) const;
 
             void setWindowOffset(const glm::vec2 offset) { m_windowOffset = offset; };
             [[nodiscard]] glm::vec2 &getWindowOffset() { return m_windowOffset; };
@@ -93,5 +94,6 @@ namespace nexo::scene {
             layer::LayerStack m_layerStack;
             std::set<ecs::Entity> m_globalEntities;
             glm::vec2 m_windowOffset = glm::vec2(0.0f);
+            std::shared_ptr<renderer::RendererContext> m_rendererContext;
     };
 }

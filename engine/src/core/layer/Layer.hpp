@@ -23,7 +23,6 @@
 #include "core/event/Event.hpp"
 #include "core/Timestep.hpp"
 #include "ecs/Entity.hpp"
-#include "core/camera/OrthographicCameraController.hpp"
 #include "Logger.hpp"
 
 #define LAYER_LISTENS_TO(DerivedLayer, ...) public nexo::layer::LayerEventMixin<DerivedLayer, __VA_ARGS__>
@@ -59,7 +58,7 @@ namespace nexo::layer {
 
     class Layer : public event::BaseListener {
         public:
-            explicit Layer(LayerId id, const std::string &name) : BaseListener(name), id(id), name(name) {};
+            explicit Layer(const LayerId id, const std::string &name) : BaseListener(name), id(id), name(name) {};
 
             ~Layer() override
             {
@@ -77,7 +76,7 @@ namespace nexo::layer {
             virtual void onAttach() {};
             virtual void onDetach() {};
             virtual void onUpdate([[maybe_unused]] core::Timestep timestep);
-            virtual void onRender();
+            virtual void onRender(std::shared_ptr<renderer::RendererContext> &rendererContext);
 
             virtual std::unordered_set<std::type_index> getListenedEventTypes() const { return m_listenedEventTypes; }
             virtual void handleEvent(const event::Event &event);

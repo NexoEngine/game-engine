@@ -30,23 +30,24 @@ namespace nexo::scene {
             [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
             [[nodiscard]] std::vector<ecs::Entity> getAllActiveEntities() const;
             [[nodiscard]] std::vector<ecs::Entity> getAllSceneEntities(SceneId sceneId) const;
+            [[nodiscard]] std::vector<ecs::Entity> getAllSceneRenderedEntities(SceneId sceneId) const;
             std::set<ecs::Entity> getSceneGlobalEntities(SceneId sceneId) const;
-            std::set<ecs::Entity> getLayerEntities(SceneId sceneId, const std::string &layerName) const;
+            std::set<ecs::Entity> getLayerEntities(SceneId sceneId, LayerId id) const;
 
             Scene &getScene(SceneId sceneId);
             const std::string &getSceneName(SceneId sceneId) const;
 
-            void addLayer(SceneId sceneId, const std::string &layerName);
-            void removeLayer(SceneId sceneId, const std::string &layerName);
-            void addOverlay(SceneId sceneId, const std::string &overlayName);
-            void removeOverlay(SceneId sceneId, const std::string &overlayName);
+            LayerId addLayer(SceneId sceneId, const std::string &layerName = "Default layer");
+            void removeLayer(SceneId sceneId, LayerId id);
+            LayerId addOverlay(SceneId sceneId, const std::string &overlayName = "Default overlay");
+            void removeOverlay(SceneId sceneId, LayerId id);
             const layer::LayerStack &getSceneLayers(SceneId sceneId) const;
-            void setLayerName(SceneId sceneId, const std::string &layerName, const std::string &newName) const;
+            void setLayerName(SceneId sceneId, LayerId id, const std::string &newName) const;
 
-            void addEntityToLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
+            void addEntityToLayer(ecs::Entity entity, SceneId sceneId, LayerId id);
             void addGlobalEntity(ecs::Entity entity, SceneId sceneId);
 
-            void removeEntityFromLayer(ecs::Entity entity, SceneId sceneId, const std::string& name);
+            void removeEntityFromLayer(ecs::Entity entity, SceneId sceneId, LayerId id);
             void removeGlobalEntity(ecs::Entity entity, SceneId sceneId);
 
             void entityDestroyed(ecs::Entity entity);
@@ -55,18 +56,18 @@ namespace nexo::scene {
             void deleteScene(SceneId id);
 
             void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes.at(sceneId).isRendered = status;; };
-            void setLayerRenderStatus(const SceneId sceneId, const std::string &layerName, const bool status) {scenes[sceneId].setLayerRenderStatus(status, layerName); };
+            void setLayerRenderStatus(const SceneId sceneId, const LayerId id, const bool status) {scenes[sceneId].setLayerRenderStatus(status, id); };
             bool isSceneRendered(const SceneId sceneId) { return scenes[sceneId].isRendered; };
-            bool isLayerRendered(const SceneId sceneId, const std::string &layerName) {return scenes[sceneId].getLayerRenderStatus(layerName); };
+            bool isLayerRendered(const SceneId sceneId, const LayerId id) {return scenes[sceneId].getLayerRenderStatus(id); };
 
             void setSceneActiveStatus(const SceneId sceneId, const bool status) { scenes[sceneId].isActive = status; };
-            void setLayerActiveStatus(const SceneId sceneId, const std::string &layerName, const bool status) { scenes[sceneId].setLayerActiveStatus(status, layerName); };
+            void setLayerActiveStatus(const SceneId sceneId, const LayerId id, const bool status) { scenes[sceneId].setLayerActiveStatus(status, id); };
             bool isSceneActive(const SceneId sceneId) { return scenes[sceneId].isActive; };
-            bool isLayerActive(const SceneId sceneId, const std::string &layerName) {return scenes[sceneId].getLayerActiveStatus(layerName); };
+            bool isLayerActive(const SceneId sceneId, const LayerId id) {return scenes[sceneId].getLayerActiveStatus(id); };
 
-            void attachCameraToLayer(SceneId id, const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
-            void detachCameraFromLayer(SceneId id, const std::string &layerName);
-            std::shared_ptr<camera::Camera> getCameraLayer(SceneId id, const std::string &layerName);
+            void attachCameraToLayer(SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, LayerId id);
+            void detachCameraFromLayer(SceneId sceneId, LayerId id);
+            std::shared_ptr<camera::Camera> getCameraLayer(SceneId sceneId, LayerId id);
 
             void setWindowOffset(SceneId id, glm::vec2 offset);
             glm::vec2 getWindowOffset(SceneId id);

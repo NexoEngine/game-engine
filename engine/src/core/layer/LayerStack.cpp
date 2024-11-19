@@ -26,25 +26,25 @@ namespace nexo::layer {
     LayerStack::~LayerStack()
     = default;
 
-    void LayerStack::pushLayer(const std::shared_ptr<layer::Layer> &layer)
+    void LayerStack::pushLayer(const std::shared_ptr<Layer> &layer)
     {
         m_layers.emplace_back(layer);
     }
 
-    void LayerStack::pushOverlay(const std::shared_ptr<layer::Layer> &overlay)
+    void LayerStack::pushOverlay(const std::shared_ptr<Layer> &overlay)
     {
         m_layerInsert = m_layers.emplace(m_layerInsert, overlay);
     }
 
-    void LayerStack::popLayer(const std::shared_ptr<layer::Layer> &layer)
+    void LayerStack::popLayer(const std::shared_ptr<Layer> &layer)
     {
-        if (const auto it = std::find(m_layers.begin(), m_layers.end(), layer); it != m_layers.end())
+        if (const auto it = std::ranges::find(m_layers, layer); it != m_layers.end())
             m_layers.erase(it);
     }
 
-    void LayerStack::popOverlay(const std::shared_ptr<layer::Layer> &overlay)
+    void LayerStack::popOverlay(const std::shared_ptr<Layer> &overlay)
     {
-        if (const auto it = std::find(m_layers.begin(), m_layers.end(), overlay); it != m_layers.end())
+        if (const auto it = std::ranges::find(m_layers, overlay); it != m_layers.end())
         {
             m_layers.erase(it);
             --m_layerInsert;
@@ -84,7 +84,7 @@ namespace nexo::layer {
         return nullptr;
     }
 
-    const std::shared_ptr<Layer> LayerStack::operator[](unsigned int id) const
+    std::shared_ptr<Layer> LayerStack::operator[](unsigned int id) const
     {
         for (const auto &layer: m_layers)
         {
