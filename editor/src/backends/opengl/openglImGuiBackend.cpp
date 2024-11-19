@@ -22,7 +22,7 @@
 namespace nexo::editor {
     void OpenGLImGuiBackend::init(GLFWwindow *window)
     {
-        if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 130"))
+        if (!ImGui_ImplGlfw_InitForOpenGL(window, true) || !ImGui_ImplOpenGL3_Init("#version 330"))
             THROW_EXCEPTION(BackendRendererApiInitFailed, "OPENGL");
     }
 
@@ -69,7 +69,7 @@ namespace nexo::editor {
 
                 case GLFW_INVALID_ENUM:
                 case GLFW_INVALID_VALUE:
-                    LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
+                    //LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
                 break;
 
                 case GLFW_OUT_OF_MEMORY:
