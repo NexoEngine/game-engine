@@ -16,29 +16,37 @@
 
 #include <vector>
 #include <variant>
-#include <renderer/Buffer.hpp>
 
 #include "core/scene/SceneManager.hpp"
 #include "Nexo.hpp"
 
 namespace nexo::editor {
-    struct CameraProperties {
-        scene::SceneId sceneId;
-        std::string layerName;
-        std::shared_ptr<camera::Camera> camera;
-    };
 
-    struct LayerProperties {
-        scene::SceneId sceneId;
-        std::string layerName;
-    };
+    using WindowId = unsigned int;
+
+    inline WindowId nextWindowId = 0;
 
     struct SceneProperties {
         scene::SceneId sceneId;
-        std::string uiName;
+        WindowId windowId;
     };
 
-    using VariantData = std::variant<std::monostate, LayerProperties, CameraProperties, std::string, int>;
+    struct LayerProperties {
+        SceneProperties sceneProps;
+        int layerId;
+    };
+
+    struct CameraProperties {
+        LayerProperties layerProps;
+        std::shared_ptr<camera::Camera> camera;
+    };
+
+    struct EntityProperties {
+        LayerProperties layerProps;
+        ecs::Entity entity;
+    };
+
+    using VariantData = std::variant<std::monostate, EntityProperties, LayerProperties, CameraProperties, SceneProperties>;
 
     enum class SelectionType {
         NONE,
@@ -57,31 +65,33 @@ namespace nexo::editor {
         scene::SceneManager &getSceneManager() const {return getApp().getSceneManager();};
 
         [[nodiscard]] const layer::LayerStack& getSceneLayers(scene::SceneId sceneId) const;
-        [[nodiscard]] std::shared_ptr<camera::Camera> getCameraLayer(scene::SceneId sceneId, const std::string& layerName) const;
+        [[nodiscard]] std::shared_ptr<camera::Camera> getCameraLayer(scene::SceneId sceneId, scene::LayerId id) const;
 
         [[nodiscard]] const std::string getSceneName(scene::SceneId sceneId) const;
-        [[nodiscard]] std::set<ecs::Entity> getLayerEntities(scene::SceneId sceneId, const std::string& layerName) const;
+        [[nodiscard]] std::set<ecs::Entity> getLayerEntities(scene::SceneId sceneId, scene::LayerId id) const;
         [[nodiscard]] std::vector<ecs::Entity> getSceneEntities(scene::SceneId sceneId) const;
+        [[nodiscard]] std::vector<ecs::Entity> getSceneRenderedEntities(scene::SceneId sceneId) const;
         [[nodiscard]] std::set<ecs::Entity> getSceneGlobalEntities(scene::SceneId sceneId) const;
         [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
         [[nodiscard]] int getSelectedEntity() const;
         [[nodiscard]] SelectionType getSelectionType() const;
         bool isSceneRendered(scene::SceneId id) { return getApp().getSceneManager().isSceneRendered(id); };
         void setSceneActiveStatus(scene::SceneId sceneId, bool status) const;
+        void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
         [[nodiscard]] bool isEntitySelected() const;
 
         void deactivateAllScenes() const;
 
         void setSelectedEntity(ecs::Entity entity);
         void setData(const VariantData& data) { m_selectionData = data; }
+        const VariantData &getData() const {return m_selectionData; };
         void setSelectionType(SelectionType type) { m_selectionType = type; }
         void unselectEntity();
-        void renameObject(int id, SelectionType type, VariantData& data, const std::string& newName);
+        void renameObject(SelectionType type, VariantData &data, const std::string &newName);
 
         ~SceneManagerBridge() = default;
     private:
         std::vector<SceneProperties> m_openScenes{};
-
 
         VariantData m_selectionData{};
         SelectionType m_selectionType = SelectionType::NONE;

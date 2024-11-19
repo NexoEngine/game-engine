@@ -42,12 +42,27 @@ namespace nexo::editor {
             scene->shutdown();
     }
 
-    void SceneViewManager::duplicateSceneView(const std::string &sceneName, const std::string &fromScene,
-                                              const std::shared_ptr<MainScene> &scene)
+    void SceneViewManager::duplicateSceneView(WindowId uiId)
     {
-
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::duplicateSceneView: scene {} not found", uiId);
+            return;
+        }
+        auto scene = m_scenes.at(uiId);
+        std::string sceneName = scene->getName();
+        auto newScene = std::make_shared<MainScene>(*scene);
+        std::string newSceneName = newScene->getName() + " - View " + std::to_string(scene->idView++);
+        newScene->setName(newSceneName);
+        newScene->setupFramebuffer();
+        newScene->windowId = nextWindowId++;
+        ImGuiDockNode *dockNode = getDockNodeForWindow(sceneName.c_str());
+        if (dockNode)
+        {
+            ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
+        }
+        m_scenes[newScene->windowId] = newScene;
     }
-
 
     void SceneViewManager::addNewScene(const std::string &sceneName, const std::shared_ptr<MainScene> &scene)
     {
@@ -69,22 +84,72 @@ namespace nexo::editor {
                 ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
             }
         }
-        m_scenes[newScene->getName()] = newScene;
+        m_scenes[newScene->windowId] = newScene;
     }
 
-    void SceneViewManager::removeScene(const std::string &sceneName)
+    void SceneViewManager::removeScene(WindowId uiId)
     {
-        if (!m_scenes.contains(sceneName))
+        if (!m_scenes.contains(uiId))
         {
-            LOG(NEXO_ERROR, "SceneViewManager::removeScene: scene {} not found", sceneName);
+            LOG(NEXO_ERROR, "SceneViewManager::removeScene: scene {} not found", uiId);
             return;
         }
-        auto scene = m_scenes.at(sceneName);
+        auto scene = m_scenes.at(uiId);
         m_sceneManagerBridge->unselectEntity();
         auto &app = nexo::getApp();
         app.deleteScene(scene->getSceneId());
-        m_scenes.erase(sceneName);
+        m_scenes.erase(uiId);
         m_openScenes.clear();
+    }
+
+    void SceneViewManager::hideLayer(WindowId uiId, scene::LayerId layerId)
+    {
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::hideLayer: scene {} not found", uiId);
+            return;
+        }
+        m_scenes.at(uiId)->hideLayer(layerId);
+    }
+
+    void SceneViewManager::showLayer(WindowId uiId, scene::LayerId layerId)
+    {
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::showLayer: scene {} not found", uiId);
+            return;
+        }
+        m_scenes.at(uiId)->showLayer(layerId);
+    }
+
+    bool SceneViewManager::isLayerHidden(WindowId uiId, scene::LayerId layerId)
+    {
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::isLayerHidden: scene {} not found", uiId);
+            return false;
+        }
+        return m_scenes.at(uiId)->isLayerHidden(layerId);
+    }
+
+    void SceneViewManager::addDefaultCameraToLayer(WindowId uiId, scene::LayerId layerId)
+    {
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::addDefaultCameraToLayer: scene {} not found", uiId);
+            return;
+        }
+        m_scenes.at(uiId)->addDefaultCameraToLayer(layerId);
+    }
+
+    const std::string &SceneViewManager::getSceneName(WindowId uiId)
+    {
+        if (!m_scenes.contains(uiId))
+        {
+            LOG(NEXO_ERROR, "SceneViewManager::getSceneName: scene {} not found", uiId);
+            return "";
+        }
+        return m_scenes.at(uiId)->getName();
     }
 
     void SceneViewManager::show()
@@ -102,7 +167,8 @@ namespace nexo::editor {
             {
                 SceneProperties openScene;
                 openScene.sceneId = scene->getSceneId();
-                openScene.uiName = scene->getName();
+                openScene.windowId = scene->windowId;
+
                 m_openScenes.push_back(openScene);
             }
             scene->update();

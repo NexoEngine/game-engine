@@ -34,7 +34,14 @@ namespace nexo::editor {
             const std::string &getName() const {return m_sceneName;};
             void setName(const std::string &name) {m_sceneName = name; };
 
+            void setupFramebuffer();
+
             scene::SceneId getSceneId() {return _sceneID;};
+
+            void hideLayer(scene::LayerId id) { m_hiddenLayers.insert(id); };
+            void showLayer(scene::LayerId id) { m_hiddenLayers.erase(id); };
+            bool isLayerHidden(scene::LayerId id) { return m_hiddenLayers.contains(id); };
+            void addDefaultCameraToLayer(scene::LayerId id) const;
 
             // Strictly used for display purposes when having multiple view of one scene
             unsigned int idView = 0;
@@ -48,6 +55,7 @@ namespace nexo::editor {
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
 
             std::shared_ptr<camera::OrthographicCameraController> m_camera;
+            std::set<scene::LayerId> m_hiddenLayers;
             scene::SceneId _sceneID;
 
             std::shared_ptr<renderer::Framebuffer> m_framebuffer;
@@ -58,7 +66,8 @@ namespace nexo::editor {
             void setupWindow();
             void setupImguizmo();
             void setupScene();
-            void loadDefaultEntities();
+            void loadDefaultEntities(scene::LayerId defaultLayerId);
+            void setHiddenLayerStatus(bool status);
 
             // void add_cube()
             // {

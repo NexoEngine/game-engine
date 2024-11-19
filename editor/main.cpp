@@ -26,18 +26,18 @@ int main(int argc, char **argv)
         loguru::init(argc, argv);
         loguru::g_stderr_verbosity = loguru::Verbosity_1;
         nexo::editor::Editor editor;
-        editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
         auto &sceneViewManager = nexo::editor::SceneViewManager::getInstance();
         sceneViewManager->addNewScene("Default scene", std::make_shared<nexo::editor::MainScene>("Default scene", true));
-        editor.registerWindow("Scene view manager", sceneViewManager);
         editor.registerWindow("SceneTree", std::make_shared<nexo::editor::SceneTreeWindow>());
+        editor.registerWindow("Scene view manager", sceneViewManager);
+        editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
         editor.init();
 
         while (editor.isOpen())
         {
             //auto start = std::chrono::high_resolution_clock::now();
-            editor.update();
             editor.render();
+            editor.update();
 
             // auto end = std::chrono::high_resolution_clock::now();
             // std::chrono::duration<double, std::milli> elapsed = end - start;
@@ -50,3 +50,4 @@ int main(int argc, char **argv)
         return 1;
     }
 }
+
