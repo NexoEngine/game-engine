@@ -6,7 +6,7 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
+//  Author:      Guillaume HEIN
 //  Date:        10/11/2024
 //  Description: Main file for the nexo editor
 //
@@ -17,6 +17,7 @@
 #include "src/DocumentWindows/EditorScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 #include "src/DocumentWindows/InspectorWindow.hpp"
+#include "src/DocumentWindows/AssetManagerWindow.hpp"
 #include "src/DocumentWindows/MaterialInspector.hpp"
 
 #include <thread>
@@ -35,6 +36,7 @@ int main(int argc, char **argv)
         editor.registerWindow<nexo::editor::InspectorWindow>("Inspector");
         editor.registerWindow<nexo::editor::ConsoleWindow>("Console");
         editor.registerWindow<nexo::editor::MaterialInspector>("Material inspector");
+        editor.registerWindow<nexo::editor::AssetManagerWindow>("Asset Manager");
 
         if (auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default scene").lock())
             defaultScene->setDefault();
