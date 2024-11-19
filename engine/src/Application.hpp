@@ -21,6 +21,7 @@
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "renderer/Buffer.hpp"
+#include "renderer/Framebuffer.hpp"
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
@@ -29,6 +30,11 @@
 #include "systems/OnSceneDeletedSystem.hpp"
 
 namespace nexo {
+
+    enum class RenderingType {
+        WINDOW,
+        FRAMEBUFFER
+    };
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -49,7 +55,7 @@ namespace nexo {
         public:
             ~Application() override = default;
 
-            void run(scene::SceneId sceneId, bool renderToFramebuffer = false);
+            void run(scene::SceneId sceneId, RenderingType renderingType);
 
             void handleEvent(event::EventKey &event) override
             {
@@ -101,23 +107,23 @@ namespace nexo {
 
             scene::SceneId createScene(const std::string &sceneName, bool active = true);
             void deleteScene(scene::SceneId sceneId);
-            void addNewLayer(scene::SceneId sceneId, const std::string &layerName);
-            void addNewOverlay(scene::SceneId sceneId, const std::string &overlayName);
-            void removeLayer(scene::SceneId sceneId, const std::string &layerName);
-            void removeOverlay(scene::SceneId sceneId, const std::string &overlayName);
+            scene::LayerId addNewLayer(scene::SceneId sceneId, const std::string &layerName = "Default Layer");
+            scene::LayerId addNewOverlay(scene::SceneId sceneId, const std::string &overlayName = "Default Overlay");
+            void removeLayer(scene::SceneId sceneId, scene::LayerId id);
+            void removeOverlay(scene::SceneId sceneId, scene::LayerId id);
             void activateScene(scene::SceneId sceneId);
-            void activateLayer(scene::SceneId, const std::string &layerName);
+            void activateLayer(scene::SceneId, scene::LayerId id);
             void deactivateScene(scene::SceneId sceneId);
-            void deactivateLayer(scene::SceneId sceneId, const std::string &layerName);
+            void deactivateLayer(scene::SceneId sceneId, scene::LayerId id);
             void setSceneRenderStatus(scene::SceneId sceneId, bool status);
-            void setLayerRenderStatus(scene::SceneId sceneId, const std::string &layerName, bool status);
-            bool isSceneActive(scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
-            bool isSceneRendered(scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
-            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, std::string layerName = "");
-            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, std::string layerName = "");
-            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, const std::string &layerName);
-            void detachCamera(scene::SceneId sceneId, const std::string &layerName);
-            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, const std::string &layerName);
+            void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
+            bool isSceneActive(const scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
+            bool isSceneRendered(const scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
+            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
+            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
+            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id);
+            void detachCamera(scene::SceneId sceneId, scene::LayerId id);
+            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
 
 
             static Application &getInstance()
