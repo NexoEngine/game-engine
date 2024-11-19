@@ -62,8 +62,7 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        try
-        {
+        try {
             m_storage->textureShader = Shader::create(
                 Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
             m_storage->textureShader->bind();

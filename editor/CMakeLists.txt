@@ -8,18 +8,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
-        common/Exception.cpp
-        common/math/Matrix.cpp
-        editor/main.cpp
-        editor/src/backends/ImGuiBackend.cpp
-        editor/src/backends/opengl/openglImGuiBackend.cpp
-        editor/src/Editor.cpp
-        editor/src/SceneManagerBridge.cpp
-        editor/src/DocumentWindows/ConsoleWindow.cpp
-        editor/src/DocumentWindows/MainScene.cpp
-        editor/src/DocumentWindows/SceneTreeWindow.cpp
-        editor/src/DocumentWindows/PopupManager.cpp
-        editor/src/DocumentWindows/SceneViewManager.cpp
+    common/Exception.cpp
+    common/math/Matrix.cpp
+    editor/main.cpp
+    editor/src/backends/ImGuiBackend.cpp
+    editor/src/backends/opengl/openglImGuiBackend.cpp
+    editor/src/Editor.cpp
+    editor/src/SceneManagerBridge.cpp
+    editor/src/DocumentWindows/ConsoleWindow.cpp
+    editor/src/DocumentWindows/MainScene.cpp
+    editor/src/DocumentWindows/SceneTreeWindow.cpp
+    editor/src/DocumentWindows/PopupManager.cpp
+    editor/src/DocumentWindows/SceneViewManager.cpp
+    editor/src/assets/AssetManager.cpp
+    editor/src/assets/Asset.cpp
+    editor/src/DocumentWindows/AssetManagerWindow.cpp
 )
 
 # Windows App Icon
@@ -78,6 +81,9 @@ target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoEditor PRIVATE Boost::dll)
+
+# Boost UUID
+find_package(boost_uuid CONFIG REQUIRED)
 
 include_directories(include)
 
