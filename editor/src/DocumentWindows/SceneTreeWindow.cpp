@@ -17,7 +17,6 @@
 #include "IconsFontAwesome.h"
 
 #include <imgui_internal.h>
-#include <raylib.h>
 #include <random>
 
 #include "SceneViewManager.hpp"

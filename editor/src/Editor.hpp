@@ -60,7 +60,7 @@ namespace nexo::editor {
             void setupLogs();
             void setupEngine();
             void setupStyle();
-            void setupFonts();
+            void setupFonts(float scaleFactorX, float scaleFactorY);
             void setupDockspace();
             void drawMenuBar();
 

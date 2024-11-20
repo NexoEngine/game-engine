@@ -76,20 +76,13 @@ target_include_directories(nexoRenderer PUBLIC
                            ${CMAKE_SOURCE_DIR}/common)
 
 # loguru
-if (WIN32)
-    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
-else()
-    find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(nexoEditor PRIVATE loguru)
-endif()
-
+find_package(loguru CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE loguru::loguru)
 
 # Stb
 find_package(Stb REQUIRED)
 target_include_directories(nexoRenderer PRIVATE ${Stb_INCLUDE_DIR})
-target_sources(nexoRenderer PRIVATE ${CMAKE_SOURCE_DIR}/engine/src/external/stb_image.cpp)
+target_sources(nexoRenderer PRIVATE ${CMAKE_SOURCE_DIR}/engine/external/stb_image.cpp)
 
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)

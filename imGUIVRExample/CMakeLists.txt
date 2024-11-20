@@ -74,14 +74,8 @@ find_package(imgui QUIET)
 include_directories(${imgui_INCLUDE_DIRS})
 
 # Find loguru package
-if (WIN32)
-    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(imgui-vr PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(imgui-vr PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
-else()
-    find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(imgui-vr PRIVATE loguru)
-endif()
+find_package(loguru CONFIG REQUIRED)
+target_link_libraries(imgui-vr PRIVATE loguru::loguru)
 
 # Find ImGuizmo package
 find_package(imguizmo CONFIG QUIET)

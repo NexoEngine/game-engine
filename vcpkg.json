@@ -1,35 +1,27 @@
 {
+  "name": "nexo-engine",
+  "version-string": "0.1.0",
+  "description": "Nexo Engine",
+  "documentation": "https://nexoengine.github.io/game-engine/",
+  "builtin-baseline": "b2cb0da531c2f1f740045bfe7c4dac59f0b2b69c",
   "dependencies": [
     {
-      "name": "raylib",
-      "platform": "windows"
-    },
-    {
       "name": "imgui",
+      "version>=": "1.95.0",
       "features": [
-        "docking-experimental"
+        "docking-experimental",
+        "glfw-binding",
+        "opengl3-binding"
       ]
     },
-    {
-      "name": "boost-preprocessor"
-    },
-    {
-      "name": "joltphysics"
-    },
-    {
-      "name": "loguru"
-    },
-    {
-      "name": "glm"
-    },
-    {
-      "name": "glfw3"
-    },
-    {
-      "name": "glad"
-    },
-    {
-      "name": "stb"
-    }
+    {"name": "imguizmo", "version>=": "2024-05-29"},
+    {"name": "boost-preprocessor", "version>=": "1.76.0"},
+    {"name": "joltphysics", "version>=": "5.0.0"},
+    {"name": "loguru", "version>=": "2.1.0#3"},
+    {"name": "glm", "version>=": "1.0.1"},
+    {"name": "glfw3", "version>=": "3.4"},
+    {"name": "glad", "version>=": "0.1.36"},
+    {"name": "stb", "version>=": "2023-04-11"},
+    {"name": "tinyfiledialogs", "version>=": "3.8.8#4"}
   ]
 }

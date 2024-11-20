@@ -11,8 +11,6 @@ set(SRCS
         common/Exception.cpp
         common/math/Matrix.cpp
         editor/main.cpp
-        editor/external/imgui_impl_opengl3.cpp
-        editor/external/imgui_impl_glfw.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/Editor.cpp
@@ -24,18 +22,9 @@ set(SRCS
         editor/src/DocumentWindows/SceneViewManager.cpp
 )
 
-FetchContent_Declare(
-        tinyfiledialogs
-        GIT_REPOSITORY https://github.com/native-toolkit/libtinyfiledialogs.git
-        GIT_TAG master
-)
-FetchContent_MakeAvailable(tinyfiledialogs)
+add_executable(nexoEditor ${SRCS})
 
-list(APPEND MY_PROJECT_SOURCES ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
-
-add_executable(nexoEditor ${SRCS} ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
-
-set_target_properties( nexoEditor
+set_target_properties(nexoEditor
         PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
@@ -62,22 +51,21 @@ if(APPLE)
     link_directories(/usr/local/lib)
 endif()
 
-# LOGURU
-if (WIN32)
-    find_path(LOGURU_INCLUDE_DIRS "loguru/loguru.cpp")
-    target_include_directories(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS})
-    target_sources(nexoEditor PRIVATE ${LOGURU_INCLUDE_DIRS}/loguru/loguru.cpp)
-else()
-    find_package(loguru CONFIG REQUIRED)
-    target_link_libraries(nexoEditor PRIVATE loguru)
-endif()
+# loguru
+find_package(loguru CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE loguru::loguru)
 
-find_package(imguizmo CONFIG QUIET)
-target_link_libraries(nexoEditor PRIVATE imguizmo)
+# ImGuizmo
+find_package(imguizmo CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE imguizmo::imguizmo)
 
+# ImGui
+find_package(imgui CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 
-target_include_directories(nexoEditor PRIVATE ${tinyfiledialogs_SOURCE_DIR})
+# TinyFileDialogs
+find_package(tinyfiledialogs CONFIG REQUIRED)
+target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 
 include_directories(include)
 

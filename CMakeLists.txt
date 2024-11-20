@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.20)
 project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
@@ -57,30 +56,11 @@ else()
 endif()
 
 # RUNNING VCPKG
-if(WIN32)
-    include("${CMAKE_CURRENT_SOURCE_DIR}\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
-else()
-    include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-endif()
-
-# RAYLIB DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
-
-# RLIMGUI DOWNLOAD
-# include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
-
-# IMGUIZMO DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
-
-# SETUP JOLT SAMPLE
-include("${CMAKE_CURRENT_SOURCE_DIR}/joltSample/joltSample.cmake")
-
-# IMGuiVR example
-include("${CMAKE_CURRENT_SOURCE_DIR}/imGUIVRExample/CMakeLists.txt")
 
 include_directories("./common")

@@ -54,7 +54,6 @@ namespace nexo::renderer {
             virtual void init() = 0;
             virtual void shutdown() = 0;
             virtual void onUpdate() = 0;
-            virtual void onFramebufferUpdate(unsigned int framebufferId) = 0;
 
             [[nodiscard]] virtual unsigned int getWidth() const = 0;
             [[nodiscard]] virtual unsigned int getHeight() const = 0;
