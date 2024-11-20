@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Buffer.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlBuffer.hpp"
 #endif
@@ -25,7 +25,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlVertexBuffer>(vertices, size);
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<VertexBuffer> createVertexBuffer(unsigned int size)
@@ -33,7 +33,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlVertexBuffer>(size);
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<IndexBuffer> createIndexBuffer(unsigned int *indices, unsigned int count)
@@ -41,6 +41,6 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlIndexBuffer>(indices, count);
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 }

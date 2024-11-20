@@ -14,7 +14,7 @@
 
 #include "OpenGlWindow.hpp"
 #include "renderer/Renderer.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 
 
@@ -81,7 +81,7 @@ namespace nexo::renderer {
     void OpenGlWindow::init()
     {
         if (!glfwInit())
-            THROW_EXCEPTION(core::GraphicsApiInitFailure, "OPENGL");
+            THROW_EXCEPTION(GraphicsApiInitFailure, "OPENGL");
         glfwSetErrorCallback(glfwErrorCallback);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -90,7 +90,7 @@ namespace nexo::renderer {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         _openGlWindow = glfwCreateWindow(static_cast<int>(_props.width), static_cast<int>(_props.height), _props.title, nullptr, nullptr);
         if (!_openGlWindow)
-            THROW_EXCEPTION(core::GraphicsApiWindowInitFailure, "OPENGL");
+            THROW_EXCEPTION(GraphicsApiWindowInitFailure, "OPENGL");
         glfwMakeContextCurrent(_openGlWindow);
         glfwSetWindowUserPointer(_openGlWindow, &_props);
         setVsync(true);

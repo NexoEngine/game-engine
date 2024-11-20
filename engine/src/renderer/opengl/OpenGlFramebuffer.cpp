@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlFramebuffer.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 
 #include <glad/glad.h>
@@ -171,7 +171,7 @@ namespace nexo::renderer {
         if (m_colorAttachments.size() > 1)
         {
             if (m_colorAttachments.size() >= 4)
-                THROW_EXCEPTION(core::FramebufferCreationFailed, "OPENGL");
+                THROW_EXCEPTION(FramebufferCreationFailed, "OPENGL");
             constexpr GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
             glDrawBuffers(static_cast<int>(m_colorAttachments.size()), buffers);
         }
@@ -179,7 +179,7 @@ namespace nexo::renderer {
             glDrawBuffer(GL_NONE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            THROW_EXCEPTION(core::FramebufferCreationFailed, "OPENGL");
+            THROW_EXCEPTION(FramebufferCreationFailed, "OPENGL");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -208,9 +208,9 @@ namespace nexo::renderer {
     void OpenGlFramebuffer::resize(const unsigned int width, const unsigned int height)
     {
         if (!width || !height)
-            THROW_EXCEPTION(core::FramebufferResizingFailed, "OPENGL", false, width, height);
+            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", false, width, height);
         if (width > sMaxFramebufferSize || height > sMaxFramebufferSize)
-            THROW_EXCEPTION(core::FramebufferResizingFailed, "OPENGL", true, width, height);
+            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", true, width, height);
 
         m_specs.width = width;
         m_specs.height = height;

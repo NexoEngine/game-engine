@@ -12,7 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Shader.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
+#include "Logger.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
@@ -26,7 +27,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlShader>(path);
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
 
     }
 
@@ -35,7 +36,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlShader>(name, vertexSource, fragmentSource);
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
 
     }
 
@@ -51,8 +52,7 @@ namespace nexo::renderer {
             in.close();
             return result;
         }
-        std::cerr << "Failed to open file " << filepath << std::endl;
-        return result;
+        THROW_EXCEPTION(FileNotFoundException, filepath);
     }
 
     void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
@@ -91,7 +91,7 @@ namespace nexo::renderer {
     {
         if (!m_shaders.contains(name))
         {
-            std::cerr << "Shader not found: " << name << std::endl;
+            LOG(NEXO_WARN, "ShaderLibrary::get: shader {} not found", name);
             return nullptr;
         }
         return m_shaders.at(name);

@@ -16,7 +16,7 @@
 #include "VertexArray.hpp"
 #include "RenderCommand.hpp"
 #include "Logger.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>

@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "VertexArray.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/OpenGlVertexArray.hpp"
 #endif
@@ -24,7 +24,7 @@ namespace nexo::renderer {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlVertexArray>();
         #endif
-        THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
 }

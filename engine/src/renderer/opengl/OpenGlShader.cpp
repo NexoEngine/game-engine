@@ -14,7 +14,7 @@
 
 #include "OpenGlShader.hpp"
 #include "Logger.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 
 #include <cstring>
 #include <array>
@@ -73,18 +73,18 @@ namespace nexo::renderer {
         {
             const size_t eol = src.find_first_of("\r\n", pos);
             if (eol == std::string::npos)
-                THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+                THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                             "Syntax error at line: " + std::to_string(currentLine), filePath);
 
             const size_t begin = pos + typeTokenLength + 1;
             std::string type = src.substr(begin, eol - begin);
             if (!shaderTypeFromString(type))
-                THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+                THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                             "Invalid shader type encountered at line: " + std::to_string(currentLine), filePath);
 
             const size_t nextLinePos = src.find_first_not_of("\r\n", eol);
             if (nextLinePos == std::string::npos)
-                THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+                THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                             "Syntax error at line: " + std::to_string(currentLine), filePath);
 
             pos = src.find(typeToken, nextLinePos);
@@ -105,7 +105,7 @@ namespace nexo::renderer {
         // Now time to link them together into a program.
         // Get a program object.
         if (shaderSources.size() > 2)
-            THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+            THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                         "Only two shader type (vertex/fragment) are supported for now", "");
         const GLuint program = glCreateProgram();
         std::array<GLenum, 2> glShaderIds{};
@@ -138,7 +138,7 @@ namespace nexo::renderer {
 
                 // We don't need the shader anymore.
                 glDeleteShader(shader);
-                THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+                THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                                 "Opengl failed to compile the shader: " + std::string(infoLog.data()), "");
             }
             glAttachShader(program, shader);
@@ -167,7 +167,7 @@ namespace nexo::renderer {
             for (auto id: glShaderIds)
                 glDeleteShader(id);
 
-            THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
+            THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                                 "Opengl failed to compile the shader: " + std::string(infoLog.data()), "");
         }
 

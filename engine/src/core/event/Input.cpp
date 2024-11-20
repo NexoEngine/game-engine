@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Input.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
     #include "opengl/InputOpenGl.hpp"
 #endif
@@ -30,7 +30,7 @@ namespace nexo::event {
                 _instance = std::make_shared<InputOpenGl>(window);
                 return;
             #endif
-            THROW_EXCEPTION(core::UnknownGraphicsApi, "UNKNOWN");
+            THROW_EXCEPTION(renderer::UnknownGraphicsApi, "UNKNOWN");
         }
     }
 
