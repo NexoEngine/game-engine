@@ -35,17 +35,9 @@ int main(int argc, char **argv)
 
         while (editor.isOpen())
         {
-            auto startTime = std::chrono::high_resolution_clock::now();
             auto start = std::chrono::high_resolution_clock::now();
             editor.render();
             editor.update();
-            auto endTime = std::chrono::high_resolution_clock::now();
-
-            // Calculate elapsed time in milliseconds
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-
-            // Log the time spent
-            LOG(NEXO_INFO, "Editor took {}us to render", duration);
 
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> elapsed = end - start;

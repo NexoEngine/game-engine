@@ -22,7 +22,6 @@ namespace nexo::layer {
 
     void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext)
     {
-        auto startTime = std::chrono::high_resolution_clock::now();
         if (!m_camera)
         {
             LOG(NEXO_WARN, "Layer::onRender(): no camera is found, disabling render");
@@ -44,14 +43,6 @@ namespace nexo::layer {
             rendererContext->renderer2D.endScene();
         else
             rendererContext->renderer3D.endScene();
-        auto endTime = std::chrono::high_resolution_clock::now();
-
-        // Calculate elapsed time in milliseconds
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-
-        // Log the time spent
-        LOG(NEXO_INFO, "Layer took {}us to render", duration);
-        //std::cout << "Layer::onRender took " << duration << " ms" << std::endl;
     }
 
     void Layer::onUpdate(core::Timestep ts)

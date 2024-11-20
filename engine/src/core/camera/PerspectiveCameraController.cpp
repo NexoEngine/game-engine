@@ -33,7 +33,6 @@ namespace nexo::camera {
     void PerspectiveCameraController::onUpdate(const core::Timestep ts)
     {
         const float time = ts;
-        std::cout << "ca call" << std::endl;
 
         // Camera movement
         if (event::isKeyPressed(NEXO_KEY_Z))
