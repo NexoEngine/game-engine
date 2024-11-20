@@ -20,7 +20,7 @@
 #include "ecs/Coordinator.hpp"
 #include "core/event/Event.hpp"
 #include "Logger.hpp"
-#include "renderer/Renderer2D.hpp"
+#include "renderer/RendererContext.hpp"
 
 namespace nexo::scene {
     using SceneId = unsigned int;
@@ -35,6 +35,7 @@ namespace nexo::scene {
                 LOG(NEXO_INFO, "Scene {} created with id: {}", name, id);
                 m_rendererContext = std::make_shared<renderer::RendererContext>();
                 m_rendererContext->renderer2D.init();
+                m_rendererContext->renderer3D.init();
             };
             ~Scene()
             {

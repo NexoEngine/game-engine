@@ -16,17 +16,23 @@
 #include "components/Components.hpp"
 #include "renderer/Renderer2D.hpp"
 
+#include <chrono>
+
 namespace nexo::layer {
 
     void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext)
     {
+        auto startTime = std::chrono::high_resolution_clock::now();
         if (!m_camera)
         {
             LOG(NEXO_WARN, "Layer::onRender(): no camera is found, disabling render");
             isRendered = false;
             return;
         }
-        rendererContext->renderer2D.beginScene(m_camera->getViewProjectionMatrix());
+        if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
+            rendererContext->renderer2D.beginScene(m_camera->getViewProjectionMatrix());
+        else
+            rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix());
         for (const auto entity : m_entities)
         {
             auto transform = getComponent<components::TransformComponent>(entity);
@@ -34,7 +40,18 @@ namespace nexo::layer {
             if (renderComponent.isRendered)
                 renderComponent.draw(rendererContext, transform);
         }
-        rendererContext->renderer2D.endScene();
+        if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
+            rendererContext->renderer2D.endScene();
+        else
+            rendererContext->renderer3D.endScene();
+        auto endTime = std::chrono::high_resolution_clock::now();
+
+        // Calculate elapsed time in milliseconds
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+
+        // Log the time spent
+        LOG(NEXO_INFO, "Layer took {}us to render", duration);
+        //std::cout << "Layer::onRender took " << duration << " ms" << std::endl;
     }
 
     void Layer::onUpdate(core::Timestep ts)

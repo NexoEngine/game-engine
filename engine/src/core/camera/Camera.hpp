@@ -42,7 +42,7 @@ namespace nexo::camera {
             [[nodiscard]] virtual const glm::mat4 &getViewMatrix() const { return m_viewMatrix; };
             [[nodiscard]] virtual const glm::mat4 &getViewProjectionMatrix() const { return m_viewProjectionMatrix; };
 
-            [[nodiscard]] CameraMode getMode() const { return m_mode; };
+            [[nodiscard]] virtual CameraMode getMode() const = 0;
 
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
 
@@ -50,6 +50,7 @@ namespace nexo::camera {
             static CameraId nextCameraId;
         protected:
             CameraId m_id{};
+            CameraMode m_mode;
 
             glm::mat4 m_projectionMatrix{};
             glm::mat4 m_viewMatrix{};
@@ -57,7 +58,6 @@ namespace nexo::camera {
 
             glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
             float m_rotation = 0.0f;
-            CameraMode m_mode{};
         private:
             void recalculateViewMatrix();
     };

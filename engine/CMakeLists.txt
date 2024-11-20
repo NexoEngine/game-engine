@@ -12,6 +12,7 @@ set(COMMON_SOURCES
         common/Exception.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
+        engine/src/EntityFactory3D.cpp
         engine/src/Application.cpp
         engine/src/Application.cpp
         engine/src/renderer/Window.cpp
@@ -28,8 +29,11 @@ set(COMMON_SOURCES
         engine/src/renderer/Texture.cpp
         engine/src/renderer/SubTexture2D.cpp
         engine/src/renderer/Renderer2D.cpp
+        engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
+        engine/src/core/camera/PerspectiveCamera.cpp
         engine/src/core/camera/OrthographicCamera.cpp
+        engine/src/core/camera/PerspectiveCameraController.cpp
         engine/src/core/camera/OrthographicCameraController.cpp
         engine/src/core/camera/Camera.cpp
         engine/src/core/layer/Layer.cpp

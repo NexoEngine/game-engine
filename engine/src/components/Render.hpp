@@ -14,8 +14,10 @@
 #pragma once
 
 #include "Render2D.hpp"
+#include "Render3D.hpp"
 #include "Transform.hpp"
 #include "Shapes2D.hpp"
+#include "Shapes3D.hpp"
 
 #include <memory>
 #include <utility>
@@ -27,7 +29,9 @@ namespace nexo::components {
 
         bool isRendered = true;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context,
+                          const TransformComponent &transf) const = 0;
+
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
@@ -39,7 +43,8 @@ namespace nexo::components {
                               const std::shared_ptr<Shape2D> &shape) : sprite(std::move(sprite)), shape(shape)
         {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context,
+                  const TransformComponent &transform) const override
         {
             shape->draw(context, transform, sprite);
         }
@@ -50,10 +55,29 @@ namespace nexo::components {
         }
     };
 
+    struct Renderable3D final : Renderable {
+        MaterialComponent material;
+        std::shared_ptr<Shape3D> shape;
+
+        explicit Renderable3D(const MaterialComponent material,
+                              const std::shared_ptr<Shape3D> &shape) : material(material), shape(shape) {};
+
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const override
+        {
+            shape->draw(context, transf, material);
+        }
+
+        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        {
+            return false;
+        }
+    };
+
     struct RenderComponent {
         bool isRendered = true;
 
         std::shared_ptr<Renderable> renderable;
+
         RenderComponent() = default;
 
         explicit RenderComponent(const std::shared_ptr<Renderable> &renderable)

@@ -192,7 +192,7 @@ namespace nexo::renderer {
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()

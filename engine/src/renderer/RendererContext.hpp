@@ -1,4 +1,4 @@
-//// Components.hpp ///////////////////////////////////////////////////////////
+//// RendererContext.hpp //////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,19 +7,20 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        10/11/2024
-//  Description: Header file including the different components of the ecs
+//  Date:        20/11/2024
+//  Description: Header file for the renderer context class
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include "Transform.hpp"
+#include "Renderer2D.hpp"
+#include "Renderer3D.hpp"
 
-#include "SceneComponents.hpp"
-
-#include "Render.hpp"
-#include "Render2D.hpp"
-#include "Render3D.hpp"
-#include "Shapes2D.hpp"
-#include "Shapes3D.hpp"
+namespace nexo::renderer {
+    class RendererContext {
+        public:
+            RendererContext() = default;
+            Renderer2D renderer2D;
+            Renderer3D renderer3D;
+    };
+}

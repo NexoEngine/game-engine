@@ -21,7 +21,7 @@ namespace nexo::core {
         public:
             explicit Timer(std::string name) : m_name(std::move(name)), m_stopped(false)
             {
-                m_start = std::chrono::steady_clock::now();
+                m_start = std::chrono::high_resolution_clock::now();
             };
 
             ~Timer()
@@ -32,21 +32,21 @@ namespace nexo::core {
 
             void stop()
             {
-                const auto endTime = std::chrono::steady_clock::now();
+                const auto endTime = std::chrono::high_resolution_clock::now();
                 const long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_start).
                         time_since_epoch().count();
                 const long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTime).
                         time_since_epoch().count();
 
                 m_stopped = true;
-                const float duration = (end - start) * 0.001f;
+                const long long duration = (end - start) * 0.001f;
 
                 std::cout << m_name << duration << "ms" << std::endl;
             }
 
         private:
             std::string m_name;
-            std::chrono::time_point<std::chrono::steady_clock> m_start;
+            std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
             bool m_stopped;
     };
 }

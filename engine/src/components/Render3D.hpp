@@ -1,4 +1,4 @@
-//// Components.hpp ///////////////////////////////////////////////////////////
+//// Render3D.hpp /////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,19 +7,16 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        10/11/2024
-//  Description: Header file including the different components of the ecs
+//  Date:        20/11/2024
+//  Description: Header file for the render 3D components
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include "Transform.hpp"
+namespace nexo::components {
 
-#include "SceneComponents.hpp"
+    struct MaterialComponent {
+        glm::vec4 color;
+    };
 
-#include "Render.hpp"
-#include "Render2D.hpp"
-#include "Render3D.hpp"
-#include "Shapes2D.hpp"
-#include "Shapes3D.hpp"
+}

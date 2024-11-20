@@ -16,6 +16,7 @@
 #include "ADocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "renderer/Framebuffer.hpp"
+#include "core/camera/PerspectiveCameraController.hpp"
 
 #include <imgui.h>
 #include <ImGuizmo.h>
@@ -54,7 +55,7 @@ namespace nexo::editor {
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
 
-            std::shared_ptr<camera::OrthographicCameraController> m_camera;
+            std::shared_ptr<camera::PerspectiveCameraController> m_camera;
             std::set<scene::LayerId> m_hiddenLayers;
             scene::SceneId _sceneID{};
 

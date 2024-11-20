@@ -105,11 +105,6 @@ namespace nexo::renderer {
             [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D> &texture) const;
     };
 
-    class RendererContext {
-        public:
-            RendererContext() = default;
-            Renderer2D renderer2D;
-    };
 }
 
 

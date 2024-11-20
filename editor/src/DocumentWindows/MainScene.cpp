@@ -14,6 +14,7 @@
 
 #include "MainScene.hpp"
 #include "EntityFactory2D.hpp"
+#include "EntityFactory3D.hpp"
 #include "Nexo.hpp"
 #include "math/Matrix.hpp"
 
@@ -43,7 +44,10 @@ namespace nexo::editor {
         auto &app = getApp();
         _sceneID = app.createScene(m_sceneName);
         const scene::LayerId layerId = app.addNewLayer(_sceneID, "Layer 1");
-        m_camera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
+        m_camera = std::make_shared<camera::PerspectiveCameraController>(_viewSize.x / _viewSize.y);
+        //m_camera->setPosition({0.0f, 0.0f, -5.0f});
+        //std::cout << static_cast<int>(m_camera->getMode()) << std::endl;
+        //m_camera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
         app.attachCamera(_sceneID, m_camera, layerId);
         if (m_defaultScene)
             loadDefaultEntities(layerId);
@@ -57,9 +61,11 @@ namespace nexo::editor {
     void MainScene::loadDefaultEntities(const scene::LayerId defaultLayerId) const
     {
         auto &app = getApp();
-        const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
-        m_sceneManagerBridge->setSelectedEntity(basicQuad);
-        app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
+        //const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
+        //m_sceneManagerBridge->setSelectedEntity(basicQuad);
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
+        //app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
     }
 
     void MainScene::setupWindow()

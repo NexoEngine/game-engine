@@ -1,4 +1,4 @@
-//// Components.hpp ///////////////////////////////////////////////////////////
+//// EntityFactory3D.hpp //////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,19 +7,19 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        10/11/2024
-//  Description: Header file including the different components of the ecs
+//  Date:        20/11/2024
+//  Description: Header for the 3D entity factory
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include "Transform.hpp"
+#include <glm/glm.hpp>
 
-#include "SceneComponents.hpp"
+#include "ecs/Entity.hpp"
 
-#include "Render.hpp"
-#include "Render2D.hpp"
-#include "Render3D.hpp"
-#include "Shapes2D.hpp"
-#include "Shapes3D.hpp"
+namespace nexo {
+    class EntityFactory3D {
+        public:
+            static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+    };
+}

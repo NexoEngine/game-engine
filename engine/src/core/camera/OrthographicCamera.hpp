@@ -19,11 +19,13 @@
 namespace nexo::camera {
 
     // 2D Rendering only (rotation only around Z-axis)
-    class OrthographicCamera : public Camera {
+    class OrthographicCamera final : public Camera {
         public:
             OrthographicCamera(float left, float right, float bottom, float top);
 
             void setProjection(float left, float right, float bottom, float top);
+
+            [[nodiscard]] CameraMode getMode() const override {return m_mode;};
     };
 
 }

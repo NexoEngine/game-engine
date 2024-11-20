@@ -17,6 +17,7 @@
 #include "Transform.hpp"
 #include "Render2D.hpp"
 #include "renderer/Renderer2D.hpp"
+#include "renderer/RendererContext.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -32,7 +33,7 @@ namespace nexo::components {
     struct Quad final : Shape2D {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite) const override
         {
-            auto renderer2D = context->renderer2D;
+            const auto renderer2D = context->renderer2D;
             if (sprite.sprite != nullptr)
                 renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
                                                sprite.sprite);
@@ -58,7 +59,5 @@ namespace nexo::components {
             return localMousePos.x >= -halfSize.x && localMousePos.x <= halfSize.x &&
                    localMousePos.y >= -halfSize.y && localMousePos.y <= halfSize.y;
         }
-
-
     };
 }

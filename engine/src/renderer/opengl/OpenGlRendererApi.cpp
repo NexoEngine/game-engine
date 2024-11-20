@@ -25,6 +25,9 @@ namespace nexo::renderer {
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
         LOG(NEXO_DEV, "Opengl renderer api initialized");
     }
 
