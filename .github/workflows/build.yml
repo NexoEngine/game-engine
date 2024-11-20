@@ -1,0 +1,91 @@
+name: Build and Package
+
+on:
+  push:
+    branches:
+      - feat/cicd-build
+  pull_request:
+    branches:
+      - feat/cicd-build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive # Ensures all submodules are fetched
+
+      - name: Install required system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev libxcursor-dev
+
+      - name: Ensure vcpkg is initialized
+        run: |
+          if [ ! -f "./vcpkg/bootstrap-vcpkg.sh" ]; then
+            git clone https://github.com/microsoft/vcpkg.git vcpkg
+          fi
+          chmod +x ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/bootstrap-vcpkg.sh
+
+      - name: Install loguru using vcpkg
+        run: |
+          ./vcpkg/vcpkg install loguru
+        continue-on-error: true # Ignore if loguru installation fails
+
+      - name: Fetch and build loguru (if not available in vcpkg)
+        run: |
+          if [ ! -d "loguru" ]; then
+            git clone https://github.com/emilk/loguru.git
+            cd loguru
+            mkdir build && cd build
+            cmake ..
+            make -j$(nproc)
+            sudo make install
+            cd ../..
+          fi
+
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: "3.20"
+
+      - name: Build the project with GCC
+        env:
+            CC: gcc
+            CXX: g++
+        run: |
+            cmake -B build -DCMAKE_BUILD_TYPE=Debug -DNO_RAYLIB_COLORS=ON
+            cmake --build build --config Debug
+
+      - name: Copy build artifacts
+        run: |
+          if [ -d "./build/Debug" ]; then
+            cp -r ./build/Debug/* ./build/
+          else
+            echo "Debug build output not found" && exit 1
+          fi
+
+      - name: Copy resources
+        run: |
+          if [ -d "./ressources" ]; then
+            cp -r ./ressources ./build/
+          else
+            echo "Resources directory not found" && exit 1
+          fi
+
+      - name: Package the build into a tar archive
+        run: |
+          tar -C $(pwd) -cf package.tar build
+          if [ $? -ne 0 ]; then
+            echo "Tar packaging failed" && exit 1
+          fi
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          path: package.tar

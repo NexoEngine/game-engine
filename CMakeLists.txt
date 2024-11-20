@@ -21,6 +21,8 @@ set(GRAPHICS_API "OpenGL")
 
 find_package(Git QUIET)
 
+add_definitions(-DNO_RAYLIB_COLORS)
+
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
