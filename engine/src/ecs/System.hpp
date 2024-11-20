@@ -60,7 +60,7 @@ namespace nexo::ecs {
             std::shared_ptr<T> registerSystem() {
                 std::type_index typeName(typeid(T));
 
-                if (m_systems.find(typeName) != m_systems.end())
+                if (m_systems.contains(typeName))
                 {
                     LOG(NEXO_WARN, "ECS::SystemManager::registerSystem: trying to register a system more than once");
                     return nullptr;
@@ -82,7 +82,7 @@ namespace nexo::ecs {
             void setSignature(Signature signature) {
                 std::type_index typeName(typeid(T));
 
-                if (m_systems.find(typeName) == m_systems.end())
+                if (!m_systems.contains(typeName))
                     THROW_EXCEPTION(SystemNotRegistered);
 
                 m_signatures.insert({typeName, signature});

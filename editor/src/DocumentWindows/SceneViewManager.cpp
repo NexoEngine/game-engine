@@ -49,18 +49,15 @@ namespace nexo::editor {
             LOG(NEXO_ERROR, "SceneViewManager::duplicateSceneView: scene {} not found", uiId);
             return;
         }
-        auto scene = m_scenes.at(uiId);
-        std::string sceneName = scene->getName();
-        auto newScene = std::make_shared<MainScene>(*scene);
-        std::string newSceneName = newScene->getName() + " - View " + std::to_string(scene->idView++);
+        const auto scene = m_scenes.at(uiId);
+        const std::string sceneName = scene->getName();
+        const auto newScene = std::make_shared<MainScene>(*scene);
+        const std::string newSceneName = newScene->getName() + " - View " + std::to_string(scene->idView++);
         newScene->setName(newSceneName);
         newScene->setupFramebuffer();
         newScene->windowId = nextWindowId++;
-        ImGuiDockNode *dockNode = getDockNodeForWindow(sceneName.c_str());
-        if (dockNode)
-        {
+        if (const ImGuiDockNode *dockNode = getDockNodeForWindow(sceneName.c_str()))
             ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
-        }
         m_scenes[newScene->windowId] = newScene;
     }
 
@@ -75,14 +72,11 @@ namespace nexo::editor {
             newScene->setup();
             newScene->setSceneManager(m_sceneManagerBridge);
         }
-        std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
+        const std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
         if (!targetWindow.empty())
         {
-            ImGuiDockNode *dockNode = getDockNodeForWindow(targetWindow.c_str());
-            if (dockNode)
-            {
+            if (const ImGuiDockNode *dockNode = getDockNodeForWindow(targetWindow.c_str()))
                 ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
-            }
         }
         m_scenes[newScene->windowId] = newScene;
     }
@@ -94,7 +88,7 @@ namespace nexo::editor {
             LOG(NEXO_ERROR, "SceneViewManager::removeScene: scene {} not found", uiId);
             return;
         }
-        auto scene = m_scenes.at(uiId);
+        const auto scene = m_scenes.at(uiId);
         m_sceneManagerBridge->unselectEntity();
         auto &app = nexo::getApp();
         app.deleteScene(scene->getSceneId());
@@ -102,7 +96,7 @@ namespace nexo::editor {
         m_openScenes.clear();
     }
 
-    void SceneViewManager::hideLayer(WindowId uiId, scene::LayerId layerId)
+    void SceneViewManager::hideLayer(WindowId uiId, const scene::LayerId layerId) const
     {
         if (!m_scenes.contains(uiId))
         {
@@ -112,7 +106,7 @@ namespace nexo::editor {
         m_scenes.at(uiId)->hideLayer(layerId);
     }
 
-    void SceneViewManager::showLayer(WindowId uiId, scene::LayerId layerId)
+    void SceneViewManager::showLayer(WindowId uiId, const scene::LayerId layerId) const
     {
         if (!m_scenes.contains(uiId))
         {
@@ -122,7 +116,7 @@ namespace nexo::editor {
         m_scenes.at(uiId)->showLayer(layerId);
     }
 
-    bool SceneViewManager::isLayerHidden(WindowId uiId, scene::LayerId layerId)
+    bool SceneViewManager::isLayerHidden(WindowId uiId, const scene::LayerId layerId) const
     {
         if (!m_scenes.contains(uiId))
         {
@@ -132,7 +126,7 @@ namespace nexo::editor {
         return m_scenes.at(uiId)->isLayerHidden(layerId);
     }
 
-    void SceneViewManager::addDefaultCameraToLayer(WindowId uiId, scene::LayerId layerId)
+    void SceneViewManager::addDefaultCameraToLayer(WindowId uiId, const scene::LayerId layerId) const
     {
         if (!m_scenes.contains(uiId))
         {
@@ -142,12 +136,13 @@ namespace nexo::editor {
         m_scenes.at(uiId)->addDefaultCameraToLayer(layerId);
     }
 
-    const std::string &SceneViewManager::getSceneName(WindowId uiId)
+    const std::string &SceneViewManager::getSceneName(WindowId uiId) const
     {
+        static const std::string emptyString;
         if (!m_scenes.contains(uiId))
         {
             LOG(NEXO_ERROR, "SceneViewManager::getSceneName: scene {} not found", uiId);
-            return "";
+            return emptyString;
         }
         return m_scenes.at(uiId)->getName();
     }
@@ -165,7 +160,7 @@ namespace nexo::editor {
         {
             if (scene->isOpened())
             {
-                SceneProperties openScene;
+                SceneProperties openScene{};
                 openScene.sceneId = scene->getSceneId();
                 openScene.windowId = scene->windowId;
 

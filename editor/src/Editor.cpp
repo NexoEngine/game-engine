@@ -77,13 +77,12 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
 
         // Optional: If you need to initialize a layout
-        ImGuiID dockspaceID = ImGui::GetMainViewport()->ID;
 
-        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+        if (const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID; !ImGui::DockBuilderGetNode(dockspaceID)) {
             ImGui::DockBuilderRemoveNode(dockspaceID); // Clear any existing layout
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
 
-            ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+            const ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
 
             // Set the size of the root dock node to match the viewport
             ImGui::DockBuilderSetNodeSize(dockspaceID, viewportSize);
@@ -100,8 +99,6 @@ namespace nexo::editor {
             ImGui::DockBuilderFinish(dockspaceID);
         }
     }
-
-
 
     Editor::Editor()
     {
@@ -173,7 +170,7 @@ namespace nexo::editor {
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
-    void Editor::setupFonts(float scaleFactorX, float scaleFactorY)
+    void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY)
     {
         ImFontConfig fontConfig;
         fontConfig.OversampleH = 3; // Horizontal oversampling
@@ -201,7 +198,7 @@ namespace nexo::editor {
         fontawesome_config.MergeMode = true;
         fontawesome_config.OversampleH = 3; // Horizontal oversampling
         fontawesome_config.OversampleV = 3; // Vertical oversampling
-        static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         io.Fonts->AddFontFromFileTTF("../assets/fonts/fontawesome4.ttf", fontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");

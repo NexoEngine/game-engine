@@ -44,7 +44,7 @@ namespace nexo {
 
     void Application::registerWindowCallbacks()
     {
-        m_window->setResizeCallback([this](int width, int height) {
+        m_window->setResizeCallback([this](const int width, const int height) {
             auto event = event::EventWindowResize(width, height);
             m_eventManager->emitEvent<event::EventWindowResize>(std::make_shared<event::EventWindowResize>(event));
         });
@@ -54,7 +54,7 @@ namespace nexo {
             m_eventManager->emitEvent<event::EventWindowClose>(std::make_shared<event::EventWindowClose>(event));
         });
 
-        m_window->setKeyCallback([this](int key, int action, int mods) {
+        m_window->setKeyCallback([this](const int key, const int action, const int mods) {
             event::EventKey eventKey;
             eventKey.keycode = key;
             eventKey.mods = mods;
@@ -77,7 +77,7 @@ namespace nexo {
             m_eventManager->emitEvent<event::EventKey>(std::make_shared<event::EventKey>(eventKey));
         });
 
-        m_window->setKeyCallback([this](int key, int action, int mods) {
+        m_window->setKeyCallback([this](const int key, const int action, const int mods) {
             event::EventKey eventKey;
             eventKey.keycode = key;
             eventKey.mods = mods;
@@ -100,7 +100,7 @@ namespace nexo {
             m_eventManager->emitEvent<event::EventKey>(std::make_shared<event::EventKey>(eventKey));
         });
 
-        m_window->setMouseClickCallback([this](int button, int action, int mods) {
+        m_window->setMouseClickCallback([this](const int button, const int action, const int mods) {
             event::EventMouseClick event;
             event.button = static_cast<nexo::event::MouseButton>(button);
             event.mods = mods;
@@ -118,13 +118,13 @@ namespace nexo {
             m_eventManager->emitEvent<event::EventMouseClick>(std::make_shared<event::EventMouseClick>(event));
         });
 
-        m_window->setMouseScrollCallback([this](double xOffset, double yOffset) {
+        m_window->setMouseScrollCallback([this](const double xOffset, const double yOffset) {
             event::EventMouseScroll event(static_cast<float>(xOffset), static_cast<float>(yOffset));
             m_eventManager->emitEvent<event::EventMouseScroll>(std::make_shared<event::EventMouseScroll>(event));
         });
 
-        m_window->setMouseMoveCallback([this](double xpos, double ypos) {
-            event::EventMouseMove event(xpos, ypos);
+        m_window->setMouseMoveCallback([this](const double xpos, const double ypos) {
+            event::EventMouseMove event(static_cast<float>(xpos), static_cast<float>(ypos));
             m_eventManager->emitEvent<event::EventMouseMove>(std::make_shared<event::EventMouseMove>(event));
         });
     }
@@ -152,7 +152,7 @@ namespace nexo {
 
 #ifdef GRAPHICS_API_OPENGL
         gladLoadGL();
-        glViewport(0, 0, m_window->getWidth(), m_window->getHeight());
+        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
 #endif
 
         renderer::Renderer::init();
@@ -168,7 +168,7 @@ namespace nexo {
         m_sceneManager.setCoordinator(m_coordinator);
     }
 
-    void Application::run(scene::SceneId sceneId, const RenderingType renderingType)
+    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
     {
         const auto time = static_cast<float>(glfwGetTime());
         const core::Timestep timestep = time - m_lastFrameTime;
@@ -178,7 +178,7 @@ namespace nexo {
         if (!m_isMinimized)
         {
             // Clear
-             renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+            renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
             renderer::RenderCommand::clear();
 
             if (m_sceneManager.isSceneActive(sceneId))
@@ -222,40 +222,38 @@ namespace nexo {
         return m_sceneManager.addLayer(sceneId, layerName);
     }
 
-    scene::LayerId Application::addNewOverlay(scene::SceneId sceneId, const std::string &overlayName)
+    scene::LayerId Application::addNewOverlay(const scene::SceneId sceneId, const std::string &overlayName)
     {
         return m_sceneManager.addOverlay(sceneId, overlayName);
     }
 
-    void Application::removeLayer(scene::SceneId sceneId, scene::LayerId id)
+    void Application::removeLayer(const scene::SceneId sceneId, const scene::LayerId id)
     {
         std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (auto entity : layerEntities)
-            removeEntityFromScene(entity, sceneId, id);
+        for (const auto entity : layerEntities)
+            removeEntityFromScene(entity, sceneId, static_cast<int>(id));
         m_sceneManager.removeLayer(sceneId, id);
     }
 
-    void Application::removeOverlay(scene::SceneId sceneId, scene::LayerId id)
+    void Application::removeOverlay(const scene::SceneId sceneId, const scene::LayerId id)
     {
         std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (auto entity : layerEntities)
-            removeEntityFromScene(entity, sceneId, id);
+        for (const auto entity : layerEntities)
+            removeEntityFromScene(entity, sceneId, static_cast<int>(id));
         m_sceneManager.removeOverlay(sceneId, id);
     }
 
-    void Application::activateScene(scene::SceneId sceneId)
+    void Application::activateScene(const scene::SceneId sceneId)
     {
         if (m_sceneManager.isSceneActive(sceneId))
             return;
         m_sceneManager.setSceneActiveStatus(sceneId, true);
         auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (auto entity : sceneEntities)
+        for (const auto entity : sceneEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
-            {
                 activeSceneComponent->get().sceneIds.insert(sceneId);
-            }
             else
             {
                 components::InActiveScene newActiveSceneComponent;
@@ -265,19 +263,17 @@ namespace nexo {
         }
     }
 
-    void Application::activateLayer(scene::SceneId sceneId, scene::LayerId id)
+    void Application::activateLayer(const scene::SceneId sceneId, const scene::LayerId id)
     {
         if (m_sceneManager.isLayerActive(sceneId, id))
             return;
         m_sceneManager.setLayerActiveStatus(sceneId, id, true);
         auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (auto entity : layerEntities)
+        for (const auto entity : layerEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
-            {
                 activeSceneComponent->get().sceneIds.insert(sceneId);
-            }
             else
             {
                 components::InActiveScene newActiveSceneComponent;
@@ -287,13 +283,13 @@ namespace nexo {
         }
     }
 
-    void Application::deactivateScene(scene::SceneId sceneId)
+    void Application::deactivateScene(const scene::SceneId sceneId)
     {
         if (!m_sceneManager.isSceneActive(sceneId))
             return;
         m_sceneManager.setSceneActiveStatus(sceneId, false);
         auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (auto entity : sceneEntities)
+        for (const auto entity : sceneEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -305,13 +301,13 @@ namespace nexo {
         }
     }
 
-    void Application::deactivateLayer(scene::SceneId sceneId, scene::LayerId id)
+    void Application::deactivateLayer(const scene::SceneId sceneId, const scene::LayerId id)
     {
         if (!m_sceneManager.isLayerActive(sceneId, id))
             return;
         m_sceneManager.setLayerActiveStatus(sceneId, id, false);
         auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (auto entity : layerEntities)
+        for (const auto entity : layerEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -323,23 +319,23 @@ namespace nexo {
         }
     }
 
-    void Application::setSceneRenderStatus(scene::SceneId sceneId, bool status)
+    void Application::setSceneRenderStatus(const scene::SceneId sceneId, const bool status)
     {
         m_sceneManager.setSceneRenderStatus(sceneId, status);
     }
 
-    void Application::setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status)
+    void Application::setLayerRenderStatus(const scene::SceneId sceneId, const scene::LayerId id, const bool status)
     {
         m_sceneManager.setLayerRenderStatus(sceneId, id, status);
     }
 
-    void Application::addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, int id)
+    void Application::addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, const int layerId)
     {
         LOG(NEXO_DEV, "Added entity {} to scene {}", entity, sceneId);
-        if (id != -1)
+        if (layerId != -1)
         {
-            m_sceneManager.addEntityToLayer(entity, sceneId, id);
-            if (!m_sceneManager.isSceneActive(sceneId) || !m_sceneManager.isLayerActive(sceneId, id))
+            m_sceneManager.addEntityToLayer(entity, sceneId, layerId);
+            if (!m_sceneManager.isSceneActive(sceneId) || !m_sceneManager.isLayerActive(sceneId, layerId))
                 return;
         }
         else
@@ -359,11 +355,11 @@ namespace nexo {
         m_coordinator->addComponent<components::InActiveScene>(entity, newActiveSceneComponent);
     }
 
-    void Application::removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, int id)
+    void Application::removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, const int layerId)
     {
         LOG(NEXO_DEV, "Removed entity {} from scene {}", entity, sceneId);
-        if (id != -1)
-            m_sceneManager.removeEntityFromLayer(entity, sceneId, id);
+        if (layerId != -1)
+            m_sceneManager.removeEntityFromLayer(entity, sceneId, layerId);
         else
             m_sceneManager.removeGlobalEntity(entity, sceneId);
         if (!m_sceneManager.isSceneActive(sceneId))
@@ -377,17 +373,17 @@ namespace nexo {
         }
     }
 
-    void Application::attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id)
+    void Application::attachCamera(const scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, const scene::LayerId id)
     {
         m_sceneManager.attachCameraToLayer(sceneId, camera, id);
     }
 
-    void Application::detachCamera(scene::SceneId sceneId, scene::LayerId id)
+    void Application::detachCamera(const scene::SceneId sceneId, const scene::LayerId id)
     {
         m_sceneManager.detachCameraFromLayer(sceneId, id);
     }
 
-    std::shared_ptr<camera::Camera> Application::getCamera(scene::SceneId sceneId, scene::LayerId id)
+    std::shared_ptr<camera::Camera> Application::getCamera(const scene::SceneId sceneId, const scene::LayerId id)
     {
         return m_sceneManager.getCameraLayer(sceneId, id);
     }

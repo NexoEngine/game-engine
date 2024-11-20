@@ -25,7 +25,7 @@ namespace nexo::renderer {
             virtual ~Shader() = default;
 
             static std::shared_ptr<Shader> create(const std::string &path);
-            static std::shared_ptr<Shader> create(std::string name, const std::string &vertexSource, const std::string &fragmentSource);
+            static std::shared_ptr<Shader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
 
             virtual void bind() const = 0;
             virtual void unbind() const = 0;
@@ -37,7 +37,7 @@ namespace nexo::renderer {
 
             [[nodiscard]] virtual const std::string &getName() const = 0;
         protected:
-            std::string readFile(const std::string &filepath);
+            static std::string readFile(const std::string &filepath);
     };
 
     class ShaderLibrary {

@@ -27,7 +27,7 @@ namespace nexo {
         return Application::getInstance();
     }
 
-    void runEngine(scene::SceneId id, const RenderingType renderingType)
+    void runEngine(const scene::SceneId id, const RenderingType renderingType)
     {
         Application &app = Application::getInstance();
         app.run(id, renderingType);

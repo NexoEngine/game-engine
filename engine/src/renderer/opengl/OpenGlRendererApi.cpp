@@ -28,9 +28,9 @@ namespace nexo::renderer {
         LOG(NEXO_DEV, "Opengl renderer api initialized");
     }
 
-    void OpenGlRendererApi::setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
+    void OpenGlRendererApi::setViewport(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
     {
-        glViewport(x, y, width, height);
+        glViewport(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height));
     }
 
     void OpenGlRendererApi::clear()
@@ -43,9 +43,9 @@ namespace nexo::renderer {
         glClearColor(color.r, color.g, color.b, color.a);
     }
 
-    void OpenGlRendererApi::drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount)
+    void OpenGlRendererApi::drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, const unsigned int indexCount)
     {
-        unsigned int count = indexCount ? vertexArray->getIndexBuffer()->getCount() : indexCount;
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+        const unsigned int count = indexCount ? vertexArray->getIndexBuffer()->getCount() : indexCount;
+        glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 }

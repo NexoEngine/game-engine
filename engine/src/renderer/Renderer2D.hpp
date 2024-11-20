@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "core/camera/OrthographicCamera.hpp"
 #include "Texture.hpp"
 #include "SubTexture2D.hpp"
 #include "Shader.hpp"
@@ -43,7 +42,7 @@ namespace nexo::renderer {
         const unsigned int maxQuads = 10000;
         const unsigned int maxVertices = maxQuads * 4;
         const unsigned int maxIndices = maxQuads * 6;
-        static const unsigned int maxTextureSlots = 32;
+        static constexpr unsigned int maxTextureSlots = 32;
 
         std::shared_ptr<Shader> textureShader;
         std::shared_ptr<VertexArray> quadVertexArray;
@@ -67,43 +66,43 @@ namespace nexo::renderer {
             void init();
             void shutdown();
 
-            void beginScene(const glm::mat4 &viewProjection);
-            void endScene();
-            void flush();
+            void beginScene(const glm::mat4 &viewProjection) const;
+            void endScene() const;
+            void flush() const;
 
             // Without rotation
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
             // With texture
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
             // With subtexture (sprites)
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
 
 
             // With rotation
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
             // With texture
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
             // With subtexture (sprites)
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture);
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
 
 
-            void resetStats();
-            RendererStats getStats();
+            void resetStats() const;
+            [[nodiscard]] RendererStats getStats() const;
 
         private:
             Renderer2DStorage *m_storage = nullptr;
 
-            void flushAndReset();
+            void flushAndReset() const;
 
             // Helper functions
-            void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords);
-            float getTextureIndex(const std::shared_ptr<Texture2D> &texture);
+            void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords) const;
+            [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D> &texture) const;
     };
 
     class RendererContext {

@@ -24,7 +24,7 @@ namespace nexo::event {
             m_eventQueue.pop();
 
             std::type_index typeIndex(typeid(*event));
-            if (m_listeners.find(typeIndex) != m_listeners.end()) {
+            if (m_listeners.contains(typeIndex)) {
                 for (auto *listener : m_listeners[typeIndex]) {
                     event->trigger(*listener);
                     if (event->consumed)

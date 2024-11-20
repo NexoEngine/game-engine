@@ -28,7 +28,7 @@ namespace nexo::renderer {
         void bind() override;
         void unbind() override;
 
-        unsigned int getFramebufferId() const override;
+        [[nodiscard]] unsigned int getFramebufferId() const override;
 
         void resize(unsigned int width, unsigned int height) override;
 

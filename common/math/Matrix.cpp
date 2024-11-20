@@ -27,7 +27,7 @@ namespace nexo::math {
         outScale.z = glm::length(glm::vec3(mat[2][0], mat[2][1], mat[2][2]));
 
         // Normalize rows to remove scale
-        glm::mat3 rotationMatrix = glm::mat3(mat);
+        auto rotationMatrix = glm::mat3(mat);
         if (outScale.x != 0) rotationMatrix[0] /= outScale.x;
         if (outScale.y != 0) rotationMatrix[1] /= outScale.y;
         if (outScale.z != 0) rotationMatrix[2] /= outScale.z;
@@ -40,9 +40,9 @@ namespace nexo::math {
         }
 
         // Extract Euler angles (rotation)
-        outRotation.x = atan2(rotationMatrix[1][2], rotationMatrix[2][2]); // Rotation around X-axis
-        float c2 = sqrt(rotationMatrix[0][0] * rotationMatrix[0][0] + rotationMatrix[0][1] * rotationMatrix[0][1]);
-        outRotation.y = atan2(-rotationMatrix[0][2], c2);                  // Rotation around Y-axis
-        outRotation.z = atan2(rotationMatrix[0][1], rotationMatrix[0][0]); // Rotation around Z-axis
+        outRotation.x = static_cast<float>(atan2(rotationMatrix[1][2], rotationMatrix[2][2])); // Rotation around X-axis
+        const auto c2 = static_cast<float>(sqrt(rotationMatrix[0][0] * rotationMatrix[0][0] + rotationMatrix[0][1] * rotationMatrix[0][1]));
+        outRotation.y = static_cast<float>(atan2(-rotationMatrix[0][2], c2));                  // Rotation around Y-axis
+        outRotation.z = static_cast<float>(atan2(rotationMatrix[0][1], rotationMatrix[0][0])); // Rotation around Z-axis
     }
 }

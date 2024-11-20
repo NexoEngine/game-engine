@@ -33,7 +33,7 @@ namespace nexo::ecs {
     constexpr Entity MAX_ENTITIES = 8191;
     using ComponentType = std::uint8_t;
 
-    const ComponentType MAX_COMPONENT_TYPE = 32;
+    constexpr ComponentType MAX_COMPONENT_TYPE = 32;
 
     /**
         * @class IComponentArray
@@ -72,7 +72,7 @@ namespace nexo::ecs {
                 */
             void insertData(const Entity entity, T component)
             {
-                if (m_entityToIndexMap.find(entity) != m_entityToIndexMap.end())
+                if (m_entityToIndexMap.contains(entity))
                 {
                     LOG(NEXO_WARN, "ECS::ComponentArray::insertData: Component already added to entity {}", entity);
                     return;
@@ -92,7 +92,7 @@ namespace nexo::ecs {
                 */
             void removeData(const Entity entity)
             {
-                if (m_entityToIndexMap.find(entity) == m_entityToIndexMap.end())
+                if (!m_entityToIndexMap.contains(entity))
                     THROW_EXCEPTION(ComponentNotFound, entity);
 
                 size_t indexOfRemovedEntity = m_entityToIndexMap[entity];
@@ -117,7 +117,7 @@ namespace nexo::ecs {
                 */
             T &getData(const Entity entity)
             {
-                if (m_entityToIndexMap.find(entity) == m_entityToIndexMap.end())
+                if (!m_entityToIndexMap.contains(entity))
                     THROW_EXCEPTION(ComponentNotFound, entity);
 
                 return m_componentArray[m_entityToIndexMap[entity]];
@@ -130,13 +130,13 @@ namespace nexo::ecs {
                 */
             void entityDestroyed(const Entity entity) override
             {
-                if (m_entityToIndexMap.find(entity) != m_entityToIndexMap.end())
+                if (m_entityToIndexMap.contains(entity))
                     removeData(entity);
             }
 
-            bool hasComponent(const Entity entity)
+            bool hasComponent(const Entity entity) const
             {
-                return m_entityToIndexMap.find(entity) != m_entityToIndexMap.end();
+                return m_entityToIndexMap.contains(entity);
             }
 
         private:
@@ -170,7 +170,7 @@ namespace nexo::ecs {
             void registerComponent()
             {
                 std::type_index typeName(typeid(T));
-                if (m_componentTypes.find(typeName) != m_componentTypes.end())
+                if (m_componentTypes.contains(typeName))
                 {
                     LOG(NEXO_WARN, "ECS::ComponentManager::registerComponent: Component already registered");
                     return;
@@ -192,7 +192,7 @@ namespace nexo::ecs {
             ComponentType getComponentType()
             {
                 const std::type_index typeName(typeid(T));
-                if (m_componentTypes.find(typeName) == m_componentTypes.end())
+                if (!m_componentTypes.contains(typeName))
                     THROW_EXCEPTION(ComponentNotRegistered);
 
                 return m_componentTypes[typeName];
@@ -273,7 +273,7 @@ namespace nexo::ecs {
             {
                 const std::type_index typeName(typeid(T));
 
-                if (m_componentArrays.find(typeName) == m_componentArrays.end())
+                if (!m_componentArrays.contains(typeName))
                     THROW_EXCEPTION(ComponentNotRegistered);
 
                 return std::static_pointer_cast<ComponentArray<T> >(m_componentArrays[typeName]);

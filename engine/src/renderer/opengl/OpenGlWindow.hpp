@@ -17,9 +17,6 @@
 #include "renderer/Window.hpp"
 
 namespace nexo::renderer {
-
-    static void glfwErrorCallback(int errorCode, const char *errorStr);
-
     class OpenGlWindow final : public Window {
         public:
             explicit OpenGlWindow(const int width = 1920,

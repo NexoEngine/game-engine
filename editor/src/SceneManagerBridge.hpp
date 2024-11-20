@@ -62,12 +62,12 @@ namespace nexo::editor {
     public:
         SceneManagerBridge()  = default;
 
-        scene::SceneManager &getSceneManager() const {return getApp().getSceneManager();};
+        [[nodiscard]] static scene::SceneManager &getSceneManager() {return getApp().getSceneManager();};
 
         [[nodiscard]] const layer::LayerStack& getSceneLayers(scene::SceneId sceneId) const;
         [[nodiscard]] std::shared_ptr<camera::Camera> getCameraLayer(scene::SceneId sceneId, scene::LayerId id) const;
 
-        [[nodiscard]] const std::string getSceneName(scene::SceneId sceneId) const;
+        [[nodiscard]] std::string getSceneName(scene::SceneId sceneId) const;
         [[nodiscard]] std::set<ecs::Entity> getLayerEntities(scene::SceneId sceneId, scene::LayerId id) const;
         [[nodiscard]] std::vector<ecs::Entity> getSceneEntities(scene::SceneId sceneId) const;
         [[nodiscard]] std::vector<ecs::Entity> getSceneRenderedEntities(scene::SceneId sceneId) const;
@@ -75,19 +75,19 @@ namespace nexo::editor {
         [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
         [[nodiscard]] int getSelectedEntity() const;
         [[nodiscard]] SelectionType getSelectionType() const;
-        bool isSceneRendered(scene::SceneId id) { return getApp().getSceneManager().isSceneRendered(id); };
+        static bool isSceneRendered(const scene::SceneId id) { return getApp().getSceneManager().isSceneRendered(id); };
         void setSceneActiveStatus(scene::SceneId sceneId, bool status) const;
-        void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
+        void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status) const;
         [[nodiscard]] bool isEntitySelected() const;
 
         void deactivateAllScenes() const;
 
         void setSelectedEntity(ecs::Entity entity);
         void setData(const VariantData& data) { m_selectionData = data; }
-        const VariantData &getData() const {return m_selectionData; };
-        void setSelectionType(SelectionType type) { m_selectionType = type; }
+        [[nodiscard]] const VariantData &getData() const {return m_selectionData; };
+        void setSelectionType(const SelectionType type) { m_selectionType = type; }
         void unselectEntity();
-        void renameObject(SelectionType type, VariantData &data, const std::string &newName);
+        void renameObject(SelectionType type, VariantData &data, const std::string &newName) const;
 
         ~SceneManagerBridge() = default;
     private:

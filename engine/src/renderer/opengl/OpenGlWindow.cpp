@@ -27,7 +27,7 @@ namespace nexo::renderer {
     void OpenGlWindow::setupCallback() const
     {
         // Resize event
-        glfwSetWindowSizeCallback(_openGlWindow, [](GLFWwindow *window, int width, int height)
+        glfwSetWindowSizeCallback(_openGlWindow, [](GLFWwindow *window, const int width, const int height)
         {
             auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
             props->width = width;
@@ -54,7 +54,7 @@ namespace nexo::renderer {
         });
 
         // Mouse click callback
-        glfwSetMouseButtonCallback(_openGlWindow, [](GLFWwindow *window, int button, const int action, const int mods)
+        glfwSetMouseButtonCallback(_openGlWindow, [](GLFWwindow *window, const int button, const int action, const int mods)
         {
             const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->mouseClickCallback)
@@ -88,7 +88,7 @@ namespace nexo::renderer {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        _openGlWindow = glfwCreateWindow(_props.width, _props.height, _props.title, nullptr, nullptr);
+        _openGlWindow = glfwCreateWindow(static_cast<int>(_props.width), static_cast<int>(_props.height), _props.title, nullptr, nullptr);
         if (!_openGlWindow)
             THROW_EXCEPTION(core::GraphicsApiWindowInitFailure, "OPENGL");
         glfwMakeContextCurrent(_openGlWindow);

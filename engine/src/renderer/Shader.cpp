@@ -30,7 +30,7 @@ namespace nexo::renderer {
 
     }
 
-    std::shared_ptr<Shader> Shader::create(std::string name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<Shader> Shader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
     {
         #ifdef GRAPHICS_API_OPENGL
             return std::make_shared<OpenGlShader>(name, vertexSource, fragmentSource);
@@ -89,7 +89,7 @@ namespace nexo::renderer {
 
     std::shared_ptr<Shader> ShaderLibrary::get(const std::string &name) const
     {
-        if (m_shaders.find(name) == m_shaders.end())
+        if (!m_shaders.contains(name))
         {
             std::cerr << "Shader not found: " << name << std::endl;
             return nullptr;

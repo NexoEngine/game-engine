@@ -46,7 +46,8 @@ namespace nexo::renderer {
 
         glGenTextures(1, &m_colorAttachments);
         glBindTexture(GL_TEXTURE_2D, m_colorAttachments);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_specs.width, m_specs.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height), 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -54,7 +55,8 @@ namespace nexo::renderer {
 
         glGenTextures(1, &m_depthAttachment);
         glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_specs.width, m_specs.height, 0, GL_DEPTH_STENCIL,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<int>(m_specs.width),
+                     static_cast<int>(m_specs.height), 0, GL_DEPTH_STENCIL,
                      GL_UNSIGNED_INT_24_8, nullptr);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment, 0);
 
@@ -69,23 +71,23 @@ namespace nexo::renderer {
         if (toResize)
         {
             glBindTexture(GL_TEXTURE_2D, m_colorAttachments);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_specs.width, m_specs.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height),
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
             glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_specs.width, m_specs.height, 0, GL_DEPTH_STENCIL,
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<int>(m_specs.width),
+                         static_cast<int>(m_specs.height), 0, GL_DEPTH_STENCIL,
                          GL_UNSIGNED_INT_24_8, nullptr);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-        glViewport(0, 0, m_specs.width , m_specs.height);
+        glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()
     {
-
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     }
 
     unsigned int OpenGlFramebuffer::getFramebufferId() const
@@ -93,7 +95,7 @@ namespace nexo::renderer {
         return m_id;
     }
 
-    void OpenGlFramebuffer::resize(unsigned int width, unsigned int height)
+    void OpenGlFramebuffer::resize(const unsigned int width, const unsigned int height)
     {
         m_specs.width = width;
         m_specs.height = height;

@@ -64,7 +64,7 @@ namespace nexo::event {
         template <typename EventType>
         void registerListener(BaseListener* listener) {
             const std::type_index typeIndex(typeid(EventType));
-            if (m_listeners.find(typeIndex) == m_listeners.end()) {
+            if (!m_listeners.contains(typeIndex)) {
                 m_listeners[typeIndex] = std::vector<BaseListener*>();
             }
 
@@ -79,7 +79,7 @@ namespace nexo::event {
             if (const auto it = m_listeners.find(typeIndex); it != m_listeners.end()) {
                 auto& listeners = it->second;
 
-                if (const auto listenerIt = std::find(listeners.begin(), listeners.end(), listener); listenerIt != listeners.end()) {
+                if (const auto listenerIt = std::ranges::find(listeners, listener); listenerIt != listeners.end()) {
                     listeners.erase(listenerIt);
                     LOG(NEXO_DEV, "EventManager(unregisterListener): Unregistered listener {}", listener->getListenerName());
 

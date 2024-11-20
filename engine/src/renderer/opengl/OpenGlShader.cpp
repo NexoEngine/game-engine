@@ -66,23 +66,23 @@ namespace nexo::renderer {
         std::unordered_map<GLenum, std::string> shaderSources;
 
         const char *typeToken = "#type";
-        size_t typeTokenLength = strlen(typeToken);
+        const size_t typeTokenLength = strlen(typeToken);
         size_t pos = src.find(typeToken, 0);
         int currentLine = 1;
         while (pos != std::string::npos)
         {
-            size_t eol = src.find_first_of("\r\n", pos);
+            const size_t eol = src.find_first_of("\r\n", pos);
             if (eol == std::string::npos)
                 THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
                             "Syntax error at line: " + std::to_string(currentLine), filePath);
 
-            size_t begin = pos + typeTokenLength + 1;
+            const size_t begin = pos + typeTokenLength + 1;
             std::string type = src.substr(begin, eol - begin);
             if (!shaderTypeFromString(type))
                 THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
                             "Invalid shader type encountered at line: " + std::to_string(currentLine), filePath);
 
-            size_t nextLinePos = src.find_first_not_of("\r\n", eol);
+            const size_t nextLinePos = src.find_first_not_of("\r\n", eol);
             if (nextLinePos == std::string::npos)
                 THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
                             "Syntax error at line: " + std::to_string(currentLine), filePath);
@@ -107,15 +107,15 @@ namespace nexo::renderer {
         if (shaderSources.size() > 2)
             THROW_EXCEPTION(core::ShaderCreationFailed, "OPENGL",
                         "Only two shader type (vertex/fragment) are supported for now", "");
-        GLuint program = glCreateProgram();
+        const GLuint program = glCreateProgram();
         std::array<GLenum, 2> glShaderIds{};
         unsigned int shaderIndex = 0;
-        for (auto &kv: shaderSources)
+        for (const auto &[fst, snd]: shaderSources)
         {
-            const GLenum type = kv.first;
-            const std::string src = kv.second;
+            const GLenum type = fst;
+            const std::string src = snd;
             // Create an empty vertex shader handle
-            GLuint shader = glCreateShader(type);
+            const GLuint shader = glCreateShader(type);
 
             // Send the vertex shader source code to GL
             // Note that std::string's .c_str is NULL character terminated.
@@ -172,7 +172,7 @@ namespace nexo::renderer {
         }
 
         // Always detach shaders after a successful link.
-        for (auto id: glShaderIds)
+        for (const auto id: glShaderIds)
             glDetachShader(program, id);
     }
 
@@ -199,7 +199,7 @@ namespace nexo::renderer {
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
-    void OpenGlShader::setUniformInt(const std::string &name, int value) const
+    void OpenGlShader::setUniformInt(const std::string &name, const int value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         glUniform1i(loc, value);
@@ -208,6 +208,6 @@ namespace nexo::renderer {
     void OpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
-        glUniform1iv(loc, count, values);
+        glUniform1iv(loc, static_cast<int>(count), values);
     }
 }

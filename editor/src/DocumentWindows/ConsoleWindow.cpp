@@ -176,7 +176,7 @@ namespace nexo::editor {
 
             for (const auto &[level, name]: levels)
             {
-                bool selected = (selectedVerbosityLevels.find(level) != selectedVerbosityLevels.end());
+                bool selected = (selectedVerbosityLevels.contains(level));
                 if (ImGui::Checkbox(name, &selected))
                 {
                     if (selected)

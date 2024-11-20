@@ -14,11 +14,11 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
-#include "core/camera/Camera.hpp"
 #include "IconsFontAwesome.h"
 #include "PopupManager.hpp"
 
 #include <unordered_map>
+#include <utility>
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -39,9 +39,9 @@ namespace nexo::editor {
         VariantData data;
         std::vector<SceneObject> children;
 
-        SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, NodeId id = 0,
+        explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {}, NodeId id = 0,
                     SelectionType type = SelectionType::NONE, VariantData data = {})
-            : uiName(name), children(std::move(children)), nodeId(id), type(type), data(std::move(data)) {}
+            : nodeId(id), uiName(std::move(name)), type(type), data(std::move(data)), children(std::move(children)) {}
     };
 
     class SceneTreeWindow : public ADocumentWindow {
@@ -68,14 +68,14 @@ namespace nexo::editor {
             SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
             SceneObject newLayerNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId, const std::string &layerName);
             SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId);
-            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, int layerId, ecs::Entity entity);
+            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, unsigned int layerId, ecs::Entity entity);
 
             void handleRename(SceneObject &obj);
-            bool handleSelection(SceneObject &obj, std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags);
-            void sceneSelected(SceneObject &obj);
-            void layerSelected(SceneObject &obj);
-            void cameraSelected(SceneObject &obj);
-            void entitySelected(SceneObject &obj);
+            bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
+            void sceneSelected(const SceneObject &obj);
+            void layerSelected(const SceneObject &obj) const;
+            void cameraSelected(const SceneObject &obj) const;
+            void entitySelected(const SceneObject &obj) const;
             void showNode(SceneObject &object);
             void sceneContextMenu();
             void sceneCreationMenu();

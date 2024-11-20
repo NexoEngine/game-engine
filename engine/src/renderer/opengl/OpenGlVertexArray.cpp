@@ -19,7 +19,7 @@
 
 namespace nexo::renderer {
 
-    static GLenum shaderDataTypeToOpenGltype(ShaderDataType type)
+    static GLenum shaderDataTypeToOpenGltype(const ShaderDataType type)
     {
         switch (type)
         {
@@ -34,7 +34,7 @@ namespace nexo::renderer {
             case ShaderDataType::MAT3: return GL_FLOAT;
             case ShaderDataType::MAT4: return GL_FLOAT;
             case ShaderDataType::BOOL: return GL_BOOL;
-            default: return -1;
+            default: return 0;
         }
     }
 
@@ -69,11 +69,11 @@ namespace nexo::renderer {
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(
                 index,
-                element.getComponentCount(),
+                static_cast<int>(element.getComponentCount()),
                 shaderDataTypeToOpenGltype(element.type),
                 element.normalized ? GL_TRUE : GL_FALSE,
-                layout.getStride(),
-                (const void *)(uintptr_t)element.offset
+                static_cast<int>(layout.getStride()),
+                reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
             );
             index++;
         }

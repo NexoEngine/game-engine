@@ -18,8 +18,8 @@
 namespace nexo::renderer {
 
     struct FramebufferSpecs {
-        unsigned int width;
-        unsigned int height;
+        unsigned int width{};
+        unsigned int height{};
 
         unsigned int samples = 1;
 
@@ -33,7 +33,7 @@ namespace nexo::renderer {
             virtual void bind() = 0;
             virtual void unbind() = 0;
 
-            virtual unsigned int getFramebufferId() const = 0;
+            [[nodiscard]] virtual unsigned int getFramebufferId() const = 0;
 
             virtual void resize(unsigned int width, unsigned int height) = 0;
 

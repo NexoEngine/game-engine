@@ -33,10 +33,11 @@ namespace nexo::scene {
 
     const std::string &SceneManager::getSceneName(SceneId sceneId) const
     {
+        static const std::string emptyString;
         if (!scenes.contains(sceneId))
         {
             LOG(NEXO_ERROR, "SceneManager:::getSceneName: id {} does not exist", sceneId);
-            return "";
+            return emptyString;
         }
         return scenes.at(sceneId).getName();
     }
@@ -96,10 +97,11 @@ namespace nexo::scene {
 
     const layer::LayerStack &SceneManager::getSceneLayers(SceneId sceneId) const
     {
+        static const layer::LayerStack emptyLayerStack;
         if (!scenes.contains(sceneId))
         {
             LOG(NEXO_ERROR, "SceneManager:::getSceneLayers: id {} does not exist", sceneId);
-            return {};
+            return emptyLayerStack;
         }
         return scenes.at(sceneId).getLayerStack();
     }

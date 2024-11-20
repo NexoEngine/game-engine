@@ -21,15 +21,15 @@ namespace nexo::system {
         std::queue<ecs::Entity> inactiveEntities;
         for (const auto entity : entities)
         {
-            auto &sceneComponent = coord->getComponent<components::InActiveScene>(entity);
-            if (sceneComponent.sceneIds.erase(sceneId) != 0)
-                if (sceneComponent.sceneIds.empty())
+            auto &[sceneIds] = coord->getComponent<components::InActiveScene>(entity);
+            if (sceneIds.erase(sceneId) != 0)
+                if (sceneIds.empty())
                     inactiveEntities.push(entity);
         }
 
         while (!inactiveEntities.empty())
         {
-            auto entity = inactiveEntities.front();
+            const auto entity = inactiveEntities.front();
             coord->removeComponent<components::InActiveScene>(entity);
             inactiveEntities.pop();
         }

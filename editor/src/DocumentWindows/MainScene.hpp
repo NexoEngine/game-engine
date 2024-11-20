@@ -21,9 +21,9 @@
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
-        class MainScene : public ADocumentWindow {
+        class MainScene final : public ADocumentWindow {
         public:
-            MainScene(std::string sceneName, bool defaultScene = false);
+            explicit MainScene(std::string sceneName, bool defaultScene = false);
             ~MainScene() override;
 
             void setup() override;
@@ -31,16 +31,16 @@ namespace nexo::editor {
             void show() override;
             void update() override;
 
-            const std::string &getName() const {return m_sceneName;};
+            [[nodiscard]] const std::string &getName() const {return m_sceneName;};
             void setName(const std::string &name) {m_sceneName = name; };
 
             void setupFramebuffer();
 
-            scene::SceneId getSceneId() {return _sceneID;};
+            [[nodiscard]] scene::SceneId getSceneId() const {return _sceneID;};
 
-            void hideLayer(scene::LayerId id) { m_hiddenLayers.insert(id); };
-            void showLayer(scene::LayerId id) { m_hiddenLayers.erase(id); };
-            bool isLayerHidden(scene::LayerId id) { return m_hiddenLayers.contains(id); };
+            void hideLayer(const scene::LayerId id) { m_hiddenLayers.insert(id); };
+            void showLayer(const scene::LayerId id) { m_hiddenLayers.erase(id); };
+            [[nodiscard]] bool isLayerHidden(const scene::LayerId id) const { return m_hiddenLayers.contains(id); };
             void addDefaultCameraToLayer(scene::LayerId id) const;
 
             // Strictly used for display purposes when having multiple view of one scene
@@ -56,7 +56,7 @@ namespace nexo::editor {
 
             std::shared_ptr<camera::OrthographicCameraController> m_camera;
             std::set<scene::LayerId> m_hiddenLayers;
-            scene::SceneId _sceneID;
+            scene::SceneId _sceneID{};
 
             std::shared_ptr<renderer::Framebuffer> m_framebuffer;
 
@@ -66,8 +66,8 @@ namespace nexo::editor {
             void setupWindow();
             void setupImguizmo();
             void setupScene();
-            void loadDefaultEntities(scene::LayerId defaultLayerId);
-            void setHiddenLayerStatus(bool status);
+            void loadDefaultEntities(scene::LayerId defaultLayerId) const;
+            void setHiddenLayerStatus(bool status) const;
 
             // void add_cube()
             // {
@@ -126,11 +126,11 @@ namespace nexo::editor {
             void handleKeyEvents();
 
             void renderToolbar();
-            void renderGizmo();
+            void renderGizmo() const;
             void renderView();
 
-            glm::vec2 getMouseWorldPosition() const;
+            [[nodiscard]] glm::vec2 getMouseWorldPosition() const;
 
-            void rayPicking(void);
+            void rayPicking() const;
     };
 }

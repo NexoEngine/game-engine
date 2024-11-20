@@ -24,8 +24,6 @@
 #include "DocumentWindows/SceneViewManager.hpp"
 #include "SceneManagerBridge.hpp"
 #include "Nexo.hpp"
-#include "DocumentWindows/MainScene.hpp"
-
 
 namespace nexo::editor {
     constexpr auto LOGURU_CALLBACK_NAME = "GEE";

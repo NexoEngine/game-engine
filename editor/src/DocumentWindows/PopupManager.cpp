@@ -35,7 +35,7 @@ namespace nexo::editor {
 
     bool PopupManager::showPopup(const std::string &popupName)
     {
-        if (m_popups.find(popupName) == m_popups.end())
+        if (!m_popups.contains(popupName))
             return false;
         if (m_popups.at(popupName))
         {
@@ -48,7 +48,7 @@ namespace nexo::editor {
 
     bool PopupManager::showPopupModal(const std::string &popupModalName)
     {
-        if (m_popups.find(popupModalName) == m_popups.end())
+        if (!m_popups.contains(popupModalName))
             return false;
         if (m_popups.at(popupModalName))
         {
