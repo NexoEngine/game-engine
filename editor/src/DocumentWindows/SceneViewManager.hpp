@@ -34,18 +34,25 @@ namespace nexo::editor {
             void show() override;
             void update() override;
             void addNewScene(const std::string &sceneName, const std::shared_ptr<MainScene>& scene = nullptr);
-            void duplicateSceneView(const std::string &sceneName, const std::string &fromScene, const std::shared_ptr<MainScene>& scene);
-            void removeScene(const std::string &sceneName);
+            void duplicateSceneView(WindowId uiId);
+            void removeScene(WindowId uiId);
+            std::shared_ptr<MainScene> getScene(WindowId uiId) {return m_scenes.at(uiId); };
+
+            void hideLayer(WindowId uiId, scene::LayerId layerId);
+            void showLayer(WindowId uiId, scene::LayerId layerId);
+            bool isLayerHidden(WindowId uiId, scene::LayerId layerId);
+            void addDefaultCameraToLayer(WindowId uiId, scene::LayerId layerId);
 
             std::vector<SceneProperties> &getOpenScenes() { return m_openScenes; };
 
             int getSelectedScene() const { return selectedScene; };
             void setSelectedScene(scene::SceneId scene) {selectedScene = scene;};
+            const std::string &getSceneName(WindowId uiId);
         private:
             std::vector<SceneProperties> m_openScenes;
 
             static std::shared_ptr<SceneViewManager> m_instance;
-            std::map<std::string, std::shared_ptr<MainScene>> m_scenes;
+            std::map<WindowId, std::shared_ptr<MainScene>> m_scenes;
             int selectedScene = -1;
 
             ImGuiDockNode* getDockNodeForWindow(const char* windowName);

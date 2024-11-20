@@ -18,7 +18,7 @@
 
 namespace nexo::layer {
 
-    void Layer::onRender()
+    void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext)
     {
         if (!m_camera)
         {
@@ -26,15 +26,15 @@ namespace nexo::layer {
             isRendered = false;
             return;
         }
-        renderer::Renderer2D::beginScene(m_camera->getViewProjectionMatrix());
+        rendererContext->renderer2D.beginScene(m_camera->getViewProjectionMatrix());
         for (const auto entity : m_entities)
         {
             auto transform = getComponent<components::TransformComponent>(entity);
             auto renderComponent = getComponent<components::RenderComponent>(entity);
             if (renderComponent.isRendered)
-                renderComponent.draw(transform);
+                renderComponent.draw(rendererContext, transform);
         }
-        renderer::Renderer2D::endScene();
+        rendererContext->renderer2D.endScene();
     }
 
     void Layer::onUpdate(core::Timestep ts)
@@ -71,7 +71,8 @@ namespace nexo::layer {
 
     void Layer::entityDestroyed(const ecs::Entity entity)
     {
-        m_entities.erase(entity);
+        if (m_entities.erase(entity) != 0)
+            LOG(NEXO_DEV, "Entity removed from layer");
     }
 
     void Layer::attachCamera(const std::shared_ptr<camera::Camera> &camera)

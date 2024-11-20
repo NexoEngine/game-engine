@@ -26,6 +26,7 @@
 #include "renderer/RenderCommand.hpp"
 
 #include "renderer/Buffer.hpp"
+#include "renderer/Framebuffer.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Texture.hpp"
 #include "renderer/VertexArray.hpp"
@@ -36,6 +37,8 @@
 #include "components/Components.hpp"
 
 namespace nexo {
+
+
     template<typename DerivedApp, typename ...Args>
     void useApp(Args &&... args)
     {
@@ -46,5 +49,5 @@ namespace nexo {
 
     Application &getApp();
 
-    void runEngine(scene::SceneId id, bool renderToFrameBuffer = false);
+    void runEngine(scene::SceneId id, RenderingType renderingType = RenderingType::WINDOW);
 }

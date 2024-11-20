@@ -21,7 +21,10 @@
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
-            explicit ADocumentWindow() {};
+            explicit ADocumentWindow()
+            {
+                windowId = nextWindowId++;
+            };
             ~ADocumentWindow() override = default;
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
@@ -38,6 +41,7 @@ namespace nexo::editor {
             {
                 m_sceneManagerBridge = bridge;
             };
+            WindowId windowId;
         protected:
             bool m_opened = true;
             bool m_focused = false;

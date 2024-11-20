@@ -27,7 +27,7 @@ namespace nexo::components {
 
         bool isRendered = true;
 
-        virtual void draw(const TransformComponent &transf) const = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const = 0;
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
@@ -39,9 +39,9 @@ namespace nexo::components {
                               const std::shared_ptr<Shape2D> &shape) : sprite(std::move(sprite)), shape(shape)
         {};
 
-        void draw(const TransformComponent &transform) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const override
         {
-            shape->draw(transform, sprite);
+            shape->draw(context, transform, sprite);
         }
 
         bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
@@ -59,10 +59,10 @@ namespace nexo::components {
         explicit RenderComponent(const std::shared_ptr<Renderable> &renderable)
             : renderable(renderable) {}
 
-        void draw(const TransformComponent &transform) const
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const
         {
             if (isRendered && renderable)
-                renderable->draw(transform);
+                renderable->draw(context, transform);
         }
     };
 }

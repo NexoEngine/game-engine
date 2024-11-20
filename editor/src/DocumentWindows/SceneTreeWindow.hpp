@@ -30,16 +30,18 @@ namespace nexo::editor {
         {SelectionType::ENTITY, ICON_FA_CUBES " "},
     };
 
+    using NodeId = unsigned int;
+
     struct SceneObject {
-        std::string name;
-        std::vector<SceneObject> children;
-        int id;
+        NodeId nodeId;
+        std::string uiName;
         SelectionType type;
         VariantData data;
+        std::vector<SceneObject> children;
 
-        SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, int id = 0,
+        SceneObject(const std::string &name = "", std::vector<SceneObject> children = {}, NodeId id = 0,
                     SelectionType type = SelectionType::NONE, VariantData data = {})
-            : name(name), children(std::move(children)), id(id), type(type), data(std::move(data)) {}
+            : uiName(name), children(std::move(children)), nodeId(id), type(type), data(std::move(data)) {}
     };
 
     class SceneTreeWindow : public ADocumentWindow {
@@ -58,14 +60,15 @@ namespace nexo::editor {
 
         private:
             SceneObject root_;
+            NodeId nextNodeId = 0;
             std::optional<std::pair<SelectionType, int>> m_renameTarget;
             std::string m_renameBuffer;
             PopupManager m_popupManager;
 
-            SceneObject newSceneNode(scene::SceneId id, const std::string &uiName);
-            SceneObject newLayerNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
-            SceneObject newCameraNode(scene::SceneId id, std::shared_ptr<layer::Layer> layer);
-            SceneObject newEntityNode(ecs::Entity entity);
+            SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
+            SceneObject newLayerNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId, const std::string &layerName);
+            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId);
+            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, int layerId, ecs::Entity entity);
 
             void handleRename(SceneObject &obj);
             bool handleSelection(SceneObject &obj, std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags);

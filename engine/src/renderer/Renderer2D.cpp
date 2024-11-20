@@ -22,48 +22,13 @@
 #include <array>
 
 namespace nexo::renderer {
-
-    struct QuadVertex {
-        glm::vec3 position;
-        glm::vec4 color;
-        glm::vec2 texCoord;
-
-        float texIndex;
-    };
-
-    struct Renderer2DStorage {
-        const unsigned int maxQuads = 10000;
-        const unsigned int maxVertices = maxQuads * 4;
-        const unsigned int maxIndices = maxQuads * 6;
-        static const unsigned int maxTextureSlots = 32;
-
-        std::shared_ptr<Shader> textureShader;
-        std::shared_ptr<VertexArray> quadVertexArray;
-        std::shared_ptr<VertexBuffer> quadVertexBuffer;
-        std::shared_ptr<Texture2D> whiteTexture;
-
-        unsigned int quadIndexCount = 0;
-        QuadVertex *quadVertexBufferBase = nullptr;
-        QuadVertex *quadVertexBufferPtr = nullptr;
-
-        std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
-        unsigned int textureSlotIndex = 1;
-
-        glm::vec4 quadVertexPositions[4];
-
-        Renderer2D::RendererStats stats;
-    };
-
-
-    static Renderer2DStorage *s_Renderer2DStorage;
-
     void Renderer2D::init()
     {
-        s_Renderer2DStorage = new Renderer2DStorage();
+        m_storage = new Renderer2DStorage();
 
-        s_Renderer2DStorage->quadVertexArray = createVertexArray();
+        m_storage->quadVertexArray = createVertexArray();
         // Vertex buffer init
-        s_Renderer2DStorage->quadVertexBuffer = createVertexBuffer(s_Renderer2DStorage->maxVertices * sizeof(QuadVertex));
+        m_storage->quadVertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(QuadVertex));
 
         // Layout init
         const BufferLayout quadVertexBufferLayout = {
@@ -72,15 +37,15 @@ namespace nexo::renderer {
             {ShaderDataType::FLOAT2, "aTexCoord"},
             {ShaderDataType::FLOAT, "aTexIndex"}
         };
-        s_Renderer2DStorage->quadVertexBuffer->setLayout(quadVertexBufferLayout);
-        s_Renderer2DStorage->quadVertexArray->addVertexBuffer(s_Renderer2DStorage->quadVertexBuffer);
+        m_storage->quadVertexBuffer->setLayout(quadVertexBufferLayout);
+        m_storage->quadVertexArray->addVertexBuffer(m_storage->quadVertexBuffer);
 
-        s_Renderer2DStorage->quadVertexBufferBase = new QuadVertex[s_Renderer2DStorage->maxVertices];
+        m_storage->quadVertexBufferBase = new QuadVertex[m_storage->maxVertices];
 
         // Index buffer init
         unsigned int offset = 0;
-        unsigned int *quadIndices = new unsigned int[s_Renderer2DStorage->maxIndices];
-        for (unsigned int i = 0; i < s_Renderer2DStorage->maxIndices; i += 6)
+        unsigned int *quadIndices = new unsigned int[m_storage->maxIndices];
+        for (unsigned int i = 0; i < m_storage->maxIndices; i += 6)
         {
             quadIndices[i + 0] = offset + 0;
             quadIndices[i + 1] = offset + 1;
@@ -92,76 +57,82 @@ namespace nexo::renderer {
 
             offset += 4;
         }
-        const std::shared_ptr<IndexBuffer> quadIndexBuffer = createIndexBuffer(quadIndices, s_Renderer2DStorage->maxIndices);
-        s_Renderer2DStorage->quadVertexArray->setIndexBuffer(quadIndexBuffer);
+        const std::shared_ptr<IndexBuffer> quadIndexBuffer = createIndexBuffer(quadIndices, m_storage->maxIndices);
+        m_storage->quadVertexArray->setIndexBuffer(quadIndexBuffer);
         delete[] quadIndices;
 
-        s_Renderer2DStorage->whiteTexture = Texture2D::create(1, 1);
+        m_storage->whiteTexture = Texture2D::create(1, 1);
         unsigned int whiteTextureData = 0xffffffff;
-        s_Renderer2DStorage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
+        m_storage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
 
         int samplers[Renderer2DStorage::maxTextureSlots];
         for (unsigned int i = 0; i < Renderer2DStorage::maxTextureSlots; ++i)
             samplers[i] = i;
 
         try {
-            s_Renderer2DStorage->textureShader = Shader::create("../assets/shaders/texture.glsl");
-            s_Renderer2DStorage->textureShader->bind();
-            s_Renderer2DStorage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
+            m_storage->textureShader = Shader::create("../assets/shaders/texture.glsl");
+            m_storage->textureShader->bind();
+            m_storage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
         } catch (const Exception &e) {
             LOG_EXCEPTION(e);
         }
 
-        s_Renderer2DStorage->textureSlots[0] = s_Renderer2DStorage->whiteTexture;
+        m_storage->textureSlots[0] = m_storage->whiteTexture;
 
-        s_Renderer2DStorage->quadVertexPositions[0] = {-0.5, -0.5f, 0.0f, 1.0f};
-        s_Renderer2DStorage->quadVertexPositions[1] = {0.5, -0.5f, 0.0f, 1.0f};
-        s_Renderer2DStorage->quadVertexPositions[2] = {0.5, 0.5f, 0.0f, 1.0f};
-        s_Renderer2DStorage->quadVertexPositions[3] = {-0.5, 0.5f, 0.0f, 1.0f};
+        m_storage->quadVertexPositions[0] = {-0.5, -0.5f, 0.0f, 1.0f};
+        m_storage->quadVertexPositions[1] = {0.5, -0.5f, 0.0f, 1.0f};
+        m_storage->quadVertexPositions[2] = {0.5, 0.5f, 0.0f, 1.0f};
+        m_storage->quadVertexPositions[3] = {-0.5, 0.5f, 0.0f, 1.0f};
         LOG(NEXO_DEV, "Renderer2D quad renderer initialized");
         LOG(NEXO_INFO, "Renderer2D initialized");
+
     }
 
     void Renderer2D::shutdown()
     {
-        delete s_Renderer2DStorage->quadVertexBufferBase;
-        delete s_Renderer2DStorage;
+        delete m_storage->quadVertexBufferBase;
+        delete m_storage;
     }
 
     void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
-        s_Renderer2DStorage->textureShader->bind();
-        s_Renderer2DStorage->textureShader->setUniformMatrix("viewProjection", viewProjection);
-        s_Renderer2DStorage->quadIndexCount = 0;
-        s_Renderer2DStorage->quadVertexBufferPtr = s_Renderer2DStorage->quadVertexBufferBase;
+        m_storage->textureShader->bind();
+        m_storage->quadVertexArray->bind();
+        m_storage->quadVertexBuffer->bind();
+        m_storage->textureShader->setUniformMatrix("viewProjection", viewProjection);
+        m_storage->quadIndexCount = 0;
+        m_storage->quadVertexBufferPtr = m_storage->quadVertexBufferBase;
 
-        s_Renderer2DStorage->textureSlotIndex = 1;
+        m_storage->textureSlotIndex = 1;
     }
 
     void Renderer2D::flush()
     {
-        for (unsigned int i = 0; i < s_Renderer2DStorage->textureSlotIndex; ++i)
+        m_storage->textureShader->bind();
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
-            s_Renderer2DStorage->textureSlots[i]->bind(i);
+            m_storage->textureSlots[i]->bind(i);
         }
-        RenderCommand::drawIndexed(s_Renderer2DStorage->quadVertexArray, s_Renderer2DStorage->quadIndexCount);
-        s_Renderer2DStorage->stats.drawCalls++;
+        RenderCommand::drawIndexed(m_storage->quadVertexArray, m_storage->quadIndexCount);
+        m_storage->stats.drawCalls++;
+        m_storage->quadVertexArray->unbind();
+        m_storage->quadVertexBuffer->unbind();
     }
 
     void Renderer2D::flushAndReset()
     {
         endScene();
 
-        s_Renderer2DStorage->quadIndexCount = 0;
-        s_Renderer2DStorage->quadVertexBufferPtr = s_Renderer2DStorage->quadVertexBufferBase;
+        m_storage->quadIndexCount = 0;
+        m_storage->quadVertexBufferPtr = m_storage->quadVertexBufferBase;
 
-        s_Renderer2DStorage->textureSlotIndex = 1;
+        m_storage->textureSlotIndex = 1;
     }
 
     void Renderer2D::endScene()
     {
-        unsigned int dataSize = (uint8_t*)s_Renderer2DStorage->quadVertexBufferPtr - (uint8_t*)s_Renderer2DStorage->quadVertexBufferBase;
-        s_Renderer2DStorage->quadVertexBuffer->setData(s_Renderer2DStorage->quadVertexBufferBase, dataSize);
+        unsigned int dataSize = (uint8_t*)m_storage->quadVertexBufferPtr - (uint8_t*)m_storage->quadVertexBufferBase;
+        m_storage->quadVertexBuffer->setData(m_storage->quadVertexBufferBase, dataSize);
         flush();
     }
 
@@ -171,23 +142,23 @@ namespace nexo::renderer {
 
         for (unsigned int i = 0; i < quadVertexCount; ++i)
         {
-            s_Renderer2DStorage->quadVertexBufferPtr->position = transform * s_Renderer2DStorage->quadVertexPositions[i];
-            s_Renderer2DStorage->quadVertexBufferPtr->color = color;
-            s_Renderer2DStorage->quadVertexBufferPtr->texCoord = textureCoords[i];
-            s_Renderer2DStorage->quadVertexBufferPtr->texIndex = textureIndex;
-            s_Renderer2DStorage->quadVertexBufferPtr++;
+            m_storage->quadVertexBufferPtr->position = transform * m_storage->quadVertexPositions[i];
+            m_storage->quadVertexBufferPtr->color = color;
+            m_storage->quadVertexBufferPtr->texCoord = textureCoords[i];
+            m_storage->quadVertexBufferPtr->texIndex = textureIndex;
+            m_storage->quadVertexBufferPtr++;
         }
 
-        s_Renderer2DStorage->quadIndexCount += 6;
+        m_storage->quadIndexCount += 6;
     }
 
     float Renderer2D::getTextureIndex(const std::shared_ptr<Texture2D> &texture)
     {
         float textureIndex = 0.0f;
 
-        for (unsigned int i = 0; i < s_Renderer2DStorage->textureSlotIndex; ++i)
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
-            if (*s_Renderer2DStorage->textureSlots[i].get() == *texture.get())
+            if (*m_storage->textureSlots[i].get() == *texture.get())
             {
                 textureIndex = static_cast<float>(i);
                 break;
@@ -196,9 +167,9 @@ namespace nexo::renderer {
 
         if (textureIndex == 0)
         {
-            textureIndex = static_cast<float>(s_Renderer2DStorage->textureSlotIndex);
-            s_Renderer2DStorage->textureSlots[s_Renderer2DStorage->textureSlotIndex] = texture;
-            s_Renderer2DStorage->textureSlotIndex++;
+            textureIndex = static_cast<float>(m_storage->textureSlotIndex);
+            m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
+            m_storage->textureSlotIndex++;
         }
 
         return textureIndex;
@@ -211,7 +182,7 @@ namespace nexo::renderer {
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec2 textureCoords[4] = {
             glm::vec2(0.0f, 0.0f),
@@ -226,7 +197,7 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture)
@@ -236,7 +207,7 @@ namespace nexo::renderer {
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         constexpr glm::vec2 textureCoords[4] = {
@@ -253,7 +224,7 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture)
@@ -263,7 +234,7 @@ namespace nexo::renderer {
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         const glm::vec2 *textureCoords = subTexture->getTextureCoords();
@@ -275,7 +246,7 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation, const glm::vec4 &color)
@@ -285,7 +256,7 @@ namespace nexo::renderer {
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
                                     glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -300,7 +271,7 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
@@ -312,7 +283,7 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
         const std::shared_ptr<Texture2D> &texture)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         constexpr glm::vec2 textureCoords[4] = {
@@ -330,7 +301,7 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
@@ -342,7 +313,7 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
         const std::shared_ptr<SubTexture2D> &subTexture)
     {
-        if (s_Renderer2DStorage->quadIndexCount >= s_Renderer2DStorage->maxIndices)
+        if (m_storage->quadIndexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         const glm::vec2 *textureCoords = subTexture->getTextureCoords();
@@ -355,18 +326,18 @@ namespace nexo::renderer {
 
         generateQuadVertices(transform, color, textureIndex, textureCoords);
 
-        s_Renderer2DStorage->stats.quadCount++;
+        m_storage->stats.quadCount++;
     }
 
     void Renderer2D::resetStats()
     {
-        s_Renderer2DStorage->stats.drawCalls = 0;
-        s_Renderer2DStorage->stats.quadCount = 0;
+        m_storage->stats.drawCalls = 0;
+        m_storage->stats.quadCount = 0;
     }
 
-    Renderer2D::RendererStats Renderer2D::getStats()
+    RendererStats Renderer2D::getStats()
     {
-        return s_Renderer2DStorage->stats;
+        return m_storage->stats;
     }
 
 }

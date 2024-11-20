@@ -33,6 +33,8 @@ namespace nexo::renderer {
             virtual void bind() = 0;
             virtual void unbind() = 0;
 
+            virtual unsigned int getFramebufferId() const = 0;
+
             virtual void resize(unsigned int width, unsigned int height) = 0;
 
             [[nodiscard]] virtual FramebufferSpecs &getSpecs() = 0;

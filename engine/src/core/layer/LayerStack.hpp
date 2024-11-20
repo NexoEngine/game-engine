@@ -39,8 +39,9 @@ namespace nexo::layer {
 
             [[nodiscard]] std::size_t size() const {return m_layers.size();};
 
-            std::shared_ptr<Layer> operator[](const unsigned int index);
-            const std::shared_ptr<Layer> operator[](const unsigned int index) const;
+            std::shared_ptr<Layer> operator[](unsigned int id);
+
+            std::shared_ptr<Layer> operator[](unsigned int id) const;
 
             std::shared_ptr<Layer> operator[](const std::string &name);
             std::shared_ptr<Layer> operator[](const std::string &name) const;

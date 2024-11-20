@@ -23,8 +23,12 @@ namespace nexo::renderer {
 
         void invalidate();
 
+        void resize(float width, float height);
+
         void bind() override;
         void unbind() override;
+
+        unsigned int getFramebufferId() const override;
 
         void resize(unsigned int width, unsigned int height) override;
 
@@ -36,6 +40,7 @@ namespace nexo::renderer {
         unsigned int m_id = 0;
         unsigned int m_colorAttachments = 0;
         unsigned int m_depthAttachment = 0;
+        unsigned int m_renderAttachment = 0;
         bool toResize = false;
         FramebufferSpecs m_specs;
     };
