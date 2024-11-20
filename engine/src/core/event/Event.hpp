@@ -31,12 +31,21 @@ namespace nexo::scene {
 
 namespace nexo::event {
 
-    class Event {
+    class IEvent {
         public:
+            virtual ~IEvent() = default;
+            virtual void trigger(BaseListener& listener) = 0;
 
-            virtual ~Event() = default;
-            virtual void trigger(BaseListener &) {}
             bool consumed = false;
+    };
+
+    template<typename DerivedEvent>
+    class Event : public IEvent {
+        public:
+            void trigger(BaseListener &listener) override
+            {
+                triggerListener(static_cast<DerivedEvent&>(*this), listener);
+            }
         protected:
             template<class T>
             static void triggerListener(T &event, BaseListener &listener)
@@ -45,10 +54,6 @@ namespace nexo::event {
                     return p->handleEvent(event);
                 LOG(NEXO_WARN, "Event(triggerListener): Listener {} is missing a handler", listener.getListenerName());
             }
-
-            #define LISTENABLE() \
-                virtual void trigger(BaseListener &l) \
-                    { return triggerListener(*this, l); }
     };
 
     /**
@@ -103,7 +108,7 @@ namespace nexo::event {
 
     private:
         std::unordered_map<std::type_index, std::vector<BaseListener *>> m_listeners;
-        std::queue<std::shared_ptr<Event>> m_eventQueue;
+        std::queue<std::shared_ptr<IEvent>> m_eventQueue;
     };
 }
 

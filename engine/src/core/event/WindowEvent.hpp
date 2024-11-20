@@ -21,21 +21,16 @@
 #include "Event.hpp"
 
 namespace nexo::event {
-    class AEvent;
 
-    class EventWindowClose final : public Event
-    {
-        public:
-            LISTENABLE();
-    };
+    class EventWindowClose final : public Event<EventWindowClose>
+    {};
 
-    class EventWindowResize final : public Event {
+    class EventWindowResize final : public Event<EventWindowResize> {
         public:
             EventWindowResize(const int width, const int height) : width(width) , height(height) {};
+
             int width;
             int height;
-
-            LISTENABLE();
     };
     std::ostream& operator<<(std::ostream& os, const EventWindowResize& event);
 
@@ -54,11 +49,10 @@ namespace nexo::event {
     };
     std::ostream& operator<<(std::ostream& os, const KeyMods& mod);
 
-    class EventKey final : public Event {
+    class EventKey final : public Event<EventKey> {
         public:
             EventKey() = default;
             EventKey(const int keycode, const KeyAction action, const int mods) : keycode(keycode), action(action), mods(mods) {};
-
 
             [[nodiscard]] bool hasMod(KeyMods mod) const
             {
@@ -67,8 +61,6 @@ namespace nexo::event {
             int keycode{};
             KeyAction action{};
             int mods{};
-
-            LISTENABLE();
     };
     std::ostream& operator<<(std::ostream& os, const EventKey& event);
 
@@ -79,10 +71,9 @@ namespace nexo::event {
     };
     std::ostream& operator<<(std::ostream& os, const MouseButton& button);
 
-    class EventMouseClick final : public Event {
+    class EventMouseClick final : public Event<EventMouseClick> {
         public:
             EventMouseClick() = default;
-
 
             [[nodiscard]] bool hasMod(KeyMods mod) const
             {
@@ -92,32 +83,24 @@ namespace nexo::event {
             MouseButton button{};
             KeyAction action{};
             int mods{};
-
-            LISTENABLE();
     };
     std::ostream& operator<<(std::ostream& os, const EventMouseClick& button);
 
-    class EventMouseScroll final : public Event {
+    class EventMouseScroll final : public Event<EventMouseScroll> {
         public:
             EventMouseScroll(const float xOffset, const float yOffset) : x(xOffset), y(yOffset) {};
 
-
             float x;
             float y;
-
-            LISTENABLE();
     };
     std::ostream& operator<<(std::ostream& os, const EventMouseScroll& scroll);
 
-    class EventMouseMove : public Event {
+    class EventMouseMove : public Event<EventMouseMove> {
         public:
             EventMouseMove(const float xpos, const float ypos) : x(xpos), y(ypos) {};
 
-
             float x;
             float y;
-
-            LISTENABLE();
     };
     std::ostream& operator<<(std::ostream& os, const EventMouseMove& mouse);
 }
