@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
-    add_compile_options(--std=c++20 -g -Wmissing-field-initializers)
+    add_compile_options(--std=c++20 -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
     add_compile_options(/std:c++20 /W4 /Zi /Zc:preprocessor)
