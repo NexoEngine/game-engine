@@ -18,30 +18,33 @@
 namespace nexo::renderer {
     class OpenGlFramebuffer final : public Framebuffer {
         public:
-        explicit OpenGlFramebuffer(const FramebufferSpecs& specs);
-        ~OpenGlFramebuffer() override;
+            explicit OpenGlFramebuffer(FramebufferSpecs specs);
+            ~OpenGlFramebuffer() override;
 
-        void invalidate();
+            void invalidate();
 
-        void resize(float width, float height);
+            void resize(float width, float height);
 
-        void bind() override;
-        void unbind() override;
+            void bind() override;
+            void unbind() override;
 
-        [[nodiscard]] unsigned int getFramebufferId() const override;
+            [[nodiscard]] unsigned int getFramebufferId() const override;
 
-        void resize(unsigned int width, unsigned int height) override;
+            void resize(unsigned int width, unsigned int height) override;
 
-        FramebufferSpecs &getSpecs() override {return m_specs;};
-        [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
+            FramebufferSpecs &getSpecs() override {return m_specs;};
+            [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
 
-        [[nodiscard]] unsigned int getColorAttachmentId() const override {return m_colorAttachments;};
+            [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
         private:
-        unsigned int m_id = 0;
-        unsigned int m_colorAttachments = 0;
-        unsigned int m_depthAttachment = 0;
-        unsigned int m_renderAttachment = 0;
-        bool toResize = false;
-        FramebufferSpecs m_specs;
+            unsigned int m_id = 0;
+            bool toResize = false;
+            FramebufferSpecs m_specs;
+
+            std::vector<FrameBufferTextureSpecifications> m_colorAttachmentsSpecs;
+            FrameBufferTextureSpecifications m_depthAttachmentSpec;
+
+            std::vector<unsigned int> m_colorAttachments;
+            unsigned int m_depthAttachment = 0;
     };
 }

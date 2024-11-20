@@ -57,9 +57,18 @@ namespace nexo::core {
 
     class FramebufferCreationFailed final : public Exception {
         public:
-        explicit FramebufferCreationFailed(const std::string &backendApi, const char *file = __FILE__,
-                                      const int line = __LINE__)
-            : Exception("[" + backendApi + "] Failed to create the framebuffer", file, line)
-        {}
+            explicit FramebufferCreationFailed(const std::string &backendApi, const char *file = __FILE__,
+                                               const int line = __LINE__)
+                : Exception("[" + backendApi + "] Failed to create the framebuffer", file, line)
+            {}
+    };
+
+    class FramebufferResizingFailed final : public Exception {
+        public:
+            explicit FramebufferResizingFailed(const std::string &backendApi, const bool tooBig,
+                                               const unsigned int width, const unsigned int height,
+                                               const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Framebuffer resizing failed: " + std::to_string(width) + "x" +
+                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
     };
 }

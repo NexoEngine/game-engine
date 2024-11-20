@@ -14,12 +14,38 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 namespace nexo::renderer {
+
+    enum class FrameBufferTextureFormats {
+        NONE = 0,
+
+        RGBA8,
+
+        DEPTH24STENCIL8,
+
+        Depth = DEPTH24STENCIL8
+    };
+
+    struct FrameBufferTextureSpecifications {
+        FrameBufferTextureSpecifications() = default;
+        FrameBufferTextureSpecifications(const FrameBufferTextureFormats format) : textureFormat(format) {};
+
+        FrameBufferTextureFormats textureFormat = FrameBufferTextureFormats::NONE;
+    };
+
+    struct FrameBufferAttachmentsSpecifications {
+        FrameBufferAttachmentsSpecifications() = default;
+        FrameBufferAttachmentsSpecifications(std::initializer_list<FrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
+
+        std::vector<FrameBufferTextureSpecifications> attachments;
+    };
 
     struct FramebufferSpecs {
         unsigned int width{};
         unsigned int height{};
+        FrameBufferAttachmentsSpecifications attachments;
 
         unsigned int samples = 1;
 
@@ -40,7 +66,7 @@ namespace nexo::renderer {
             [[nodiscard]] virtual FramebufferSpecs &getSpecs() = 0;
             [[nodiscard]] virtual const FramebufferSpecs &getSpecs() const = 0;
 
-            [[nodiscard]] virtual unsigned int getColorAttachmentId() const = 0;
+            [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
 
             static std::shared_ptr<Framebuffer> create(const FramebufferSpecs& specs);
     };

@@ -77,6 +77,7 @@ namespace nexo::editor {
     void MainScene::setupFramebuffer()
     {
         renderer::FramebufferSpecs framebufferSpecs;
+        framebufferSpecs.attachments = {renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth};
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
         m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
