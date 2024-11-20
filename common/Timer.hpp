@@ -16,10 +16,17 @@
 #include <chrono>
 #include <utility>
 
-namespace nexo::core {
+namespace nexo {
+
+    struct ProfileResult {
+        std::string name;
+        long long time;
+    };
+
+    template<typename Fn>
     class Timer {
         public:
-            explicit Timer(std::string name) : m_name(std::move(name)), m_stopped(false)
+            explicit Timer(std::string name, Fn &&func) : m_name(std::move(name)), m_stopped(false), m_func(func)
             {
                 m_start = std::chrono::high_resolution_clock::now();
             };
@@ -41,12 +48,14 @@ namespace nexo::core {
                 m_stopped = true;
                 const long long duration = (end - start) * 0.001f;
 
-                std::cout << m_name << duration << "ms" << std::endl;
+                m_func(m_func, duration);
             }
 
         private:
             std::string m_name;
             std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
             bool m_stopped;
+            Fn m_func;
     };
 }
+

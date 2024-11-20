@@ -25,8 +25,11 @@
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
+#include "Timer.hpp"
 
 #include "systems/OnSceneDeletedSystem.hpp"
+
+#define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
 namespace nexo {
 
@@ -159,6 +162,8 @@ namespace nexo {
             void registerEcsComponents();
             void registerWindowCallbacks();
             void registerSystems();
+
+            void displayProfileResults();
             static std::unique_ptr<Application> _instance;
 
             scene::SceneId m_nextSceneId = 0;
@@ -166,6 +171,7 @@ namespace nexo {
 
             bool m_isRunning = true;
             bool m_isMinimized = false;
+            bool m_displayProfileResult = true;
             std::shared_ptr<renderer::Window> m_window;
 
             float m_lastFrameTime = 0.0f;
@@ -173,6 +179,8 @@ namespace nexo {
             int m_eventDebugFlags{};
 
             std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
+
+            std::vector<ProfileResult> m_profilesResults;
     };
 }
 

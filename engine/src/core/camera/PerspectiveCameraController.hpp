@@ -14,7 +14,7 @@
 #pragma once
 
 #include "PerspectiveCamera.hpp"
-#include "core/Timestep.hpp"
+#include "Timestep.hpp"
 #include "core/event/Event.hpp"
 #include "core/event/WindowEvent.hpp"
 
@@ -27,7 +27,7 @@ namespace nexo::camera {
         public:
             explicit PerspectiveCameraController(float aspectRatio, float fovY = 45.0f);
 
-            void onUpdate(core::Timestep ts) override;
+            void onUpdate(Timestep ts) override;
 
             PerspectiveCamera &getCamera() { return m_camera; }
             [[nodiscard]] const PerspectiveCamera &getCamera() const { return m_camera; }

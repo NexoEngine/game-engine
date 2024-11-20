@@ -16,8 +16,8 @@
 #include "Application.hpp"
 #include "core/layer/Layer.hpp"
 #include "core/event/KeyCodes.hpp"
-#include "core/Timestep.hpp"
-#include "core/Timer.hpp"
+#include "Timestep.hpp"
+#include "Timer.hpp"
 #include "Logger.hpp"
 
 // Renderer

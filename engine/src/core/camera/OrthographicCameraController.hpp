@@ -15,7 +15,7 @@
 #pragma once
 
 #include "OrthographicCamera.hpp"
-#include "core/Timestep.hpp"
+#include "Timestep.hpp"
 #include "core/event/Event.hpp"
 #include "core/event/WindowEvent.hpp"
 
@@ -28,7 +28,7 @@ namespace nexo::camera {
         public:
             explicit OrthographicCameraController(float aspectRatio, bool rotation = false);
 
-            void onUpdate(core::Timestep ts) override;
+            void onUpdate(Timestep ts) override;
 
             OrthographicCamera &getCamera() { return m_camera; }
             [[nodiscard]] const OrthographicCamera &getCamera() const { return m_camera; }

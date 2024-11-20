@@ -18,6 +18,7 @@
 
 #include "components/Components.hpp"
 #include "core/event/Input.hpp"
+#include "Timestep.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -168,10 +169,22 @@ namespace nexo {
         m_sceneManager.setCoordinator(m_coordinator);
     }
 
+    void Application::displayProfileResults()
+    {
+        for (auto &result : m_profilesResults)
+        {
+            std::ostringstream stream;
+            stream << std::fixed << std::setprecision(3) << result.time;
+            std::string label = stream.str() + "ms" + " " + result.name;
+            LOG(NEXO_DEV, "{}", label);
+        }
+    }
+
+
     void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
     {
         const auto time = static_cast<float>(glfwGetTime());
-        const core::Timestep timestep = time - m_lastFrameTime;
+        const Timestep timestep = time - m_lastFrameTime;
         m_lastFrameTime = time;
         auto scenesIds = m_sceneManager.getSceneIDs();
 
@@ -192,6 +205,8 @@ namespace nexo {
             m_window->onUpdate();
         // Dispatch events to active scenes
         m_eventManager->dispatchEvents(m_sceneManager.getScene(sceneId), m_sceneManager.isSceneActive(sceneId));
+        if (m_displayProfileResult)
+            displayProfileResults();
     }
 
     ecs::Entity Application::createEntity()

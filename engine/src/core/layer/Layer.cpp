@@ -45,13 +45,13 @@ namespace nexo::layer {
             rendererContext->renderer3D.endScene();
     }
 
-    void Layer::onUpdate(core::Timestep ts)
+    void Layer::onUpdate(Timestep ts)
     {
         if (m_camera)
             m_camera->onUpdate(ts);
     }
 
-    void Layer::handleEvent(const event::Event &event)
+    void Layer::handleEvent(const event::IEvent &event)
     {
         if (const auto handler = m_callbackEventFunctions.at(typeid(event)))
             handler(event);

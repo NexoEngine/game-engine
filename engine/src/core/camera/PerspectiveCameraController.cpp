@@ -30,7 +30,7 @@ namespace nexo::camera {
         Application::getInstance().getEventManager()->registerListener<event::EventMouseScroll>(this);
     }
 
-    void PerspectiveCameraController::onUpdate(const core::Timestep ts)
+    void PerspectiveCameraController::onUpdate(const Timestep ts)
     {
         const float time = ts;
 

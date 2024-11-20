@@ -21,7 +21,7 @@
 
 #include "core/event/Listener.hpp"
 #include "core/event/Event.hpp"
-#include "core/Timestep.hpp"
+#include "Timestep.hpp"
 #include "ecs/Entity.hpp"
 #include "Logger.hpp"
 
@@ -75,13 +75,13 @@ namespace nexo::layer {
 
             virtual void onAttach() {};
             virtual void onDetach() {};
-            virtual void onUpdate([[maybe_unused]] core::Timestep timestep);
+            virtual void onUpdate([[maybe_unused]] Timestep timestep);
             virtual void onRender(std::shared_ptr<renderer::RendererContext> &rendererContext);
 
             virtual std::unordered_set<std::type_index> getListenedEventTypes() const { return m_listenedEventTypes; }
-            virtual void handleEvent(const event::Event &event);
+            virtual void handleEvent(const event::IEvent &event);
             template<typename EventType>
-            void registerCallbackEventFunction(const std::function<void(const event::Event &)> &callbackFunction)
+            void registerCallbackEventFunction(const std::function<void(const event::IEvent &)> &callbackFunction)
             {
                 const std::type_index typeId(typeid(EventType));
                 m_callbackEventFunctions[typeId] = callbackFunction;
@@ -119,7 +119,7 @@ namespace nexo::layer {
             }
 
         private:
-            std::unordered_map<std::type_index, std::function<void(const event::Event &)> > m_callbackEventFunctions;
+            std::unordered_map<std::type_index, std::function<void(const event::IEvent &)> > m_callbackEventFunctions;
 
     };
 

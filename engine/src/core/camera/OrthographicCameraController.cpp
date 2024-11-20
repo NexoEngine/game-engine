@@ -30,7 +30,7 @@ namespace nexo::camera {
         Application::getInstance().getEventManager()->registerListener<event::EventMouseScroll>(this);
     }
 
-    void OrthographicCameraController::onUpdate(core::Timestep ts)
+    void OrthographicCameraController::onUpdate(Timestep ts)
     {
         const float time = ts;
         // Camera movement

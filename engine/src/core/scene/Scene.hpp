@@ -78,10 +78,10 @@ namespace nexo::scene {
             void setWindowOffset(const glm::vec2 offset) { m_windowOffset = offset; };
             [[nodiscard]] glm::vec2 &getWindowOffset() { return m_windowOffset; };
 
-            void onUpdate(core::Timestep timestep);
+            void onUpdate(Timestep timestep);
             void onRender();
 
-            void dispatchEventToLayers(event::Event &event);
+            void dispatchEventToLayers(event::IEvent &event);
 
             [[nodiscard]] const layer::LayerStack &getLayers() const { return m_layerStack; };
 

@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-namespace nexo::core {
+namespace nexo {
     class Timestep {
         public:
             Timestep(const float time = 0.0f) : m_time(time) {};

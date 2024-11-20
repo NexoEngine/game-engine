@@ -171,7 +171,7 @@ namespace nexo::scene {
         return false;
     }
 
-    void Scene::onUpdate(const core::Timestep timestep)
+    void Scene::onUpdate(const Timestep timestep)
     {
         for (const auto &layer: m_layerStack)
         {
@@ -189,7 +189,7 @@ namespace nexo::scene {
         }
     }
 
-    void Scene::dispatchEventToLayers(event::Event &event)
+    void Scene::dispatchEventToLayers(event::IEvent &event)
     {
         const std::type_index eventType(typeid(event));
         for (const auto &layer: m_layerStack)

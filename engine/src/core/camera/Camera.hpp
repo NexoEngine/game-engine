@@ -15,7 +15,7 @@
 
 #include <glm/glm.hpp>
 
-#include "core/Timestep.hpp"
+#include "Timestep.hpp"
 
 namespace nexo::camera {
 
@@ -46,7 +46,7 @@ namespace nexo::camera {
 
             [[nodiscard]] CameraId getCameraID() const { return m_id; };
 
-            virtual void onUpdate([[maybe_unused]] core::Timestep ts) {};
+            virtual void onUpdate([[maybe_unused]] Timestep ts) {};
             static CameraId nextCameraId;
         protected:
             CameraId m_id{};
