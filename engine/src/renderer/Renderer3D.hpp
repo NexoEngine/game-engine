@@ -22,6 +22,14 @@
 
 namespace nexo::renderer {
 
+    struct Vertex {
+        glm::vec3 position;
+        glm::vec4 color;
+        //glm::vec3 normal; //TODO: Later
+        glm::vec2 texCoord;
+        float texIndex;
+    };
+
     struct CubeVertex {
         glm::vec3 position;
         glm::vec4 color;
@@ -44,18 +52,19 @@ namespace nexo::renderer {
         static constexpr unsigned int maxTextureSlots = 32;
 
         std::shared_ptr<Shader> textureShader;
-        std::shared_ptr<VertexArray> cubeVertexArray;
-        std::shared_ptr<VertexBuffer> cubeVertexBuffer;
+        std::shared_ptr<VertexArray> vertexArray;
+        std::shared_ptr<VertexBuffer> vertexBuffer;
+        std::shared_ptr<IndexBuffer> indexBuffer;
         std::shared_ptr<Texture2D> whiteTexture;
 
-        unsigned int cubeIndexCount = 0;
-        CubeVertex* cubeVertexBufferBase = nullptr;
-        CubeVertex* cubeVertexBufferPtr = nullptr;
+        unsigned int indexCount = 0;
+        Vertex* vertexBufferBase = nullptr;
+        unsigned int *indexBufferBase = nullptr;
+        Vertex* vertexBufferPtr = nullptr;
+        unsigned int *indexBufferPtr = nullptr;
 
         std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
-
-        glm::vec3 cubeVertexPositions[8];
 
         Renderer3DStats stats;
     };
@@ -75,6 +84,9 @@ namespace nexo::renderer {
         // With texture
         void drawCube(const glm::vec3& position, const glm::vec3& size, const std::shared_ptr<Texture2D>& texture) const;
         //void drawCube(const glm::vec3& position, const glm::vec3& size, float rotation, const std::shared_ptr<Texture2D>& texture) const;
+
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture) const;
+
 
         void resetStats() const;
         [[nodiscard]] Renderer3DStats getStats() const;

@@ -88,6 +88,10 @@ find_package(Stb REQUIRED)
 target_include_directories(nexoRenderer PRIVATE ${Stb_INCLUDE_DIR})
 target_sources(nexoRenderer PRIVATE ${CMAKE_SOURCE_DIR}/engine/external/stb_image.cpp)
 
+# assimp
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
+
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)

@@ -63,8 +63,11 @@ namespace nexo::editor {
         auto &app = getApp();
         //const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         //m_sceneManagerBridge->setSelectedEntity(basicQuad);
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
+        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        // app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
+
+        const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
+        app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
         //app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
     }
 

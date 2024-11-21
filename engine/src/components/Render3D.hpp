@@ -13,10 +13,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "renderer/Renderer3D.hpp"
+
 namespace nexo::components {
 
-    struct MaterialComponent {
+    struct Material {
         glm::vec4 color;
     };
+
 
 }

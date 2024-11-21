@@ -42,24 +42,25 @@ namespace nexo::renderer {
 
         m_storage->quadVertexBufferBase = new QuadVertex[m_storage->maxVertices];
 
+        //TODO: Refactor the index buffer to comply with the new one
         // Index buffer init
-        unsigned int offset = 0;
-        auto *quadIndices = new unsigned int[m_storage->maxIndices];
-        for (unsigned int i = 0; i < m_storage->maxIndices; i += 6)
-        {
-            quadIndices[i + 0] = offset + 0;
-            quadIndices[i + 1] = offset + 1;
-            quadIndices[i + 2] = offset + 2;
-
-            quadIndices[i + 3] = offset + 2;
-            quadIndices[i + 4] = offset + 3;
-            quadIndices[i + 5] = offset + 0;
-
-            offset += 4;
-        }
-        const std::shared_ptr<IndexBuffer> quadIndexBuffer = createIndexBuffer(quadIndices, m_storage->maxIndices);
-        m_storage->quadVertexArray->setIndexBuffer(quadIndexBuffer);
-        delete[] quadIndices;
+        // unsigned int offset = 0;
+        // auto *quadIndices = new unsigned int[m_storage->maxIndices];
+        // for (unsigned int i = 0; i < m_storage->maxIndices; i += 6)
+        // {
+        //     quadIndices[i + 0] = offset + 0;
+        //     quadIndices[i + 1] = offset + 1;
+        //     quadIndices[i + 2] = offset + 2;
+        //
+        //     quadIndices[i + 3] = offset + 2;
+        //     quadIndices[i + 4] = offset + 3;
+        //     quadIndices[i + 5] = offset + 0;
+        //
+        //     offset += 4;
+        // }
+        // const std::shared_ptr<IndexBuffer> quadIndexBuffer = createIndexBuffer(quadIndices, m_storage->maxIndices);
+        // m_storage->quadVertexArray->setIndexBuffer(quadIndexBuffer);
+        // delete[] quadIndices;
 
         m_storage->whiteTexture = Texture2D::create(1, 1);
         unsigned int whiteTextureData = 0xffffffff;
