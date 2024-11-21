@@ -37,11 +37,13 @@ namespace nexo::renderer {
 
     class OpenGlIndexBuffer final : public IndexBuffer {
         public:
-        OpenGlIndexBuffer(const unsigned int *indices, unsigned int count);
+        OpenGlIndexBuffer();
         ~OpenGlIndexBuffer() override;
 
         void bind() const override;
         void unbind() const override;
+
+        void setData(unsigned int *indices, unsigned int count) override;
 
         [[nodiscard]] unsigned int getCount() const override;
         private:
