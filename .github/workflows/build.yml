@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
         compiler: [gcc, msvc]
@@ -24,7 +25,7 @@ jobs:
           #  version: 13
           - os: windows-latest
             compiler: msvc
-            version: 19
+            version: 14
         exclude:
           - os: windows-latest
             compiler: gcc
