@@ -17,7 +17,7 @@ jobs:
         compiler: [msvc]
         gcc: [13]
         clang: [13]
-        msvc: [14.41]
+        msvc: [14]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
