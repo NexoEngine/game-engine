@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
         compiler: [gcc, clang, msvc]
         include:
           #- os: ubuntu-latest
@@ -25,6 +25,11 @@ jobs:
           - os: windows-latest
             compiler: msvc
             version: 14.41
+        exclude:
+          - os: windows-latest
+            compiler: gcc
+          - os: windows-latest
+            compiler: clang
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
