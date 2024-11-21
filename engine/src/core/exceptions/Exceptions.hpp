@@ -24,4 +24,13 @@ namespace nexo::core {
                                            const int line = __LINE__)
                 : Exception("File not found: " + filePath, file, line) {}
     };
+
+    class LoadModelException final : public Exception {
+        public:
+            explicit LoadModelException(const std::string &filePath, const std::string &errorStr,
+                                        const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "Failure to load model : " + filePath + " : " + errorStr, file, line) {};
+    };
+
+
 }
