@@ -19,6 +19,9 @@ jobs:
         with:
           submodules: recursive # Ensures all submodules are fetched
 
+      - name: Fetch all history for all tags and branches
+        run: cd vcpkg && git fetch --prune --unshallow
+
       - name: Install required system dependencies
         run: |
           sudo apt-get update
