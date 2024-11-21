@@ -13,35 +13,45 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        compiler: [gcc]
+        os: [ubuntu-latest, windows-latest]
+        compiler: [msvc]
         gcc: [13]
         clang: [13]
+        msvc: [14.41]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          submodules: recursive # Ensures all submodules are fetched
+          submodules: recursive
 
       - name: Set up GCC
-        if: ${{ matrix.compiler == 'gcc' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: ${{ matrix.gcc }}
           platform: x64
 
       - name: Set up Clang
-        if: ${{ matrix.compiler == 'clang' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'clang' }}
         uses: egor-tensin/setup-clang@v1
         with:
           version: ${{ matrix.clang }}
           platform: x64
 
+      - name: Set up MSVC
+        if: ${{ matrix.os == 'windows-latest' && matrix.compiler == 'msvc' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: ${{ matrix.msvc }}
+
       - name: Fetch all history for all tags and branches
-        run: cd vcpkg && git fetch --prune --unshallow
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow
 
       - name: Install required system dependencies
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev libxcursor-dev
@@ -51,13 +61,13 @@ jobs:
         with:
           cmake-version: "3.30"
 
-      - name: Build the project with GCC
+      - name: Build the project
         env:
-            CC: ${{ matrix.compiler }}
-            CXX: ${{ matrix.compiler }}
+          CC: ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler }}
         run: |
-            cmake -B build
-            cmake --build build
+          cmake -B build
+          cmake --build build
 
       - name: Copy build artifacts
         run: |
