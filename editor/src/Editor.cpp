@@ -155,7 +155,6 @@ namespace nexo::editor {
         fontConfig.OversampleV = 3; // Vertical oversampling
 
         ImGuiIO &io = ImGui::GetIO();
-        io.IniFilename = nullptr;
 
         io.Fonts->AddFontDefault();
 
@@ -166,7 +165,7 @@ namespace nexo::editor {
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
 
-        ImFont *font = io.Fonts->AddFontFromFileTTF("../assets/fonts/SourceSans3-Regular.ttf", fontSize,
+        ImFont *font = io.Fonts->AddFontFromFileTTF("./assets/fonts/SourceSans3-Regular.ttf", fontSize,
                                                     &fontConfig);
         IM_ASSERT(font != nullptr);
         io.FontDefault = font;

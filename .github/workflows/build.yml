@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install git
+        run: |
+          sudo apt-get install -y git
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
