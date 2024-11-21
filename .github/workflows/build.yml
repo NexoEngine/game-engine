@@ -14,10 +14,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        compiler: [msvc]
-        gcc: [13]
-        clang: [13]
-        msvc: [14]
+        compiler: [gcc, clang, msvc]
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            version: 13
+          - os: ubuntu-latest
+            compiler: clang
+            version: 13
+          - os: windows-latest
+            compiler: msvc
+            version: 14.41
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -29,21 +36,21 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
         uses: egor-tensin/setup-gcc@v1
         with:
-          version: ${{ matrix.gcc }}
+          version: ${{ matrix.version }}
           platform: x64
 
       - name: Set up Clang
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'clang' }}
         uses: egor-tensin/setup-clang@v1
         with:
-          version: ${{ matrix.clang }}
+          version: ${{ matrix.version }}
           platform: x64
 
       - name: Set up MSVC
         if: ${{ matrix.os == 'windows-latest' && matrix.compiler == 'msvc' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: ${{ matrix.msvc }}
+          toolset: ${{ matrix.version }}
 
       - name: Fetch all history for all tags and branches
         run: |
