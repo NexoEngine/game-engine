@@ -24,7 +24,7 @@ jobs:
           #  version: 13
           - os: windows-latest
             compiler: msvc
-            version: 14.41
+            version: 14
         exclude:
           - os: windows-latest
             compiler: gcc
