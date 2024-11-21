@@ -143,12 +143,14 @@ namespace nexo::renderer {
             virtual void bind() const  = 0;
             virtual void unbind() const = 0;
 
+            virtual void setData(unsigned int *data, unsigned int size) = 0;
+
             [[nodiscard]] virtual unsigned int getCount() const = 0;
     };
 
     std::shared_ptr<VertexBuffer> createVertexBuffer(float *vertices, unsigned int size);
     std::shared_ptr<VertexBuffer> createVertexBuffer(unsigned int size);
-    std::shared_ptr<IndexBuffer> createIndexBuffer(unsigned int *indices, unsigned int count);
+    std::shared_ptr<IndexBuffer> createIndexBuffer();
 
 
 }

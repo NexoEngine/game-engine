@@ -56,15 +56,15 @@ namespace nexo::components {
     };
 
     struct Renderable3D final : Renderable {
-        MaterialComponent material;
+        Material material;
         std::shared_ptr<Shape3D> shape;
 
-        explicit Renderable3D(const MaterialComponent material,
+        explicit Renderable3D(const Material material,
                               const std::shared_ptr<Shape3D> &shape) : material(material), shape(shape) {};
 
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const override
         {
-            shape->draw(context, transf, material);
+            shape->draw(context, transf);
         }
 
         bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override

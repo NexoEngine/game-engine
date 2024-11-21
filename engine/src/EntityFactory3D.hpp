@@ -14,12 +14,24 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include "ecs/Entity.hpp"
+#include "components/Components.hpp"
 
 namespace nexo {
     class EntityFactory3D {
         public:
             static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+            static ecs::Entity createModel(const std::string &path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
     };
+}
+
+namespace nexo::utils {
+    std::shared_ptr<components::MeshNode> loadModel(const std::string& path);
+    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode* node, const aiScene* scene);
+    components::Mesh processMesh(const std::string &path, aiMesh* mesh, const aiScene* scene);
+    glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
 }

@@ -152,7 +152,7 @@ namespace nexo {
         m_window->setVsync(false);
 
 #ifdef GRAPHICS_API_OPENGL
-        gladLoadGL();
+        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
 #endif
 
@@ -191,7 +191,7 @@ namespace nexo {
         if (!m_isMinimized)
         {
             // Clear
-            renderer::RenderCommand::setClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+            renderer::RenderCommand::setClearColor({1.0f, 0.0f, 1.0f, 1.0f});
             renderer::RenderCommand::clear();
 
             if (m_sceneManager.isSceneActive(sceneId))

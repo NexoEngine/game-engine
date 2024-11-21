@@ -36,10 +36,10 @@ namespace nexo::renderer {
         THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<IndexBuffer> createIndexBuffer(unsigned int *indices, unsigned int count)
+    std::shared_ptr<IndexBuffer> createIndexBuffer()
     {
         #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlIndexBuffer>(indices, count);
+            return std::make_shared<OpenGlIndexBuffer>();
         #endif
         THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
