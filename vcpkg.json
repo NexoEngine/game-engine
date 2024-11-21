@@ -22,6 +22,7 @@
     {"name": "glfw3", "version>=": "3.4"},
     {"name": "glad", "version>=": "0.1.36"},
     {"name": "stb", "version>=": "2023-04-11"},
-    {"name": "tinyfiledialogs", "version>=": "3.8.8#4"}
+    {"name": "tinyfiledialogs", "version>=": "3.8.8#4"},
+    {"name":  "assimp", "version>=":  "5.4.3#0"}
   ]
 }
