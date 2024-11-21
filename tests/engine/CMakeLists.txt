@@ -24,10 +24,9 @@ include_directories("./common")
 
 # Add engine test source files
 add_executable(engine_tests
-    ${BASEDIR}/../test_main.cpp
     ${BASEDIR}/test.cpp
     # Add other engine test files here
 )
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(engine_tests PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main nexoRenderer)
+target_link_libraries(engine_tests GTest::gtest GTest::gtest_main nexoRenderer)

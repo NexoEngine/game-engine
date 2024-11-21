@@ -28,7 +28,6 @@ set(COMMON_SOURCES
 
 add_executable(common_tests
     ${COMMON_SOURCES}
-    ${BASEDIR}/../test_main.cpp
     ${BASEDIR}/Matrix.test.cpp
 )
 
@@ -36,4 +35,4 @@ add_executable(common_tests
 find_package(glm CONFIG REQUIRED)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(common_tests PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
+target_link_libraries(common_tests GTest::gtest GTest::gtest_main)

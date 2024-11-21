@@ -22,7 +22,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
    
 enable_testing()
-
+include(GoogleTest)
 # Find gtest package
 find_package(GTest CONFIG REQUIRED)
 
@@ -30,8 +30,17 @@ include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/common/CMakeLists.txt)
 
 # Add tests
-add_test(NAME EngineTests COMMAND engine_tests)
-add_test(NAME CommonTests COMMAND common_tests)
+gtest_add_tests(TARGET engine_tests
+                TEST_LIST engineTestsList
+                
+)
+gtest_add_tests(TARGET common_tests
+                TEST_LIST commonTestsList
+)
+
+set_tests_properties(${engineTestsList} PROPERTIES LABELS "engine")
+set_tests_properties(${commonTestsList} PROPERTIES LABELS "common")
+
 
 # Add this later when editor tests are implemented
 #add_test(NAME EditorTests COMMAND editor_tests)

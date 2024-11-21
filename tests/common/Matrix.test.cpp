@@ -18,11 +18,15 @@
 #include "math/Matrix.hpp"
 
 // Helper function to compare two glm::vec3 values
-bool compareVec3(const glm::vec3 &v1, const glm::vec3 &v2, float epsilon = 0.0001f) {
-    return glm::length(v1 - v2) < epsilon;
-}
 
-TEST(DecomposeTransformEulerTest, IdentityMatrix) {
+class DecomposeTransformEulerTest : public ::testing::Test {
+    protected:
+        static bool compareVec3(const glm::vec3 &v1, const glm::vec3 &v2, float epsilon = 0.0001f) {
+            return glm::length(v1 - v2) < epsilon;
+        }
+};
+
+TEST_F(DecomposeTransformEulerTest, IdentityMatrix) {
     auto identity = glm::mat4(1.0f);
     glm::vec3 translation, rotation, scale;
 
@@ -33,7 +37,7 @@ TEST(DecomposeTransformEulerTest, IdentityMatrix) {
     EXPECT_TRUE(compareVec3(scale, glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
-TEST(DecomposeTransformEulerTest, TranslationOnly) {
+TEST_F(DecomposeTransformEulerTest, TranslationOnly) {
     const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, -3.0f, 2.0f));
     glm::vec3 translation, rotation, scale;
 
@@ -44,7 +48,7 @@ TEST(DecomposeTransformEulerTest, TranslationOnly) {
     EXPECT_TRUE(compareVec3(scale, glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
-TEST(DecomposeTransformEulerTest, ScaleOnly) {
+TEST_F(DecomposeTransformEulerTest, ScaleOnly) {
     const glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 3.0f, 4.0f));
     glm::vec3 translation, rotation, scale;
 
@@ -55,7 +59,7 @@ TEST(DecomposeTransformEulerTest, ScaleOnly) {
     EXPECT_TRUE(compareVec3(scale, glm::vec3(2.0f, 3.0f, 4.0f)));
 }
 
-TEST(DecomposeTransformEulerTest, RotationOnly) {
+TEST_F(DecomposeTransformEulerTest, RotationOnly) {
     const glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::vec3 translation, rotation, scale;
 
@@ -66,7 +70,7 @@ TEST(DecomposeTransformEulerTest, RotationOnly) {
     EXPECT_TRUE(compareVec3(scale, glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
-TEST(DecomposeTransformEulerTest, TranslationRotationScale) {
+TEST_F(DecomposeTransformEulerTest, TranslationRotationScale) {
     glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, -5.0f, 3.0f));
     transform = glm::rotate(transform, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     transform = glm::scale(transform, glm::vec3(2.0f, 3.0f, 4.0f));
@@ -80,7 +84,7 @@ TEST(DecomposeTransformEulerTest, TranslationRotationScale) {
     EXPECT_TRUE(compareVec3(scale, glm::vec3(2.0f, 3.0f, 4.0f)));
 }
 
-TEST(DecomposeTransformEulerTest, NegativeScale) {
+TEST_F(DecomposeTransformEulerTest, NegativeScale) {
     glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(-1.0f, 2.0f, 3.0f));
     glm::vec3 translation, rotation, scale;
 
