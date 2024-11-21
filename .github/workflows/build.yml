@@ -13,23 +13,25 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]
-        compiler: [gcc, clang, msvc]
+        os: [windows-latest, ubuntu-latest]
+        compiler: [gcc, msvc]
         include:
-          #- os: ubuntu-latest
-          #  compiler: gcc
-          #  version: 13
+          - os: ubuntu-latest
+            compiler: gcc
+            version: 13
           #- os: ubuntu-latest
           #  compiler: clang
           #  version: 13
           - os: windows-latest
             compiler: msvc
-            version: 14
+            version: 19
         exclude:
           - os: windows-latest
             compiler: gcc
           - os: windows-latest
             compiler: clang
+          - os: ubuntu-latest
+            compiler: msvc
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -82,30 +84,25 @@ jobs:
           cmake --build build
 
       - name: Copy build artifacts
+        shell: bash
         run: |
-          if [ -d "./build/Debug" ]; then
-            cp -r ./build/Debug/* ./build/
-          else
-            echo "Debug build output not found" && exit 1
-          fi
+          mkdir -p output
+          mkdir -p output/assets
+          cp -r ./assets ./output/assets
+          cp -r ./build/Debug ./output/
 
-      - name: Copy resources
-        run: |
-          if [ -d "./ressources" ]; then
-            cp -r ./ressources ./build/
-          else
-            echo "Resources directory not found" && exit 1
-          fi
-
-      - name: Package the build into a tar archive
-        run: |
-          tar -C $(pwd) -cf package.tar build
-          if [ $? -ne 0 ]; then
-            echo "Tar packaging failed" && exit 1
-          fi
+      - name: Compress action step
+        uses: a7ul/tar-action@v1.1.0
+        id: compress
+        with:
+          command: c
+          cwd: .
+          files: |
+            ./output
+          outPath: package.tar.gz
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: package
-          path: package.tar
+          path: package.tar.gz
