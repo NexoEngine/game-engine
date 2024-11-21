@@ -29,7 +29,7 @@ set(COMMON_SOURCES
 add_executable(common_tests
     ${COMMON_SOURCES}
     ${BASEDIR}/../test_main.cpp
-    ${BASEDIR}/math_test.cpp
+    ${BASEDIR}/Matrix.test.cpp
 )
 
 # Find glm and add its include directories

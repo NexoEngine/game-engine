@@ -63,6 +63,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 # SETUP TESTS
-include("${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 
 include_directories("./common")
