@@ -23,7 +23,7 @@ include_directories("./common")
 # TODO: make common a library and link it to the tests
 set(COMMON_SOURCES
     common/Exception.cpp
-    common/Math/Matrix.cpp
+    common/math/Matrix.cpp
 )
 
 add_executable(common_tests
