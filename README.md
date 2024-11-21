@@ -65,6 +65,22 @@ For Windows:
 > [!NOTE]
 > For detailed instructions, visit our [Installation Guide](docs/install/README.md).
 
+## Run the tests
+
+In this project tests use the [gtest](http://google.github.io/googletest/) library.
+
+First build the tests:
+```bash
+cmake -B build
+cmake --build build
+```
+
+Then run the tests:
+```bash
+cd build
+ctest -C Debug
+```
+
 ## The Team
 
 NEXO Engine is brought to life by a dedicated team of fourth-year students from EPITECH Strasbourg:
