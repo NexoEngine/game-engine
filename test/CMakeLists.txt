@@ -1,0 +1,37 @@
+#### CMakeLists.txt ###########################################################
+#
+#  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+#  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+#  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+#  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+#  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+#
+#  Author:      Guillaume HEIN
+#  Date:        21/11/2024
+#  Description: CMakeLists.txt file for the tests.
+#
+###############################################################################
+
+cmake_minimum_required(VERSION 3.10)
+
+# Set project name
+project(nexoTests VERSION 1.0.0)
+
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+   
+enable_testing()
+
+# Find gtest package
+find_package(GTest CONFIG REQUIRED)
+
+include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/common/CMakeLists.txt)
+
+# Add tests
+add_test(NAME EngineTests COMMAND engine_tests)
+add_test(NAME CommonTests COMMAND common_tests)
+
+# Add this later when editor tests are implemented
+#add_test(NAME EditorTests COMMAND editor_tests)
