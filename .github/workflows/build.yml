@@ -3,10 +3,11 @@ name: Build and Package
 on:
   push:
     branches:
-      - feat/cicd-build
+      # TODO: remove this branch filter once the build is stable
+      - feat/cicd-build-refactor
   pull_request:
     branches:
-      - feat/cicd-build
+      - feat/cicd-build-refactor
 
 jobs:
   build:
@@ -23,31 +24,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev libxcursor-dev
 
-      - name: Ensure vcpkg is initialized
-        run: |
-          if [ ! -f "./vcpkg/bootstrap-vcpkg.sh" ]; then
-            git clone https://github.com/microsoft/vcpkg.git vcpkg
-          fi
-          chmod +x ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/bootstrap-vcpkg.sh
-
-      - name: Install loguru using vcpkg
-        run: |
-          ./vcpkg/vcpkg install loguru
-        continue-on-error: true # Ignore if loguru installation fails
-
-      - name: Fetch and build loguru (if not available in vcpkg)
-        run: |
-          if [ ! -d "loguru" ]; then
-            git clone https://github.com/emilk/loguru.git
-            cd loguru
-            mkdir build && cd build
-            cmake ..
-            make -j$(nproc)
-            sudo make install
-            cd ../..
-          fi
-
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v1
         with:
@@ -58,8 +34,8 @@ jobs:
             CC: gcc
             CXX: g++
         run: |
-            cmake -B build -DCMAKE_BUILD_TYPE=Debug -DNO_RAYLIB_COLORS=ON
-            cmake --build build --config Debug
+            cmake -B build
+            cmake --build build
 
       - name: Copy build artifacts
         run: |
