@@ -24,6 +24,20 @@ jobs:
         with:
           submodules: recursive # Ensures all submodules are fetched
 
+      - name: Set up GCC
+        if: ${{ matrix.compiler == 'gcc' }}
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.gcc }}
+          platform: x64
+
+      - name: Set up Clang
+        if: ${{ matrix.compiler == 'clang' }}
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ matrix.clang }}
+          platform: x64
+
       - name: Fetch all history for all tags and branches
         run: cd vcpkg && git fetch --prune --unshallow
 
@@ -39,8 +53,8 @@ jobs:
 
       - name: Build the project with GCC
         env:
-            CC: gcc
-            CXX: g++
+            CC: ${{ matrix.compiler }}
+            CXX: ${{ matrix.compiler }}
         run: |
             cmake -B build
             cmake --build build
