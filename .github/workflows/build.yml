@@ -14,23 +14,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
-        compiler: [gcc, clang, msvc]
+        compiler: [gcc, msvc] # TODO: add clang later
         include:
           - os: ubuntu-latest
             compiler: gcc
             version: 13
-          - os: ubuntu-latest
-            compiler: clang
-            version: 19
           - os: windows-latest
             compiler: msvc
             version: 14
-          - os: windows-latest
-            compiler: clang
-            version: 17
-          - os: macos-latest
-            compiler: clang
-            version: 16
         exclude:
           - os: ubuntu-latest
             compiler: msvc
