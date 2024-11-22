@@ -1,4 +1,4 @@
-name: Build and Package
+name: Build, test and Package
 
 on:
   push:
@@ -84,26 +84,17 @@ jobs:
           cmake -B build
           cmake --build build
 
-      - name: Copy build artifacts
-        shell: bash
-        run: |
-          mkdir -p output
-          mkdir -p output/assets
-          cp -r ./assets ./output/assets
-          cp -r ./build/Debug ./output/
-
-      - name: Compress action step
-        uses: a7ul/tar-action@v1.1.0
-        id: compress
+      - name: Test Project
+        uses: threeal/ctest-action@v1.1.0
         with:
-          command: c
-          cwd: .
-          files: |
-            ./output
-          outPath: package.tar.gz
+          test-dir: build
+          build-config: Debug
+          verbose: true
 
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: package
-          path: package.tar.gz
+          name: nexo-editor-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          path: |
+            ./assets
+            ./build/Debug/*
