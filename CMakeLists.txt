@@ -79,7 +79,7 @@ install(TARGETS nexoEditor
         RUNTIME DESTINATION bin
 )
 # Fix to install runtime dependencies (.dll on Windows)
-install(FILES $<TARGET_RUNTIME_DLLS:your_exe_here> TYPE BIN)
+install(FILES $<TARGET_RUNTIME_DLLS:nexoEditor> TYPE BIN)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/" DESTINATION assets)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/config/" DESTINATION config)
 install(DIRECTORY DESTINATION logs)
