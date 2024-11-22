@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         compiler: [gcc, clang, msvc]
         include:
           - os: ubuntu-latest
@@ -21,18 +21,23 @@ jobs:
             version: 13
           - os: ubuntu-latest
             compiler: clang
-            version: 17
+            version: 19
           - os: windows-latest
             compiler: msvc
             version: 14
           - os: windows-latest
             compiler: clang
             version: 17
+          - os: macos-latest
+            compiler: clang
+            version: 16
         exclude:
           - os: ubuntu-latest
             compiler: msvc
           - os: windows-latest
             compiler: gcc
+          - os: macos-latest
+            compiler: [gcc, msvc]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -64,13 +69,15 @@ jobs:
 
       - name: Install required system dependencies for Ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxrandr-dev libx11-dev \
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxrandr-dev libx11-dev \
             libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
             libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
             libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
             libegl1-mesa-dev
+          version: 1.0
+          execute_install_scripts: true
 
       - name: Fetch all history for all tags and branches of vcpkg
         run: |
