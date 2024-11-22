@@ -1,9 +1,6 @@
 name: Build, test and Package
 
-on:
-  push:
-    branches:
-      - *
+on: [push]
 
 jobs:
   build:
