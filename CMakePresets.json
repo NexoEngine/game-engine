@@ -29,10 +29,7 @@
         {
             "name": "vcpkg",
             "configurePreset": "vcpkg",
-            "configuration": "Debug",
-            "output": {
-                "verbose": true
-            }
+            "configuration": "Debug"
         }
     ]
 }
