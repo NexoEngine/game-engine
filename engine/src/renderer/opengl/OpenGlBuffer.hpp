@@ -20,35 +20,38 @@ namespace nexo::renderer {
 
     class OpenGlVertexBuffer final : public VertexBuffer {
         public:
-        OpenGlVertexBuffer(const float *vertices, unsigned int size);
-        explicit OpenGlVertexBuffer(unsigned int size);
-        ~OpenGlVertexBuffer() override;
+            OpenGlVertexBuffer(const float *vertices, unsigned int size);
+            explicit OpenGlVertexBuffer(unsigned int size);
+            ~OpenGlVertexBuffer() override;
 
-        void bind() const override;
-        void unbind() const override;
-        void setLayout(const BufferLayout &layout) override { _layout = layout; };
-        [[nodiscard]] const BufferLayout getLayout() const override { return _layout; };
+            void bind() const override;
+            void unbind() const override;
+            void setLayout(const BufferLayout &layout) override { _layout = layout; };
+            [[nodiscard]] const BufferLayout getLayout() const override { return _layout; };
 
-        void setData(void *data, unsigned int size) override;
+            void setData(void *data, unsigned int size) override;
+            [[nodiscard]] unsigned int getId() const override { return _id; };
         private:
-        unsigned int _id{};
-        BufferLayout _layout;
+            unsigned int _id{};
+            BufferLayout _layout;
     };
 
     class OpenGlIndexBuffer final : public IndexBuffer {
         public:
-        OpenGlIndexBuffer();
-        ~OpenGlIndexBuffer() override;
+            OpenGlIndexBuffer();
+            ~OpenGlIndexBuffer() override;
 
-        void bind() const override;
-        void unbind() const override;
+            void bind() const override;
+            void unbind() const override;
 
-        void setData(unsigned int *indices, unsigned int count) override;
+            void setData(unsigned int *indices, unsigned int count) override;
 
-        [[nodiscard]] unsigned int getCount() const override;
+            [[nodiscard]] unsigned int getCount() const override;
+
+            unsigned int getId() const override { return _id; };
         private:
-        unsigned int _id{};
-        unsigned int _count;
+            unsigned int _id{};
+            unsigned int _count;
     };
 
 }

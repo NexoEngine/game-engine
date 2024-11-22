@@ -134,6 +134,8 @@ namespace nexo::renderer {
             [[nodiscard]] virtual const BufferLayout getLayout() const = 0;
 
             virtual void setData(void *data, unsigned int size) = 0;
+
+            [[nodiscard]] virtual unsigned int getId() const = 0;
     };
 
     class IndexBuffer {
@@ -146,6 +148,8 @@ namespace nexo::renderer {
             virtual void setData(unsigned int *data, unsigned int size) = 0;
 
             [[nodiscard]] virtual unsigned int getCount() const = 0;
+
+            virtual unsigned int getId() const = 0;
     };
 
     std::shared_ptr<VertexBuffer> createVertexBuffer(float *vertices, unsigned int size);
