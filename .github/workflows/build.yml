@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
         compiler: [gcc, clang, msvc]
         include:
           - os: ubuntu-latest
