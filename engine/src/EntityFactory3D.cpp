@@ -85,9 +85,9 @@ namespace nexo::utils {
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
             //TODO: Later
-            // if (mesh->HasNormals()) {
-            //     vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
-            // }
+            if (mesh->HasNormals()) {
+                vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+            }
 
             if (mesh->mTextureCoords[0])
                 vertex.texCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
@@ -120,7 +120,7 @@ namespace nexo::utils {
                 std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
 
                 texture = renderer::Texture2D::create(texturePath.string());
-                LOG(NEXO_INFO, "Loaded texture: {}", str.data);
+                LOG(NEXO_INFO, "Loaded diffuse texture: {}", str.data);
             }
         }
 
