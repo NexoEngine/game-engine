@@ -78,10 +78,18 @@ include_directories("./common")
 install(TARGETS nexoEditor
         RUNTIME DESTINATION bin
 )
+# Fix to install runtime dependencies (.dll on Windows)
 install(CODE [[
-    file(GET_RUNTIME_DEPENDENCIES)
-    ]] DESTINATION bin
-)
+    file(GET_RUNTIME_DEPENDENCIES
+        EXECUTABLES $<TARGET_FILE:nexoEditor>
+        DIRECTORIES $<TARGET_FILE_DIR:nexoEditor>
+        RESOLVED_DEPENDENCIES_VAR deps
+        UNRESOLVED_DEPENDENCIES_VAR unresolved
+    )
+    foreach(dep ${deps})
+        file(INSTALL ${dep} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+    endforeach()
+]])
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/" DESTINATION assets)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/config/" DESTINATION config)
 install(DIRECTORY DESTINATION logs)
