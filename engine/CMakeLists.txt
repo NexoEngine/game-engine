@@ -94,7 +94,7 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
-target_link_libraries(nexoEditor PRIVATE Boost::dll)
+target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
