@@ -100,7 +100,7 @@ void main()
     vec3 normal = normalize(vNormal);
 
     // Start with ambient light contribution
-    vec3 fragColor = ambientLight * sampler.rgb;
+    vec3 fragColor = ambientLight * sampler.rgb * vColor.rgb;
 
     // Directional Lights
     for (int i = 0; i < numDirLights; ++i) {

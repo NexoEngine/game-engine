@@ -45,13 +45,16 @@ namespace nexo::renderer {
         static constexpr unsigned int maxTextureSlots = 32;
 
         std::shared_ptr<Shader> textureShader;
-        std::shared_ptr<VertexArray> quadVertexArray;
-        std::shared_ptr<VertexBuffer> quadVertexBuffer;
+        std::shared_ptr<VertexArray> vertexArray;
+        std::shared_ptr<VertexBuffer> vertexBuffer;
+        std::shared_ptr<IndexBuffer> indexBuffer;
         std::shared_ptr<Texture2D> whiteTexture;
 
-        unsigned int quadIndexCount = 0;
-        QuadVertex *quadVertexBufferBase = nullptr;
-        QuadVertex *quadVertexBufferPtr = nullptr;
+        unsigned int indexCount = 0;
+        QuadVertex* vertexBufferBase = nullptr;
+        unsigned int *indexBufferBase = nullptr;
+        QuadVertex* vertexBufferPtr = nullptr;
+        unsigned int *indexBufferPtr = nullptr;
 
         std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
