@@ -5,6 +5,7 @@ project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
+set(VCPKG_APPINSTALL_DEPS ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
@@ -76,6 +77,10 @@ include_directories("./common")
 
 install(TARGETS nexoEditor
         RUNTIME DESTINATION bin
+)
+install(CODE [[
+    file(GET_RUNTIME_DEPENDENCIES)
+    ]] DESTINATION bin
 )
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/" DESTINATION assets)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/config/" DESTINATION config)
