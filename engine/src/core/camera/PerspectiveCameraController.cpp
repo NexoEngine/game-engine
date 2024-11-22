@@ -36,6 +36,7 @@ namespace nexo::camera {
 
     void PerspectiveCameraController::onUpdate(const Timestep ts)
     {
+        m_resizing = false;
         const float time = ts;
 
         if (event::isKeyPressed(NEXO_KEY_Z))
@@ -69,6 +70,7 @@ namespace nexo::camera {
 
     void PerspectiveCameraController::handleEvent(event::EventWindowResize &event)
     {
+        m_resizing = true;
         m_aspectRatio = static_cast<float>(event.width) / static_cast<float>(event.height);
         m_camera.setProjection(m_fovY, m_aspectRatio, 0.1f, 100.0f);
         event.consumed = true;
@@ -79,6 +81,9 @@ namespace nexo::camera {
         glm::vec2 currentMousePosition(event.x, event.y);
         glm::vec2 mouseDelta = (currentMousePosition - m_lastMousePosition) * m_mouseSensitivity;
         m_lastMousePosition = currentMousePosition;
+
+        if (!event::isMouseDown(NEXO_MOUSE_LEFT) || m_resizing)
+            return;
 
         m_cameraYaw += mouseDelta.x;
         m_cameraPitch -= mouseDelta.y;

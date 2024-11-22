@@ -267,6 +267,7 @@ namespace nexo::editor {
             _viewSize.y = viewportPanelSize.y;
             const auto event = std::make_shared<event::EventWindowResize>(viewportPanelSize.x, viewportPanelSize.y);
             getApp().getEventManager()->emitEvent<event::EventWindowResize>(event);
+            m_sceneManagerBridge->setSceneActiveStatus(_sceneID, false);
         }
 
         // Render framebuffer

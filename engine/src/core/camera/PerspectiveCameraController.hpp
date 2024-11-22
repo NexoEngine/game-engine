@@ -65,6 +65,8 @@ namespace nexo::camera {
 
             float m_mouseSensitivity = 0.1f;
             float m_cameraTranslationSpeed = 10.0f;
+
+            bool m_resizing = false;
     };
 
 }

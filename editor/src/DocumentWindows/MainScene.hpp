@@ -61,6 +61,8 @@ namespace nexo::editor {
 
             std::shared_ptr<renderer::Framebuffer> m_framebuffer;
 
+            bool m_cursorLocked = false;
+
             // ---------------------- //
             // --- Internal logic --- //
             // ---------------------- //
