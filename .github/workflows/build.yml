@@ -56,6 +56,16 @@ jobs:
         with:
           toolset: ${{ matrix.version }}
 
+      - name: Install required system dependencies for Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxrandr-dev libx11-dev \
+            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
+            libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
+            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+            libegl1-mesa-dev
+
       - name: Fetch all history for all tags and branches of vcpkg
         run: |
           cd vcpkg
@@ -76,12 +86,11 @@ jobs:
           buildPreset: 'vcpkg'
           testPreset: 'vcpkg'
 
-      - name: Test Project
-        uses: threeal/ctest-action@v1.1.0
-        with:
-          test-dir: build
-          build-config: Debug
-          verbose: true
+      # if previous step fails print log /home/runner/work/game-engine/game-engine/vcpkg/buildtrees/draco/install-x64-linux-dbg-out.log
+      - name: Print vcpkg log if build fails
+        if: failure()
+        run: |
+          cat /home/runner/work/game-engine/game-engine/vcpkg/buildtrees/draco/install-x64-linux-dbg-out.log
 
       - name: Upload package
         uses: actions/upload-artifact@v4
