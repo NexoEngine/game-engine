@@ -3,10 +3,7 @@ name: Build, test and Package
 on:
   push:
     branches:
-      - feat/cicd-build-refactor
-  pull_request:
-    branches:
-      - feat/cicd-build-refactor
+      - *
 
 jobs:
   build:
@@ -98,12 +95,11 @@ jobs:
           CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
-      - name: Copy output files
+      - name: Install nexoEditor
         shell: bash
         run: |
           mkdir -p output
-          cp -r build output/
-          cp -r assets output/
+          cmake --install build --prefix ./output --config Debug -v
 
       - name: Upload package
         uses: actions/upload-artifact@v4

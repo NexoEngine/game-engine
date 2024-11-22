@@ -15,6 +15,7 @@
 #include "Nexo.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
+#include "Path.hpp"
 #include "backends/ImGuiBackend.hpp"
 #include "IconsFontAwesome.h"
 
@@ -105,6 +106,12 @@ namespace nexo::editor {
         ImGui::CreateContext();
         ImGuiBackend::init(m_app->getWindow());
 
+        ImGuiIO &io = ImGui::GetIO();
+        static const std::string iniFilePath = Path::resolvePathRelativeToExe(
+            "../config/default-layout.ini").string();
+        io.IniFilename = iniFilePath.c_str();
+        LOG(NEXO_INFO, "ImGui .ini file path: {}", iniFilePath);
+
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::Enable(true);
@@ -165,8 +172,11 @@ namespace nexo::editor {
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
 
-        ImFont *font = io.Fonts->AddFontFromFileTTF("./assets/fonts/SourceSans3-Regular.ttf", fontSize,
+        static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
+            "../assets/fonts/SourceSans3-Regular.ttf").string();
+        ImFont *font = io.Fonts->AddFontFromFileTTF(sourceSansPath.c_str(), fontSize,
                                                     &fontConfig);
+        LOG(NEXO_DEBUG, "Font path: {}", sourceSansPath);
         IM_ASSERT(font != nullptr);
         io.FontDefault = font;
 
@@ -176,8 +186,10 @@ namespace nexo::editor {
         fontawesome_config.MergeMode = true;
         fontawesome_config.OversampleH = 3; // Horizontal oversampling
         fontawesome_config.OversampleV = 3; // Vertical oversampling
-        static constexpr ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
-        io.Fonts->AddFontFromFileTTF("../assets/fonts/fontawesome4.ttf", fontSize, &fontawesome_config, icon_ranges);
+        static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        static const std::string fontawesomePath = Path::resolvePathRelativeToExe(
+            "../assets/fonts/fontawesome4.ttf").string();
+        io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), fontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");
     }

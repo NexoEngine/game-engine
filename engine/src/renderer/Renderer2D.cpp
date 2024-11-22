@@ -20,6 +20,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>
+#include <Path.hpp>
 
 namespace nexo::renderer {
     void Renderer2D::init()
@@ -63,7 +64,7 @@ namespace nexo::renderer {
             samplers[i] = i;
 
         try {
-            m_storage->textureShader = Shader::create("../assets/shaders/texture.glsl");
+            m_storage->textureShader = Shader::create(Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
             m_storage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
         } catch (const Exception &e)

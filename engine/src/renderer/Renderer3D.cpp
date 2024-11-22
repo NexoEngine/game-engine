@@ -20,6 +20,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <array>
+#include <Path.hpp>
 
 namespace nexo::renderer {
 
@@ -82,7 +83,8 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer3DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        m_storage->textureShader = Shader::create("./assets/shaders/texture.glsl");
+        m_storage->textureShader = Shader::create(Path::resolvePathRelativeToExe(
+            "../assets/shaders/texture.glsl").string());
         m_storage->textureShader->bind();
         m_storage->textureShader->setUniformIntArray("uTexture", samplers, Renderer3DStorage::maxTextureSlots);
 
