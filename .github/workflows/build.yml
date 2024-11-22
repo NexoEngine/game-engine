@@ -37,7 +37,9 @@ jobs:
           - os: windows-latest
             compiler: gcc
           - os: macos-latest
-            compiler: [gcc, msvc]
+            compiler: gcc
+          - os: macos-latest
+            compiler: msvc
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
