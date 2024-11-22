@@ -54,12 +54,12 @@ namespace nexo::editor {
             void registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window);
             void addLog(const LogMessage& message);
             [[nodiscard]] const std::vector<LogMessage>& getLogs() const;
-            private:
+        private:
             void setupLogs();
             void setupEngine();
             void setupStyle();
             void setupFonts(float scaleFactorX, float scaleFactorY);
-            void setupDockspace();
+            void buildDockspace();
             void drawMenuBar();
 
             static void loguruCallback(void *userData, const loguru::Message& message);

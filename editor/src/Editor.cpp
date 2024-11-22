@@ -23,9 +23,8 @@
 #include <ImGuizmo.h>
 #include <algorithm>
 
-namespace nexo::editor {
-
-    static loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
+namespace nexo::utils {
+    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
     {
         switch (level)
         {
@@ -38,29 +37,9 @@ namespace nexo::editor {
         }
         return loguru::Verbosity_INVALID;
     }
+}
 
-    void Editor::setupLogs()
-    {
-        loguru::add_callback(LOGURU_CALLBACK_NAME, &Editor::loguruCallback,
-                             this, loguru::Verbosity_MAX);
-
-        auto engineLogCallback = [](const LogLevel level, const std::string& message) {
-            const auto loguruLevel = nexoLevelToLoguruLevel(level);
-            VLOG_F(loguruLevel, "%s", message.c_str());
-        };
-        Logger::setCallback(engineLogCallback);
-
-    }
-
-    void Editor::addLog(const LogMessage &message)
-    {
-        m_logs.push_back(message);
-    }
-
-    const std::vector<LogMessage> &Editor::getLogs() const
-    {
-        return m_logs;
-    }
+namespace nexo::editor {
 
     void Editor::loguruCallback([[maybe_unused]] void *userData,
                                 const loguru::Message &message)
@@ -73,31 +52,22 @@ namespace nexo::editor {
         });
     }
 
-    void SetupDockspace() {
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+    Editor::~Editor()
+    {
+        LOG(NEXO_INFO, "Closing editor");
+        destroy();
+        ImGuiBackend::shutdown();
 
-        // Optional: If you need to initialize a layout
+        loguru::remove_callback(LOGURU_CALLBACK_NAME);
+    }
 
-        if (const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID; !ImGui::DockBuilderGetNode(dockspaceID)) {
-            ImGui::DockBuilderRemoveNode(dockspaceID); // Clear any existing layout
-            ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
-
-            const ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
-
-            // Set the size of the root dock node to match the viewport
-            ImGui::DockBuilderSetNodeSize(dockspaceID, viewportSize);
-
-            // Split the dockspace into left (70%) and right (30%)
-            ImGuiID leftNode, rightNode;
-            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.3f, &leftNode, &rightNode);
-
-            // Dock windows into the split nodes
-            ImGui::DockBuilderDockWindow("Left left Window", leftNode);
-            ImGui::DockBuilderDockWindow("Left Window", rightNode);
-            ImGui::DockBuilderDockWindow("Right Window", rightNode);
-
-            ImGui::DockBuilderFinish(dockspaceID);
+    void Editor::destroy()
+    {
+        for (const auto &[_, window]: m_windows)
+        {
+            window->shutdown();
         }
+        LOG(NEXO_INFO, "All windows destroyed");
     }
 
     Editor::Editor()
@@ -107,7 +77,6 @@ namespace nexo::editor {
         setupEngine();
         setupStyle();
         LOG(NEXO_INFO, "Style initialized");
-        setupDockspace();
         LOG(NEXO_INFO, "Editor initialized");
         //LOG(NEXO_FATAL, "Fatal error log test");
         LOG(NEXO_ERROR, "Error log test");
@@ -115,9 +84,16 @@ namespace nexo::editor {
         m_sceneManagerBridge = std::make_shared<SceneManagerBridge>();
     }
 
-    bool Editor::isOpen() const
+    void Editor::setupLogs()
     {
-        return !m_quit && m_app->isWindowOpen();
+        loguru::add_callback(LOGURU_CALLBACK_NAME, &Editor::loguruCallback,
+                             this, loguru::Verbosity_MAX);
+
+        auto engineLogCallback = [](const LogLevel level, const std::string &message) {
+            const auto loguruLevel = utils::nexoLevelToLoguruLevel(level);
+            VLOG_F(loguruLevel, "%s", message.c_str());
+        };
+        Logger::setCallback(engineLogCallback);
     }
 
     void Editor::setupEngine()
@@ -142,14 +118,16 @@ namespace nexo::editor {
 
         float scaleFactorX, scaleFactorY = 0.0f;
         m_app->getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
-        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
-            LOG(NEXO_WARN, "Scale factor is greater than 1.0, if you have any issue try adjusting the system's scale factor");
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
+        {
+            LOG(NEXO_WARN,
+                "Scale factor is greater than 1.0, if you have any issue try adjusting the system's scale factor");
             LOG(NEXO_INFO, "DPI scale: x: {}, y: {}", scaleFactorX, scaleFactorY);
         }
 
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(m_app->getWindow()->getWidth()),
-                            static_cast<float>(m_app->getWindow()->getHeight()));
+                                static_cast<float>(m_app->getWindow()->getHeight()));
         io.DisplayFramebufferScale = ImVec2(scaleFactorX, scaleFactorY); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -182,7 +160,8 @@ namespace nexo::editor {
         io.Fonts->AddFontDefault();
 
         float fontSize = 18.0f;
-        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
+        {
             fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
@@ -198,15 +177,41 @@ namespace nexo::editor {
         fontawesome_config.MergeMode = true;
         fontawesome_config.OversampleH = 3; // Horizontal oversampling
         fontawesome_config.OversampleV = 3; // Vertical oversampling
-        static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        static constexpr ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
         io.Fonts->AddFontFromFileTTF("../assets/fonts/fontawesome4.ttf", fontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
-    void Editor::setupDockspace()
+    void Editor::registerWindow(const std::string &name,
+                            std::shared_ptr<IDocumentWindow> window)
     {
-        //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_None);
+        window->setSceneManager(m_sceneManagerBridge);
+        m_windows[name] = std::move(window);
+        LOG(NEXO_INFO, "Registered window: {}", name.c_str());
+    }
+
+    void Editor::init()
+    {
+        for (const auto &[_, window]: m_windows)
+        {
+            window->setup();
+        }
+    }
+
+    void Editor::addLog(const LogMessage &message)
+    {
+        m_logs.push_back(message);
+    }
+
+    const std::vector<LogMessage> &Editor::getLogs() const
+    {
+        return m_logs;
+    }
+
+    bool Editor::isOpen() const
+    {
+        return !m_quit && m_app->isWindowOpen();
     }
 
     void Editor::drawMenuBar()
@@ -236,40 +241,36 @@ namespace nexo::editor {
         }
     }
 
-    Editor::~Editor()
+    void Editor::buildDockspace()
     {
-        LOG(NEXO_INFO, "Closing editor");
-        ImGuiBackend::shutdown();
+        const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID;
 
-        loguru::remove_callback(LOGURU_CALLBACK_NAME);
-    }
-
-    void Editor::init()
-    {
-
-        for (const auto &[_, window]: m_windows)
+        if (!ImGui::DockBuilderGetNode(dockspaceID))
         {
-            window->setup();
-        }
-    }
+            ImGui::DockBuilderRemoveNode(dockspaceID);
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+            ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
 
-    void Editor::update()
-    {
-        for (const auto &[_, window]: m_windows)
-        {
-            window->update();
-        }
-    }
+            ImGui::DockBuilderSetNodeSize(dockspaceID, ImGui::GetMainViewport()->Size);
 
-    ImGuiDockNode* GetDockNodeForWindow(const char* windowName) {
-        ImGuiWindow* window = ImGui::FindWindowByName(windowName);
-        if (window && window->DockNode) {
-            return window->DockNode;
-        }
-        return nullptr;
-    }
+            ImGuiID topNode, rightNode, bottomNode, leftNode;
 
-bool showWindow = false;
+            // Split the main dockspace vertically (70% for the main scene)
+            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.7f, &leftNode, &rightNode);
+            // Split the right part horizontally (50/50 between the console and the scene tree)
+            ImGui::DockBuilderSplitNode(rightNode, ImGuiDir_Up, 0.5f, &topNode, &bottomNode);
+
+            // Attach the default scene to the left side of the window
+            ImGui::DockBuilderDockWindow("Default scene", leftNode);
+            // Attach the scene tree to the top of the right part
+            ImGui::DockBuilderDockWindow("Scene Tree", topNode);
+            // Attach the console to the bottom of the right part
+            ImGui::DockBuilderDockWindow("Console", bottomNode);
+
+            ImGui::DockBuilderFinish(dockspaceID);
+        }
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+    }
 
     void Editor::render()
     {
@@ -277,12 +278,12 @@ bool showWindow = false;
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
-        SetupDockspace();
+        buildDockspace();
 
         drawMenuBar();
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
-        for (const auto &[_, window] : m_windows)
+        for (const auto &[_, window]: m_windows)
         {
             if (window->isOpened())
                 window->show();
@@ -292,20 +293,11 @@ bool showWindow = false;
         ImGuiBackend::end(m_app->getWindow());
     }
 
-    void Editor::destroy()
+    void Editor::update()
     {
         for (const auto &[_, window]: m_windows)
         {
-            window->shutdown();
+            window->update();
         }
-        LOG(NEXO_INFO, "All windows destroyed");
-    }
-
-    void Editor::registerWindow(const std::string &name,
-                                std::shared_ptr<IDocumentWindow> window)
-    {
-        window->setSceneManager(m_sceneManagerBridge);
-        m_windows[name] = std::move(window);
-        LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }
 }

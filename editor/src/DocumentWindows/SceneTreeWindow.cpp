@@ -66,6 +66,8 @@ namespace nexo::editor {
                                           const ImGuiTreeNodeFlags baseFlags) const
     {
         const bool nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), baseFlags);
+        if (!nodeOpen)
+            return nodeOpen;
         const auto &viewManager = SceneViewManager::getInstance();
         if (ImGui::IsItemClicked())
         {
@@ -256,7 +258,10 @@ namespace nexo::editor {
         if (nodeOpen && !leaf)
         {
             for (auto &child: object.children)
+            {
                 showNode(child);
+
+            }
             ImGui::TreePop();
         }
     }
@@ -342,46 +347,6 @@ namespace nexo::editor {
 
     void SceneTreeWindow::show()
     {
-        nextNodeId = 0;
-        root_.uiName = "Scenes";
-        root_.nodeId = nextNodeId++;
-        root_.children.clear();
-
-        // Retrieves the scenes that are displayed on the GUI
-        auto scenes = SceneViewManager::getInstance()->getOpenScenes();
-
-        for (const auto &[sceneId, windowId]: scenes)
-        {
-            SceneObject sceneNode = newSceneNode(sceneId, windowId);
-
-            // Retrieve the global entities of the scene (i.e. entities that are not part of a layer)
-            auto sceneEntities = m_sceneManagerBridge->getSceneGlobalEntities(sceneId);
-            for (auto entity: sceneEntities)
-                sceneNode.children.push_back(newEntityNode(sceneId, windowId, -1, entity));
-
-            auto layers = m_sceneManagerBridge->getSceneLayers(sceneId);
-            for (const auto &layer: layers)
-            {
-                SceneObject layerNode = newLayerNode(sceneId, windowId, layer->id, layer->name);
-
-                SceneObject cameraNode = newCameraNode(sceneId, windowId, layer->id);
-                // Checks if a camera is attached to the layer
-                if (std::holds_alternative<CameraProperties>(cameraNode.data))
-                    layerNode.children.push_back(cameraNode);
-
-                auto entities = m_sceneManagerBridge->getLayerEntities(sceneId, layer->id);
-                for (const auto &entity: entities)
-                {
-                    SceneObject entityNode = newEntityNode(sceneId, windowId, layer->id, entity);
-
-                    layerNode.children.push_back(entityNode);
-                }
-                sceneNode.children.push_back(layerNode);
-            }
-            root_.children.push_back(sceneNode);
-        }
-
-
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
@@ -393,7 +358,8 @@ namespace nexo::editor {
                 if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
                     m_popupManager.openPopup("Scene Tree Context Menu");
             }
-            showNode(root_);
+            if (!root_.children.empty())
+                showNode(root_);
             sceneContextMenu();
             sceneCreationMenu();
             layerCreationMenu();
@@ -459,44 +425,44 @@ namespace nexo::editor {
 
     void SceneTreeWindow::update()
     {
-        // nextNodeId = 0;
-        // root_.uiName = "Scenes";
-        // root_.nodeId = nextNodeId++;
-        // root_.children.clear();
-        //
-        // // Retrieves the scenes that are displayed on the GUI
-        // auto scenes = SceneViewManager::getInstance()->getOpenScenes();
-        //
-        // for (const auto &scene: scenes)
-        // {
-        //     SceneObject sceneNode = newSceneNode(scene.sceneId, scene.windowId);
-        //
-        //     // Retrieve the global entities of the scene (i.e entities that are not part of a layer)
-        //     auto sceneEntities = m_sceneManagerBridge->getSceneGlobalEntities(scene.sceneId);
-        //     for (auto entity: sceneEntities)
-        //         sceneNode.children.push_back(newEntityNode(scene.sceneId, scene.windowId, -1, entity));
-        //
-        //     auto layers = m_sceneManagerBridge->getSceneLayers(scene.sceneId);
-        //     for (const auto &layer: layers)
-        //     {
-        //         SceneObject layerNode = newLayerNode(scene.sceneId, scene.windowId, layer->id, layer->name);
-        //
-        //         SceneObject cameraNode = newCameraNode(scene.sceneId, scene.windowId, layer->id);
-        //         // Checks if a camera is attached to the layer
-        //         if (std::holds_alternative<CameraProperties>(cameraNode.data))
-        //             layerNode.children.push_back(cameraNode);
-        //
-        //         auto entities = m_sceneManagerBridge->getLayerEntities(scene.sceneId, layer->id);
-        //         for (const auto &entity: entities)
-        //         {
-        //             SceneObject entityNode = newEntityNode(scene.sceneId, scene.windowId, layer->id, entity);
-        //
-        //             layerNode.children.push_back(entityNode);
-        //         }
-        //         sceneNode.children.push_back(layerNode);
-        //     }
-        //     root_.children.push_back(sceneNode);
-        // }
+        nextNodeId = 0;
+        root_.uiName = "Scenes";
+        root_.nodeId = nextNodeId++;
+        root_.children.clear();
+
+        // Retrieves the scenes that are displayed on the GUI
+        auto scenes = SceneViewManager::getInstance()->getOpenScenes();
+
+        for (const auto &[sceneId, windowId]: scenes)
+        {
+            SceneObject sceneNode = newSceneNode(sceneId, windowId);
+
+            // Retrieve the global entities of the scene (i.e. entities that are not part of a layer)
+            auto sceneEntities = m_sceneManagerBridge->getSceneGlobalEntities(sceneId);
+            for (auto entity: sceneEntities)
+                sceneNode.children.push_back(newEntityNode(sceneId, windowId, -1, entity));
+
+            auto layers = m_sceneManagerBridge->getSceneLayers(sceneId);
+            for (const auto &layer: layers)
+            {
+                SceneObject layerNode = newLayerNode(sceneId, windowId, layer->id, layer->name);
+
+                SceneObject cameraNode = newCameraNode(sceneId, windowId, layer->id);
+                // Checks if a camera is attached to the layer
+                if (std::holds_alternative<CameraProperties>(cameraNode.data))
+                    layerNode.children.push_back(cameraNode);
+
+                auto entities = m_sceneManagerBridge->getLayerEntities(sceneId, layer->id);
+                for (const auto &entity: entities)
+                {
+                    SceneObject entityNode = newEntityNode(sceneId, windowId, layer->id, entity);
+
+                    layerNode.children.push_back(entityNode);
+                }
+                sceneNode.children.push_back(layerNode);
+            }
+            root_.children.push_back(sceneNode);
+        }
     }
 
 }
