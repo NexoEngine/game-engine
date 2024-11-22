@@ -20,6 +20,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <random>
 
 #include "SceneViewManager.hpp"
 
@@ -45,7 +46,7 @@ namespace nexo::editor {
         _sceneID = app.createScene(m_sceneName);
         const scene::LayerId layerId = app.addNewLayer(_sceneID, "Layer 1");
         m_camera = std::make_shared<camera::PerspectiveCameraController>(_viewSize.x / _viewSize.y);
-        //m_camera->setPosition({0.0f, 0.0f, -5.0f});
+        m_camera->setPosition({0.0f, 2.0f, 0.0f});
         //std::cout << static_cast<int>(m_camera->getMode()) << std::endl;
         //m_camera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
         app.attachCamera(_sceneID, m_camera, layerId);
@@ -58,6 +59,13 @@ namespace nexo::editor {
         ImGuizmo::SetOrthographic(true);
     }
 
+    float randomColor()
+    {
+        static std::mt19937 rng(std::random_device{}());
+        static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+        return dist(rng);
+    }
+
     void MainScene::loadDefaultEntities(const scene::LayerId defaultLayerId) const
     {
         auto &app = getApp();
@@ -66,8 +74,27 @@ namespace nexo::editor {
         // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
         // app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
-        const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
+        const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 90.0f, 0.0f});
         app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
+        glm::vec3 lightPos1 = {0.0f, 2.0f, 1.0f};
+        glm::vec4 color1 = {randomColor(), randomColor(), randomColor(), 1.0f};
+        auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1, 0.9);
+        app.addLightToScene(_sceneID, pointLight1);
+
+        // glm::vec3 lightPos2 = {0.0f, 2.0f, 1.0f};
+        // glm::vec4 color2 = {randomColor(), randomColor(), randomColor(), 1.0f};
+        // auto pointLight2 = std::make_shared<components::PointLight>(lightPos2, color2);
+        // app.addLightToScene(_sceneID, pointLight2);
+        //
+        // glm::vec3 lightPos3 = {1.0f, 2.0f, 0.0f};
+        // glm::vec4 color3 = {randomColor(), randomColor(), randomColor(), 1.0f};
+        // auto pointLight3 = std::make_shared<components::PointLight>(lightPos3, color3);
+        // app.addLightToScene(_sceneID, pointLight3);
+
+        // glm::vec3 lightPos4 = {-1.0f, 2.0f, 0.0f};
+        // glm::vec4 color4 = {1.0f, 1.0f, 1.0f, 1.0f};
+        // auto pointLight4 = std::make_shared<components::PointLight>(lightPos4, color4);
+        // app.addLightToScene(_sceneID, pointLight4);
         //app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
     }
 

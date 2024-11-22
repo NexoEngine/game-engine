@@ -187,6 +187,18 @@ namespace nexo::renderer {
         glUseProgram(0);
     }
 
+    void OpenGlShader::setUniformFloat(const std::string &name, const float value) const
+    {
+        const int loc = glGetUniformLocation(m_id, name.c_str());
+        glUniform1f(loc, value);
+    }
+
+    void OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
+    {
+        const int loc = glGetUniformLocation(m_id, name.c_str());
+        glUniform3f(loc, values.x, values.y, values.z);
+    }
+
     void OpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());

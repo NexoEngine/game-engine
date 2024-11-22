@@ -311,6 +311,26 @@ namespace nexo::scene {
         return scenes.at(sceneId).getCameraLayer(id);
     }
 
+    unsigned int SceneManager::addLightToScene(SceneId id, const std::shared_ptr<components::Light> &light)
+    {
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::addLightToScene: id {} does not exist", id);
+            return 0;
+        }
+        return scenes.at(id).addLight(light);
+    }
+
+    void SceneManager::removeLightFromScene(SceneId id, const unsigned int index)
+    {
+        if (!scenes.contains(id))
+        {
+            LOG(NEXO_ERROR, "SceneManager::removeLightFromScene: id {} does not exist", id);
+            return;
+        }
+        scenes.at(id).removeLight(index);
+    }
+
     void SceneManager::setWindowOffset(const SceneId id, const glm::vec2 offset)
     {
         if (!scenes.contains(id))

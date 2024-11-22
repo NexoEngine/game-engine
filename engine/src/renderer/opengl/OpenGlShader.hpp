@@ -27,6 +27,8 @@ namespace nexo::renderer {
             void bind() const override;
             void unbind() const override;
 
+            void setUniformFloat(const std::string &name, const float value) const override;
+            void setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
             void setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
             void setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const override;
             void setUniformInt(const std::string &name, int value) const override;

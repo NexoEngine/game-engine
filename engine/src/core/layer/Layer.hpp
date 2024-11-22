@@ -27,6 +27,10 @@
 
 #define LAYER_LISTENS_TO(DerivedLayer, ...) public nexo::layer::LayerEventMixin<DerivedLayer, __VA_ARGS__>
 
+namespace nexo::scene {
+    struct SceneContext;
+}
+
 namespace nexo::layer {
 
     using LayerId = unsigned int;
@@ -75,11 +79,16 @@ namespace nexo::layer {
 
             virtual void onAttach() {};
             virtual void onDetach() {};
+
             virtual void onUpdate([[maybe_unused]] Timestep timestep);
-            virtual void onRender(std::shared_ptr<renderer::RendererContext> &rendererContext);
+
+            virtual void onRender(std::shared_ptr<renderer::RendererContext> &rendererContext,
+                                  const scene::SceneContext &sceneContext);
 
             virtual std::unordered_set<std::type_index> getListenedEventTypes() const { return m_listenedEventTypes; }
+
             virtual void handleEvent(const event::IEvent &event);
+
             template<typename EventType>
             void registerCallbackEventFunction(const std::function<void(const event::IEvent &)> &callbackFunction)
             {
@@ -88,19 +97,24 @@ namespace nexo::layer {
             }
 
             void addEntity(ecs::Entity entity);
+
             void removeEntity(ecs::Entity entity);
+
             void entityDestroyed(ecs::Entity entity);
 
             std::set<ecs::Entity> &getEntities() { return m_entities; };
 
             void attachCamera(const std::shared_ptr<camera::Camera> &camera);
+
             void detachCamera();
+
             std::shared_ptr<camera::Camera> &getCamera() { return m_camera; };
 
             LayerId id;
             std::string name;
             bool isRendered = true;
             bool isActive = true;
+
         protected:
             std::unordered_set<std::type_index> m_listenedEventTypes;
             std::set<ecs::Entity> m_entities;
@@ -117,6 +131,8 @@ namespace nexo::layer {
             {
                 return Application::m_coordinator->entityHasComponent<T>(entity);
             }
+
+            void setupLights(const std::shared_ptr<renderer::RendererContext> &rendererContext, const scene::SceneContext &sceneContext);
 
         private:
             std::unordered_map<std::type_index, std::function<void(const event::IEvent &)> > m_callbackEventFunctions;

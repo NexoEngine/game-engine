@@ -30,6 +30,8 @@ namespace nexo::renderer {
             virtual void bind() const = 0;
             virtual void unbind() const = 0;
 
+            virtual void setUniformFloat(const std::string &name, const float value) const = 0;
+            virtual void setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
             virtual void setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
             virtual void setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;
             virtual void setUniformInt(const std::string &name, int value) const = 0;

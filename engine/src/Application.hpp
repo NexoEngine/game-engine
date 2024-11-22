@@ -26,6 +26,7 @@
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
+#include "components/Light.hpp"
 
 #include "systems/OnSceneDeletedSystem.hpp"
 
@@ -126,6 +127,8 @@ namespace nexo {
             void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id);
             void detachCamera(scene::SceneId sceneId, scene::LayerId id);
             std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
+            unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
+            void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
 
 
             static Application &getInstance()

@@ -25,9 +25,9 @@ namespace nexo::renderer {
     struct Vertex {
         glm::vec3 position;
         glm::vec4 color;
-        //glm::vec3 normal; //TODO: Later
         glm::vec2 texCoord;
         float texIndex;
+        glm::vec3 normal;
     };
 
     struct CubeVertex {
@@ -74,7 +74,7 @@ namespace nexo::renderer {
         void init();
         void shutdown();
 
-        void beginScene(const glm::mat4& viewProjection) const;
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos) const;
         void endScene() const;
 
         // With color
@@ -90,6 +90,8 @@ namespace nexo::renderer {
 
         void resetStats() const;
         [[nodiscard]] Renderer3DStats getStats() const;
+
+        std::shared_ptr<Shader> &getShader() const {return m_storage->textureShader;};
 
     private:
         Renderer3DStorage* m_storage = nullptr;

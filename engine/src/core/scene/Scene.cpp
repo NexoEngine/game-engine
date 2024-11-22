@@ -171,6 +171,49 @@ namespace nexo::scene {
         return false;
     }
 
+    unsigned int Scene::addLight(const std::shared_ptr<components::Light> &light)
+    {
+        if (nbLights >= m_lights.size())
+        {
+            LOG(NEXO_ERROR, "Scene::{}::addLight: Max number of lights reached", name);
+            return 0;
+        }
+        if (light->type == components::LightType::DIRECTIONAL && nbDirectionalLights >= MAX_DIRECTIONAL_LIGHTS)
+        {
+            LOG(NEXO_ERROR, "Scene::{}::addLight: Max number of directional lights reached", name);
+            return 0;
+        }
+        if (light->type == components::LightType::POINT && nbPointLights >= MAX_POINT_LIGHTS)
+        {
+            LOG(NEXO_ERROR, "Scene::{}::addLight: Max number of point lights reached", name);
+            return 0;
+        }
+        if (light->type == components::LightType::DIRECTIONAL)
+            nbDirectionalLights++;
+        else
+            nbPointLights++;
+        m_lights[nbLights] = light;
+        LOG(NEXO_INFO, "Scene::{}::addLight: New light added", name);
+        return nbLights++;
+    }
+
+    void Scene::removeLight(const unsigned int index)
+    {
+        if (index >= nbLights)
+        {
+            LOG(NEXO_ERROR, "Scene::{}::removeLight: index out of range", name);
+            return;
+        }
+        if (m_lights[index]->type == components::LightType::DIRECTIONAL)
+            nbDirectionalLights--;
+        else
+            nbPointLights--;
+        for (unsigned int i = index; i < nbLights - 1; ++i)
+            m_lights[i] = m_lights[i + 1];
+        m_lights[--nbLights] = nullptr;
+        LOG(NEXO_INFO, "Scene::{}::removeLight: Light removed", name);
+    }
+
     void Scene::onUpdate(const Timestep timestep)
     {
         for (const auto &layer: m_layerStack)
@@ -182,10 +225,16 @@ namespace nexo::scene {
 
     void Scene::onRender()
     {
+        SceneContext context;
+        context.lightContext.m_lights = m_lights;
+        context.lightContext.ambientLight = ambientLight;
+        context.lightContext.nbLights = nbLights;
+        context.lightContext.nbDirectionalLights = nbDirectionalLights;
+        context.lightContext.nbPointLights = nbPointLights;
         for (const auto &layer: m_layerStack)
         {
             if (layer->isRendered)
-                layer->onRender(m_rendererContext);
+                layer->onRender(m_rendererContext, context);
         }
     }
 

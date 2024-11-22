@@ -35,7 +35,8 @@ namespace nexo::renderer {
             {ShaderDataType::FLOAT3, "aPos"},
             {ShaderDataType::FLOAT4, "aColor"},
             {ShaderDataType::FLOAT2, "aTexCoord"},
-            {ShaderDataType::FLOAT, "aTexIndex"}
+            {ShaderDataType::FLOAT, "aTexIndex"},
+            {ShaderDataType::FLOAT3, "aNormal"}
         };
         m_storage->vertexBuffer->setLayout(cubeVertexBufferLayout);
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
@@ -96,12 +97,13 @@ namespace nexo::renderer {
         delete m_storage;
     }
 
-    void Renderer3D::beginScene(const glm::mat4 &viewProjection) const
+    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos) const
     {
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
         m_storage->textureShader->setUniformMatrix("viewProjection", viewProjection);
+        m_storage->textureShader->setUniformFloat3("camPos", cameraPos);
         m_storage->indexCount = 0;
         m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
         m_storage->indexBufferPtr = m_storage->indexBufferBase;
@@ -239,6 +241,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr->color = {1.0f, 1.0f, 1.0f, 1.0f};
             m_storage->vertexBufferPtr->texCoord = vertex.texCoord;
             m_storage->vertexBufferPtr->texIndex = textureIndex;
+            m_storage->vertexBufferPtr->normal = vertex.normal;
             m_storage->vertexBufferPtr++;
         }
 

@@ -18,6 +18,8 @@
 
 #include "SceneComponents.hpp"
 
+#include "Light.hpp"
+
 #include "Render.hpp"
 #include "Render2D.hpp"
 #include "Render3D.hpp"

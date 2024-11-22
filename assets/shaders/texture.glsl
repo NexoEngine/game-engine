@@ -4,18 +4,23 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in float aTexIndex;
+layout (location = 4) in vec3 aNormal;
 
 uniform mat4 viewProjection;
 
+out vec3 currentPos;
 out vec2 vTexCoord;
 out float vTexIndex;
 out vec4 vColor;
+out vec3 vNormal;
 
 void main()
 {
+    currentPos = aPos;
     vColor = aColor;
     vTexCoord = aTexCoord;
     vTexIndex = aTexIndex;
+    vNormal = aNormal;
     gl_Position = viewProjection  * vec4(aPos, 1.0);
 }
 
@@ -23,11 +28,36 @@ void main()
 #version 330 core
 out vec4 FragColor;
 
+#define MAX_DIR_LIGHTS 4
+#define MAX_POINT_LIGHTS 8
+
+struct DirectionalLight {
+    vec3 direction;
+    vec4 color;
+    float intensity;
+};
+
+struct PointLight {
+    vec3 position;
+    vec4 color;
+    float intensity;
+};
+
+in vec3 currentPos;
 in vec4 vColor;
 in vec2 vTexCoord;
 in float vTexIndex;
+in vec3 vNormal;
 
 uniform sampler2D uTexture[32];
+
+uniform vec3 camPos;
+
+uniform DirectionalLight dirLights[MAX_DIR_LIGHTS];
+uniform int numDirLights;
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform int numPointLights;
+uniform float ambientLight;
 
 void main()
 {
@@ -66,5 +96,38 @@ void main()
         case 30: sampler = texture(uTexture[30], vTexCoord); break;
         case 31: sampler = texture(uTexture[31], vTexCoord); break;
     }
-    FragColor = sampler * vColor;
+
+    vec3 normal = normalize(vNormal);
+
+    // Start with ambient light contribution
+    vec3 fragColor = ambientLight * sampler.rgb;
+
+    // Directional Lights
+    for (int i = 0; i < numDirLights; ++i) {
+        vec3 lightDir = normalize(-dirLights[i].direction);
+        float diffuse = max(dot(normal, lightDir), 0.0);
+        vec3 viewDirection = normalize(camPos - currentPos);
+        vec3 reflectionDirection = reflect(-lightDir, normal);
+        float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0), 8);
+        float specular = specAmount * dirLights[i].intensity;
+
+        fragColor += (diffuse + specular) * dirLights[i].color.rgb * sampler.rgb;
+    }
+
+    // Point Lights
+    for (int i = 0; i < numPointLights; ++i) {
+        vec3 lightDir = normalize(pointLights[i].position - currentPos);
+        float diffuse = max(dot(normal, lightDir), 0.0);
+        vec3 viewDirection = normalize(camPos - currentPos);
+        vec3 reflectionDirection = reflect(-lightDir, normal);
+        float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0), 8);
+        float specular = specAmount * pointLights[i].intensity;
+
+        float distance = length(pointLights[i].position - currentPos);
+        float attenuation = 1.0 / (1.0 + 0.09 * distance + 0.032 * (distance * distance));
+
+        fragColor += attenuation * (diffuse + specular) * pointLights[i].color.rgb * sampler.rgb;
+    }
+
+    FragColor = vec4(fragColor, 1.0);
 }

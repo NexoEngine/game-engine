@@ -191,7 +191,7 @@ namespace nexo {
         if (!m_isMinimized)
         {
             // Clear
-            renderer::RenderCommand::setClearColor({1.0f, 0.0f, 1.0f, 1.0f});
+            renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
             renderer::RenderCommand::clear();
 
             if (m_sceneManager.isSceneActive(sceneId))
@@ -401,5 +401,15 @@ namespace nexo {
     std::shared_ptr<camera::Camera> Application::getCamera(const scene::SceneId sceneId, const scene::LayerId id)
     {
         return m_sceneManager.getCameraLayer(sceneId, id);
+    }
+
+    unsigned int Application::addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light)
+    {
+        return m_sceneManager.addLightToScene(sceneId, light);
+    }
+
+    void Application::removeLightFromScene(const scene::SceneId sceneId, const unsigned int index)
+    {
+        m_sceneManager.removeLightFromScene(sceneId, index);
     }
 }

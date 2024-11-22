@@ -15,12 +15,43 @@
 #include "Layer.hpp"
 #include "components/Components.hpp"
 #include "renderer/Renderer2D.hpp"
+#include "core/scene/Scene.hpp"
 
 #include <chrono>
 
 namespace nexo::layer {
 
-    void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext)
+    //TODO: This should be done per shader material rather than globally, but for now we only have one shader
+    void Layer::setupLights(const std::shared_ptr<renderer::RendererContext> &rendererContext,
+                            const scene::SceneContext &sceneContext)
+    {
+        const auto renderer3D = rendererContext->renderer3D;
+        const auto& shader = renderer3D.getShader();
+        shader->setUniformFloat("ambientLight", sceneContext.lightContext.ambientLight);
+        shader->setUniformInt("numDirLights", sceneContext.lightContext.nbDirectionalLights);
+        shader->setUniformInt("numPointLights", sceneContext.lightContext.nbPointLights);
+        for (unsigned int i = 0; i < sceneContext.lightContext.nbLights; ++i)
+        {
+            auto light = sceneContext.lightContext.m_lights[i];
+            if (light->type == components::LightType::DIRECTIONAL)
+            {
+                auto directionalLight = static_cast<components::DirectionalLight *>(light.get());
+                shader->setUniformFloat3("dirLights[" + std::to_string(i) + "].direction", directionalLight->direction);
+                shader->setUniformFloat4("dirLights[" + std::to_string(i) + "].color", directionalLight->color);
+                shader->setUniformFloat("dirLights[" + std::to_string(i) + "].intensity", directionalLight->intensity);
+            } else if (light->type == components::LightType::POINT)
+            {
+                auto pointLight = static_cast<components::PointLight *>(light.get());
+                shader->setUniformFloat3("pointLights[" + std::to_string(i) + "].position", pointLight->pos);
+                shader->setUniformFloat4("pointLights[" + std::to_string(i) + "].color", pointLight->color);
+                shader->setUniformFloat("pointLights[" + std::to_string(i) + "].intensity", pointLight->intensity);
+            }
+        }
+    }
+
+
+    void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext,
+                         const scene::SceneContext &sceneContext)
     {
         if (!m_camera)
         {
@@ -31,8 +62,11 @@ namespace nexo::layer {
         if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
             rendererContext->renderer2D.beginScene(m_camera->getViewProjectionMatrix());
         else
-            rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix());
-        for (const auto entity : m_entities)
+        {
+            rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix(), m_camera->getPosition());
+            setupLights(rendererContext, sceneContext);
+        }
+        for (const auto entity: m_entities)
         {
             auto transform = getComponent<components::TransformComponent>(entity);
             auto renderComponent = getComponent<components::RenderComponent>(entity);
