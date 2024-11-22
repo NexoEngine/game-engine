@@ -14,21 +14,25 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
-        compiler: [gcc, msvc]
+        compiler: [gcc, clang, msvc]
         include:
           - os: ubuntu-latest
             compiler: gcc
             version: 13
+          - os: ubuntu-latest
+            compiler: clang
+            version: 17
           - os: windows-latest
             compiler: msvc
             version: 14
-        exclude:
-          - os: windows-latest
-            compiler: gcc
           - os: windows-latest
             compiler: clang
+            version: 17
+        exclude:
           - os: ubuntu-latest
             compiler: msvc
+          - os: windows-latest
+            compiler: gcc
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -37,21 +41,21 @@ jobs:
           submodules: recursive
 
       - name: Set up GCC
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        if: ${{ matrix.compiler == 'gcc' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: ${{ matrix.version }}
           platform: x64
 
       - name: Set up Clang
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'clang' }}
+        if: ${{ matrix.compiler == 'clang' }}
         uses: egor-tensin/setup-clang@v1
         with:
           version: ${{ matrix.version }}
           platform: x64
 
       - name: Set up MSVC
-        if: ${{ matrix.os == 'windows-latest' && matrix.compiler == 'msvc' }}
+        if: ${{ matrix.compiler == 'msvc' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: ${{ matrix.version }}
@@ -86,16 +90,15 @@ jobs:
           buildPreset: 'vcpkg'
           testPreset: 'vcpkg'
 
-      # if previous step fails print log /home/runner/work/game-engine/game-engine/vcpkg/buildtrees/draco/install-x64-linux-dbg-out.log
-      - name: Print vcpkg log if build fails
-        if: failure()
+      - name: Copy output files
         run: |
-          cat /home/runner/work/game-engine/game-engine/vcpkg/buildtrees/draco/install-x64-linux-dbg-out.log
+          mkdir -p output
+          cp -r build/Debug/* output/
+          cp -r assets output/
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: nexo-editor-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
           path: |
-            ./assets
-            ./build/Debug/*
+            ./output/*
