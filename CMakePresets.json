@@ -8,24 +8,30 @@
     "configurePresets": [
         {
             "name": "vcpkg",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
                     "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
                 }
             }
-        },
+        }
+    ],
+    "buildPresets": [
         {
-            "name": "vcpkg-and-compile-commands",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": {
-                    "type": "FILEPATH",
-                    "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-                },
-                "CMAKE_EXPORT_COMPILE_COMMANDS": {
-                    "type": "BOOL",
-                    "value": "ON"
-                }
+            "name": "vcpkg",
+            "configurePreset": "vcpkg"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "vcpkg",
+            "configurePreset": "vcpkg",
+            "configuration": "Debug",
+            "output": {
+                "verbose": true
             }
         }
     ]
