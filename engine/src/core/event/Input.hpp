@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/vec2.hpp>
+
 #include "renderer/Window.hpp"
 
 namespace nexo::event {
@@ -29,6 +31,8 @@ namespace nexo::event {
 
             [[nodiscard]] virtual bool isMouseDown(int button) const = 0;
             [[nodiscard]] virtual bool isMouseReleased(int button) const = 0;
+
+            [[nodiscard]] virtual glm::vec2 getMousePosition() const = 0;
 
             static std::shared_ptr<Input> getInstance()
             {
@@ -49,4 +53,6 @@ namespace nexo::event {
 
     inline bool isMouseDown(const int button) { return Input::getInstance()->isMouseDown(button); }
     inline bool isMouseReleased(const int button) { return Input::getInstance()->isMouseReleased(button); }
+
+    inline glm::vec2 getMousePosition() { return Input::getInstance()->getMousePosition(); }
 }

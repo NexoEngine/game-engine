@@ -412,4 +412,14 @@ namespace nexo {
     {
         m_sceneManager.removeLightFromScene(sceneId, index);
     }
+
+    void Application::setAmbientLightValue(scene::SceneId sceneId, float value)
+    {
+        m_sceneManager.setSceneAmbientLightValue(sceneId, value);
+    }
+
+    float Application::getAmbientLightValue(scene::SceneId sceneId)
+    {
+        return m_sceneManager.getSceneAmbientLightValue(sceneId);
+    }
 }

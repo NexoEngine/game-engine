@@ -64,8 +64,8 @@ namespace nexo::layer {
         else
         {
             rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix(), m_camera->getPosition());
-            setupLights(rendererContext, sceneContext);
         }
+        setupLights(rendererContext, sceneContext);
         for (const auto entity: m_entities)
         {
             auto transform = getComponent<components::TransformComponent>(entity);

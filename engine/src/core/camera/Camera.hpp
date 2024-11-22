@@ -13,7 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
+#include <glm/detail/type_quat.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 
 #include "Timestep.hpp"
 
@@ -32,11 +36,12 @@ namespace nexo::camera {
 
             virtual ~Camera() = default;
 
-            virtual void setPosition(const glm::vec3 &position) { m_position = position; recalculateViewMatrix(); };
+            virtual void setPosition(const glm::vec3 &position) {m_position = position; recalculateViewMatrix();};
             [[nodiscard]] virtual const glm::vec3 &getPosition() const { return m_position; };
 
-            virtual void setRotation(const float rotation) { m_rotation = rotation; recalculateViewMatrix(); };
-            [[nodiscard]] virtual float getRotation() const { return m_rotation; };
+            virtual void setRotation(const glm::vec3 &rotation) {m_rotation = glm::quat(glm::radians(rotation)); recalculateViewMatrix();};
+            [[nodiscard]] virtual glm::vec3 getRotation() const { return glm::degrees(glm::eulerAngles(m_rotation));; };
+            virtual void rotate(const glm::vec3 &deltaRotation);
 
             [[nodiscard]] virtual const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; };
             [[nodiscard]] virtual const glm::mat4 &getViewMatrix() const { return m_viewMatrix; };
@@ -57,7 +62,7 @@ namespace nexo::camera {
             glm::mat4 m_viewProjectionMatrix{};
 
             glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
-            float m_rotation = 0.0f;
+            glm::quat m_rotation;
         private:
             void recalculateViewMatrix();
     };

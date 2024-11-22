@@ -14,15 +14,17 @@
 #pragma once
 
 #include "PerspectiveCamera.hpp"
+#include "CameraController.hpp"
 #include "Timestep.hpp"
 #include "core/event/Event.hpp"
 #include "core/event/WindowEvent.hpp"
 
 namespace nexo::camera {
 
-    class PerspectiveCameraController final : public Camera, LISTENS_TO(
+    class PerspectiveCameraController final : public CameraController, LISTENS_TO(
         event::EventMouseScroll,
-        event::EventWindowResize
+        event::EventWindowResize,
+        event::EventMouseMove
     ) {
         public:
             explicit PerspectiveCameraController(float aspectRatio, float fovY = 45.0f);
@@ -34,11 +36,12 @@ namespace nexo::camera {
 
             void handleEvent(event::EventMouseScroll &event) override;
             void handleEvent(event::EventWindowResize &event) override;
+            void handleEvent(event::EventMouseMove &event) override;
 
             void setPosition(const glm::vec3 &position) override { m_camera.setPosition(position); };
-            void setRotation(const float rotation) override { m_camera.setRotation(rotation); };
+            void setRotation(const glm::vec3 &rotation) override { m_camera.setRotation(rotation); };
             [[nodiscard]] const glm::vec3 &getPosition() const override { return m_camera.getPosition(); };
-            [[nodiscard]] float getRotation() const override { return m_camera.getRotation(); };
+            [[nodiscard]] glm::vec3 getRotation() const override { return m_camera.getRotation(); };
 
             [[nodiscard]] const glm::mat4 &getProjectionMatrix() const override { return m_camera.getProjectionMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewMatrix() const override { return m_camera.getViewMatrix(); };
@@ -46,18 +49,22 @@ namespace nexo::camera {
 
             [[nodiscard]] CameraMode getMode() const override {return m_camera.getMode();}
 
-            bool zoomOn = true;
-
         private:
             float m_aspectRatio;
             float m_fovY;
-            float m_zoomLevel = 1.0f;
             PerspectiveCamera m_camera;
 
             glm::vec3 m_cameraPosition = {0.0f, 0.0f, 5.0f};
-            glm::vec3 m_cameraRotation = {0.0f, 0.0f, 0.0f};
-            float m_cameraTranslationSpeed = 1.0f;
-            float m_cameraRotationSpeed = 100.0f;
+            glm::vec3 m_cameraFront = {0.0f, 0.0f, -1.0f};
+            glm::vec3 m_cameraUp = {0.0f, 1.0f, 0.0f};
+            glm::vec3 m_cameraRight = {1.0f, 0.0f, 0.0f};
+
+            glm::vec2 m_lastMousePosition = {0.0f, 0.0f};
+            float m_cameraYaw = -90.0f; // Looking along negative Z-axis
+            float m_cameraPitch = 0.0f;
+
+            float m_mouseSensitivity = 0.1f;
+            float m_cameraTranslationSpeed = 10.0f;
     };
 
 }

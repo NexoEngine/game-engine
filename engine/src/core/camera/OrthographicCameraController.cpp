@@ -33,27 +33,31 @@ namespace nexo::camera {
     void OrthographicCameraController::onUpdate(Timestep ts)
     {
         const float time = ts;
-        // Camera movement
-        if (event::isKeyPressed(NEXO_KEY_Z))
-            m_cameraPosition.y -= m_cameraTranslationSpeed * time;
-        if (event::isKeyPressed(NEXO_KEY_S))
-            m_cameraPosition.y += m_cameraTranslationSpeed * time;
-        if (event::isKeyPressed(NEXO_KEY_D))
-            m_cameraPosition.x -= m_cameraTranslationSpeed * time;
-        if (event::isKeyPressed(NEXO_KEY_Q))
-            m_cameraPosition.x += m_cameraTranslationSpeed * time;
 
-        // Camera rotation
+        // Calculate the camera's direction vectors based on rotation
+        const float radians = glm::radians(m_cameraRotation);
+        const glm::vec3 rightDirection = {cos(radians), sin(radians), 0.0f};
+        const glm::vec3 upDirection = {-rightDirection.y, rightDirection.x, 0.0f};
+
+        if (event::isKeyPressed(NEXO_KEY_Z))
+            m_cameraPosition -= upDirection * m_cameraTranslationSpeed * time; // Move up
+        if (event::isKeyPressed(NEXO_KEY_S))
+            m_cameraPosition += upDirection * m_cameraTranslationSpeed * time; // Move down
+        if (event::isKeyPressed(NEXO_KEY_Q))
+            m_cameraPosition += rightDirection * m_cameraTranslationSpeed * time; // Move left
+        if (event::isKeyPressed(NEXO_KEY_D))
+            m_cameraPosition -= rightDirection * m_cameraTranslationSpeed * time; // Move right
+
         if (m_rotation)
         {
             if (event::isKeyPressed(NEXO_KEY_E))
                 m_cameraRotation += m_cameraRotationSpeed * time;
             if (event::isKeyPressed(NEXO_KEY_A))
                 m_cameraRotation -= m_cameraRotationSpeed * time;
-
-            m_camera.setRotation(m_cameraRotation);
         }
+
         m_camera.setPosition(m_cameraPosition);
+        m_camera.setRotation({0.0f, 0.0f, m_cameraRotation});
 
         m_cameraTranslationSpeed = m_zoomLevel;
     }
@@ -62,6 +66,7 @@ namespace nexo::camera {
     {
         if (!zoomOn)
             return;
+
         m_zoomLevel -= event.y * 0.5f;
         m_zoomLevel = std::max(m_zoomLevel, 0.25f);
         m_camera.setProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);

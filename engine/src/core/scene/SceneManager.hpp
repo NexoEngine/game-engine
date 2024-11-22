@@ -71,6 +71,8 @@ namespace nexo::scene {
 
             unsigned int addLightToScene(SceneId id, const std::shared_ptr<components::Light> &light);
             void removeLightFromScene(SceneId id, unsigned int index);
+            void setSceneAmbientLightValue(SceneId id, float value);
+            float getSceneAmbientLightValue(SceneId id);
 
             void setWindowOffset(SceneId id, glm::vec2 offset);
             glm::vec2 getWindowOffset(SceneId id);

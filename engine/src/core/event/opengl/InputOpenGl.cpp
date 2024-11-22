@@ -34,8 +34,17 @@ namespace nexo::event {
     {
         return glfwGetMouseButton(static_cast<GLFWwindow *>(m_window->window()), button) == GLFW_PRESS;
     }
+
     bool InputOpenGl::isMouseReleased(const int button) const
     {
         return glfwGetMouseButton(static_cast<GLFWwindow *>(m_window->window()), button) == GLFW_RELEASE;
     }
+
+    glm::vec2 InputOpenGl::getMousePosition() const
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(static_cast<GLFWwindow *>(m_window->window()), &xpos, &ypos);
+        return {static_cast<float>(xpos), static_cast<float>(ypos)};
+    }
+
 }

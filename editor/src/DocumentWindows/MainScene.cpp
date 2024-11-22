@@ -17,6 +17,7 @@
 #include "EntityFactory3D.hpp"
 #include "Nexo.hpp"
 #include "math/Matrix.hpp"
+#include "core/camera/PerspectiveCameraController.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -46,8 +47,6 @@ namespace nexo::editor {
         _sceneID = app.createScene(m_sceneName);
         const scene::LayerId layerId = app.addNewLayer(_sceneID, "Layer 1");
         m_camera = std::make_shared<camera::PerspectiveCameraController>(_viewSize.x / _viewSize.y);
-        m_camera->setPosition({0.0f, 2.0f, 0.0f});
-        //std::cout << static_cast<int>(m_camera->getMode()) << std::endl;
         //m_camera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
         app.attachCamera(_sceneID, m_camera, layerId);
         if (m_defaultScene)
@@ -69,13 +68,14 @@ namespace nexo::editor {
     void MainScene::loadDefaultEntities(const scene::LayerId defaultLayerId) const
     {
         auto &app = getApp();
-        //const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
-        //m_sceneManagerBridge->setSelectedEntity(basicQuad);
-        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        // app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
+        // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
+        // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
+        // app.setAmbientLightValue(_sceneID, 1.0f);
+         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
-        const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 90.0f, 0.0f});
-        app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
+        // const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 90.0f, 0.0f});
+        // app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
         glm::vec3 lightPos1 = {0.0f, 2.0f, 1.0f};
         glm::vec4 color1 = {randomColor(), randomColor(), randomColor(), 1.0f};
         auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1, 0.9);

@@ -30,5 +30,7 @@ namespace nexo::event {
 
         [[nodiscard]] bool isMouseDown(int button) const override;
         [[nodiscard]] bool isMouseReleased(int button) const override;
+
+        [[nodiscard]] glm::vec2 getMousePosition() const override;
     };
 }

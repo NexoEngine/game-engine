@@ -46,4 +46,23 @@ namespace nexo::camera {
         setProjection(m_fovY, m_aspectRatio, m_nearClip, m_farClip);
     }
 
+    void PerspectiveCamera::update(const glm::vec3 &position, float yaw, float pitch)
+    {
+        glm::vec3 front;
+        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front.y = sin(glm::radians(pitch));
+        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front = glm::normalize(front);
+
+        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        glm::vec3 up = glm::normalize(glm::cross(right, front));
+
+        m_rotation = glm::quatLookAt(front, up);
+
+        m_position = position;
+        m_viewMatrix = glm::lookAt(position, position + front, up);
+        m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
+    }
+
+
 }

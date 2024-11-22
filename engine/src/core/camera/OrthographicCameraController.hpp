@@ -15,13 +15,14 @@
 #pragma once
 
 #include "OrthographicCamera.hpp"
+#include "CameraController.hpp"
 #include "Timestep.hpp"
 #include "core/event/Event.hpp"
 #include "core/event/WindowEvent.hpp"
 
 namespace nexo::camera {
 
-    class OrthographicCameraController : public Camera,  LISTENS_TO(
+    class OrthographicCameraController final : public CameraController,  LISTENS_TO(
         event::EventMouseScroll,
         event::EventWindowResize
     ) {
@@ -37,9 +38,9 @@ namespace nexo::camera {
             void handleEvent(event::EventWindowResize &event) override;
 
             void setPosition(const glm::vec3 &position) override {m_camera.setPosition(position);};
-            void setRotation(const float rotation) override {m_camera.setRotation(rotation);};
+            void setRotation(const glm::vec3 &rotation) override {m_camera.setRotation(rotation);};
             [[nodiscard]] const glm::vec3 &getPosition() const override { return m_camera.getPosition(); };
-            [[nodiscard]] float getRotation() const override { return m_camera.getRotation(); };
+            [[nodiscard]] glm::vec3 getRotation() const override { return m_camera.getRotation(); };
 
             [[nodiscard]] const glm::mat4 &getProjectionMatrix() const override { return m_camera.getProjectionMatrix(); };
             [[nodiscard]] const glm::mat4 &getViewMatrix() const override { return m_camera.getViewMatrix(); };
@@ -47,7 +48,6 @@ namespace nexo::camera {
 
             [[nodiscard]] CameraMode getMode() const override {return m_camera.getMode();}
 
-            bool zoomOn = true;
         private:
             float m_aspectRatio;
             float m_zoomLevel = 1.0f;

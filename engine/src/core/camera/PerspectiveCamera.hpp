@@ -26,8 +26,9 @@ namespace nexo::camera {
 
             [[nodiscard]] CameraMode getMode() const override {return m_mode;}
 
+            void update(const glm::vec3& position, float yaw, float pitch);
+
         private:
-            glm::vec4 m_rotation;
             float m_fovY = 45.0f;
             float m_aspectRatio = 16.0f / 9.0f;
             float m_nearClip = 0.1f;
