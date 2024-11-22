@@ -43,10 +43,10 @@ namespace nexo::camera {
             m_cameraPosition.x += m_cameraTranslationSpeed * time;
         if (event::isKeyPressed(NEXO_KEY_A))
             m_cameraPosition.x -= m_cameraTranslationSpeed * time;
-        // if (event::isKeyPressed(NEXO_KEY_SPACE))
-        //     m_cameraPosition.y += m_cameraTranslationSpeed * time;
-        // if (event::isKeyPressed(NEXO_KEY_LEFT_SHIFT))
-        //     m_cameraPosition.y -= m_cameraTranslationSpeed * time;
+        if (event::isKeyPressed(NEXO_KEY_SPACE))
+            m_cameraPosition.y += m_cameraTranslationSpeed * time;
+        if (event::isKeyPressed(NEXO_KEY_TAB))
+            m_cameraPosition.y -= m_cameraTranslationSpeed * time;
 
         // Camera rotation
         if (event::isKeyPressed(NEXO_KEY_UP))
@@ -59,7 +59,7 @@ namespace nexo::camera {
             m_cameraRotation.y += m_cameraRotationSpeed * time;
 
         m_camera.setPosition(m_cameraPosition);
-        m_camera.setRotation(m_cameraRotation.y);
+        m_camera.setRotation(m_cameraRotation.x);
 
         m_cameraTranslationSpeed = m_zoomLevel;
     }
