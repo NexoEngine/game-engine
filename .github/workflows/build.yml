@@ -89,11 +89,15 @@ jobs:
           configurePreset: 'vcpkg'
           buildPreset: 'vcpkg'
           testPreset: 'vcpkg'
+        env:
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
       - name: Copy output files
+        shell: bash
         run: |
           mkdir -p output
-          cp -r build/Debug/* output/
+          cp -r build output/
           cp -r assets output/
 
       - name: Upload package
