@@ -28,6 +28,7 @@ find_package(GTest CONFIG REQUIRED)
 
 include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/common/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/renderer/CMakeLists.txt)
 
 # Add tests
 gtest_add_tests(TARGET engine_tests
@@ -37,9 +38,13 @@ gtest_add_tests(TARGET engine_tests
 gtest_add_tests(TARGET common_tests
                 TEST_LIST commonTestsList
 )
+gtest_add_tests(TARGET renderer_tests
+        TEST_LIST rendererTestsList
+)
 
 set_tests_properties(${engineTestsList} PROPERTIES LABELS "engine")
 set_tests_properties(${commonTestsList} PROPERTIES LABELS "common")
+set_tests_properties(${rendererTestsList} PROPERTIES LABELS "renderer")
 
 
 # Add this later when editor tests are implemented
