@@ -14,6 +14,7 @@
 
 #ifndef PRIMITIVE_HPP
 #define PRIMITIVE_HPP
+
 #include "EntityFactory2D.hpp"
 #include "EntityFactory3D.hpp"
 
@@ -55,4 +56,5 @@ namespace nexo::editor
         &EntityFactory3D::createCube
     };
 }
+
 #endif //PRIMITIVE_HPPd
