@@ -45,7 +45,6 @@ namespace nexo::editor {
         return ImGui::BeginPopup(popupName.c_str());
     }
 
-
     bool PopupManager::showPopupModal(const std::string &popupModalName)
     {
         if (!m_popups.contains(popupModalName))
