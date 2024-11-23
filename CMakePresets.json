@@ -28,7 +28,10 @@
         {
             "name": "vcpkg",
             "configurePreset": "vcpkg",
-            "configuration": "Debug"
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            }
         }
     ]
 }
