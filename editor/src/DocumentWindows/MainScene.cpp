@@ -13,6 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MainScene.hpp"
+
+#include <Path.hpp>
+
 #include "EntityFactory2D.hpp"
 #include "EntityFactory3D.hpp"
 #include "Nexo.hpp"
@@ -74,7 +77,7 @@ namespace nexo::editor {
          const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
          app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
-        // const ecs::Entity gunModel = EntityFactory3D::createModel("../assets/models/9mn/scene.gltf", {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 90.0f, 0.0f});
+        // const ecs::Entity gunModel = EntityFactory3D::createModel(Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf").string(), {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
         // app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
         glm::vec3 lightPos1 = {0.0f, 2.0f, 1.0f};
         glm::vec4 color1 = {randomColor(), randomColor(), randomColor(), 1.0f};

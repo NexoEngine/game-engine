@@ -11,4 +11,10 @@
 #define NOGDI               // Exclude GDI definitions
 #define NOUSER              // Exclude User definitions
 
+#ifndef NO_RAYLIB_COLORS
+    #define WHITE CLITERAL(Color){ 255, 255, 255, 255 }
+    #define BLACK CLITERAL(Color){ 0, 0, 0, 255 }
+    // Add other colors if needed
+#endif
+
 #include "raylib.h"

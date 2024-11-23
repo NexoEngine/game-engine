@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.28)
 
 # PROJECT
 project(client CXX)
@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 20)
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
     add_compile_options(--std=c++20 -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fexperimental-library)
+    endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
     add_compile_options(/std:c++20 /W4 /Zi /Zc:preprocessor)
@@ -20,6 +23,8 @@ set(GRAPHICS_API "OpenGL")
 # SETUP GIT SUBMODULES
 
 find_package(Git QUIET)
+
+add_definitions(-DNO_RAYLIB_COLORS)
 
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
@@ -67,3 +72,24 @@ enable_testing()
 include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 
 include_directories("./common")
+
+# Set output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# Installation rules
+install(TARGETS nexoEditor
+        RUNTIME DESTINATION bin
+)
+
+# Automatically install runtime dependencies (Windows .dll files, Linux .so files, etc.)
+install(TARGETS nexoEditor
+        RUNTIME_DEPENDENCIES
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" ".*system32.*" [[.*(\\|/)system32(\\|/).*\.dll]]
+        POST_EXCLUDE_REGEXES ".*windows.*" ".*Microsoft.*" [[.*(\\|/)system32(\\|/).*\.dll]]
+        RUNTIME DESTINATION bin
+)
+
+# Install assets, config, and logs directories
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/" DESTINATION assets)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/config/" DESTINATION config)
+install(DIRECTORY DESTINATION logs)

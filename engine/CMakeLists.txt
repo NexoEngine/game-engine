@@ -92,6 +92,10 @@ target_sources(nexoRenderer PRIVATE ${CMAKE_SOURCE_DIR}/engine/external/stb_imag
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 
+# boost-dll
+find_package(Boost CONFIG REQUIRED COMPONENTS dll)
+target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)

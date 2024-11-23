@@ -3,6 +3,8 @@ src/server/Makefile
 src/client/client
 src/client/Makefile
 
+instdir/
+
 # Prerequisites
 *.d
 

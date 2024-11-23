@@ -1,0 +1,111 @@
+name: Build, test and Package
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
+        compiler: [gcc, msvc] # TODO: add clang later
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            version: 13
+          - os: windows-latest
+            compiler: msvc
+            version: 14
+        exclude:
+          - os: ubuntu-latest
+            compiler: msvc
+          - os: windows-latest
+            compiler: gcc
+          - os: macos-latest
+            compiler: gcc
+          - os: macos-latest
+            compiler: msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up GCC
+        if: ${{ matrix.compiler == 'gcc' }}
+        id: set-up-gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.version }}
+          platform: x64
+
+      - name: Set up Clang
+        if: ${{ matrix.compiler == 'clang' }}
+        id: set-up-clang
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ matrix.version }}
+          platform: x64
+          cygwin: ${{ matrix.os == 'windows-latest' && 1 || 0 }}
+
+      - name: Set up MSVC
+        if: ${{ matrix.compiler == 'msvc' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: ${{ matrix.version }}
+
+      - name: Install required system dependencies for Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxrandr-dev libx11-dev \
+            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
+            libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
+            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+            libegl1-mesa-dev
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Fetch all history for all tags and branches of vcpkg
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow
+
+      - name: Install latest CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ~3.30.0
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+
+      - name: Run CMake consuming CMakePreset.json and run vcpkg to build packages
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'vcpkg'
+          buildPreset: 'vcpkg'
+        env:
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: 'ctest -C Debug -V --output-on-failure'
+          working-directory: 'build'
+
+      - name: Install nexoEditor
+        shell: bash
+        run: |
+          mkdir -p output
+          cmake --install build --prefix ./output --config Debug -v
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-editor-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          path: |
+            ./output/*

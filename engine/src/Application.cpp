@@ -19,6 +19,7 @@
 #include "components/Components.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
+#include "renderer/RendererExceptions.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -152,7 +153,10 @@ namespace nexo {
         m_window->setVsync(false);
 
 #ifdef GRAPHICS_API_OPENGL
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+			THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
+        }
+		LOG(NEXO_INFO, "OpenGL context initialized with glad");
         glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
 #endif
 

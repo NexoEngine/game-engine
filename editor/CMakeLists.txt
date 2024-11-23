@@ -67,8 +67,16 @@ target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 find_package(tinyfiledialogs CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 
+# boost-dll
+find_package(Boost CONFIG REQUIRED COMPONENTS dll)
+target_link_libraries(nexoEditor PRIVATE Boost::dll)
+
 include_directories(include)
 
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoEditor PRIVATE GRAPHICS_API_OPENGL)
 endif()
+
+# Set the output directory for the executable (prevents generator from creating Debug/Release folders)
+set_target_properties(nexoEditor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
+
