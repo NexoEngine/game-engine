@@ -20,7 +20,7 @@ namespace nexo::renderer {
 
     class OpenGlShader final : public Shader {
         public:
-            explicit OpenGlShader(const std::string &path);
+            OpenGlShader(const std::string &path);
             OpenGlShader(std::string name, const std::string &vertexSource, const std::string &fragmentSource);
             ~OpenGlShader() override;
 
@@ -35,6 +35,7 @@ namespace nexo::renderer {
             void setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
 
             [[nodiscard]] const std::string &getName() const override { return m_name; };
+            unsigned int getProgramId() const override { return m_id; };
         private:
             std::string m_name;
             unsigned int m_id = 0;

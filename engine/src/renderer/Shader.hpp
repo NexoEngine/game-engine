@@ -38,6 +38,7 @@ namespace nexo::renderer {
             virtual void setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
             [[nodiscard]] virtual const std::string &getName() const = 0;
+            virtual unsigned int getProgramId() const = 0;
         protected:
             static std::string readFile(const std::string &filepath);
     };

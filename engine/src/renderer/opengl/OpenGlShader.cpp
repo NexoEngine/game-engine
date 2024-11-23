@@ -190,36 +190,48 @@ namespace nexo::renderer {
     void OpenGlShader::setUniformFloat(const std::string &name, const float value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniform1f(loc, value);
     }
 
     void OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniform3f(loc, values.x, values.y, values.z);
     }
 
     void OpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniform4f(loc, values.x, values.y, values.z, values.w);
     }
 
     void OpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
     void OpenGlShader::setUniformInt(const std::string &name, const int value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniform1i(loc, value);
     }
 
     void OpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
         glUniform1iv(loc, static_cast<int>(count), values);
     }
 }

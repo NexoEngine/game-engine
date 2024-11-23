@@ -60,6 +60,15 @@ namespace nexo::renderer {
             {}
     };
 
+    class ShaderInvalidUniform final : public Exception {
+        public:
+            explicit ShaderInvalidUniform(const std::string &backendApi, const std::string &shaderName,
+                                          const std::string &uniformName, const char *file = __FILE__,
+                                          const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Failed to retrieve uniform \"" + uniformName + "\" in shader: " + shaderName,
+                file, line) {};
+    };
+
     class FramebufferCreationFailed final : public Exception {
         public:
             explicit FramebufferCreationFailed(const std::string &backendApi, const char *file = __FILE__,
@@ -80,15 +89,15 @@ namespace nexo::renderer {
     class FramebufferUnsupportedColorFormat final : public Exception {
         public:
             explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName, const char *file = __FILE__,
-                                                   const int line = __LINE__) : Exception(
-            "[" + backendApiName + "] Unsupported framebuffer color attachment format", file, line) {};
+                                                       const int line = __LINE__) : Exception(
+                "[" + backendApiName + "] Unsupported framebuffer color attachment format", file, line) {};
     };
 
     class FramebufferUnsupportedDepthFormat final : public Exception {
         public:
             explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName, const char *file = __FILE__,
-                                                   const int line = __LINE__) : Exception(
-            "[" + backendApiName + "] Unsupported framebuffer depth attachment format", file, line) {};
+                                                       const int line = __LINE__) : Exception(
+                "[" + backendApiName + "] Unsupported framebuffer depth attachment format", file, line) {};
     };
 
     class BufferLayoutEmpty final : public Exception {
