@@ -1,11 +1,9 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28)
 
 # PROJECT
 project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
-set(VCPKG_APPINSTALL_DEPS ON)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     message(STATUS "GCC/Clang detected, adding compile flags")
