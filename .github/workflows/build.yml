@@ -85,12 +85,17 @@ jobs:
         with:
           configurePreset: 'vcpkg'
           buildPreset: 'vcpkg'
-          testPreset: 'vcpkg'
         env:
           CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
           CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: 'ctest -C Debug -V --output-on-failure'
+          working-directory: 'build'
 
       - name: Install nexoEditor
         shell: bash
