@@ -75,23 +75,5 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 
 include_directories("./common")
 
-# Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# Installation rules
-install(TARGETS nexoEditor
-        RUNTIME DESTINATION bin
-)
-
-# Automatically install runtime dependencies (Windows .dll files, Linux .so files, etc.)
-install(TARGETS nexoEditor
-        RUNTIME_DEPENDENCIES
-        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" ".*system32.*" [[.*(\\|/)system32(\\|/).*\.dll]]
-        POST_EXCLUDE_REGEXES ".*windows.*" ".*Microsoft.*" [[.*(\\|/)system32(\\|/).*\.dll]]
-        RUNTIME DESTINATION bin
-)
-
-# Install assets, config, and logs directories
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/" DESTINATION assets)
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/config/" DESTINATION config)
-install(DIRECTORY DESTINATION logs)
+include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack.cmake")
