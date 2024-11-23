@@ -68,6 +68,11 @@ target_compile_definitions(renderer_tests PRIVATE GRAPHICS_API_OPENGL)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glad CONFIG REQUIRED)
+
+# boost-dll
+find_package(Boost CONFIG REQUIRED COMPONENTS dll)
+target_link_libraries(renderer_tests PRIVATE Boost::dll)
+
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
