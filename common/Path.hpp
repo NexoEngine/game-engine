@@ -30,7 +30,7 @@ namespace nexo {
          */
         static const std::filesystem::path& getExecutablePath()
         {
-            if (!m_executablePathCached.empty())
+            if (!m_executablePathCached.empty() && !m_executableRootPathCached.empty())
                 return m_executablePathCached;
             const boost::dll::fs::path path = boost::dll::program_location();
             m_executablePathCached = path.c_str();
@@ -48,11 +48,18 @@ namespace nexo {
         */
         static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path)
         {
-            auto newPath = (m_executableRootPathCached / path).lexically_normal();
-            if (!m_executableRootPathCached.empty())
-                return newPath;
-            getExecutablePath();
-            return newPath;
+            if (m_executableRootPathCached.empty())
+                getExecutablePath();
+            return (m_executableRootPathCached / path).lexically_normal();
+        }
+
+        /**
+         * @brief Reset the cached paths
+         */
+        static void resetCache()
+        {
+            m_executablePathCached.clear();
+            m_executableRootPathCached.clear();
         }
 
         private:
