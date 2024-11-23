@@ -22,10 +22,12 @@ namespace nexo::renderer {
         NONE = 0,
 
         RGBA8,
+        RGBA16,
 
         DEPTH24STENCIL8,
 
-        Depth = DEPTH24STENCIL8
+        Depth = DEPTH24STENCIL8,
+        NB_TEXTURE_FORMATS
     };
 
     struct FrameBufferTextureSpecifications {

@@ -77,6 +77,20 @@ namespace nexo::renderer {
                 std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
     };
 
+    class FramebufferUnsupportedColorFormat final : public Exception {
+        public:
+            explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName, const char *file = __FILE__,
+                                                   const int line = __LINE__) : Exception(
+            "[" + backendApiName + "] Unsupported framebuffer color attachment format", file, line) {};
+    };
+
+    class FramebufferUnsupportedDepthFormat final : public Exception {
+        public:
+            explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName, const char *file = __FILE__,
+                                                   const int line = __LINE__) : Exception(
+            "[" + backendApiName + "] Unsupported framebuffer depth attachment format", file, line) {};
+    };
+
     class BufferLayoutEmpty final : public Exception {
         public:
             explicit BufferLayoutEmpty(const std::string &backendApi, const char *file = __FILE__,

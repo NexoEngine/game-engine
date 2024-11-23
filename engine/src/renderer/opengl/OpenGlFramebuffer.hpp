@@ -23,8 +23,6 @@ namespace nexo::renderer {
 
             void invalidate();
 
-            void resize(float width, float height);
-
             void bind() override;
             void unbind() override;
 

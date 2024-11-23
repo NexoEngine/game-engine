@@ -24,6 +24,14 @@ namespace nexo::renderer {
 
     static constexpr unsigned int sMaxFramebufferSize = 8192;
 
+    static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
+    {
+        constexpr GLenum internalFormats[] = {GL_NONE, GL_RGBA8, GL_RGBA16, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
+        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::NB_TEXTURE_FORMATS)
+            return -1;
+        return static_cast<int>(internalFormats[static_cast<unsigned int>(format)]);
+    }
+
     static GLenum textureTarget(const bool multisampled)
     {
         return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
@@ -94,6 +102,10 @@ namespace nexo::renderer {
 
     OpenGlFramebuffer::OpenGlFramebuffer(FramebufferSpecs specs) : m_specs(std::move(specs))
     {
+        if (!m_specs.width || !m_specs.height)
+            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", false, m_specs.width, m_specs.height);
+        if (m_specs.width > sMaxFramebufferSize || m_specs.height > sMaxFramebufferSize)
+            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", true, m_specs.width, m_specs.height);
         for (auto format: m_specs.attachments.attachments)
         {
             if (!isDepthFormat(format.textureFormat))
@@ -137,18 +149,12 @@ namespace nexo::renderer {
             for (unsigned int i = 0; i < m_colorAttachments.size(); ++i)
             {
                 bindTexture(multisample, m_colorAttachments[i]);
-                switch (m_colorAttachmentsSpecs[i].textureFormat)
-                {
-                    case FrameBufferTextureFormats::RGBA8:
-                        attachColorTexture(m_colorAttachments[i], m_specs.samples, GL_RGBA8, m_specs.width,
-                                           m_specs.height, i);
-                        break;
-                    case FrameBufferTextureFormats::DEPTH24STENCIL8:
-                        break;
-                    default:
-                        LOG(NEXO_WARN, "[OPENGL] Failed to create framebuffer: unsupported color texture format");
-                        return;
-                }
+                const int glTextureFormat = framebufferTextureFormatToOpenGlFormat(
+                    m_colorAttachmentsSpecs[i].textureFormat);
+                if (glTextureFormat == -1)
+                    THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+                attachColorTexture(m_colorAttachments[i], m_specs.samples, glTextureFormat, m_specs.width,
+                                   m_specs.height, i);
             }
         }
 
@@ -156,26 +162,22 @@ namespace nexo::renderer {
         {
             createTextures(multisample, &m_depthAttachment, 1);
             bindTexture(multisample, m_depthAttachment);
-            switch (m_depthAttachmentSpec.textureFormat)
-            {
-                case FrameBufferTextureFormats::DEPTH24STENCIL8:
-                    attachDepthTexture(m_depthAttachment, m_specs.samples, GL_DEPTH24_STENCIL8,
-                                       GL_DEPTH_STENCIL_ATTACHMENT, m_specs.width, m_specs.height);
-                    break;
-                default:
-                    LOG(NEXO_WARN, "[OPENGL] Failed to create framebuffer: unsupported depth texture format");
-                return;
-            }
+            int glDepthFormat = framebufferTextureFormatToOpenGlFormat(m_depthAttachmentSpec.textureFormat);
+            if (glDepthFormat == -1)
+                THROW_EXCEPTION(FramebufferUnsupportedDepthFormat, "OPENGL");
+            attachDepthTexture(m_depthAttachment, m_specs.samples, glDepthFormat, GL_DEPTH_STENCIL_ATTACHMENT,
+                               m_specs.width, m_specs.height);
         }
 
         if (m_colorAttachments.size() > 1)
         {
             if (m_colorAttachments.size() >= 4)
                 THROW_EXCEPTION(FramebufferCreationFailed, "OPENGL");
-            constexpr GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+            constexpr GLenum buffers[4] = {
+                GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
+            };
             glDrawBuffers(static_cast<int>(m_colorAttachments.size()), buffers);
-        }
-        else if (m_colorAttachments.empty())
+        } else if (m_colorAttachments.empty())
             glDrawBuffer(GL_NONE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
