@@ -25,7 +25,7 @@
 namespace nexo::renderer {
     void Renderer2D::init()
     {
-        m_storage = new Renderer2DStorage();
+        m_storage = std::make_shared<Renderer2DStorage>();
 
         // Initialize vertex array and buffer
         m_storage->vertexArray = createVertexArray();
@@ -63,8 +63,10 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        try {
-            m_storage->textureShader = Shader::create(Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
+        try
+        {
+            m_storage->textureShader = Shader::create(
+                Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
             m_storage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
         } catch (const Exception &e)
@@ -87,12 +89,18 @@ namespace nexo::renderer {
 
     void Renderer2D::shutdown()
     {
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         delete m_storage->vertexBufferBase;
-        delete m_storage;
     }
 
-    void Renderer2D::beginScene(const glm::mat4 &viewProjection) const
+    void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+        if (m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer already rendering a scene, make sure to call endScene before calling another beginScene");
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
@@ -101,6 +109,7 @@ namespace nexo::renderer {
         m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
         m_storage->indexBufferPtr = m_storage->indexBufferBase;
         m_storage->textureSlotIndex = 1;
+        m_renderingScene = true;
     }
 
     void Renderer2D::flush() const
@@ -127,6 +136,11 @@ namespace nexo::renderer {
 
     void Renderer2D::endScene() const
     {
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         const unsigned int vertexDataSize = reinterpret_cast<uint8_t *>(m_storage->vertexBufferPtr) -
                                             reinterpret_cast<uint8_t *>(m_storage->vertexBufferBase);
 
@@ -365,12 +379,16 @@ namespace nexo::renderer {
 
     void Renderer2D::resetStats() const
     {
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.quadCount = 0;
     }
 
     RendererStats Renderer2D::getStats() const
     {
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         return m_storage->stats;
     }
 

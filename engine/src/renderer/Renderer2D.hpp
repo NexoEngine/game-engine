@@ -69,7 +69,7 @@ namespace nexo::renderer {
             void init();
             void shutdown();
 
-            void beginScene(const glm::mat4 &viewProjection) const;
+            void beginScene(const glm::mat4 &viewProjection);
             void endScene() const;
             void flush() const;
 
@@ -99,7 +99,8 @@ namespace nexo::renderer {
             [[nodiscard]] RendererStats getStats() const;
 
         private:
-            Renderer2DStorage *m_storage = nullptr;
+            std::shared_ptr<Renderer2DStorage> m_storage;
+            bool m_renderingScene = false;
 
             void flushAndReset() const;
 

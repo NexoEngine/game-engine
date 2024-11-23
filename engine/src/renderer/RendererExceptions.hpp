@@ -106,4 +106,25 @@ namespace nexo::renderer {
                                        const int line = __LINE__) : Exception(
                 "[" + backendApi + "] Vertex buffer layout cannot be empty", file, line) {};
     };
+
+    enum class RendererType {
+        RENDERER_2D,
+        RENDERER_3D
+    };
+
+    class RendererNotInitialized final : public Exception {
+        public:
+            explicit RendererNotInitialized(const RendererType type, const char *file = __FILE__,
+                                            const int line = __LINE__) : Exception(
+                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) +
+                " Renderer not initialized, call the init function first", file, line) {};
+    };
+
+    class RendererSceneLifeCycleFailure : public Exception {
+        public:
+            explicit RendererSceneLifeCycleFailure(const RendererType type, const std::string &msg,
+                                                   const char *file = __FILE__, const int line = __LINE__) : Exception(
+                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) + " " + msg, file,
+                line) {};
+    };
 }
