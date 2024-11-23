@@ -125,6 +125,8 @@ namespace nexo::editor {
 
         float scaleFactorX, scaleFactorY = 0.0f;
         m_app->getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
+        m_app->getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
+            "../assets/textures/logo_nexo.png"));
         if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
         {
             LOG(NEXO_WARN,
