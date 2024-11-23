@@ -16,8 +16,8 @@
 #include <GLFW/glfw3.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <opengl/OpenGlVertexArray.hpp>
 
+#include "opengl/OpenGlVertexArray.hpp"
 #include "opengl/OpenGlBuffer.hpp"
 #include "contexts/opengl.hpp"
 #include "RendererExceptions.hpp"

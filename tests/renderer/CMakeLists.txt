@@ -54,6 +54,7 @@ add_executable(renderer_tests
         ${RENDERER_SOURCES}
         ${BASEDIR}/Buffer.test.cpp
         ${BASEDIR}/VertexArray.test.cpp
+        ${BASEDIR}/Framebuffer.test.cpp
 )
 
 # Find glm and add its include directories
