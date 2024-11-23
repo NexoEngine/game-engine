@@ -12,17 +12,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/ext/matrix_transform.hpp>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include "Buffer.hpp"
 #include "opengl/OpenGlBuffer.hpp"
+#include "contexts/opengl.hpp"
 
 namespace nexo::renderer {
-    TEST(BufferLayout, BasicConstruction) {
+    TEST(BufferLayout, BasicConstruction)
+    {
         BufferLayout layout = {
             {ShaderDataType::FLOAT3, "Position"},
             {ShaderDataType::FLOAT4, "Color"}
@@ -36,13 +36,15 @@ namespace nexo::renderer {
         EXPECT_EQ(elements[1].offset, 12);
     }
 
-    TEST(BufferLayout, EmptyLayout) {
+    TEST(BufferLayout, EmptyLayout)
+    {
         BufferLayout layout;
         EXPECT_EQ(layout.getStride(), 0);
         EXPECT_TRUE(layout.getElements().empty());
     }
 
-    TEST(BufferLayout, ComponentCount) {
+    TEST(BufferLayout, ComponentCount)
+    {
         BufferElements element(ShaderDataType::FLOAT3, "Position");
         EXPECT_EQ(element.getComponentCount(), 3);
 
@@ -50,7 +52,8 @@ namespace nexo::renderer {
         EXPECT_EQ(element.getComponentCount(), 16);
     }
 
-    TEST(BufferLayout, LargeLayout) {
+    TEST(BufferLayout, LargeLayout)
+    {
         BufferLayout layout = {
             {ShaderDataType::FLOAT3, "Position"},
             {ShaderDataType::FLOAT4, "Color"},
@@ -63,14 +66,15 @@ namespace nexo::renderer {
         EXPECT_EQ(layout.getElements().size(), 5);
 
         const auto &elements = layout.getElements();
-        EXPECT_EQ(elements[0].offset, 0);    // Position
-        EXPECT_EQ(elements[1].offset, 12);  // Color
-        EXPECT_EQ(elements[2].offset, 28);  // UV
-        EXPECT_EQ(elements[3].offset, 36);  // ModelMatrix
+        EXPECT_EQ(elements[0].offset, 0); // Position
+        EXPECT_EQ(elements[1].offset, 12); // Color
+        EXPECT_EQ(elements[2].offset, 28); // UV
+        EXPECT_EQ(elements[3].offset, 36); // ModelMatrix
         EXPECT_EQ(elements[4].offset, 100); // ID
     }
 
-    TEST(BufferLayout, MixedNormalization) {
+    TEST(BufferLayout, MixedNormalization)
+    {
         BufferLayout layout = {
             {ShaderDataType::FLOAT4, "Position", true},
             {ShaderDataType::INT3, "BoneIDs"},
@@ -86,86 +90,8 @@ namespace nexo::renderer {
         EXPECT_TRUE(elements[2].normalized);
     }
 
-
-
-    class MockVertexBuffer : public VertexBuffer {
-        public:
-            MOCK_METHOD(void, bind, (), (const, override));
-            MOCK_METHOD(void, unbind, (), (const, override));
-            MOCK_METHOD(void, setLayout, (const BufferLayout &layout), (override));
-            MOCK_METHOD(const BufferLayout, getLayout, (), (const, override));
-            MOCK_METHOD(void, setData, (void *data, unsigned int size), (override));
-            MOCK_METHOD(unsigned int, getId, (), (const override));
-    };
-
-    TEST(VertexBuffer, BindUnbind) {
-        MockVertexBuffer mockBuffer;
-
-        EXPECT_CALL(mockBuffer, bind()).Times(1);
-        EXPECT_CALL(mockBuffer, unbind()).Times(1);
-
-        mockBuffer.bind();
-        mockBuffer.unbind();
-    }
-
-    class MockIndexBuffer : public IndexBuffer {
-        public:
-            MOCK_METHOD(void, bind, (), (const, override));
-            MOCK_METHOD(void, unbind, (), (const, override));
-            MOCK_METHOD(void, setData, (unsigned int *data, unsigned int size), (override));
-            MOCK_METHOD(unsigned int, getCount, (), (const, override));
-            MOCK_METHOD(unsigned int, getId, (), (const, override));
-    };
-
-    TEST(IndexBuffer, DataManagement) {
-        MockIndexBuffer mockBuffer;
-
-        EXPECT_CALL(mockBuffer, setData(::testing::_, 6)).Times(1);
-        EXPECT_CALL(mockBuffer, getCount()).WillOnce(::testing::Return(6));
-
-        unsigned int indices[6] = {0, 1, 2, 2, 3, 0};
-        mockBuffer.setData(indices, 6);
-        EXPECT_EQ(mockBuffer.getCount(), 6);
-    }
-
-    // Class to setup an opengl context
-    class OpenGLTest : public ::testing::Test {
-        protected:
-        GLFWwindow* window = nullptr;
-
-        void SetUp() override {
-            if (!glfwInit()) {
-                FAIL() << "Failed to initialize GLFW";
-            }
-
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-            window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
-            if (!window) {
-                glfwTerminate();
-                FAIL() << "Failed to create GLFW window";
-            }
-
-            glfwMakeContextCurrent(window);
-
-            if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-                glfwDestroyWindow(window);
-                glfwTerminate();
-                FAIL() << "Failed to initialize GLAD";
-            }
-        }
-
-        void TearDown() override {
-            if (window) {
-                glfwDestroyWindow(window);
-            }
-            glfwTerminate();
-        }
-    };
-
-    TEST_F(OpenGLTest, VertexBufferCreationAndBinding) {
+    TEST_F(OpenGLTest, VertexBufferCreationAndBinding)
+    {
         OpenGlVertexBuffer buffer1(nullptr, 100);
         OpenGlVertexBuffer buffer2(nullptr, 100);
 
@@ -193,8 +119,8 @@ namespace nexo::renderer {
         EXPECT_EQ(boundBuffer, 0);
     }
 
-
-    TEST_F(OpenGLTest, VertexBufferDataUpdate) {
+    TEST_F(OpenGLTest, VertexBufferDataUpdate)
+    {
         float vertices[] = {0.0f, 1.0f, 2.0f};
         OpenGlVertexBuffer buffer(vertices, sizeof(vertices));
 
@@ -219,7 +145,8 @@ namespace nexo::renderer {
         buffer.unbind();
     }
 
-    TEST_F(OpenGLTest, IndexBufferCreationAndBinding) {
+    TEST_F(OpenGLTest, IndexBufferCreationAndBinding)
+    {
         OpenGlIndexBuffer buffer1;
         OpenGlIndexBuffer buffer2;
 
@@ -247,7 +174,8 @@ namespace nexo::renderer {
         EXPECT_EQ(boundBuffer, 0);
     }
 
-    TEST_F(OpenGLTest, IndexBufferDataUpdate) {
+    TEST_F(OpenGLTest, IndexBufferDataUpdate)
+    {
         OpenGlIndexBuffer buffer;
 
         unsigned int indices[] = {0, 1, 2, 2, 3, 0};

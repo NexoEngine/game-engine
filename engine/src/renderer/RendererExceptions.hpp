@@ -18,9 +18,9 @@
 namespace nexo::renderer {
     class FileNotFoundException final : public Exception {
         public:
-        explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
-                                       const int line = __LINE__)
-            : Exception("File not found: " + filePath, file, line) {}
+            explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
+                                           const int line = __LINE__)
+                : Exception("File not found: " + filePath, file, line) {}
     };
 
     class UnknownGraphicsApi final : public Exception {
@@ -42,6 +42,13 @@ namespace nexo::renderer {
             explicit GraphicsApiWindowInitFailure(const std::string &backendApiName, const char *file = __FILE__,
                                                   const int line = __LINE__)
                 : Exception("Failed to initialize graphics api: " + backendApiName, file, line) {}
+    };
+
+    class InvalidValue final : public Exception {
+        public:
+            explicit InvalidValue(const std::string &backendApiName, const std::string &msg,
+                                  const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "[" + backendApiName + "] Invalid value: " + msg, file, line) {};
     };
 
     class ShaderCreationFailed final : public Exception {
@@ -68,5 +75,12 @@ namespace nexo::renderer {
                                                const char *file = __FILE__, const int line = __LINE__) : Exception(
                 "[" + backendApi + "] Framebuffer resizing failed: " + std::to_string(width) + "x" +
                 std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
+    };
+
+    class BufferLayoutEmpty final : public Exception {
+        public:
+            explicit BufferLayoutEmpty(const std::string &backendApi, const char *file = __FILE__,
+                                       const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Vertex buffer layout cannot be empty", file, line) {};
     };
 }

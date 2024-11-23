@@ -29,6 +29,8 @@ namespace nexo::renderer {
 
             [[nodiscard]] virtual const std::vector<std::shared_ptr<VertexBuffer>> &getVertexBuffers() const = 0;
             [[nodiscard]] virtual const std::shared_ptr<IndexBuffer> &getIndexBuffer() const = 0;
+
+            virtual unsigned int getId() const = 0;
     };
 
     std::shared_ptr<VertexArray> createVertexArray();

@@ -14,6 +14,7 @@
 
 #include "OpenGlVertexArray.hpp"
 #include "Logger.hpp"
+#include "renderer/RendererExceptions.hpp"
 
 #include <glad/glad.h>
 
@@ -55,15 +56,17 @@ namespace nexo::renderer {
 
     void OpenGlVertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer)
     {
+        if (!vertexBuffer)
+            THROW_EXCEPTION(InvalidValue, "OPENGL", "Vertex buffer is null");
         glBindVertexArray(_id);
         vertexBuffer->bind();
 
-        if (vertexBuffer->getLayout().getElements().empty()) {
-            LOG(NEXO_ERROR, "The vertex buffer has no layout");
-            return;
-        }
+        if (vertexBuffer->getLayout().getElements().empty())
+            THROW_EXCEPTION(BufferLayoutEmpty, "OPENGL");
 
-        unsigned int index = 0;
+        unsigned int index = static_cast<unsigned int>(_vertexBuffers.size() > 0
+            ? _vertexBuffers.back()->getLayout().getElements().size()
+            : 0);
         const auto& layout = vertexBuffer->getLayout();
         for (const auto &element : layout) {
             glEnableVertexAttribArray(index);
@@ -82,6 +85,8 @@ namespace nexo::renderer {
 
     void OpenGlVertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer)
     {
+        if (!indexBuffer)
+            THROW_EXCEPTION(InvalidValue, "OPENGL", "Index buffer cannot be null");
         glBindVertexArray(_id);
         indexBuffer->bind();
 
@@ -97,4 +102,10 @@ namespace nexo::renderer {
     {
         return _indexBuffer;
     }
+
+    unsigned int OpenGlVertexArray::getId() const
+    {
+        return _id;
+    }
+
 }

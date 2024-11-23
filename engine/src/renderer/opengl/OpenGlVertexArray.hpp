@@ -20,23 +20,25 @@ namespace nexo::renderer {
 
     class OpenGlVertexArray final : public VertexArray {
         public:
-        OpenGlVertexArray();
-        ~OpenGlVertexArray() override = default;
+            OpenGlVertexArray();
+            ~OpenGlVertexArray() override = default;
 
 
-        void bind() const override;
-        void unbind() const override;
+            void bind() const override;
+            void unbind() const override;
 
-        void addVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) override;
-        void setIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer) override;
+            void addVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) override;
+            void setIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer) override;
 
-        [[nodiscard]] const std::vector<std::shared_ptr<VertexBuffer>> &getVertexBuffers() const override;
-        [[nodiscard]] const std::shared_ptr<IndexBuffer> &getIndexBuffer() const override;
+            [[nodiscard]] const std::vector<std::shared_ptr<VertexBuffer>> &getVertexBuffers() const override;
+            [[nodiscard]] const std::shared_ptr<IndexBuffer> &getIndexBuffer() const override;
+
+            unsigned int getId() const override;
         private:
-        std::vector<std::shared_ptr<VertexBuffer>> _vertexBuffers;
-        std::shared_ptr<IndexBuffer> _indexBuffer;
+            std::vector<std::shared_ptr<VertexBuffer>> _vertexBuffers;
+            std::shared_ptr<IndexBuffer> _indexBuffer;
 
-        unsigned int _id{};
+            unsigned int _id{};
     };
 
 }
