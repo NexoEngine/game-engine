@@ -10,11 +10,13 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
     - [Game Engine](#game-engine)
-    - [Client](#client)
   - [External Dependencies](#external-dependencies)
-  - [Installation](#installation)
+  - [Build the project](#build-the-project)
+  - [Install the project](#install-the-project)
+    - [Install via CMake](#install-via-cmake)
+    - [Create an installer for Windows](#create-an-installer-for-windows)
+  - [Run the tests](#run-the-tests)
   - [The Team](#the-team)
-  - [Acknowledgements](#acknowledgements)
 
 > [!NOTE]  
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
@@ -41,7 +43,7 @@ To run this project, ensure you have the following:
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
 - **X11**: Required for Linux and macOS.
 
-## Installation
+## Build the project
 
 Cloning and building is a breeze:
 1. Clone the repository.
@@ -64,6 +66,35 @@ For Windows:
 
 > [!NOTE]
 > For detailed instructions, visit our [Installation Guide](docs/install/README.md).
+
+## Install the project
+
+### Install via CMake
+
+First build the project as seen in the step [Build the project](#build-the-project).
+Then run the following command:
+
+```bash
+cmake --install build --prefix /path/to/install
+```
+
+This will install the NEXO Engine in the directory `/path/to/install` with all the necessary files.
+
+### Create an installer for Windows
+
+To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
+
+> [!WARNING]
+> We assume here that you already ran the cmake command to generate the build files in the `build` directory.
+
+First install NSIS on your computer, then run the following command:
+
+```bash
+cd build
+cpack -G NSIS -C Debug
+```
+
+This will generate an installer in the `build` directory that you can run to install the NEXO Engine on your computer.
 
 ## Run the tests
 
