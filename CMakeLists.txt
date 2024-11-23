@@ -86,8 +86,8 @@ install(TARGETS nexoEditor
 # Automatically install runtime dependencies (Windows .dll files, Linux .so files, etc.)
 install(TARGETS nexoEditor
         RUNTIME_DEPENDENCIES
-        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" ".*system32.*" ".*HvsiFileTrust.*" ".*wpaxholder.*"
-        POST_EXCLUDE_REGEXES ".*windows.*" ".*Microsoft.*"
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" ".*system32.*" [[.*(\\|/)system32(\\|/).*\.dll]]
+        POST_EXCLUDE_REGEXES ".*windows.*" ".*Microsoft.*" [[.*(\\|/)system32(\\|/).*\.dll]]
         RUNTIME DESTINATION bin
 )
 
