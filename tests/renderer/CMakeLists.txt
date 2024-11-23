@@ -76,4 +76,4 @@ target_link_libraries(renderer_tests PRIVATE Boost::dll)
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(renderer_tests GTest::gtest GTest::gtest_main GTest::gmock OpenGL::GL glfw glad::glad)
+target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gtest_main GTest::gmock OpenGL::GL glfw glad::glad)
