@@ -57,4 +57,4 @@ namespace nexo::editor
     };
 }
 
-#endif //PRIMITIVE_HPPd
+#endif //PRIMITIVE_HPP
