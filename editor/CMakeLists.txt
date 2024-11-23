@@ -7,18 +7,6 @@ project(nexoEditor)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Force output binaries to the build directory (--build) root
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-# Also account for multi-configuration generators (like Visual Studio)
-foreach(CONFIG_TYPE IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE} ${CMAKE_BINARY_DIR})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE} ${CMAKE_BINARY_DIR})
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_TYPE} ${CMAKE_BINARY_DIR})
-endforeach()
-
 set(SRCS
         common/Exception.cpp
         common/math/Matrix.cpp
@@ -88,3 +76,7 @@ include_directories(include)
 if(GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoEditor PRIVATE GRAPHICS_API_OPENGL)
 endif()
+
+# Set the output directory for the executable (prevents generator from creating Debug/Release folders)
+set_target_properties(nexoEditor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
+
