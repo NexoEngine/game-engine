@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <memory>
 
 #include "core/event/Event.hpp"
@@ -76,6 +77,7 @@ namespace nexo::renderer {
 
             virtual void getDpiScale(float *x, float *y) const = 0;
 
+            virtual void setWindowIcon(const std::filesystem::path& iconPath) = 0;
             virtual void setVsync(bool enabled) = 0;
             [[nodiscard]] virtual bool isVsync() const = 0;
 

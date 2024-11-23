@@ -13,6 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlWindow.hpp"
+
+#include <stb_image.h>
+
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
@@ -127,6 +130,17 @@ namespace nexo::renderer {
     void OpenGlWindow::getDpiScale(float *x, float *y) const
     {
         glfwGetWindowContentScale(_openGlWindow, x, y);
+    }
+
+    void OpenGlWindow::setWindowIcon(const std::filesystem::path& iconPath)
+    {
+        GLFWimage icon;
+        const auto iconStringPath = iconPath.string();
+        icon.pixels = stbi_load(iconStringPath.c_str(), &icon.width, &icon.height, nullptr, 4);
+        if (!icon.pixels)
+            THROW_EXCEPTION(FileNotFoundException, iconPath.string());
+        glfwSetWindowIcon(_openGlWindow, 1, &icon);
+        stbi_image_free(icon.pixels);
     }
 
     void OpenGlWindow::setErrorCallback(void *fctPtr)

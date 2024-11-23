@@ -79,6 +79,8 @@ namespace nexo::renderer {
 
             void getDpiScale(float *x, float *y) const override;
 
+            void setWindowIcon(const std::filesystem::path& iconPath) override;
+
             /**
             * @brief Enables or disables vertical synchronization (VSync).
             *
