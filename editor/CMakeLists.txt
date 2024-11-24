@@ -22,6 +22,7 @@ set(SRCS
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/SceneViewManager.cpp
+        editor/src/DocumentWindows/InspectorWindow.cpp
 )
 
 FetchContent_Declare(

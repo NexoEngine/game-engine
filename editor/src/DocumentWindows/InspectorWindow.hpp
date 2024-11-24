@@ -15,8 +15,10 @@
 
 #include "ADocumentWindow.hpp"
 
+#include <imgui.h>
+
 namespace nexo::editor {
-    class InspectorWindow final : public ADocumentWindow {
+    class InspectorWindow : public ADocumentWindow {
         public:
             InspectorWindow();
             ~InspectorWindow() override;
@@ -28,6 +30,6 @@ namespace nexo::editor {
             void update() override;
 
         private:
-
+            void showTransform();
     };
 }
