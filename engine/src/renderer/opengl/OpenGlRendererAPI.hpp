@@ -21,9 +21,15 @@ namespace nexo::renderer {
         public:
             void init() override;
             void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
+            void getMaxViewportSize(unsigned int *width, unsigned int *height) override;
             void clear() override ;
             void setClearColor(const glm::vec4 &color) override;
+            void setClearDepth(float depth) override;
 
             void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount = 0) override;
+        private:
+            bool m_initialized = false;
+            int m_maxWidth = 0;
+            int m_maxHeight = 0;
     };
 }

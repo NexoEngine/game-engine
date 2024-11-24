@@ -26,8 +26,10 @@ namespace nexo::renderer {
 
             virtual void init() = 0;
             virtual void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) = 0;
+            virtual void getMaxViewportSize(unsigned int *width, unsigned int *height) = 0;
             virtual void clear() = 0;
             virtual void setClearColor(const glm::vec4 &color) = 0;
+            virtual void setClearDepth(float depth) = 0;
 
             virtual void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int count = 0) = 0;
     };

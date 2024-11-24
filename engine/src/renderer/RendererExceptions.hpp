@@ -37,6 +37,22 @@ namespace nexo::renderer {
                 : Exception("Failed to initialize graphics api: " + backendApiName, file, line) {}
     };
 
+    class GraphicsApiNotInitialized final : public Exception {
+        public:
+        explicit GraphicsApiNotInitialized(const std::string &backendApiName, const char *file = __FILE__,
+                                        const int line = __LINE__)
+            : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", file, line) {}
+    };
+
+    class GraphicsApiViewportResizingFailure final : public Exception {
+        public:
+        explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
+                                           const unsigned int width, const unsigned int height,
+                                           const char *file = __FILE__, const int line = __LINE__) : Exception(
+            "[" + backendApi + "] Viewport resizing failed: " + std::to_string(width) + "x" +
+            std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
+    };
+
     class GraphicsApiWindowInitFailure final : public Exception {
         public:
             explicit GraphicsApiWindowInitFailure(const std::string &backendApiName, const char *file = __FILE__,
