@@ -164,7 +164,7 @@ namespace nexo::editor
                 {
                     ecs::Entity newPrimitive = add_primitive_fct[i]({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 0.0f, {0.0f, 1.0f, 0.0f, 1.0f});
                     auto&app = getApp();
-                    app.addEntityToScene(newPrimitive, props.sceneId, props.layerName);
+                    app.addEntityToScene(newPrimitive, sceneProps.sceneId, layerId);
                     m_sceneManagerBridge->setSelectedEntity(newPrimitive);
                     m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
                 }
