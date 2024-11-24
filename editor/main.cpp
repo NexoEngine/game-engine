@@ -16,6 +16,7 @@
 #include "src/DocumentWindows/ConsoleWindow.hpp"
 #include "src/DocumentWindows/MainScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
+#include "src/DocumentWindows/InspectorWindow.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
