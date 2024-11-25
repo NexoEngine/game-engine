@@ -92,11 +92,19 @@ namespace nexo::renderer {
         if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         delete m_storage->vertexBufferBase;
+        m_storage->vertexBufferBase = nullptr;
+        delete m_storage->indexBufferBase;
+        m_storage->indexBufferBase = nullptr;
+    }
+
+    Renderer2D::~Renderer2D()
+    {
+
     }
 
     void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
-        if (!m_storage)
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         if (m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -136,7 +144,7 @@ namespace nexo::renderer {
 
     void Renderer2D::endScene() const
     {
-        if (!m_storage)
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -145,11 +153,7 @@ namespace nexo::renderer {
                                             reinterpret_cast<uint8_t *>(m_storage->vertexBufferBase);
 
         m_storage->vertexBuffer->setData(m_storage->vertexBufferBase, vertexDataSize);
-
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase, vertexDataSize);
-
-        const unsigned int indexDataSize = m_storage->indexCount * sizeof(unsigned int);
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase, indexDataSize);
+        m_storage->indexBuffer->setData(m_storage->indexBufferBase, m_storage->indexCount);
 
         flushAndReset();
     }
@@ -220,11 +224,17 @@ namespace nexo::renderer {
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, color);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec2 textureCoords[4] = {
@@ -246,12 +256,18 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, texture);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -275,12 +291,18 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
                               const std::shared_ptr<SubTexture2D> &subTexture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, subTexture);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
                               const std::shared_ptr<SubTexture2D> &subTexture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -299,11 +321,17 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
                               const glm::vec4 &color) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, color);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
@@ -325,12 +353,18 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, texture);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -355,12 +389,18 @@ namespace nexo::renderer {
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
                               const std::shared_ptr<SubTexture2D> &subTexture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, subTexture);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
                               const std::shared_ptr<SubTexture2D> &subTexture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
         constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -379,7 +419,7 @@ namespace nexo::renderer {
 
     void Renderer2D::resetStats() const
     {
-        if (!m_storage)
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.quadCount = 0;
@@ -387,7 +427,7 @@ namespace nexo::renderer {
 
     RendererStats Renderer2D::getStats() const
     {
-        if (!m_storage)
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         return m_storage->stats;
     }

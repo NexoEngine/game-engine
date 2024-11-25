@@ -66,6 +66,7 @@ namespace nexo::renderer {
 
     class Renderer2D {
         public:
+            ~Renderer2D();
             void init();
             void shutdown();
 
@@ -98,6 +99,7 @@ namespace nexo::renderer {
             void resetStats() const;
             [[nodiscard]] RendererStats getStats() const;
 
+            std::shared_ptr<Renderer2DStorage> getInternalStorage() const { return m_storage; };
         private:
             std::shared_ptr<Renderer2DStorage> m_storage;
             bool m_renderingScene = false;
