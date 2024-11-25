@@ -23,7 +23,7 @@ namespace nexo::renderer {
         m_texCoords[3] = {min.x, max.y};
     }
 
-    std::shared_ptr<SubTexture2D> createFromCoords(const std::shared_ptr<Texture2D> &texture, const glm::vec2 &coords, const glm::vec2 &cellSize, const glm::vec2 &spriteSize)
+    std::shared_ptr<SubTexture2D> SubTexture2D::createFromCoords(const std::shared_ptr<Texture2D> &texture, const glm::vec2 &coords, const glm::vec2 &cellSize, const glm::vec2 &spriteSize)
     {
         glm::vec2 min = {(coords.x * cellSize.x) / static_cast<float>(texture->getWidth()) , (coords.y * cellSize.y) / static_cast<float>(texture->getHeight())};
         glm::vec2 max = {((coords.x + spriteSize.x) * cellSize.x) / static_cast<float>(texture->getWidth()), ((coords.y + spriteSize.y) * cellSize.y) / static_cast<float>(texture->getHeight())};
