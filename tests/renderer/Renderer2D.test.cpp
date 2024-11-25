@@ -454,6 +454,8 @@ namespace nexo::renderer {
 
         // Expect RendererNotInitialized exception
         EXPECT_THROW(renderer2D->beginScene(viewProjection), RendererNotInitialized);
+        // Re-init for TearDown function
+        renderer2D->init();
     }
 
     TEST_F(Renderer2DTest, EndSceneWithoutBeginScene) {
@@ -487,6 +489,8 @@ namespace nexo::renderer {
 
         // Expect RendererNotInitialized exception
         EXPECT_THROW(renderer2D->resetStats(), RendererNotInitialized);
+        // Re-init for TearDown function
+        renderer2D->init();
     }
 
     TEST_F(Renderer2DTest, GetStatsWithoutInit) {
@@ -495,6 +499,8 @@ namespace nexo::renderer {
 
         // Expect RendererNotInitialized exception
         EXPECT_THROW(renderer2D->getStats(), RendererNotInitialized);
+        // Re-init for TearDown function
+        renderer2D->init();
     }
 
 
