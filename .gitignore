@@ -3,6 +3,10 @@ src/server/Makefile
 src/client/client
 src/client/Makefile
 
+# CPack specific files
+# Ignored because auto generated
+scripts/linux/postinst
+
 instdir/
 
 # Prerequisites
