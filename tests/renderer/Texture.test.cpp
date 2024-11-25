@@ -20,6 +20,7 @@
 #include "opengl/OpenGlTexture2D.hpp"
 #include "renderer/Texture.hpp"
 #include "contexts/opengl.hpp"
+#include "flattenedAssets/testLogo.hpp"
 
 namespace nexo::renderer {
     class OpenGlTexture2DTest : public OpenGLTest {
@@ -28,42 +29,8 @@ namespace nexo::renderer {
 
             void createTemporaryTextureFile()
             {
-                // Open a binary file for writing
                 std::ofstream file(temporaryTextureFilePath, std::ios::binary);
-
-                // Minimal PNG file: Signature, IHDR, IDAT, and IEND chunks
-                const unsigned char pngData[] = {
-                    // PNG signature
-                    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-
-                    // IHDR chunk
-                    0x00, 0x00, 0x00, 0x0D, // Chunk length
-                    0x49, 0x48, 0x44, 0x52, // Chunk type "IHDR"
-                    0x00, 0x00, 0x00, 0x02, // Width: 2 pixels
-                    0x00, 0x00, 0x00, 0x02, // Height: 2 pixels
-                    0x08, // Bit depth: 8
-                    0x02, // Color type: RGB
-                    0x00, // Compression: Deflate
-                    0x00, // Filter: None
-                    0x00, // Interlace: None
-                    0x5C, 0x72, 0xA8, 0x66, // CRC
-
-                    // IDAT chunk (compressed image data for a 2x2 red image)
-                    0x00, 0x00, 0x00, 0x0C, // Chunk length
-                    0x49, 0x44, 0x41, 0x54, // Chunk type "IDAT"
-                    0x78, 0x9C, // Zlib compression header
-                    0x63, 0x60, 0xA0, 0x04, // Red pixel data (compressed)
-                    0x00, 0x00, 0x05, 0x00, 0x01, // Zlib checksum
-                    0x2C, 0x9F, 0xD3, 0x73, // CRC
-
-                    // IEND chunk
-                    0x00, 0x00, 0x00, 0x00, // Chunk length
-                    0x49, 0x45, 0x4E, 0x44, // Chunk type "IEND"
-                    0xAE, 0x42, 0x60, 0x82 // CRC
-                };
-
-                // Write the PNG data to the file
-                file.write(reinterpret_cast<const char *>(pngData), sizeof(pngData));
+                file.write(reinterpret_cast<const char *>(testLogo.data()), testLogo.size());
                 file.close();
             }
 
@@ -103,13 +70,15 @@ namespace nexo::renderer {
 
     TEST_F(OpenGlTexture2DTest, CreateTextureFromFile) {
         //TODO: make this test with a real texture file
-        // createTemporaryTextureFile();
-        // OpenGlTexture2D texture(temporaryTextureFilePath);
-        //
-        // // Validate dimensions
-        // EXPECT_GT(texture.getWidth(), 0);
-        // EXPECT_GT(texture.getHeight(), 0);
-        // deleteTemporaryTextureFile();
+        createTemporaryTextureFile();
+        OpenGlTexture2D texture(temporaryTextureFilePath);
+
+        // Validate dimensions
+        std::cout << texture.getWidth() << std::endl;
+        std::cout << texture.getHeight() << std::endl;
+        EXPECT_GT(texture.getWidth(), 0);
+        EXPECT_GT(texture.getHeight(), 0);
+        deleteTemporaryTextureFile();
     }
 
     TEST_F(OpenGlTexture2DTest, CreateTextureFromInvalidFile) {
