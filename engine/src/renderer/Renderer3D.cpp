@@ -108,9 +108,6 @@ namespace nexo::renderer {
     {
         if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
-        if (m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
-                        "Renderer already rendering a scene, make sure to call endScene before calling another beginScene");
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
