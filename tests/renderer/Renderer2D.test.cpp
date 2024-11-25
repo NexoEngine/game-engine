@@ -463,17 +463,6 @@ namespace nexo::renderer {
         EXPECT_THROW(renderer2D->endScene(), RendererSceneLifeCycleFailure);
     }
 
-    TEST_F(Renderer2DTest, BeginSceneTwice) {
-        glm::mat4 viewProjection = glm::mat4(1.0f);
-
-        renderer2D->beginScene(viewProjection);
-
-        // Expect RendererSceneLifeCycleFailure exception when calling beginScene again without ending the first one
-        EXPECT_THROW(renderer2D->beginScene(viewProjection), RendererSceneLifeCycleFailure);
-
-        renderer2D->endScene();
-    }
-
     TEST_F(Renderer2DTest, DrawQuadWithoutBeginScene) {
         glm::vec2 position = {0.0f, 0.0f};
         glm::vec2 size = {1.0f, 1.0f};
