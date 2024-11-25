@@ -14,7 +14,8 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
   - [Build the project](#build-the-project)
   - [Install the project](#install-the-project)
     - [Install via CMake](#install-via-cmake)
-    - [Create an installer for Windows](#create-an-installer-for-windows)
+    - [Create an installer for Windows (NSIS)](#create-an-installer-for-windows-nsis)
+    - [Create an installer for Linux (DEB)](#create-an-installer-for-linux-deb)
   - [Run the tests](#run-the-tests)
   - [The Team](#the-team)
 
@@ -80,7 +81,7 @@ cmake --install build --prefix /path/to/install
 
 This will install the NEXO Engine in the directory `/path/to/install` with all the necessary files.
 
-### Create an installer for Windows
+### Create an installer for Windows (NSIS)
 
 To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
 
@@ -94,7 +95,23 @@ cd build
 cpack -G NSIS -C Debug
 ```
 
-This will generate an installer in the `build` directory that you can run to install the NEXO Engine on your computer.
+Now you can run the generated installer to install the NEXO Engine on your computer.
+
+## Create an installer for Linux (DEB)
+
+> [!WARNING]
+> We assume here that you already ran the cmake command to generate the build files in the `build` directory.
+
+```bash
+cd build
+cpack -G DEB
+```
+
+To install the generated package (on Ubuntu/Debian...), run the following command:
+
+```bash
+sudo dpkg -i NEXO-Engine-*-Linux.deb
+```
 
 ## Run the tests
 

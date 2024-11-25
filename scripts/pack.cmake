@@ -22,39 +22,38 @@ set(NEXO_VERSION_MINOR 0)
 set(NEXO_VERSION_PATCH 0)
 
 # Set the project name
-set(PROJECT_NAME "NEXO Engine")
+set(PROJECT_NAME "NEXO-Engine")
 
 # CPack specific variables
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_VENDOR "NEXO")
+set(CPACK_PACKAGE_VENDOR "NEXO Engine")
 set(CPACK_PACKAGE_CONTACT "nexo.engine@gmail.com")
+set(CPACK_STRIP_FILES YES)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "NEXO Engine - A simple C++ OpenGL game engine featuring a scene editor, console logging, and asset importing.")
+    "NEXO Engine - A C++ OpenGL game engine usable in virtual reality.")
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+    "Features a scene editor, console logging, and asset importing."
+)
 set(CPACK_PACKAGE_VERSION "${NEXO_VERSION_MAJOR}.${NEXO_VERSION_MINOR}.${NEXO_VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${NEXO_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${NEXO_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${NEXO_VERSION_PATCH}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "NexoEngine")
 
-# Icon setup
-# Install Icon
-set (CPACK_NSIS_MUI_ICON
-     "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
-# Uninstall Icon
-set (CPACK_NSIS_MUI_UNIICON
-     "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
-# Start Menu Icon
-set(CPACK_NSIS_INSTALLED_ICON_NAME "bin/nexoEditor.exe")
-# Icon displayed in installer
-# See https://stackoverflow.com/questions/28768417/how-to-set-an-icon-in-nsis-install-cmake
-# On linux to convert image to the right bmp format:
-#  convert logo.png -background white -flatten BMP3:logo_nexo.bmp
-set (CPACK_PACKAGE_ICON
-     "${CMAKE_SOURCE_DIR}/assets/textures\\\\logo_nexo.bmp")
+# Set the icon path
+set(NEXO_ICON_PATH "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
 
-# Adds shortcuts to the Start Menu
-# It will find exe in any subdirectory of the install directory
-set(CPACK_PACKAGE_EXECUTABLES "nexoEditor" "NEXO Engine")
+include("${CMAKE_SOURCE_DIR}/scripts/linux/deb_config.cmake")
+include("${CMAKE_SOURCE_DIR}/scripts/windows/nsis_config.cmake")
+
+
+# Configure each CPack generator
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_BINARY_DIR}/scripts/generator_config.cmake")
+# Replace @VARS@ with CMake variables in the template file
+configure_file("${PROJECT_SOURCE_DIR}/scripts/CMakeCPackOptions.cmake.in"
+               "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake" @ONLY)
+# Use the final generated file as config
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake")
 
 # This must always be after all CPACK\_\* variables are defined
 include(CPack)

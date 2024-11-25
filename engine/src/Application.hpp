@@ -58,6 +58,8 @@ namespace nexo {
         public:
             ~Application() override = default;
 
+            void init();
+
             void run(scene::SceneId sceneId, RenderingType renderingType);
 
             void handleEvent(event::EventKey &event) override

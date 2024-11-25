@@ -106,5 +106,11 @@ namespace nexo::renderer {
             virtual void setMouseClickCallback(MouseClickCallback callback) = 0;
             virtual void setMouseScrollCallback(MouseScrollCallback callback) = 0;
             virtual void setMouseMoveCallback(MouseMoveCallback callback) = 0;
+
+            // Linux specific methods
+#ifdef __linux__
+            virtual void setWaylandAppId(const char *appId) = 0;
+            virtual void setWmClass(const char *className, const char *instanceName) = 0;
+#endif
     };
 }

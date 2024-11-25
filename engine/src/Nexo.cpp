@@ -18,6 +18,7 @@ namespace nexo {
     Application &init()
     {
         Application &app = Application::getInstance();
+        app.init();
         LOG(NEXO_INFO, "Nexo engine initialized");
         return app;
     }
