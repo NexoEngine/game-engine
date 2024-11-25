@@ -22,7 +22,7 @@ set(NEXO_VERSION_MINOR 0)
 set(NEXO_VERSION_PATCH 0)
 
 # Set the project name
-set(PROJECT_NAME "NEXO Engine")
+set(PROJECT_NAME "NEXO-Engine")
 
 # CPack specific variables
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
