@@ -13,6 +13,8 @@
 #
 ###############################################################################
 
+cmake_minimum_required(VERSION 3.19)
+
 # Write the desktop entry to a file
 file(WRITE "${CMAKE_BINARY_DIR}/postinst"
 "#!/bin/sh
@@ -31,7 +33,6 @@ Categories=${DEB_CATEGORIES}
 END
 ")
 
-if (UNIX)
-    # Set the permissions
-    file(CHMOD "${CMAKE_BINARY_DIR}/postinst" OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE)
-endif (UNIX)
+# Set the permissions
+file(CHMOD "${CMAKE_BINARY_DIR}/postinst"
+     PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE)
