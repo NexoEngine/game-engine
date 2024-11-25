@@ -20,8 +20,8 @@ file(WRITE "${CMAKE_BINARY_DIR}/postinst"
 "#!/bin/sh
 set -e
 
-if [ ! -s /usr/share/applications/${DESKTOP_ENTRY_NAME}.desktop ]; then
-    cat >/usr/share/applications/${DESKTOP_ENTRY_NAME}.desktop<<-END
+if [ ! -s /usr/share/applications/${DEB_DESKTOP_ENTRY_NAME}.desktop ]; then
+    cat >/usr/share/applications/${DEB_DESKTOP_ENTRY_NAME}.desktop<<-END
 [Desktop Entry]
 Name=${CPACK_PACKAGE_NAME}
 Comment=${CPACK_PACKAGE_DESCRIPTION_SUMMARY}
@@ -31,6 +31,7 @@ Terminal=false
 Type=Application
 Categories=${DEB_CATEGORIES}
 END
+fi
 ")
 
 # Set the permissions
