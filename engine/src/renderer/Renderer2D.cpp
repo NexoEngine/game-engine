@@ -89,7 +89,7 @@ namespace nexo::renderer {
 
     void Renderer2D::shutdown()
     {
-        if (!m_storage)
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         delete m_storage->vertexBufferBase;
         m_storage->vertexBufferBase = nullptr;
