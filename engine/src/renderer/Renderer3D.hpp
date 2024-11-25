@@ -37,6 +37,7 @@ namespace nexo::renderer {
         float texIndex;
     };
 
+    //TODO: Add stats for the meshes
     struct Renderer3DStats {
         unsigned int drawCalls = 0;
         unsigned int cubeCount = 0;
@@ -74,7 +75,7 @@ namespace nexo::renderer {
         void init();
         void shutdown();
 
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos) const;
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos);
         void endScene() const;
 
         // With color
@@ -93,8 +94,10 @@ namespace nexo::renderer {
 
         std::shared_ptr<Shader> &getShader() const {return m_storage->textureShader;};
 
+        std::shared_ptr<Renderer3DStorage> getInternalStorage() const { return m_storage; };
     private:
-        Renderer3DStorage* m_storage = nullptr;
+        std::shared_ptr<Renderer3DStorage> m_storage;
+        bool m_renderingScene = false;
 
         void flush() const;
         void flushAndReset() const;

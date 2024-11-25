@@ -15,6 +15,7 @@
 #include "Renderer3D.hpp"
 #include "RenderCommand.hpp"
 #include "Logger.hpp"
+#include "renderer/RendererExceptions.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -26,7 +27,7 @@ namespace nexo::renderer {
 
     void Renderer3D::init()
     {
-        m_storage = new Renderer3DStorage();
+        m_storage = std::make_shared<Renderer3DStorage>();
 
         m_storage->vertexArray = createVertexArray();
         m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(Vertex));
@@ -95,12 +96,21 @@ namespace nexo::renderer {
 
     void Renderer3D::shutdown()
     {
-        delete[] m_storage->vertexBufferBase;
-        delete m_storage;
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+        delete m_storage->vertexBufferBase;
+        m_storage->vertexBufferBase = nullptr;
+        delete m_storage->indexBufferBase;
+        m_storage->indexBufferBase = nullptr;
     }
 
-    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos) const
+    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos)
     {
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+        if (m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+                        "Renderer already rendering a scene, make sure to call endScene before calling another beginScene");
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
@@ -110,19 +120,22 @@ namespace nexo::renderer {
         m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
         m_storage->indexBufferPtr = m_storage->indexBufferBase;
         m_storage->textureSlotIndex = 1;
+        m_renderingScene = true;
     }
 
     void Renderer3D::endScene() const
     {
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         const unsigned int vertexDataSize = reinterpret_cast<uint8_t *>(m_storage->vertexBufferPtr) -
                                             reinterpret_cast<uint8_t *>(m_storage->vertexBufferBase);
 
         m_storage->vertexBuffer->setData(m_storage->vertexBufferBase, vertexDataSize);
 
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase, vertexDataSize);
-
-        const unsigned int indexDataSize = m_storage->indexCount * sizeof(unsigned int);
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase, indexDataSize);
+        m_storage->indexBuffer->setData(m_storage->indexBufferBase, m_storage->indexCount);
 
         flushAndReset();
     }
@@ -197,6 +210,9 @@ namespace nexo::renderer {
 
     void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         constexpr glm::vec3 cubePositions[8] = {
             {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
             {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
@@ -272,6 +288,9 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         constexpr glm::vec3 cubePositions[8] = {
             {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
             {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
@@ -326,9 +345,13 @@ namespace nexo::renderer {
     void Renderer3D::drawMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
                               const std::shared_ptr<Texture2D> &texture) const
     {
+        if (!m_renderingScene)
+            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+                        "Renderer not rendering a scene, make sure to call beginScene first");
         if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase) + vertices.size() > m_storage->maxVertices ||
             m_storage->indexCount + indices.size() > m_storage->maxIndices)
         {
+            //TODO: Implement the batch rendering for meshes
             LOG(NEXO_INFO, "Max number attained");
         }
         const float textureIndex = getTextureIndex(texture);
@@ -354,12 +377,16 @@ namespace nexo::renderer {
 
     void Renderer3D::resetStats() const
     {
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.cubeCount = 0;
     }
 
     Renderer3DStats Renderer3D::getStats() const
     {
+        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
         return m_storage->stats;
     }
 
