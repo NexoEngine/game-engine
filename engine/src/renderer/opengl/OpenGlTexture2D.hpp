@@ -33,8 +33,6 @@ namespace nexo::renderer {
             void bind(unsigned int slot = 0) const override;
             void unbind(unsigned int slot = 0) const override;
             void setData(void *data, unsigned int size) override;
-
-            bool operator==(const Texture &other) const override { return m_id == other.getId(); };
         private:
             std::string m_path;
             unsigned int m_width;
