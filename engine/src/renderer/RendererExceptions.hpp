@@ -39,18 +39,20 @@ namespace nexo::renderer {
 
     class GraphicsApiNotInitialized final : public Exception {
         public:
-        explicit GraphicsApiNotInitialized(const std::string &backendApiName, const char *file = __FILE__,
-                                        const int line = __LINE__)
-            : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", file, line) {}
+            explicit GraphicsApiNotInitialized(const std::string &backendApiName, const char *file = __FILE__,
+                                               const int line = __LINE__)
+                : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", file, line)
+            {}
     };
 
     class GraphicsApiViewportResizingFailure final : public Exception {
         public:
-        explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
-                                           const unsigned int width, const unsigned int height,
-                                           const char *file = __FILE__, const int line = __LINE__) : Exception(
-            "[" + backendApi + "] Viewport resizing failed: " + std::to_string(width) + "x" +
-            std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
+            explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
+                                                        const unsigned int width, const unsigned int height,
+                                                        const char *file = __FILE__,
+                                                        const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Viewport resizing failed: " + std::to_string(width) + "x" +
+                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
     };
 
     class GraphicsApiWindowInitFailure final : public Exception {
@@ -142,5 +144,34 @@ namespace nexo::renderer {
                                                    const char *file = __FILE__, const int line = __LINE__) : Exception(
                 std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) + " " + msg, file,
                 line) {};
+    };
+
+    class TextureInvalidSize : public Exception {
+        public:
+            explicit TextureInvalidSize(const std::string &backendApi,
+                                        const unsigned int width, const unsigned int height,
+                                        const unsigned int maxTextureSize,
+                                        const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Invalid size for texture: " + std::to_string(width) + "x" +
+                std::to_string(height) + " is too big, max texture size is : " + std::to_string(maxTextureSize), file,
+                line) {};
+    };
+
+    class TextureUnsupportedFormat : public Exception {
+        public:
+            explicit TextureUnsupportedFormat(const std::string &backendApi, const int channels,
+                                              const std::string &path,
+                                              const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Unsupported image format with " + std::to_string(channels) + " channels in " +
+                path, file,
+                line) {};
+    };
+
+    class TextureSizeMismatch : public Exception {
+        public:
+            explicit TextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
+                                         const char *file = __FILE__, const int line = __LINE__) : Exception(
+                "[" + backendApi + "] Data size does not match the texture size: " + std::to_string(dataSize) + " != " +
+                std::to_string(expectedSize), file, line) {};
     };
 }

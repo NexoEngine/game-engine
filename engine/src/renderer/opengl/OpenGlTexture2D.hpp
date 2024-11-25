@@ -26,10 +26,12 @@ namespace nexo::renderer {
 
             [[nodiscard]] unsigned int getWidth() const override {return m_width;};
             [[nodiscard]] unsigned int getHeight() const override {return m_height;};
+            unsigned int getMaxTextureSize() const override;
 
             [[nodiscard]] unsigned int getId() const override {return m_id;};
 
             void bind(unsigned int slot = 0) const override;
+            void unbind(unsigned int slot = 0) const override;
             void setData(void *data, unsigned int size) override;
 
             bool operator==(const Texture &other) const override { return m_id == other.getId(); };

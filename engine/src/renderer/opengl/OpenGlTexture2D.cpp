@@ -13,6 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlTexture2D.hpp"
+
+#include <Exception.hpp>
+#include <RendererExceptions.hpp>
+
 #include "Logger.hpp"
 #include <stb_image.h>
 
@@ -20,6 +24,9 @@ namespace nexo::renderer {
 
     OpenGlTexture2D::OpenGlTexture2D(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
     {
+        const unsigned int maxTextureSize = getMaxTextureSize();
+        if (width > maxTextureSize || height > maxTextureSize)
+            THROW_EXCEPTION(TextureInvalidSize, "OPENGL", width, height, maxTextureSize);
         m_internalFormat = GL_RGBA8;
         m_dataFormat = GL_RGBA;
 
@@ -39,10 +46,8 @@ namespace nexo::renderer {
         //TODO: Set this conditionnaly based on the type of texture
         //stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        if (!data) {
-            LOG(NEXO_ERROR, "[OPENGL] File not found: {}", path);
-            return;
-        }
+        if (!data)
+            THROW_EXCEPTION(FileNotFoundException, path);
         m_width = width;
         m_height = height;
 
@@ -61,9 +66,8 @@ namespace nexo::renderer {
         }
         else
         {
-            LOG(NEXO_ERROR, "[OPENGL] Unsupported image format with {} channels in {}", channels, path);
             stbi_image_free(data);
-            return;
+            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, path);
         }
 
         m_internalFormat = internalFormat;
@@ -86,12 +90,17 @@ namespace nexo::renderer {
         glDeleteTextures(1, &m_id);
     }
 
+    unsigned int OpenGlTexture2D::getMaxTextureSize() const
+    {
+        int maxTextureSize = 0;
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+        return static_cast<unsigned int>(maxTextureSize);
+    }
+
     void OpenGlTexture2D::setData(void *data, const unsigned int size)
     {
-        if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize) {
-            LOG(NEXO_ERROR, "[OPENGL] Data size does not match the texture size: {} != {}", size, expectedSize);
-            return;
-        }
+        if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
+            THROW_EXCEPTION(TextureSizeMismatch, "OPENGL", size, expectedSize);
         glBindTexture(GL_TEXTURE_2D, m_id);
         // Update the entire texture with new data
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(m_width), static_cast<int>(m_height), GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -103,4 +112,11 @@ namespace nexo::renderer {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_id);
     }
+
+    void OpenGlTexture2D::unbind(const unsigned int slot) const
+    {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
 }
