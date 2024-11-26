@@ -22,9 +22,16 @@
 #include <memory>
 #include <utility>
 
-namespace nexo::components {
+namespace nexo::components
+{
+    enum class RenderType
+    {
+        RENDER_2D,
+        RENDER_3D
+    };
 
-    struct Renderable {
+    struct Renderable
+    {
         virtual ~Renderable() = default;
 
         bool isRendered = true;
@@ -35,13 +42,15 @@ namespace nexo::components {
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
-    struct Renderable2D final : Renderable {
+    struct Renderable2D final : Renderable
+    {
         SpriteComponent sprite;
         std::shared_ptr<Shape2D> shape;
 
         explicit Renderable2D(SpriteComponent sprite,
-                              const std::shared_ptr<Shape2D> &shape) : sprite(std::move(sprite)), shape(shape)
-        {};
+                              const std::shared_ptr<Shape2D>& shape) : sprite(std::move(sprite)), shape(shape)
+        {
+        };
 
         void draw(std::shared_ptr<renderer::RendererContext> &context,
                   const TransformComponent &transform) const override
@@ -49,7 +58,7 @@ namespace nexo::components {
             shape->draw(context, transform, sprite);
         }
 
-        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        bool isClicked(const TransformComponent& transf, const glm::vec2& mouseWorldPos) override
         {
             return shape->isClicked(transf, mouseWorldPos);
         }
@@ -75,13 +84,17 @@ namespace nexo::components {
 
     struct RenderComponent {
         bool isRendered = true;
+        RenderType type = RenderType::RENDER_2D;
 
         std::shared_ptr<Renderable> renderable;
 
         RenderComponent() = default;
 
-        explicit RenderComponent(const std::shared_ptr<Renderable> &renderable)
-            : renderable(renderable) {}
+        explicit RenderComponent(const std::shared_ptr<Renderable>& renderable,
+                                 const RenderType type = RenderType::RENDER_2D)
+            : renderable(renderable), type(type)
+        {
+        }
 
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const
         {
