@@ -29,6 +29,7 @@ add_executable(engine_tests
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/layer/LayerStack.test.cpp
     ${BASEDIR}/layer/Layer.test.cpp
+    ${BASEDIR}/scene/Scene.test.cpp
         # Add other engine test files here
 )
 
