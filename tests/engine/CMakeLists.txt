@@ -25,6 +25,7 @@ include_directories("./common")
 # Add engine test source files
 add_executable(engine_tests
     ${BASEDIR}/camera/OrthographicCamera.test.cpp
+    ${BASEDIR}/camera/PerspectiveCamera.test.cpp
         # Add other engine test files here
 )
 
