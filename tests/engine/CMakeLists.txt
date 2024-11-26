@@ -26,8 +26,9 @@ include_directories("./common")
 add_executable(engine_tests
     ${BASEDIR}/camera/OrthographicCamera.test.cpp
     ${BASEDIR}/camera/PerspectiveCamera.test.cpp
+    ${BASEDIR}/event/EventManager.test.cpp
         # Add other engine test files here
 )
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(engine_tests GTest::gtest GTest::gtest_main nexoRenderer)
+target_link_libraries(engine_tests GTest::gtest GTest::gtest_main GTest::gmock nexoRenderer)
