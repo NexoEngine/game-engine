@@ -68,7 +68,11 @@ namespace nexo::editor
         if (selectedEntity == -1)
             return;
 
-        auto& [pos, size, rotation] = App.getEntityComponent<components::TransformComponent>(selectedEntity);
+        if (!std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData()))
+            return;
+
+        const EntityProperties &props = std::get<EntityProperties>(m_sceneManagerBridge->getData());
+        auto& [pos, size, rotation] = App.getEntityComponent<components::TransformComponent>(props.entity);
 
         if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
@@ -80,7 +84,7 @@ namespace nexo::editor
                     ImGui::TableNextRow(ImGuiTableRowFlags_None);
                     ImGui::TableNextColumn();
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 11.0f);
-                    ImGui::Text(label);
+                    ImGui::Text("%s", label);
                     ImGui::SameLine();
 
                     ImGui::TableNextColumn();
@@ -119,9 +123,15 @@ namespace nexo::editor
         if (selectedEntity == -1)
             return;
 
-        auto& renderComponent = App.getEntityComponent<components::RenderComponent>(selectedEntity);
+        if (!std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData()))
+            return;
+
+        const EntityProperties &props = std::get<EntityProperties>(m_sceneManagerBridge->getData());
+        auto& renderComponent = App.getEntityComponent<components::RenderComponent>(props.entity);
+
         if (renderComponent.type == components::RenderType::RENDER_3D)
             return;
+
         auto renderable2D = std::dynamic_pointer_cast<components::Renderable2D>(renderComponent.renderable);
         components::SpriteComponent& sprite = renderable2D->sprite;
 
