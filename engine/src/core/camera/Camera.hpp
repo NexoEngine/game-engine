@@ -62,7 +62,7 @@ namespace nexo::camera {
             glm::mat4 m_viewProjectionMatrix{};
 
             glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
-            glm::quat m_rotation;
+            glm::quat m_rotation = {1.0f, 0.0f, 0.0f, 0.0f};
         private:
             void recalculateViewMatrix();
     };
