@@ -19,19 +19,18 @@
 
 namespace nexo::editor {
     class InspectorWindow : public ADocumentWindow {
-    public:
-        InspectorWindow();
-        ~InspectorWindow() override;
+	    public:
+	        InspectorWindow();
+	        ~InspectorWindow() override;
 
-        void setup() override;
-        void shutdown() override;
+	        void setup() override;
+	        void shutdown() override;
 
-        void show() override;
-        void update() override;
+	        void show() override;
+	        void update() override;
 
-    private:
-        void showTransformComponent();
-        void showRendererComponent();
+	    private:
+	        void showTransformComponent();
+	        void showRendererComponent();
     };
-
 };
