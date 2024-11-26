@@ -106,7 +106,7 @@ namespace nexo::editor
                     ImGui::TableNextRow(ImGuiTableRowFlags_None);
                     ImGui::TableNextColumn();
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 11.0f);
-                    ImGui::Text(label);
+                    ImGui::Text("%s", label);
                     ImGui::SameLine();
 
                     ImGui::TableNextColumn();
