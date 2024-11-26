@@ -29,7 +29,7 @@ namespace nexo {
         sprite.color = color;
         auto quad = std::make_shared<components::Quad>();
         auto renderable = std::make_shared<components::Renderable2D>(sprite, quad);
-        components::RenderComponent renderComponent(renderable);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_2D);
 
         ecs::Entity newQuad = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newQuad, transform);
