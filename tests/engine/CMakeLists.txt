@@ -28,6 +28,7 @@ add_executable(engine_tests
     ${BASEDIR}/camera/PerspectiveCamera.test.cpp
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/layer/LayerStack.test.cpp
+    ${BASEDIR}/layer/Layer.test.cpp
         # Add other engine test files here
 )
 
