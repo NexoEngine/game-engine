@@ -13,7 +13,8 @@
 ###############################################################################
 
 # Set the executable path
-set(DEB_EXECUTABLE_PATH "/usr/share/bin/nexoEditor")
+set(DEB_EXECUTABLE_PATH "/usr/share/nexo-engine/bin/nexoEditor")
+set(DEB_ICON_PATH "/usr/share/nexo-engine/assets/nexo.png")
 
 # Set the desktop entry name (e.g. nexo-engine for nexo-engine.desktop)
 set(DEB_DESKTOP_ENTRY_NAME "nexo-engine")
@@ -22,6 +23,7 @@ set(DEB_DESKTOP_ENTRY_NAME "nexo-engine")
 set(DEB_CATEGORIES "Game;Development;")
 
 include("${CMAKE_SOURCE_DIR}/scripts/linux/generate_postinst.cmake")
+include("${CMAKE_SOURCE_DIR}/scripts/linux/generate_postrm.cmake")
 
 # Install the desktop entry
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst")

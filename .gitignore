@@ -178,3 +178,7 @@ Makefile
 *.tar
 
 html/
+
+_CPack_Packages/
+
+myinstall/

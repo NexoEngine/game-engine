@@ -42,5 +42,14 @@ set(NEXO_ICON_PATH "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
 include("${CMAKE_SOURCE_DIR}/scripts/linux/deb_config.cmake")
 include("${CMAKE_SOURCE_DIR}/scripts/windows/nsis_config.cmake")
 
+
+# Configure each CPack generator
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_BINARY_DIR}/scripts/generator_config.cmake")
+# Replace @VARS@ with CMake variables in the template file
+configure_file("${PROJECT_SOURCE_DIR}/scripts/CMakeCPackOptions.cmake.in"
+               "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake" @ONLY)
+# Use the final generated file as config
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake")
+
 # This must always be after all CPACK\_\* variables are defined
 include(CPack)
