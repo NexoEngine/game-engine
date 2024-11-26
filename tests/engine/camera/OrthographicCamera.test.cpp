@@ -19,6 +19,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "core/camera/OrthographicCamera.hpp"
+#include "../../utils/comparison.hpp"
 
 namespace nexo::camera {
     class OrthographicCameraTest : public ::testing::Test {
@@ -37,19 +38,19 @@ namespace nexo::camera {
     TEST_F(OrthographicCameraTest, InitialProjectionMatrix)
     {
         glm::mat4 expectedProjectionMatrix = glm::ortho(left, right, bottom, top);
-        EXPECT_EQ(camera.getProjectionMatrix(), expectedProjectionMatrix);
+        EXPECT_MAT4_NEAR(camera.getProjectionMatrix(), expectedProjectionMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, InitialViewMatrix)
     {
         glm::mat4 expectedViewMatrix = glm::mat4(1.0f);
-        EXPECT_EQ(camera.getViewMatrix(), expectedViewMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewMatrix(), expectedViewMatrix, 0.1f);
     }
 
     TEST_F(OrthographicCameraTest, InitialViewProjectionMatrix)
     {
         glm::mat4 expectedViewProjectionMatrix = glm::ortho(left, right, bottom, top) * glm::mat4(1.0f);
-        EXPECT_EQ(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, SetProjection)
@@ -62,7 +63,7 @@ namespace nexo::camera {
         camera.setProjection(newLeft, newRight, newBottom, newTop);
 
         glm::mat4 expectedProjectionMatrix = glm::ortho(newLeft, newRight, newBottom, newTop);
-        EXPECT_EQ(camera.getProjectionMatrix(), expectedProjectionMatrix);
+        EXPECT_MAT4_NEAR(camera.getProjectionMatrix(), expectedProjectionMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, SetPosition)
@@ -71,10 +72,10 @@ namespace nexo::camera {
         camera.setPosition(newPosition);
 
         glm::mat4 expectedViewMatrix = glm::inverse(glm::translate(glm::mat4(1.0f), newPosition));
-        EXPECT_EQ(camera.getViewMatrix(), expectedViewMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewMatrix(), expectedViewMatrix, 0.01f);
 
         glm::mat4 expectedViewProjectionMatrix = camera.getProjectionMatrix() * expectedViewMatrix;
-        EXPECT_EQ(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, SetRotation)
@@ -85,10 +86,10 @@ namespace nexo::camera {
         glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(rotation)));
         glm::mat4 expectedViewMatrix = glm::inverse(
             rotationMatrix * glm::translate(glm::mat4(1.0f), camera.getPosition()));
-        EXPECT_EQ(camera.getViewMatrix(), expectedViewMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewMatrix(), expectedViewMatrix, 0.01f);
 
         glm::mat4 expectedViewProjectionMatrix = camera.getProjectionMatrix() * expectedViewMatrix;
-        EXPECT_EQ(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix);
+        EXPECT_MAT4_NEAR(camera.getViewProjectionMatrix(), expectedViewProjectionMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, MoveCamera)
@@ -99,22 +100,26 @@ namespace nexo::camera {
         glm::vec3 newPosition = initialPosition + deltaPosition;
         camera.setPosition(newPosition);
 
-        EXPECT_EQ(camera.getPosition(), newPosition);
+        EXPECT_VEC3_NEAR(camera.getPosition(), newPosition, 0.01f);
 
-        glm::mat4 expectedViewMatrix = glm::inverse(glm::translate(glm::mat4(1.0f), newPosition));
-        EXPECT_EQ(camera.getViewMatrix(), expectedViewMatrix);
+        const glm::mat4 rotationMatrix = glm::toMat4(glm::quat({1.0f, 0.0f, 0.0f, 0.0f}));
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), newPosition) *
+                                    rotationMatrix;
+
+        glm::mat4 expectedViewMatrix = glm::inverse(transform);
+        EXPECT_MAT4_NEAR(camera.getViewMatrix(), expectedViewMatrix, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, RotateCamera)
     {
+        glm::quat defaultQuat = {1.0f, 0.0f, 0.0f, 0.0f};
         glm::vec3 deltaRotation = {0.0f, 0.0f, 20.0f}; // Rotate 20 degrees around Z-axis
-        glm::quat baseQuatRotation = {0, 0, 0, 0};
         camera.rotate(deltaRotation);
 
-        glm::quat expectedQuat = glm::quat(glm::radians(deltaRotation));
-        glm::quat expectedQuatNormalized = glm::normalize(expectedQuat * baseQuatRotation);
-        glm::vec3 expectedRotation = glm::degrees(glm::eulerAngles(expectedQuatNormalized));
-        EXPECT_EQ(camera.getRotation(), expectedRotation);
+        const auto deltaQuat = glm::quat(glm::radians(deltaRotation));
+        glm::quat newRotation = glm::normalize(deltaQuat * defaultQuat);
+        glm::vec3 expectedRotation = glm::degrees(glm::eulerAngles(newRotation));
+        EXPECT_VEC3_NEAR(camera.getRotation(), expectedRotation, 0.01f);
     }
 
     TEST_F(OrthographicCameraTest, ModeIsOrthographic)
