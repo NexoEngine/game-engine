@@ -15,6 +15,7 @@
 #include "SceneTreeWindow.hpp"
 #include "EntityFactory2D.hpp"
 #include "IconsFontAwesome.h"
+#include "Primitive.hpp"
 
 #include <imgui_internal.h>
 #include <random>
