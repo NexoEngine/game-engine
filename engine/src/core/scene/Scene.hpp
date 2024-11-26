@@ -118,7 +118,7 @@ namespace nexo::scene {
 
             void onRender();
 
-            void dispatchEventToLayers(event::IEvent &event);
+            virtual void dispatchEventToLayers(event::IEvent &event);
 
             [[nodiscard]] const layer::LayerStack &getLayers() const { return m_layerStack; };
 
