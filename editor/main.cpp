@@ -16,6 +16,7 @@
 #include "src/DocumentWindows/ConsoleWindow.hpp"
 #include "src/DocumentWindows/MainScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
+#include "src/DocumentWindows/InspectorWindow.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
@@ -30,6 +31,7 @@ int main(int argc, char **argv)
         sceneViewManager->addNewScene("Default scene", std::make_shared<nexo::editor::MainScene>("Default scene", true));
         editor.registerWindow("Scene Tree", std::make_shared<nexo::editor::SceneTreeWindow>());
         editor.registerWindow("Scene view manager", sceneViewManager);
+        editor.registerWindow("Inspector", std::make_shared<nexo::editor::InspectorWindow>());
         editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
         editor.init();
 

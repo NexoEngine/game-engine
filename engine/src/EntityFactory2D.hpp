@@ -17,10 +17,12 @@
 
 #include "ecs/Entity.hpp"
 
-namespace nexo {
-
-    class EntityFactory2D {
-        public:
-            static ecs::Entity createQuad(glm::vec3 pos, glm::vec2 size, float rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+namespace nexo
+{
+    class EntityFactory2D
+    {
+    public:
+        static ecs::Entity createQuad(glm::vec3 pos, glm::vec2 size, float rotation,
+                                      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
     };
 }
