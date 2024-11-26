@@ -151,13 +151,18 @@ namespace nexo::editor {
         }
         if (ImGui::MenuItem("Add entity"))
         {
-            const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 0.0f,
-                                                                      {
-                                                                          randomFloat(), randomFloat(), randomFloat(),
-                                                                          1.0f
-                                                                      });
-            auto &app = getApp();
-            app.addEntityToScene(basicQuad, sceneProps.sceneId, layerId);
+            for (int i = 0; i < IM_ARRAYSIZE(primitives_names); i++)
+            {
+                if (ImGui::MenuItem(primitives_names[i]))
+                {
+                    ecs::Entity newPrimitive = add_primitive_fct[i]({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 0.0f, {0.0f, 1.0f, 0.0f, 1.0f});
+                    auto&app = getApp();
+                    app.addEntityToScene(newPrimitive, sceneProps.sceneId, layerId);
+                    m_sceneManagerBridge->setSelectedEntity(newPrimitive);
+                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
+                }
+            }
+            ImGui::EndMenu();
         }
 
         const auto &viewManager = SceneViewManager::getInstance();
