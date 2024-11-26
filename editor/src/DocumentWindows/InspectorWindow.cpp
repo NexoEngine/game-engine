@@ -102,7 +102,7 @@ namespace nexo::editor
             {
                 auto showRow = [](const char* label, float* values)
                 {
-                    ImGui::PushID(label);
+                    ImGui::PushID("%s", label);
                     ImGui::TableNextRow(ImGuiTableRowFlags_None);
                     ImGui::TableNextColumn();
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 11.0f);
