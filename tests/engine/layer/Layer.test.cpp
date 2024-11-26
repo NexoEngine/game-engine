@@ -1,3 +1,17 @@
+//// Layer.test.cpp ///////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        26/11/2024
+//  Description: Test file for the layers
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "core/layer/Layer.hpp"
@@ -95,6 +109,7 @@ namespace nexo::layer {
         });
 
         layer->handleEvent(*mockEvent);
+        // Validate that the callback has been called
         EXPECT_TRUE(callbackTriggered);
     }
 
