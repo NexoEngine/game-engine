@@ -191,7 +191,7 @@ namespace nexo::renderer {
         // Validate the data provided
         unsigned int bufferData[6];
         glGetNamedBufferSubData(buffer.getId(), 0, sizeof(indices), bufferData);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 6; i++)
         {
             EXPECT_EQ(bufferData[i], indices[i]);
         }
@@ -204,7 +204,7 @@ namespace nexo::renderer {
         EXPECT_EQ(bufferSize, sizeof(updatedIndices));
         unsigned int updatedBufferData[8];
         glGetNamedBufferSubData(buffer.getId(), 0, sizeof(updatedIndices), updatedBufferData);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 8; i++)
         {
             EXPECT_EQ(updatedBufferData[i], updatedIndices[i]);
         }

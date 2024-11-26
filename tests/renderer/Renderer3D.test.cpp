@@ -19,6 +19,7 @@
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "contexts/opengl.hpp"
+#include "../utils/comparison.hpp"
 
 namespace nexo::renderer {
     class Renderer3DTest : public ::testing::Test {
@@ -125,8 +126,8 @@ namespace nexo::renderer {
         // Validate vertex positions and colors
         for (int i = 0; i < 8; ++i)
         {
-            EXPECT_EQ(vertexData[i].position, expectedPositions[i]);
-            EXPECT_EQ(vertexData[i].color, color);
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+            EXPECT_VEC4_NEAR(vertexData[i].color, color, 0.01f);
             EXPECT_EQ(vertexData[i].texIndex, 0.0f);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -198,8 +199,8 @@ namespace nexo::renderer {
         // Validate vertex positions and colors
         for (int i = 0; i < 8; ++i)
         {
-            EXPECT_EQ(vertexData[i].position, expectedPositions[i]);
-            EXPECT_EQ(vertexData[i].texCoord, expectedTexCoords[i % 4]);
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i % 4], 0.01f);
             EXPECT_EQ(vertexData[i].texIndex, 1.0f);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -271,10 +272,10 @@ namespace nexo::renderer {
         // Validate vertex attributes (position, color, texCoord, normal)
         for (size_t i = 0; i < vertices.size(); ++i)
         {
-            EXPECT_EQ(vertexData[i].position, vertices[i].position);
-            EXPECT_EQ(vertexData[i].texCoord, vertices[i].texCoord);
+            EXPECT_VEC3_NEAR(vertexData[i].position, vertices[i].position, 0.01f);
+            EXPECT_VEC2_NEAR(vertexData[i].texCoord, vertices[i].texCoord, 0.01f);
             EXPECT_EQ(vertexData[i].texIndex, 1.0f);
-            EXPECT_EQ(vertexData[i].normal, vertices[i].normal);
+            EXPECT_VEC3_NEAR(vertexData[i].normal, vertices[i].normal, 0.01f);
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

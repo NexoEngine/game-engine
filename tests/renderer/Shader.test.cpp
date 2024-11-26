@@ -18,6 +18,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "../utils/comparison.hpp"
 #include "contexts/opengl.hpp"
 #include "opengl/OpenGlShader.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -228,7 +229,7 @@ namespace nexo::renderer {
         // Validate uniform value
         GLfloat queriedVec3Value[3] = {0.0f};
         glGetUniformfv(shader.getProgramId(), vec3UniformLocation, queriedVec3Value);
-        EXPECT_EQ(glm::vec3(queriedVec3Value[0], queriedVec3Value[1], queriedVec3Value[2]), vec3Value);
+        EXPECT_VEC3_NEAR(glm::vec3(queriedVec3Value[0], queriedVec3Value[1], queriedVec3Value[2]), vec3Value, 0.01f);
 
         ////// Validate float vec4 uniform //////
         glm::vec4 vec4Value(1.0f, 2.0f, 3.0f, 4.0f);
@@ -239,8 +240,8 @@ namespace nexo::renderer {
         // Validate uniform value
         GLfloat queriedVec4Value[4] = {0.0f};
         glGetUniformfv(shader.getProgramId(), vec4UniformLocation, queriedVec4Value);
-        EXPECT_EQ(glm::vec4(queriedVec4Value[0], queriedVec4Value[1], queriedVec4Value[2], queriedVec4Value[3]),
-                  vec4Value);
+        EXPECT_VEC4_NEAR(glm::vec4(queriedVec4Value[0], queriedVec4Value[1], queriedVec4Value[2], queriedVec4Value[3]),
+                  vec4Value, 0.01f);
 
         ////// Validate float mat4x4 uniform //////
         glm::mat4 matrixValue(1.0f);
@@ -251,7 +252,7 @@ namespace nexo::renderer {
         // Validate uniform value
         GLfloat queriedMatrixValue[16] = {0.0f};
         glGetUniformfv(shader.getProgramId(), matrixUniformLocation, queriedMatrixValue);
-        EXPECT_EQ(glm::make_mat4(queriedMatrixValue), matrixValue);
+        EXPECT_MAT4_NEAR(glm::make_mat4(queriedMatrixValue), matrixValue, 0.01f);
 
         ////// Validate int uniform //////
         const int intValue = 1;

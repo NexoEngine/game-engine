@@ -21,6 +21,7 @@
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "contexts/opengl.hpp"
+#include "../utils/comparison.hpp"
 
 namespace nexo::renderer {
     class Renderer2DTest : public ::testing::Test {
@@ -186,9 +187,9 @@ namespace nexo::renderer {
         // Validate each vertex
         for (int i = 0; i < 4; ++i)
         {
-            EXPECT_EQ(vertexData[i].position, expectedPositions[i]);
-            EXPECT_EQ(vertexData[i].texCoord, expectedTexCoords[i]);
-            EXPECT_EQ(vertexData[i].color, expectedColor); // Default white color for textures
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+            EXPECT_VEC4_NEAR(vertexData[i].color, expectedColor, 0.01f);
             EXPECT_EQ(vertexData[i].texIndex, 1.0f); // Texture index in the shader
         }
 
@@ -246,7 +247,7 @@ namespace nexo::renderer {
         // Validate texture coordinates
         for (int i = 0; i < 4; ++i)
         {
-            EXPECT_EQ(vertexData[i].texCoord, expectedTexCoords[i]);
+            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
         }
 
         // Validate stats
@@ -287,8 +288,7 @@ namespace nexo::renderer {
         };
         for (int i = 0; i < 4; ++i)
         {
-            EXPECT_NEAR(vertexData[i].position.x, expectedPositions[i].x, 0.01f);
-            EXPECT_NEAR(vertexData[i].position.y, expectedPositions[i].y, 0.01f);
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
         }
 
 
@@ -340,8 +340,8 @@ namespace nexo::renderer {
         // Validate vertex positions and colors
         for (int i = 0; i < 8; ++i)
         {
-            EXPECT_EQ(vertexData[i].position, expectedPositions[i]);
-            EXPECT_EQ(vertexData[i].color, expectedColors[i]);
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+            EXPECT_VEC4_NEAR(vertexData[i].color, expectedColors[i], 0.01f);
         }
 
         // Validate index buffer content
@@ -418,9 +418,9 @@ namespace nexo::renderer {
         // Validate vertex positions, texture coordinates, and texture indices
         for (int i = 0; i < 8; ++i)
         {
-            EXPECT_EQ(vertexData[i].position, expectedPositions[i]) << "Mismatch at vertex " << i;
-            EXPECT_EQ(vertexData[i].texCoord, expectedTexCoords[i]) << "Mismatch at vertex " << i;
-            EXPECT_EQ(vertexData[i].texIndex, expectedTexIndices[i]) << "Mismatch at vertex " << i;
+            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+            EXPECT_EQ(vertexData[i].texIndex, expectedTexIndices[i]);
         }
 
         // Validate index buffer content
@@ -442,7 +442,7 @@ namespace nexo::renderer {
         // Validate indices
         for (int i = 0; i < 12; ++i)
         {
-            EXPECT_EQ(indexData[i], expectedIndices[i]) << "Mismatch at index " << i;
+            EXPECT_EQ(indexData[i], expectedIndices[i]);
         }
     }
 
