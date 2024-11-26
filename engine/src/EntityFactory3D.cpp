@@ -33,7 +33,7 @@ namespace nexo {
         material.color = color;
         auto cube = std::make_shared<components::Cube>();
         auto renderable = std::make_shared<components::Renderable3D>(material, cube);
-        components::RenderComponent renderComponent(renderable);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
 
         ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
@@ -51,7 +51,7 @@ namespace nexo {
         std::shared_ptr<components::MeshNode> rootNode = utils::loadModel(path);
         auto model = std::make_shared<components::Model>(rootNode);
         auto renderable = std::make_shared<components::Renderable3D>(material, model);
-        components::RenderComponent renderComponent(renderable);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
 
         ecs::Entity newModel = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newModel, transform);

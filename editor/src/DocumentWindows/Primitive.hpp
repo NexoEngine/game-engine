@@ -15,15 +15,17 @@
 #ifndef PRIMITIVE_HPP
 #define PRIMITIVE_HPP
 #include "EntityFactory2D.hpp"
+#include "EntityFactory3D.hpp"
+
 namespace nexo::editor
 {
-    using PrimitiveFunction = ecs::Entity(*)(glm::vec3 pos, glm::vec2 size, float rotation, glm::vec4 color);
-    inline const char *primitives_names[] = {
-        "  Cube", "  Plan", "  Sphere",\
-        "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",\
+    using Primitive2DFunction = ecs::Entity(*)(glm::vec3 pos, glm::vec2 size, float rotation, glm::vec4 color);
+    inline const char* primitives2DNames[] = {
+        "  Cube", "  Plan", "  Sphere",
+        "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",
         "  Hemisphere"
     };
-    inline PrimitiveFunction add_primitive_fct[] = {
+    inline Primitive2DFunction addPrimitive2D[] = {
         &EntityFactory2D::createQuad,
         &EntityFactory2D::createQuad,
         &EntityFactory2D::createQuad,
@@ -34,5 +36,23 @@ namespace nexo::editor
         &EntityFactory2D::createQuad,
         &EntityFactory2D::createQuad
     };
+
+    using Primitive3DFunction = ecs::Entity(*)(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color);
+    inline const char* primitives3DNames[] = {
+        "  Cube", "  Plan", "  Sphere",
+        "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",
+        "  Hemisphere"
+    };
+    inline Primitive3DFunction addPrimitive3D[] = {
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCube
+    };
 }
-#endif //PRIMITIVE_HPP
+#endif //PRIMITIVE_HPPd
