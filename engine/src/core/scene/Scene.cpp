@@ -45,12 +45,12 @@ namespace nexo::scene {
 
     std::shared_ptr<layer::Layer> Scene::getLayer(const LayerId id) const
     {
-        return m_layerStack[id];
+        return m_layerStack.byId(id);
     }
 
     void Scene::addEntityToLayer(const ecs::Entity entity, const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->addEntity(entity);
             LOG(NEXO_DEV, "Scene::{}::addEntityToLayerByName: entity {} added to layer {}", name, entity, layer->name);
@@ -65,7 +65,7 @@ namespace nexo::scene {
 
     void Scene::removeEntityFromLayer(const ecs::Entity entity, const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->removeEntity(entity);
             LOG(NEXO_DEV, "Scene::{}::removeEntityFromLayerByName: entity {} removed from layer {}", name, entity, layer->name);
@@ -112,7 +112,7 @@ namespace nexo::scene {
 
     void Scene::attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->attachCamera(camera);
             LOG(NEXO_DEV, "Scene::{}::attachCameraToLayerByName: camera added to layer {}", name, layer->name);
@@ -121,7 +121,7 @@ namespace nexo::scene {
 
     void Scene::detachCameraFromLayer(const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->detachCamera();
             LOG(NEXO_DEV, "Scene::{}::detachCameraFromLayerByName: camera removed from layer {}", name, layer->name);
@@ -130,7 +130,7 @@ namespace nexo::scene {
 
     std::shared_ptr<camera::Camera> Scene::getCameraLayer(const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             return layer->getCamera();
         }
@@ -139,7 +139,7 @@ namespace nexo::scene {
 
     void Scene::setLayerRenderStatus(const bool status, const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->isRendered = status;
             std::string strStatus = status ? "rendered" : "not rendered";
@@ -149,7 +149,7 @@ namespace nexo::scene {
 
     void Scene::setLayerActiveStatus(const bool status, const LayerId id)
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
             layer->isRendered = status;
             std::string strStatus = status ? "active" : "unactive";
@@ -159,14 +159,14 @@ namespace nexo::scene {
 
     bool Scene::getLayerRenderStatus(const LayerId id) const
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
             return layer->isRendered;
         return false;
     }
 
     bool Scene::getLayerActiveStatus(const LayerId id) const
     {
-        if (const auto layer = m_layerStack[id]; layer != nullptr)
+        if (const auto layer = m_layerStack.byId(id); layer != nullptr)
             return layer->isActive;
         return false;
     }

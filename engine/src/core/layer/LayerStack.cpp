@@ -18,42 +18,61 @@
 #include <algorithm>
 
 namespace nexo::layer {
+
     LayerStack::LayerStack()
     {
         m_layerInsert = m_layers.begin();
     }
 
-    LayerStack::~LayerStack()
-    = default;
+    LayerStack::~LayerStack() = default;
 
-    void LayerStack::pushLayer(const std::shared_ptr<Layer> &layer)
+    void LayerStack::pushLayer(const std::shared_ptr<Layer>& layer)
     {
-        m_layers.emplace_back(layer);
+        // Insert the layer just after the overlays
+        m_layerInsert = m_layers.emplace(m_layerInsert, layer);
     }
 
-    void LayerStack::pushOverlay(const std::shared_ptr<Layer> &overlay)
+    void LayerStack::pushOverlay(const std::shared_ptr<Layer>& overlay)
     {
-        m_layerInsert = m_layers.emplace(m_layerInsert, overlay);
+        // Calculate the distance of m_layerInsert from the beginning
+        auto offset = std::distance(m_layers.begin(), m_layerInsert);
+
+        m_layers.insert(m_layers.begin(), overlay);
+
+        // Recalculate m_layerInsert because insert could cause reallocation that invalidates the iterator
+        m_layerInsert = m_layers.begin() + offset + 1;
     }
 
-    void LayerStack::popLayer(const std::shared_ptr<Layer> &layer)
+    void LayerStack::popLayer(const std::shared_ptr<Layer>& layer)
     {
         if (const auto it = std::ranges::find(m_layers, layer); it != m_layers.end())
+        {
             m_layers.erase(it);
+
+            // Adjust m_layerInsert only if the layer was the one pointed to by m_layerInsert
+            if (m_layerInsert == it)
+                if (m_layerInsert == m_layers.end())
+                    m_layerInsert = m_layers.begin();
+        }
     }
 
-    void LayerStack::popOverlay(const std::shared_ptr<Layer> &overlay)
+
+    void LayerStack::popOverlay(const std::shared_ptr<Layer>& overlay)
     {
         if (const auto it = std::ranges::find(m_layers, overlay); it != m_layers.end())
         {
+            // Erase the overlay
             m_layers.erase(it);
-            --m_layerInsert;
+
+            if (it < m_layerInsert) {
+                --m_layerInsert;
+            }
         }
     }
 
-    std::shared_ptr<Layer> LayerStack::operator[](const std::string &name)
+    std::shared_ptr<Layer> LayerStack::operator[](const std::string& name)
     {
-        for (auto &layer: m_layers)
+        for (auto& layer : m_layers)
         {
             if (layer->name == name)
                 return layer;
@@ -62,9 +81,9 @@ namespace nexo::layer {
         return nullptr;
     }
 
-    std::shared_ptr<Layer> LayerStack::operator[](const std::string &name) const
+    std::shared_ptr<Layer> LayerStack::operator[](const std::string& name) const
     {
-        for (const auto &layer: m_layers)
+        for (const auto& layer : m_layers)
         {
             if (layer->name == name)
                 return layer;
@@ -73,9 +92,29 @@ namespace nexo::layer {
         return nullptr;
     }
 
-    std::shared_ptr<Layer> LayerStack::operator[](unsigned int id)
+    std::shared_ptr<Layer> LayerStack::operator[](unsigned int index)
     {
-        for (auto &layer: m_layers)
+        if (index >= m_layers.size())
+        {
+            LOG(NEXO_WARN, "LayerStack: Index {} is out of range", index);
+            return nullptr;
+        }
+        return m_layers[index];
+    }
+
+    std::shared_ptr<Layer> LayerStack::operator[](unsigned int index) const
+    {
+        if (index >= m_layers.size())
+        {
+            LOG(NEXO_WARN, "LayerStack: Index {} is out of range", index);
+            return nullptr;
+        }
+        return m_layers[index];
+    }
+
+    std::shared_ptr<Layer> LayerStack::byId(unsigned int id)
+    {
+        for (const auto& layer : m_layers)
         {
             if (layer->id == id)
                 return layer;
@@ -84,9 +123,9 @@ namespace nexo::layer {
         return nullptr;
     }
 
-    std::shared_ptr<Layer> LayerStack::operator[](unsigned int id) const
+    std::shared_ptr<Layer> LayerStack::byId(unsigned int id) const
     {
-        for (const auto &layer: m_layers)
+        for (const auto& layer : m_layers)
         {
             if (layer->id == id)
                 return layer;
