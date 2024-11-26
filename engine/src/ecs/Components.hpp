@@ -72,6 +72,8 @@ namespace nexo::ecs {
                 */
             void insertData(const Entity entity, T component)
             {
+                if (m_size == MAX_ENTITIES)
+                    THROW_EXCEPTION(OutOfRange, MAX_ENTITIES);
                 if (m_entityToIndexMap.contains(entity))
                 {
                     LOG(NEXO_WARN, "ECS::ComponentArray::insertData: Component already added to entity {}", entity);
