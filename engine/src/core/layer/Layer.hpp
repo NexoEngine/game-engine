@@ -25,6 +25,7 @@
 #include "ecs/Entity.hpp"
 #include "Logger.hpp"
 
+// NOTE: Events used here must have a default constructor
 #define LAYER_LISTENS_TO(DerivedLayer, ...) public nexo::layer::LayerEventMixin<DerivedLayer, __VA_ARGS__>
 
 namespace nexo::scene {
@@ -100,7 +101,8 @@ namespace nexo::layer {
 
             void removeEntity(ecs::Entity entity);
 
-            void entityDestroyed(ecs::Entity entity);
+            // Made virtual for mocking purposes
+            virtual void entityDestroyed(ecs::Entity entity);
 
             std::set<ecs::Entity> &getEntities() { return m_entities; };
 
