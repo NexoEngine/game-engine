@@ -86,7 +86,9 @@ namespace nexo::scene {
     {
         m_globalEntities.erase(entity);
         for (const auto& layer : m_layerStack)
+        {
             layer->entityDestroyed(entity);
+        }
     }
 
     std::set<ecs::Entity> Scene::getEntities() const
@@ -151,7 +153,7 @@ namespace nexo::scene {
     {
         if (const auto layer = m_layerStack.byId(id); layer != nullptr)
         {
-            layer->isRendered = status;
+            layer->isActive = status;
             std::string strStatus = status ? "active" : "unactive";
             LOG(NEXO_DEV, "Scene::{}::setLayerActiveStatusByName: layer {} is now {}", name, layer->name, strStatus);
         }
