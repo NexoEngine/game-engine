@@ -24,6 +24,16 @@ namespace nexo::renderer {
 
     static constexpr unsigned int sMaxFramebufferSize = 8192;
 
+    /**
+     * @brief Converts a framebuffer texture format to its OpenGL equivalent.
+     *
+     * Maps internal framebuffer texture formats (e.g., RGBA8, DEPTH24STENCIL8) to their
+     * corresponding OpenGL formats. Used during texture attachment creation.
+     *
+     * @param format The `FrameBufferTextureFormats` value to convert.
+     * @return The OpenGL format (GLenum) corresponding to the specified texture format,
+     *         or -1 if the format is invalid or unsupported.
+     */
     static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
     {
         constexpr GLenum internalFormats[] = {GL_NONE, GL_RGBA8, GL_RGBA16, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
@@ -32,21 +42,71 @@ namespace nexo::renderer {
         return static_cast<int>(internalFormats[static_cast<unsigned int>(format)]);
     }
 
+    /**
+     * @brief Determines the OpenGL texture target based on multisampling.
+     *
+     * Returns the appropriate OpenGL texture target (e.g., `GL_TEXTURE_2D` or `GL_TEXTURE_2D_MULTISAMPLE`)
+     * depending on whether multisampling is enabled.
+     *
+     * @param multisampled Indicates whether the texture is multisampled.
+     * @return The OpenGL texture target as a GLenum.
+     */
     static GLenum textureTarget(const bool multisampled)
     {
         return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
     }
 
+    /**
+     * @brief Creates OpenGL texture objects.
+     *
+     * Allocates one or more texture IDs in OpenGL, with support for multisampling.
+     *
+     * @param multisampled Indicates whether the textures are multisampled.
+     * @param outId Pointer to an array where the generated texture IDs will be stored.
+     * @param count The number of textures to create.
+     *
+     * OpenGL Operation:
+     * - `glCreateTextures`: Allocates texture IDs for the specified texture target.
+     */
     static void createTextures(const bool multisampled, unsigned int *outId, const unsigned int count)
     {
         glCreateTextures(textureTarget(multisampled), static_cast<int>(count), outId);
     }
 
+    /**
+     * @brief Binds an OpenGL texture to the current context.
+     *
+     * Activates the specified texture ID for subsequent OpenGL operations.
+     *
+     * @param multisampled Indicates whether the texture is multisampled.
+     * @param id The OpenGL ID of the texture to bind.
+     *
+     * OpenGL Operation:
+     * - `glBindTexture`: Binds the texture to the current context.
+     */
     static void bindTexture(const bool multisampled, const unsigned int id)
     {
         glBindTexture(textureTarget(multisampled), id);
     }
 
+    /**
+     * @brief Attaches a color texture to the framebuffer.
+     *
+     * Configures and attaches a color texture to the framebuffer at the specified index.
+     * Supports both multisampled and non-multisampled textures.
+     *
+     * @param id The OpenGL ID of the texture to attach.
+     * @param samples The number of samples for multisampling (1 for no multisampling).
+     * @param format The OpenGL internal format of the texture (e.g., GL_RGBA8).
+     * @param width The width of the texture in pixels.
+     * @param height The height of the texture in pixels.
+     * @param index The attachment index (e.g., GL_COLOR_ATTACHMENT0 + index).
+     *
+     * OpenGL Operations:
+     * - Configures the texture using `glTexImage2D` or `glTexImage2DMultisample`.
+     * - Sets texture parameters for filtering and wrapping.
+     * - Attaches the texture to the framebuffer using `glFramebufferTexture2D`.
+     */
     static void attachColorTexture(const unsigned int id, const unsigned int samples, const GLenum format,
                                    const unsigned int width, const unsigned int height, const unsigned int index)
     {
@@ -69,6 +129,24 @@ namespace nexo::renderer {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, textureTarget(multisample), id, 0);
     }
 
+    /**
+     * @brief Attaches a depth texture to the framebuffer.
+     *
+     * Configures and attaches a depth texture to the framebuffer. Supports both multisampled
+     * and non-multisampled textures.
+     *
+     * @param id The OpenGL ID of the texture to attach.
+     * @param samples The number of samples for multisampling (1 for no multisampling).
+     * @param format The OpenGL internal format of the depth texture (e.g., GL_DEPTH24_STENCIL8).
+     * @param attachmentType The framebuffer attachment type (e.g., GL_DEPTH_ATTACHMENT).
+     * @param width The width of the texture in pixels.
+     * @param height The height of the texture in pixels.
+     *
+     * OpenGL Operations:
+     * - Configures the texture using `glTexStorage2D` or `glTexImage2DMultisample`.
+     * - Sets texture parameters for filtering and wrapping.
+     * - Attaches the texture to the framebuffer using `glFramebufferTexture2D`.
+     */
     static void attachDepthTexture(const unsigned int id, const unsigned int samples, const GLenum format,
                                    const GLenum attachmentType, const unsigned int width, const unsigned int height)
     {
@@ -90,6 +168,15 @@ namespace nexo::renderer {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget(multisample), id, 0);
     }
 
+    /**
+     * @brief Checks if a texture format is a depth format.
+     *
+     * Determines whether the specified `FrameBufferTextureFormats` value corresponds to
+     * a depth or depth-stencil format.
+     *
+     * @param format The texture format to check.
+     * @return True if the format is a depth format, false otherwise.
+     */
     static bool isDepthFormat(const FrameBufferTextureFormats format)
     {
         switch (format)
@@ -98,7 +185,6 @@ namespace nexo::renderer {
             default: return false;
         }
     }
-
 
     OpenGlFramebuffer::OpenGlFramebuffer(FramebufferSpecs specs) : m_specs(std::move(specs))
     {

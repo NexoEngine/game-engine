@@ -18,12 +18,42 @@
 
 namespace nexo::renderer {
 
+    /**
+    * @class OpenGlShader
+    * @brief Implementation of the Shader interface using OpenGL.
+    *
+    * The `OpenGlShader` class provides OpenGL-specific functionality for creating
+    * and managing shader programs. It supports setting uniform variables and compiling
+    * shaders from source code or files.
+    *
+    * Responsibilities:
+    * - Compile and link shader programs using OpenGL.
+    * - Set uniform variables for rendering operations.
+    * - Manage the lifecycle of OpenGL shader programs.
+    */
     class OpenGlShader final : public Shader {
         public:
+            /**
+            * @brief Constructs a shader program from a source file.
+            *
+            * Reads and compiles a shader program from the specified file path. The file should
+            * contain `#type` directives to separate shader stages.
+            *
+            * @param path The file path to the shader source code.
+            *
+            * Throws:
+            * - `FileNotFoundException` if the file cannot be found.
+            * - `ShaderCreationFailed` if shader compilation fails.
+            */
             OpenGlShader(const std::string &path);
             OpenGlShader(std::string name, const std::string &vertexSource, const std::string &fragmentSource);
             ~OpenGlShader() override;
 
+            /**
+            * @brief Activates the shader program in OpenGL.
+            *
+            * Binds the shader program for use in subsequent rendering operations.
+            */
             void bind() const override;
             void unbind() const override;
 

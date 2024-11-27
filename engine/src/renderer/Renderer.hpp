@@ -26,9 +26,12 @@ namespace nexo::renderer {
             static void init();
             static void onWindowResize(unsigned int width, unsigned int height);
 
+            // DEPRECATED
             static void beginScene(const camera::OrthographicCamera &camera);
+            // DEPRECATED
             static void endScene();
 
+            // DEPRECATED
             static void submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
 
             struct SceneData {

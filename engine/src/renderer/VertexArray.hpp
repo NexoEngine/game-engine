@@ -17,6 +17,22 @@
 
 namespace nexo::renderer {
 
+    /**
+    * @class VertexArray
+    * @brief Abstract class representing a vertex array in the rendering system.
+    *
+    * The `VertexArray` class manages the collection of vertex buffers and an optional
+    * index buffer. It provides the interface for binding, unbinding, and configuring
+    * vertex attributes in the rendering pipeline.
+    *
+    * Responsibilities:
+    * - Manage vertex buffers and index buffers.
+    * - Bind/unbind the vertex array for rendering.
+    * - Provide access to underlying buffers.
+    *
+    * Derived classes (e.g., `OpenGlVertexArray`) implement platform-specific behavior
+    * for managing vertex arrays.
+    */
     class VertexArray {
         public:
             virtual ~VertexArray() = default;
@@ -33,5 +49,13 @@ namespace nexo::renderer {
             virtual unsigned int getId() const = 0;
     };
 
+    /**
+    * @brief Factory function to create a platform-specific vertex array object.
+    *
+    * Depending on the graphics API (e.g., OpenGL), this function creates an instance
+    * of the corresponding `VertexArray` implementation.
+    *
+    * @return A shared pointer to the created `VertexArray` instance.
+    */
     std::shared_ptr<VertexArray> createVertexArray();
 }

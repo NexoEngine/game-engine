@@ -20,6 +20,17 @@
 
 namespace nexo::renderer {
 
+    /**
+    * @brief Converts a `ShaderDataType` enum value to the corresponding OpenGL type.
+    *
+    * @param type The shader data type to convert.
+    * @return The OpenGL equivalent type (e.g., `GL_FLOAT`).
+    *
+    * Example:
+    * ```cpp
+    * GLenum glType = shaderDataTypeToOpenGltype(ShaderDataType::FLOAT3);
+    * ```
+    */
     static GLenum shaderDataTypeToOpenGltype(const ShaderDataType type)
     {
         switch (type)

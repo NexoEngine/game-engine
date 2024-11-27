@@ -20,17 +20,82 @@
 
 namespace nexo::renderer {
 
+    /**
+    * @class Shader
+    * @brief Abstract class representing a shader program in the rendering pipeline.
+    *
+    * The `Shader` class provides a generic interface for creating and managing shader
+    * programs. These programs are used to execute rendering operations on the GPU.
+    *
+    * Responsibilities:
+    * - Create shader programs from source code or files.
+    * - Bind and unbind shader programs during rendering.
+    * - Set uniform variables to pass data from the CPU to the GPU.
+    *
+    * Subclasses:
+    * - `OpenGlShader`: Implements this interface using OpenGL-specific functionality.
+    *
+    * Example Usage:
+    * ```cpp
+    * auto shader = Shader::create("path/to/shader.glsl");
+    * shader->bind();
+    * shader->setUniformFloat("uTime", 1.0f);
+    * ```
+    */
     class Shader {
         public:
             virtual ~Shader() = default;
 
+            /**
+            * @brief Creates a shader program from a source file.
+            *
+            * Loads and compiles a shader program from the specified file path. The file
+            * should contain shader stages marked with `#type` directives.
+            *
+            * @param path The file path to the shader source code.
+            * @return A shared pointer to the created `Shader` instance.
+            *
+            * Throws:
+            * - `UnknownGraphicsApi` if no graphics API is supported.
+            * - `ShaderCreationFailed` if shader compilation fails.
+            */
             static std::shared_ptr<Shader> create(const std::string &path);
+
+            /**
+            * @brief Creates a shader program from source code strings.
+            *
+            * Compiles and links a shader program from provided vertex and fragment shader source code.
+            *
+            * @param name The name of the shader program.
+            * @param vertexSource The source code for the vertex shader.
+            * @param fragmentSource The source code for the fragment shader.
+            * @return A shared pointer to the created `Shader` instance.
+            *
+            * Throws:
+            * - `UnknownGraphicsApi` if no graphics API is supported.
+            * - `ShaderCreationFailed` if shader compilation fails.
+            */
             static std::shared_ptr<Shader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
 
+            /**
+            * @brief Binds the shader program for use in the rendering pipeline.
+            *
+            * Makes the shader program active, so subsequent draw calls use this program.
+            *
+            * Must be implemented by subclasses.
+            */
             virtual void bind() const = 0;
+
+            /**
+            * @brief Unbinds the shader program.
+            *
+            * Deactivates the currently bound shader program.
+            *
+            * Must be implemented by subclasses.
+            */
             virtual void unbind() const = 0;
 
-            virtual void setUniformFloat(const std::string &name, const float value) const = 0;
+            virtual void setUniformFloat(const std::string &name, float value) const = 0;
             virtual void setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
             virtual void setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
             virtual void setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;

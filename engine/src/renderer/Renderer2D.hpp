@@ -64,39 +64,168 @@ namespace nexo::renderer {
         RendererStats stats;
     };
 
+    /**
+     * @class Renderer2D
+     * @brief Provides a 2D rendering system for drawing quads, textures, and sprites.
+     *
+     * The `Renderer2D` class is a high-performance 2D rendering engine that supports
+     * batching, texture binding, and transformation.
+     *
+     * Features:
+     * - Efficient batching of quads to minimize draw calls.
+     * - Support for textured and colored quads, including sprites (subtextures).
+     * - Dynamic resizing of vertex and index buffers as needed.
+     * - Integration with shaders for advanced rendering effects.
+     *
+     * Responsibilities:
+     * - Handles the lifecycle of rendering scenes (begin, end, flush).
+     * - Manages internal rendering storage for textures, vertices, and indices.
+     * - Provides high-level API for drawing quads with various configurations.
+     *
+     * Usage:
+     * 1. Call `init()` to initialize the renderer.
+     * 2. Begin a scene using `beginScene()` with a view-projection matrix.
+     * 3. Use `drawQuad()` methods to draw quads with or without textures.
+     * 4. Call `endScene()` to finalize the rendering and issue draw calls.
+     * 5. Call `shutdown()` to release resources when the renderer is no longer needed.
+     */
     class Renderer2D {
         public:
+            /**
+            * @brief Destroys the Renderer2D instance and releases resources.
+            *
+            * Ensures proper cleanup of the internal storage and associated buffers.
+            */
             ~Renderer2D();
+
+            /**
+            * @brief Initializes the Renderer2D and allocates required resources.
+            *
+            * This method sets up the internal storage, including vertex arrays, buffers,
+            * textures, and shaders. It also predefines the vertex positions for quads.
+            *
+            * Responsibilities:
+            * - Creates and configures vertex and index buffers.
+            * - Allocates memory for vertex and index data.
+            * - Sets up a default white texture for rendering quads without textures.
+            * - Configures the texture shader and binds texture samplers.
+            *
+            * Throws:
+            * - Exceptions if shader creation or buffer allocation fails.
+            *
+            * Notes:
+            * - Must be called before any rendering operations.
+            */
             void init();
+
+            /**
+             * @brief Shuts down the Renderer2D and releases allocated resources.
+             *
+             * This method deletes internal storage, including vertex and index buffers,
+             * and resets the internal storage pointer.
+             *
+             * Throws:
+             * - RendererNotInitialized if the renderer is not initialized.
+             */
             void shutdown();
 
+            /**
+             * @brief Begins a new rendering scene.
+             *
+             * Sets up the view-projection matrix for rendering and resets internal storage
+             * pointers for batching vertices and indices.
+             *
+             * @param viewProjection The combined view and projection matrix for the scene.
+             *
+             * Throws:
+             * - RendererNotInitialized if the renderer is not initialized.
+             * - RendererSceneLifeCycleFailure if called without proper initialization.
+             */
             void beginScene(const glm::mat4 &viewProjection);
+
+            /**
+             * @brief Ends the current rendering scene.
+             *
+             * Uploads vertex and index data to the GPU, flushes the rendering pipeline,
+             * and resets internal buffers for the next frame.
+             *
+             * Throws:
+             * - RendererNotInitialized if the renderer is not initialized.
+             * - RendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
+             */
             void endScene() const;
             void flush() const;
 
-            // Without rotation
+            /**
+             * @brief Draws a colored quad at the specified position and size.
+             *
+             * @param pos The position of the quad (2D or 3D).
+             * @param size The size of the quad.
+             * @param color The color of the quad (RGBA format).
+             *
+             * Overloaded for:
+             * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
+             */
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
-            // With texture
+
+            /**
+             * @brief Draws a textured quad at the specified position and size.
+             *
+             * @param pos The position of the quad (2D or 3D).
+             * @param size The size of the quad.
+             * @param texture The texture to apply to the quad.
+             *
+             * Overloaded for:
+             * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
+             */
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
-            // With subtexture (sprites)
+
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
 
 
-            // With rotation
+            /**
+             * @brief Draws a rotated quad with a specified color or texture.
+             *
+             * @param pos The position of the quad (2D or 3D).
+             * @param size The size of the quad.
+             * @param rotation The rotation angle in degrees (clockwise).
+             * @param color The color of the quad (RGBA format).
+             * @param texture Optional texture to apply to the quad.
+             *
+             * Overloaded for:
+             * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
+             */
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
-            // With texture
+
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
-            // With subtexture (sprites)
+
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
 
-
+            /**
+            * @brief Resets rendering statistics.
+            *
+            * Clears the draw call and quad counters in `RendererStats`.
+            *
+            * Throws:
+            * - RendererNotInitialized if the renderer is not initialized.
+            */
             void resetStats() const;
+
+            /**
+             * @brief Retrieves the current rendering statistics.
+             *
+             * @return A `RendererStats` struct containing the number of draw calls and
+             *         quads rendered.
+             *
+             * Throws:
+             * - RendererNotInitialized if the renderer is not initialized.
+             */
             [[nodiscard]] RendererStats getStats() const;
 
             std::shared_ptr<Renderer2DStorage> getInternalStorage() const { return m_storage; };

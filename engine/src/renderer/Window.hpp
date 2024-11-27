@@ -45,6 +45,22 @@ namespace nexo::renderer {
         WindowProperty(const unsigned int w, const unsigned h, const char * t) : width(w), height(h), title(t) {}
     };
 
+    /**
+    * @class Window
+    * @brief Abstract class for managing window operations in the rendering system.
+    *
+    * The `Window` class provides an interface for creating, configuring, and
+    * managing a window. It includes support for events like resizing, closing,
+    * keyboard input, and mouse interactions.
+    *
+    * Responsibilities:
+    * - Initialize and manage the window lifecycle.
+    * - Handle window properties such as size, title, and VSync.
+    * - Provide event handling through callbacks.
+    *
+    * Derived classes (e.g., `OpenGlWindow`) implement platform-specific behavior
+    * for managing windows.
+    */
     class Window {
         public:
             Window() = default;
@@ -68,6 +84,17 @@ namespace nexo::renderer {
 
             [[nodiscard]] virtual void *window() const = 0;
 
+            /**
+            * @brief Factory function to create a platform-specific window.
+            *
+            * Depending on the graphics API (e.g., OpenGL), this function creates an
+            * instance of the corresponding `Window` implementation.
+            *
+            * @param width Initial width of the window.
+            * @param height Initial height of the window.
+            * @param title Title of the window.
+            * @return A shared pointer to the created `Window` instance.
+            */
             static std::shared_ptr<Window> create(int width = 1920, int height = 1080, const char *title = "Nexo window");
 
             virtual void setErrorCallback(void *fctPtr) = 0;
