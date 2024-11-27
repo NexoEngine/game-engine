@@ -47,6 +47,7 @@ namespace nexo::layer {
         void SetUp() override {
             layer = std::make_shared<Layer>(1, "TestLayer");
             auto &app = nexo::Application::getInstance();
+            nexo::init();
 
         }
     };

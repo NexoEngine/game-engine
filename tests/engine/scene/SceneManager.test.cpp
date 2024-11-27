@@ -23,6 +23,7 @@ namespace nexo::scene {
         protected:
         void SetUp() override {
             Application::getInstance();
+            nexo::init();
             sceneManager = std::make_unique<SceneManager>();
         }
 

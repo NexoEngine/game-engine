@@ -66,6 +66,7 @@ namespace nexo::scene {
     protected:
         void SetUp() override {
             auto &app = nexo::Application::getInstance();
+            nexo::init();
             scene = std::make_shared<Scene>(1, "TestScene");
         }
 
