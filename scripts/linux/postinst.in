@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+
+echo "Adding the icon..."
+cp "@DEB_ICON_PATH@" "/usr/share/icons/hicolor/256x256/apps/nexo.png"
+
+echo "Adding the executable to path..."
+ln -s "@DEB_EXECUTABLE_PATH@" "/usr/bin/nexoEditor"
+
+echo "Creating the desktop entry..."
+cat >/usr/share/applications/@DEB_DESKTOP_ENTRY_NAME@.desktop<<-END
+[Desktop Entry]
+Name=NEXO Engine
+Comment=@CPACK_PACKAGE_DESCRIPTION_SUMMARY@
+Exec=@DEB_EXECUTABLE_PATH@
+Icon=nexo
+Terminal=false
+Type=Application
+Categories=@DEB_CATEGORIES@
+StartupWMClass=@WAYLAND_APP_ID@
+END

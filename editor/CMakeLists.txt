@@ -28,6 +28,9 @@ if (WIN32)
 endif()
 
 add_executable(nexoEditor ${SRCS})
+set(WAYLAND_APP_ID "app.nexo-engine.editor")
+# Add custom DEFINE for the app id
+add_compile_definitions(WAYLAND_APP_ID="${WAYLAND_APP_ID}")
 
 set_target_properties(nexoEditor
         PROPERTIES

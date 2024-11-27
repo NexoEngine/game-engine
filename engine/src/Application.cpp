@@ -144,32 +144,15 @@ namespace nexo {
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
         LOG(NEXO_DEV, "Debug listeners registered");
-        event::Input::init(m_window);
-
-        // Window and glad init
-        m_window->init();
-        registerWindowCallbacks();
-        m_window->setVsync(false);
-
-#ifdef GRAPHICS_API_OPENGL
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
-        }
-		LOG(NEXO_INFO, "OpenGL context initialized with glad");
-        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
-#endif
-
-        renderer::Renderer::init();
 
         // Debug flags
         //m_eventDebugFlags |= DEBUG_LOG_KEYBOARD_EVENT;
 
         m_coordinator = std::make_shared<ecs::Coordinator>();
-        m_coordinator->init();
+
         ecs::System::coord = m_coordinator;
-        registerEcsComponents();
-        registerSystems();
-        m_sceneManager.setCoordinator(m_coordinator);
+
+        LOG(NEXO_DEV, "Application created");
     }
 
     void Application::displayProfileResults()
@@ -183,6 +166,32 @@ namespace nexo {
         }
     }
 
+    void Application::init()
+    {
+        event::Input::init(m_window);
+
+        // Window and glad init
+        m_window->init();
+        registerWindowCallbacks();
+        m_window->setVsync(false);
+
+#ifdef GRAPHICS_API_OPENGL
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+            THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
+        }
+        LOG(NEXO_INFO, "OpenGL context initialized with glad");
+        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
+#endif
+
+        renderer::Renderer::init();
+
+        m_coordinator->init();
+        registerEcsComponents();
+        registerSystems();
+        m_sceneManager.setCoordinator(m_coordinator);
+
+        LOG(NEXO_DEV, "Application initialized");
+    }
 
     void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
     {

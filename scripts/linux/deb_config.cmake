@@ -20,10 +20,20 @@ set(DEB_ICON_PATH "/usr/share/nexo-engine/assets/nexo.png")
 set(DEB_DESKTOP_ENTRY_NAME "nexo-engine")
 
 # Set the categories
-set(DEB_CATEGORIES "Game;Development;")
+set(DEB_CATEGORIES "Development;Graphics;3DGraphics;Building;")
 
-include("${CMAKE_SOURCE_DIR}/scripts/linux/generate_postinst.cmake")
-include("${CMAKE_SOURCE_DIR}/scripts/linux/generate_postrm.cmake")
+# generate postinst and postrm files using templates
+configure_file("${CMAKE_SOURCE_DIR}/scripts/linux/postinst.in"
+               "${CMAKE_BINARY_DIR}/postinst" @ONLY
+               FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE
+)
+configure_file("${CMAKE_SOURCE_DIR}/scripts/linux/postrm.in"
+               "${CMAKE_BINARY_DIR}/postrm" @ONLY
+               FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE
+)
 
 # Install the desktop entry
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst")
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+    ${CMAKE_BINARY_DIR}/postinst
+    ${CMAKE_BINARY_DIR}/postrm
+)

@@ -99,7 +99,22 @@ namespace nexo::editor {
 
     void Editor::setupEngine()
     {
-        m_app = std::make_shared<Application>(nexo::init());
+        auto &app = Application::getInstance();
+        auto &window = app.getWindow();
+
+#ifdef __linux__
+    #ifndef WAYLAND_APP_ID
+        #warning "WAYLAND_APP_ID not defined, cannot set Wayland app id for window"
+        LOG(NEXO_WARN, "WAYLAND_APP_ID not defined, cannot set Wayland app id for window");
+    #else
+        window->setWaylandAppId(WAYLAND_APP_ID);
+        window->setWmClass(WAYLAND_APP_ID, "nexo-editor");
+    #endif
+#endif
+
+        m_app = std::make_shared<Application>(app);
+
+        nexo::init();
 
         ImGuiBackend::setErrorCallback(m_app->getWindow());
 
@@ -126,7 +141,7 @@ namespace nexo::editor {
         float scaleFactorX, scaleFactorY = 0.0f;
         m_app->getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
         m_app->getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
-            "../assets/textures/logo_nexo.png"));
+            "../assets/nexo.png"));
         if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
         {
             LOG(NEXO_WARN,
