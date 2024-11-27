@@ -75,8 +75,11 @@ For Windows:
 First build the project as seen in the step [Build the project](#build-the-project).
 Then run the following command:
 
+> [!IMPORTANT]
+> The `--component Unspecified` option is MANDATORY to prevent specific components from being installed.
+
 ```bash
-cmake --install build --prefix /path/to/install
+cmake --install build --component Unspecified --prefix /path/to/install
 ```
 
 This will install the NEXO Engine in the directory `/path/to/install` with all the necessary files.
