@@ -63,7 +63,7 @@ namespace nexo::editor {
 
                 case GLFW_INVALID_ENUM:
                 case GLFW_INVALID_VALUE:
-                    //LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
+                    LOG(NEXO_WARN, "[OPENGL WARNING] ({}): {}", error, description);
                 break;
 
                 case GLFW_OUT_OF_MEMORY:
