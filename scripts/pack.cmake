@@ -26,10 +26,14 @@ set(PROJECT_NAME "NEXO-Engine")
 
 # CPack specific variables
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_VENDOR "NEXO")
+set(CPACK_PACKAGE_VENDOR "NEXO Engine")
 set(CPACK_PACKAGE_CONTACT "nexo.engine@gmail.com")
+set(CPACK_STRIP_FILES YES)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "NEXO Engine - A simple C++ OpenGL game engine featuring a scene editor, console logging, and asset importing.")
+    "NEXO Engine - A C++ OpenGL game engine usable in virtual reality.")
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+    "Features a scene editor, console logging, and asset importing."
+)
 set(CPACK_PACKAGE_VERSION "${NEXO_VERSION_MAJOR}.${NEXO_VERSION_MINOR}.${NEXO_VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${NEXO_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${NEXO_VERSION_MINOR}")

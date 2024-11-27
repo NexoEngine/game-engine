@@ -1,17 +1,2 @@
 #!/bin/sh
 set -e
-
-echo "Removing the icon..."
-if [ -f /usr/share/icons/hicolor/256x256/apps/nexo.png ]; then
-    rm /usr/share/icons/hicolor/256x256/apps/nexo.png
-fi
-
-echo "Removing the desktop entry..."
-if [ -f /usr/share/applications/@DEB_DESKTOP_ENTRY_NAME@.desktop ]; then
-    rm /usr/share/applications/@DEB_DESKTOP_ENTRY_NAME@.desktop
-fi
-
-echo "Removing the executable from path..."
-if [ -f "/usr/bin/nexoEditor" ]; then
-    rm "/usr/bin/nexoEditor"
-fi
