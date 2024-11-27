@@ -75,5 +75,4 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 
 include_directories("./common")
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack.cmake")

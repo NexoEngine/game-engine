@@ -29,6 +29,7 @@ namespace nexo::scene {
         m_layerStack.pushOverlay(newOverlay);
         LOG(NEXO_DEV, "Scene::{}::addOverlay: overlay {} added", name, overlayName);
     }
+
     void Scene::removeLayer(LayerId id)
     {
         const auto layer = getLayer(id);

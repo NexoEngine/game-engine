@@ -14,7 +14,9 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-project(pack-nexo)
+project(nexo-pack)
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.cmake")
 
 # Set the version number
 set(NEXO_VERSION_MAJOR 1)
@@ -43,17 +45,35 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "NexoEngine")
 # Set the icon path
 set(NEXO_ICON_PATH "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
 
+# Configs for different package generators (but not the actual CPack configuration)
 include("${CMAKE_SOURCE_DIR}/scripts/linux/deb_config.cmake")
 include("${CMAKE_SOURCE_DIR}/scripts/windows/nsis_config.cmake")
 
+set(CPACK_GENERATOR "DEB;NSIS")
 
-# Configure each CPack generator
-set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_BINARY_DIR}/scripts/generator_config.cmake")
 # Replace @VARS@ with CMake variables in the template file
 configure_file("${PROJECT_SOURCE_DIR}/scripts/CMakeCPackOptions.cmake.in"
                "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake" @ONLY)
-# Use the final generated file as config
+
+# Use the final generated file as config for CPack
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake")
+# CMakeCPackOptions.cmake is processed in the include(CPack) command below
 
 # This must always be after all CPACK\_\* variables are defined
 include(CPack)
+cpack_add_component(documentation
+                    DISPLAY_NAME "Documentation"
+                    DESCRIPTION "The documentation of the NEXO Engine. Will be installed in the docs directory."
+                    GROUP optional
+)
+cpack_add_component(headers
+                    DISPLAY_NAME "Headers"
+                    DESCRIPTION "The headers of the NEXO Engine. Will be installed in the headers directory."
+                    DISABLED
+                    GROUP optional
+)
+cpack_add_component_group(optional
+                          DISPLAY_NAME "Optional Components"
+                          DESCRIPTION "Optional components of the NEXO Engine."
+                          EXPANDED
+)

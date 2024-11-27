@@ -46,7 +46,7 @@ set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
 # Component deb-symlink
 install(FILES ${DEB_TEMP_GENERATED_SYMLINK_PATH}
         DESTINATION /usr/bin  RENAME "nexoEditor"
-        COMPONENT deb-symlink EXCLUDE_FROM_ALL
+        COMPONENT deb-symlink EXCLUDE_FROM_ALL # EXCLUDE_FROM_ALL is important to avoid installing the symlink in the default component
 )
 # Component deb-icon
 install(FILES "${CMAKE_SOURCE_DIR}/assets/nexo.png"
