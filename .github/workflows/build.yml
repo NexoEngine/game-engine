@@ -106,6 +106,73 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: nexo-editor-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          name: nexo-engine-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
           path: |
             ./output/*
+
+      - name: Generate NSIS installer
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: bash
+        run: |
+          choco install -y nsis
+          cd build
+          cpack -G NSIS
+
+      - name: Generate DEB installer
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+          cd build
+          cpack -G DEB
+
+      - name: Upload installer packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-engine-installer-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          path: |
+            build/*.exe
+            build/*.deb
+
+  test-nsis-installer:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Download NSIS installer
+        uses: actions/download-artifact@v4
+        with:
+          path: installer
+          pattern: 'nexo-engine-installer-*-windows'
+
+      - name: Run NSIS installer
+        shell: bash
+        run: |
+          cd installer
+          for f in *.exe; do
+            $f /S
+          done
+
+      - name: Run NEXO
+        shell: cmd
+        run: |
+          cmd /c "nexoEditor.exe" & timeout /t 10
+
+  test-deb-installer:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download DEB installer
+        uses: actions/download-artifact@v4
+        with:
+          path: installer
+          pattern: 'nexo-engine-installer-*-ubuntu'
+
+      - name: Install DEB package
+        shell: bash
+        run: |
+          cd installer
+          sudo dpkg -i *.deb
+
+      - name: Run NEXO
+        shell: bash
+        run: |
+          timeout 10s nexoEditor
