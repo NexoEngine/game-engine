@@ -117,14 +117,14 @@ jobs:
         run: |
           choco install -y nsis
           cd build
-          cpack -G NSIS
+          cpack -G NSIS --verbose
 
       - name: Generate DEB installer
         if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
         run: |
           cd build
-          cpack -G DEB
+          cpack -G DEB --verbose
 
       - name: Upload installer packages
         uses: actions/upload-artifact@v4
