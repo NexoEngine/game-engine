@@ -23,7 +23,6 @@
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
-std::shared_ptr<nexo::ecs::Coordinator> nexo::ecs::System::coord = nullptr;
 
 namespace nexo {
 

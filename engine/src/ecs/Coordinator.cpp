@@ -14,6 +14,8 @@
 
 #include "Coordinator.hpp"
 
+std::shared_ptr<nexo::ecs::Coordinator> nexo::ecs::System::coord = nullptr;
+
 namespace nexo::ecs {
 
     void Coordinator::init()
@@ -23,6 +25,7 @@ namespace nexo::ecs {
         m_systemManager = std::make_shared<SystemManager>();
         m_singletonComponentManager = std::make_shared<SingletonComponentManager>();
 
+        System::coord = std::shared_ptr<Coordinator>(this, [](Coordinator*) {});
 
         LOG(NEXO_DEV, "ecs: Coordinator initialized");
     }
