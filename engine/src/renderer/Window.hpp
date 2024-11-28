@@ -83,6 +83,7 @@ namespace nexo::renderer {
 
 
             [[nodiscard]] virtual bool isOpen() const = 0;
+            virtual void close() = 0;
 
             [[nodiscard]] virtual void *window() const = 0;
 

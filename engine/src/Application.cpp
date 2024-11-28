@@ -14,6 +14,7 @@
 
 #include "Application.hpp"
 
+#include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
 
 #include "components/Components.hpp"
@@ -34,6 +35,15 @@ namespace nexo {
         m_eventManager->registerListener<event::EventMouseClick>(this);
         m_eventManager->registerListener<event::EventMouseScroll>(this);
         m_eventManager->registerListener<event::EventMouseMove>(this);
+        LOG(NEXO_DEV, "Debug listeners registered");
+    }
+
+    void Application::registerSignalListeners()
+    {
+        m_eventManager->registerListener<event::EventAnySignal>(this);
+        m_eventManager->registerListener<event::EventSignalTerminate>(this);
+        m_eventManager->registerListener<event::EventSignalInterrupt>(this);
+        LOG(NEXO_DEV, "Signal listeners registered");
     }
 
     void Application::registerEcsComponents()
@@ -143,7 +153,7 @@ namespace nexo {
         m_window = renderer::Window::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
-        LOG(NEXO_DEV, "Debug listeners registered");
+        registerSignalListeners();
 
         // Debug flags
         //m_eventDebugFlags |= DEBUG_LOG_KEYBOARD_EVENT;
@@ -169,6 +179,7 @@ namespace nexo {
     void Application::init()
     {
         event::Input::init(m_window);
+        event::SignalHandler::getInstance()->registerEventManager(m_eventManager);
 
         // Window and glad init
         m_window->init();
