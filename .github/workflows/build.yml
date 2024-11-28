@@ -154,13 +154,13 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          pattern: 'nexo-engine-installer-*-windows-*'
+          pattern: 'nexo-engine-installer-msvc14-windows-latest'
 
       - name: Run NSIS installer
         shell: pwsh
         run: |
           # Find the first .exe file in the downloaded directory
-          $exePath = Get-ChildItem -Path "${{steps.download.outputs.download-path}}" -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
+          $exePath = Get-ChildItem -Path "${{steps.download.outputs.download-path}}\nexo-engine-installer-msvc14-windows-latest" -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
       
           if (-not $exePath) {
             Write-Error "No .exe file found in the directory."
@@ -194,12 +194,12 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          pattern: 'nexo-engine-installer-*-ubuntu-*'
+          pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
 
       - name: Install DEB package
         shell: bash
         run: |
-          sudo dpkg -i ${{steps.download.outputs.download-path}}/*.deb
+          sudo dpkg -i ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
       - name: Run NEXO
         shell: bash
