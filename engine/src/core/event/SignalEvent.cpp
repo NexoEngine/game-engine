@@ -75,6 +75,5 @@ namespace nexo::event {
     {
         signal(SIGTERM, signalHandler);
         signal(SIGINT, signalHandler);
-        signal(SIGHUP, signalHandler);
     }
 } // namespace nexo::event
