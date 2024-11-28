@@ -179,8 +179,17 @@ jobs:
               exit 1
           }
 
-      - name: Install Mesa Windows # To run NEXO in headless mode (without real screen)
-        uses: ssciwr/setup-mesa-dist-win@v2
+      - name: Install 7zip
+        run: choco install 7zip.install
+
+      - name: Install Mesa
+        shell: cmd
+        run: |
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
+          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
+          mklink opengl32.dll "x64\opengl32.dll"
+          mklink libglapi.dll "x64\libglapi.dll"
+        working-directory: "C:\\Program Files\\NexoEngine\\bin\\"
 
       - name: Run NEXO headless
         shell: pwsh
@@ -191,6 +200,9 @@ jobs:
           $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
           if ($process.WaitForExit(10000)) {
             # Exit with the process exit code
+            if ($process.ExitCode -ne 0) {
+              Write-Error "Process exited with code $($process.ExitCode)"
+            }
             exit $process.ExitCode
           } else {
             # If the process doesn't exit within 10 seconds, terminate it
