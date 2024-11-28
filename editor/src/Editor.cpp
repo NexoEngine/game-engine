@@ -112,14 +112,12 @@ namespace nexo::editor {
     #endif
 #endif
 
-        m_app = std::make_shared<Application>(app);
-
         nexo::init();
 
-        ImGuiBackend::setErrorCallback(m_app->getWindow());
+        ImGuiBackend::setErrorCallback(nexo::getApp().getWindow());
 
         ImGui::CreateContext();
-        ImGuiBackend::init(m_app->getWindow());
+        ImGuiBackend::init(nexo::getApp().getWindow());
 
         ImGuiIO &io = ImGui::GetIO();
         static const std::string iniFilePath = Path::resolvePathRelativeToExe(
@@ -139,8 +137,8 @@ namespace nexo::editor {
         // Retrieve DPI scale
 
         float scaleFactorX, scaleFactorY = 0.0f;
-        m_app->getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
-        m_app->getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
+        nexo::getApp().getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
+        nexo::getApp().getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
             "../assets/nexo.png"));
         if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
         {
@@ -150,8 +148,8 @@ namespace nexo::editor {
         }
 
         ImGuiIO &io = ImGui::GetIO();
-        io.DisplaySize = ImVec2(static_cast<float>(m_app->getWindow()->getWidth()),
-                                static_cast<float>(m_app->getWindow()->getHeight()));
+        io.DisplaySize = ImVec2(static_cast<float>(nexo::getApp().getWindow()->getWidth()),
+                                static_cast<float>(nexo::getApp().getWindow()->getHeight()));
         io.DisplayFramebufferScale = ImVec2(scaleFactorX, scaleFactorY); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -239,7 +237,7 @@ namespace nexo::editor {
 
     bool Editor::isOpen() const
     {
-        return !m_quit && m_app->isWindowOpen();
+        return !m_quit && nexo::getApp().isWindowOpen() && nexo::getApp().isRunning();
     }
 
     void Editor::drawMenuBar()
@@ -318,7 +316,7 @@ namespace nexo::editor {
         }
 
         ImGui::Render();
-        ImGuiBackend::end(m_app->getWindow());
+        ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
     void Editor::update()
