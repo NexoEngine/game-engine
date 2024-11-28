@@ -169,11 +169,17 @@ jobs:
           
           # Run the installer with /S for silent mode and /D to specify the installation directory
           Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
+          
+          # Check if the installation directory exists
+          if (-not (Test-Path "C:\Program Files\NexoEngine")) {
+              Write-Error "Installation directory not found."
+              exit 1
+          }
 
       - name: Install Mesa Windows # To run NEXO in headless mode (without real screen)
         uses: f3d-app/install-mesa-windows-action@v1
         with:
-          path: "C:/Program Files/NexoEngine/bin"
+          path: "C:/Program Files/NexoEngine/bin/"
 
       - name: Run NEXO headless
         shell: pwsh
