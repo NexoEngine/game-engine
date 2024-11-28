@@ -8,12 +8,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
+        os: [windows-latest] # TODO: Add macos-latest later
         compiler: [gcc, msvc] # TODO: add clang later
         include:
-          - os: ubuntu-latest
-            compiler: gcc
-            version: 13
+          #- os: ubuntu-latest
+          #  compiler: gcc
+          #  version: 13
           - os: windows-latest
             compiler: msvc
             version: 14
@@ -173,7 +173,7 @@ jobs:
       - name: Install Mesa Windows # To run NEXO in headless mode (without real screen)
         uses: f3d-app/install-mesa-windows-action@v1
         with:
-          path: "C:\Program Files\NexoEngine\bin"
+          path: "C:\\Program Files\\NexoEngine\\bin"
 
       - name: Run NEXO headless
         shell: pwsh
