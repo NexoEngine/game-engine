@@ -24,6 +24,8 @@
     - [System Management](#system-management)
     - [Workflow Summary](#workflow-summary)
     - [EC Systems UML Diagram](#ec-systems-uml-diagram)
+  - [Examples](#examples)
+    - [Basic example](#basic-example)
 
 ## What is ECS ?
 
@@ -127,8 +129,8 @@ As components are added to or removed from this entity, the Coordinator updates 
 The SystemManager uses these signatures to maintain an up-to-date list of entities for each system.  
 Each system processes its specific subset of entities, based on the components they possess.
 
-### Examples
-#### Basic example
+## Examples
+### Basic example
 First we create two very basic components :
 ```c++
 struct Position {
