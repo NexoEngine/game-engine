@@ -229,6 +229,8 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
           sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
       - name: Run NEXO headless
