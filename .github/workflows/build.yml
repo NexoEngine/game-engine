@@ -167,6 +167,16 @@ jobs:
             exit 1
           }
           
+          # Run the installer with /S for silent mode and /D to specify the installation directory
+          &"$exePath" /S /D=C:\Program Files\NexoEngine
+          
+
+
+      - name: Run NEXO
+        shell: pwsh
+        run: |
+          $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
+          
           # Start the process and wait for up to 10 seconds
           $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
           if ($process.WaitForExit(10000)) {
@@ -179,11 +189,6 @@ jobs:
 
           # Exit with success
           exit 0
-
-      - name: Run NEXO
-        shell: cmd
-        run: |
-          cmd /c "C:\Program Files\NexoEngine\bin\nexoEditor.exe" & timeout /t 10
 
   test-deb-installer:
     name: Test DEB installer
@@ -199,9 +204,9 @@ jobs:
       - name: Install DEB package
         shell: bash
         run: |
-          sudo dpkg -i ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
+          sudo apt -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
       - name: Run NEXO
         shell: bash
         run: |
-          timeout 10s nexoEditor
+          timeout --preserve-status 10s nexoEditor
