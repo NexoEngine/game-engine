@@ -1,8 +1,8 @@
 name: Task Template
 description: Use this template to create tasks for the project.
-title: "[feat | fix | chore | doc]: "
+title: "[feat | refactor | chore]: "
 labels: ["task"]
-projects: ["EpitechPromo2026/1295"]
+projects: ["NexoEngine/3"]
 
 body:
   - type: textarea
@@ -44,22 +44,28 @@ body:
         Components: 
         Resources: 
 
-  - type: textarea
-    id: mockups-examples
-    attributes:
-      label: Mockups / Examples
-      description: Attach any mockups, screenshots, or code examples if applicable.
-      placeholder: Add any mockups or examples.
-
   - type: dropdown
     id: type
     attributes:
       label: Type
       description: What part of the project this issue is about ?
       options:
-        - Server
-        - Client
         - Engine
+        - Editor
+        - CI/CD
+        - Testing
+        - Documentation
         - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: iteration
+    attributes:
+      label: Iteration
+      description: Specify the iteration for this task.
+      options:
+        - Current Iteration
+        - Next Iteration
     validations:
       required: true
