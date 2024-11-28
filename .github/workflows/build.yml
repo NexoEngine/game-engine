@@ -193,6 +193,7 @@ jobs:
 
       - name: Run NEXO headless
         shell: pwsh
+        timeout-minutes: 1
         run: |
           $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
           
@@ -235,5 +236,6 @@ jobs:
 
       - name: Run NEXO headless
         uses: coactions/setup-xvfb@v1
+        timeout-minutes: 1
         with:
-          run: timeout --preserve-status 10s nexoEditor
+          run: timeout --preserve-status --signal=QUIT 10s nexoEditor
