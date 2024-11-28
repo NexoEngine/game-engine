@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
   build:
-    if: false
     name: Build, test and Package
     strategy:
       fail-fast: false
@@ -149,15 +148,13 @@ jobs:
   test-nsis-installer:
     name: Test NSIS installer
     runs-on: windows-latest
-    #needs: build
+    needs: build
     steps:
       - name: Download NSIS installer
         id: download
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-msvc14-windows-latest'
-          run-id: 12070557655
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run NSIS installer
         shell: pwsh
@@ -216,15 +213,13 @@ jobs:
   test-deb-installer:
     name: Test DEB installer
     runs-on: ubuntu-latest
-    #needs: build
+    needs: build
     steps:
       - name: Download DEB installer
         id: download
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
-          run-id: 12070557655
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install DEB package
         shell: bash
@@ -238,4 +233,4 @@ jobs:
         uses: coactions/setup-xvfb@v1
         timeout-minutes: 1
         with:
-          run: timeout --preserve-status --signal=QUIT 10s nexoEditor
+          run: timeout --preserve-status --signal=TERM 10s nexoEditor
