@@ -169,10 +169,13 @@ jobs:
           
           # Run the installer with /S for silent mode and /D to specify the installation directory
           Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
-          
 
+      - name: Install Mesa Windows # To run NEXO in headless mode (without real screen)
+        uses: f3d-app/install-mesa-windows-action@v1
+        with:
+          path: "C:\Program Files\NexoEngine\bin"
 
-      - name: Run NEXO
+      - name: Run NEXO headless
         shell: pwsh
         run: |
           $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
@@ -204,9 +207,10 @@ jobs:
       - name: Install DEB package
         shell: bash
         run: |
+          sudo apt update
           sudo apt -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
-      - name: Run NEXO
-        shell: bash
-        run: |
-          timeout --preserve-status 10s nexoEditor
+      - name: Run NEXO headless
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: timeout --preserve-status 10s nexoEditor
