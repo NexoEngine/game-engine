@@ -150,13 +150,13 @@ jobs:
         run: |
           cd installer
           for f in *.exe; do
-            $f /S
+            $f /S /D=C:\Program Files\NexoEngine
           done
 
       - name: Run NEXO
         shell: cmd
         run: |
-          cmd /c "nexoEditor.exe" & timeout /t 10
+          cmd /c "C:\Program Files\NexoEngine\bin\nexoEditor.exe" & timeout /t 10
 
   test-deb-installer:
     name: Test DEB installer

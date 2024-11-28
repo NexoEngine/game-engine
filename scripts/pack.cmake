@@ -61,3 +61,19 @@ set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake")
 
 # This must always be after all CPACK\_\* variables are defined
 include(CPack)
+cpack_add_component(documentation
+                    DISPLAY_NAME "Documentation"
+                    DESCRIPTION "The documentation of the NEXO Engine. Will be installed in the docs directory."
+                    GROUP optional
+)
+cpack_add_component(headers
+                    DISPLAY_NAME "Headers"
+                    DESCRIPTION "The headers of the NEXO Engine. Will be installed in the headers directory."
+                    DISABLED
+                    GROUP optional
+)
+cpack_add_component_group(optional
+                          DISPLAY_NAME "Optional Components"
+                          DESCRIPTION "Optional components of the NEXO Engine."
+                          EXPANDED
+)
