@@ -173,7 +173,7 @@ jobs:
       - name: Install Mesa Windows # To run NEXO in headless mode (without real screen)
         uses: f3d-app/install-mesa-windows-action@v1
         with:
-          path: "C:\\Program Files\\NexoEngine\\bin\\"
+          path: "C:/Program Files/NexoEngine/bin"
 
       - name: Run NEXO headless
         shell: pwsh
