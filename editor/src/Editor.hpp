@@ -69,7 +69,7 @@ namespace nexo::editor {
             std::unordered_map<std::string, std::shared_ptr<IDocumentWindow>> m_windows;
 
             std::vector<LogMessage> m_logs;
-        
+
             std::shared_ptr<SceneManagerBridge> m_sceneManagerBridge;
     };
 }

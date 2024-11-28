@@ -94,6 +94,7 @@ namespace nexo::renderer {
 
 
             [[nodiscard]] bool isOpen() const override { return !glfwWindowShouldClose(_openGlWindow);};
+            void close() override { glfwSetWindowShouldClose(_openGlWindow, GLFW_TRUE); };
 
             [[nodiscard]] void *window() const override { return _openGlWindow; };
             void setErrorCallback(void *fctPtr) override;

@@ -18,6 +18,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Window.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
+        engine/src/core/event/SignalEvent.cpp
         engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp

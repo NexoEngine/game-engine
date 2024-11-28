@@ -33,6 +33,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Add Ubuntu toolchain repository
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        run: |
+          sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+
       - name: Pre-install GCC with cache
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -170,24 +176,44 @@ jobs:
           # Run the installer with /S for silent mode and /D to specify the installation directory
           Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
           
+          # Check if the installation directory exists
+          if (-not (Test-Path "C:\Program Files\NexoEngine")) {
+              Write-Error "Installation directory not found."
+              exit 1
+          }
 
+      - name: Install 7zip
+        run: choco install 7zip.install
 
-      - name: Run NEXO
+      - name: Install Mesa
+        shell: cmd
+        run: |
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
+          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
+          mklink opengl32.dll "x64\opengl32.dll"
+          mklink libglapi.dll "x64\libglapi.dll"
+        working-directory: "C:\\Program Files\\NexoEngine\\bin\\"
+
+      - name: Run NEXO headless
         shell: pwsh
+        timeout-minutes: 1
         run: |
           $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
           
-          # Start the process and wait for up to 10 seconds
+          # Test the close behavior of the NEXO Editor
           $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
-          if ($process.WaitForExit(10000)) {
-            # Exit with the process exit code
-            exit $process.ExitCode
-          } else {
-            # If the process doesn't exit within 10 seconds, terminate it
-            Stop-Process -Id $process.Id -Force
+          $exited = $process.WaitForExit(10000)
+          if ($exited) {
+            Write-Error "::error:: NEXO Editor exited before timeout with code $($process.ExitCode)"
+            exit 1
           }
-
-          # Exit with success
+          $process.CloseMainWindow()
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) {
+            Write-Error "::error:: NEXO Editor exited at close window with code $($process.ExitCode)"
+            exit 1
+          }
+          Write-Output "NEXO Editor gracefully closed with window close"
           exit 0
 
   test-deb-installer:
@@ -204,9 +230,55 @@ jobs:
       - name: Install DEB package
         shell: bash
         run: |
-          sudo apt -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
+          sudo apt-get update
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
-      - name: Run NEXO
-        shell: bash
-        run: |
-          timeout --preserve-status 10s nexoEditor
+      - name: Write NEXO run script
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: ./run-nexo.sh
+          contents: |
+            #!/bin/bash
+            nexoEditor &
+            process_pid=$!
+            echo "Started NEXO Editor with PID: $process_pid"
+          
+            # Wait for the process for up to 10 seconds
+            timeout=10
+            for ((i=0; i<timeout; i++)); do
+              if ! ps -p $process_pid > /dev/null; then
+                # Process exited before timeout; capture exit code
+                wait $process_pid
+                exit_code=$?
+                echo "::error:: NEXO Editor exited before timeout with code $exit_code"
+                exit 1
+              fi
+              sleep 1
+            done
+            
+            # Send SIGTERM signal to the process
+            kill -SIGTERM $process_pid
+            echo "Sent SIGTERM to process with PID: $process_pid"
+          
+            # Wait for the process to terminate after SIGTERM
+            wait $process_pid
+            exit_code=$?
+            
+            if [ $exit_code -ne 0 ]; then
+              echo "::error:: NEXO Editor exited at SIGTERM with code $exit_code"
+              exit 1
+            fi
+            
+            echo "NEXO Editor gracefully closed with SIGTERM"
+            exit 0
+
+      - name: Set permissions for NEXO run script
+        run: chmod +x ./run-nexo.sh
+
+      - name: Run NEXO headless
+        uses: coactions/setup-xvfb@v1
+        timeout-minutes: 1
+        with:
+          run: './run-nexo.sh'
