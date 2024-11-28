@@ -142,7 +142,7 @@ jobs:
         with:
           name: nexo-engine-installer-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
           path: |
-            build/*.exe
+            build/NEXO-Engine-*-win64.exe
             build/*.deb
 
   test-nsis-installer:
@@ -168,7 +168,7 @@ jobs:
           }
           
           # Run the installer with /S for silent mode and /D to specify the installation directory
-          &"$exePath" /S /D=C:\Program Files\NexoEngine
+          Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
           
 
 
