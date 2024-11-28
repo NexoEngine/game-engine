@@ -21,7 +21,7 @@
 namespace nexo::utils {
 
 #ifdef _WIN32
-    inline consteval constexpr const char *strsignal(const int signal)
+    constexpr const char *strsignal(const int signal)
     {
         switch (signal) {
             case SIGABRT: return "SIGABRT";
@@ -34,9 +34,10 @@ namespace nexo::utils {
         }
     }
 #else
-    inline const char *strsignal(const int signal)
+    constexpr const char *strsignal(const int signal)
     {
         return ::strsignal(signal);
     }
 #endif
+
 }
