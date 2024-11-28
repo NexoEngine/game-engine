@@ -157,6 +157,7 @@ jobs:
         with:
           pattern: 'nexo-engine-installer-msvc14-windows-latest'
           run-id: 12070557655
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run NSIS installer
         shell: pwsh
@@ -210,6 +211,7 @@ jobs:
         with:
           pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
           run-id: 12070557655
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install DEB package
         shell: bash
