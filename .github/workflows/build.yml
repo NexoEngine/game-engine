@@ -33,6 +33,16 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Pre-install GCC with cache
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: cpp-13 gcc-13 gcc-13-base libasan8 libatomic1 libcc1-0 libgcc-13-dev \
+            libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 libstdc++-13-dev \
+            libstdc++6 libtsan2 libubsan1
+          version: 1.0
+          execute_install_scripts: true
+
       - name: Set up GCC
         if: ${{ matrix.compiler == 'gcc' }}
         id: set-up-gcc
@@ -142,13 +152,11 @@ jobs:
       - name: Download NSIS installer
         uses: actions/download-artifact@v4
         with:
-          path: installer
           pattern: 'nexo-engine-installer-*-windows'
 
       - name: Run NSIS installer
         shell: bash
         run: |
-          cd installer
           for f in *.exe; do
             $f /S /D=C:\Program Files\NexoEngine
           done
@@ -166,13 +174,11 @@ jobs:
       - name: Download DEB installer
         uses: actions/download-artifact@v4
         with:
-          path: installer
           pattern: 'nexo-engine-installer-*-ubuntu'
 
       - name: Install DEB package
         shell: bash
         run: |
-          cd installer
           sudo dpkg -i *.deb
 
       - name: Run NEXO
