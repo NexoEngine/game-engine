@@ -25,6 +25,7 @@
 
 # ------------------------------------------------------------------------------
 
+message(STATUS "Configuring CPack options for generator: ${CPACK_GENERATOR}")
 if (CPACK_GENERATOR MATCHES "DEB")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_VENDOR} <${CPACK_PACKAGE_CONTACT}>")
     set(
@@ -47,8 +48,10 @@ if (CPACK_GENERATOR MATCHES "DEB")
     message(STATUS "Setting CPACK_DEBIAN_PACKAGE_DEPENDS to ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
 
 	# Add components for DEB package generator
-    set(CPACK_DEBIAN_ENABLE_COMPONENTS ON)
+    set(CPACK_DEB_ENABLE_COMPONENTS ON)
+    set(CPACK_DEB_COMPONENT_INSTALL ON)
     set(CPACK_COMPONENTS_ALL
+        Unspecified
         deb-symlink
         deb-icon
         deb-desktop-entry
@@ -56,7 +59,9 @@ if (CPACK_GENERATOR MATCHES "DEB")
     set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
 elseif (CPACK_GENERATOR MATCHES "NSIS")
     set(CPACK_NSIS_ENABLE_COMPONENTS ON)
-    set(CPACK_COMPONENTS_ALL "")
+    set(CPACK_COMPONENTS_ALL
+        Unspecified
+    )
 else()
     message(WARNING "Unknown CPACK_GENERATOR: ${CPACK_GENERATOR}, cannot configure package generator specific settings. This may result in a broken package.")
 endif()

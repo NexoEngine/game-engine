@@ -46,17 +46,17 @@ set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
 # Component deb-symlink
 install(FILES ${DEB_TEMP_GENERATED_SYMLINK_PATH}
         DESTINATION /usr/bin  RENAME "nexoEditor"
-        COMPONENT deb-symlink OPTIONAL # TODO: Find a way to make EXCLUDE_FROM_ALL work
+        COMPONENT deb-symlink EXCLUDE_FROM_ALL # EXCLUDE_FROM_ALL is important to avoid installing the symlink in the default component
 )
 # Component deb-icon
 install(FILES "${CMAKE_SOURCE_DIR}/assets/nexo.png"
         DESTINATION /usr/share/icons/hicolor/256x256/apps
-        COMPONENT deb-icon OPTIONAL
+        COMPONENT deb-icon EXCLUDE_FROM_ALL
         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 # Component deb-desktop-entry
 install(FILES ${CMAKE_BINARY_DIR}/nexo-engine.desktop
         DESTINATION /usr/share/applications
-        COMPONENT deb-desktop-entry OPTIONAL
+        COMPONENT deb-desktop-entry EXCLUDE_FROM_ALL
         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

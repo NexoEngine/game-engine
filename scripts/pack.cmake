@@ -14,7 +14,9 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-project(pack-nexo)
+project(nexo-pack)
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.cmake")
 
 # Set the version number
 set(NEXO_VERSION_MAJOR 1)
@@ -48,7 +50,6 @@ include("${CMAKE_SOURCE_DIR}/scripts/linux/deb_config.cmake")
 include("${CMAKE_SOURCE_DIR}/scripts/windows/nsis_config.cmake")
 
 set(CPACK_GENERATOR "DEB;NSIS")
-set(CPACK_COMPONENTS_ALL "") # Don't use all components for all generators (because we have different components for DEB and NSIS)
 
 # Replace @VARS@ with CMake variables in the template file
 configure_file("${PROJECT_SOURCE_DIR}/scripts/CMakeCPackOptions.cmake.in"
