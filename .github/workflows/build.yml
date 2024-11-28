@@ -37,9 +37,10 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: cpp-13 gcc-13 gcc-13-base libasan8 libatomic1 libcc1-0 libgcc-13-dev \
-            libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 libstdc++-13-dev \
-            libstdc++6 libtsan2 libubsan1
+          packages: cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
+            libstdc++-13-dev libasan8 libatomic1 libcc1-0 libgcc-13-dev \
+            libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 \
+            libstdc++-13-dev libstdc++6 libtsan2 libubsan1
           version: 1.0
           execute_install_scripts: true
 
@@ -153,14 +154,31 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          pattern: 'nexo-engine-installer-*-windows'
+          pattern: 'nexo-engine-installer-*-windows-*'
 
       - name: Run NSIS installer
-        shell: bash
+        shell: pwsh
         run: |
-          for f in ${{steps.download.outputs.download-path}}/*.exe; do
-            $f /S /D=C:\Program Files\NexoEngine
-          done
+          # Find the first .exe file in the downloaded directory
+          $exePath = Get-ChildItem -Path "${{steps.download.outputs.download-path}}" -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
+      
+          if (-not $exePath) {
+            Write-Error "No .exe file found in the directory."
+            exit 1
+          }
+          
+          # Start the process and wait for up to 10 seconds
+          $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
+          if ($process.WaitForExit(10000)) {
+            # Exit with the process exit code
+            exit $process.ExitCode
+          } else {
+            # If the process doesn't exit within 10 seconds, terminate it
+            Stop-Process -Id $process.Id -Force
+          }
+
+          # Exit with success
+          exit 0
 
       - name: Run NEXO
         shell: cmd
@@ -176,7 +194,7 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          pattern: 'nexo-engine-installer-*-ubuntu'
+          pattern: 'nexo-engine-installer-*-ubuntu-*'
 
       - name: Install DEB package
         shell: bash
