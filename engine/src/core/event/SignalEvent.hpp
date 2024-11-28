@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "Event.hpp"
+#include "Signals.hpp"
 
 namespace nexo::event {
 
@@ -36,11 +37,7 @@ namespace nexo::event {
     template <int TSignal>
     class EventSignal final : public Event<EventSignal<TSignal>> {};
     template <int TSignal>
-    std::ostream& operator<<(std::ostream& os, const EventSignal<TSignal>& event)
-    {
-        os << "[EventSignal] Signal : " << strsignal(TSignal) << " (" << TSignal << ")";
-        return os;
-    }
+    std::ostream& operator<<(std::ostream& os, const EventSignal<TSignal>& event);
 
     using EventSignalTerminate = EventSignal<SIGTERM>;
     using EventSignalInterrupt = EventSignal<SIGINT>;

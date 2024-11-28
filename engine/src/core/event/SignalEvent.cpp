@@ -39,6 +39,19 @@ namespace nexo::event {
         emitEventToAll<EventAnySignal>(signal);
     }
 
+    std::ostream& operator<<(std::ostream& os, const EventAnySignal& event)
+    {
+        os << "[EventAnySignal] Signal : " << utils::strsignal(event.signal) << " (" << event.signal << ")";
+        return os;
+    }
+
+    template<int TSignal>
+    std::ostream& operator<<(std::ostream& os, const EventSignal<TSignal>& event)
+    {
+        os << "[EventSignal] Signal : " << utils::strsignal(TSignal) << " (" << TSignal << ")";
+        return os;
+    }
+
     template<typename EventType, typename ... Args>
     void SignalHandler::emitEventToAll(Args&&... args)
     {
@@ -46,12 +59,6 @@ namespace nexo::event {
         {
             eventManager->emitEvent<EventType>(std::forward<Args>(args)...);
         }
-    }
-
-    std::ostream& operator<<(std::ostream& os, const EventAnySignal& event)
-    {
-        os << "[EventAnySignal] Signal : " << strsignal(event.signal) << " (" << event.signal << ")";
-        return os;
     }
 
     SignalHandler::SignalHandler()
