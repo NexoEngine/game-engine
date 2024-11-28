@@ -150,6 +150,7 @@ jobs:
     needs: build
     steps:
       - name: Download NSIS installer
+        id: download
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-*-windows'
@@ -157,7 +158,7 @@ jobs:
       - name: Run NSIS installer
         shell: bash
         run: |
-          for f in *.exe; do
+          for f in ${{steps.download.outputs.download-path}}/*.exe; do
             $f /S /D=C:\Program Files\NexoEngine
           done
 
@@ -172,6 +173,7 @@ jobs:
     needs: build
     steps:
       - name: Download DEB installer
+        id: download
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-*-ubuntu'
@@ -179,7 +181,7 @@ jobs:
       - name: Install DEB package
         shell: bash
         run: |
-          sudo dpkg -i *.deb
+          sudo dpkg -i ${{steps.download.outputs.download-path}}/*.deb
 
       - name: Run NEXO
         shell: bash
