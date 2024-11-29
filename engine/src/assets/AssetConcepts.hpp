@@ -1,4 +1,4 @@
-//// Asset.cpp ////////////////////////////////////////////////////////////////
+//// AssetConcepts.hpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,26 +7,18 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Guillaume HEIN
-//  Date:        18/11/2024
-//  Description: Source file for the Asset class, base class for all assets
+//  Date:        25/11/2024
+//  Description: Header file for concepts related to assets.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Asset.hpp"
+#pragma once
 
-namespace nexo::editor {
+#include <concepts>
 
-    AssetType Asset::getType() const
-    {
-        return m_type;
-    }
+namespace nexo::assets {
+    class Asset;
 
-    AssetUUID Asset::getUUID() const
-    {
-        return m_uuid;
-    }
-
-    void Asset::setID(AssetUUID id)
-    {
-    }
-} // namespace nexo::editor
+    template<typename T>
+    concept DerivedFromAsset = std::derived_from<T, nexo::assets::Asset>;
+} // namespace nexo::assets

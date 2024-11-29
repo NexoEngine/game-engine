@@ -20,8 +20,6 @@ set(SRCS
     editor/src/DocumentWindows/SceneTreeWindow.cpp
     editor/src/DocumentWindows/PopupManager.cpp
     editor/src/DocumentWindows/SceneViewManager.cpp
-    editor/src/assets/AssetManager.cpp
-    editor/src/assets/Asset.cpp
     editor/src/DocumentWindows/AssetManagerWindow.cpp
 )
 
