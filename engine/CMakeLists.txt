@@ -19,6 +19,9 @@ set(COMMON_SOURCES
         engine/src/Application.cpp
         engine/src/Application.cpp
         engine/src/renderer/Window.cpp
+        engine/src/assets/Asset.cpp
+        engine/src/assets/AssetManager.cpp
+        engine/src/assets/AssetRef.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
         engine/src/core/event/SignalEvent.cpp
