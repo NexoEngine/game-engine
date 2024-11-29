@@ -194,20 +194,20 @@ jobs:
         run: |
           $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
           
-          # Start the process and wait for up to 10 seconds
+          # Test the close behavior of the NEXO Editor
           $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
-          if ($process.WaitForExit(10000)) {
-            # Exit with the process exit code
-            if ($process.ExitCode -ne 0) {
-              Write-Error "Process exited with code $($process.ExitCode)"
-            }
-            exit $process.ExitCode
-          } else {
-            # If the process doesn't exit within 10 seconds, terminate it
-            Stop-Process -Id $process.Id -Force
+          $exited = $process.WaitForExit(10000)
+          if ($exited) {
+            Write-Error "NEXO Editor exited before timeout with code $($process.ExitCode)"
+            exit 1
           }
-
-          # Exit with success
+          $process.CloseMainWindow()
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) {
+            Write-Error "NEXO Editor exited at close window with code $($process.ExitCode)"
+            exit 1
+          }
+          Write-Output "NEXO Editor gracefully closed with window close"
           exit 0
 
   test-deb-installer:
