@@ -24,6 +24,7 @@ jobs:
           - language: c-cpp
             build-mode: autobuild
             compiler: gcc
+            version: 13
             os: ubuntu-latest
     steps:
       - name: Checkout repository
