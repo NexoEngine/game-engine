@@ -29,6 +29,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Fetch all history for all tags and branches of vcpkg
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow
+
+      - name: Add Ubuntu toolchain repository
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        run: |
+          sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+
       - name: Pre-install GCC with cache
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
