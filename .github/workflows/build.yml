@@ -281,4 +281,4 @@ jobs:
         uses: coactions/setup-xvfb@v1
         timeout-minutes: 1
         with:
-          run: './run-nexo.sh'
+          run: ./run-nexo.sh
