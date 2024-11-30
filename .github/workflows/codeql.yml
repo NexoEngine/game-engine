@@ -74,6 +74,14 @@ jobs:
           cd vcpkg
           git fetch --prune --unshallow
 
+      - name: Install latest CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ~3.30.0
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
