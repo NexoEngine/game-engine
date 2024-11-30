@@ -4,8 +4,8 @@ on: [pull_request]
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }}/${{ matrix.compiler }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    name: Analyze (${{ matrix.language }}/${{ matrix.compiler }}) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     permissions:
       # required for all workflows
       security-events: write
@@ -24,6 +24,7 @@ jobs:
           - language: c-cpp
             build-mode: autobuild
             compiler: gcc
+            os: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
