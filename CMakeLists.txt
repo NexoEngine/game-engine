@@ -48,6 +48,7 @@ if (GIT_SUBMODULE)
 endif()
 
 # SETUP VCPKG
+message(STATUS "Bootstraping VCPKG")
 if (WIN32)
     execute_process(
             COMMAND .\\vcpkg\\bootstrap-vcpkg.bat
@@ -61,7 +62,9 @@ else()
 endif()
 
 # RUNNING VCPKG
+message(STATUS "Running VCPKG...")
 include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+message(STATUS "VCPKG done.)
 
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
