@@ -1,6 +1,6 @@
 name: "CodeQL Advanced Analysis"
 
-on: [pull_request]
+on: [push]
 
 jobs:
   analyze:
