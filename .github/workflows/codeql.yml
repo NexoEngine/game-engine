@@ -30,11 +30,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Fetch all history for all tags and branches of vcpkg
-        run: |
-          cd vcpkg
-          git fetch --prune --unshallow
-
       - name: Add Ubuntu toolchain repository
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
         run: |
@@ -71,6 +66,14 @@ jobs:
         with:
           version: ${{ matrix.version }}
           platform: x64
+
+      - name: Fetch all history for all tags and branches of vcpkg
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow    
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
