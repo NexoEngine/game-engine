@@ -42,7 +42,9 @@ namespace nexo::renderer {
 
     OpenGlTexture2D::OpenGlTexture2D(const std::string &path)
     {
-        int width, height, channels = 0;
+        int width = 0;
+        int height = 0;
+        int channels = 0;
         //TODO: Set this conditionnaly based on the type of texture
         //stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
