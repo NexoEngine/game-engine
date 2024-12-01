@@ -43,4 +43,3 @@ target_link_libraries(ecsExample PRIVATE nexoRenderer)
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
 set_target_properties(ecsExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
-

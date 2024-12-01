@@ -2,36 +2,156 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 20,
-        "patch": 0
+        "minor": 28
     },
     "configurePresets": [
         {
-            "name": "vcpkg",
+            "name": "default",
+            "description": "Default configuration with vcpkg",
             "hidden": false,
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
                     "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                },
+                "CMAKE_EXPORT_COMPILE_COMMANDS": {
+                    "type": "BOOL",
+                    "value": true
+                },
+                "NEXO_BOOTSTRAP_VCPKG": {
+                    "type": "BOOL",
+                    "value": true
+                }
+            }
+        },
+        {
+            "name": "coverage",
+            "description": "Enable coverage for binaries",
+            "inherits": "default",
+            "cacheVariables": {
+                "NEXO_COVERAGE": {
+                    "type": "BOOL",
+                    "value": true
+                }
+            }
+        },
+        {
+            "name": "minimal",
+            "description": "Minimal configuration without tests or examples",
+            "inherits": "default",
+            "cacheVariables": {
+                "NEXO_BUILD_TESTS": {
+                    "type": "BOOL",
+                    "value": false
+                },
+                "NEXO_BUILD_EXAMPLES": {
+                    "type": "BOOL",
+                    "value": false
                 }
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "vcpkg",
-            "configurePreset": "vcpkg"
+            "name": "Release",
+            "configurePreset": "default",
+            "description": "Build in release mode",
+            "buildType": "Release"
+        },
+        {
+            "name": "Debug",
+            "configurePreset": "default",
+            "description": "Build in debug mode",
+            "buildType": "Debug"
+        },
+        {
+            "name": "Coverage",
+            "configurePreset": "coverage",
+            "description": "Build in debug mode with coverage enabled",
+            "buildType": "Debug"
         }
     ],
     "testPresets": [
         {
-            "name": "vcpkg",
-            "configurePreset": "vcpkg",
+            "name": "DebugTests",
+            "configurePreset": "default",
+            "description": "Run tests in debug mode",
             "configuration": "Debug",
             "output": {
                 "outputOnFailure": true
             }
+        },
+        {
+            "name": "CoverageTests",
+            "configurePreset": "coverage",
+            "description": "Run tests in debug mode with coverage",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "build-debug",
+            "description": "Configure and build in debug mode",
+            "steps": [
+                {
+                    "type": "configure",
+                    "preset": "default"
+                },
+                {
+                    "type": "build",
+                    "preset": "Debug"
+                }
+            ]
+        },
+        {
+            "name": "build-release",
+            "description": "Configure and build in release mode",
+            "steps": [
+                {
+                    "type": "configure",
+                    "preset": "default"
+                },
+                {
+                    "type": "build",
+                    "preset": "Release"
+                }
+            ]
+        },
+        {
+            "name": "build-coverage",
+            "description": "Configure, build, and run with coverage enabled",
+            "steps": [
+                {
+                    "type": "configure",
+                    "preset": "coverage"
+                },
+                {
+                    "type": "build",
+                    "preset": "Coverage"
+                },
+                {
+                    "type": "test",
+                    "preset": "CoverageTests"
+                }
+            ]
+        },
+        {
+            "name": "minimal-build",
+            "description": "Configure and build without tests or examples",
+            "steps": [
+                {
+                    "type": "configure",
+                    "preset": "minimal"
+                },
+                {
+                    "type": "build",
+                    "preset": "Release"
+                }
+            ]
         }
     ]
 }

@@ -81,7 +81,7 @@ target_link_libraries(nexoEditor PRIVATE Boost::dll)
 
 include_directories(include)
 
-if(GRAPHICS_API STREQUAL "OpenGL")
+if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoEditor PRIVATE GRAPHICS_API_OPENGL)
 endif()
 
