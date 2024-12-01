@@ -55,20 +55,20 @@ namespace nexo::editor {
 
     Editor::~Editor()
     {
-        LOG(NEXO_INFO, "Closing editor");
-        destroy();
-        ImGuiBackend::shutdown();
-
-        loguru::remove_callback(LOGURU_CALLBACK_NAME);
+        LOG(NEXO_DEV, "Editor destroyed");
     }
 
-    void Editor::destroy()
+    void Editor::shutdown()
     {
+        LOG(NEXO_INFO, "Closing editor");
         for (const auto &[_, window]: m_windows)
         {
             window->shutdown();
         }
         LOG(NEXO_INFO, "All windows destroyed");
+        ImGuiBackend::shutdown();
+        loguru::remove_callback(LOGURU_CALLBACK_NAME);
+        LOG(NEXO_INFO, "Editor closed");
     }
 
     Editor::Editor()

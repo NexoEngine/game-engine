@@ -49,7 +49,7 @@ namespace nexo::editor {
 
             void update();
             void render();
-            void destroy();
+            void shutdown();
 
             void registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window);
             void addLog(const LogMessage& message);
