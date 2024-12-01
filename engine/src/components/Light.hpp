@@ -13,8 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#define MAX_DIRECTIONAL_LIGHTS 8
-#define MAX_POINT_LIGHTS 8
+constexpr unsigned int MAX_DIRECTIONAL_LIGHTS = 8;
+constexpr unsigned int MAX_POINT_LIGHTS = 8;
 
 namespace nexo::components {
     enum class LightType {
