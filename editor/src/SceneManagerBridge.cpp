@@ -104,23 +104,16 @@ namespace nexo::editor {
 
     void SceneManagerBridge::renameObject(const SelectionType type, VariantData &data, const std::string &newName) const
     {
-        if (type == SelectionType::SCENE)
+        if (type == SelectionType::SCENE && std::holds_alternative<SceneProperties>(data))
         {
-            if (std::holds_alternative<SceneProperties>(data))
-            {
-                const auto &[sceneId, _] = std::get<SceneProperties>(data);
-                getSceneManager().getScene(sceneId).name = newName;
-            }
+            const auto &[sceneId, _] = std::get<SceneProperties>(data);
+            getSceneManager().getScene(sceneId).name = newName;
         }
-        else if (type == SelectionType::LAYER)
+        else if (type == SelectionType::LAYER && std::holds_alternative<LayerProperties>(data))
         {
-            if (std::holds_alternative<LayerProperties>(data))
-            {
-                auto [sceneProps, layerId] = std::get<LayerProperties>(data);
-                getSceneManager().setLayerName(sceneProps.sceneId, layerId, newName);
-            }
+            auto [sceneProps, layerId] = std::get<LayerProperties>(data);
+            getSceneManager().setLayerName(sceneProps.sceneId, layerId, newName);
         }
-
     }
 
 }
