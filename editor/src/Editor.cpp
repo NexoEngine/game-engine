@@ -74,7 +74,6 @@ namespace nexo::editor {
         setupStyle();
         LOG(NEXO_INFO, "Style initialized");
         LOG(NEXO_INFO, "Editor initialized");
-        //LOG(NEXO_FATAL, "Fatal error log test");
         LOG(NEXO_ERROR, "Error log test");
         LOG(NEXO_WARN, "Warning log test");
         m_sceneManagerBridge = std::make_shared<SceneManagerBridge>();
