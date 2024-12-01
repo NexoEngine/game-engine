@@ -153,9 +153,6 @@ namespace nexo::layer {
             {
                 return m_listenedEventTypes;
             }
-
-        private:
-            std::unordered_set<std::type_index> m_listenedEventTypes;
     };
 
 }
