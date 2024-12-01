@@ -22,7 +22,15 @@ set(SRCS
         editor/src/DocumentWindows/SceneViewManager.cpp
 )
 
+# Windows App Icon
+if (WIN32)
+    list(APPEND SRCS ${CMAKE_SOURCE_DIR}/assets/nexo.rc)
+endif()
+
 add_executable(nexoEditor ${SRCS})
+set(WAYLAND_APP_ID "app.nexo-engine.editor")
+# Add custom DEFINE for the app id
+add_compile_definitions(WAYLAND_APP_ID="${WAYLAND_APP_ID}")
 
 set_target_properties(nexoEditor
         PROPERTIES
@@ -79,4 +87,3 @@ endif()
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
 set_target_properties(nexoEditor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
-

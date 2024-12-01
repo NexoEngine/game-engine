@@ -14,6 +14,7 @@
 
 #include "Application.hpp"
 
+#include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
 
 #include "components/Components.hpp"
@@ -34,6 +35,15 @@ namespace nexo {
         m_eventManager->registerListener<event::EventMouseClick>(this);
         m_eventManager->registerListener<event::EventMouseScroll>(this);
         m_eventManager->registerListener<event::EventMouseMove>(this);
+        LOG(NEXO_DEV, "Debug listeners registered");
+    }
+
+    void Application::registerSignalListeners()
+    {
+        m_eventManager->registerListener<event::EventAnySignal>(this);
+        m_eventManager->registerListener<event::EventSignalTerminate>(this);
+        m_eventManager->registerListener<event::EventSignalInterrupt>(this);
+        LOG(NEXO_DEV, "Signal listeners registered");
     }
 
     void Application::registerEcsComponents()
@@ -143,33 +153,16 @@ namespace nexo {
         m_window = renderer::Window::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
-        LOG(NEXO_DEV, "Debug listeners registered");
-        event::Input::init(m_window);
-
-        // Window and glad init
-        m_window->init();
-        registerWindowCallbacks();
-        m_window->setVsync(false);
-
-#ifdef GRAPHICS_API_OPENGL
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
-        }
-		LOG(NEXO_INFO, "OpenGL context initialized with glad");
-        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
-#endif
-
-        renderer::Renderer::init();
+        registerSignalListeners();
 
         // Debug flags
         //m_eventDebugFlags |= DEBUG_LOG_KEYBOARD_EVENT;
 
         m_coordinator = std::make_shared<ecs::Coordinator>();
-        m_coordinator->init();
+
         ecs::System::coord = m_coordinator;
-        registerEcsComponents();
-        registerSystems();
-        m_sceneManager.setCoordinator(m_coordinator);
+
+        LOG(NEXO_DEV, "Application created");
     }
 
     void Application::displayProfileResults()
@@ -183,6 +176,33 @@ namespace nexo {
         }
     }
 
+    void Application::init()
+    {
+        event::Input::init(m_window);
+        event::SignalHandler::getInstance()->registerEventManager(m_eventManager);
+
+        // Window and glad init
+        m_window->init();
+        registerWindowCallbacks();
+        m_window->setVsync(false);
+
+#ifdef GRAPHICS_API_OPENGL
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+            THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
+        }
+        LOG(NEXO_INFO, "OpenGL context initialized with glad");
+        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
+#endif
+
+        renderer::Renderer::init();
+
+        m_coordinator->init();
+        registerEcsComponents();
+        registerSystems();
+        m_sceneManager.setCoordinator(m_coordinator);
+
+        LOG(NEXO_DEV, "Application initialized");
+    }
 
     void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
     {

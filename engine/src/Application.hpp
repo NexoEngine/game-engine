@@ -20,6 +20,7 @@
 
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
+#include "core/event/SignalEvent.hpp"
 #include "renderer/Buffer.hpp"
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
@@ -53,10 +54,15 @@ namespace nexo {
         event::EventWindowResize,
         event::EventMouseClick,
         event::EventMouseScroll,
-        event::EventMouseMove
+        event::EventMouseMove,
+        event::EventAnySignal,
+        event::EventSignal<SIGTERM>,
+        event::EventSignalInterrupt
     ) {
         public:
             ~Application() override = default;
+
+            void init();
 
             void run(scene::SceneId sceneId, RenderingType renderingType);
 
@@ -99,11 +105,32 @@ namespace nexo {
                     std::cout << event << std::endl;
             }
 
+            void handleEvent(event::EventAnySignal &event) override
+            {
+                LOG(NEXO_INFO, "Received signal via {}", event);
+            }
+
+            void handleEvent(event::EventSignal<SIGTERM>&) override
+            {
+                LOG(NEXO_INFO, "Received terminate signal");
+                m_isRunning = false;
+                //m_window->close();
+            }
+
+            void handleEvent(event::EventSignalInterrupt&) override
+            {
+                LOG(NEXO_INFO, "Received interrupt signal");
+                m_isRunning = false;
+                //m_window->close();
+            }
+
             [[nodiscard]] std::shared_ptr<event::EventManager> getEventManager() const { return m_eventManager; };
             void setEventDebugFlags(const int flags) {m_eventDebugFlags = flags; };
             void removeEventDebugFlags(const int flag) {m_eventDebugFlags &= flag; };
             void addEventDebugFlag(const int flag) {m_eventDebugFlags |= flag; };
             void resetEventDebugFlags() {m_eventDebugFlags = 0; };
+
+            bool isRunning() const { return m_isRunning; };
 
             ecs::Entity createEntity();
             void destroyEntity(ecs::Entity entity);
@@ -164,6 +191,7 @@ namespace nexo {
 
         private:
             void registerAllDebugListeners();
+            void registerSignalListeners();
             void registerEcsComponents();
             void registerWindowCallbacks();
             void registerSystems();

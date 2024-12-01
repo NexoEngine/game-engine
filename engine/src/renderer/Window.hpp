@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <memory>
 
 #include "core/event/Event.hpp"
@@ -76,11 +77,13 @@ namespace nexo::renderer {
 
             virtual void getDpiScale(float *x, float *y) const = 0;
 
+            virtual void setWindowIcon(const std::filesystem::path& iconPath) = 0;
             virtual void setVsync(bool enabled) = 0;
             [[nodiscard]] virtual bool isVsync() const = 0;
 
 
             [[nodiscard]] virtual bool isOpen() const = 0;
+            virtual void close() = 0;
 
             [[nodiscard]] virtual void *window() const = 0;
 
@@ -104,5 +107,11 @@ namespace nexo::renderer {
             virtual void setMouseClickCallback(MouseClickCallback callback) = 0;
             virtual void setMouseScrollCallback(MouseScrollCallback callback) = 0;
             virtual void setMouseMoveCallback(MouseMoveCallback callback) = 0;
+
+            // Linux specific methods
+#ifdef __linux__
+            virtual void setWaylandAppId(const char *appId) = 0;
+            virtual void setWmClass(const char *className, const char *instanceName) = 0;
+#endif
     };
 }

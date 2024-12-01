@@ -3,8 +3,6 @@ src/server/Makefile
 src/client/client
 src/client/Makefile
 
-instdir/
-
 # Prerequisites
 *.d
 
@@ -174,3 +172,7 @@ Makefile
 *.tar
 
 html/
+
+_CPack_Packages/
+
+myinstall/

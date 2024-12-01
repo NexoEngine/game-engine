@@ -70,7 +70,6 @@ namespace nexo::editor {
 
             std::vector<LogMessage> m_logs;
 
-            std::shared_ptr<Application>  m_app;
             std::shared_ptr<SceneManagerBridge> m_sceneManagerBridge;
     };
 }

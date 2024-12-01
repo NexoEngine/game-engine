@@ -13,6 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlWindow.hpp"
+
+#include <stb_image.h>
+#include <core/exceptions/Exceptions.hpp>
+
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
@@ -82,7 +86,15 @@ namespace nexo::renderer {
     {
         if (!glfwInit())
             THROW_EXCEPTION(GraphicsApiInitFailure, "OPENGL");
+        LOG(NEXO_DEV, "Initializing opengl window");
         glfwSetErrorCallback(glfwErrorCallback);
+
+#ifdef __linux__
+        glfwWindowHintString(GLFW_WAYLAND_APP_ID, _waylandAppId.c_str());
+        glfwWindowHintString(GLFW_X11_CLASS_NAME, _x11ClassName.c_str());
+        glfwWindowHintString(GLFW_X11_INSTANCE_NAME, _x11InstanceName.c_str());
+#endif
+
 		// TODO: add in documentation, if a function of opengl segv, it might be bcs this hints a version older than the function's opengl version
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -129,8 +141,42 @@ namespace nexo::renderer {
         glfwGetWindowContentScale(_openGlWindow, x, y);
     }
 
+    void OpenGlWindow::setWindowIcon(const std::filesystem::path& iconPath)
+    {
+        GLFWimage icon;
+        const auto iconStringPath = iconPath.string();
+        icon.pixels = stbi_load(iconStringPath.c_str(), &icon.width, &icon.height, nullptr, 4);
+        if (!icon.pixels) {
+            THROW_EXCEPTION(StbiLoadException,
+                std::format("Failed to load icon '{}': {}",
+                    iconStringPath, stbi_failure_reason()));
+        }
+        if (icon.width == 0 || icon.height == 0) {
+            LOG(NEXO_WARN, "Icon '{}' has a size of 0x0", iconStringPath);
+        }
+        LOG(NEXO_DEV, "Window icon loaded from '{}', size {}x{}", iconStringPath, icon.width, icon.height);
+        glfwSetWindowIcon(_openGlWindow, 1, &icon);
+        stbi_image_free(icon.pixels);
+    }
+
     void OpenGlWindow::setErrorCallback(void *fctPtr)
     {
         glfwSetErrorCallback(reinterpret_cast<GLFWerrorfun>(fctPtr));
     }
+
+    // Linux specific method
+#ifdef __linux__
+    void OpenGlWindow::setWaylandAppId(const char* appId)
+    {
+        _waylandAppId = appId;
+        LOG(NEXO_DEV, "Wayland app id set to '{}'", appId);
+    }
+
+    void OpenGlWindow::setWmClass(const char* className, const char* instanceName)
+    {
+        _x11ClassName = className;
+        _x11InstanceName = instanceName;
+        LOG(NEXO_DEV, "X11 class name set to '{}' and instance name set to '{}'", className, instanceName);
+    }
+#endif
 }

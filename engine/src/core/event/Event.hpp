@@ -104,6 +104,12 @@ namespace nexo::event {
             m_eventQueue.push(event);
         }
 
+        // Use variadic arguments to forward the arguments to the constructor of the event
+        template <typename EventType, typename... Args>
+        void emitEvent(Args&&... args) {
+            emitEvent(std::make_shared<EventType>(std::forward<Args>(args)...));
+        }
+
         void dispatchEvents(scene::Scene &scene, bool isActive);
 
     private:

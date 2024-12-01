@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=NEXO Engine
+Comment=@CPACK_PACKAGE_DESCRIPTION_SUMMARY@
+Exec=@DEB_EXECUTABLE_PATH@
+Icon=nexo
+Terminal=false
+Type=Application
+Categories=@DEB_CATEGORIES@
+StartupWMClass=@WAYLAND_APP_ID@

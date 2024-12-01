@@ -1,0 +1,70 @@
+#### CMakeCPackOptions.cmake.in ###############################################
+#
+#  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+#  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+#  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+#  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+#  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+#
+#  Author:      Guillaume HEIN
+#  Date:        25/11/2024
+#  Description: CMake to configure CPack options for different package generators.
+#				This is a template file that is processed by CMake to generate the
+#				final CMakeCPackOptions.cmake file.
+#
+###############################################################################
+
+# Per-generator CPack configuration file. See CPACK_PROJECT_CONFIG_FILE documented at
+# http://www.cmake.org/cmake/help/v2.8.12/cpack.html#variable:CPACK_PROJECT_CONFIG_FILE
+#
+# All common CPACK_* variables are set in CMakeLists.txt already. This file only
+# overrides some of these to provide package generator specific settings.
+
+# See https://cmake.org/cmake/help/latest/command/configure_file.html
+# @VAR@ is replaced by CMake with the value of VAR in parent CMake when configure_file is called.
+
+# ------------------------------------------------------------------------------
+
+message(STATUS "Configuring CPack options for generator: ${CPACK_GENERATOR}")
+if (CPACK_GENERATOR MATCHES "DEB")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_VENDOR} <${CPACK_PACKAGE_CONTACT}>")
+    set(
+            CPACK_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE
+    )
+    set(CPACK_DEBIAN_PACKAGE_MULTIARCH "foreign")
+
+    message(STATUS "Configuring DEB package generator")
+
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/share/nexo-engine")
+    message(STATUS "Setting CPACK_PACKAGING_INSTALL_PREFIX to ${CPACK_PACKAGING_INSTALL_PREFIX}")
+    if("@GRAPHICS_API@" STREQUAL "OpenGL")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "mesa-utils, libglfw3")
+    else()
+        message(WARNING "Unknown graphics API: @GRAPHICS_API@, cannot set dependencies")
+    endif()
+    message(STATUS "Setting CPACK_DEBIAN_PACKAGE_DEPENDS to ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
+    set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+	# Add components for DEB package generator
+    set(CPACK_DEB_ENABLE_COMPONENTS ON)
+    set(CPACK_DEB_COMPONENT_INSTALL ON)
+    set(CPACK_COMPONENTS_ALL
+        Unspecified
+        deb-symlink
+        deb-icon
+        deb-desktop-entry
+    )
+    set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)
+elseif (CPACK_GENERATOR MATCHES "NSIS")
+    set(CPACK_NSIS_COMPONENT_INSTALL ON)
+    set(CPACK_COMPONENTS_ALL
+        Unspecified
+        documentation
+        headers
+    )
+else()
+    message(WARNING "Unknown CPACK_GENERATOR: ${CPACK_GENERATOR}, cannot configure package generator specific settings. This may result in a broken package.")
+endif()

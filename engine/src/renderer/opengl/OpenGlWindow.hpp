@@ -79,6 +79,8 @@ namespace nexo::renderer {
 
             void getDpiScale(float *x, float *y) const override;
 
+            void setWindowIcon(const std::filesystem::path& iconPath) override;
+
             /**
             * @brief Enables or disables vertical synchronization (VSync).
             *
@@ -92,6 +94,7 @@ namespace nexo::renderer {
 
 
             [[nodiscard]] bool isOpen() const override { return !glfwWindowShouldClose(_openGlWindow);};
+            void close() override { glfwSetWindowShouldClose(_openGlWindow, GLFW_TRUE); };
 
             [[nodiscard]] void *window() const override { return _openGlWindow; };
             void setErrorCallback(void *fctPtr) override;
@@ -101,6 +104,16 @@ namespace nexo::renderer {
             void setMouseClickCallback(MouseClickCallback callback) override { _props.mouseClickCallback = std::move(callback); }
             void setMouseScrollCallback(MouseScrollCallback callback) override { _props.mouseScrollCallback = std::move(callback); }
             void setMouseMoveCallback(MouseMoveCallback callback) override { _props.mouseMoveCallback = std::move(callback); }
+
+            // Linux specific method
+#ifdef __linux__
+            void setWaylandAppId(const char* appId) override;
+            void setWmClass(const char* className, const char* instanceName) override;
+        private:
+            std::string _waylandAppId = "nexo";
+            std::string _x11ClassName = "nexo";
+            std::string _x11InstanceName = "nexo";
+#endif
         private:
             GLFWwindow *_openGlWindow{};
             WindowProperty _props;

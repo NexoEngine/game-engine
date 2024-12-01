@@ -174,4 +174,10 @@ namespace nexo::renderer {
                 "[" + backendApi + "] Data size does not match the texture size: " + std::to_string(dataSize) + " != " +
                 std::to_string(expectedSize), file, line) {};
     };
+
+    class StbiLoadException : public Exception {
+        public:
+            explicit StbiLoadException(const std::string &msg, const char *file = __FILE__, const int line = __LINE__)
+                : Exception("STBI load failed: " + msg, file, line) {}
+    };
 }

@@ -28,8 +28,11 @@ namespace nexo::layer {
 
     void LayerStack::pushLayer(const std::shared_ptr<Layer>& layer)
     {
-        // Insert the layer just after the overlays
-        m_layerInsert = m_layers.emplace(m_layerInsert, layer);
+        if (m_layers.empty())
+            m_layerInsert = m_layers.emplace(m_layers.begin(), layer);
+        else
+            // Insert the layer just after the overlays
+                m_layerInsert = m_layers.emplace(m_layerInsert, layer);
     }
 
     void LayerStack::pushOverlay(const std::shared_ptr<Layer>& overlay)
