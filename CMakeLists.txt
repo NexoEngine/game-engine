@@ -1,43 +1,54 @@
-cmake_minimum_required(VERSION 3.20)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    message(STATUS "GCC/Clang detected, adding compile flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" -Wmissing-field-initializers)
-endif()
+cmake_minimum_required(VERSION 3.28)
 
 # PROJECT
 project(client CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message(STATUS "GCC/Clang detected, adding compile flags")
+    add_compile_options(--std=c++20 -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fexperimental-library)
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "MSVC detected, adding compile flags")
+    add_compile_options(/std:c++20 /W4 /Zi /Zc:preprocessor)
+else()
+    message(FATAL_ERROR "Unsupported compiler ${CMAKE_CXX_COMPILER_ID}")
+endif()
+
+set(GRAPHICS_API "OpenGL")
+
+set(GIT_SUBMODULE OFF)
 
 # SETUP GIT SUBMODULES
+if (GIT_SUBMODULE)
+    find_package(Git QUIET)
 
-find_package(Git QUIET)
-
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-    # Update submodules as needed
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule sync --recursive
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule sync --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+        # Update submodules as needed
+        option(GIT_SUBMODULE "Check submodules during build" ON)
+        if(GIT_SUBMODULE)
+            message(STATUS "Submodule update")
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule sync --recursive
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                            RESULT_VARIABLE GIT_SUBMOD_RESULT)
+            if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+                message(FATAL_ERROR "git submodule sync --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+            endif()
+            execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive --remote
+                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                            RESULT_VARIABLE GIT_SUBMOD_RESULT)
+            if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+                message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+            endif()
         endif()
     endif()
 endif()
 
 # SETUP VCPKG
-
+message(STATUS "Bootstraping VCPKG")
 if (WIN32)
     execute_process(
             COMMAND .\\vcpkg\\bootstrap-vcpkg.bat
@@ -51,27 +62,20 @@ else()
 endif()
 
 # RUNNING VCPKG
-if(WIN32)
-    include("${CMAKE_CURRENT_SOURCE_DIR}\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake")
-else()
-    include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-endif()
+message(STATUS "Running VCPKG...")
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+message(STATUS "VCPKG done.")
 
-# RAYLIB DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
+# SETUP EDITOR
+include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
+# SETUP ENGINE
+include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
+# SETUP EXAMPLE
+include("${CMAKE_CURRENT_SOURCE_DIR}/examples/ecs/CMakeLists.txt")
+# SETUP TESTS
+enable_testing()
+include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 
-# ADOBE IMGUI DOWNLOAD
-#include("${CMAKE_CURRENT_SOURCE_DIR}/external/adobe_imgui/CMakeLists.txt")
+include_directories("./common")
 
-# RLIMGUI DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/rlImGui/CMakeLists.txt")
-
-# IMGUIZMO DOWNLOAD
-include("${CMAKE_CURRENT_SOURCE_DIR}/external/ImGuizmo/CMakeLists.txt")
-
-# SETUP GAME ENGINE GUI
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/CMakeLists.txt")
-# include("${CMAKE_CURRENT_SOURCE_DIR}/src/protoVR/CMakeLists.txt")
-
-# IMGuiVR example
-include("${CMAKE_CURRENT_SOURCE_DIR}/src/game_engine/ImGUIVRExample/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack.cmake")

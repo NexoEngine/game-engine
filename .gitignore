@@ -149,6 +149,7 @@ B-CPP-500_rtype.pdf
 build/
 
 vcpkg*/
+!external/vcpkg-ports
 
 _deps/
 
@@ -171,3 +172,7 @@ Makefile
 *.tar
 
 html/
+
+_CPack_Packages/
+
+myinstall/

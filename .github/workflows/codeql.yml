@@ -1,0 +1,101 @@
+name: "CodeQL Advanced Analysis"
+
+on: [push]
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }}/${{ matrix.compiler }}) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: c-cpp
+            build-mode: autobuild
+            compiler: gcc
+            version: 13
+            os: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Add Ubuntu toolchain repository
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        run: |
+          sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+
+      - name: Pre-install GCC with cache
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
+            libstdc++-13-dev libasan8 libatomic1 libcc1-0 libgcc-13-dev \
+            libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 \
+            libstdc++-13-dev libstdc++6 libtsan2 libubsan1
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Install required system dependencies for Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxrandr-dev libx11-dev \
+            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
+            libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
+            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+            libegl1-mesa-dev
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Set up GCC
+        if: ${{ matrix.compiler == 'gcc' }}
+        id: set-up-gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.version }}
+          platform: x64
+
+      - name: Fetch all history for all tags and branches of vcpkg
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow
+
+      - name: Install latest CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ~3.30.0
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
+
+          # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
