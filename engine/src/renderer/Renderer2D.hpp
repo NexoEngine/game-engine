@@ -96,7 +96,7 @@ namespace nexo::renderer {
             *
             * Ensures proper cleanup of the internal storage and associated buffers.
             */
-            ~Renderer2D();
+            ~Renderer2D() = default;
 
             /**
             * @brief Initializes the Renderer2D and allocates required resources.
