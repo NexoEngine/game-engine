@@ -37,7 +37,7 @@ namespace nexo::editor {
     class Editor {
         public:
             Editor();
-            ~Editor();
+            ~Editor() = default;
 
             /**
              * @brief Initializes the engine, setting up necessary components and systems.

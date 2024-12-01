@@ -53,9 +53,6 @@ namespace nexo::editor {
         });
     }
 
-    Editor::~Editor()
-    {}
-
     void Editor::shutdown()
     {
         LOG(NEXO_INFO, "Closing editor");
