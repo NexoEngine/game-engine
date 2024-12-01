@@ -19,6 +19,7 @@
 #include <sstream>
 #include <format>
 #include <string_view>
+#include <source_location>
 
 namespace nexo {
 
@@ -82,7 +83,7 @@ namespace nexo {
             }
 
             template<typename... Args>
-            static void logWithFormat(const LogLevel level, const char *file, const int line, const std::string_view fmt, Args &&... args)
+            static void logWithFormat(const LogLevel level, const std::source_location loc, const std::string_view fmt, Args &&... args)
             {
                 auto transformed = std::tuple{toFormatFriendly(std::forward<Args>(args))...};
 
@@ -97,7 +98,7 @@ namespace nexo {
                 else
                 {
                     std::stringstream ss;
-                    ss << getFileName(file) << ":" << line << " - " << message;
+                    ss << getFileName(loc.file_name()) << ":" << loc.line() << " - " << message;
                     logString(level, ss.str());
                 }
             }
@@ -115,7 +116,7 @@ namespace nexo {
 }
 
 #define LOG(level, fmt, ...) \
-    nexo::Logger::logWithFormat(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+    nexo::Logger::logWithFormat(level, std::source_location::current(), fmt, ##__VA_ARGS__)
 
 #define LOG_EXCEPTION(exception) \
     LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage());
