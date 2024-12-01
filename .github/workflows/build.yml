@@ -98,10 +98,10 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
 
-      - name: CMake Config and build with preset 'Coverage' for tests
+      - name: CMake Workflow with preset 'build-coverage' for tests
         uses: lukka/run-cmake@v10
         with:
-          buildPreset: 'Coverage'
+          workflowPreset: 'build-coverage'
         env:
           CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}

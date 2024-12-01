@@ -22,6 +22,14 @@
                 "NEXO_BOOTSTRAP_VCPKG": {
                     "type": "BOOL",
                     "value": true
+                },
+                "NEXO_BUILD_TESTS": {
+                    "type": "BOOL",
+                    "value": true
+                },
+                "NEXO_BUILD_EXAMPLES": {
+                    "type": "BOOL",
+                    "value": true
                 }
             }
         },
@@ -146,10 +154,6 @@
                 {
                     "type": "build",
                     "name": "Coverage"
-                },
-                {
-                    "type": "test",
-                    "name": "CoverageTests"
                 }
             ]
         },
@@ -164,6 +168,42 @@
                 {
                     "type": "build",
                     "name": "MinimalRelease"
+                }
+            ]
+        },
+        {
+            "name": "test-debug",
+            "description": "Configure, build, and run tests in debug mode",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "default"
+                },
+                {
+                    "type": "build",
+                    "name": "Debug"
+                },
+                {
+                    "type": "test",
+                    "name": "DebugTests"
+                }
+            ]
+        },
+        {
+            "name": "test-coverage",
+            "description": "Configure, build, and run tests in debug mode with coverage",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "coverage"
+                },
+                {
+                    "type": "build",
+                    "name": "Coverage"
+                },
+                {
+                    "type": "test",
+                    "name": "CoverageTests"
                 }
             ]
         }
