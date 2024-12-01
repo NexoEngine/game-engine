@@ -79,6 +79,12 @@
             "configurePreset": "coverage",
             "description": "Build in debug mode with coverage enabled",
             "configuration": "Debug"
+        },
+        {
+            "name": "MinimalRelease",
+            "configurePreset": "minimal",
+            "description": "Build minimal release mode",
+            "configuration": "Release"
         }
     ],
     "testPresets": [
@@ -158,7 +164,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "Release"
+                    "name": "MinimalRelease"
                 }
             ]
         }
