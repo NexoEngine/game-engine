@@ -102,6 +102,7 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           workflowPreset: 'build-coverage'
+          configurePresetAdditionalArgs: ${{matrix.compiler == 'gcc' && '["-G Ninja"]' || '[]'}}
         env:
           CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
