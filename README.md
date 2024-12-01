@@ -47,7 +47,11 @@ To run this project, ensure you have the following:
 ## Build the project
 
 Cloning and building is a breeze:
-1. Clone the repository.
+1. Clone the repository with the submodules.
+```bash
+git clone --recurse-submodules
+```
+
 2. Run cmake to generate the build files.
 ```bash
 cmake -B build
