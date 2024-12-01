@@ -53,7 +53,7 @@ namespace nexo::camera {
             float m_zoomLevel = 1.0f;
             OrthographicCamera m_camera;
 
-            bool m_rotation;
+            bool m_rotationActivated;
 
             glm::vec3 m_cameraPosition = { 0.0f, 0.0f, 0.0f };
             float m_cameraRotation = 0.0f;

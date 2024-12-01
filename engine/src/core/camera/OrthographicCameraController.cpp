@@ -23,7 +23,7 @@ namespace nexo::camera {
     OrthographicCameraController::OrthographicCameraController(const float aspectRatio, const bool rotation)
         : m_aspectRatio(aspectRatio),
         m_camera(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel),
-        m_rotation(rotation)
+        m_rotationActivated(rotation)
     {
         LOG(NEXO_DEBUG, "OrthographicCameraController: new orthographic camera controller created");
         Application::getInstance().getEventManager()->registerListener<event::EventWindowResize>(this);
@@ -48,7 +48,7 @@ namespace nexo::camera {
         if (event::isKeyPressed(NEXO_KEY_D))
             m_cameraPosition -= rightDirection * m_cameraTranslationSpeed * time; // Move right
 
-        if (m_rotation)
+        if (m_rotationActivated)
         {
             if (event::isKeyPressed(NEXO_KEY_E))
                 m_cameraRotation += m_cameraRotationSpeed * time;
