@@ -55,7 +55,7 @@ namespace nexo::components {
 
             glm::vec4 localMousePos = inverseTransform * glm::vec4(mouseWorldPos, 0.0f, 1.0f);
 
-            glm::vec2 halfSize = glm::vec2(0.5f);
+            auto halfSize = glm::vec2(0.5f);
             return localMousePos.x >= -halfSize.x && localMousePos.x <= halfSize.x &&
                    localMousePos.y >= -halfSize.y && localMousePos.y <= halfSize.y;
         }
