@@ -31,7 +31,14 @@ namespace nexo::editor {
             void setUserData(const std::string &popupName, const VariantData &data);
 
         private:
-            std::unordered_map<std::string, bool> m_popups;
-            std::unordered_map<std::string, VariantData> m_userData;
+            struct TransparentHasher {
+                using is_transparent = void; // Required for heterogeneous lookup
+                std::size_t operator()(std::string_view key) const noexcept {
+                    return std::hash<std::string_view>{}(key);
+                }
+            };
+
+            std::unordered_map<std::string, bool, TransparentHasher, std::equal_to<>> m_popups;
+            std::unordered_map<std::string, VariantData, TransparentHasher, std::equal_to<>> m_userData;
     };
 }
