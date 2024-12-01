@@ -34,6 +34,20 @@ namespace nexo::editor {
         std::string prefix;
     };
 
+    struct TransparentStringHash {
+        using is_transparent = void; // Enable heterogeneous lookup
+        std::size_t operator()(const std::string_view key) const noexcept {
+            return std::hash<std::string_view>{}(key);
+        }
+    };
+
+    struct TransparentStringEqual {
+        using is_transparent = void; // Enable heterogeneous lookup
+        bool operator()(const std::string_view lhs, const std::string_view rhs) const noexcept {
+            return lhs == rhs;
+        }
+    };
+
     class Editor {
         public:
             Editor();
@@ -66,7 +80,7 @@ namespace nexo::editor {
 
             bool m_quit = false;
             bool m_showDemoWindow = false;
-            std::unordered_map<std::string, std::shared_ptr<IDocumentWindow>> m_windows;
+            std::unordered_map<std::string, std::shared_ptr<IDocumentWindow>, TransparentStringHash, TransparentStringEqual> m_windows;
 
             std::vector<LogMessage> m_logs;
 
