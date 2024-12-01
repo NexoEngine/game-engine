@@ -74,8 +74,9 @@ namespace nexo::editor {
         // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
         // app.setAmbientLightValue(_sceneID, 1.0f);
-         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
+                                                                  {0.0f, 0.0f, 0.0f});
+        app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
         // const ecs::Entity gunModel = EntityFactory3D::createModel(Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf").string(), {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
         // app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
@@ -116,7 +117,9 @@ namespace nexo::editor {
     void MainScene::setupFramebuffer()
     {
         renderer::FramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth};
+        framebufferSpecs.attachments = {
+            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth
+        };
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
         m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
@@ -312,17 +315,15 @@ namespace nexo::editor {
             const auto transformComponent = coord->tryGetComponent<components::TransformComponent>(entity);
             const auto renderComponent = coord->tryGetComponent<components::RenderComponent>(entity);
 
-            if (renderComponent && transformComponent)
+            if (renderComponent && transformComponent && renderComponent->get().renderable->isClicked(
+                    transformComponent->get(), mouseWorldPosition))
             {
-                if (renderComponent->get().renderable->isClicked(transformComponent->get(), mouseWorldPosition))
-                {
-                    m_sceneManagerBridge->setSelectedEntity(-1);
-                    EntityProperties props{};
-                    props.entity = entity;
-                    m_sceneManagerBridge->setData(props);
-                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
-                    return;
-                }
+                m_sceneManagerBridge->setSelectedEntity(-1);
+                EntityProperties props{};
+                props.entity = entity;
+                m_sceneManagerBridge->setData(props);
+                m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
+                return;
             }
         }
         m_sceneManagerBridge->unselectEntity();
