@@ -131,7 +131,8 @@ namespace nexo::editor {
 
         // Retrieve DPI scale
 
-        float scaleFactorX, scaleFactorY = 0.0f;
+        float scaleFactorX = 0.0f;
+        float scaleFactorY = 0.0f;
         nexo::getApp().getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
         nexo::getApp().getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
             "../assets/nexo.png"));
@@ -274,7 +275,10 @@ namespace nexo::editor {
 
             ImGui::DockBuilderSetNodeSize(dockspaceID, ImGui::GetMainViewport()->Size);
 
-            ImGuiID topNode, rightNode, bottomNode, leftNode;
+            ImGuiID topNode;
+            ImGuiID rightNode;
+            ImGuiID bottomNode;
+            ImGuiID leftNode;
 
             // Split the main dockspace vertically (70% for the main scene)
             ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.7f, &leftNode, &rightNode);
