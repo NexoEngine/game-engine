@@ -28,14 +28,14 @@ endif()
 
 add_compile_options(
         "${NEXO_COMPILER_FLAGS_ALL}"
-        "$<$<CONFIG:DEBUG>:${NEXO_COMPILER_FLAGS_DEBUG}>"
-        "$<$<CONFIG:RELEASE>:${NEXO_COMPILER_FLAGS_RELEASE}>"
+        "$<$<CONFIG:Debug>:${NEXO_COMPILER_FLAGS_DEBUG}>"
+        "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
 )
 
 if (NEXO_COVERAGE)
     message(STATUS "Coverage enabled, adding flags: ${NEXO_COVERAGE_FLAGS}")
-    add_compile_options($<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>)
-    add_link_options($<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>)
+    add_compile_options("$<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>")
+    add_link_options("$<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>")
 endif()
 
 # SETUP GIT SUBMODULES
