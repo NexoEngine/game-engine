@@ -1,0 +1,284 @@
+name: Build, test and Package
+
+on: [push]
+
+jobs:
+  build:
+    name: Build, test and Package
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
+        compiler: [gcc, msvc] # TODO: add clang later
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            version: 13
+          - os: windows-latest
+            compiler: msvc
+            version: 14
+        exclude:
+          - os: ubuntu-latest
+            compiler: msvc
+          - os: windows-latest
+            compiler: gcc
+          - os: macos-latest
+            compiler: gcc
+          - os: macos-latest
+            compiler: msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Add Ubuntu toolchain repository
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        run: |
+          sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+
+      - name: Pre-install GCC with cache
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
+            libstdc++-13-dev libasan8 libatomic1 libcc1-0 libgcc-13-dev \
+            libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 \
+            libstdc++-13-dev libstdc++6 libtsan2 libubsan1
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Set up GCC
+        if: ${{ matrix.compiler == 'gcc' }}
+        id: set-up-gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.version }}
+          platform: x64
+
+      - name: Set up Clang
+        if: ${{ matrix.compiler == 'clang' }}
+        id: set-up-clang
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ matrix.version }}
+          platform: x64
+          cygwin: ${{ matrix.os == 'windows-latest' && 1 || 0 }}
+
+      - name: Set up MSVC
+        if: ${{ matrix.compiler == 'msvc' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: ${{ matrix.version }}
+
+      - name: Install required system dependencies for Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxrandr-dev libx11-dev \
+            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
+            libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
+            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+            libegl1-mesa-dev
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Fetch all history for all tags and branches of vcpkg
+        run: |
+          cd vcpkg
+          git fetch --prune --unshallow
+
+      - name: Install latest CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ~3.30.0
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+
+      - name: Run CMake consuming CMakePreset.json and run vcpkg to build packages
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'vcpkg'
+          buildPreset: 'vcpkg'
+        env:
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: 'ctest -C Debug --output-on-failure'
+          working-directory: 'build'
+
+      - name: Install nexoEditor
+        shell: bash
+        run: |
+          mkdir -p output
+          cmake --install build --component Unspecified --prefix ./output --config Debug -v
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-engine-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          path: |
+            ./output/*
+
+      - name: Generate NSIS installer
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: bash
+        run: |
+          choco install -y nsis
+          cd build
+          cpack -G NSIS --verbose
+
+      - name: Generate DEB installer
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+          cd build
+          cpack -G DEB --verbose
+
+      - name: Upload installer packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-engine-installer-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
+          path: |
+            build/NEXO-Engine-*-win64.exe
+            build/*.deb
+
+  test-nsis-installer:
+    name: Test NSIS installer
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Download NSIS installer
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'nexo-engine-installer-msvc14-windows-latest'
+
+      - name: Run NSIS installer
+        shell: pwsh
+        run: |
+          # Find the first .exe file in the downloaded directory
+          $exePath = Get-ChildItem -Path "${{steps.download.outputs.download-path}}\nexo-engine-installer-msvc14-windows-latest" -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
+      
+          if (-not $exePath) {
+            Write-Error "No .exe file found in the directory."
+            exit 1
+          }
+          
+          # Run the installer with /S for silent mode and /D to specify the installation directory
+          Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
+          
+          # Check if the installation directory exists
+          if (-not (Test-Path "C:\Program Files\NexoEngine")) {
+              Write-Error "Installation directory not found."
+              exit 1
+          }
+
+      - name: Install 7zip
+        run: choco install 7zip.install
+
+      - name: Install Mesa
+        shell: cmd
+        run: |
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
+          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
+          mklink opengl32.dll "x64\opengl32.dll"
+          mklink libglapi.dll "x64\libglapi.dll"
+        working-directory: "C:\\Program Files\\NexoEngine\\bin\\"
+
+      - name: Run NEXO headless
+        shell: pwsh
+        timeout-minutes: 1
+        run: |
+          $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
+          
+          # Test the close behavior of the NEXO Editor
+          $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
+          $exited = $process.WaitForExit(10000)
+          if ($exited) {
+            Write-Error "::error:: NEXO Editor exited before timeout with code $($process.ExitCode)"
+            exit 1
+          }
+          $process.CloseMainWindow()
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) {
+            Write-Error "::error:: NEXO Editor exited at close window with code $($process.ExitCode)"
+            exit 1
+          }
+          Write-Output "NEXO Editor gracefully closed with window close"
+          exit 0
+
+  test-deb-installer:
+    name: Test DEB installer
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download DEB installer
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
+
+      - name: Install DEB package
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
+
+      - name: Write NEXO run script
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: ./run-nexo.sh
+          contents: |
+            #!/bin/bash
+            nexoEditor &
+            process_pid=$!
+            echo "Started NEXO Editor with PID: $process_pid"
+          
+            # Wait for the process for up to 10 seconds
+            timeout=10
+            for ((i=0; i<timeout; i++)); do
+              if ! ps -p $process_pid > /dev/null; then
+                # Process exited before timeout; capture exit code
+                wait $process_pid
+                exit_code=$?
+                echo "::error:: NEXO Editor exited before timeout with code $exit_code"
+                exit 1
+              fi
+              sleep 1
+            done
+            
+            # Send SIGTERM signal to the process
+            kill -SIGTERM $process_pid
+            echo "Sent SIGTERM to process with PID: $process_pid"
+          
+            # Wait for the process to terminate after SIGTERM
+            wait $process_pid
+            exit_code=$?
+            
+            if [ $exit_code -ne 0 ]; then
+              echo "::error:: NEXO Editor exited at SIGTERM with code $exit_code"
+              exit 1
+            fi
+            
+            echo "NEXO Editor gracefully closed with SIGTERM"
+            exit 0
+
+      - name: Set permissions for NEXO run script
+        run: chmod +x ./run-nexo.sh
+
+      - name: Run NEXO headless
+        uses: coactions/setup-xvfb@v1
+        timeout-minutes: 1
+        with:
+          run: ./run-nexo.sh
