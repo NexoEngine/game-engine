@@ -65,12 +65,12 @@ namespace nexo::renderer {
     {
         std::unordered_map<GLenum, std::string> shaderSources;
 
-        const char *typeToken = "#type";
-        const size_t typeTokenLength = strlen(typeToken);
+        constexpr char typeToken[] = "#type";
         size_t pos = src.find(typeToken, 0);
         int currentLine = 1;
         while (pos != std::string::npos)
         {
+            constexpr size_t typeTokenLength = sizeof(typeToken);
             const size_t eol = src.find_first_of("\r\n", pos);
             if (eol == std::string::npos)
                 THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
