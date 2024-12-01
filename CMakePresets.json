@@ -107,14 +107,12 @@
             "description": "Configure and build in debug mode",
             "steps": [
                 {
-                    "name": "Configure Debug",
                     "type": "configure",
-                    "preset": "default"
+                    "name": "default"
                 },
                 {
-                    "name": "Build Debug",
                     "type": "build",
-                    "preset": "Debug"
+                    "name": "Debug"
                 }
             ]
         },
@@ -123,14 +121,12 @@
             "description": "Configure and build in release mode",
             "steps": [
                 {
-                    "name": "Configure Release",
                     "type": "configure",
-                    "preset": "default"
+                    "name": "default"
                 },
                 {
-                    "name": "Build Release",
                     "type": "build",
-                    "preset": "Release"
+                    "name": "Release"
                 }
             ]
         },
@@ -139,19 +135,16 @@
             "description": "Configure, build, and run with coverage enabled",
             "steps": [
                 {
-                    "name": "Configure Coverage",
                     "type": "configure",
-                    "preset": "coverage"
+                    "name": "coverage"
                 },
                 {
-                    "name": "Build Coverage",
                     "type": "build",
-                    "preset": "Coverage"
+                    "name": "Coverage"
                 },
                 {
-                    "name": "Run Coverage Tests",
                     "type": "test",
-                    "preset": "CoverageTests"
+                    "name": "CoverageTests"
                 }
             ]
         },
@@ -160,14 +153,12 @@
             "description": "Configure and build without tests or examples",
             "steps": [
                 {
-                    "name": "Configure Minimal",
                     "type": "configure",
-                    "preset": "minimal"
+                    "name": "minimal"
                 },
                 {
-                    "name": "Build Minimal",
                     "type": "build",
-                    "preset": "Release"
+                    "name": "Release"
                 }
             ]
         }
