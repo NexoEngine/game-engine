@@ -10,6 +10,7 @@
             "description": "Default configuration with vcpkg",
             "hidden": false,
             "binaryDir": "${sourceDir}/build",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
@@ -33,6 +34,10 @@
                 "NEXO_COVERAGE": {
                     "type": "BOOL",
                     "value": true
+                },
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Debug"
                 }
             }
         },
@@ -48,6 +53,10 @@
                 "NEXO_BUILD_EXAMPLES": {
                     "type": "BOOL",
                     "value": false
+                },
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Release"
                 }
             }
         }
@@ -57,19 +66,19 @@
             "name": "Release",
             "configurePreset": "default",
             "description": "Build in release mode",
-            "buildType": "Release"
+            "configuration": "Release"
         },
         {
             "name": "Debug",
             "configurePreset": "default",
             "description": "Build in debug mode",
-            "buildType": "Debug"
+            "configuration": "Debug"
         },
         {
             "name": "Coverage",
             "configurePreset": "coverage",
             "description": "Build in debug mode with coverage enabled",
-            "buildType": "Debug"
+            "configuration": "Debug"
         }
     ],
     "testPresets": [
@@ -98,10 +107,12 @@
             "description": "Configure and build in debug mode",
             "steps": [
                 {
+                    "name": "Configure Debug",
                     "type": "configure",
                     "preset": "default"
                 },
                 {
+                    "name": "Build Debug",
                     "type": "build",
                     "preset": "Debug"
                 }
@@ -112,10 +123,12 @@
             "description": "Configure and build in release mode",
             "steps": [
                 {
+                    "name": "Configure Release",
                     "type": "configure",
                     "preset": "default"
                 },
                 {
+                    "name": "Build Release",
                     "type": "build",
                     "preset": "Release"
                 }
@@ -126,14 +139,17 @@
             "description": "Configure, build, and run with coverage enabled",
             "steps": [
                 {
+                    "name": "Configure Coverage",
                     "type": "configure",
                     "preset": "coverage"
                 },
                 {
+                    "name": "Build Coverage",
                     "type": "build",
                     "preset": "Coverage"
                 },
                 {
+                    "name": "Run Coverage Tests",
                     "type": "test",
                     "preset": "CoverageTests"
                 }
@@ -144,10 +160,12 @@
             "description": "Configure and build without tests or examples",
             "steps": [
                 {
+                    "name": "Configure Minimal",
                     "type": "configure",
                     "preset": "minimal"
                 },
                 {
+                    "name": "Build Minimal",
                     "type": "build",
                     "preset": "Release"
                 }
