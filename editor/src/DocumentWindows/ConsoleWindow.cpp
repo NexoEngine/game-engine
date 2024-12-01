@@ -69,18 +69,19 @@ namespace nexo::editor {
         items.clear();
     }
 
-    void ConsoleWindow::addLog(const char *fmt, ...)
+    void ConsoleWindow::addLog(const char* fmt, ...)
     {
         char buf[1024];
         va_list args;
-        va_start(args, fmt);
-        vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
-        buf[IM_ARRAYSIZE(buf) - 1] = 0;
-        va_end(args);
-        items.emplace_back(buf);
 
+        va_start(args, fmt);
+        snprintf(buf, IM_ARRAYSIZE(buf), "%s", fmt);
+        va_end(args);
+
+        items.emplace_back(buf);
         scrollToBottom = true;
     }
+
 
     void ConsoleWindow::executeCommand(const char *command_line)
     {
