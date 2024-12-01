@@ -14,22 +14,23 @@
 #pragma once
 
 #include <string>
+#include <source_location>
 
 #include "Exception.hpp"
 
 namespace nexo::core {
     class FileNotFoundException final : public Exception {
         public:
-            explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
-                                           const int line = __LINE__)
-                : Exception("File not found: " + filePath, file, line) {}
+            explicit FileNotFoundException(const std::string &filePath,
+                                           const std::source_location loc = std::source_location::current())
+                : Exception("File not found: " + filePath, loc) {}
     };
 
     class LoadModelException final : public Exception {
         public:
             explicit LoadModelException(const std::string &filePath, const std::string &errorStr,
-                                        const char *file = __FILE__, const int line = __LINE__) : Exception(
-                "Failure to load model : " + filePath + " : " + errorStr, file, line) {};
+                                        const std::source_location loc = std::source_location::current()) : Exception(
+                "Failure to load model : " + filePath + " : " + errorStr, loc) {};
     };
 
 

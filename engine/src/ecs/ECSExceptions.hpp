@@ -15,48 +15,45 @@
 
 #include "Exception.hpp"
 
+#include <source_location>
+
 namespace nexo::ecs {
     using Entity = std::uint32_t;
 
     class ComponentNotFound final : public Exception {
         public:
-            explicit ComponentNotFound(const Entity entity, const char *file = __FILE__,
-                                       const int line = __LINE__)
-                : Exception("Component not found for: " + std::to_string(entity), file, line) {}
+            explicit ComponentNotFound(const Entity entity,
+                                       const std::source_location loc = std::source_location::current())
+                : Exception("Component not found for: " + std::to_string(entity), loc) {}
     };
 
     class ComponentNotRegistered final : public Exception {
         public:
-            explicit ComponentNotRegistered(const char *file = __FILE__,
-                                            const int line = __LINE__)
-                : Exception("Component has not been registered before use", file, line) {}
+            explicit ComponentNotRegistered(const std::source_location loc = std::source_location::current())
+                : Exception("Component has not been registered before use", loc) {}
     };
 
     class SingletonComponentNotRegistered final : public Exception {
         public:
-            explicit SingletonComponentNotRegistered(const char *file = __FILE__,
-                                                     const int line = __LINE__)
-                : Exception("Singleton component has not been registered before use", file, line) {}
+            explicit SingletonComponentNotRegistered(const std::source_location loc = std::source_location::current())
+                : Exception("Singleton component has not been registered before use", loc) {}
     };
 
     class SystemNotRegistered final : public Exception {
         public:
-            explicit SystemNotRegistered(const char *file = __FILE__,
-                                         const int line = __LINE__)
-                : Exception("System has not been registered before use", file, line) {}
+            explicit SystemNotRegistered(const std::source_location loc = std::source_location::current())
+                : Exception("System has not been registered before use", loc) {}
     };
 
     class TooManyEntities final : public Exception {
         public:
-            explicit TooManyEntities(const char *file = __FILE__,
-                                     const int line = __LINE__)
-                : Exception("Too many living entities, max is 8191", file, line) {}
+            explicit TooManyEntities(const std::source_location loc = std::source_location::current())
+                : Exception("Too many living entities, max is 8191", loc) {}
     };
 
     class OutOfRange final : public Exception {
         public:
-            explicit OutOfRange(unsigned int index, const char *file = __FILE__,
-                                const int line = __LINE__)
-                : Exception("Index " + std::to_string(index) + " is out of range", file, line) {}
+            explicit OutOfRange(unsigned int index, const std::source_location loc = std::source_location::current())
+                : Exception("Index " + std::to_string(index) + " is out of range", loc) {}
     };
 }

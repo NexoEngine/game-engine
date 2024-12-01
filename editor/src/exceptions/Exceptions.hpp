@@ -16,42 +16,43 @@
 
 #include "Exception.hpp"
 
+#include <source_location>
+
 namespace nexo::editor {
 
     class FileNotFoundException final : public Exception {
         public:
-            explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
-                                           const int line = __LINE__)
-                : Exception("File not found: " + filePath, file, line) {}
+            explicit FileNotFoundException(const std::string &filePath,
+                                           const std::source_location loc = std::source_location::current())
+                : Exception("File not found: " + filePath, loc) {}
     };
 
     class BackendRendererApiNotSupported final : public Exception {
         public:
-            explicit BackendRendererApiNotSupported(const std::string &backendApiName, const char *file = __FILE__,
-                                                    const int line = __LINE__)
-                : Exception("Backend render API not supported: " + backendApiName, file, line) {}
+            explicit BackendRendererApiNotSupported(const std::string &backendApiName,
+                                                    const std::source_location loc = std::source_location::current())
+                : Exception("Backend render API not supported: " + backendApiName, loc) {}
     };
 
     class BackendRendererApiInitFailed final : public Exception {
         public:
-            explicit BackendRendererApiInitFailed(const std::string &backendApiName, const char *file = __FILE__,
-                                                  const int line = __LINE__)
-                : Exception("Backend render API init failed: " + backendApiName, file, line) {}
+            explicit BackendRendererApiInitFailed(const std::string &backendApiName,
+                                                  const std::source_location loc = std::source_location::current())
+                : Exception("Backend render API init failed: " + backendApiName, loc) {}
     };
 
     class BackendRendererApiFontInitFailed final : public Exception {
         public:
-            explicit BackendRendererApiFontInitFailed(const std::string &backendApiName, const char *file = __FILE__,
-                                                      const int line = __LINE__)
-                : Exception("Backend render API font init failed: " + backendApiName, file, line) {}
+            explicit BackendRendererApiFontInitFailed(const std::string &backendApiName,
+                                                      const std::source_location loc = std::source_location::current())
+                : Exception("Backend render API font init failed: " + backendApiName, loc) {}
     };
 
     class BackendRendererApiFatalFailure final : public Exception {
         public:
             explicit BackendRendererApiFatalFailure(const std::string &backendApiName, const std::string &message,
-                                                    const char *file = __FILE__,
-                                                    const int line = __LINE__)
-                : Exception("[" + backendApiName + " FATAL ERROR]" + message, file, line) {}
+                                                    const std::source_location loc = std::source_location::current())
+                : Exception("[" + backendApiName + " FATAL ERROR]" + message, loc) {}
     };
 
 }

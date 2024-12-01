@@ -15,33 +15,35 @@
 
 #include "Exception.hpp"
 
+#include <source_location>
+
 namespace nexo::renderer {
     class FileNotFoundException final : public Exception {
         public:
-            explicit FileNotFoundException(const std::string &filePath, const char *file = __FILE__,
-                                           const int line = __LINE__)
-                : Exception("File not found: " + filePath, file, line) {}
+            explicit FileNotFoundException(const std::string &filePath,
+                                           const std::source_location loc = std::source_location::current())
+                : Exception("File not found: " + filePath, loc) {}
     };
 
     class UnknownGraphicsApi final : public Exception {
         public:
-            explicit UnknownGraphicsApi(const std::string &backendApiName, const char *file = __FILE__,
-                                        const int line = __LINE__)
-                : Exception("Unknown graphics API: " + backendApiName, file, line) {}
+            explicit UnknownGraphicsApi(const std::string &backendApiName,
+                                        const std::source_location loc = std::source_location::current())
+                : Exception("Unknown graphics API: " + backendApiName, loc) {}
     };
 
     class GraphicsApiInitFailure final : public Exception {
         public:
-            explicit GraphicsApiInitFailure(const std::string &backendApiName, const char *file = __FILE__,
-                                            const int line = __LINE__)
-                : Exception("Failed to initialize graphics api: " + backendApiName, file, line) {}
+            explicit GraphicsApiInitFailure(const std::string &backendApiName,
+                                            const std::source_location loc = std::source_location::current())
+                : Exception("Failed to initialize graphics api: " + backendApiName, loc) {}
     };
 
     class GraphicsApiNotInitialized final : public Exception {
         public:
-            explicit GraphicsApiNotInitialized(const std::string &backendApiName, const char *file = __FILE__,
-                                               const int line = __LINE__)
-                : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", file, line)
+            explicit GraphicsApiNotInitialized(const std::string &backendApiName,
+                                               const std::source_location loc = std::source_location::current())
+                : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", loc)
             {}
     };
 
@@ -49,49 +51,49 @@ namespace nexo::renderer {
         public:
             explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
                                                         const unsigned int width, const unsigned int height,
-                                                        const char *file = __FILE__,
-                                                        const int line = __LINE__) : Exception(
+                                                        const std::source_location loc =
+                                                                std::source_location::current()) : Exception(
                 "[" + backendApi + "] Viewport resizing failed: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
+                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), loc) {};
     };
 
     class GraphicsApiWindowInitFailure final : public Exception {
         public:
-            explicit GraphicsApiWindowInitFailure(const std::string &backendApiName, const char *file = __FILE__,
-                                                  const int line = __LINE__)
-                : Exception("Failed to initialize graphics api: " + backendApiName, file, line) {}
+            explicit GraphicsApiWindowInitFailure(const std::string &backendApiName,
+                                                  const std::source_location loc = std::source_location::current())
+                : Exception("Failed to initialize graphics api: " + backendApiName, loc) {}
     };
 
     class InvalidValue final : public Exception {
         public:
             explicit InvalidValue(const std::string &backendApiName, const std::string &msg,
-                                  const char *file = __FILE__, const int line = __LINE__) : Exception(
-                "[" + backendApiName + "] Invalid value: " + msg, file, line) {};
+                                  const std::source_location loc = std::source_location::current()) : Exception(
+                "[" + backendApiName + "] Invalid value: " + msg, loc) {};
     };
 
     class ShaderCreationFailed final : public Exception {
         public:
             explicit ShaderCreationFailed(const std::string &backendApi, const std::string &message,
-                                          const std::string &path = "", const char *file = __FILE__,
-                                          const int line = __LINE__)
-                : Exception("[" + backendApi + "] Failed to create the shader (" + path + "): " + message, file, line)
+                                          const std::string &path = "",
+                                          const std::source_location loc = std::source_location::current())
+                : Exception("[" + backendApi + "] Failed to create the shader (" + path + "): " + message, loc)
             {}
     };
 
     class ShaderInvalidUniform final : public Exception {
         public:
             explicit ShaderInvalidUniform(const std::string &backendApi, const std::string &shaderName,
-                                          const std::string &uniformName, const char *file = __FILE__,
-                                          const int line = __LINE__) : Exception(
+                                          const std::string &uniformName,
+                                          const std::source_location loc = std::source_location::current()) : Exception(
                 "[" + backendApi + "] Failed to retrieve uniform \"" + uniformName + "\" in shader: " + shaderName,
-                file, line) {};
+                loc) {};
     };
 
     class FramebufferCreationFailed final : public Exception {
         public:
-            explicit FramebufferCreationFailed(const std::string &backendApi, const char *file = __FILE__,
-                                               const int line = __LINE__)
-                : Exception("[" + backendApi + "] Failed to create the framebuffer", file, line)
+            explicit FramebufferCreationFailed(const std::string &backendApi,
+                                               const std::source_location loc = std::source_location::current())
+                : Exception("[" + backendApi + "] Failed to create the framebuffer", loc)
             {}
     };
 
@@ -99,30 +101,33 @@ namespace nexo::renderer {
         public:
             explicit FramebufferResizingFailed(const std::string &backendApi, const bool tooBig,
                                                const unsigned int width, const unsigned int height,
-                                               const char *file = __FILE__, const int line = __LINE__) : Exception(
+                                               const std::source_location loc =
+                                                       std::source_location::current()) : Exception(
                 "[" + backendApi + "] Framebuffer resizing failed: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), file, line) {};
+                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), loc) {};
     };
 
     class FramebufferUnsupportedColorFormat final : public Exception {
         public:
-            explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName, const char *file = __FILE__,
-                                                       const int line = __LINE__) : Exception(
-                "[" + backendApiName + "] Unsupported framebuffer color attachment format", file, line) {};
+            explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName,
+                                                       const std::source_location loc =
+                                                               std::source_location::current()) : Exception(
+                "[" + backendApiName + "] Unsupported framebuffer color attachment format", loc) {};
     };
 
     class FramebufferUnsupportedDepthFormat final : public Exception {
         public:
-            explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName, const char *file = __FILE__,
-                                                       const int line = __LINE__) : Exception(
-                "[" + backendApiName + "] Unsupported framebuffer depth attachment format", file, line) {};
+            explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName,
+                                                       const std::source_location loc =
+                                                               std::source_location::current()) : Exception(
+                "[" + backendApiName + "] Unsupported framebuffer depth attachment format", loc) {};
     };
 
     class BufferLayoutEmpty final : public Exception {
         public:
-            explicit BufferLayoutEmpty(const std::string &backendApi, const char *file = __FILE__,
-                                       const int line = __LINE__) : Exception(
-                "[" + backendApi + "] Vertex buffer layout cannot be empty", file, line) {};
+            explicit BufferLayoutEmpty(const std::string &backendApi,
+                                       const std::source_location loc = std::source_location::current()) : Exception(
+                "[" + backendApi + "] Vertex buffer layout cannot be empty", loc) {};
     };
 
     enum class RendererType {
@@ -132,18 +137,20 @@ namespace nexo::renderer {
 
     class RendererNotInitialized final : public Exception {
         public:
-            explicit RendererNotInitialized(const RendererType type, const char *file = __FILE__,
-                                            const int line = __LINE__) : Exception(
+            explicit RendererNotInitialized(const RendererType type,
+                                            const std::source_location loc =
+                                                    std::source_location::current()) : Exception(
                 std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) +
-                " Renderer not initialized, call the init function first", file, line) {};
+                " Renderer not initialized, call the init function first", loc) {};
     };
 
     class RendererSceneLifeCycleFailure : public Exception {
         public:
             explicit RendererSceneLifeCycleFailure(const RendererType type, const std::string &msg,
-                                                   const char *file = __FILE__, const int line = __LINE__) : Exception(
-                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) + " " + msg, file,
-                line) {};
+                                                   const std::source_location loc =
+                                                           std::source_location::current()) : Exception(
+                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) + " " + msg, loc)
+            {};
     };
 
     class TextureInvalidSize : public Exception {
@@ -151,33 +158,34 @@ namespace nexo::renderer {
             explicit TextureInvalidSize(const std::string &backendApi,
                                         const unsigned int width, const unsigned int height,
                                         const unsigned int maxTextureSize,
-                                        const char *file = __FILE__, const int line = __LINE__) : Exception(
+                                        const std::source_location loc = std::source_location::current()) : Exception(
                 "[" + backendApi + "] Invalid size for texture: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too big, max texture size is : " + std::to_string(maxTextureSize), file,
-                line) {};
+                std::to_string(height) + " is too big, max texture size is : " + std::to_string(maxTextureSize),
+                loc) {};
     };
 
     class TextureUnsupportedFormat : public Exception {
         public:
             explicit TextureUnsupportedFormat(const std::string &backendApi, const int channels,
                                               const std::string &path,
-                                              const char *file = __FILE__, const int line = __LINE__) : Exception(
+                                              const std::source_location loc =
+                                                      std::source_location::current()) : Exception(
                 "[" + backendApi + "] Unsupported image format with " + std::to_string(channels) + " channels in " +
-                path, file,
-                line) {};
+                path, loc) {};
     };
 
     class TextureSizeMismatch : public Exception {
         public:
             explicit TextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
-                                         const char *file = __FILE__, const int line = __LINE__) : Exception(
+                                         const std::source_location loc = std::source_location::current()) : Exception(
                 "[" + backendApi + "] Data size does not match the texture size: " + std::to_string(dataSize) + " != " +
-                std::to_string(expectedSize), file, line) {};
+                std::to_string(expectedSize), loc) {};
     };
 
     class StbiLoadException : public Exception {
         public:
-            explicit StbiLoadException(const std::string &msg, const char *file = __FILE__, const int line = __LINE__)
-                : Exception("STBI load failed: " + msg, file, line) {}
+            explicit StbiLoadException(const std::string &msg,
+                                       const std::source_location loc = std::source_location::current())
+                : Exception("STBI load failed: " + msg, loc) {}
     };
 }
