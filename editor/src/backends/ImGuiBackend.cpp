@@ -20,7 +20,7 @@
 
 namespace nexo::editor {
 
-    void ImGuiBackend::init(const std::shared_ptr<renderer::Window>& window)
+    void ImGuiBackend::init([[maybe_unused]] const std::shared_ptr<renderer::Window>& window)
     {
         #ifdef GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::init(static_cast<GLFWwindow*>(window->window()));
@@ -56,7 +56,7 @@ namespace nexo::editor {
         THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
-    void ImGuiBackend::end(const std::shared_ptr<renderer::Window>& window)
+    void ImGuiBackend::end([[maybe_unused]] const std::shared_ptr<renderer::Window>& window)
     {
         #ifdef GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::end(static_cast<GLFWwindow*>(window->window()));
@@ -65,7 +65,7 @@ namespace nexo::editor {
         THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
-    void ImGuiBackend::setErrorCallback(const std::shared_ptr<renderer::Window> &window)
+    void ImGuiBackend::setErrorCallback([[maybe_unused]] const std::shared_ptr<renderer::Window> &window)
     {
         #ifdef GRAPHICS_API_OPENGL
             const auto callback = OpenGLImGuiBackend::getErrorCallback();
