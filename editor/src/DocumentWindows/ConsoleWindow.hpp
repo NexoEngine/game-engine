@@ -47,9 +47,6 @@ namespace nexo::editor {
             loguru::Verbosity_INFO,
         };
 
-        // Command and variables handling (optional)
-        // std::map<std::string, std::function<void(const std::string&)>> commandsMap;
-
         const Editor& _editor;
 
         void clearLog();
