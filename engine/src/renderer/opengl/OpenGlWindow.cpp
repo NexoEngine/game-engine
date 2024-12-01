@@ -90,9 +90,14 @@ namespace nexo::renderer {
         glfwSetErrorCallback(glfwErrorCallback);
 
 #ifdef __linux__
-        glfwWindowHintString(GLFW_WAYLAND_APP_ID, _waylandAppId.c_str());
-        glfwWindowHintString(GLFW_X11_CLASS_NAME, _x11ClassName.c_str());
-        glfwWindowHintString(GLFW_X11_INSTANCE_NAME, _x11InstanceName.c_str());
+        if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+            glfwWindowHintString(GLFW_WAYLAND_APP_ID, _waylandAppId.c_str());
+        } else if (glfwGetPlatform() == GLFW_PLATFORM_X11) {
+            glfwWindowHintString(GLFW_X11_CLASS_NAME, _x11ClassName.c_str());
+            glfwWindowHintString(GLFW_X11_INSTANCE_NAME, _x11InstanceName.c_str());
+        } else {
+            LOG(NEXO_WARN, "[GLFW WARNING] Unsupported platform for specific window hints.");
+        }
 #endif
 
 		// TODO: add in documentation, if a function of opengl segv, it might be bcs this hints a version older than the function's opengl version
@@ -110,6 +115,7 @@ namespace nexo::renderer {
         setupCallback();
         LOG(NEXO_DEV, "Opengl window ({}, {}) initialized", _props.width, _props.height);
     }
+
     void OpenGlWindow::shutdown()
     {
         glfwDestroyWindow(_openGlWindow);
