@@ -24,8 +24,8 @@ namespace nexo::editor {
             void openPopup(const std::string &popupName);
             bool showPopupModal(const std::string &popupModalName);
             bool showPopup(const std::string &popupName);
-            void closePopup();
-            void closePopupInContext();
+            void closePopup() const;
+            void closePopupInContext() const;
 
             VariantData &getUserData(const std::string &popupName);
             void setUserData(const std::string &popupName, const VariantData &data);
