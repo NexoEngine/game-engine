@@ -25,7 +25,6 @@
 var NAVTREE =
 [
   [ "RType", "index.html", [
-    [ "R-Type Remastered", "index.html", null ],
     [ "Contributing", "contributing_parent_page.html", "contributing_parent_page" ],
     [ "Game Engine Documentation", "game_engine_parent_page.html", "game_engine_parent_page" ],
     [ "Installation", "install_parent_page.html", "install_parent_page" ],
@@ -35,22 +34,25 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
-    ] ]
+    ] ],
+    [ "Examples", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"_a_document_window_8hpp_source.html",
-"classengine_1_1editor_1_1_scene_tree_window.html"
+"_a_entity_property_8hpp_source.html",
+"classengine_1_1core_1_1_engine_camera.html#a961f8fc4aa65a1051e5ef002fcf0003a",
+"classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#af80d89d5ec0984488d0d1e2476f1a047",
+"include_2common_old_2_icons_font_awesome_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

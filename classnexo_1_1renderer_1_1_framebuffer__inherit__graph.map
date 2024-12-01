@@ -1,0 +1,4 @@
+<map id="nexo::renderer::Framebuffer" name="nexo::renderer::Framebuffer">
+<area shape="rect" id="node1" title="Abstract class representing a framebuffer in the rendering pipeline." alt="" coords="27,5,205,200"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_open_gl_framebuffer.html" title=" " alt="" coords="5,248,227,457"/>
+</map>

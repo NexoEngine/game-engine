@@ -124,14 +124,16 @@ $(document).ready(function(){initNavTree('ecs_readme.html',''); initResizable();
 <li><a href="#ec-systems-uml-diagram">EC Systems UML Diagram</a></li>
 </ul>
 </li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#basic-example">Basic example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <h2>What is ECS ?</h2>
-<p >ECS stands for Entity-Component-System. It's a design pattern that is used to decouple data from logic.</p>
-<h3>Why use ECS ?</h3>
-<p >ECS is a very powerful design pattern. It allows you to decouple data from logic, which means that you can easily add new features to your game without having to change the existing code.</p>
-<h2>Core concepts</h2>
+<p >ECS stands for Entity-Component-System. It's a design pattern that is used to decouple data from logic. </p><hr  />
+ <h2>Core concepts</h2>
 <ul>
 <li><b>Entity:</b> A general-purpose object identified by a unique ID. Entities are lightweight and don't contain data or behavior themselves. <br  />
 </li>
@@ -145,61 +147,153 @@ $(document).ready(function(){initNavTree('ecs_readme.html',''); initResizable();
 </p>
 <h3>But first, the signatures...</h3>
 <p >Before talking about the managers, i need to introduce the concept of signature. <br  />
- A signature is a std::bitset (basically an array with 0's or 1's). Each Entity has a signature describing the components that are tied to it. When you register a new component, a unique ID is tied to its type. This unique ID corresponds to an index in the signature. <br  />
+ A signature is a <code>std::bitset</code> (basically an array of 0's and 1's). Each Entity has a signature describing the components that are tied to it. When you register a new component, a unique ID is tied to its type. This unique ID corresponds to an index in the signature. <br  />
 </p>
+<blockquote class="doxtable">
 <p ><b>Example:</b> Let's say you have a position component. When you register it in the <b>ComponentManager</b>, a unique id is tied to its type. You can then create a new signature and set inside it the index corresponding to the unique id to 1. <br  />
- Now, if you tie this signature to an entity, this entity will have the position component and all of the systems needing the position component will know that this entity can be affected by it.</p>
-<h2>Now we can talk...</h2>
+ </p>
+</blockquote>
+<p>Now, if you tie this signature to an entity, this entity will have the position component and all of the systems needing the position component will know that this entity can be affected by it. </p><hr  />
+ <h2>Now we can talk...</h2>
 <h3>First of the all, the <b>EntityManager</b>:</h3>
-<p >The EntityManager class is focused on the management of entities. In ECS, an entity is essentially an ID that represents a game object, and the EntityManager is responsible for creating, tracking, and destroying these entities. Let's break down its responsibilities:</p>
+<p >The EntityManager class is focused on the management of entities. An entity is essentially an ID that represents a game object, and the EntityManager is responsible for creating, tracking, and destroying these entities. Let's break down its responsibilities:</p>
 <p ><b>Core Responsibilities:</b> <br  />
 </p>
-<p ><b>Entity Creation (createEntity):</b> Handles the creation of a new entity. It typically involves assigning a unique ID to the entity. If there are available IDs (recycled from destroyed entities), it reuses them; otherwise, it creates a new one. This process ensures that the system can handle a large number of entities efficiently by reusing entity IDs while also efficiently packing the data, avoiding missed CPU cache-line.</p>
-<p ><b>Entity Destruction (destroyEntity):</b> This function is responsible for properly disposing of an entity. When an entity is no longer needed (like when a game object is removed from the game), this function is called to release its ID and mark it as available for future use. This is crucial for managing the lifecycle of game objects without leaking resources or IDs.</p>
-<p ><b>Signature Management (setSignature, getSignature):</b> Each entity in an ECS architecture has a signature, which is essentially a bitset where each bit represents whether the entity has a particular component type. This feature allows systems in the ECS framework to quickly determine which entities have the components they are interested in processing. The EntityManager is responsible for updating (with setSignature) and querying (with getSignature) these signatures. </p><h3>Second, the <b>ComponentManager</b>:</h3>
-<p >This one is a bit trickier, its goal is to handle all the different components (which are basically structs). <br  />
+<blockquote class="doxtable">
+<p ><b>Entity Creation (createEntity):</b> Handles the creation of a new entity. It typically involves assigning a unique ID to the entity. If there are available IDs (recycled from destroyed entities), it reuses them; otherwise, it creates a new one. This process ensures that the system can handle a large number of entities efficiently by reusing entity IDs while also efficiently packing the data, avoiding missed CPU cache-line. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p ><b>Entity Destruction (destroyEntity):</b> This function is responsible for properly disposing of an entity. When an entity is no longer needed (like when a game object is removed from the game), this function is called to release its ID and mark it as available for future use. This is crucial for managing the lifecycle of game objects without leaking resources or IDs. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p ><b>Signature Management (setSignature, getSignature):</b> Each entity in an ECS architecture has a signature, which is essentially a bitset where each bit represents whether the entity has a particular component type. This feature allows systems in the ECS framework to quickly determine which entities have the components they are interested in processing. The EntityManager is responsible for updating (with setSignature) and querying (with getSignature) these signatures. </p>
+</blockquote>
+<p>### Second, the <b>ComponentManager</b>: This one is a bit trickier, its goal is to handle all the different components (which are basically structs). <br  />
 </p>
 <h4><b><a class="el" href="class_component_array_3_01_t_01_4.html" title="Templated class that manages a specific type of component for all entities.">ComponentArray&lt;T&gt;</a></b></h4>
-<p >This class is a template class, meaning it's designed to store components of any type (T). It's used to manage a specific type of component for all entities. Each ComponentArray instance corresponds to a different type of component in the ECS architecture. Its primary functions include:</p>
-<p ><b>Inserting Components:</b> When a new component is added to an entity, it's stored in an array. The class maintains a mapping between the entity ID and its index in this array, ensuring fast access. <br  />
-</p>
-<p ><b>Removing Components:</b> When a component is removed from an entity, this class updates its internal structures to reflect this change, keeping the array packed by moving the last element to the position of the removed element.</p>
-<p ><b>Accessing Components:</b> It allows quick retrieval of a component attached to an entity using the entity ID.</p>
-<p ><b>Handling Entity Destruction:</b> If an entity is destroyed, this class ensures that all components associated with that entity are properly removed. This class is a crucial part of the ECS architecture, enabling efficient and type-safe storage and retrieval of components.</p>
+<p >&gt;This class is a template class, meaning it's designed to store components of any type (T). It's used to manage a specific type of component for all entities. Each ComponentArray instance corresponds to a different type of component in the ECS architecture. Its primary functions include: &gt;&gt;<b>Inserting Components:</b> When a new component is added to an entity, it's stored in an array. The class maintains a mapping between the entity ID and its index in this array, ensuring fast access. </p><blockquote class="doxtable">
+<blockquote class="doxtable">
+<p >&gt;<b>Removing Components:</b> When a component is removed from an entity, this class updates its internal structures to reflect this change, keeping the array packed by moving the last element to the position of the removed element. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p >&gt;<b>Accessing Components:</b> It allows quick retrieval of a component attached to an entity using the entity ID. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p >&gt;<b>Handling Entity Destruction:</b> If an entity is destroyed, this class ensures that all components associated with that entity are properly removed. </p>
+</blockquote>
+</blockquote>
+<p>This class is a crucial part of the ECS architecture, enabling efficient and type-safe storage and retrieval of components.</p>
 <h4><b>ComponentManager</b></h4>
-<p >The ComponentManager serves as the central point for managing different types of components in the ECS framework. It's responsible for:</p>
-<p ><b>Component Type Registration:</b> Each component type (like Position, Velocity, etc.) is registered with a unique identifier. This registration process involves creating a ComponentArray for each new type.</p>
-<p ><b>Adding and Removing Components:</b> It delegates the task of adding or removing components to the appropriate ComponentArray, based on the component type.</p>
-<p ><b>Component Retrieval:</b> It provides a way to access specific components of an entity, again delegating to the relevant ComponentArray.</p>
-<p ><b>Entity Destruction Handling:</b> When an entity is destroyed, the ComponentManager notifies each ComponentArray to remove any components associated with the destroyed entity.</p>
-<p >In essence, the ComponentManager abstracts the complexities of handling various component types, allowing the rest of the ECS system to interact with components through a unified interface.</p>
+<p >&gt;The ComponentManager serves as the central point for managing different types of components in the ECS framework. It's responsible for: </p><blockquote class="doxtable">
+<blockquote class="doxtable">
+<p >&gt;<b>Component Type Registration:</b> Each component type (like <a class="el" href="struct_position.html">Position</a>, <a class="el" href="struct_velocity.html">Velocity</a>, etc.) is registered with a unique identifier. This registration process involves creating a ComponentArray for each new type. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p >&gt;<b>Adding and Removing Components:</b> It delegates the task of adding or removing components to the appropriate ComponentArray, based on the component type. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p >&gt;<b>Component Retrieval:</b> It provides a way to access specific components of an entity, again delegating to the relevant ComponentArray. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p >&gt;<b>Entity Destruction Handling:</b> When an entity is destroyed, the ComponentManager notifies each ComponentArray to remove any components associated with the destroyed entity. </p>
+</blockquote>
+</blockquote>
+<p>In essence, the ComponentManager abstracts the complexities of handling various component types, allowing the rest of the ECS system to interact with components through a unified interface.</p>
 <h3>Finally, the SystemManager:</h3>
-<p >The System class is a base class for all systems within the ECS framework. Systems in ECS are responsible for the logic that operates on entities that have a specific set of components. Key aspects of the System class include:</p>
-<p ><b>Entity Tracking:</b> Each system maintains a set of entities (_entities) that it is interested in. These are the entities that have the components required by this system to operate.</p>
+<p >The System class is a base class for all systems within the ECS framework. Systems are responsible for the logic that operates on entities that have a specific set of components. <br  />
+</p>
+<p >Each system maintains a set of entities that it is interested in. These are the entities that have the components required by this system to operate.</p>
 <h4>SystemManager</h4>
 <p >The SystemManager plays a central coordinating role for all the systems in the ECS architecture. It's responsible for:</p>
-<p ><b>System Registration (registerSystem):</b> This function is used to create and register a new system. It ensures that each system type is registered only once and stores a shared pointer to the created system. This approach allows for easy and efficient management of different system types within the game.</p>
-<p ><b>Setting System Signatures (setSignature):</b> Each system operates on entities with a specific set of components. The setSignature function associates a signature (a bitset representing component types) with a system. This signature is used to determine which entities the system should process.</p>
-<p ><b>Handling Entity Destruction (entityDestroyed):</b> When an entity is destroyed, SystemManager ensures that this entity is removed from all system's tracking sets, maintaining the integrity of each system's entity list.</p>
-<p ><b>Updating Entity Signatures (entitySignatureChanged):</b> When an entity's signature changes (due to adding or removing components), the SystemManager updates the entity sets of all systems. It checks each system's signature against the entity's new signature. If the entity's signature matches a system's signature, the entity is added to that system's set; otherwise, it's removed.</p>
+<p >&gt;<b>System Registration (registerSystem):</b> This function is used to create and register a new system. It ensures that each system type is registered only once and stores a shared pointer to the created system. This approach allows for easy and efficient management of different system types within the game.</p>
+<p >&gt;<b>Setting System Signatures (setSignature):</b> Each system operates on entities with a specific set of components. The setSignature function associates a signature (a bitset representing component types) with a system. This signature is used to determine which entities the system should process.</p>
+<p >&gt;<b>Handling Entity Destruction (entityDestroyed):</b> When an entity is destroyed, SystemManager ensures that this entity is removed from all system's tracking sets, maintaining the integrity of each system's entity list.</p>
+<p >&gt;<b>Updating Entity Signatures (entitySignatureChanged):</b> When an entity's signature changes (due to adding or removing components), the SystemManager updates the entity sets of all systems. It checks each system's signature against the entity's new signature. If the entity's signature matches a system's signature, the entity is added to that system's set; otherwise, it's removed.</p>
 <h2>A global overview of the workflow</h2>
 <p >The Coordinator class serves as the central orchestrator for the ECS, tying together the functionality of the EntityManager, ComponentManager, and SystemManager. Here's an overview of the global workflow in this ECS architecture:</p>
 <h3>Initialization</h3>
-<p ><b>Init Phase:</b> Upon initialization (init method), the Coordinator creates instances of EntityManager, ComponentManager, and SystemManager. This setup establishes the foundational structures for entity management, component handling, and system operations.</p>
+<p >&gt;<b>Init Phase:</b> Upon initialization (init method), the Coordinator creates instances of EntityManager, ComponentManager, and SystemManager. This setup establishes the foundational structures for entity management, component handling, and system operations.</p>
 <h3>Entity Management</h3>
-<p ><b>Creating Entities:</b> When a new entity is needed (createEntity), the EntityManager generates a new entity ID.</p>
-<p ><b>Destroying Entities:</b> When an entity is destroyed (destroyEntity), the EntityManager, ComponentManager, and SystemManager are all notified to remove any references to this entity, clean up components, and update system entity lists.</p>
+<p >&gt;<b>Creating Entities:</b> When a new entity is needed (createEntity), the EntityManager generates a new entity ID.</p>
+<p >&gt;<b>Destroying Entities:</b> When an entity is destroyed (destroyEntity), the EntityManager, ComponentManager, and SystemManager are all notified to remove any references to this entity, clean up components, and update system entity lists.</p>
 <h3>Component Management</h3>
-<p ><b>Registering Components:</b> Components are registered (registerComponent) with the ComponentManager, allowing for the creation and tracking of different component types.</p>
-<p ><b>Adding Components:</b> When a component is added to an entity (addComponent), it is stored in the ComponentManager, and the entity's signature in the EntityManager is updated. The SystemManager is also notified to update the entity lists in relevant systems.</p>
-<p ><b>Removing Components:</b> Removing a component from an entity (removeComponent) follows a similar process but in reverse, updating the entity's signature to no longer include the component type.</p>
+<p >&gt;<b>Registering Components:</b> Components are registered (registerComponent) with the ComponentManager, allowing for the creation and tracking of different component types.</p>
+<p >&gt;<b>Adding Components:</b> When a component is added to an entity (addComponent), it is stored in the ComponentManager, and the entity's signature in the EntityManager is updated. The SystemManager is also notified to update the entity lists in relevant systems.</p>
+<p >&gt;<b>Removing Components:</b> Removing a component from an entity (removeComponent) follows a similar process but in reverse, updating the entity's signature to no longer include the component type.</p>
 <h3>System Management</h3>
-<p ><b>Registering Systems:</b> Systems are registered (registerSystem) with the SystemManager. Each system is responsible for processing entities with specific components.</p>
-<p ><b>Setting System Signatures:</b> Each system has a signature (setSystemSignature) that determines which entities it will process, based on their components. </p><h3>Workflow Summary</h3>
+<p >&gt;<b>Registering Systems:</b> Systems are registered (registerSystem) with the SystemManager. Each system is responsible for processing entities with specific components.</p>
+<p >&gt;<b>Setting System Signatures:</b> Each system has a signature (setSystemSignature) that determines which entities it will process, based on their components. </p><h3>Workflow Summary</h3>
 <p >When a game object is created, an entity ID is generated. <br  />
  As components are added to or removed from this entity, the Coordinator updates the entity's signature to reflect its current component makeup. <br  />
  The SystemManager uses these signatures to maintain an up-to-date list of entities for each system. <br  />
  Each system processes its specific subset of entities, based on the components they possess.</p>
+<h2>Examples</h2>
+<h3>Basic example</h3>
+<p >First we create two very basic components : </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">struct Position {</div>
+<div class="line">    float x, y, z;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">struct Velocity {</div>
+<div class="line">    float x, y, z;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p> Then we set up the <code><a class="el" href="class_movement_system.html">MovementSystem</a></code>: </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">class MovementSystem : public nexo::ecs::System {</div>
+<div class="line">    public:</div>
+<div class="line">        void update(float deltaTime) {</div>
+<div class="line">            for (auto entity : entities) {</div>
+<div class="line">                auto&amp; position = coord-&gt;getComponent&lt;Position&gt;(entity);</div>
+<div class="line">                auto&amp; velocity = coord-&gt;getComponent&lt;Velocity&gt;(entity);</div>
+<div class="line"> </div>
+<div class="line">                position.x += velocity.x * deltaTime;</div>
+<div class="line">                position.y += velocity.y * deltaTime;</div>
+<div class="line">                position.z += velocity.z * deltaTime;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line">};</div>
+</div><!-- fragment --> <blockquote class="doxtable">
+<p >[!CAUTION] </p>
+</blockquote>
+<p>The coordinator is a static member initialized during the init call of the coordinator class. <br  />
+ </p><blockquote class="doxtable">
+<p >It is not thread safe ! So manage with caution </p>
+</blockquote>
+<p>Now we can do our basic initialization routine : </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">nexo::ecs::Coordinator coordinator;</div>
+<div class="line">coordinator.init();</div>
+<div class="line"> </div>
+<div class="line">coordinator.registerComponent&lt;Position&gt;();</div>
+<div class="line">coordinator.registerComponent&lt;Velocity&gt;();</div>
+</div><!-- fragment --><p> Create our system and assign it its signature : </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">auto movementSystem = coordinator.registerSystem&lt;MovementSystem&gt;();</div>
+<div class="line">nexo::ecs::Signature movementSignature;</div>
+<div class="line">movementSignature.set(coordinator.getComponentType&lt;Position&gt;(), true);</div>
+<div class="line">movementSignature.set(coordinator.getComponentType&lt;Velocity&gt;(), true);</div>
+<div class="line">coordinator.setSystemSignature&lt;MovementSystem&gt;(movementSignature);</div>
+</div><!-- fragment --><p> Then create our entities and attach them the different components : </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">auto entity1 = coordinator.createEntity();</div>
+<div class="line">coordinator.addComponent(entity1, Position{0.0f, 0.0f, 0.0f});</div>
+<div class="line">coordinator.addComponent(entity1, Velocity{1.0f, 0.0f, 0.0f});</div>
+<div class="line"> </div>
+<div class="line">auto entity2 = coordinator.createEntity();</div>
+<div class="line">coordinator.addComponent(entity2, Position{5.0f, 5.0f, 5.0f});</div>
+<div class="line">coordinator.addComponent(entity2, Velocity{0.0f, -1.0f, 0.0f});</div>
+</div><!-- fragment --><p> And finally, call the update function of our system inside our game loop : </p><div class="fragment"><div class="line"> {c++}</div>
+<div class="line">for (int frame = 0; frame &lt; 10; ++frame) {</div>
+<div class="line">    std::cout &lt;&lt; &quot;Frame &quot; &lt;&lt; frame &lt;&lt; &quot;:\n&quot;;</div>
+<div class="line"> </div>
+<div class="line">    movementSystem-&gt;update(0.016f); // Assuming 60 FPS, so ~16ms per frame</div>
+<div class="line"> </div>
+<div class="line">    // This is just an example of how you can then retrieve the component to do other stuff</div>
+<div class="line">    for (auto entity : movementSystem-&gt;entities) {</div>
+<div class="line">        auto&amp; position = coordinator.getComponent&lt;Position&gt;(entity);</div>
+<div class="line">        std::cout &lt;&lt; &quot;Entity &quot; &lt;&lt; entity &lt;&lt; &quot; Position: (&quot;</div>
+<div class="line">                  &lt;&lt; position.x &lt;&lt; &quot;, &quot; &lt;&lt; position.y &lt;&lt; &quot;, &quot; &lt;&lt; position.z &lt;&lt; &quot;)\n&quot;;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    std::cout &lt;&lt; &quot;---------------------\n&quot;;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p> [!NOTE] You can find the full example along with a CMakeLists inside the <code>examples/ecs</code> folder.</p>
 <h3>EC Systems UML Diagram</h3>
 <p ><img src="ecs_systems_uml.png" alt="" class="inline" title="ECS Systems UML Diagram"/> </p>
 </div></div><!-- contents -->

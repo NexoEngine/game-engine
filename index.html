@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RType: R-Type Remastered</title>
+<title>RType: RType</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,54 +85,104 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">R-Type Remastered </div></div>
+  <div class="headertitle"><div class="title">RType </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md_README"></a> Welcome to R-Type Remastered, an exciting reimagination of the classic arcade shooter. This project is a testament to modern C++ capabilities, featuring a multithreaded server and dynamic client for an immersive multiplayer experience.</p>
+<div class="textblock"><p ><a class="anchor" id="md_README"></a> <img src="https://raw.githubusercontent.com/NexoEngine/assets/refs/heads/main/logo_nexo.png" alt="NEXO Logo" width="250" height="250" align="right" class="inline"/></p>
+<h1>NEXO Engine</h1>
+<p >Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality!</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#nexo-engine">NEXO Engine</a><ul>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#project-overview">Project Overview</a><ul>
+<li><a href="#game-engine">Game Engine</a></li>
+</ul>
+</li>
+<li><a href="#external-dependencies">External Dependencies</a></li>
+<li><a href="#build-the-project">Build the project</a></li>
+<li><a href="#install-the-project">Install the project</a><ul>
+<li><a href="#install-via-cmake">Install via CMake</a></li>
+<li><a href="#create-an-installer-for-windows-nsis">Create an installer for Windows (NSIS)</a></li>
+<li><a href="#create-an-installer-for-linux-deb">Create an installer for Linux (DEB)</a></li>
+</ul>
+</li>
+<li><a href="#run-the-tests">Run the tests</a></li>
+<li><a href="#the-team">The Team</a></li>
+</ul>
+</li>
+</ul>
 <blockquote class="doxtable">
 <p >[!NOTE] <br  />
- Find the whole documentation on our <a href="https://rtype.guillaume-hein.fr/">website</a>. </p>
+ Find the whole documentation on our <a href="https://nexoengine.github.io/game-engine/">website</a>. </p>
 </blockquote>
-<h1>Project Overview</h1>
-<h2><a class="el" href="class_game.html">Game</a> Engine</h2>
-<p >Quick video of the game engine in action with Jolt Physics</p>
-<p ><a href="https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d">https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d</a></p>
+<h2>Project Overview</h2>
+<h3><a class="el" href="class_game.html">Game</a> Engine</h3>
 <p >Interface screenshot</p>
 <p ><img src="editor_interface.png" alt="" class="inline" title="Editor interface"/></p>
-<h2>Client</h2>
-<p ><a href="https://github.com/Thyodas/rtype/assets/53176398/2d6a7a5f-9ad2-435a-88c5-36cfdcd72b80">https://github.com/Thyodas/rtype/assets/53176398/2d6a7a5f-9ad2-435a-88c5-36cfdcd72b80</a></p>
-<h1>Documentation Quick Links</h1>
-<ul>
-<li><b><a class="el" href="class_game.html">Game</a> Engine Architecture</b>: Detailed design principles of our engine Game Engine Documentation.</li>
-<li><b>Network Protocol</b>: Our custom protocol specifications Network Documentation.</li>
-</ul>
-<h1>External Dependencies</h1>
+<p >Quick video of the game engine in action with Jolt Physics</p>
+<p ><a href="https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d">https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d</a></p>
+<blockquote class="doxtable">
+<p >[!WARNING] This video is from a prototype version of the engine. The final version does not currently integrate physics. </p>
+</blockquote>
+<h2>External Dependencies</h2>
 <p >To run this project, ensure you have the following:</p><ul>
-<li><b>Adobe ImGui</b>: For a user-friendly interface.</li>
-<li><b>Raylib 5.0</b>: For robust graphics handling.</li>
-<li><b>rlImGui</b>: To integrate ImGui with Raylib.</li>
-<li><b>Boost</b>: For various functionalities including networking.</li>
 <li><b>CMake</b>: Necessary for building the project from source.</li>
+<li><b>C++ Compiler</b>: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.</li>
+<li><b>X11</b>: Required for Linux and macOS.</li>
 </ul>
-<h1>Installation</h1>
+<h2>Build the project</h2>
 <p >Cloning and building is a breeze:</p><ol type="1">
-<li>Clone the repository.</li>
-<li>Run the <code>./build.sh</code> script or use the CMake commands for a manual build.</li>
-<li>Start the server with <code>./server</code> from the root directory.</li>
-<li>Launch the client by executing <code>./client</code>, also at the root directory.</li>
+<li>Clone the repository with the submodules. <div class="fragment"><div class="line">git clone --recurse-submodules</div>
+</div><!-- fragment --></li>
+<li>Run cmake to generate the build files. <div class="fragment"><div class="line">cmake -B build</div>
+<div class="line">cmake --build build</div>
+</div><!-- fragment --></li>
+<li>Launch the engine!</li>
 </ol>
-<p >For detailed instructions, visit our Installation Guide.</p>
-<p >Prepare for an unparalleled gaming experience!</p>
-<h1>The Team</h1>
-<p >R-Type Remastered is brought to life by a dedicated team of third-year students from Epitech Strasbourg:</p><ul>
-<li>Mehdy Morvan</li>
-<li>Guillaume Hein</li>
-<li>Rémi MERGEN</li>
-<li>Jean Cardonne</li>
-<li>Nathan De Balthasar de Gachéo</li>
-<li>Alex Di Venanzio</li>
+<p >For Linux and MacOS: </p><div class="fragment"><div class="line">./build/nexoEditor</div>
+</div><!-- fragment --><p >For Windows: </p><div class="fragment"><div class="line">./build/nexoEditor.exe</div>
+</div><!-- fragment --><blockquote class="doxtable">
+<p >[!NOTE] For detailed instructions, visit our Installation Guide. </p>
+</blockquote>
+<h2>Install the project</h2>
+<h3>Install via CMake</h3>
+<p >First build the project as seen in the step <a href="#build-the-project">Build the project</a>. Then run the following command:</p>
+<div class="fragment"><div class="line">cmake --install build --prefix /path/to/install</div>
+</div><!-- fragment --><p >This will install the NEXO Engine in the directory <code>/path/to/install</code> with all the necessary files.</p>
+<h3>Create an installer for Windows (NSIS)</h3>
+<p >To create an installer for Windows, you can use the <a href="https://nsis.sourceforge.io/Main_Page">NSIS</a> installer.</p>
+<blockquote class="doxtable">
+<p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
+</blockquote>
+<p>First install NSIS on your computer, then run the following command:</p>
+<div class="fragment"><div class="line">cd build</div>
+<div class="line">cpack -G NSIS -C Debug</div>
+</div><!-- fragment --><p >Now you can run the generated installer to install the NEXO Engine on your computer.</p>
+<h2>Create an installer for Linux (DEB)</h2>
+<blockquote class="doxtable">
+<p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
+</blockquote>
+<div class="fragment"><div class="line">cd build</div>
+<div class="line">cpack -G DEB</div>
+</div><!-- fragment --><p >To install the generated package (on Ubuntu/Debian...), run the following command:</p>
+<div class="fragment"><div class="line">sudo dpkg -i NEXO-Engine-*-Linux.deb</div>
+</div><!-- fragment --><h2>Run the tests</h2>
+<p >In this project tests use the <a href="http://google.github.io/googletest/">gtest</a> library.</p>
+<p >First build the tests: </p><div class="fragment"><div class="line">cmake -B build</div>
+<div class="line">cmake --build build</div>
+</div><!-- fragment --><p >Then run the tests: </p><div class="fragment"><div class="line">cd build</div>
+<div class="line">ctest -C Debug</div>
+</div><!-- fragment --><h2>The Team</h2>
+<p >NEXO Engine is brought to life by a dedicated team of fourth-year students from EPITECH Strasbourg:</p><ul>
+<li>Guillaume HEIN (@Thyodas)</li>
+<li>Jean CARDONNE (@jcardonne)</li>
+<li>Marie GIACOMEL (@Sauterelle57)</li>
+<li>Mehdy MORVAN (@iMeaNz)</li>
+<li>Thomas PARENTEAU (@ThomasParenteau)</li>
 </ul>
-<p >This project is part of our curriculum, showcasing our collective skills in advanced software development with modern C++.</p>
+<h2>Acknowledgements</h2>
+<p >This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.</p>
 <p >We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

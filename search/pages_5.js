@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pull_20request_20template_0',['Pull Request Template',['../pull_request_template.html',1,'contributing_parent_page']]]
+  ['installation_0',['Installation',['../install_parent_page.html',1,'(Global Namespace)'],['../install_readme.html',1,'install_parent_page']]]
 ];

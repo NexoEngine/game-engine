@@ -1,0 +1,4 @@
+<map id="nexo::renderer::OpenGlVertexArray" name="nexo::renderer::OpenGlVertexArray">
+<area shape="rect" id="node1" title="OpenGL&#45;specific implementation of the VertexArray class." alt="" coords="5,233,195,443"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_vertex_array.html" title="Abstract class representing a vertex array in the rendering system." alt="" coords="13,5,187,185"/>
+</map>

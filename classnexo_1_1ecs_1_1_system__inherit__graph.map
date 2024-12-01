@@ -1,0 +1,7 @@
+<map id="nexo::ecs::System" name="nexo::ecs::System">
+<area shape="rect" id="node1" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="172,5,299,97"/>
+<area shape="rect" id="node2" href="$class_movement_system.html" title=" " alt="" coords="5,153,132,230"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_mock_system.html" title=" " alt="" coords="156,145,315,237"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_mock_system2.html" title=" " alt="" coords="339,153,505,230"/>
+<area shape="rect" id="node5" href="$classnexo_1_1system_1_1_on_scene_deleted.html" title=" " alt="" coords="529,153,731,230"/>
+</map>

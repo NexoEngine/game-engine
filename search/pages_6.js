@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['r_2dtype_20remastered_0',['R-Type Remastered',['../index.html',1,'']]],
-  ['rfc0001_1',['RFC0001',['../rfc0001.html',1,'network_parent_page']]]
+  ['network_0',['Network',['../network_readme.html',1,'network_parent_page']]],
+  ['network_20documentation_1',['Network Documentation',['../network_parent_page.html',1,'']]]
 ];

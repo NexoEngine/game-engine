@@ -1,9 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classengine_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,115,172,157"/>
-<area shape="rect" id="node2" href="$classengine_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="220,115,392,157"/>
-<area shape="rect" id="node3" href="$classengine_1_1editor_1_1_console_window.html" title=" " alt="" coords="440,5,637,32"/>
-<area shape="rect" id="node4" href="$classengine_1_1editor_1_1_entity_properties_window.html" title=" " alt="" coords="441,57,636,98"/>
-<area shape="rect" id="node5" href="$classengine_1_1editor_1_1_main3_d_scene.html" title=" " alt="" coords="446,123,631,149"/>
-<area shape="rect" id="node6" href="$classengine_1_1editor_1_1_model_viewer_window.html" title=" " alt="" coords="449,174,628,215"/>
-<area shape="rect" id="node7" href="$classengine_1_1editor_1_1_scene_tree_window.html" title=" " alt="" coords="455,239,622,281"/>
+<area shape="rect" id="node1" href="$classengine_1_1editor_1_1_game_engine_editor.html" title=" " alt="" coords="5,5,184,47"/>
 </map>

@@ -1,0 +1,7 @@
+<map id="nexo::components::Light" name="nexo::components::Light">
+<area shape="rect" id="node1" title=" " alt="" coords="347,5,508,141"/>
+<area shape="rect" id="node2" href="$structnexo_1_1components_1_1_directional_light.html" title=" " alt="" coords="5,189,199,281"/>
+<area shape="rect" id="node3" href="$classnexo_1_1components_1_1_mock_light.html" title=" " alt="" coords="223,197,416,274"/>
+<area shape="rect" id="node4" href="$structnexo_1_1components_1_1_point_light.html" title=" " alt="" coords="440,197,631,274"/>
+<area shape="rect" id="node5" href="$classnexo_1_1scene_1_1_mock_light.html" title=" " alt="" coords="655,197,813,274"/>
+</map>

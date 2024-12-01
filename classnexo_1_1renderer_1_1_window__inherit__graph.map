@@ -1,0 +1,4 @@
+<map id="nexo::renderer::Window" name="nexo::renderer::Window">
+<area shape="rect" id="node1" title="Abstract class for managing window operations in the rendering system." alt="" coords="27,5,182,244"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_open_gl_window.html" title="OpenGL&#45;specific implementation of the Window class." alt="" coords="5,292,204,516"/>
+</map>
