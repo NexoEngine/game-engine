@@ -49,7 +49,7 @@ namespace nexo::renderer {
 
             virtual void setData(void *data, unsigned int size) = 0;
 
-            virtual bool operator==(const Texture &other) const { return this->getId() == other.getId(); };
+            bool operator==(const Texture &other) const { return this->getId() == other.getId(); };
     };
 
     class Texture2D :  public Texture {
