@@ -150,7 +150,7 @@ namespace nexo::editor {
         if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), ImGuiInputTextFlags_EnterReturnsTrue))
         {
             executeCommand(inputBuf);
-            strcpy(inputBuf, "");
+            std::memset(inputBuf, '\0', sizeof(inputBuf));
         }
 
         ImGui::SameLine();
