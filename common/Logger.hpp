@@ -119,7 +119,7 @@ namespace nexo {
     nexo::Logger::logWithFormat(level, std::source_location::current(), fmt, ##__VA_ARGS__)
 
 #define LOG_EXCEPTION(exception) \
-    LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage());
+    LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage())
 
 #define NEXO_FATAL nexo::LogLevel::FATAL
 #define NEXO_ERROR nexo::LogLevel::ERROR
