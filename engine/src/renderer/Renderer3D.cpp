@@ -22,6 +22,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <array>
 #include <Path.hpp>
+#include <algorithm>
 
 namespace nexo::renderer {
 
@@ -272,10 +273,10 @@ namespace nexo::renderer {
         }
 
         // Index data
-        for (unsigned int i = 0; i < 36; ++i)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = cubeIndices[i] + vertexOffset;
-        }
+        std::ranges::for_each(cubeIndices, [this, vertexOffset](unsigned int index) {
+            m_storage->indexBufferBase[m_storage->indexCount++] = index + vertexOffset;
+        });
+
 
         // Update stats
         m_storage->stats.cubeCount++;
@@ -331,10 +332,10 @@ namespace nexo::renderer {
         }
 
         // Index data
-        for (unsigned int i = 0; i < 36; ++i)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = cubeIndices[i] + vertexOffset;
-        }
+        std::ranges::for_each(cubeIndices, [this, vertexOffset](unsigned int index) {
+            m_storage->indexBufferBase[m_storage->indexCount++] = index + vertexOffset;
+        });
+
 
         m_storage->stats.cubeCount++;
     }
