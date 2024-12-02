@@ -93,6 +93,7 @@ jobs:
           git fetch --prune --unshallow
 
       - name: Install sonar-scanner
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: sonarsource/sonarcloud-github-c-cpp@v3
 
       - name: Install latest CMake and Ninja
