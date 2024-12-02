@@ -109,8 +109,8 @@ namespace nexo::utils {
         // Extract texture (if available)
         std::shared_ptr<renderer::Texture2D> texture = nullptr;
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        aiString str;
-        if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
+
+        if (aiString str; material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
         {
             std::filesystem::path modelPath(path);
             std::filesystem::path modelDirectory = modelPath.parent_path();
