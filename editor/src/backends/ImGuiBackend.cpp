@@ -72,7 +72,7 @@ namespace nexo::editor {
             window->setErrorCallback(callback);
             return;
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");;
+        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
 }
