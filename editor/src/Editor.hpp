@@ -56,24 +56,24 @@ namespace nexo::editor {
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
              */
-            void init();
+            void init() const;
 
             [[nodiscard]] bool isOpen() const;
 
 
-            void update();
+            void update() const;
             void render();
-            void shutdown();
+            void shutdown() const;
 
             void registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window);
             void addLog(const LogMessage& message);
             [[nodiscard]] const std::vector<LogMessage>& getLogs() const;
         private:
             void setupLogs();
-            void setupEngine();
+            void setupEngine() const;
             void setupStyle();
-            void setupFonts(float scaleFactorX, float scaleFactorY);
-            void buildDockspace();
+            void setupFonts(float scaleFactorX, float scaleFactorY) const;
+            void buildDockspace() const;
             void drawMenuBar();
 
             static void loguruCallback(void *userData, const loguru::Message& message);

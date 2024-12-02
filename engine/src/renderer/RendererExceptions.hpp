@@ -16,34 +16,36 @@
 #include "Exception.hpp"
 
 #include <source_location>
+#include <format>
 
 namespace nexo::renderer {
     class FileNotFoundException final : public Exception {
         public:
             explicit FileNotFoundException(const std::string &filePath,
                                            const std::source_location loc = std::source_location::current())
-                : Exception("File not found: " + filePath, loc) {}
+                : Exception(std::format("File not found: {}", filePath), loc) {}
     };
 
     class UnknownGraphicsApi final : public Exception {
         public:
             explicit UnknownGraphicsApi(const std::string &backendApiName,
                                         const std::source_location loc = std::source_location::current())
-                : Exception("Unknown graphics API: " + backendApiName, loc) {}
+                : Exception(std::format("Unknown graphics API: {}", backendApiName), loc) {}
     };
 
     class GraphicsApiInitFailure final : public Exception {
         public:
             explicit GraphicsApiInitFailure(const std::string &backendApiName,
                                             const std::source_location loc = std::source_location::current())
-                : Exception("Failed to initialize graphics api: " + backendApiName, loc) {}
+                : Exception(std::format("Failed to initialize graphics API: {}", backendApiName), loc) {}
     };
 
     class GraphicsApiNotInitialized final : public Exception {
         public:
             explicit GraphicsApiNotInitialized(const std::string &backendApiName,
                                                const std::source_location loc = std::source_location::current())
-                : Exception("[" + backendApiName + "] Api is not initialized, call the init function first", loc)
+                : Exception(std::format("[{}] API is not initialized, call the init function first", backendApiName),
+                            loc)
             {}
     };
 
@@ -52,23 +54,23 @@ namespace nexo::renderer {
             explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
                                                         const unsigned int width, const unsigned int height,
                                                         const std::source_location loc =
-                                                                std::source_location::current()) : Exception(
-                "[" + backendApi + "] Viewport resizing failed: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), loc) {};
+                                                                std::source_location::current())
+                : Exception(std::format("[{}] Viewport resizing failed: {}x{} is too {}",
+                                        backendApi, width, height, (tooBig ? "big" : "small")), loc) {}
     };
 
     class GraphicsApiWindowInitFailure final : public Exception {
         public:
             explicit GraphicsApiWindowInitFailure(const std::string &backendApiName,
                                                   const std::source_location loc = std::source_location::current())
-                : Exception("Failed to initialize graphics api: " + backendApiName, loc) {}
+                : Exception(std::format("Failed to initialize graphics API: {}", backendApiName), loc) {}
     };
 
     class InvalidValue final : public Exception {
         public:
             explicit InvalidValue(const std::string &backendApiName, const std::string &msg,
-                                  const std::source_location loc = std::source_location::current()) : Exception(
-                "[" + backendApiName + "] Invalid value: " + msg, loc) {};
+                                  const std::source_location loc = std::source_location::current())
+                : Exception(std::format("[{}] Invalid value: {}", backendApiName, msg), loc) {}
     };
 
     class ShaderCreationFailed final : public Exception {
@@ -76,7 +78,7 @@ namespace nexo::renderer {
             explicit ShaderCreationFailed(const std::string &backendApi, const std::string &message,
                                           const std::string &path = "",
                                           const std::source_location loc = std::source_location::current())
-                : Exception("[" + backendApi + "] Failed to create the shader (" + path + "): " + message, loc)
+                : Exception(std::format("[{}] Failed to create the shader ({}): {}", backendApi, path, message), loc)
             {}
     };
 
@@ -84,16 +86,16 @@ namespace nexo::renderer {
         public:
             explicit ShaderInvalidUniform(const std::string &backendApi, const std::string &shaderName,
                                           const std::string &uniformName,
-                                          const std::source_location loc = std::source_location::current()) : Exception(
-                "[" + backendApi + "] Failed to retrieve uniform \"" + uniformName + "\" in shader: " + shaderName,
-                loc) {};
+                                          const std::source_location loc = std::source_location::current())
+                : Exception(std::format("[{}] Failed to retrieve uniform \"{}\" in shader: {}", backendApi, uniformName,
+                                        shaderName), loc) {}
     };
 
     class FramebufferCreationFailed final : public Exception {
         public:
             explicit FramebufferCreationFailed(const std::string &backendApi,
                                                const std::source_location loc = std::source_location::current())
-                : Exception("[" + backendApi + "] Failed to create the framebuffer", loc)
+                : Exception(std::format("[{}] Failed to create the framebuffer", backendApi), loc)
             {}
     };
 
@@ -102,32 +104,32 @@ namespace nexo::renderer {
             explicit FramebufferResizingFailed(const std::string &backendApi, const bool tooBig,
                                                const unsigned int width, const unsigned int height,
                                                const std::source_location loc =
-                                                       std::source_location::current()) : Exception(
-                "[" + backendApi + "] Framebuffer resizing failed: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too " + (tooBig ? "big" : "small"), loc) {};
+                                                       std::source_location::current())
+                : Exception(std::format("[{}] Framebuffer resizing failed: {}x{} is too {}",
+                                        backendApi, width, height, (tooBig ? "big" : "small")), loc) {}
     };
 
     class FramebufferUnsupportedColorFormat final : public Exception {
         public:
             explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName,
                                                        const std::source_location loc =
-                                                               std::source_location::current()) : Exception(
-                "[" + backendApiName + "] Unsupported framebuffer color attachment format", loc) {};
+                                                               std::source_location::current())
+                : Exception(std::format("[{}] Unsupported framebuffer color attachment format", backendApiName), loc) {}
     };
 
     class FramebufferUnsupportedDepthFormat final : public Exception {
         public:
             explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName,
                                                        const std::source_location loc =
-                                                               std::source_location::current()) : Exception(
-                "[" + backendApiName + "] Unsupported framebuffer depth attachment format", loc) {};
+                                                               std::source_location::current())
+                : Exception(std::format("[{}] Unsupported framebuffer depth attachment format", backendApiName), loc) {}
     };
 
     class BufferLayoutEmpty final : public Exception {
         public:
             explicit BufferLayoutEmpty(const std::string &backendApi,
-                                       const std::source_location loc = std::source_location::current()) : Exception(
-                "[" + backendApi + "] Vertex buffer layout cannot be empty", loc) {};
+                                       const std::source_location loc = std::source_location::current())
+                : Exception(std::format("[{}] Vertex buffer layout cannot be empty", backendApi), loc) {}
     };
 
     enum class RendererType {
@@ -139,53 +141,54 @@ namespace nexo::renderer {
         public:
             explicit RendererNotInitialized(const RendererType type,
                                             const std::source_location loc =
-                                                    std::source_location::current()) : Exception(
-                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) +
-                " Renderer not initialized, call the init function first", loc) {};
+                                                    std::source_location::current())
+                : Exception(std::format("{} Renderer not initialized, call the init function first",
+                                        (type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")), loc)
+            {}
     };
 
     class RendererSceneLifeCycleFailure : public Exception {
         public:
             explicit RendererSceneLifeCycleFailure(const RendererType type, const std::string &msg,
                                                    const std::source_location loc =
-                                                           std::source_location::current()) : Exception(
-                std::string((type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")) + " " + msg, loc)
-            {};
+                                                           std::source_location::current())
+                : Exception(std::format("{} {}",
+                                        (type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]"), msg),
+                            loc) {}
     };
 
-    class TextureInvalidSize : public Exception {
+    class TextureInvalidSize final : public Exception {
         public:
             explicit TextureInvalidSize(const std::string &backendApi,
                                         const unsigned int width, const unsigned int height,
                                         const unsigned int maxTextureSize,
-                                        const std::source_location loc = std::source_location::current()) : Exception(
-                "[" + backendApi + "] Invalid size for texture: " + std::to_string(width) + "x" +
-                std::to_string(height) + " is too big, max texture size is : " + std::to_string(maxTextureSize),
-                loc) {};
+                                        const std::source_location loc = std::source_location::current())
+                : Exception(std::format("[{}] Invalid size for texture: {}x{} is too big, max texture size is : {}",
+                                        backendApi, width, height, maxTextureSize), loc) {}
     };
 
-    class TextureUnsupportedFormat : public Exception {
+    class TextureUnsupportedFormat final : public Exception {
         public:
             explicit TextureUnsupportedFormat(const std::string &backendApi, const int channels,
                                               const std::string &path,
                                               const std::source_location loc =
-                                                      std::source_location::current()) : Exception(
-                "[" + backendApi + "] Unsupported image format with " + std::to_string(channels) + " channels in " +
-                path, loc) {};
+                                                      std::source_location::current())
+                : Exception(std::format("[{}] Unsupported image format with {} channels in {}",
+                                        backendApi, channels, path), loc) {}
     };
 
-    class TextureSizeMismatch : public Exception {
+    class TextureSizeMismatch final : public Exception {
         public:
             explicit TextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
-                                         const std::source_location loc = std::source_location::current()) : Exception(
-                "[" + backendApi + "] Data size does not match the texture size: " + std::to_string(dataSize) + " != " +
-                std::to_string(expectedSize), loc) {};
+                                         const std::source_location loc = std::source_location::current())
+                : Exception(std::format("[{}] Data size does not match the texture size: {} != {}",
+                                        backendApi, dataSize, expectedSize), loc) {}
     };
 
-    class StbiLoadException : public Exception {
+    class StbiLoadException final : public Exception {
         public:
             explicit StbiLoadException(const std::string &msg,
                                        const std::source_location loc = std::source_location::current())
-                : Exception("STBI load failed: " + msg, loc) {}
+                : Exception(std::format("STBI load failed: {}", msg), loc) {}
     };
 }

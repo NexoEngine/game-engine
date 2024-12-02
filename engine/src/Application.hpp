@@ -130,7 +130,7 @@ namespace nexo {
 
             bool isRunning() const { return m_isRunning; };
 
-            ecs::Entity createEntity();
+            ecs::Entity createEntity() const;
             void destroyEntity(ecs::Entity entity);
 
             scene::SceneId createScene(const std::string &sceneName, bool active = true);
@@ -190,11 +190,11 @@ namespace nexo {
         private:
             void registerAllDebugListeners();
             void registerSignalListeners();
-            void registerEcsComponents();
-            void registerWindowCallbacks();
+            void registerEcsComponents() const;
+            void registerWindowCallbacks() const;
             void registerSystems();
 
-            void displayProfileResults();
+            void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
 
             scene::SceneId m_nextSceneId = 0;

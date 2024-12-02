@@ -73,8 +73,8 @@ namespace nexo::renderer {
         std::shared_ptr<Texture2D> whiteTexture;
 
         unsigned int indexCount = 0;
-        Vertex* vertexBufferBase = nullptr;
-        unsigned int *indexBufferBase = nullptr;
+        std::array<Vertex, 80000> vertexBufferBase;
+        std::array<unsigned int, 360000> indexBufferBase;
         Vertex* vertexBufferPtr = nullptr;
         unsigned int *indexBufferPtr = nullptr;
 

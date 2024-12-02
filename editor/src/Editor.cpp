@@ -53,7 +53,7 @@ namespace nexo::editor {
         });
     }
 
-    void Editor::shutdown()
+    void Editor::shutdown() const
     {
         LOG(NEXO_INFO, "Closing editor");
         for (const auto &[_, window]: m_windows)
@@ -91,9 +91,9 @@ namespace nexo::editor {
         Logger::setCallback(engineLogCallback);
     }
 
-    void Editor::setupEngine()
+    void Editor::setupEngine() const
     {
-        auto &app = Application::getInstance();
+        auto const &app = Application::getInstance();
         auto &window = app.getWindow();
 
 #ifdef __linux__
@@ -165,7 +165,7 @@ namespace nexo::editor {
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
-    void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY)
+    void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY) const
     {
         ImFontConfig fontConfig;
         fontConfig.OversampleH = 3; // Horizontal oversampling
@@ -212,7 +212,7 @@ namespace nexo::editor {
         LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }
 
-    void Editor::init()
+    void Editor::init() const
     {
         for (const auto &[_, window]: m_windows)
         {
@@ -262,11 +262,9 @@ namespace nexo::editor {
         }
     }
 
-    void Editor::buildDockspace()
+    void Editor::buildDockspace() const
     {
-        const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID;
-
-        if (!ImGui::DockBuilderGetNode(dockspaceID))
+        if (const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID; !ImGui::DockBuilderGetNode(dockspaceID))
         {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
@@ -317,7 +315,7 @@ namespace nexo::editor {
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
-    void Editor::update()
+    void Editor::update() const
     {
         for (const auto &[_, window]: m_windows)
         {

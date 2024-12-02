@@ -48,7 +48,7 @@ namespace nexo::renderer {
         GraphicsApiInitFailure ex("OpenGL");
         std::string formattedMessage = ex.what();
 
-        EXPECT_NE(formattedMessage.find("Failed to initialize graphics api: OpenGL"), std::string::npos);
+        EXPECT_NE(formattedMessage.find("Failed to initialize graphics API: OpenGL"), std::string::npos);
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
         EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
     }

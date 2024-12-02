@@ -49,9 +49,9 @@ namespace nexo::camera {
     void PerspectiveCamera::update(const glm::vec3 &position, float yaw, float pitch)
     {
         glm::vec3 front;
-        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        front.y = sin(glm::radians(pitch));
-        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front.x = static_cast<float>(cos(glm::radians(yaw)) * cos(glm::radians(pitch)));
+        front.y = static_cast<float>(sin(glm::radians(pitch)));
+        front.z = static_cast<float>(sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
         front = glm::normalize(front);
 
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));

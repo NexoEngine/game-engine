@@ -46,7 +46,7 @@ namespace nexo::renderer {
             * - `ShaderCreationFailed` if shader compilation fails.
             */
             OpenGlShader(const std::string &path);
-            OpenGlShader(std::string name, const std::string &vertexSource, const std::string &fragmentSource);
+            OpenGlShader(std::string name, const std::string_view &vertexSource, const std::string_view &fragmentSource);
             ~OpenGlShader() override;
 
             /**
@@ -69,7 +69,7 @@ namespace nexo::renderer {
         private:
             std::string m_name;
             unsigned int m_id = 0;
-            static std::unordered_map<GLenum, std::string> preProcess(const std::string &src, const std::string &filePath);
+            static std::unordered_map<GLenum, std::string> preProcess(const std::string_view &src, const std::string &filePath);
             void compile(const std::unordered_map<GLenum, std::string> &shaderSources);
     };
 

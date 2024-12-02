@@ -44,7 +44,7 @@ namespace nexo::renderer {
         // Close event
         glfwSetWindowCloseCallback(_openGlWindow, [](GLFWwindow *window)
         {
-            auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->closeCallback)
                 props->closeCallback();
         });
@@ -68,7 +68,7 @@ namespace nexo::renderer {
         // Mouse scroll event
         glfwSetScrollCallback(_openGlWindow, [](GLFWwindow *window, const double xOffset, const double yOffset)
         {
-            auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->mouseScrollCallback)
                 props->mouseScrollCallback(xOffset, yOffset);
         });
