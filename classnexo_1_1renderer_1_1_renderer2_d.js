@@ -1,6 +1,6 @@
 var classnexo_1_1renderer_1_1_renderer2_d =
 [
-    [ "~Renderer2D", "classnexo_1_1renderer_1_1_renderer2_d.html#af6787d8bd8d17f495c0cec5d630e53bc", null ],
+    [ "~Renderer2D", "classnexo_1_1renderer_1_1_renderer2_d.html#af076a356fd2c1e8dc404c4923305913a", null ],
     [ "init", "classnexo_1_1renderer_1_1_renderer2_d.html#acc783d646bad414feff48e097ea30078", null ],
     [ "shutdown", "classnexo_1_1renderer_1_1_renderer2_d.html#aff4e4441f2ea1a34c3f79e004a848cdf", null ],
     [ "beginScene", "classnexo_1_1renderer_1_1_renderer2_d.html#aa15e3b87794b3a435cb1c46aa1a50b62", null ],

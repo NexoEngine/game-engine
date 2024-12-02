@@ -15,6 +15,8 @@ var searchData=
   ['transform_5ft_12',['transform_t',['../structtransform__t.html',1,'']]],
   ['transformcomponent_13',['TransformComponent',['../structnexo_1_1components_1_1_transform_component.html',1,'nexo::components']]],
   ['transformproperty_14',['TransformProperty',['../classengine_1_1editor_1_1_transform_property.html',1,'engine::editor']]],
-  ['tsqueue_15',['TsQueue',['../classrtype_1_1net_1_1_ts_queue.html',1,'rtype::net']]],
-  ['type_16',['type',['../structecs_1_1event_1_1type.html',1,'ecs::event']]]
+  ['transparentstringequal_15',['TransparentStringEqual',['../structnexo_1_1editor_1_1_transparent_string_equal.html',1,'nexo::editor']]],
+  ['transparentstringhash_16',['TransparentStringHash',['../structnexo_1_1editor_1_1_transparent_string_hash.html',1,'nexo::editor']]],
+  ['tsqueue_17',['TsQueue',['../classrtype_1_1net_1_1_ts_queue.html',1,'rtype::net']]],
+  ['type_18',['type',['../structecs_1_1event_1_1type.html',1,'ecs::event']]]
 ];

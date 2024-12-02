@@ -423,6 +423,8 @@ var hierarchy =
     [ "ecs::components::physics::transform_s", "structecs_1_1components_1_1physics_1_1transform__s.html", null ],
     [ "transform_t", "structtransform__t.html", null ],
     [ "nexo::components::TransformComponent", "structnexo_1_1components_1_1_transform_component.html", null ],
+    [ "nexo::editor::TransparentStringEqual", "structnexo_1_1editor_1_1_transparent_string_equal.html", null ],
+    [ "nexo::editor::TransparentStringHash", "structnexo_1_1editor_1_1_transparent_string_hash.html", null ],
     [ "rtype::net::TsQueue< T >", "classrtype_1_1net_1_1_ts_queue.html", null ],
     [ "ecs::event::type", "structecs_1_1event_1_1type.html", null ],
     [ "Velocity", "struct_velocity.html", null ],

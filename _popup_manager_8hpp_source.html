@@ -113,17 +113,24 @@ $(document).ready(function(){initNavTree('_popup_manager_8hpp_source.html',''); 
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keywordtype">void</span> openPopup(<span class="keyword">const</span> std::string &amp;popupName);</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordtype">bool</span> showPopupModal(<span class="keyword">const</span> std::string &amp;popupModalName);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordtype">bool</span> showPopup(<span class="keyword">const</span> std::string &amp;popupName);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordtype">void</span> closePopup();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordtype">void</span> closePopupInContext();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordtype">void</span> closePopup() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordtype">void</span> closePopupInContext() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            VariantData &amp;getUserData(<span class="keyword">const</span> std::string &amp;popupName);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordtype">void</span> setUserData(<span class="keyword">const</span> std::string &amp;popupName, <span class="keyword">const</span> VariantData &amp;data);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            std::unordered_map&lt;std::string, bool&gt; m_popups;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            std::unordered_map&lt;std::string, VariantData&gt; m_userData;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    };</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">struct </span>TransparentHasher {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keyword">using</span> is_transparent = void; <span class="comment">// Required for heterogeneous lookup</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                std::size_t operator()(std::string_view key) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                    <span class="keywordflow">return</span> std::hash&lt;std::string_view&gt;{}(key);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            };</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            std::unordered_map&lt;std::string, bool, TransparentHasher, std::equal_to&lt;&gt;&gt; m_popups;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            std::unordered_map&lt;std::string, VariantData, TransparentHasher, std::equal_to&lt;&gt;&gt; m_userData;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    };</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_popup_manager_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_popup_manager.html">nexo::editor::PopupManager</a></div><div class="ttdef"><b>Definition:</b> PopupManager.hpp:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -144,7 +144,7 @@ $(document).ready(function(){initNavTree('_shapes2_d_8hpp_source.html',''); init
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            glm::vec4 localMousePos = inverseTransform * glm::vec4(mouseWorldPos, 0.0f, 1.0f);</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            glm::vec2 halfSize = glm::vec2(0.5f);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keyword">auto</span> halfSize = glm::vec2(0.5f);</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">return</span> localMousePos.x &gt;= -halfSize.x &amp;&amp; localMousePos.x &lt;= halfSize.x &amp;&amp;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                   localMousePos.y &gt;= -halfSize.y &amp;&amp; localMousePos.y &lt;= halfSize.y;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>

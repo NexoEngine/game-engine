@@ -137,8 +137,8 @@ $(document).ready(function(){initNavTree('_shapes3_d_8hpp_source.html',''); init
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        std::vector&lt;Mesh&gt; meshes;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        std::vector&lt;std::shared_ptr&lt;MeshNode&gt;&gt; children;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">void</span> draw(<a class="code hl_class" href="classnexo_1_1renderer_1_1_renderer3_d.html">renderer::Renderer3D</a> &amp;renderer3D, <span class="keyword">const</span> glm::mat4 &amp;parentTransform)</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">void</span> draw(<a class="code hl_class" href="classnexo_1_1renderer_1_1_renderer3_d.html">renderer::Renderer3D</a> &amp;renderer3D, <span class="keyword">const</span> glm::mat4 &amp;parentTransform)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">        </span>{</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            glm::mat4 localTransform = parentTransform * transform;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;mesh: meshes)</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            {</div>
@@ -177,19 +177,18 @@ $(document).ready(function(){initNavTree('_shapes3_d_8hpp_source.html',''); init
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                        glm::vec3(0.0f, 0.0f, 1.0f));</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keyword">const</span> glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                glm::vec3 size = {0.01f, 0.01f, 0.01f};</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keyword">const</span> glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transf.size);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <span class="keyword">const</span> glm::mat4 transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                root-&gt;draw(renderer3D, transformMatrix);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    };</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keyword">const</span> glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transf.size);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <span class="keyword">const</span> glm::mat4 transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                root-&gt;draw(renderer3D, transformMatrix);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    };</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_renderer3_d_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_renderer3_d.html">nexo::renderer::Renderer3D</a></div><div class="ttdoc">Provides a high-performance 3D rendering system for drawing cubes, textured objects,...</div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:113</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_renderer3_d_html_a4cfbd015d41b42290bbdb42044acb305"><div class="ttname"><a href="classnexo_1_1renderer_1_1_renderer3_d.html#a4cfbd015d41b42290bbdb42044acb305">nexo::renderer::Renderer3D::drawMesh</a></div><div class="ttdeci">void drawMesh(const std::vector&lt; Vertex &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const std::shared_ptr&lt; Texture2D &gt; &amp;texture) const</div><div class="ttdoc">Draws a custom 3D mesh.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:342</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_renderer3_d_html_a4cfbd015d41b42290bbdb42044acb305"><div class="ttname"><a href="classnexo_1_1renderer_1_1_renderer3_d.html#a4cfbd015d41b42290bbdb42044acb305">nexo::renderer::Renderer3D::drawMesh</a></div><div class="ttdeci">void drawMesh(const std::vector&lt; Vertex &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const std::shared_ptr&lt; Texture2D &gt; &amp;texture) const</div><div class="ttdoc">Draws a custom 3D mesh.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:343</div></div>
 <div class="ttc" id="astructnexo_1_1components_1_1_cube_html"><div class="ttname"><a href="structnexo_1_1components_1_1_cube.html">nexo::components::Cube</a></div><div class="ttdef"><b>Definition:</b> Shapes3D.hpp:29</div></div>
 <div class="ttc" id="astructnexo_1_1components_1_1_material_html"><div class="ttname"><a href="structnexo_1_1components_1_1_material.html">nexo::components::Material</a></div><div class="ttdef"><b>Definition:</b> Render3D.hpp:20</div></div>
 <div class="ttc" id="astructnexo_1_1components_1_1_mesh_html"><div class="ttname"><a href="structnexo_1_1components_1_1_mesh.html">nexo::components::Mesh</a></div><div class="ttdef"><b>Definition:</b> Shapes3D.hpp:38</div></div>

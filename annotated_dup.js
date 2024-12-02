@@ -226,7 +226,9 @@ var annotated_dup =
         [ "SceneObject", "structnexo_1_1editor_1_1_scene_object.html", null ],
         [ "SceneProperties", "structnexo_1_1editor_1_1_scene_properties.html", null ],
         [ "SceneTreeWindow", "classnexo_1_1editor_1_1_scene_tree_window.html", null ],
-        [ "SceneViewManager", "classnexo_1_1editor_1_1_scene_view_manager.html", null ]
+        [ "SceneViewManager", "classnexo_1_1editor_1_1_scene_view_manager.html", null ],
+        [ "TransparentStringEqual", "structnexo_1_1editor_1_1_transparent_string_equal.html", null ],
+        [ "TransparentStringHash", "structnexo_1_1editor_1_1_transparent_string_hash.html", null ]
       ] ],
       [ "event", null, [
         [ "AnotherMockListener", "classnexo_1_1event_1_1_another_mock_listener.html", null ],

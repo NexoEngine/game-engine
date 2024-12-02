@@ -120,34 +120,32 @@ $(document).ready(function(){initNavTree('editor_2src_2_document_windows_2_conso
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordtype">void</span> show() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordtype">void</span> update() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordtype">void</span> addLog(<span class="keyword">const</span> <span class="keywordtype">char</span>* fmt, ...);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordtype">void</span> executeCommand(<span class="keyword">const</span> <span class="keywordtype">char</span>* command_line);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordtype">char</span> inputBuf[512] = {};</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        std::deque&lt;std::string&gt; items;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">bool</span> scrollToBottom = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        std::vector&lt;std::string&gt; commands; <span class="comment">// History of executed commands.</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        std::set&lt;loguru::Verbosity&gt; selectedVerbosityLevels = {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            loguru::Verbosity_FATAL,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            loguru::Verbosity_ERROR,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            loguru::Verbosity_WARNING,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            loguru::Verbosity_INFO,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        };</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="comment">// Command and variables handling (optional)</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="comment">// std::map&lt;std::string, std::function&lt;void(const std::string&amp;)&gt;&gt; commandsMap;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordtype">void</span> addLog(<span class="keyword">const</span> <span class="keywordtype">char</span>* fmt, Args&amp;&amp;... args);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">void</span> executeCommand(<span class="keyword">const</span> <span class="keywordtype">char</span>* command_line);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">char</span> inputBuf[512] = {};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        std::deque&lt;std::string&gt; items;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">bool</span> scrollToBottom = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        std::vector&lt;std::string&gt; commands; <span class="comment">// History of executed commands.</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        std::set&lt;loguru::Verbosity&gt; selectedVerbosityLevels = {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            loguru::Verbosity_FATAL,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            loguru::Verbosity_ERROR,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            loguru::Verbosity_WARNING,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            loguru::Verbosity_INFO,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        };</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_editor.html">Editor</a>&amp; _editor;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_editor.html">Editor</a>&amp; _editor;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordtype">void</span> clearLog();</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    };</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">void</span> clearLog();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    };</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:22</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html">nexo::editor::ConsoleWindow</a></div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:22</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor.html">nexo::editor::Editor</a></div><div class="ttdef"><b>Definition:</b> Editor.hpp:37</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor.html">nexo::editor::Editor</a></div><div class="ttdef"><b>Definition:</b> Editor.hpp:51</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

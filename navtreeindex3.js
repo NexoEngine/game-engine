@@ -131,6 +131,8 @@ var NAVTREEINDEX3 =
 "structnexo_1_1editor_1_1_log_message.html":[4,0,4,4,13],
 "structnexo_1_1editor_1_1_scene_object.html":[4,0,4,4,18],
 "structnexo_1_1editor_1_1_scene_properties.html":[4,0,4,4,19],
+"structnexo_1_1editor_1_1_transparent_string_equal.html":[4,0,4,4,22],
+"structnexo_1_1editor_1_1_transparent_string_hash.html":[4,0,4,4,23],
 "structnexo_1_1renderer_1_1_buffer_elements.html":[4,0,4,7,0],
 "structnexo_1_1renderer_1_1_cube_vertex.html":[4,0,4,7,3],
 "structnexo_1_1renderer_1_1_frame_buffer_attachments_specifications.html":[4,0,4,7,6],
