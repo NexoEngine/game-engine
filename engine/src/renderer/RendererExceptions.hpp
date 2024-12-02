@@ -163,7 +163,7 @@ namespace nexo::renderer {
                                         const unsigned int width, const unsigned int height,
                                         const unsigned int maxTextureSize,
                                         const std::source_location loc = std::source_location::current())
-                : Exception(std::format("[{}] Invalid size for texture: {}x{} is too big, max texture size is: {}",
+                : Exception(std::format("[{}] Invalid size for texture: {}x{} is too big, max texture size is : {}",
                                         backendApi, width, height, maxTextureSize), loc) {}
     };
 
