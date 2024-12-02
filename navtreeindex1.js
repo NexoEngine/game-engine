@@ -129,7 +129,7 @@ var NAVTREEINDEX1 =
 "classnexo_1_1editor_1_1_backend_renderer_api_not_supported.html":[4,0,4,4,4],
 "classnexo_1_1editor_1_1_console_window.html":[4,0,4,4,6],
 "classnexo_1_1editor_1_1_editor.html":[4,0,4,4,7],
-"classnexo_1_1editor_1_1_editor.html#a93bd620e211e157621ee766bdd0fa619":[4,0,4,4,7,0],
+"classnexo_1_1editor_1_1_editor.html#a9951ba0fd54a7248d5b1a0b8f1d5f9a6":[4,0,4,4,7,0],
 "classnexo_1_1editor_1_1_file_not_found_exception.html":[4,0,4,4,9],
 "classnexo_1_1editor_1_1_i_document_window.html":[4,0,4,4,10],
 "classnexo_1_1editor_1_1_im_gui_backend.html":[4,0,4,4,11],

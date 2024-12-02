@@ -1,5 +1,5 @@
 <map id="nexo::renderer::Renderer2DStorage" name="nexo::renderer::Renderer2DStorage">
-<area shape="rect" id="node1" title=" " alt="" coords="106,204,273,501"/>
+<area shape="rect" id="node1" title=" " alt="" coords="106,189,273,501"/>
 <area shape="rect" id="node2" href="$structnexo_1_1renderer_1_1_quad_vertex.html" title=" " alt="" coords="5,5,181,127"/>
 <area shape="rect" id="node3" href="$structnexo_1_1renderer_1_1_renderer_stats.html" title=" " alt="" coords="205,5,365,127"/>
 </map>

@@ -219,7 +219,7 @@ $(document).ready(function(){initNavTree('_application_8hpp_source.html',''); in
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keywordtype">bool</span> isRunning()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_isRunning; };</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            ecs::Entity createEntity();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            ecs::Entity createEntity() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keywordtype">void</span> destroyEntity(ecs::Entity entity);</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            scene::SceneId createScene(<span class="keyword">const</span> std::string &amp;sceneName, <span class="keywordtype">bool</span> active = <span class="keyword">true</span>);</div>
@@ -279,11 +279,11 @@ $(document).ready(function(){initNavTree('_application_8hpp_source.html',''); in
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordtype">void</span> registerAllDebugListeners();</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordtype">void</span> registerSignalListeners();</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keywordtype">void</span> registerEcsComponents();</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <span class="keywordtype">void</span> registerWindowCallbacks();</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keywordtype">void</span> registerEcsComponents() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <span class="keywordtype">void</span> registerWindowCallbacks() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            <span class="keywordtype">void</span> registerSystems();</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordtype">void</span> displayProfileResults();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordtype">void</span> displayProfileResults() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keyword">static</span> std::unique_ptr&lt;Application&gt; _instance;</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            scene::SceneId m_nextSceneId = 0;</div>
