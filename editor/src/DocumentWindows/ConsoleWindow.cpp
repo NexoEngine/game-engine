@@ -75,7 +75,7 @@ namespace nexo::editor {
     {
         try
         {
-            std::string formattedMessage = std::format(fmt, std::forward<Args>(args)...);
+            std::string formattedMessage = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
             items.emplace_back(formattedMessage);
         }
         catch (const std::format_error& e)
