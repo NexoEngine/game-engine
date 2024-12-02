@@ -81,7 +81,7 @@ namespace nexo::utils {
         // Extract vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
-            renderer::Vertex vertex;
+            renderer::Vertex vertex{};
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
             //TODO: Later
@@ -108,7 +108,7 @@ namespace nexo::utils {
 
         // Extract texture (if available)
         std::shared_ptr<renderer::Texture2D> texture = nullptr;
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+        aiMaterial const *material = scene->mMaterials[mesh->mMaterialIndex];
 
         if (aiString str; material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
         {
@@ -125,7 +125,7 @@ namespace nexo::utils {
         return {mesh->mName.data, vertices, indices, texture, std::nullopt}; // Optional material not used yet
     }
 
-    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode *node, const aiScene *scene)
+    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode const *node, const aiScene *scene)
     {
         static int nbNode = 0;
         nbNode++;
