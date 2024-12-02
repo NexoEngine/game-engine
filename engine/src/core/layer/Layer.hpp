@@ -70,6 +70,38 @@ namespace nexo::layer {
                 LOG(NEXO_DEBUG, "Layer {} deleted", name);
             };
 
+            Layer(const Layer& other)
+                : BaseListener(other.name), id(other.id), name(other.name) {
+                LOG(NEXO_DEBUG, "Layer {} copied", name);
+            }
+
+            Layer& operator=(const Layer& other) {
+                if (this == &other) return *this;
+
+                BaseListener::operator=(other);
+                id = other.id;
+                name = other.name;
+
+                LOG(NEXO_DEBUG, "Layer {} copy-assigned", name);
+                return *this;
+            }
+
+            Layer(Layer&& other) noexcept
+                : BaseListener(other), id(other.id), name(std::move(other.name)) {
+                LOG(NEXO_DEBUG, "Layer {} moved", name);
+            }
+
+            Layer& operator=(Layer&& other) noexcept {
+                if (this == &other) return *this;
+
+                BaseListener::operator=(other);
+                id = other.id;
+                name = std::move(other.name);
+
+                LOG(NEXO_DEBUG, "Layer {} move-assigned", name);
+                return *this;
+            }
+
             template<typename DerivedLayer = void>
             std::optional<std::type_index> getTypeIndex() const
             {
