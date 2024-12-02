@@ -16,6 +16,7 @@
 #include "Exception.hpp"
 
 #include <source_location>
+#include <format>
 
 namespace nexo::ecs {
     using Entity = std::uint32_t;
