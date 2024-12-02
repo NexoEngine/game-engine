@@ -55,7 +55,7 @@ namespace nexo::scene {
                 m_rendererContext->renderer3D.init();
             };
 
-            ~Scene()
+            virtual ~Scene()
             {
                 LOG(NEXO_DEBUG, "Scene {} deleted", name);
             };
