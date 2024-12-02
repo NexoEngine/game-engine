@@ -80,7 +80,7 @@ namespace nexo::editor {
         }
         catch (const std::format_error& e)
         {
-            items.emplace_back("[Error formatting log message]");
+            items.emplace_back(std::format("[Error formatting log message]: {}", e.what()));
         }
 
         scrollToBottom = true;
