@@ -22,9 +22,9 @@ namespace nexo::ecs {
 
     class ComponentNotFound final : public Exception {
         public:
-            explicit ComponentNotFound(const Entity entity,
-                                       const std::source_location loc = std::source_location::current())
-                : Exception("Component not found for: " + std::to_string(entity), loc) {}
+        explicit ComponentNotFound(const Entity entity,
+                                    const std::source_location loc = std::source_location::current())
+            : Exception(std::format("Component not found for: {}", entity), loc) {}
     };
 
     class ComponentNotRegistered final : public Exception {
@@ -53,7 +53,7 @@ namespace nexo::ecs {
 
     class OutOfRange final : public Exception {
         public:
-            explicit OutOfRange(unsigned int index, const std::source_location loc = std::source_location::current())
-                : Exception("Index " + std::to_string(index) + " is out of range", loc) {}
+        explicit OutOfRange(unsigned int index, const std::source_location loc = std::source_location::current())
+            : Exception(std::format("Index {} is out of range", index), loc) {}
     };
 }
