@@ -15,11 +15,15 @@
 #include "ecs/Coordinator.hpp"
 
 struct Position {
-    float x, y, z;
+    float x;
+    float y;
+    float z;
 };
 
 struct Velocity {
-    float x, y, z;
+    float x;
+    float y;
+    float z;
 };
 
 class MovementSystem : public nexo::ecs::System {

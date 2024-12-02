@@ -16,7 +16,6 @@
 #include "ADocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "renderer/Framebuffer.hpp"
-//#include "core/camera/PerspectiveCameraController.hpp"
 #include "core/camera/CameraController.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
@@ -33,7 +32,7 @@ namespace nexo::editor {
             void update() override;
 
             [[nodiscard]] const std::string &getName() const {return m_sceneName;};
-            void setName(const std::string &name) {m_sceneName = name; };
+            void setName(const std::string_view name) { m_sceneName = name; };
 
             void setupFramebuffer();
 

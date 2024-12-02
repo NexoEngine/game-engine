@@ -67,7 +67,7 @@ namespace nexo::components {
             shape->draw(context, transf);
         }
 
-        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        bool isClicked([[maybe_unused]] const TransformComponent &transf, [[maybe_unused]] const glm::vec2 &mouseWorldPos) override
         {
             return false;
         }

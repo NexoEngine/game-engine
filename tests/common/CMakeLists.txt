@@ -30,6 +30,7 @@ add_executable(common_tests
     ${COMMON_SOURCES}
     ${BASEDIR}/Matrix.test.cpp
     ${BASEDIR}/Path.test.cpp
+    ${BASEDIR}/Exceptions.test.cpp
 )
 
 # Find glm and add its include directories

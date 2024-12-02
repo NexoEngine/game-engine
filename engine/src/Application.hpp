@@ -114,14 +114,12 @@ namespace nexo {
             {
                 LOG(NEXO_INFO, "Received terminate signal");
                 m_isRunning = false;
-                //m_window->close();
             }
 
             void handleEvent(event::EventSignalInterrupt&) override
             {
                 LOG(NEXO_INFO, "Received interrupt signal");
                 m_isRunning = false;
-                //m_window->close();
             }
 
             [[nodiscard]] std::shared_ptr<event::EventManager> getEventManager() const { return m_eventManager; };

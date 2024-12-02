@@ -23,12 +23,12 @@ namespace nexo::editor {
         m_popups[popupName] = true;
     }
 
-    void PopupManager::closePopup()
+    void PopupManager::closePopup() const
     {
         ImGui::EndPopup();
     }
 
-    void PopupManager::closePopupInContext()
+    void PopupManager::closePopupInContext() const
     {
         ImGui::CloseCurrentPopup();
     }

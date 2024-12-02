@@ -27,6 +27,8 @@ add_executable(engine_tests
     ${BASEDIR}/camera/OrthographicCamera.test.cpp
     ${BASEDIR}/camera/PerspectiveCamera.test.cpp
     ${BASEDIR}/event/EventManager.test.cpp
+    ${BASEDIR}/event/WindowEvent.test.cpp
+    ${BASEDIR}/exceptions/Exceptions.test.cpp
     ${BASEDIR}/layer/LayerStack.test.cpp
     ${BASEDIR}/layer/Layer.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp

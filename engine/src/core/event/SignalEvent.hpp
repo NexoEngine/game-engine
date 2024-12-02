@@ -15,8 +15,6 @@
 #pragma once
 
 #include <csignal>
-#include <cstring>
-#include <iostream>
 
 #include "Event.hpp"
 #include "Signals.hpp"
@@ -27,17 +25,26 @@ namespace nexo::event {
         public:
             explicit EventAnySignal(int signal) : signal(signal) {};
             int signal;
+
+            friend std::ostream &operator<<(std::ostream &os, const EventAnySignal &event)
+            {
+                os << "[EventAnySignal] Signal : " << utils::strsignal(event.signal) << " (" << event.signal << ")";
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventAnySignal& event);
 
     /**
      * @brief Template class to handle a specific signal
      * @tparam TSignal The number of the signal to handle
      */
-    template <int TSignal>
-    class EventSignal final : public Event<EventSignal<TSignal>> {};
-    template <int TSignal>
-    std::ostream& operator<<(std::ostream& os, const EventSignal<TSignal>& event);
+    template<int TSignal>
+    class EventSignal final : public Event<EventSignal<TSignal> > {
+        friend std::ostream &operator<<(std::ostream &os, [[maybe_unused]] const EventSignal &)
+        {
+            os << "[EventSignal] Signal : " << utils::strsignal(TSignal) << " (" << TSignal << ")";
+            return os;
+        }
+    };
 
     using EventSignalTerminate = EventSignal<SIGTERM>;
     using EventSignalInterrupt = EventSignal<SIGINT>;
@@ -46,11 +53,13 @@ namespace nexo::event {
     class SignalHandler {
         public:
             SignalHandler();
+
             ~SignalHandler() = default;
 
             // Singleton
-            SignalHandler(SignalHandler const&) = delete;
-            void operator=(SignalHandler const&) = delete;
+            SignalHandler(SignalHandler const &) = delete;
+
+            void operator=(SignalHandler const &) = delete;
 
             void registerEventManager(std::shared_ptr<EventManager> eventManager);
 
@@ -64,14 +73,15 @@ namespace nexo::event {
 
         private:
             static void signalHandler(int signal);
+
             static void defaultSignalHandler(int signal);
 
-            template <typename EventType, typename... Args>
-            static void emitEventToAll(Args&&... args);
+            template<typename EventType, typename... Args>
+            static void emitEventToAll(Args &&... args);
 
-            void initSignals();
+            void initSignals() const;
 
-            std::vector<std::shared_ptr<EventManager>> m_eventManagers;
+            std::vector<std::shared_ptr<EventManager> > m_eventManagers;
 
             // Singleton
             inline static std::shared_ptr<SignalHandler> s_instance = nullptr;

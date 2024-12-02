@@ -40,7 +40,7 @@ namespace nexo::camera {
             [[nodiscard]] virtual const glm::vec3 &getPosition() const { return m_position; };
 
             virtual void setRotation(const glm::vec3 &rotation) {m_rotation = glm::quat(glm::radians(rotation)); recalculateViewMatrix();};
-            [[nodiscard]] virtual glm::vec3 getRotation() const { return glm::degrees(glm::eulerAngles(m_rotation));; };
+            [[nodiscard]] virtual glm::vec3 getRotation() const { return glm::degrees(glm::eulerAngles(m_rotation)); };
             virtual void rotate(const glm::vec3 &deltaRotation);
 
             [[nodiscard]] virtual const glm::mat4 &getProjectionMatrix() const { return m_projectionMatrix; };

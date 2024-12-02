@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <imgui.h>
+#include <format>
 #include "ConsoleWindow.hpp"
 
 namespace nexo::editor {
@@ -69,24 +70,26 @@ namespace nexo::editor {
         items.clear();
     }
 
-    void ConsoleWindow::addLog(const char *fmt, ...)
+    template <typename... Args>
+    void ConsoleWindow::addLog(const char* fmt, Args&&... args)
     {
-        char buf[1024];
-        va_list args;
-        va_start(args, fmt);
-        vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
-        buf[IM_ARRAYSIZE(buf) - 1] = 0;
-        va_end(args);
-        items.emplace_back(buf);
+        try
+        {
+            std::string formattedMessage = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
+            items.emplace_back(formattedMessage);
+        }
+        catch (const std::format_error& e)
+        {
+            items.emplace_back(std::format("[Error formatting log message]: {}", e.what()));
+        }
 
         scrollToBottom = true;
     }
 
-    void ConsoleWindow::executeCommand(const char *command_line)
+    void ConsoleWindow::executeCommand(const char* command_line)
     {
         commands.emplace_back(command_line);
-
-        addLog("# %s\n", command_line);
+        addLog("# {}\n", command_line);
     }
 
     void ConsoleWindow::show()

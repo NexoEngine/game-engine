@@ -31,7 +31,8 @@ namespace nexo::editor {
         void show() override;
         void update() override;
 
-        void addLog(const char* fmt, ...);
+        template <typename... Args>
+        void addLog(const char* fmt, Args&&... args);
         void executeCommand(const char* command_line);
 
         private:
@@ -46,9 +47,6 @@ namespace nexo::editor {
             loguru::Verbosity_WARNING,
             loguru::Verbosity_INFO,
         };
-
-        // Command and variables handling (optional)
-        // std::map<std::string, std::function<void(const std::string&)>> commandsMap;
 
         const Editor& _editor;
 
