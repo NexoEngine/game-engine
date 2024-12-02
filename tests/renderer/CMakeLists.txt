@@ -60,6 +60,7 @@ add_executable(renderer_tests
         ${BASEDIR}/Texture.test.cpp
         ${BASEDIR}/Renderer2D.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
+        ${BASEDIR}/Exceptions.test.cpp
 )
 
 # Find glm and add its include directories
