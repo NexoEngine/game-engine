@@ -124,8 +124,8 @@ jobs:
       - name: Collect coverage into XML report for SonarCloud
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          pip install gcovr==7.2
-          gcovr build --sonarqube -o coverage.xml
+          pip install gcovr==6.0
+          gcovr build --verbose --sonarqube -o coverage.xml
           cat coverage.xml
 
       - name: Run sonar-scanner
