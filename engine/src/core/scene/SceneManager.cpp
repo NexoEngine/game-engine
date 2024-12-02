@@ -106,7 +106,7 @@ namespace nexo::scene {
         return scenes.at(sceneId).getLayerStack();
     }
 
-    void SceneManager::setLayerName(SceneId sceneId, LayerId id, const std::string &newName) const
+    void SceneManager::setLayerName(SceneId sceneId, LayerId id, const std::string_view &newName) const
     {
         if (!scenes.contains(sceneId))
         {
@@ -263,7 +263,7 @@ namespace nexo::scene {
     {
         auto sceneId = m_nextSceneId++;
         Scene newScene(sceneId, sceneName);
-        scenes.emplace(sceneId, newScene);
+        scenes.try_emplace(sceneId, newScene);
         if (active)
             m_activeScenes.insert(sceneId);
         return sceneId;
