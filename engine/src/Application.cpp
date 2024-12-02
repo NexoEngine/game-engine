@@ -56,13 +56,11 @@ namespace nexo {
     void Application::registerWindowCallbacks()
     {
         m_window->setResizeCallback([this](const int width, const int height) {
-            auto event = event::EventWindowResize(width, height);
-            m_eventManager->emitEvent<event::EventWindowResize>(std::make_shared<event::EventWindowResize>(event));
+            m_eventManager->emitEvent<event::EventWindowResize>(std::make_shared<event::EventWindowResize>(width, height));
         });
 
         m_window->setCloseCallback([this]() {
-            event::EventWindowClose event;
-            m_eventManager->emitEvent<event::EventWindowClose>(std::make_shared<event::EventWindowClose>(event));
+            m_eventManager->emitEvent<event::EventWindowClose>(std::make_shared<event::EventWindowClose>());
         });
 
         m_window->setKeyCallback([this](const int key, const int action, const int mods) {
