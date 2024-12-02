@@ -5,25 +5,41 @@ project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
+set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
+set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
+set(NEXO_BUILD_TESTS ${BUILD_TESTING} CACHE BOOL "Enable tests")
+set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
+set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    message(STATUS "GCC/Clang detected, adding compile flags")
-    add_compile_options(--std=c++20 -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-fexperimental-library)
-    endif()
+    set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})
+    set(NEXO_COMPILER_FLAGS_DEBUG -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
+    set(NEXO_COMPILER_FLAGS_RELEASE -O3)
+    set(NEXO_COVERAGE_FLAGS -O0 --coverage)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    message(STATUS "MSVC detected, adding compile flags")
-    add_compile_options(/std:c++20 /W4 /Zi /Zc:preprocessor)
+    set(NEXO_COMPILER_FLAGS_ALL /std:c++${CMAKE_CXX_STANDARD})
+    set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor)
+    set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor)
+    set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
 else()
-    message(FATAL_ERROR "Unsupported compiler ${CMAKE_CXX_COMPILER_ID}")
+    message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}, using default flags")
 endif()
 
-set(GRAPHICS_API "OpenGL")
+add_compile_options(
+        "${NEXO_COMPILER_FLAGS_ALL}"
+        "$<$<CONFIG:Debug>:${NEXO_COMPILER_FLAGS_DEBUG}>"
+        "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
+)
 
-set(GIT_SUBMODULE OFF)
+if (NEXO_COVERAGE)
+    message(STATUS "Coverage enabled, adding flags: ${NEXO_COVERAGE_FLAGS}")
+    add_compile_options("$<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>")
+    add_link_options("$<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>")
+endif()
 
 # SETUP GIT SUBMODULES
-if (GIT_SUBMODULE)
+if (NEXO_GIT_SUBMODULE)
     find_package(Git QUIET)
 
     if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -48,17 +64,21 @@ if (GIT_SUBMODULE)
 endif()
 
 # SETUP VCPKG
-message(STATUS "Bootstraping VCPKG")
-if (WIN32)
-    execute_process(
-            COMMAND .\\vcpkg\\bootstrap-vcpkg.bat
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+if(NEXO_BOOTSTRAP_VCPKG)
+    message(STATUS "Bootstraping VCPKG")
+    if (WIN32)
+        execute_process(
+                COMMAND .\\vcpkg\\bootstrap-vcpkg.bat
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+    else()
+        execute_process(
+                COMMAND ./vcpkg/bootstrap-vcpkg.sh
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+    endif()
 else()
-    execute_process(
-            COMMAND ./vcpkg/bootstrap-vcpkg.sh
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+    message(STATUS "Skipping VCPKG bootstrap")
 endif()
 
 # RUNNING VCPKG
@@ -71,7 +91,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 # SETUP EXAMPLE
-include("${CMAKE_CURRENT_SOURCE_DIR}/examples/ecs/CMakeLists.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt")
 # SETUP TESTS
 enable_testing()
 include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")

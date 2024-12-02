@@ -55,6 +55,13 @@ set_tests_properties(${rendererTestsList} PROPERTIES LABELS "renderer")
 # Ecs tests
 set_tests_properties(${ecsTestsList} PROPERTIES LABELS "ecs")
 
-
-# Add this later when editor tests are implemented
-#add_test(NAME EditorTests COMMAND editor_tests)
+# Exclude tests from the "ALL" target
+if(NOT NEXO_BUILD_TESTS)
+    message(STATUS "Excluding tests from the 'ALL' target")
+    set_target_properties(engine_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(common_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(renderer_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(ecs_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+else()
+    message(STATUS "Including tests in the 'ALL' target")
+endif()
