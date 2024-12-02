@@ -41,7 +41,7 @@ namespace nexo::event {
     template<typename EventType, typename... Args>
     void SignalHandler::emitEventToAll(Args &&... args)
     {
-        for (auto &eventManager: getInstance()->m_eventManagers)
+        for (const auto &eventManager: getInstance()->m_eventManagers)
         {
             eventManager->emitEvent<EventType>(std::forward<Args>(args)...);
         }
@@ -64,7 +64,7 @@ namespace nexo::event {
         return s_instance;
     }
 
-    void SignalHandler::initSignals()
+    void SignalHandler::initSignals() const
     {
         signal(SIGTERM, signalHandler);
         signal(SIGINT, signalHandler);
