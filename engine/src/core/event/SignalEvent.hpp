@@ -39,7 +39,7 @@ namespace nexo::event {
      */
     template<int TSignal>
     class EventSignal final : public Event<EventSignal<TSignal> > {
-        friend std::ostream &operator<<(std::ostream &os, const EventSignal &)
+        friend std::ostream &operator<<(std::ostream &os, [[maybe_unused]] const EventSignal &)
         {
             os << "[EventSignal] Signal : " << utils::strsignal(TSignal) << " (" << TSignal << ")";
             return os;
@@ -79,7 +79,7 @@ namespace nexo::event {
             template<typename EventType, typename... Args>
             static void emitEventToAll(Args &&... args);
 
-            void initSignals();
+            void initSignals() const;
 
             std::vector<std::shared_ptr<EventManager> > m_eventManagers;
 
