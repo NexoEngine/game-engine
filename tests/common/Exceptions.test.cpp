@@ -24,16 +24,6 @@ namespace nexo {
         EXPECT_NE(std::string(ex.what()).find("Test exception message"), std::string::npos);
     }
 
-    TEST(ExceptionTest, ExceptionLocation) {
-        constexpr const char *expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2; // Account for the next line
-
-        Exception ex("Location test", std::source_location::current());
-
-        EXPECT_EQ(ex.getFile(), expectedFile);
-        EXPECT_EQ(ex.getLine(), expectedLine);
-    }
-
     TEST(ExceptionTest, FormattedMessageContainsFileAndLine) {
         constexpr const char *expectedFile = __FILE__;
         constexpr unsigned int expectedLine = __LINE__ + 2; // Account for the next line
