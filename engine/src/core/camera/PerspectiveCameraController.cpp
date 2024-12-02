@@ -91,9 +91,9 @@ namespace nexo::camera {
         m_cameraPitch = glm::clamp(m_cameraPitch, -89.0f, 89.0f);
 
         glm::vec3 front;
-        front.x = cos(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch));
-        front.y = sin(glm::radians(m_cameraPitch));
-        front.z = sin(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch));
+        front.x = static_cast<float>(cos(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch)));
+        front.y = static_cast<float>(sin(glm::radians(m_cameraPitch)));
+        front.z = static_cast<float>(sin(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch)));
         m_cameraFront = glm::normalize(front);
 
         m_cameraRight = glm::normalize(glm::cross(m_cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
