@@ -75,7 +75,7 @@ namespace nexo::renderer {
         if (vertexBuffer->getLayout().getElements().empty())
             THROW_EXCEPTION(BufferLayoutEmpty, "OPENGL");
 
-        unsigned int index = static_cast<unsigned int>(_vertexBuffers.size() > 0
+        auto index = static_cast<unsigned int>(!_vertexBuffers.empty()
             ? _vertexBuffers.back()->getLayout().getElements().size()
             : 0);
         const auto& layout = vertexBuffer->getLayout();
