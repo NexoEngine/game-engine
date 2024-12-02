@@ -134,7 +134,7 @@ namespace nexo::layer {
                 return Application::m_coordinator->entityHasComponent<T>(entity);
             }
 
-            void setupLights(const std::shared_ptr<renderer::RendererContext> &rendererContext, const scene::SceneContext &sceneContext);
+            void setupLights(const std::shared_ptr<renderer::RendererContext> &rendererContext, const scene::SceneContext &sceneContext) const;
 
         private:
             std::unordered_map<std::type_index, std::function<void(const event::IEvent &)> > m_callbackEventFunctions;
