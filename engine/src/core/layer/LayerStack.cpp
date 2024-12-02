@@ -53,12 +53,10 @@ namespace nexo::layer {
             m_layers.erase(it);
 
             // Adjust m_layerInsert only if the layer was the one pointed to by m_layerInsert
-            if (m_layerInsert == it)
-                if (m_layerInsert == m_layers.end())
-                    m_layerInsert = m_layers.begin();
+            if (m_layerInsert == it && m_layerInsert == m_layers.end())
+                m_layerInsert = m_layers.begin();
         }
     }
-
 
     void LayerStack::popOverlay(const std::shared_ptr<Layer>& overlay)
     {
@@ -75,7 +73,7 @@ namespace nexo::layer {
 
     std::shared_ptr<Layer> LayerStack::operator[](const std::string& name)
     {
-        for (auto& layer : m_layers)
+        for (const auto& layer : m_layers)
         {
             if (layer->name == name)
                 return layer;
