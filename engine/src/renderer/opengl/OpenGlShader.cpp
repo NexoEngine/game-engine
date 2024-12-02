@@ -23,7 +23,7 @@
 
 namespace nexo::renderer {
 
-    static GLenum shaderTypeFromString(const std::string &type)
+    static GLenum shaderTypeFromString(const std::string_view &type)
     {
         if (type == "vertex")
             return GL_VERTEX_SHADER;
@@ -46,8 +46,8 @@ namespace nexo::renderer {
         m_name = path.substr(lastSlash, count);
     }
 
-    OpenGlShader::OpenGlShader(std::string name, const std::string &vertexSource,
-                               const std::string &fragmentSource) : m_name(std::move(name))
+    OpenGlShader::OpenGlShader(std::string name, const std::string_view &vertexSource,
+                               const std::string_view &fragmentSource) : m_name(std::move(name))
     {
         std::unordered_map<GLenum, std::string> preProcessedSource;
         preProcessedSource[GL_VERTEX_SHADER] = vertexSource;
@@ -60,7 +60,7 @@ namespace nexo::renderer {
         glDeleteProgram(m_id);
     }
 
-    std::unordered_map<GLenum, std::string> OpenGlShader::preProcess(const std::string &src,
+    std::unordered_map<GLenum, std::string> OpenGlShader::preProcess(const std::string_view &src,
                                                                      const std::string &filePath)
     {
         std::unordered_map<GLenum, std::string> shaderSources;
@@ -77,7 +77,7 @@ namespace nexo::renderer {
                             "Syntax error at line: " + std::to_string(currentLine), filePath);
 
             const size_t begin = pos + typeTokenLength + 1;
-            std::string type = src.substr(begin, eol - begin);
+            std::string_view type = src.substr(begin, eol - begin);
             if (!shaderTypeFromString(type))
                 THROW_EXCEPTION(ShaderCreationFailed, "OPENGL",
                             "Invalid shader type encountered at line: " + std::to_string(currentLine), filePath);
@@ -142,7 +142,7 @@ namespace nexo::renderer {
                                 "Opengl failed to compile the shader: " + std::string(infoLog.data()), "");
             }
             glAttachShader(program, shader);
-            glShaderIds[shaderIndex++] = shader;;
+            glShaderIds[shaderIndex++] = shader;
         }
         m_id = program;
 
@@ -151,7 +151,7 @@ namespace nexo::renderer {
 
         // Note the different functions here: glGetProgram* instead of glGetShader*.
         GLint isLinked = 0;
-        glGetProgramiv(m_id, GL_LINK_STATUS, (int *) &isLinked);
+        glGetProgramiv(m_id, GL_LINK_STATUS, &isLinked);
         if (isLinked == GL_FALSE)
         {
             GLint maxLength = 0;
