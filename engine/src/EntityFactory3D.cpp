@@ -108,20 +108,17 @@ namespace nexo::utils {
 
         // Extract texture (if available)
         std::shared_ptr<renderer::Texture2D> texture = nullptr;
-        if (mesh->mMaterialIndex >= 0)
+        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
+        if (aiString str; material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
         {
-            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-            aiString str;
-            if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
-            {
-                std::filesystem::path modelPath(path);
-                std::filesystem::path modelDirectory = modelPath.parent_path();
+            std::filesystem::path modelPath(path);
+            std::filesystem::path modelDirectory = modelPath.parent_path();
 
-                std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
+            std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
 
-                texture = renderer::Texture2D::create(texturePath.string());
-                LOG(NEXO_INFO, "Loaded diffuse texture: {}", str.data);
-            }
+            texture = renderer::Texture2D::create(texturePath.string());
+            LOG(NEXO_INFO, "Loaded diffuse texture: {}", str.data);
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);

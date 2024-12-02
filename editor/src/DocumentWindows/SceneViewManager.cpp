@@ -52,7 +52,7 @@ namespace nexo::editor {
         const auto scene = m_scenes.at(uiId);
         const std::string sceneName = scene->getName();
         const auto newScene = std::make_shared<MainScene>(*scene);
-        const std::string newSceneName = newScene->getName() + " - View " + std::to_string(scene->idView++);
+        const std::string newSceneName = std::format("{} - View {}", newScene->getName(), scene->idView++);
         newScene->setName(newSceneName);
         newScene->setupFramebuffer();
         newScene->windowId = nextWindowId++;

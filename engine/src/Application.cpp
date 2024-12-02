@@ -56,13 +56,12 @@ namespace nexo {
     void Application::registerWindowCallbacks()
     {
         m_window->setResizeCallback([this](const int width, const int height) {
-            auto event = event::EventWindowResize(width, height);
-            m_eventManager->emitEvent<event::EventWindowResize>(std::make_shared<event::EventWindowResize>(event));
+            m_eventManager->emitEvent<event::EventWindowResize>(
+                std::make_shared<event::EventWindowResize>(width, height));
         });
 
         m_window->setCloseCallback([this]() {
-            event::EventWindowClose event;
-            m_eventManager->emitEvent<event::EventWindowClose>(std::make_shared<event::EventWindowClose>(event));
+            m_eventManager->emitEvent<event::EventWindowClose>(std::make_shared<event::EventWindowClose>());
         });
 
         m_window->setKeyCallback([this](const int key, const int action, const int mods) {
@@ -130,13 +129,13 @@ namespace nexo {
         });
 
         m_window->setMouseScrollCallback([this](const double xOffset, const double yOffset) {
-            event::EventMouseScroll event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-            m_eventManager->emitEvent<event::EventMouseScroll>(std::make_shared<event::EventMouseScroll>(event));
+            m_eventManager->emitEvent<event::EventMouseScroll>(
+                std::make_shared<event::EventMouseScroll>(static_cast<float>(xOffset), static_cast<float>(yOffset)));
         });
 
         m_window->setMouseMoveCallback([this](const double xpos, const double ypos) {
-            event::EventMouseMove event(static_cast<float>(xpos), static_cast<float>(ypos));
-            m_eventManager->emitEvent<event::EventMouseMove>(std::make_shared<event::EventMouseMove>(event));
+            m_eventManager->emitEvent<event::EventMouseMove>(
+                std::make_shared<event::EventMouseMove>(static_cast<float>(xpos), static_cast<float>(ypos)));
         });
     }
 
@@ -167,7 +166,7 @@ namespace nexo {
 
     void Application::displayProfileResults()
     {
-        for (auto &result : m_profilesResults)
+        for (auto &result: m_profilesResults)
         {
             std::ostringstream stream;
             stream << std::fixed << std::setprecision(3) << result.time;
@@ -187,7 +186,8 @@ namespace nexo {
         m_window->setVsync(false);
 
 #ifdef GRAPHICS_API_OPENGL
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+        {
             THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
         }
         LOG(NEXO_INFO, "OpenGL context initialized with glad");
@@ -268,7 +268,7 @@ namespace nexo {
     void Application::removeLayer(const scene::SceneId sceneId, const scene::LayerId id)
     {
         std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity : layerEntities)
+        for (const auto entity: layerEntities)
             removeEntityFromScene(entity, sceneId, static_cast<int>(id));
         m_sceneManager.removeLayer(sceneId, id);
     }
@@ -276,7 +276,7 @@ namespace nexo {
     void Application::removeOverlay(const scene::SceneId sceneId, const scene::LayerId id)
     {
         std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity : layerEntities)
+        for (const auto entity: layerEntities)
             removeEntityFromScene(entity, sceneId, static_cast<int>(id));
         m_sceneManager.removeOverlay(sceneId, id);
     }
@@ -287,7 +287,7 @@ namespace nexo {
             return;
         m_sceneManager.setSceneActiveStatus(sceneId, true);
         auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (const auto entity : sceneEntities)
+        for (const auto entity: sceneEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -307,7 +307,7 @@ namespace nexo {
             return;
         m_sceneManager.setLayerActiveStatus(sceneId, id, true);
         auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity : layerEntities)
+        for (const auto entity: layerEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -327,7 +327,7 @@ namespace nexo {
             return;
         m_sceneManager.setSceneActiveStatus(sceneId, false);
         auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (const auto entity : sceneEntities)
+        for (const auto entity: sceneEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -345,7 +345,7 @@ namespace nexo {
             return;
         m_sceneManager.setLayerActiveStatus(sceneId, id, false);
         auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity : layerEntities)
+        for (const auto entity: layerEntities)
         {
             auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
             if (activeSceneComponent)
@@ -375,8 +375,7 @@ namespace nexo {
             m_sceneManager.addEntityToLayer(entity, sceneId, layerId);
             if (!m_sceneManager.isSceneActive(sceneId) || !m_sceneManager.isLayerActive(sceneId, layerId))
                 return;
-        }
-        else
+        } else
         {
             m_sceneManager.addGlobalEntity(entity, sceneId);
             if (!m_sceneManager.isSceneActive(sceneId))
@@ -411,7 +410,8 @@ namespace nexo {
         }
     }
 
-    void Application::attachCamera(const scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, const scene::LayerId id)
+    void Application::attachCamera(const scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera,
+                                   const scene::LayerId id)
     {
         m_sceneManager.attachCameraToLayer(sceneId, camera, id);
     }

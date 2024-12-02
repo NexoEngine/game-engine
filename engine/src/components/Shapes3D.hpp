@@ -48,7 +48,7 @@ namespace nexo::components {
         std::vector<Mesh> meshes;
         std::vector<std::shared_ptr<MeshNode>> children;
 
-        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform)
+        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform) const
         {
             glm::mat4 localTransform = parentTransform * transform;
             for (const auto &mesh: meshes)
@@ -88,7 +88,6 @@ namespace nexo::components {
                                                         glm::vec3(0.0f, 0.0f, 1.0f));
                 const glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
 
-                glm::vec3 size = {0.01f, 0.01f, 0.01f};
                 const glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transf.size);
 
                 const glm::mat4 transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;

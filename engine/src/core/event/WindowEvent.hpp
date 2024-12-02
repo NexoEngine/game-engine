@@ -22,54 +22,84 @@
 
 namespace nexo::event {
 
-    class EventWindowClose final : public Event<EventWindowClose>
-    {};
+    class EventWindowClose final : public Event<EventWindowClose> {};
 
     class EventWindowResize final : public Event<EventWindowResize> {
         public:
-            EventWindowResize(const int width, const int height) : width(width) , height(height) {};
+            EventWindowResize(const int width, const int height) : width(width), height(height) {};
 
             int width;
             int height;
+
+            friend std::ostream &operator<<(std::ostream &os, const EventWindowResize &event)
+            {
+                os << "[RESIZE WINDOW EVENT]: " << event.width << "x" << event.height;
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventWindowResize& event);
 
     enum KeyAction {
         PRESSED,
         RELEASED,
         REPEAT
     };
-    std::ostream& operator<<(std::ostream& os, const KeyAction& action);
+
+    std::ostream &operator<<(std::ostream &os, const KeyAction &action);
 
     enum class KeyMods {
-        NONE = 0,
-        SHIFT = GLFW_MOD_SHIFT,
+        NONE    = 0,
+        SHIFT   = GLFW_MOD_SHIFT,
         CONTROL = GLFW_MOD_CONTROL,
-        ALT = GLFW_MOD_ALT,
+        ALT     = GLFW_MOD_ALT,
     };
-    std::ostream& operator<<(std::ostream& os, const KeyMods& mod);
+
+    std::ostream &operator<<(std::ostream &os, const KeyMods &mod);
 
     class EventKey final : public Event<EventKey> {
         public:
             EventKey() = default;
-            EventKey(const int keycode, const KeyAction action, const int mods) : keycode(keycode), action(action), mods(mods) {};
+
+            EventKey(const int keycode, const KeyAction action, const int mods) : keycode(keycode), action(action),
+                                                                                  mods(mods) {};
 
             [[nodiscard]] bool hasMod(KeyMods mod) const
             {
                 return (mods & static_cast<int>(mod));
             }
+
             int keycode{};
             KeyAction action{};
             int mods{};
+
+            friend std::ostream &operator<<(std::ostream &os, const EventKey &event)
+            {
+                std::string mod;
+                if (event.hasMod(KeyMods::ALT))
+                    mod.append("ALT");
+                if (event.hasMod(KeyMods::CONTROL))
+                {
+                    if (!mod.empty())
+                        mod.append(" + ");
+                    mod.append("CTRL");
+                }
+                if (event.hasMod(KeyMods::SHIFT))
+                {
+                    if (!mod.empty())
+                        mod.append(" + ");
+                    mod.append("SHIFT");
+                }
+                os << "[KEYBOARD EVENT] : " << event.keycode << " with action : " << event.action << " " << mod;
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventKey& event);
 
     enum MouseButton {
-        LEFT = 0,
-        RIGHT = 1,
+        LEFT   = 0,
+        RIGHT  = 1,
         MIDDLE = 2
     };
-    std::ostream& operator<<(std::ostream& os, const MouseButton& button);
+
+    std::ostream &operator<<(std::ostream &os, const MouseButton &button);
 
     class EventMouseClick final : public Event<EventMouseClick> {
         public:
@@ -83,8 +113,28 @@ namespace nexo::event {
             MouseButton button{};
             KeyAction action{};
             int mods{};
+
+            friend std::ostream &operator<<(std::ostream &os, const EventMouseClick &event)
+            {
+                std::string mod;
+                if (event.hasMod(KeyMods::ALT))
+                    mod.append("ALT");
+                if (event.hasMod(KeyMods::CONTROL))
+                {
+                    if (!mod.empty())
+                        mod.append(" + ");
+                    mod.append("CTRL");
+                }
+                if (event.hasMod(KeyMods::SHIFT))
+                {
+                    if (!mod.empty())
+                        mod.append(" + ");
+                    mod.append("SHIFT");
+                }
+                os << "[MOUSE BUTTON EVENT] : " << event.button << " with action : " << event.action << " " << mod;
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventMouseClick& button);
 
     class EventMouseScroll final : public Event<EventMouseScroll> {
         public:
@@ -92,8 +142,13 @@ namespace nexo::event {
 
             float x;
             float y;
+
+            friend std::ostream &operator<<(std::ostream &os, const EventMouseScroll &scroll)
+            {
+                os << "[MOUSE SCROLL EVENT] xOffset : " << scroll.x << " yOffset : " << scroll.y;
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventMouseScroll& scroll);
 
     class EventMouseMove : public Event<EventMouseMove> {
         public:
@@ -101,6 +156,11 @@ namespace nexo::event {
 
             float x;
             float y;
+
+            friend std::ostream &operator<<(std::ostream &os, const EventMouseMove &mouse)
+            {
+                os << "[MOUSE MOVE EVENT] x : " << mouse.x << " y : " << mouse.y;
+                return os;
+            }
     };
-    std::ostream& operator<<(std::ostream& os, const EventMouseMove& mouse);
 }

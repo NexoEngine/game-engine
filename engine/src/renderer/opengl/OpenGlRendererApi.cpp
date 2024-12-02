@@ -33,8 +33,8 @@ namespace nexo::renderer {
         // glFrontFace(GL_CCW);
         int maxViewportSize[] = {0, 0};
         glGetIntegerv(GL_MAX_VIEWPORT_DIMS, maxViewportSize);
-        m_maxWidth = maxViewportSize[0];
-        m_maxHeight = maxViewportSize[1];
+        m_maxWidth = static_cast<unsigned int>(maxViewportSize[0]);
+        m_maxHeight = static_cast<unsigned int>(maxViewportSize[1]);
         m_initialized = true;
         LOG(NEXO_DEV, "Opengl renderer api initialized");
     }

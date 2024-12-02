@@ -31,7 +31,6 @@ namespace nexo::event {
                 LOG(NEXO_WARN, "SignalHandler: cannot emit event: unknown signal {}", signal);
                 break;
         }
-
     }
 
     void SignalHandler::defaultSignalHandler(int signal)
@@ -39,23 +38,10 @@ namespace nexo::event {
         emitEventToAll<EventAnySignal>(signal);
     }
 
-    std::ostream& operator<<(std::ostream& os, const EventAnySignal& event)
+    template<typename EventType, typename... Args>
+    void SignalHandler::emitEventToAll(Args &&... args)
     {
-        os << "[EventAnySignal] Signal : " << utils::strsignal(event.signal) << " (" << event.signal << ")";
-        return os;
-    }
-
-    template<int TSignal>
-    std::ostream& operator<<(std::ostream& os, const EventSignal<TSignal>& event)
-    {
-        os << "[EventSignal] Signal : " << utils::strsignal(TSignal) << " (" << TSignal << ")";
-        return os;
-    }
-
-    template<typename EventType, typename ... Args>
-    void SignalHandler::emitEventToAll(Args&&... args)
-    {
-        for (auto &eventManager : getInstance()->m_eventManagers)
+        for (const auto &eventManager: getInstance()->m_eventManagers)
         {
             eventManager->emitEvent<EventType>(std::forward<Args>(args)...);
         }
@@ -78,7 +64,7 @@ namespace nexo::event {
         return s_instance;
     }
 
-    void SignalHandler::initSignals()
+    void SignalHandler::initSignals() const
     {
         signal(SIGTERM, signalHandler);
         signal(SIGINT, signalHandler);

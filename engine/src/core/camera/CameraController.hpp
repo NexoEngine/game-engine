@@ -20,9 +20,7 @@ namespace nexo::camera {
 
     class CameraController : public Camera {
         public:
-        virtual ~CameraController() = default;
-
-        virtual void onUpdate(Timestep ts) = 0;
+        ~CameraController() override = default;
         bool zoomOn = true;
     };
 

@@ -16,7 +16,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace nexo::math {
-    void decomposeTransformEuler(const glm::mat4 &mat, glm::vec3 &outTranslation, glm::vec3 &outRotation, glm::vec3 &outScale)
+    void decomposeTransformEuler(const glm::mat4 &mat, glm::vec3 &outTranslation, glm::vec3 &outRotation,
+                                 glm::vec3 &outScale)
     {
         // Extract translation
         outTranslation = glm::vec3(mat[3][0], mat[3][1], mat[3][2]);
@@ -33,16 +34,18 @@ namespace nexo::math {
         if (outScale.z != 0) rotationMatrix[2] /= outScale.z;
 
         // Check for negative scale using the cross product of the first two rows
-        glm::vec3 crossProduct = glm::cross(glm::vec3(rotationMatrix[0]), glm::vec3(rotationMatrix[1]));
-        if (glm::dot(crossProduct, glm::vec3(rotationMatrix[2])) < 0) {
+        if (const glm::vec3 crossProduct = glm::cross(glm::vec3(rotationMatrix[0]), glm::vec3(rotationMatrix[1]));
+            glm::dot(crossProduct, glm::vec3(rotationMatrix[2])) < 0)
+        {
             outScale.x *= -1;
             rotationMatrix[0] = -rotationMatrix[0];
         }
 
         // Extract Euler angles (rotation)
         outRotation.x = static_cast<float>(atan2(rotationMatrix[1][2], rotationMatrix[2][2])); // Rotation around X-axis
-        const auto c2 = static_cast<float>(sqrt(rotationMatrix[0][0] * rotationMatrix[0][0] + rotationMatrix[0][1] * rotationMatrix[0][1]));
-        outRotation.y = static_cast<float>(atan2(-rotationMatrix[0][2], c2));                  // Rotation around Y-axis
+        const auto c2 = static_cast<float>(sqrt(
+            rotationMatrix[0][0] * rotationMatrix[0][0] + rotationMatrix[0][1] * rotationMatrix[0][1]));
+        outRotation.y = static_cast<float>(atan2(-rotationMatrix[0][2], c2)); // Rotation around Y-axis
         outRotation.z = static_cast<float>(atan2(rotationMatrix[0][1], rotationMatrix[0][0])); // Rotation around Z-axis
     }
 }

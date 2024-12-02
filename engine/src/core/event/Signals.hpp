@@ -34,7 +34,7 @@ namespace nexo::utils {
         }
     }
 #else
-    constexpr const char *strsignal(const int signal)
+    inline const char *strsignal(const int signal)
     {
         return ::strsignal(signal);
     }

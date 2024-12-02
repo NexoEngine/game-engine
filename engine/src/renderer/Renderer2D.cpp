@@ -97,11 +97,6 @@ namespace nexo::renderer {
         m_storage->indexBufferBase = nullptr;
     }
 
-    Renderer2D::~Renderer2D()
-    {
-
-    }
-
     void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
         if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)

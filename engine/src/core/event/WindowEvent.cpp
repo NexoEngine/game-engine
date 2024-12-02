@@ -15,12 +15,6 @@
 
 namespace nexo::event {
 
-    std::ostream& operator<<(std::ostream& os, const EventWindowResize& event)
-    {
-        os << "[RESIZE WINDOW EVENT]: " << event.width << "x" << event.height;
-        return os;
-    }
-
     std::ostream& operator<<(std::ostream& os, const KeyAction& action)
     {
         switch (action)
@@ -46,25 +40,6 @@ namespace nexo::event {
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const EventKey& event)
-    {
-        std::string mod;
-        if (event.hasMod(KeyMods::ALT))
-            mod.append("ALT");
-        if (event.hasMod(KeyMods::CONTROL)) {
-            if (!mod.empty())
-                mod.append(" + ");
-            mod.append("CTRL");
-        }
-        if (event.hasMod(KeyMods::SHIFT)) {
-            if (!mod.empty())
-                mod.append(" + ");
-            mod.append("SHIFT");
-        }
-        os << "[KEYBOARD EVENT] : " << event.keycode << " with action : " << event.action << " " << mod;
-        return os;
-    }
-
     std::ostream& operator<<(std::ostream& os, const MouseButton& button)
     {
         switch (button)
@@ -77,34 +52,4 @@ namespace nexo::event {
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const EventMouseClick& event)
-    {
-        std::string mod;
-        if (event.hasMod(KeyMods::ALT))
-            mod.append("ALT");
-        if (event.hasMod(KeyMods::CONTROL)) {
-            if (!mod.empty())
-                mod.append(" + ");
-            mod.append("CTRL");
-        }
-        if (event.hasMod(KeyMods::SHIFT)) {
-            if (!mod.empty())
-                mod.append(" + ");
-            mod.append("SHIFT");
-        }
-        os << "[MOUSE BUTTON EVENT] : " << event.button << " with action : " << event.action << " " << mod;
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const EventMouseScroll& scroll)
-    {
-        os << "[MOUSE SCROLL EVENT] xOffset : " << scroll.x << " yOffset : " << scroll.y;
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const EventMouseMove& mouse)
-    {
-        os << "[MOUSE MOVE EVENT] x : " << mouse.x << " y : " << mouse.y;
-        return os;
-    }
 }
