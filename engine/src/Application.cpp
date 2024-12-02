@@ -46,14 +46,14 @@ namespace nexo {
         LOG(NEXO_DEV, "Signal listeners registered");
     }
 
-    void Application::registerEcsComponents()
+    void Application::registerEcsComponents() const
     {
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::InActiveScene>();
     }
 
-    void Application::registerWindowCallbacks()
+    void Application::registerWindowCallbacks() const
     {
         m_window->setResizeCallback([this](const int width, const int height) {
             m_eventManager->emitEvent<event::EventWindowResize>(
@@ -164,7 +164,7 @@ namespace nexo {
         LOG(NEXO_DEV, "Application created");
     }
 
-    void Application::displayProfileResults()
+    void Application::displayProfileResults() const
     {
         for (auto &result: m_profilesResults)
         {
@@ -232,7 +232,7 @@ namespace nexo {
             displayProfileResults();
     }
 
-    ecs::Entity Application::createEntity()
+    ecs::Entity Application::createEntity() const
     {
         return m_coordinator->createEntity();
     }
