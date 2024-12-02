@@ -34,6 +34,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0 # Fetch all history for all tags and branches (for SonarCloud)
 
       - name: Add Ubuntu toolchain repository
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
