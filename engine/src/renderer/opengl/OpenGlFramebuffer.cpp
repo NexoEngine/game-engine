@@ -230,7 +230,7 @@ namespace nexo::renderer {
         {
             m_colorAttachments.resize(m_colorAttachmentsSpecs.size());
             // Fill the color attachments vector with open gl texture ids
-            createTextures(multisample, m_colorAttachments.data(), m_colorAttachmentsSpecs.size());
+            createTextures(multisample, m_colorAttachments.data(), static_cast<unsigned int>(m_colorAttachmentsSpecs.size()));
 
             for (unsigned int i = 0; i < m_colorAttachments.size(); ++i)
             {
