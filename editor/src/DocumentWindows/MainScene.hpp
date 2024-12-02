@@ -66,7 +66,7 @@ namespace nexo::editor {
             // --- Internal logic --- //
             // ---------------------- //
             void setupWindow();
-            void setupImguizmo();
+            void setupImguizmo() const;
             void setupScene();
             void loadDefaultEntities(scene::LayerId defaultLayerId) const;
             void setHiddenLayerStatus(bool status) const;
