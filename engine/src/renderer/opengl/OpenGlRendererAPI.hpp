@@ -121,7 +121,7 @@ namespace nexo::renderer {
             void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount = 0) override;
         private:
             bool m_initialized = false;
-            int m_maxWidth = 0;
-            int m_maxHeight = 0;
+            unsigned int m_maxWidth = 0;
+            unsigned int m_maxHeight = 0;
     };
 }
