@@ -42,12 +42,10 @@ namespace nexo::renderer {
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
 
         // Initialize vertex data storage
-        m_storage->vertexBufferBase = new QuadVertex[m_storage->maxVertices];
-        m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
+        m_storage->vertexBufferPtr = m_storage->vertexBufferBase.data();
 
         // Initialize index data storage
-        m_storage->indexBufferBase = new unsigned int[m_storage->maxIndices];
-        m_storage->indexBufferPtr = m_storage->indexBufferBase;
+        m_storage->indexBufferPtr = m_storage->indexBufferBase.data();
 
         // Create index buffer and attach it to the vertex array
         m_storage->indexBuffer = createIndexBuffer();
@@ -59,7 +57,7 @@ namespace nexo::renderer {
         m_storage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
 
         // Setup texture samplers
-        int samplers[Renderer2DStorage::maxTextureSlots];
+        std::array<int, Renderer2DStorage::maxTextureSlots> samplers{};
         for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
@@ -68,7 +66,7 @@ namespace nexo::renderer {
             m_storage->textureShader = Shader::create(
                 Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
-            m_storage->textureShader->setUniformIntArray("uTexture", samplers, Renderer2DStorage::maxTextureSlots);
+            m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer2DStorage::maxTextureSlots);
         } catch (const Exception &e)
         {
             LOG_EXCEPTION(e);
@@ -89,25 +87,22 @@ namespace nexo::renderer {
 
     void Renderer2D::shutdown()
     {
-        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+        if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
-        delete m_storage->vertexBufferBase;
-        m_storage->vertexBufferBase = nullptr;
-        delete m_storage->indexBufferBase;
-        m_storage->indexBufferBase = nullptr;
+        m_storage.reset();
     }
 
     void Renderer2D::beginScene(const glm::mat4 &viewProjection)
     {
-        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+        if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
         m_storage->textureShader->setUniformMatrix("viewProjection", viewProjection);
         m_storage->indexCount = 0;
-        m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
-        m_storage->indexBufferPtr = m_storage->indexBufferBase;
+        m_storage->vertexBufferPtr = m_storage->vertexBufferBase.data();
+        m_storage->indexBufferPtr = m_storage->indexBufferBase.data();
         m_storage->textureSlotIndex = 1;
         m_renderingScene = true;
     }
@@ -129,23 +124,25 @@ namespace nexo::renderer {
     {
         flush();
         m_storage->indexCount = 0;
-        m_storage->vertexBufferPtr = m_storage->vertexBufferBase;
-        m_storage->indexBufferPtr = m_storage->indexBufferBase;
+        m_storage->vertexBufferPtr = m_storage->vertexBufferBase.data();
+        m_storage->indexBufferPtr = m_storage->indexBufferBase.data();
         m_storage->textureSlotIndex = 1;
     }
 
     void Renderer2D::endScene() const
     {
-        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+        if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        const unsigned int vertexDataSize = reinterpret_cast<uint8_t *>(m_storage->vertexBufferPtr) -
-                                            reinterpret_cast<uint8_t *>(m_storage->vertexBufferBase);
+        const auto vertexDataSize = static_cast<unsigned int>(
+            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
+            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
+        );
 
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase, vertexDataSize);
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase, m_storage->indexCount);
+        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
+        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
 
         flushAndReset();
     }
@@ -158,14 +155,14 @@ namespace nexo::renderer {
         constexpr unsigned int quadIndexCount = 6;
 
         // Ensure we don't overflow the buffers
-        if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase) + quadVertexCount > m_storage->maxVertices ||
+        if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + quadVertexCount > m_storage->maxVertices ||
             m_storage->indexCount + quadIndexCount > m_storage->maxIndices)
         {
             flushAndReset();
         }
 
         // Calculate vertex offset for this quad
-        unsigned int vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase);
+        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
 
         // Generate quad vertices
         for (unsigned int i = 0; i < quadVertexCount; ++i)
@@ -411,7 +408,7 @@ namespace nexo::renderer {
 
     void Renderer2D::resetStats() const
     {
-        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+        if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.quadCount = 0;
@@ -419,7 +416,7 @@ namespace nexo::renderer {
 
     RendererStats Renderer2D::getStats() const
     {
-        if (!m_storage || !m_storage->vertexBufferBase || !m_storage->indexBufferBase)
+        if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
         return m_storage->stats;
     }
