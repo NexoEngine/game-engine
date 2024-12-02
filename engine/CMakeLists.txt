@@ -49,7 +49,7 @@ set(COMMON_SOURCES
 )
 
 # Add API-specific sources
-if(GRAPHICS_API STREQUAL "OpenGL")
+if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     list(APPEND COMMON_SOURCES
             engine/src/renderer/opengl/OpenGlBuffer.cpp
             engine/src/renderer/opengl/OpenGlWindow.cpp
@@ -97,7 +97,7 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 
-if(GRAPHICS_API STREQUAL "OpenGL")
+if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)
     find_package(glfw3 3.4 REQUIRED)

@@ -14,9 +14,11 @@ jobs:
           - os: ubuntu-latest
             compiler: gcc
             version: 13
+            generator: Ninja
           - os: windows-latest
             compiler: msvc
             version: 14
+            generator: "Visual Studio 17 2022"
         exclude:
           - os: ubuntu-latest
             compiler: msvc
@@ -32,6 +34,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0 # Fetch all history for all tags and branches (for SonarCloud)
 
       - name: Add Ubuntu toolchain repository
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
@@ -85,10 +88,13 @@ jobs:
           version: 1.0
           execute_install_scripts: true
 
-      - name: Fetch all history for all tags and branches of vcpkg
+      - name: Init submodules
         run: |
-          cd vcpkg
-          git fetch --prune --unshallow
+            git submodule update --init --recursive
+
+      - name: Install sonar-scanner
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: sonarsource/sonarcloud-github-c-cpp@v3
 
       - name: Install latest CMake and Ninja
         uses: lukka/get-cmake@latest
@@ -98,12 +104,12 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
 
-      - name: Run CMake consuming CMakePreset.json and run vcpkg to build packages
+      - name: CMake Workflow with preset 'build-coverage' for tests
         uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'vcpkg'
-          buildPreset: 'vcpkg'
+          workflowPreset: 'build-coverage'
         env:
+          CMAKE_GENERATOR: ${{ matrix.generator }}
           CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
           CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
@@ -114,6 +120,22 @@ jobs:
         with:
           run: 'ctest -C Debug --output-on-failure'
           working-directory: 'build'
+
+      - name: Collect coverage into XML report for SonarCloud
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          pip install gcovr==5.0
+          gcovr build --sonarqube -o coverage.xml
+
+      - name: Run sonar-scanner
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        run: |
+          sonar-scanner \
+            --define sonar.cfamily.compile-commands="./build/compile_commands.json" \
+            --define sonar.coverageReportPaths=coverage.xml
 
       - name: Install nexoEditor
         shell: bash
@@ -127,6 +149,17 @@ jobs:
           name: nexo-engine-${{ matrix.compiler }}${{ matrix.version }}-${{ matrix.os }}
           path: |
             ./output/*
+
+      - name: CMake Workflow with preset 'minimal-build' for packaging
+        uses: lukka/run-cmake@v10
+        with:
+          workflowPreset: 'minimal-build'
+        env:
+          CMAKE_GENERATOR: ${{ matrix.generator }}
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
       - name: Generate NSIS installer
         if: ${{ matrix.os == 'windows-latest' }}
