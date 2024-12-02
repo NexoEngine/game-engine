@@ -88,10 +88,9 @@ jobs:
           version: 1.0
           execute_install_scripts: true
 
-      - name: Fetch all history for all tags and branches of vcpkg
+      - name: Init submodules
         run: |
-          cd vcpkg
-          git fetch --prune --unshallow
+            git submodule update --init --recursive
 
       - name: Install sonar-scanner
         if: ${{ matrix.os == 'ubuntu-latest' }}
