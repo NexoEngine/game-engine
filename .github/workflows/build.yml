@@ -126,6 +126,7 @@ jobs:
         run: |
           pip install gcovr==5.0
           gcovr build --sonarqube -o coverage.xml
+          cat coverage.xml
 
       - name: Run sonar-scanner
         if: ${{ matrix.os == 'ubuntu-latest' }}
