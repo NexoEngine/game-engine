@@ -62,23 +62,23 @@ namespace nexo::scene {
 
             [[nodiscard]] const std::string &getName() const { return name; }
 
-            void addLayer(LayerId id, const std::string &layerName);
+            void addLayer(LayerId layerId, const std::string &layerName);
 
-            void addOverlay(LayerId id, const std::string &overlayName);
+            void addOverlay(LayerId layerId, const std::string &overlayName);
 
-            void removeLayer(LayerId id);
+            void removeLayer(LayerId layerId);
 
-            void removeOverlay(LayerId id);
+            void removeOverlay(LayerId layerId);
 
-            [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(LayerId id) const;
+            [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(LayerId layerId) const;
 
             [[nodiscard]] const layer::LayerStack &getLayerStack() const { return m_layerStack; };
 
-            void addEntityToLayer(ecs::Entity entity, LayerId id);
+            void addEntityToLayer(ecs::Entity entity, LayerId layerId);
 
             void addGlobalEntity(ecs::Entity entity);
 
-            void removeEntityFromLayer(ecs::Entity entity, LayerId id);
+            void removeEntityFromLayer(ecs::Entity entity, LayerId layerId);
 
             void removeGlobalEntity(ecs::Entity entity);
 
@@ -92,17 +92,17 @@ namespace nexo::scene {
 
             void attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, LayerId id);
 
-            void detachCameraFromLayer(LayerId id);
+            void detachCameraFromLayer(LayerId layerId);
 
-            std::shared_ptr<camera::Camera> getCameraLayer(LayerId id);
+            std::shared_ptr<camera::Camera> getCameraLayer(LayerId layerId);
 
-            void setLayerRenderStatus(bool status, LayerId id);
+            void setLayerRenderStatus(bool status, LayerId layerId);
 
-            void setLayerActiveStatus(bool status, LayerId id);
+            void setLayerActiveStatus(bool status, LayerId layerId);
 
-            [[nodiscard]] bool getLayerRenderStatus(LayerId id) const;
+            [[nodiscard]] bool getLayerRenderStatus(LayerId layerId) const;
 
-            [[nodiscard]] bool getLayerActiveStatus(LayerId id) const;
+            [[nodiscard]] bool getLayerActiveStatus(LayerId layerId) const;
 
             void setWindowOffset(const glm::vec2 offset) { m_windowOffset = offset; };
             [[nodiscard]] glm::vec2 &getWindowOffset() { return m_windowOffset; };
@@ -114,7 +114,7 @@ namespace nexo::scene {
             void setAmbientLight(const float ambient) { ambientLight = ambient; };
             [[nodiscard]] float getAmbientLight() const { return ambientLight; };
 
-            void onUpdate(Timestep timestep);
+            void onUpdate(Timestep timestep) const;
 
             void onRender();
 
