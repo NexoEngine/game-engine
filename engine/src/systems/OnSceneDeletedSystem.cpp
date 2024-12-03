@@ -22,8 +22,9 @@ namespace nexo::system {
         for (const auto entity : entities)
         {
             auto &[sceneIds] = coord->getComponent<components::InActiveScene>(entity);
-            if (sceneIds.erase(sceneId) != 0 && sceneIds.empty())
-                inactiveEntities.push(entity);
+            if (sceneIds.erase(sceneId) != 0)
+                if (sceneIds.empty())
+                    inactiveEntities.push(entity);
         }
 
         while (!inactiveEntities.empty())
