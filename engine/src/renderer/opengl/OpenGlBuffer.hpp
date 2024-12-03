@@ -89,7 +89,7 @@ namespace nexo::renderer {
             void unbind() const override;
 
             void setLayout(const BufferLayout &layout) override { _layout = layout; };
-            [[nodiscard]] const BufferLayout getLayout() const override { return _layout; };
+            [[nodiscard]] BufferLayout getLayout() const override { return _layout; };
 
             /**
              * @brief Updates the data in the vertex buffer.
