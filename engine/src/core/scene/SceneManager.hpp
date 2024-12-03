@@ -42,7 +42,7 @@ namespace nexo::scene {
             LayerId addOverlay(SceneId sceneId, const std::string &overlayName = "Default overlay");
             void removeOverlay(SceneId sceneId, LayerId id);
             const layer::LayerStack &getSceneLayers(SceneId sceneId) const;
-            void setLayerName(SceneId sceneId, LayerId id, const std::string &newName) const;
+            void setLayerName(SceneId sceneId, LayerId id, const std::string_view &newName) const;
 
             void addEntityToLayer(ecs::Entity entity, SceneId sceneId, LayerId id);
             void addGlobalEntity(ecs::Entity entity, SceneId sceneId);
@@ -55,7 +55,7 @@ namespace nexo::scene {
             SceneId createScene(const std::string& sceneName, bool active = true);
             void deleteScene(SceneId id);
 
-            void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes.at(sceneId).isRendered = status;; };
+            void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes.at(sceneId).isRendered = status; };
             void setLayerRenderStatus(const SceneId sceneId, const LayerId id, const bool status) {scenes[sceneId].setLayerRenderStatus(status, id); };
             bool isSceneRendered(const SceneId sceneId) { return scenes[sceneId].isRendered; };
             bool isLayerRendered(const SceneId sceneId, const LayerId id) {return scenes[sceneId].getLayerRenderStatus(id); };

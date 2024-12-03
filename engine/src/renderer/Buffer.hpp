@@ -259,7 +259,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            [[nodiscard]] virtual const BufferLayout getLayout() const = 0;
+            [[nodiscard]] virtual BufferLayout getLayout() const = 0;
 
             /**
              * @brief Uploads new data to the vertex buffer.

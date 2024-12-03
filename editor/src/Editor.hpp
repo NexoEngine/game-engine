@@ -71,7 +71,7 @@ namespace nexo::editor {
         private:
             void setupLogs();
             void setupEngine() const;
-            void setupStyle();
+            void setupStyle() const;
             void setupFonts(float scaleFactorX, float scaleFactorY) const;
             void buildDockspace() const;
             void drawMenuBar();

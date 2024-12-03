@@ -56,7 +56,7 @@ namespace nexo::editor {
             loadDefaultEntities(layerId);
     }
 
-    void MainScene::setupImguizmo()
+    void MainScene::setupImguizmo() const
     {
         ImGuizmo::SetOrthographic(true);
     }

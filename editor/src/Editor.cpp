@@ -124,7 +124,7 @@ namespace nexo::editor {
         ImGuizmo::Enable(true);
     }
 
-    void Editor::setupStyle()
+    void Editor::setupStyle() const
     {
         ImGui::Spectrum::StyleColorsSpectrum();
 
