@@ -46,7 +46,7 @@ namespace nexo::ecs {
     {
         std::vector<std::pair<std::type_index, std::any>> components;
 
-        for (auto& [type, func] : m_hasComponentFunctions) {
+        for (const auto& [type, func] : m_hasComponentFunctions) {
             if (func(entity)) {
                 components.emplace_back(type, m_getComponentFunctions[type](entity));
             }
