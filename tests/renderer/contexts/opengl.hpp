@@ -72,7 +72,7 @@ namespace nexo::renderer {
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
         MOCK_METHOD(void, setLayout, (const BufferLayout &layout), (override));
-        MOCK_METHOD(const BufferLayout, getLayout, (), (const, override));
+        MOCK_METHOD(BufferLayout, getLayout, (), (const, override));
         MOCK_METHOD(void, setData, (void *data, unsigned int size), (override));
         MOCK_METHOD(unsigned int, getId, (), (const override));
     };
