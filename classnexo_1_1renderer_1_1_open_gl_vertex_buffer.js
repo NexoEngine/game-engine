@@ -6,6 +6,6 @@ var classnexo_1_1renderer_1_1_open_gl_vertex_buffer =
     [ "bind", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#af80d89d5ec0984488d0d1e2476f1a047", null ],
     [ "unbind", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#a9441a596235da4df58ad5993312499a0", null ],
     [ "setLayout", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#afdb477d41300654f3989a999214e5f68", null ],
-    [ "getLayout", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#af7017ffe65225ca9f5fa9d311fe68436", null ],
+    [ "getLayout", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#a51a1226baafc29da7bba81b20ba44aae", null ],
     [ "setData", "classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#a125c89f1b69de0787e1318869b8e7347", null ]
 ];
