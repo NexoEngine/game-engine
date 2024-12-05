@@ -15,7 +15,7 @@
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "opengl/OpenGlShader.hpp"
+    #include "GraphicsBackends/opengl/OpenGlShader.hpp"
 #endif
 
 #include <fstream>

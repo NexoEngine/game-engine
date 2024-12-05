@@ -40,13 +40,13 @@ set(RENDERER_SOURCES
         engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
-        engine/src/renderer/opengl/OpenGlBuffer.cpp
-        engine/src/renderer/opengl/OpenGlWindow.cpp
-        engine/src/renderer/opengl/OpenGlVertexArray.cpp
-        engine/src/renderer/opengl/OpenGlTexture2D.cpp
-        engine/src/renderer/opengl/OpenGlShader.cpp
-        engine/src/renderer/opengl/OpenGlRendererApi.cpp
-        engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlBuffer.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlWindow.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlVertexArray.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlTexture2D.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlShader.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlRendererApi.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlFramebuffer.cpp
 )
 
 add_executable(renderer_tests

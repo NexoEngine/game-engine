@@ -54,13 +54,13 @@ set(COMMON_SOURCES
 # Add API-specific sources
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     list(APPEND COMMON_SOURCES
-            engine/src/renderer/opengl/OpenGlBuffer.cpp
-            engine/src/renderer/opengl/OpenGlWindow.cpp
-            engine/src/renderer/opengl/OpenGlVertexArray.cpp
-            engine/src/renderer/opengl/OpenGlTexture2D.cpp
-            engine/src/renderer/opengl/OpenGlShader.cpp
-            engine/src/renderer/opengl/OpenGlRendererApi.cpp
-            engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlBuffer.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlWindow.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlVertexArray.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlTexture2D.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlShader.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlRendererApi.cpp
+            engine/src/renderer/GraphicsBackends/opengl/OpenGlFramebuffer.cpp
     )
 endif()
 

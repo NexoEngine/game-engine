@@ -17,7 +17,7 @@
 #include <opengl/OpenGlVertexArray.hpp>
 
 #include "contexts/opengl.hpp"
-#include "opengl/OpenGlRendererAPI.hpp"
+#include "GraphicsBackends/opengl/OpenGlRendererAPI.hpp"
 #include "renderer/RendererExceptions.hpp"
 
 namespace nexo::renderer {
