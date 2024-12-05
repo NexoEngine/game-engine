@@ -134,7 +134,7 @@ jobs:
       - name: Run headless test
         uses: coactions/setup-xvfb@v1
         with:
-          run: 'ctest -C Debug --output-on-failure'
+          run: 'ctest -C Debug --output-on-failure --extra-verbose'
           working-directory: 'build'
 
       - name: Collect coverage into XML report for SonarCloud
