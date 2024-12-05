@@ -120,7 +120,7 @@ namespace nexo::renderer {
         glm::vec3 expectedPositions[8] = {
             {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
             {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-            {-0.5f, -100.5f, 0.5f}, {0.5f, -0.5f, 0.5f},
+            {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f},
             {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f},
         };
         // Validate vertex positions and colors
