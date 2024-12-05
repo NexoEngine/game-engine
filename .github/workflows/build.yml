@@ -121,6 +121,16 @@ jobs:
           CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
+      - name: Install Mesa for Windows
+        shell: cmd
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
+          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
+          mklink opengl32.dll "x64\opengl32.dll"
+          mklink libglapi.dll "x64\libglapi.dll"
+        working-directory: 'build'
+
       - name: Run headless test
         uses: coactions/setup-xvfb@v1
         with:
