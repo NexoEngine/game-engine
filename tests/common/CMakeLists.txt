@@ -27,6 +27,7 @@ set(COMMON_SOURCES
 )
 
 add_executable(common_tests
+    ${TEST_MAIN_FILES}
     ${COMMON_SOURCES}
     ${BASEDIR}/Matrix.test.cpp
     ${BASEDIR}/Path.test.cpp
@@ -41,4 +42,4 @@ find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(common_tests PRIVATE Boost::dll)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(common_tests PRIVATE GTest::gtest GTest::gtest_main)
+target_link_libraries(common_tests PRIVATE GTest::gtest)
