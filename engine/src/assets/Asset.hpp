@@ -61,10 +61,10 @@ namespace nexo::assets {
             IAsset() = delete;
             virtual ~IAsset() = default;
 
-            [[nodiscard]] const AssetMetadata& getMetadata() const { return m_metadata; }
-            [[nodiscard]] AssetType getType() const { return getMetadata().type; }
-            [[nodiscard]] AssetID getID() const { return getMetadata().id; }
-            [[nodiscard]] AssetStatus getStatus() const { return getMetadata().status; }
+            [[nodiscard]] virtual const AssetMetadata& getMetadata() const { return m_metadata; }
+            [[nodiscard]] virtual AssetType getType() const { return getMetadata().type; }
+            [[nodiscard]] virtual AssetID getID() const { return getMetadata().id; }
+            [[nodiscard]] virtual AssetStatus getStatus() const { return getMetadata().status; }
         protected:
             explicit IAsset(AssetType type)
                 : m_metadata({
@@ -103,25 +103,12 @@ namespace nexo::assets {
             [[nodiscard]] AssetID getID() const { return getMetadata().id; }
             [[nodiscard]] AssetStatus getStatus() const { return getMetadata().status; }
         protected:
-            explicit Asset(AssetType type)
-                : IAsset(), m_metadata({
-                      .type = type,
-                      .status = AssetStatus::UNLOADED,
-                      .referenceCount = 0,
-                      .id = boost::uuids::nil_uuid(),
-                      .manager = nullptr
-                  })
+            explicit Asset(AssetType type) : IAsset(type)
             {
             }
 
         private:
-            AssetMetadata m_metadata;
             TAssetData m_data;
-
-            /**
-             * @brief Get the metadata of the asset (for modification)
-             */
-            [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
 
             virtual AssetStatus load() = 0;
             virtual AssetStatus unload() = 0;
