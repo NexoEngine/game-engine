@@ -28,79 +28,103 @@ namespace nexo::assets {
     class AssetManager;
 
     /**
-     * @brief Base class for all AssetRef classes, providing a static reference to the AssetManager.
-     *
-     * This class maintains a single static instance of the AssetManager pointer that is shared
-     * across all AssetRef template instantiations. It provides protected access to the AssetManager
-     * and handles the initialization of the manager reference.
-     */
-    class AssetRefBase {
-        friend class AssetManager;
-        protected:
-            /** @brief Single static instance of AssetManager used by all asset references */
-            inline static AssetManager* s_assetManager;
-
-        private:
-            /**
-             * @brief Sets the global AssetManager instance
-             * @param assetManager Pointer to the AssetManager instance
-             * @warning Will log an error if attempting to set when an AssetManager already exists
-             */
-            static void setAssetManager(AssetManager* assetManager);
-    };
-
-    /**
      * @brief Template class representing a lightweight reference to an asset.
-     * @tparam TAssetData The type of asset data being referenced
+     * @tparam TAsset The type of asset data being referenced
      *
      * AssetRef provides a lightweight wrapper around asset data that is managed by the AssetManager.
      * It offers convenient access to the asset data while ensuring proper resource management.
      * The class focuses on making the common case fast by providing direct pointer access to
      * asset data, while still maintaining safety through the AssetManager.
      */
-    template<DerivedFromAsset TAssetData>
+    template<typename TAssetData>
     class AssetRef {
+        using TAsset = Asset<TAssetData>;
+
         public:
             /**
              * @brief Constructs an AssetRef with the given asset data pointer
              * @param data Pointer to the asset data
              */
-            explicit AssetRef(TAssetData* data) : m_data(data)
+            explicit AssetRef(TAsset* data) : m_asset(data)
             {
+                if (!data)
+                    return;
+                ++m_asset->getMetadata().referenceCount;
+            }
 
+            ~AssetRef()
+            {
+                if (!m_asset)
+                    return;
+                --m_asset->getMetadata().referenceCount;
             }
 
             /** @brief Copy constructor */
-            AssetRef(const AssetRef& other) = default;
+            AssetRef(const AssetRef& other)
+            {
+                m_asset = other.m_asset;
+                ++m_asset->m_metadata.referenceCount;
+            }
 
             /** @brief Copy assignment operator */
-            AssetRef& operator=(const AssetRef& other) = default;
+            AssetRef& operator=(const AssetRef& other)
+            {
+                if (this == &other)
+                    return *this;
+
+                if (m_asset)
+                    --m_asset->m_metadata.referenceCount;
+
+                m_asset = other.m_asset;
+                ++m_asset->m_metadata.referenceCount;
+
+                return *this;
+            }
 
             /** @brief Move constructor */
-            AssetRef(AssetRef&& other) noexcept = default;
+            AssetRef(AssetRef&& other) noexcept
+            {
+                m_asset = other.m_asset;
+                other.m_asset = nullptr;
+            }
 
             /** @brief Move assignment operator */
-            AssetRef& operator=(AssetRef&& other) noexcept = default;
+            AssetRef& operator=(AssetRef&& other) noexcept
+            {
+                if (this == &other)
+                    return *this;
 
-            /** @brief Destructor */
-            ~AssetRef() = default;
+                m_asset = other.m_asset;
+                other.m_asset = nullptr;
+
+                return *this;
+            }
 
             /**
              * @brief Gets the raw pointer to the asset data
              * @return Pointer to the asset data
              */
-            [[nodiscard]] TAssetData* get() const
+            [[nodiscard]] TAssetData* get() const noexcept
             {
-                return m_data;
+                return m_asset;
             }
 
             /**
              * @brief Arrow operator for accessing asset data members
              * @return Pointer to the asset data
              */
-            TAssetData* operator->() const
+            TAsset* operator->() const noexcept
             {
-                return m_data;
+                return this->get();
+            }
+
+            /**
+             * @brief Dereference operator for accessing asset data members
+             * @return Reference to the asset data
+             */
+            TAsset& operator*() const noexcept
+            {
+                return *this->get();
             }
 
             /**
@@ -109,7 +133,7 @@ namespace nexo::assets {
              */
             [[nodiscard]] bool isValid() const
             {
-                return m_data != nullptr;
+                return m_asset != nullptr;
             }
 
             /**
@@ -128,9 +152,9 @@ namespace nexo::assets {
              * @brief Creates a null asset reference
              * @return An AssetRef instance with a null data pointer
              */
-            [[nodiscard]] static AssetRef<TAssetData> null()
+            [[nodiscard]] static AssetRef<TAsset> null()
             {
-                return AssetRef<TAssetData>(nullptr);
+                return AssetRef<TAsset>(nullptr);
             }
 
             /**
@@ -143,22 +167,9 @@ namespace nexo::assets {
             }
 
         private:
-            TAssetData* m_data; /**< Pointer to the actual asset data */
+            TAsset* m_asset; /**< Pointer to the actual asset */
     };
 
-    template<DerivedFromAsset TAssetData>
-    bool AssetRef<TAssetData>::isLoaded() const
-    {
-        //m_data->getMetadata().status == AssetStatus::LOADED;
-    }
+    class GenericAssetRef : public AssetRef<Asset> {};
 
-    template<DerivedFromAsset TAssetData>
-    void AssetRef<TAssetData>::reload()
-    {
-    }
-
-    template<DerivedFromAsset TAssetData>
-    void AssetRef<TAssetData>::unload()
-    {
-    }
 } // namespace nexo::assets

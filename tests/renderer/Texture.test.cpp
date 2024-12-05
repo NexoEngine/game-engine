@@ -17,7 +17,7 @@
 #include <fstream>
 #include <RendererExceptions.hpp>
 
-#include "opengl/OpenGlTexture2D.hpp"
+#include "GraphicsBackends/opengl/OpenGlTexture2D.hpp"
 #include "renderer/Texture.hpp"
 #include "contexts/opengl.hpp"
 #include "flattenedAssets/testLogo.hpp"

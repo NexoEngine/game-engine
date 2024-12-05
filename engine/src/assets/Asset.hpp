@@ -52,18 +52,19 @@ namespace nexo::assets {
         AssetManager *manager;       //< Pointer to the asset manager
     };
 
-    class Asset {
+    class IAsset {
         friend class AssetManager;
         friend class AssetRefBase;
         public:
-            virtual ~Asset() = default;
+            IAsset() = delete;
+            virtual ~IAsset() = default;
 
             [[nodiscard]] const AssetMetadata& getMetadata() const { return m_metadata; }
             [[nodiscard]] AssetType getType() const { return getMetadata().type; }
             [[nodiscard]] AssetID getID() const { return getMetadata().id; }
             [[nodiscard]] AssetStatus getStatus() const { return getMetadata().status; }
         protected:
-            explicit Asset(AssetType type)
+            explicit IAsset(AssetType type)
                 : m_metadata({
                     .type = type,
                     .status = AssetStatus::UNLOADED,
@@ -87,13 +88,40 @@ namespace nexo::assets {
 
     };
 
-    class TextureAsset : public Asset {
+    template<typename TAssetData>
+    class Asset : public IAsset {
+        friend class AssetManager;
+        friend class AssetRef;
         public:
-            TextureAsset() : Asset(AssetType::TEXTURE)
+            virtual ~Asset() = default;
+
+            [[nodiscard]] const AssetMetadata& getMetadata() const { return m_metadata; }
+            [[nodiscard]] AssetType getType() const { return getMetadata().type; }
+            [[nodiscard]] AssetID getID() const { return getMetadata().id; }
+            [[nodiscard]] AssetStatus getStatus() const { return getMetadata().status; }
+        protected:
+            explicit Asset(AssetType type)
+                : IAsset(), m_metadata({
+                      .type = type,
+                      .status = AssetStatus::UNLOADED,
+                      .referenceCount = 0,
+                      .id = boost::uuids::nil_uuid(),
+                      .manager = nullptr
+                  })
             {
             }
 
         private:
+            AssetMetadata m_metadata;
+            TAssetData m_data;
+
+            /**
+             * @brief Get the metadata of the asset (for modification)
+             */
+            [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
+
+            virtual AssetStatus load() = 0;
+            virtual AssetStatus unload() = 0;
 
     };
 

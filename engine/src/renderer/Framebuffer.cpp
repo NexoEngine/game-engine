@@ -14,7 +14,7 @@
 #include "Framebuffer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "opengl/OpenGlFramebuffer.hpp"
+    #include "GraphicsBackends/opengl/OpenGlFramebuffer.hpp"
 #endif
 
 namespace nexo::renderer {
