@@ -7,10 +7,6 @@ set(ROOT "../../..")
 
 include_directories(${ROOT}/include)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../${ROOT}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../${ROOT}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../${ROOT}/bin)
-
 add_library(controls STATIC systems/Controls.cpp)
 add_library(draw STATIC systems/Draw.cpp)
 add_library(physics STATIC systems/Physics.cpp)
