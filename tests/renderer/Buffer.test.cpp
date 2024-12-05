@@ -17,7 +17,7 @@
 #include <gmock/gmock.h>
 
 #include "Buffer.hpp"
-#include "opengl/OpenGlBuffer.hpp"
+#include "GraphicsBackends/opengl/OpenGlBuffer.hpp"
 #include "contexts/opengl.hpp"
 
 namespace nexo::renderer {

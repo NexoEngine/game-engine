@@ -14,7 +14,7 @@
 #include "Buffer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "opengl/OpenGlBuffer.hpp"
+    #include "GraphicsBackends/opengl/OpenGlBuffer.hpp"
 #endif
 
 
