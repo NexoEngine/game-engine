@@ -35,7 +35,7 @@ namespace nexo::assets {
             }
             ~AssetManager() = default;
 
-            template<DerivedFromAsset TAssetData, typename... Args>
+            /*template<DerivedFromAsset TAssetData, typename... Args>
             AssetRef<TAssetData> createAsset(Args&&... args) {
                 auto asset = new TAssetData(std::forward<Args>(args)...);
                 auto assetRef = AssetRef<Asset>(asset);
@@ -62,7 +62,7 @@ namespace nexo::assets {
             AssetRef<Asset> getAsset(AssetID id);
         private:
             std::unordered_map<AssetID, AssetRef<Asset>> m_assetMap;
-            boost::uuids::random_generator m_uuidGenerator;
+            boost::uuids::random_generator m_uuidGenerator;*/
 
     };
 } // namespace nexo::editor

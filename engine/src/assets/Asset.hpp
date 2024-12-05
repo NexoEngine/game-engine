@@ -22,6 +22,8 @@
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 
+#include "AssetRef.hpp"
+
 namespace nexo::assets {
 
     enum class AssetType {
@@ -91,7 +93,8 @@ namespace nexo::assets {
     template<typename TAssetData>
     class Asset : public IAsset {
         friend class AssetManager;
-        friend class AssetRef;
+
+        friend class AssetRef<TAssetData>;
         public:
             virtual ~Asset() = default;
 
