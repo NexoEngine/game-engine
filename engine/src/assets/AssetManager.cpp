@@ -16,6 +16,7 @@
 
 namespace nexo::assets {
 
+    /*
     void AssetManager::loadAsset(const AssetID id)
     {
         const auto& asset = m_assetMap.at(id);
@@ -48,6 +49,7 @@ namespace nexo::assets {
     {
         m_assetMap.erase(uuid);
     }
+    */
 
 
 } // namespace nexo::editor

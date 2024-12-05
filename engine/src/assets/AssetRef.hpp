@@ -24,7 +24,10 @@
 #include "AssetConcepts.hpp"
 
 namespace nexo::assets {
+
+    template<typename TAssetData>
     class Asset;
+
     class AssetManager;
 
     /**
@@ -170,6 +173,6 @@ namespace nexo::assets {
             TAsset* m_asset; /**< Pointer to the actual asset */
     };
 
-    class GenericAssetRef : public AssetRef<Asset> {};
+    class GenericAssetRef : public AssetRef<void> {};
 
 } // namespace nexo::assets

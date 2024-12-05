@@ -16,13 +16,5 @@
 
 namespace nexo::assets {
 
-    void AssetRefBase::setAssetManager(AssetManager* assetManager)
-    {
-        if (s_assetManager != nullptr) {
-            LOG(NEXO_ERROR, "AssetManager already set for AssetRefBase! "
-                "Data may be corrupted or lost.");
-        }
-        s_assetManager = assetManager;
-    }
 
 } // namespace nexo::assets

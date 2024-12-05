@@ -17,8 +17,8 @@
 #include <concepts>
 
 namespace nexo::assets {
-    class Asset;
+    /*class Asset;
 
     template<typename T>
-    concept DerivedFromAsset = std::derived_from<T, nexo::assets::Asset>;
+    concept DerivedFromAsset = std::derived_from<T, nexo::assets::Asset>;*/
 } // namespace nexo::assets
