@@ -32,6 +32,10 @@ add_compile_options(
         "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
 )
 
+# Prevent Visual Studio (or other build tools) from creating per config sub-directories (e.g. Debug, Release)
+# Useful to look for resource files relative to the executable path
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}>)
+
 if (NEXO_COVERAGE)
     message(STATUS "Coverage enabled, adding flags: ${NEXO_COVERAGE_FLAGS}")
     add_compile_options("$<$<CONFIG:Debug>:${NEXO_COVERAGE_FLAGS}>")
