@@ -9,46 +9,51 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add source files
 set(COMMON_SOURCES
-        common/Exception.cpp
-        engine/src/Nexo.cpp
-        engine/src/EntityFactory2D.cpp
-        engine/src/EntityFactory3D.cpp
-        engine/src/Application.cpp
-        engine/src/Application.cpp
-        engine/src/renderer/Window.cpp
-        engine/src/assets/Asset.cpp
-        engine/src/assets/AssetManager.cpp
-        engine/src/assets/AssetRef.cpp
-        engine/src/core/event/Event.cpp
-        engine/src/core/event/Input.cpp
-        engine/src/core/event/SignalEvent.cpp
-        engine/src/core/event/opengl/InputOpenGl.cpp
-        engine/src/core/event/WindowEvent.cpp
-        engine/src/renderer/Buffer.cpp
-        engine/src/renderer/Shader.cpp
-        engine/src/renderer/VertexArray.cpp
-        engine/src/renderer/RendererAPI.cpp
-        engine/src/renderer/Renderer.cpp
-        engine/src/renderer/RenderCommand.cpp
-        engine/src/renderer/Texture.cpp
-        engine/src/renderer/SubTexture2D.cpp
-        engine/src/renderer/Renderer2D.cpp
-        engine/src/renderer/Renderer3D.cpp
-        engine/src/renderer/Framebuffer.cpp
-        engine/src/core/camera/PerspectiveCamera.cpp
-        engine/src/core/camera/OrthographicCamera.cpp
-        engine/src/core/camera/PerspectiveCameraController.cpp
-        engine/src/core/camera/OrthographicCameraController.cpp
-        engine/src/core/camera/Camera.cpp
-        engine/src/core/layer/Layer.cpp
-        engine/src/core/layer/LayerStack.cpp
-        engine/src/core/scene/Scene.cpp
-        engine/src/core/scene/SceneManager.cpp
-        engine/src/ecs/Entity.cpp
-        engine/src/ecs/Components.cpp
-        engine/src/ecs/Coordinator.cpp
-        engine/src/ecs/System.cpp
-        engine/src/systems/OnSceneDeletedSystem.cpp
+    common/Exception.cpp
+)
+
+list(APPEND COMMON_SOURCES
+    engine/src/Nexo.cpp
+    engine/src/EntityFactory2D.cpp
+    engine/src/EntityFactory3D.cpp
+    engine/src/Application.cpp
+    engine/src/Application.cpp
+    engine/src/renderer/Window.cpp
+    engine/src/assets/Asset.cpp
+    engine/src/assets/AssetManager.cpp
+    engine/src/assets/AssetRef.cpp
+    engine/src/core/event/Event.cpp
+    engine/src/core/event/Input.cpp
+    engine/src/core/event/SignalEvent.cpp
+    engine/src/core/event/opengl/InputOpenGl.cpp
+    engine/src/core/event/WindowEvent.cpp
+    engine/src/renderer/Buffer.cpp
+    engine/src/renderer/Shader.cpp
+    engine/src/renderer/VertexArray.cpp
+    engine/src/renderer/RendererAPI.cpp
+    engine/src/renderer/Renderer.cpp
+    engine/src/renderer/RenderCommand.cpp
+    engine/src/renderer/Texture.cpp
+    engine/src/renderer/SubTexture2D.cpp
+    engine/src/renderer/Renderer2D.cpp
+    engine/src/renderer/Renderer3D.cpp
+    engine/src/renderer/Framebuffer.cpp
+    engine/src/core/camera/PerspectiveCamera.cpp
+    engine/src/core/camera/OrthographicCamera.cpp
+    engine/src/core/camera/PerspectiveCameraController.cpp
+    engine/src/core/camera/OrthographicCameraController.cpp
+    engine/src/core/camera/Camera.cpp
+    engine/src/core/layer/Layer.cpp
+    engine/src/core/layer/LayerStack.cpp
+    engine/src/core/scene/Scene.cpp
+    engine/src/core/scene/SceneManager.cpp
+    engine/src/ecs/Entity.cpp
+    engine/src/ecs/Components.cpp
+    engine/src/ecs/Coordinator.cpp
+    engine/src/ecs/System.cpp
+    engine/src/systems/OnSceneDeletedSystem.cpp
+    engine/src/assets/AssetName.cpp
+    engine/src/assets/AssetName.hpp
 )
 
 # Add API-specific sources

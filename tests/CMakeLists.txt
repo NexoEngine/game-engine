@@ -38,7 +38,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/ecs/CMakeLists.txt)
 # Add tests
 gtest_add_tests(TARGET engine_tests
                 TEST_LIST engineTestsList
-                
 )
 gtest_add_tests(TARGET common_tests
                 TEST_LIST commonTestsList
