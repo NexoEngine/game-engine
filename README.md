@@ -139,6 +139,10 @@ cd build
 ctest -C Debug
 ```
 
+## Troubleshooting
+
+If you encounter any issues, please refer to our [Troubleshooting Guide](docs/troubleshooting/troubleshooting.md).
+
 ## The Team
 
 NEXO Engine is brought to life by a dedicated team of fourth-year students from EPITECH Strasbourg:
