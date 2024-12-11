@@ -7,6 +7,7 @@
 - [Common Issues](#common-issues)
   - [Couldn't create symlink](#couldnt-create-symlink)
   - [CPackDeb: file utility is not available](#cpackdeb-file-utility-is-not-available)
+  - [CMake configure/build infinite loop](#cmake-configurebuild-infinite-loop)
 - [Still having issues? Any other questions?](#still-having-issues-any-other-questions)
 
 ## Common Issues
@@ -66,6 +67,16 @@ choco install file
 
 > [!WARNING]
 > If you are running Windows, you may not want to generate a DEB package. It may not be supported.
+
+### CMake configure/build infinite loop
+
+If you encounter an infinite loop when running the `cmake` command, it may be due to various reasons.
+
+#### Solution
+
+- Check if date and time are set correctly on your system.
+- Something is modifying cmake files after each run. Check if you have any scripts or tools that modify the CMake files.
+- Try to delete the `build` (might be another name) directory and rerun the `cmake` command.
 
 ## Still having issues? Any other questions?
 
