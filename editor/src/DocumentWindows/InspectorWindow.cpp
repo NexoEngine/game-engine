@@ -53,7 +53,29 @@ namespace nexo::editor
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
         {
-            printf("right click on inspector\n");
+            int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
+            auto App = getApp();
+            if (selectedEntity == -1)
+            {
+                ImGui::End();
+                return;
+            }
+            if (!std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData()))
+            {
+
+                ImGui::End();
+                return;
+            }
+            const auto & [layerProps, entity] = std::get<EntityProperties>(m_sceneManagerBridge->getData());
+
+            const std::vector<std::pair<std::type_index, std::any>> components = App.getAllEntityComponents(entity);
+            LOG(NEXO_INFO, "EntityProperties: {}", components.size());
+            for (auto& component : components)
+            {
+                auto& [type, data] = component;
+                LOG(NEXO_INFO, "Component type: {}", type.name());
+            }
+            LOG(NEXO_INFO, "right click on inspector\n");
         }
 
         showTransformComponent();
@@ -63,8 +85,8 @@ namespace nexo::editor
 
     void InspectorWindow::showTransformComponent()
     {
-        int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
-        auto App = getApp();
+        const int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
+        auto const& App = getApp();
         if (selectedEntity == -1)
             return;
 
@@ -118,8 +140,8 @@ namespace nexo::editor
     void InspectorWindow::showRendererComponent()
     {
         static bool active = true;
-        int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
-        auto App = getApp();
+        const int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
+        auto const& App = getApp();
         if (selectedEntity == -1)
             return;
 
