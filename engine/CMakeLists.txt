@@ -56,6 +56,7 @@ set(COMMON_SOURCES
         engine/src/systems/lights/SpotLightsSystem.cpp
         engine/src/assets/AssetName.cpp
         engine/src/assets/AssetName.hpp
+        engine/src/assets/AssetLocation.cpp
 )
 
 # Add API-specific sources

@@ -11,5 +11,5 @@ int main(int argc, char **argv) {
         GTEST_LOG_(FATAL) << "No tests were run. This might be due to a wrong linking configuration";
         return 1;
     }
-    return RUN_ALL_TESTS();
+    return rv;
 }

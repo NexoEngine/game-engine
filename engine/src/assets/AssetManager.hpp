@@ -22,6 +22,7 @@
 #include "Asset.hpp"
 #include "AssetRef.hpp"
 #include "AssetConcepts.hpp"
+#include "AssetCatalog.hpp"
 
 namespace nexo::assets {
 
