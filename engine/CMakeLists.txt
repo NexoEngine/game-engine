@@ -52,8 +52,7 @@ list(APPEND COMMON_SOURCES
     engine/src/ecs/Coordinator.cpp
     engine/src/ecs/System.cpp
     engine/src/systems/OnSceneDeletedSystem.cpp
-    engine/src/assets/AssetName.cpp
-    engine/src/assets/AssetName.hpp
+    engine/src/assets/AssetLocation.cpp
 )
 
 # Add API-specific sources

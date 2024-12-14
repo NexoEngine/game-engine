@@ -1,4 +1,4 @@
-//// AssetName.hpp ////////////////////////////////////////////////////////////
+//// ValidatedName.cpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,22 +7,17 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Guillaume HEIN
-//  Date:        07/12/2024
-//  Description: AssetName is a wrapper of std::string to represent the name
-//               of an asset. It is used to apply our own rules on naming.
+//  Date:        11/12/2024
+//  Description: Source file for the ValidatedName class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#pragma once
-
 #include "ValidatedName.hpp"
-#include "FilenameValidator.hpp"
-#include <regex>
 
 namespace nexo::assets {
 
-    struct AssetNameValidator : FilenameValidator {};
 
-    using AssetName = ValidatedName<AssetNameValidator>;
+
+
 
 } // namespace nexo::assets
