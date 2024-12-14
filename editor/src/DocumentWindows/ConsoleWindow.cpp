@@ -6,7 +6,7 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
+//  Author:      Guillaume HEIN
 //  Date:        10/11/2024
 //  Description: Source file for the console window class
 //

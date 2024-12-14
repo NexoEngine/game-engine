@@ -40,16 +40,17 @@ set(RENDERER_SOURCES
         engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
-        engine/src/renderer/opengl/OpenGlBuffer.cpp
-        engine/src/renderer/opengl/OpenGlWindow.cpp
-        engine/src/renderer/opengl/OpenGlVertexArray.cpp
-        engine/src/renderer/opengl/OpenGlTexture2D.cpp
-        engine/src/renderer/opengl/OpenGlShader.cpp
-        engine/src/renderer/opengl/OpenGlRendererApi.cpp
-        engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlBuffer.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlWindow.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlVertexArray.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlTexture2D.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlShader.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlRendererApi.cpp
+        engine/src/renderer/GraphicsBackends/opengl/OpenGlFramebuffer.cpp
 )
 
 add_executable(renderer_tests
+        ${TEST_MAIN_FILES}
         ${COMMON_SOURCES}
         ${RENDERER_SOURCES}
         ${BASEDIR}/Buffer.test.cpp
@@ -83,4 +84,4 @@ target_link_libraries(renderer_tests PRIVATE Boost::dll)
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gtest_main GTest::gmock OpenGL::GL glfw glad::glad)
+target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad)

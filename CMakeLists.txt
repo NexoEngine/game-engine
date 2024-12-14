@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
 set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
-set(NEXO_BUILD_TESTS ${BUILD_TESTING} CACHE BOOL "Enable tests")
+set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
 set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
 set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
 
@@ -31,6 +31,10 @@ add_compile_options(
         "$<$<CONFIG:Debug>:${NEXO_COMPILER_FLAGS_DEBUG}>"
         "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
 )
+
+# Prevent Visual Studio (or other build tools) from creating per config sub-directories (e.g. Debug, Release)
+# Useful to look for resource files relative to the executable path
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}>)
 
 if (NEXO_COVERAGE)
     message(STATUS "Coverage enabled, adding flags: ${NEXO_COVERAGE_FLAGS}")
