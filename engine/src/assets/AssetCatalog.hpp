@@ -1,4 +1,4 @@
-//// AssetIndex.hpp ///////////////////////////////////////////////////////////
+//// AssetCatalog.hpp /////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -8,7 +8,7 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        03/12/2024
-//  Description: Header file for the AssetIndex class
+//  Description: Header file for the AssetCatalog class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -20,14 +20,14 @@ namespace nexo::assets {
 
 
     /**
-    * @class AssetIndex
+    * @class AssetCatalog
     *
     * @brief Singleton class that holds all the assets in the engine.
     */
-    class AssetIndex {
+    class AssetCatalog {
         public:
-            AssetIndex() = default;
-            ~AssetIndex() = default;
+            AssetCatalog() = default;
+            ~AssetCatalog() = default;
 
             /*void addAsset(AssetID id, AssetRef<Asset> asset);
             void removeAsset(AssetID id);
