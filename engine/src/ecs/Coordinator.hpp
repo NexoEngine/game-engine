@@ -167,6 +167,8 @@ namespace nexo::ecs {
                 return m_singletonComponentManager->getSingletonComponent<T>();
             }
 
+            std::vector<std::type_index> getAllComponentTypes(const Entity entity) const;
+
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
             /**

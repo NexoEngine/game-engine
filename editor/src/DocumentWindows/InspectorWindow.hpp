@@ -18,10 +18,10 @@
 #include <imgui.h>
 
 namespace nexo::editor {
-    class InspectorWindow : public ADocumentWindow {
-	    public:
-	        InspectorWindow();
-	        ~InspectorWindow() override;
+    class InspectorWindow final : public ADocumentWindow {
+    public:
+        InspectorWindow();
+        ~InspectorWindow() override;
 
 	        void setup() override;
 	        void shutdown() override;
@@ -29,8 +29,13 @@ namespace nexo::editor {
 	        void show() override;
 	        void update() override;
 
-	    private:
-	        void showTransformComponent();
-	        void showRendererComponent();
+    private:
+        // std::unordered_map<std::type_index, void (InspectorWindow::*)()> m_componentShowFunctions;
+        std::unordered_map<std::type_index, int (*)(ecs::Entity)> m_componentShowFunctions;
+
+        void showEntityProperties();
+        void showComponent(const std::type_index& type);
+        // void showTransformComponent();
+        // void showRendererComponent();
     };
 };
