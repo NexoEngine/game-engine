@@ -39,7 +39,8 @@ namespace nexo::renderer {
             {ShaderDataType::FLOAT4, "aColor"},
             {ShaderDataType::FLOAT2, "aTexCoord"},
             {ShaderDataType::FLOAT, "aTexIndex"},
-            {ShaderDataType::FLOAT3, "aNormal"}
+            {ShaderDataType::FLOAT3, "aNormal"},
+            {ShaderDataType::INT, "aEntityID"}
         };
         m_storage->vertexBuffer->setLayout(cubeVertexBufferLayout);
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
@@ -178,7 +179,7 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color) const
+    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -241,6 +242,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr->texCoord = textureCoords[i % 4];
             m_storage->vertexBufferPtr->texIndex = 0.0f; // White texture
             m_storage->vertexBufferPtr->normal = vertexNormals[i];
+            m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
         }
 
@@ -256,7 +258,7 @@ namespace nexo::renderer {
 
 
     void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -300,6 +302,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr->texCoord = textureCoords[i % 4];
             m_storage->vertexBufferPtr->texIndex = textureIndex;
             m_storage->vertexBufferPtr->normal = glm::normalize(cubePositions[i]);
+            m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
         }
 

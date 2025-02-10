@@ -125,6 +125,16 @@ namespace nexo::renderer {
                 : Exception(std::format("[{}] Unsupported framebuffer depth attachment format", backendApiName), loc) {}
     };
 
+    class FramebufferReadFailure final : public Exception {
+        public:
+            explicit FramebufferReadFailure(const std::string &backendApiName, int index, int x, int y, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Unable to read framebuffer with index {} at coordinate ({}, {})", backendApiName, index, x, y), loc) {}
+    };
+
+    class FramebufferInvalidIndex final : public Exception {
+        public:
+            explicit FramebufferInvalidIndex(const std::string &backendApiName, int index, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Invalid attachment index : {}", backendApiName, index), loc) {};
+    };
+
     class BufferLayoutEmpty final : public Exception {
         public:
             explicit BufferLayoutEmpty(const std::string &backendApi,

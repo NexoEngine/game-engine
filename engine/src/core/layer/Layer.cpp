@@ -21,7 +21,6 @@
 #include <format>
 
 namespace nexo::layer {
-
     //TODO: This should be done per shader material rather than globally, but for now we only have one shader
     void Layer::setupLights(const std::shared_ptr<renderer::RendererContext> &rendererContext,
                             const scene::SceneContext &sceneContext) const
@@ -73,7 +72,7 @@ namespace nexo::layer {
             const auto &transform = getComponent<components::TransformComponent>(entity);
             const auto &renderComponent = getComponent<components::RenderComponent>(entity);
             if (renderComponent.isRendered)
-                renderComponent.draw(rendererContext, transform);
+                renderComponent.draw(rendererContext, transform, entity);
         }
         if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
             rendererContext->renderer2D.endScene();

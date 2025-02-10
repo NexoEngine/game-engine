@@ -28,6 +28,8 @@ namespace nexo::renderer {
         glm::vec2 texCoord;
         float texIndex;
         glm::vec3 normal;
+
+        int entityID;
     };
 
     struct CubeVertex {
@@ -182,8 +184,8 @@ namespace nexo::renderer {
          * Overloads:
          * - Draws a cube with a solid color or a texture.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color) const;
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const std::shared_ptr<Texture2D>& texture) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
 
         /**
          * @brief Draws a custom 3D mesh.

@@ -50,6 +50,20 @@ namespace nexo::renderer {
         }
     }
 
+    static bool isInt(const ShaderDataType type)
+    {
+        switch (type)
+        {
+            case ShaderDataType::INT: return true;
+            case ShaderDataType::INT2: return true;
+            case ShaderDataType::INT3: return true;
+            case ShaderDataType::INT4: return true;
+            case ShaderDataType::BOOL: return true;
+            default: return false;
+        }
+        return false;
+    }
+
     OpenGlVertexArray::OpenGlVertexArray()
     {
         glGenVertexArrays(1, &_id);
@@ -81,14 +95,27 @@ namespace nexo::renderer {
         const auto& layout = vertexBuffer->getLayout();
         for (const auto &element : layout) {
             glEnableVertexAttribArray(index);
-            glVertexAttribPointer(
-                index,
-                static_cast<int>(element.getComponentCount()),
-                shaderDataTypeToOpenGltype(element.type),
-                element.normalized ? GL_TRUE : GL_FALSE,
-                static_cast<int>(layout.getStride()),
-                reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
-            );
+            if (isInt(element.type))
+            {
+                glVertexAttribIPointer(
+                    index,
+                    static_cast<int>(element.getComponentCount()),
+                    shaderDataTypeToOpenGltype(element.type),
+                    static_cast<int>(layout.getStride()),
+                    reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
+                );
+            }
+            else
+            {
+                glVertexAttribPointer(
+                    index,
+                    static_cast<int>(element.getComponentCount()),
+                    shaderDataTypeToOpenGltype(element.type),
+                    element.normalized ? GL_TRUE : GL_FALSE,
+                    static_cast<int>(layout.getStride()),
+                    reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
+                );
+            }
             index++;
         }
         _vertexBuffers.push_back(vertexBuffer);
