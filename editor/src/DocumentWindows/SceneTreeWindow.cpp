@@ -414,7 +414,7 @@ namespace nexo::editor {
         const SceneProperties sceneProperties(sceneId, uiId);
         const LayerProperties layerProperties(sceneProperties, static_cast<int>(layerId));
         entityNode.data = EntityProperties(layerProperties, entity);
-        if (m_sceneManagerBridge->isEntitySelected() && m_sceneManagerBridge->getSelectionType() == SelectionType::ENTITY && m_sceneManagerBridge->getSelectedEntity() == entity)
+        if (m_sceneManagerBridge->isEntitySelected() && m_sceneManagerBridge->getSelectionType() == SelectionType::ENTITY && m_sceneManagerBridge->getSelectedEntity() == static_cast<int>(entity))
         {
             const auto &viewManager = SceneViewManager::getInstance();
             m_sceneManagerBridge->setSelectedEntity(entityNode.nodeId);
