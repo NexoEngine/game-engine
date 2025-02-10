@@ -316,7 +316,7 @@ namespace nexo::renderer {
     }
 
     void Renderer3D::drawMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -339,6 +339,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr->texCoord = vertex.texCoord;
             m_storage->vertexBufferPtr->texIndex = textureIndex;
             m_storage->vertexBufferPtr->normal = vertex.normal;
+            m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
         }
 

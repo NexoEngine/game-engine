@@ -48,7 +48,7 @@ namespace nexo::components {
         std::vector<Mesh> meshes;
         std::vector<std::shared_ptr<MeshNode>> children;
 
-        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform) const
+        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform, int entityID) const
         {
             glm::mat4 localTransform = parentTransform * transform;
             for (const auto &mesh: meshes)
@@ -61,7 +61,7 @@ namespace nexo::components {
             }
 
             for (const auto &child: children)
-                child->draw(renderer3D, localTransform);
+                child->draw(renderer3D, localTransform, entityID);
         }
     };
 
@@ -92,7 +92,7 @@ namespace nexo::components {
 
                 const glm::mat4 transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;
 
-                root->draw(renderer3D, transformMatrix);
+                root->draw(renderer3D, transformMatrix, entityID);
             }
         }
     };
