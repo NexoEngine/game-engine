@@ -30,7 +30,7 @@ namespace nexo::components {
         bool isRendered = true;
 
         virtual void draw(std::shared_ptr<renderer::RendererContext> &context,
-                          const TransformComponent &transf) const = 0;
+                          const TransformComponent &transf, int entityID) const = 0;
 
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
@@ -44,9 +44,9 @@ namespace nexo::components {
         {};
 
         void draw(std::shared_ptr<renderer::RendererContext> &context,
-                  const TransformComponent &transform) const override
+                  const TransformComponent &transform, int entityID) const override
         {
-            shape->draw(context, transform, sprite);
+            shape->draw(context, transform, sprite, entityID);
         }
 
         bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
@@ -62,9 +62,9 @@ namespace nexo::components {
         explicit Renderable3D(const Material material,
                               const std::shared_ptr<Shape3D> &shape) : material(material), shape(shape) {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) const override
         {
-            shape->draw(context, transf);
+            shape->draw(context, transf, entityID);
         }
 
         bool isClicked([[maybe_unused]] const TransformComponent &transf, [[maybe_unused]] const glm::vec2 &mouseWorldPos) override
@@ -83,10 +83,10 @@ namespace nexo::components {
         explicit RenderComponent(const std::shared_ptr<Renderable> &renderable)
             : renderable(renderable) {}
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform, int entityID = -1) const
         {
             if (isRendered && renderable)
-                renderable->draw(context, transform);
+                renderable->draw(context, transform, entityID);
         }
     };
 }

@@ -73,7 +73,7 @@ namespace nexo::editor {
         auto &app = getApp();
         // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
-        // app.setAmbientLightValue(_sceneID, 1.0f);
+        // // app.setAmbientLightValue(_sceneID, 1.0f);
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
                                                                   {0.0f, 0.0f, 0.0f});
         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
@@ -118,7 +118,7 @@ namespace nexo::editor {
     {
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth
+            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
@@ -263,6 +263,8 @@ namespace nexo::editor {
 
     void MainScene::renderView()
     {
+        auto viewPortOffset = ImGui::GetCursorPos();
+
         // Resize handling
         if (ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             _viewSize.x != viewportPanelSize.x || _viewSize.y != viewportPanelSize.y)
@@ -277,8 +279,19 @@ namespace nexo::editor {
         }
 
         // Render framebuffer
-        const unsigned int textureId = m_framebuffer->getColorAttachmentId();
+        const unsigned int textureId = m_framebuffer->getColorAttachmentId(0);
         ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), _viewSize, ImVec2(0, 1), ImVec2(1, 0));
+        m_framebuffer->clearAttachment<int>(1, -1);
+
+        auto windowSize = ImGui::GetWindowSize();
+        auto minBounds = ImGui::GetWindowPos();
+
+        minBounds.x += viewPortOffset.x;
+        minBounds.y += viewPortOffset.y;
+
+        ImVec2 maxBounds = {minBounds.x + windowSize.x, minBounds.y + windowSize.y};
+        m_viewportBounds[0] = minBounds;
+        m_viewportBounds[1] = maxBounds;
     }
 
     glm::vec2 MainScene::getMouseWorldPosition() const
@@ -294,39 +307,6 @@ namespace nexo::editor {
 
         const glm::vec4 worldPos = glm::inverse(m_camera->getViewProjectionMatrix()) * glm::vec4(ndc, 0.0f, 1.0f);
         return {worldPos.x, worldPos.y};
-    }
-
-    void MainScene::rayPicking() const
-    {
-        const ImVec2 mousePos = ImGui::GetMousePos();
-        const ImVec2 windowPos = ImGui::GetWindowPos();
-        const ImVec2 windowSize = ImGui::GetWindowSize();
-
-        const bool insideWindow = mousePos.x >= windowPos.x && mousePos.x <= (windowPos.x + windowSize.x) &&
-                                  mousePos.y >= windowPos.y && mousePos.y <= (windowPos.y + windowSize.y);
-
-        if (!insideWindow)
-            return;
-        const auto &coord = Application::m_coordinator;
-        std::vector<ecs::Entity> sceneEntities = m_sceneManagerBridge->getSceneRenderedEntities(_sceneID);
-        const auto mouseWorldPosition = getMouseWorldPosition();
-        for (const auto entity: sceneEntities)
-        {
-            const auto transformComponent = coord->tryGetComponent<components::TransformComponent>(entity);
-            const auto renderComponent = coord->tryGetComponent<components::RenderComponent>(entity);
-
-            if (renderComponent && transformComponent && renderComponent->get().renderable->isClicked(
-                    transformComponent->get(), mouseWorldPosition))
-            {
-                m_sceneManagerBridge->setSelectedEntity(-1);
-                EntityProperties props{};
-                props.entity = entity;
-                m_sceneManagerBridge->setData(props);
-                m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
-                return;
-            }
-        }
-        m_sceneManagerBridge->unselectEntity();
     }
 
     void MainScene::setHiddenLayerStatus(const bool status) const
@@ -358,9 +338,6 @@ namespace nexo::editor {
                 }
             }
 
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
-                rayPicking();
-
             renderView();
             renderGizmo();
         }
@@ -377,9 +354,38 @@ namespace nexo::editor {
         handleKeyEvents();
 
         m_framebuffer->bind();
+        renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
+        renderer::RenderCommand::clear();
+        m_framebuffer->clearAttachment<int>(1, -1);
         runEngine(_sceneID, RenderingType::FRAMEBUFFER);
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
+        {
+            auto [mx, my] = ImGui::GetMousePos();
+            mx -= m_viewportBounds[0].x;
+            my -= m_viewportBounds[0].y;
+
+            // Flip the y-coordinate to match opengl texture format (maybe make it modular in some way)
+            my = _viewSize.y - my;
+
+            if (mx >= 0 && my >= 0 && mx < _viewSize.x && my < _viewSize.y)
+            {
+                int data = m_framebuffer->getPixel<int>(1, mx, my);
+                if (data != -1)
+                {
+                    const auto &viewManager = SceneViewManager::getInstance();
+                    m_sceneManagerBridge->setSelectedEntity(data);
+                    viewManager->setSelectedScene(_sceneID);
+                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
+                }
+                else
+                {
+                    m_sceneManagerBridge->unselectEntity();
+                }
+            }
+        }
         m_framebuffer->unbind();
         setHiddenLayerStatus(true);
+
     }
 
     void MainScene::addDefaultCameraToLayer(const scene::LayerId id) const

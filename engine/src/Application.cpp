@@ -213,10 +213,6 @@ namespace nexo {
 
         if (!m_isMinimized)
         {
-            // Clear
-            renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
-            renderer::RenderCommand::clear();
-
             if (m_sceneManager.isSceneActive(sceneId))
                 m_sceneManager.getScene(sceneId).onUpdate(timestep);
             if (m_sceneManager.isSceneRendered(sceneId))

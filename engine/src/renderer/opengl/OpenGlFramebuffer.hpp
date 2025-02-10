@@ -14,8 +14,33 @@
 #pragma once
 
 #include "renderer/Framebuffer.hpp"
+#include "renderer/RendererExceptions.hpp"
+
+#include <glad/glad.h>
+#include <iostream>
 
 namespace nexo::renderer {
+
+    template<typename T>
+    constexpr GLenum getGLTypeFromTemplate()
+    {
+         if constexpr (std::is_same_v<T, float>)
+             return GL_FLOAT;
+         else if constexpr (std::is_same_v<T, int>)
+             return GL_INT;
+         else if constexpr (std::is_same_v<T, unsigned int>)
+             return GL_UNSIGNED_INT;
+        return 0;
+    }
+
+    static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
+    {
+        constexpr GLenum formats[] = {GL_NONE, GL_RGBA, GL_RGBA, GL_RED_INTEGER};
+        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::DEPTH24STENCIL8) // Maybe change that later
+            return -1;
+        return static_cast<int>(formats[static_cast<unsigned int>(format)]);
+    }
+
     class OpenGlFramebuffer final : public Framebuffer {
         public:
             /**
@@ -106,6 +131,32 @@ namespace nexo::renderer {
              * - FramebufferResizingFailed if the new dimensions are zero or exceed the maximum supported size.
              */
             void resize(unsigned int width, unsigned int height) override;
+
+            template<typename T>
+            T getPixelImpl(unsigned int attachmentIndex, int x, int y) const
+            {
+                if (attachmentIndex >= m_colorAttachments.size())
+                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+                constexpr GLenum type = getGLTypeFromTemplate<T>();
+                T pixelData;
+                auto &textureFormat = m_colorAttachmentsSpecs[attachmentIndex].textureFormat;
+                glReadPixels(x, y, 1, 1, framebufferTextureFormatToOpenGlFormat(textureFormat), type, &pixelData);
+                return pixelData;
+            }
+            void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const override;
+
+            template<typename T>
+            void clearAttachmentImpl(unsigned int attachmentIndex, const void *value) const
+            {
+                if (attachmentIndex >= m_colorAttachments.size())
+                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+                auto &spec = m_colorAttachmentsSpecs[attachmentIndex];
+                constexpr GLenum type = getGLTypeFromTemplate<T>();
+
+                glClearTexImage(m_colorAttachments[attachmentIndex], 0, framebufferTextureFormatToOpenGlFormat(spec.textureFormat), type, value);
+            }
+            void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const override;
 
             FramebufferSpecs &getSpecs() override {return m_specs;};
             [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};

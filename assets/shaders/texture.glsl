@@ -5,6 +5,7 @@ layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in float aTexIndex;
 layout (location = 4) in vec3 aNormal;
+layout (location = 5) in int aEntityID;
 
 uniform mat4 viewProjection;
 
@@ -13,6 +14,7 @@ out vec2 vTexCoord;
 out float vTexIndex;
 out vec4 vColor;
 out vec3 vNormal;
+flat out int vEntityID;
 
 void main()
 {
@@ -21,12 +23,14 @@ void main()
     vTexCoord = aTexCoord;
     vTexIndex = aTexIndex;
     vNormal = aNormal;
+    vEntityID = aEntityID;
     gl_Position = viewProjection  * vec4(aPos, 1.0);
 }
 
 #type fragment
 #version 330 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int EntityID;
 
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 8
@@ -48,6 +52,7 @@ in vec4 vColor;
 in vec2 vTexCoord;
 in float vTexIndex;
 in vec3 vNormal;
+flat in int vEntityID;
 
 uniform sampler2D uTexture[32];
 
@@ -130,4 +135,5 @@ void main()
     }
 
     FragColor = vec4(fragColor, 1.0);
+    EntityID = vEntityID;
 }

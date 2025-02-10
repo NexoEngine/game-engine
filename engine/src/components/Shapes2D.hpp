@@ -26,12 +26,12 @@ namespace nexo::components {
     struct Shape2D {
         virtual ~Shape2D() = default;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite) const = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite, int entityID) const = 0;
         virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
     struct Quad final : Shape2D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite, int entityID) const override
         {
             const auto renderer2D = context->renderer2D;
             if (sprite.sprite != nullptr)

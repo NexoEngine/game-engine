@@ -50,6 +50,7 @@ namespace nexo::editor {
             bool m_defaultScene = false;
             ImVec2 _viewSize = {0, 0};
             ImVec2 _viewPosition = {0, 0};
+            ImVec2 m_viewportBounds[2];
             int _targetFPS = 60;
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
@@ -132,7 +133,5 @@ namespace nexo::editor {
             void renderView();
 
             [[nodiscard]] glm::vec2 getMouseWorldPosition() const;
-
-            void rayPicking() const;
     };
 }

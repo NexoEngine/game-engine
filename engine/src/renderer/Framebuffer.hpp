@@ -39,6 +39,8 @@ namespace nexo::renderer {
         RGBA8,
         RGBA16,
 
+        RED_INTEGER,
+
         DEPTH24STENCIL8,
 
         Depth = DEPTH24STENCIL8,
@@ -188,6 +190,24 @@ namespace nexo::renderer {
              * @param height The new height of the framebuffer in pixels.
              */
             virtual void resize(unsigned int width, unsigned int height) = 0;
+
+            virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const = 0;
+
+            template<typename T>
+            T getPixel(unsigned int attachmentIndex, int x, int y) const
+            {
+                 T result;
+                 getPixelWrapper(attachmentIndex, x, y, &result, typeid(T));
+                 return result;
+            }
+
+            virtual void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const = 0;
+
+            template<typename T>
+            void clearAttachment(unsigned int attachmentIndex, T value) const
+            {
+                 clearAttachmentWrapper(attachmentIndex, &value, typeid(T));
+            }
 
             /**
              * @brief Retrieves the specifications of the framebuffer.
