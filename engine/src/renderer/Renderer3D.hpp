@@ -199,7 +199,7 @@ namespace nexo::renderer {
          * Throws:
          * - RendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
          */
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
 
         /**
          * @brief Resets rendering statistics.

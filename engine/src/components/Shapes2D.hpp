@@ -27,7 +27,6 @@ namespace nexo::components {
         virtual ~Shape2D() = default;
 
         virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite, int entityID) const = 0;
-        virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
     };
 
     struct Quad final : Shape2D {
@@ -36,28 +35,13 @@ namespace nexo::components {
             const auto renderer2D = context->renderer2D;
             if (sprite.sprite != nullptr)
                 renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.sprite);
+                                               sprite.sprite, entityID);
             else if (sprite.texture != nullptr)
                 renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.texture);
+                                               sprite.texture, entityID);
             else
                 renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.color);
-        }
-
-        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
-        {
-            const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(transf.pos.x, transf.pos.y, 0.0f)) *
-                                        glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                                        glm::scale(glm::mat4(1.0f), glm::vec3(transf.size.x, transf.size.y, 1.0f));
-
-            glm::mat4 inverseTransform = glm::inverse(transform);
-
-            glm::vec4 localMousePos = inverseTransform * glm::vec4(mouseWorldPos, 0.0f, 1.0f);
-
-            auto halfSize = glm::vec2(0.5f);
-            return localMousePos.x >= -halfSize.x && localMousePos.x <= halfSize.x &&
-                   localMousePos.y >= -halfSize.y && localMousePos.y <= halfSize.y;
+                                               sprite.color, entityID);
         }
     };
 }
