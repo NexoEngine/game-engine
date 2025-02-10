@@ -40,14 +40,6 @@ namespace nexo::renderer {
         return static_cast<int>(internalFormats[static_cast<unsigned int>(format)]);
     }
 
-    static int framebufferTextureFormatToOpenGlDataType(FrameBufferTextureFormats format)
-    {
-        constexpr GLenum formats[] = {GL_NONE, GL_UNSIGNED_BYTE, GL_RGBA, GL_RED_INTEGER};
-        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::DEPTH24STENCIL8) // Maybe change that later
-            return -1;
-        return static_cast<int>(formats[static_cast<unsigned int>(format)]);
-    }
-
     /**
      * @brief Determines the OpenGL texture target based on multisampling.
      *
