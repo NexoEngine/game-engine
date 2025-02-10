@@ -162,6 +162,7 @@ namespace nexo::renderer {
             [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
 
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
+            [[nodiscard]] unsigned int getDepthAttachmentId() const { return m_depthAttachment; }
         private:
             unsigned int m_id = 0;
             bool toResize = false;
