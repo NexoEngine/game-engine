@@ -172,7 +172,7 @@ namespace nexo::renderer {
                        FrameBufferTextureFormats::DEPTH24STENCIL8)
             {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture),
-                          static_cast<unsigned int>(framebuffer.getSpecs().attachments.attachments[i].textureFormat));
+                          framebuffer.getDepthAttachmentId());
             } else
             {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture), 0);
