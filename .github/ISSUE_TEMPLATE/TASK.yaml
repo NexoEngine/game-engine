@@ -1,6 +1,6 @@
 name: Task Template
-description: Use this template to create tasks for the project.
-title: "[feat | refactor | chore]: "
+description: Use this template to create tasks for the Nexo Engine project.
+title: "[feat | refactor | chore | bug]: "
 labels: ["task"]
 projects: ["NexoEngine/3"]
 
@@ -17,8 +17,8 @@ body:
   - type: textarea
     id: acceptance-criteria
     attributes:
-      label: Acceptance criteria
-      description: "What are the different requirements for this task ?"
+      label: Acceptance Criteria
+      description: "What are the different requirements for this task?"
       value: |
         - [ ] 1.
         - [ ] 2.
@@ -48,14 +48,28 @@ body:
     id: type
     attributes:
       label: Type
-      description: What part of the project this issue is about ?
+      description: What part of the project is this issue about?
       options:
         - Engine
         - Editor
         - CI/CD
         - Testing
         - Documentation
+        - Bug
+        - Feature
         - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Specify the priority level for this task.
+      options:
+        - High
+        - Medium
+        - Low
     validations:
       required: true
 
@@ -69,3 +83,10 @@ body:
         - Next Iteration
     validations:
       required: true
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Additional Notes
+      description: Provide any additional information or context for this task.
+      placeholder: Enter any additional notes.
