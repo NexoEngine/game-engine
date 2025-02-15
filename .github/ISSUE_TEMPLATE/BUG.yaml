@@ -1,0 +1,75 @@
+name: Bug report
+description: Use this template to report a bug in the Nexo Engine project.
+title: "[Bug]: "
+labels: ["bug"]
+projects: ["NexoEngine/3"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Welcome to the Nexo Engine Bug Report!
+        
+        Thank you for taking the time to help improve Nexo Engine. Please provide as much detail as possible so we can address the issue promptly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Enter the description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: "What steps did you take to reproduce this issue?"
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what you expected to happen.
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide details about your environment, such as the operating system, browser, or any other relevant information.
+      placeholder: Enter the environment details.
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Attach any screenshots related to the bug. (optional)
+      placeholder: Attach screenshots if applicable.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this issue?
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
