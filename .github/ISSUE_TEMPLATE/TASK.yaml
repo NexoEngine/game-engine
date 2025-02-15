@@ -1,5 +1,6 @@
-name: Task Template
+name: Task template
 description: Use this template to create tasks for the Nexo Engine project.
+type: "Task"
 title: "[feat | refactor | chore | bug]: "
 projects: ["NexoEngine/3"]
 
