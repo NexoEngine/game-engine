@@ -1,7 +1,8 @@
 name: Bug report
 description: Use this template to report a bug in the Nexo Engine project.
-title: "[Bug]: "
+title: "fix: "
 labels: ["bug"]
+type: "Bug"
 projects: ["NexoEngine/3"]
 
 body:
@@ -11,6 +12,9 @@ body:
         ## Welcome to the Nexo Engine Bug Report!
         
         Thank you for taking the time to help improve Nexo Engine. Please provide as much detail as possible so we can address the issue promptly.
+
+        > [!NOTE]
+        > You can attach screenshots in any text field, it's a welcomed addition :)
 
   - type: textarea
     id: description
@@ -53,13 +57,6 @@ body:
       label: Environment
       description: Provide details about your environment, such as the operating system, browser, or any other relevant information.
       placeholder: Enter the environment details.
-
-  - type: textarea
-    id: screenshots
-    attributes:
-      label: Screenshots
-      description: Attach any screenshots related to the bug. (optional)
-      placeholder: Attach screenshots if applicable.
 
   - type: dropdown
     id: severity
