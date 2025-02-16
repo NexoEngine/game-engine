@@ -14,24 +14,26 @@
 #pragma once
 
 #include "Render3D.hpp"
+#include "Transform.hpp"
 #include "renderer/RendererContext.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
+#include <optional>
 
 namespace nexo::components {
 
     struct Shape3D {
         virtual ~Shape3D() = default;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
     };
 
     struct Cube final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for cube and other basic primitives
-            renderer3D.drawCube(transf.pos, transf.size, {1.0f, 0.0f, 0.0f, 1.0f}, entityID);
+            renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
         }
     };
 
@@ -39,8 +41,7 @@ namespace nexo::components {
         std::string name;
         std::vector<renderer::Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::shared_ptr<renderer::Texture2D> texture;
-        std::optional<Material> material; // Not used yet
+        std::optional<Material> material;
     };
 
     struct MeshNode {
@@ -57,7 +58,7 @@ namespace nexo::components {
                 std::vector<renderer::Vertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
-                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.texture);
+                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.material->albedoTexture, entityID);
             }
 
             for (const auto &child: children)
@@ -71,7 +72,8 @@ namespace nexo::components {
 
         explicit Model(const std::shared_ptr<MeshNode> &rootNode) : root(rootNode) {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) override
+        // NOT WORKING ANYMORE
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Pass the material to the draw mesh function

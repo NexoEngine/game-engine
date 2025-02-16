@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EntityFactory3D.hpp"
-#include "components/Components.hpp"
 #include "core/exceptions/Exceptions.hpp"
 #include "Application.hpp"
 
@@ -26,11 +25,12 @@ namespace nexo {
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
+
         transform.pos = pos;
         transform.size = size;
         transform.rotation = rotation;
         components::Material material{};
-        material.color = color;
+        material.albedoColor = color;
         auto cube = std::make_shared<components::Cube>();
         auto renderable = std::make_shared<components::Renderable3D>(material, cube);
         components::RenderComponent renderComponent(renderable);
@@ -75,16 +75,13 @@ namespace nexo::utils {
     {
         std::vector<renderer::Vertex> vertices;
         std::vector<unsigned int> indices;
-
         vertices.reserve(mesh->mNumVertices);
 
-        // Extract vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             renderer::Vertex vertex{};
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
-            //TODO: Later
             if (mesh->HasNormals()) {
                 vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
             }
@@ -97,33 +94,75 @@ namespace nexo::utils {
             vertices.push_back(vertex);
         }
 
-        // Extract indices
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             aiFace face = mesh->mFaces[i];
-            indices.resize(indices.size() + face.mNumIndices);
-            for (unsigned int j = 0; j < face.mNumIndices; j++)
-                indices.push_back(face.mIndices[j]);
+            indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
         }
 
-        // Extract texture (if available)
-        std::shared_ptr<renderer::Texture2D> texture = nullptr;
         aiMaterial const *material = scene->mMaterials[mesh->mMaterialIndex];
 
-        if (aiString str; material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
-        {
-            std::filesystem::path modelPath(path);
-            std::filesystem::path modelDirectory = modelPath.parent_path();
+        components::Material materialComponent;
 
-            std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
-
-            texture = renderer::Texture2D::create(texturePath.string());
-            LOG(NEXO_INFO, "Loaded diffuse texture: {}", str.data);
+        aiColor4D color;
+        if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+            materialComponent.albedoColor = { color.r, color.g, color.b, color.a };
         }
 
+        if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
+            materialComponent.specularColor = { color.r, color.g, color.b };
+        }
+
+        if (material->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) {
+            materialComponent.emissiveColor = { color.r, color.g, color.b };
+        }
+
+        float roughness = 0.0f;
+        if (material->Get(AI_MATKEY_SHININESS, roughness) == AI_SUCCESS) {
+            materialComponent.roughness = 1.0f - (roughness / 100.0f); // Convert glossiness to roughness
+        }
+
+        // Load Metallic
+        float metallic = 0.0f;
+        if (material->Get(AI_MATKEY_METALLIC_FACTOR, metallic) == AI_SUCCESS) {
+            materialComponent.metallic = metallic;
+        }
+
+        float opacity = 1.0f;
+        if (material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
+            materialComponent.opacity = opacity;
+        }
+
+        // Load Textures
+        std::filesystem::path modelPath(path);
+        std::filesystem::path modelDirectory = modelPath.parent_path();
+
+        auto loadTexture = [&](aiTextureType type) -> std::shared_ptr<renderer::Texture2D> {
+            aiString str;
+            if (material->GetTexture(type, 0, &str) == AI_SUCCESS) {
+                std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
+                return renderer::Texture2D::create(texturePath.string());
+            }
+            return nullptr;
+        };
+
+        materialComponent.albedoTexture = loadTexture(aiTextureType_DIFFUSE);
+        materialComponent.normalMap = loadTexture(aiTextureType_NORMALS);
+        materialComponent.metallicMap = loadTexture(aiTextureType_SPECULAR);  // Specular can store metallic in some cases
+        materialComponent.roughnessMap = loadTexture(aiTextureType_SHININESS);
+        materialComponent.emissiveMap = loadTexture(aiTextureType_EMISSIVE);
+
+        LOG(NEXO_INFO, "Loaded material: Diffuse = {}, Normal = {}, Metallic = {}, Roughness = {}",
+            materialComponent.albedoTexture ? "Yes" : "No",
+            materialComponent.normalMap ? "Yes" : "No",
+            materialComponent.metallicMap ? "Yes" : "No",
+            materialComponent.roughnessMap ? "Yes" : "No");
+
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-        return {mesh->mName.data, vertices, indices, texture, std::nullopt}; // Optional material not used yet
+
+        return {mesh->mName.data, vertices, indices, materialComponent};
     }
+
 
     std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode const *node, const aiScene *scene)
     {
