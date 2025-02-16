@@ -32,7 +32,7 @@ jobs:
     - name: Init submodules
       run: |
           git submodule update --init --recursive
-          cd vcpkg && git fetch --all
+          cd vcpkg && git fetch --all && git pull
 
 
     # This will execute a dry-run, meaning that libraries will not be built and
