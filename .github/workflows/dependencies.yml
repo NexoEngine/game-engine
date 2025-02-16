@@ -24,6 +24,8 @@ jobs:
     - name: Init submodules
       run: |
           git submodule update --init --recursive
+          cd vcpkg
+          git fetch origin
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
