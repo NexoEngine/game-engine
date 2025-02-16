@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.17)
 # Set project name
 project(nexoEditor)
 
+# Add Sentry package
+find_package(sentry CONFIG REQUIRED)
+
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -87,3 +90,13 @@ endif()
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
 set_target_properties(nexoEditor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
+
+target_link_libraries(nexoEditor PRIVATE 
+    loguru::loguru 
+    imguizmo::imguizmo 
+    nexoRenderer 
+    imgui::imgui 
+    tinyfiledialogs::tinyfiledialogs 
+    Boost::dll
+    sentry::sentry
+)
