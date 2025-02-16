@@ -73,16 +73,16 @@ namespace nexo::editor {
         auto &app = getApp();
         // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
-        // // app.setAmbientLightValue(_sceneID, 1.0f);
+        app.setAmbientLightValue(_sceneID, glm::vec3(0.2f));
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
-                                                                  {0.0f, 0.0f, 0.0f});
+                                                                  {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
         // const ecs::Entity gunModel = EntityFactory3D::createModel(Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf").string(), {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
         // app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
-        glm::vec3 lightPos1 = {0.0f, 2.0f, 1.0f};
-        glm::vec4 color1 = {randomColor(), randomColor(), randomColor(), 1.0f};
-        auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1, 0.9);
+        glm::vec3 lightPos1 = {1.0f, 1.0f, -1.0f};
+        glm::vec4 color1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1, 10.0f);
         app.addLightToScene(_sceneID, pointLight1);
 
         // glm::vec3 lightPos2 = {0.0f, 2.0f, 1.0f};
