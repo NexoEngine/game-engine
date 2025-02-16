@@ -23,6 +23,7 @@ set(COMMON_SOURCES
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderStorageBuffer.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
         engine/src/renderer/Renderer.cpp
@@ -32,6 +33,8 @@ set(COMMON_SOURCES
         engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
+        engine/src/renderer/primitives/Mesh.cpp
+        engine/src/renderer/primitives/Cube.cpp
         engine/src/core/camera/PerspectiveCamera.cpp
         engine/src/core/camera/OrthographicCamera.cpp
         engine/src/core/camera/PerspectiveCameraController.cpp
@@ -56,6 +59,7 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlVertexArray.cpp
             engine/src/renderer/opengl/OpenGlTexture2D.cpp
             engine/src/renderer/opengl/OpenGlShader.cpp
+            engine/src/renderer/opengl/OpenGlShaderStorageBuffer.cpp
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
     )
