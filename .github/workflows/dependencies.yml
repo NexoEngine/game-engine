@@ -24,7 +24,7 @@ jobs:
     - name: Init submodules
       run: |
           git submodule update --init --recursive
-          cd vcpkg && git fetch --all
+          cd vcpkg && git fetch --all --unshallow
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -32,7 +32,7 @@ jobs:
     - name: Init submodules
       run: |
           git submodule update --init --recursive
-          cd vcpkg && git fetch --all
+          cd vcpkg && git fetch --all --unshallow
 
 
     # This will execute a dry-run, meaning that libraries will not be built and
