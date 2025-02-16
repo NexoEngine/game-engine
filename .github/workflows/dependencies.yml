@@ -2,9 +2,6 @@ name: Populate dependencies
 
 on:
   push:
-    branches:
-      main
-      ci/vcpkg-deps-graph
   workflow_dispatch:
 
 permissions:
