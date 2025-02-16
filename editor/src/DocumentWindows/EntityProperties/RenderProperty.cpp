@@ -37,8 +37,9 @@ namespace nexo::editor {
             auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
             if (renderable3D)
             {
-                auto& [color] = renderable3D->material;
-                selectedEntityColor = reinterpret_cast<ImVec4*>(&color);
+                //auto& [color] = renderable3D->material;
+                ImVec4 tempColor(1.0f, 0.0f, 0.0f, 1.0f);
+                selectedEntityColor = &tempColor;
             }
         }
         if (renderComponent.type == components::RenderType::RENDER_2D)
