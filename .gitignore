@@ -43,6 +43,10 @@ src/client/Makefile
 # Visual Studio Code
 .vscode
 
+# Zed editor
+.cache
+.zed
+
 random
 robot.glb
 example_game_engine
