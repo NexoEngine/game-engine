@@ -5,6 +5,12 @@ on: [push]
 jobs:
   build:
     name: Build, test and Package
+    # env and permissions are setup to add dependencies from vcpkg to the repo's dependency graph
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VCPKG_FEATURE_FLAGS: dependencygraph
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
