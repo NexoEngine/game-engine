@@ -55,6 +55,18 @@ namespace nexo::renderer {
         THROW_EXCEPTION(FileNotFoundException, filepath);
     }
 
+    void Shader::addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer)
+    {
+        m_storageBuffers.push_back(buffer);
+    }
+
+    void Shader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
+    {
+        if (index >= m_storageBuffers.size())
+            THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+        m_storageBuffers[index]->setData(data, size);
+    }
+
     void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
     {
         const std::string &name = shader->getName();

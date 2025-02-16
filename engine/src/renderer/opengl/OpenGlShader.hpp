@@ -64,6 +64,10 @@ namespace nexo::renderer {
             void setUniformInt(const std::string &name, int value) const override;
             void setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
 
+            void bindStorageBuffer(unsigned int index) const override;
+            void bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const override;
+            void unbindStorageBuffer(unsigned int index) const override;
+
             [[nodiscard]] const std::string &getName() const override { return m_name; };
             unsigned int getProgramId() const override { return m_id; };
         private:

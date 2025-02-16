@@ -13,10 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <iostream>
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include <memory>
+#include <vector>
+
+#include "ShaderStorageBuffer.hpp"
 
 namespace nexo::renderer {
 
@@ -102,10 +104,17 @@ namespace nexo::renderer {
             virtual void setUniformInt(const std::string &name, int value) const = 0;
             virtual void setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
+            void addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer);
+            void setStorageBufferData(unsigned int index, void *data, unsigned int size);
+            virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
+            virtual void bindStorageBuffer(unsigned int index) const = 0;
+            virtual void unbindStorageBuffer(unsigned int index) const = 0;
+
             [[nodiscard]] virtual const std::string &getName() const = 0;
             virtual unsigned int getProgramId() const = 0;
         protected:
             static std::string readFile(const std::string &filepath);
+        	std::vector<std::shared_ptr<ShaderStorageBuffer>> m_storageBuffers;
     };
 
     class ShaderLibrary {
