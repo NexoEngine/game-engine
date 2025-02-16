@@ -19,6 +19,14 @@
 #include <format>
 
 namespace nexo::renderer {
+
+	class OutOfRangeException final : public Exception {
+        public:
+            explicit OutOfRangeException(unsigned int index, unsigned int size,
+                                         const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Index {} is out of range [0, {})", index, size), loc) {}
+    };
+
     class FileNotFoundException final : public Exception {
         public:
             explicit FileNotFoundException(const std::string &filePath,
