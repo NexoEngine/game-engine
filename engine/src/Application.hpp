@@ -154,8 +154,8 @@ namespace nexo {
             std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
             unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
             void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
-            void setAmbientLightValue(scene::SceneId sceneId, float value);
-            float getAmbientLightValue(scene::SceneId sceneId);
+            void setAmbientLightValue(scene::SceneId sceneId, glm::vec3 value);
+            glm::vec3 getAmbientLightValue(scene::SceneId sceneId);
 
 
             static Application &getInstance()
@@ -214,5 +214,3 @@ namespace nexo {
             std::vector<ProfileResult> m_profilesResults;
     };
 }
-
-

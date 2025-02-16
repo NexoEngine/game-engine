@@ -17,7 +17,6 @@
 #include "renderer/Renderer2D.hpp"
 #include "core/scene/Scene.hpp"
 
-#include <chrono>
 #include <format>
 
 namespace nexo::layer {
@@ -27,7 +26,7 @@ namespace nexo::layer {
     {
         const auto renderer3D = rendererContext->renderer3D;
         const auto& shader = renderer3D.getShader();
-        shader->setUniformFloat("ambientLight", sceneContext.lightContext.ambientLight);
+        shader->setUniformFloat3("ambientLight", sceneContext.lightContext.ambientLight);
         shader->setUniformInt("numDirLights", sceneContext.lightContext.nbDirectionalLights);
         shader->setUniformInt("numPointLights", sceneContext.lightContext.nbPointLights);
 

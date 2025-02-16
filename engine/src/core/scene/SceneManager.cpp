@@ -331,7 +331,7 @@ namespace nexo::scene {
         scenes.at(id).removeLight(index);
     }
 
-    void SceneManager::setSceneAmbientLightValue(SceneId id, float value)
+    void SceneManager::setSceneAmbientLightValue(SceneId id, glm::vec3 value)
     {
         if (!scenes.contains(id))
         {
@@ -341,12 +341,12 @@ namespace nexo::scene {
         scenes.at(id).setAmbientLight(value);
     }
 
-    float SceneManager::getSceneAmbientLightValue(SceneId id)
+    glm::vec3 SceneManager::getSceneAmbientLightValue(SceneId id)
     {
         if (!scenes.contains(id))
         {
             LOG(NEXO_ERROR, "SceneManager::getSceneAmbientLightValue: id {} does not exist", id);
-            return 0.0f;
+            return glm::vec3(0.0f);
         }
         return scenes.at(id).getAmbientLight();
     }
