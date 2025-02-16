@@ -32,17 +32,17 @@ namespace nexo::editor {
         auto& renderComponent = App.getEntityComponent<components::RenderComponent>(entity);
 
         ImVec4* selectedEntityColor = nullptr;
+
         if (renderComponent.type == components::RenderType::RENDER_3D)
         {
             auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
             if (renderable3D)
             {
-                //auto& [color] = renderable3D->material;
-                ImVec4 tempColor(1.0f, 0.0f, 0.0f, 1.0f);
+                static ImVec4 tempColor(1.0f, 0.0f, 0.0f, 1.0f);
                 selectedEntityColor = &tempColor;
             }
         }
-        if (renderComponent.type == components::RenderType::RENDER_2D)
+        else if (renderComponent.type == components::RenderType::RENDER_2D)
         {
             auto renderable2D = std::dynamic_pointer_cast<components::Renderable2D>(renderComponent.renderable);
             if (renderable2D)
@@ -51,23 +51,21 @@ namespace nexo::editor {
                 selectedEntityColor = reinterpret_cast<ImVec4*>(&color);
             }
         }
+
         if (!selectedEntityColor)
             return false;
 
-        ImGui::Checkbox("##RenderComponentActive", &renderComponent.isRendered);
-
-        ImGui::SameLine(ImGui::GetCursorPosX());
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(30.0f, 11.0f));
-        if (ImGui::TreeNodeEx("Renderer", ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::CollapsingHeader("Renderer", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            ImGui::ColorEdit4("##InspectorRenderColorPicker", reinterpret_cast<float*>(selectedEntityColor),
-                              ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB |
-                              ImGuiColorEditFlags_NoSidePreview |
-                              ImGuiColorEditFlags_NoTooltip);
-            ImGui::TreePop();
+            ImGui::Checkbox("Active", &renderComponent.isRendered);
+
+            ImGui::ColorEdit4("Color", reinterpret_cast<float*>(selectedEntityColor),
+                                ImGuiColorEditFlags_DisplayRGB
+                            | ImGuiColorEditFlags_InputRGB
+                            | ImGuiColorEditFlags_NoSidePreview
+                            | ImGuiColorEditFlags_NoTooltip);
         }
 
-        ImGui::PopStyleVar();
         return true;
     }
 
