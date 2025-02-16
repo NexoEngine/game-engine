@@ -20,6 +20,10 @@ set(SRCS
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/SceneViewManager.cpp
+        editor/src/DocumentWindows/InspectorWindow.cpp
+        editor/src/DocumentWindows/EntityProperties/AEntityProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
 )
 
 # Windows App Icon

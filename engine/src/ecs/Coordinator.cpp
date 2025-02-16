@@ -42,6 +42,19 @@ namespace nexo::ecs {
         m_systemManager->entityDestroyed(entity);
     }
 
+    std::vector<std::type_index> Coordinator::getAllComponentTypes(const Entity entity) const
+    {
+        std::vector<std::type_index> types;
+
+        for (const auto& [type, func] : m_hasComponentFunctions) {
+            if (func(entity)) {
+                types.emplace_back(type);
+            }
+        }
+
+        return types;
+    }
+
     std::vector<std::pair<std::type_index, std::any>> Coordinator::getAllComponents(const Entity entity)
     {
         std::vector<std::pair<std::type_index, std::any>> components;

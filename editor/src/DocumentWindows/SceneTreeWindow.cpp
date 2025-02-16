@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "Primitive.hpp"
 #include "EntityFactory2D.hpp"
 #include "IconsFontAwesome.h"
 
@@ -151,13 +152,20 @@ namespace nexo::editor {
         }
         if (ImGui::MenuItem("Add entity"))
         {
-            const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 0.0f,
-                                                                      {
-                                                                          randomFloat(), randomFloat(), randomFloat(),
-                                                                          1.0f
-                                                                      });
-            auto &app = getApp();
-            app.addEntityToScene(basicQuad, sceneProps.sceneId, layerId);
+        	for (int i = 0; i < IM_ARRAYSIZE(primitives3DNames); i++)
+            {
+                if (ImGui::MenuItem(primitives3DNames[i]))
+                {
+                    const ecs::Entity newPrimitive = addPrimitive3D[i](
+                        {1.2f, 1.2f, 1.2f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
+                        {0.0f, 1.0f, 0.0f, 1.0f});
+                    auto& app = getApp();
+                    app.addEntityToScene(newPrimitive, sceneProps.sceneId, layerId);
+                    m_sceneManagerBridge->setSelectedEntity(newPrimitive);
+                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
+                }
+            }
+            ImGui::EndMenu();
         }
 
         const auto &viewManager = SceneViewManager::getInstance();

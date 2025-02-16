@@ -296,6 +296,7 @@ namespace nexo::editor {
 
     void Editor::render()
     {
+        std::cout << "Render start" << std::endl;
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -307,6 +308,7 @@ namespace nexo::editor {
 
         for (const auto &[_, window]: m_windows)
         {
+            std::cout << "Render window" << std::endl;
             if (window->isOpened())
                 window->show();
         }

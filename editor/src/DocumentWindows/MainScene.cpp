@@ -27,6 +27,7 @@
 #include <random>
 
 #include "SceneViewManager.hpp"
+#include "Primitive.hpp"
 
 namespace nexo::editor {
 

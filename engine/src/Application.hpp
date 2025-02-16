@@ -177,6 +177,16 @@ namespace nexo {
                 return m_coordinator->getComponent<T>(entity);
             }
 
+            static std::vector<std::type_index> getAllEntityComponentTypes(const ecs::Entity entity)
+            {
+                return m_coordinator->getAllComponentTypes(entity);
+            }
+
+            static std::vector<std::pair<std::type_index, std::any>> getAllEntityComponents(const ecs::Entity entity)
+            {
+                return m_coordinator->getAllComponents(entity);
+            }
+
             scene::SceneManager &getSceneManager() { return m_sceneManager; };
 
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
