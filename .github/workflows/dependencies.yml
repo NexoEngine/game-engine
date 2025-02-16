@@ -25,6 +25,9 @@ jobs:
       run: |
           git submodule update --init --recursive
 
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+
     # This will execute a dry-run, meaning that libraries will not be built and
     # installed, but they will still be reported to the GitHub dependency graph.
     # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-vcpkg`)
