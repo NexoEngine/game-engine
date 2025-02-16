@@ -57,7 +57,7 @@ namespace nexo::components {
 
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) const override
         {
-            shape->draw(context, transf, entityID);
+            shape->draw(context, transf, material, entityID);
         }
     };
 

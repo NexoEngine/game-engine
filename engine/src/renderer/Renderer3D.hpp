@@ -16,6 +16,7 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
+#include "components/Render3D.hpp"
 
 #include <array>
 #include <glm/glm.hpp>
@@ -24,19 +25,27 @@ namespace nexo::renderer {
 
     struct Vertex {
         glm::vec3 position;
-        glm::vec4 color;
         glm::vec2 texCoord;
-        float texIndex;
         glm::vec3 normal;
+        glm::vec3 tangent;
+        glm::vec3 bitangent;
 
         int entityID;
     };
 
-    struct CubeVertex {
-        glm::vec3 position;
-        glm::vec4 color;
-        glm::vec2 texCoord;
-        float texIndex;
+    struct Material {
+        glm::vec4 albedoColor = glm::vec4(1.0f);
+        int albedoTexIndex = 0; // Default: 0 (white texture)
+        glm::vec3 specularColor = glm::vec3(1.0f);
+        int specularTexIndex = 0; // Default: 0 (white texture)
+        glm::vec3 emissiveColor = glm::vec3(0.0f);
+        int emissiveTexIndex = 0; // Default: 0 (white texture)
+        float roughness = 0.5f;
+        int roughnessTexIndex = 0; // Default: 0 (white texture)
+        float metallic = 0.0f;
+        int metallicTexIndex = 0; // Default: 0 (white texture)
+        float opacity = 1.0f;
+        int opacityTexIndex = 0; // Default: 0 (white texture)
     };
 
     //TODO: Add stats for the meshes
@@ -67,6 +76,7 @@ namespace nexo::renderer {
         const unsigned int maxVertices = maxCubes * 8;
         const unsigned int maxIndices = maxCubes * 36;
         static constexpr unsigned int maxTextureSlots = 32;
+        static constexpr unsigned int maxTransforms = 1024;
 
         std::shared_ptr<Shader> textureShader;
         std::shared_ptr<VertexArray> vertexArray;
@@ -185,7 +195,12 @@ namespace nexo::renderer {
          * - Draws a cube with a solid color or a texture.
          */
         void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
+
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
 
         /**
          * @brief Draws a custom 3D mesh.
@@ -200,6 +215,10 @@ namespace nexo::renderer {
          * - RendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
          */
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
+
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Resets rendering statistics.
@@ -230,8 +249,8 @@ namespace nexo::renderer {
 
         void flush() const;
         void flushAndReset() const;
-        void generateCubeVertices(const glm::mat4& transform, const glm::vec4& color, float textureIndex, const glm::vec2* textureCoords) const;
         [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D>& texture) const;
+        void setMaterialUniforms(const renderer::Material& material) const;
     };
 
 }

@@ -18,7 +18,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "ecs/Entity.hpp"
+#include "ecs/ECSExceptions.hpp"
 #include "components/Components.hpp"
 
 namespace nexo {
