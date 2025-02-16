@@ -31,7 +31,7 @@ namespace nexo::scene {
     struct LightContext {
         LightContext() = default;
 
-        float ambientLight{};
+        glm::vec3 ambientLight;
         std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS> m_lights;
         unsigned int nbLights = 0;
         unsigned int nbPointLights = 0;
@@ -111,8 +111,8 @@ namespace nexo::scene {
 
             void removeLight(unsigned int index);
 
-            void setAmbientLight(const float ambient) { ambientLight = ambient; };
-            [[nodiscard]] float getAmbientLight() const { return ambientLight; };
+            void setAmbientLight(const glm::vec3 ambient) { ambientLight = ambient; };
+            [[nodiscard]] glm::vec3 getAmbientLight() const { return ambientLight; };
 
             void onUpdate(Timestep timestep) const;
 
@@ -139,7 +139,7 @@ namespace nexo::scene {
             unsigned int nbLights = 0;
             unsigned int nbPointLights = 0;
             unsigned int nbDirectionalLights = 0;
-            float ambientLight = 0.5f;
+            glm::vec3 ambientLight = glm::vec3(0.2f);
 
     };
 }
