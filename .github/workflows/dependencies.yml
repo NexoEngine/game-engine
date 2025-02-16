@@ -23,7 +23,6 @@ jobs:
 
     - name: Init submodules
       run: |
-          git submodule update --init --recursive
           cd vcpkg && git fetch --all --unshallow
 
     - name: Setup vcpkg
@@ -31,7 +30,6 @@ jobs:
 
     - name: Init submodules
       run: |
-          git submodule update --init --recursive
           cd vcpkg && git fetch --all --unshallow
 
 
