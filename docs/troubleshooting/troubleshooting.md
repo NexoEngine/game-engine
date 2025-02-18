@@ -29,7 +29,7 @@ required for installing NEXO in the path of a DEB compatible linux distribution.
 If you are running Windows:
 - Either ignore this message, since you may not want to generate a DEB package.
 - If you still want to generate a DEB package, you should enable Windows Developer Mode,
-  see [Microsoft Documentaion](https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development).
+  see [Microsoft Documentation](https://learn.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development).
   And rerun the cmake configure, build and cpack commands.
 
 > [!WARNING]
