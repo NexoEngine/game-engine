@@ -54,10 +54,11 @@ namespace nexo::editor {
 	class EntityPropertiesComponents {
 		public:
 			static bool drawHeader(const std::string &label, const std::string &headerText);
-			static void drawButton(const std::string &label, const ImVec2& size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
 			static void drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg, ImU32 bgHovered, ImU32 bgActive);
 			static void drawRowLabel(const ChannelLabel &rowLabel);
 			static void drawRowDragFloat(const Channels &channels);
-			static void drawColorRGBA(const std::string &label, float *color);
+			static bool drawColorButton(const std::string &label, ImVec2 size, ImVec4 color);
+			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
 	};
 }

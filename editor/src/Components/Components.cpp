@@ -45,7 +45,7 @@ namespace nexo::editor {
 		return open;
 	}
 
-	void EntityPropertiesComponents::drawButton(
+	bool EntityPropertiesComponents::drawButton(
 			const std::string &label,
 			const ImVec2 &size,
 			ImU32 bg,
@@ -57,9 +57,10 @@ namespace nexo::editor {
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, bgActive);
         ImGui::PushStyleColor(ImGuiCol_Text, txtColor);
 
-        ImGui::Button(label.c_str(), size);
+        bool clicked = ImGui::Button(label.c_str(), size);
 
         ImGui::PopStyleColor(4);
+		return clicked;
 	}
 
 	void EntityPropertiesComponents::drawDragFloat(
@@ -119,49 +120,27 @@ namespace nexo::editor {
 		}
 	}
 
-	void EntityPropertiesComponents::drawColorRGBA(const std::string &label, float *color)
+	bool EntityPropertiesComponents::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color)
 	{
-		std::string labelR = std::string("##R") + label;
-		std::string labelG = std::string("##G") + label;
-		std::string labelB = std::string("##B") + label;
-		std::string labelA = std::string("##A") + label;
+		static bool clicked = false;
+		if (ImGui::ColorButton(label.c_str(),
+								color,
+                                ImGuiColorEditFlags_NoTooltip,
+                                size))
+        {
+            clicked = !clicked;
+        }
 
-		std::string badgeLabelR = std::string("R##") + label;
-		std::string badgeLabelG = std::string("G##") + label;
-		std::string badgeLabelB = std::string("B##") + label;
-		std::string badgeLabelA = std::string("A##") + label;
+        ImVec2 p_min = ImGui::GetItemRectMin();
+        ImVec2 p_max = ImGui::GetItemRectMax();
+        ImU32 borderColor = IM_COL32(150, 150, 150, 255);
+        if (ImGui::IsItemHovered())
+            borderColor = IM_COL32(200, 200, 200, 255);
+        if (ImGui::IsItemActive())
+            borderColor = IM_COL32(250, 250, 250, 255);
 
-		ImGui::TableNextRow();
-
-		ChannelLabel chanLabel;
-		chanLabel.label = std::string(label);
-		chanLabel.fixedWidth = -1.0f;
-		EntityPropertiesComponents::drawRowLabel(chanLabel);
-		ImGui::TableNextColumn();
-		ImGui::ColorEdit4("##Picker", color);
-		ImGui::TableNextRow();
-		ImGui::TableNextColumn();
-
-		float badgeSize = ImGui::GetFrameHeight();
-		std::vector<Badge> badges;
-		badges.reserve(4);
-		badges.push_back(Badge(badgeLabelR, ImVec2(badgeSize, badgeSize), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)));
-		badges.push_back(Badge(badgeLabelG, ImVec2(badgeSize, badgeSize), IM_COL32(0, 80, 0, 255), IM_COL32(0, 80, 0, 255), IM_COL32(0, 80, 0, 255), IM_COL32(180, 255, 180, 255)));
-		badges.push_back(Badge(badgeLabelB, ImVec2(badgeSize, badgeSize), IM_COL32(0, 0, 80, 255), IM_COL32(0, 0, 80, 255), IM_COL32(0, 0, 80, 255), IM_COL32(180, 180, 255, 255)));
-		badges.push_back(Badge(badgeLabelA, ImVec2(badgeSize, badgeSize), IM_COL32(80, 80, 80, 255), IM_COL32(80, 80, 80, 255), IM_COL32(80, 80, 80, 255), IM_COL32(0, 0, 0, 255)));
-
-		std::vector<DragFloat> sliders;
-		sliders.reserve(4);
-		sliders.push_back(DragFloat(labelR, &color[0], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-		sliders.push_back(DragFloat(labelG, &color[1], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-		sliders.push_back(DragFloat(labelB, &color[2], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-		sliders.push_back(DragFloat(labelA, &color[3], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-
-		Channels channels;
-		channels.count = 4;
-		channels.badges = badges;
-		channels.sliders = sliders;
-
-		EntityPropertiesComponents::drawRowDragFloat(channels);
+        // Draw the border manually using the window's draw list
+        ImGui::GetWindowDrawList()->AddRect(p_min, p_max, borderColor, 2.0f, 0, 3.0f);
+        return clicked;
 	}
 }
