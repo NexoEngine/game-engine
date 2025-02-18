@@ -22,6 +22,5 @@ namespace nexo::editor {
 
             static int show(ecs::Entity entity);
             void showEnd();
-
     };
 }
