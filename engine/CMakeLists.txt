@@ -82,7 +82,7 @@ target_include_directories(nexoRenderer PUBLIC
 
 # loguru
 find_package(loguru CONFIG REQUIRED)
-target_link_libraries(nexoEditor PRIVATE loguru::loguru)
+target_link_libraries(nexoRenderer PRIVATE loguru::loguru)
 
 # Stb
 find_package(Stb REQUIRED)
@@ -104,3 +104,8 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
 endif()
+
+# Enable threading support
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)

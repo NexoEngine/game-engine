@@ -18,7 +18,6 @@
 #include "src/DocumentWindows/MainScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 
-#include <thread>
 #include <core/exceptions/Exceptions.hpp>
 
 int main(int argc, char **argv)
@@ -32,10 +31,10 @@ int main(int argc, char **argv)
     sentry_init(options);
 
     sentry_capture_event(sentry_value_new_message_event(
-  /*   level */ SENTRY_LEVEL_INFO,
-  /*  logger */ "custom",
-  /* message */ "It works!"
-));
+    /*   level */ SENTRY_LEVEL_INFO,
+    /*  logger */ "custom",
+    /* message */ "It works!"
+    ));
 
     try {
         loguru::init(argc, argv);
@@ -50,20 +49,26 @@ int main(int argc, char **argv)
 
         while (editor.isOpen())
         {
-            auto start = std::chrono::high_resolution_clock::now();
+            // auto start = std::chrono::high_resolution_clock::now();
             editor.render();
             editor.update();
 
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = end - start;
-            std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+            // auto end = std::chrono::high_resolution_clock::now();
+            // std::chrono::duration<double, std::milli> elapsed = end - start;
+            // std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
         }
 
         editor.shutdown();
         sentry_close();  // Make sure to close Sentry before exiting
         return 0;
     } catch (const nexo::Exception &e) {
-        sentry_capture_exception(e);  // Capture the exception in Sentry
+        sentry_value_t event = sentry_value_new_event();
+
+        sentry_value_t exc = sentry_value_new_exception("Editor Exception", e.what());
+        sentry_value_set_stacktrace(exc, NULL, 0);
+        sentry_event_add_exception(event, exc);
+
+        sentry_capture_event(event);
         LOG_EXCEPTION(e);
         sentry_close();
         return 1;
