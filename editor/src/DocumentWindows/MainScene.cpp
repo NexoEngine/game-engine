@@ -282,7 +282,7 @@ namespace nexo::editor {
         // Render framebuffer
         const unsigned int textureId = m_framebuffer->getColorAttachmentId(0);
         ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), _viewSize, ImVec2(0, 1), ImVec2(1, 0));
-        m_framebuffer->clearAttachment<int>(1, -1);
+        m_framebuffer->clearAttachment<int>(1, -1); // ?
 
         auto windowSize = ImGui::GetWindowSize();
         auto minBounds = ImGui::GetWindowPos();
