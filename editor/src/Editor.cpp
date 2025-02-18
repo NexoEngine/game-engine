@@ -157,11 +157,32 @@ namespace nexo::editor {
         style->PopupRounding = 4.0f;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
-        ImVec4 *colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_Tab] = ImVec4(0.26f, 0.52f, 0.83f, 0.93f);
-        colors[ImGuiCol_TabHovered] = ImVec4(0.12f, 0.52f, 0.99f, 0.80f);
-        colors[ImGuiCol_TabActive] = ImVec4(0.06f, 0.32f, 0.63f, 1.00f);
-        colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
+        ImVec4 darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
+
+            // Apply the darker color to the title bar variants:
+        style->Colors[ImGuiCol_TitleBg]         = darker;
+        style->Colors[ImGuiCol_TitleBgActive]   = darker;
+        style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
+
+        ImVec4 creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
+        ImVec4 creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
+        ImVec4 creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
+        ImVec4 brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
+
+        // Apply the light cream colors to the tabs:
+        style->Colors[ImGuiCol_Tab]                = creamColor;
+        style->Colors[ImGuiCol_TabHovered]         = creamHovered;
+        style->Colors[ImGuiCol_TabActive]          = brighterActive;
+        style->Colors[ImGuiCol_TabUnfocused]       = creamColor;
+        style->Colors[ImGuiCol_TabUnfocusedActive] = creamActive;
+        style->Colors[ImGuiCol_TabSelectedOverline] = ImVec4(1, 1, 1, 1);
+        style->Colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(1, 1, 1, 0);
+
+        style->Colors[ImGuiCol_Header]                = creamColor;
+        style->Colors[ImGuiCol_HeaderHovered]         = creamHovered;
+        style->Colors[ImGuiCol_HeaderActive]          = creamActive;
+
+        // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
@@ -296,7 +317,8 @@ namespace nexo::editor {
 
     void Editor::render()
     {
-        std::cout << "Render start" << std::endl;
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_WindowBg].w = 0.0f; // 0.0f for full transparency
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -308,9 +330,40 @@ namespace nexo::editor {
 
         for (const auto &[_, window]: m_windows)
         {
-            std::cout << "Render window" << std::endl;
             if (window->isOpened())
                 window->show();
+        }
+
+        // Gradient background handling
+        {
+	        ImGuiViewport* viewport = ImGui::GetMainViewport();
+	        ImGui::SetNextWindowPos(viewport->Pos);
+	        ImGui::SetNextWindowSize(viewport->Size);
+	        ImGui::SetNextWindowViewport(viewport->ID);
+	        ImGui::Begin("Background", nullptr,
+	                        ImGuiWindowFlags_NoDecoration |
+	                        ImGuiWindowFlags_NoInputs |
+	                        ImGuiWindowFlags_NoFocusOnAppearing |
+	                        ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+	        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	        ImU32 darkBase = IM_COL32(20, 20, 20, 255);
+
+	        ImU32 col_top_left     = darkBase;
+	        ImU32 col_bottom_right = darkBase;
+
+	        // Subtle blue tint
+	        ImU32 col_bottom_left  = IM_COL32(20, 20, 40, 255);
+
+	        // Subtle fuchsia tint.
+	        ImU32 col_top_right    = IM_COL32(30, 20, 30, 255);
+
+	        draw_list->AddRectFilledMultiColor(
+	            viewport->Pos,
+	            ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
+	            col_top_left, col_top_right, col_bottom_right, col_bottom_left);
+
+	        ImGui::End();
         }
 
         ImGui::Render();
