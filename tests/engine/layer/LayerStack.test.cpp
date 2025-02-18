@@ -34,7 +34,7 @@ namespace nexo::layer {
     TEST(LayerStackTest, PopLayer) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         LayerStack stack;
         auto layer = std::make_shared<MockLayer>("Layer1", 1);
@@ -49,7 +49,7 @@ namespace nexo::layer {
     TEST(LayerStackTest, PopOverlay) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         LayerStack stack;
         auto overlay = std::make_shared<MockLayer>("Overlay1", 2);
@@ -120,7 +120,7 @@ namespace nexo::layer {
     TEST(LayerStackTest, RemoveLayerAndOverlayOrder) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         LayerStack stack;
         auto layer = std::make_shared<MockLayer>("Layer", 1);
@@ -167,7 +167,7 @@ namespace nexo::layer {
     TEST(LayerStackTest, RemoveLayersAndOverlaysInRandomOrder) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         LayerStack stack;
 

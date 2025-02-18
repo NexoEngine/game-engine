@@ -284,7 +284,7 @@ namespace nexo::renderer {
     {
 #ifdef _WIN32
         // TODO: fix test (see #99)
-        GTEST_SKIP_("This test infinitely loops on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
 #endif
         // Create a small framebuffer with one color attachment.
         FramebufferSpecs specs;
@@ -308,7 +308,7 @@ namespace nexo::renderer {
     {
 #ifdef _WIN32
         // TODO: fix test (see #99)
-        GTEST_SKIP_("This test infinitely loops on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
 #endif
         // Verify that getPixelWrapper throws when provided with a type other than int.
         FramebufferSpecs specs;
@@ -331,7 +331,7 @@ namespace nexo::renderer {
     {
 #ifdef _WIN32
         // TODO: fix test (see #99)
-        GTEST_SKIP_("This test infinitely loops on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
 #endif
         // Verify that getPixelWrapper throws if the attachment index is out of bounds.
         FramebufferSpecs specs;
