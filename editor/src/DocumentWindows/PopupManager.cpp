@@ -19,7 +19,6 @@
 namespace nexo::editor {
     void PopupManager::openPopup(const std::string &popupName)
     {
-        LOG(NEXO_INFO, "Set {} to true", popupName);
         m_popups[popupName] = true;
     }
 
