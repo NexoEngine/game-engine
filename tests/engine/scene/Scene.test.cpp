@@ -76,7 +76,7 @@ namespace nexo::scene {
     TEST_F(SceneTest, AddAndRemoveLayers) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         scene->addLayer(1, "Layer1");
         scene->addLayer(2, "Layer2");
@@ -92,7 +92,7 @@ namespace nexo::scene {
     TEST_F(SceneTest, AddAndRemoveOverlays) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         scene->addOverlay(1, "Overlay1");
         scene->addOverlay(2, "Overlay2");

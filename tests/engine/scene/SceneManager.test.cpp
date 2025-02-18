@@ -45,7 +45,7 @@ namespace nexo::scene {
     TEST_F(SceneManagerTest, AddAndRemoveLayersAndOverlays) {
 #ifdef _WIN32
         // TODO: fix test (see #100)
-        GTEST_SKIP_("Test crashes on the CI on Windows, skipping for now.");
+        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
 #endif
         SceneId scene = sceneManager->createScene("Main Scene");
 
