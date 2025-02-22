@@ -285,35 +285,63 @@ namespace nexo::editor {
 
     void Editor::buildDockspace() const
     {
-        if (const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID; !ImGui::DockBuilderGetNode(dockspaceID))
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const ImGuiID dockspaceID = viewport->ID;
+
+        // If the dockspace node doesn't exist yet, create it
+        if (!ImGui::DockBuilderGetNode(dockspaceID))
         {
             ImGui::DockBuilderRemoveNode(dockspaceID);
-            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+            ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
+            ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->Size);
 
-            ImGui::DockBuilderSetNodeSize(dockspaceID, ImGui::GetMainViewport()->Size);
+            // ─────────────────────────────────────────────
+            // Step 1: Split off the rightmost column for Material Inspector.
+            // We'll reserve 20% of the width for the Material Inspector.
+            ImGuiID materialInspectorNode, remainingNode;
+            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.15f, &materialInspectorNode, &remainingNode);
+            // 'materialInspectorNode' will hold "Material Inspector"
+            // 'remainingNode' now covers the remaining 80% of the dockspace.
 
-            ImGuiID topNode;
-            ImGuiID rightNode;
-            ImGuiID bottomNode;
-            ImGuiID leftNode;
+            // ─────────────────────────────────────────────
+            // Step 2: Split the remaining node horizontally into two columns.
+            // Left column (main scene and console) will take 70% of the remaining width,
+            // and the middle column (scene tree and Inspector) takes the other 30%.
+            ImGuiID mainSceneColumn, inspectorColumn;
+            ImGui::DockBuilderSplitNode(remainingNode, ImGuiDir_Right, 0.2f, &inspectorColumn, &mainSceneColumn);
+            // 'mainSceneColumn' is ~70% of the remaining space.
+            // 'inspectorColumn' is ~30% of the remaining space.
 
-            // Split the main dockspace vertically (70% for the main scene)
-            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.7f, &leftNode, &rightNode);
-            // Split the right part horizontally (50/50 between the console and the scene tree)
-            ImGui::DockBuilderSplitNode(rightNode, ImGuiDir_Up, 0.5f, &topNode, &bottomNode);
+            // ─────────────────────────────────────────────
+            // Step 3: In the left column (main scene), split vertically.
+            // The main scene will be on top (70% height) and the console below (30% height).
+            ImGuiID mainSceneTop, consoleNode;
+            ImGui::DockBuilderSplitNode(mainSceneColumn, ImGuiDir_Down, 0.3f, &consoleNode, &mainSceneTop);
 
-            // Attach the default scene to the left side of the window
-            ImGui::DockBuilderDockWindow("Default scene", leftNode);
-            // Attach the scene tree to the top of the right part
-            ImGui::DockBuilderDockWindow("Scene Tree", topNode);
-            // Attach the console to the bottom of the right part
-            ImGui::DockBuilderDockWindow("Console", bottomNode);
+            // ─────────────────────────────────────────────
+            // Step 4: In the middle column (inspector column), split vertically.
+            // The scene tree goes on top and the Inspector (replacing the old console) goes below.
+            // Here, we use a 50/50 split (adjust the ratio if needed).
+            ImGuiID sceneTreeNode, inspectorNode;
+            ImGui::DockBuilderSplitNode(inspectorColumn, ImGuiDir_Down, 0.5f, &inspectorNode, &sceneTreeNode);
 
+            // ─────────────────────────────────────────────
+            // Dock the windows into their corresponding nodes.
+            ImGui::DockBuilderDockWindow("Default scene", mainSceneTop);
+            ImGui::DockBuilderDockWindow("Console", consoleNode);
+            ImGui::DockBuilderDockWindow("Scene Tree", sceneTreeNode);
+            ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
+            ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
+
+            // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+
+        // Render the dockspace
+        ImGui::DockSpaceOverViewport(viewport->ID);
     }
+
 
     void Editor::render()
     {
