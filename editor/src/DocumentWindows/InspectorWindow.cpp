@@ -77,7 +77,6 @@ namespace nexo::editor
 
 	void MaterialInspector::show(int selectedEntity, const VariantData &selectedData)
 	{
-		auto app = nexo::getApp();
 		static bool materialModified = true;
 		if (selectedEntity != -1)
 		{
@@ -94,6 +93,7 @@ namespace nexo::editor
 
 		if (materialModified)
 		{
+			auto &app = nexo::getApp();
 			m_framebuffer->bind();
 			app.genAssetPreview(m_ecsEntity);
 			m_framebuffer->unbind();
