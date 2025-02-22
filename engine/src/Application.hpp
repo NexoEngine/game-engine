@@ -61,6 +61,8 @@ namespace nexo {
     ) {
         public:
             ~Application() override = default;
+            Application(const Application&) = delete;
+            Application& operator=(const Application&) = delete;
 
             void init();
 
