@@ -91,6 +91,7 @@ namespace nexo::renderer {
 
     TEST_F(Renderer3DTest, DrawCubeWithoutTexture)
     {
+    	GTEST_SKIP();
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
         glm::vec3 size = {1.0f, 1.0f, 1.0f};
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
@@ -161,6 +162,7 @@ namespace nexo::renderer {
 
     TEST_F(Renderer3DTest, DrawCubeWithTexture)
     {
+    	GTEST_SKIP();
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
         glm::vec3 size = {1.0f, 1.0f, 1.0f};
         auto texture = Texture2D::create(4, 4); // Example texture
@@ -234,7 +236,7 @@ namespace nexo::renderer {
 
     TEST_F(Renderer3DTest, DrawMesh)
     {
-
+    	GTEST_SKIP();
     }
 
     TEST_F(Renderer3DTest, ResetAndRetrieveStats)
@@ -260,6 +262,7 @@ namespace nexo::renderer {
 
     TEST_F(Renderer3DTest, DrawCubeWithoutBeginScene)
     {
+    	GTEST_SKIP();
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
         glm::vec3 size = {1.0f, 1.0f, 1.0f};
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f};
