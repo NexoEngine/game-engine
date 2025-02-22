@@ -60,5 +60,8 @@ namespace nexo
 
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color);
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
+
+            static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                                glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
     };
 }

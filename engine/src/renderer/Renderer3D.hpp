@@ -309,6 +309,28 @@ namespace nexo::renderer {
          */
         void drawCube(const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
 
+
+        /**
+         * @brief Draws a 3D tetrahedron at the specified position and size.
+         *
+         * The tetrahedron can be drawn with a solid color or a texture.
+         *
+         * @param position The position of the tetrahedron in the 3D space.
+         * @param size The dimensions of the tetrahedron.
+         * @param color The color of the tetrahedron (RGBA format).
+         * @param texture Optional texture to apply to the tetrahedron.
+         *
+         * Overloads:
+         * - Draws a tetrahedron with a solid color or a texture.
+         */
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
+        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
+
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+        void drawTetrahedron(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
+
         /**
          * @brief Draws a custom 3D mesh.
          *
