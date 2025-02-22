@@ -9,7 +9,7 @@
 
 #include "TransformProperty.hpp"
 #include "AEntityProperty.hpp"
-#include "Components/Components.hpp"
+#include "Components/EntityPropertiesComponents.hpp"
 
 #include <loguru/loguru.hpp>
 
