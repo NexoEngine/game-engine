@@ -121,6 +121,11 @@ namespace nexo::renderer {
         m_storage->stats.drawCalls++;
         m_storage->vertexArray->unbind();
         m_storage->vertexBuffer->unbind();
+        m_storage->textureShader->unbind();
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
+        {
+            m_storage->textureSlots[i]->unbind(i);
+        }
     }
 
     void Renderer3D::flushAndReset() const
@@ -165,7 +170,7 @@ namespace nexo::renderer {
 
         m_storage->textureShader->setUniformFloat4("material.albedoColor", material.albedoColor);
         m_storage->textureShader->setUniformInt("material.albedoTexIndex", material.albedoTexIndex);
-        m_storage->textureShader->setUniformFloat3("material.specularColor", material.specularColor);
+        m_storage->textureShader->setUniformFloat4("material.specularColor", material.specularColor);
         m_storage->textureShader->setUniformInt("material.specularTexIndex", material.specularTexIndex);
         m_storage->textureShader->setUniformFloat3("material.emissiveColor", material.emissiveColor);
         m_storage->textureShader->setUniformInt("material.emissiveTexIndex", material.emissiveTexIndex);
