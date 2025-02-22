@@ -14,6 +14,8 @@ set(SRCS
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/Components/Components.cpp
+        editor/src/Components/EntityPropertiesComponents.cpp
+        editor/src/Components/Widgets.cpp
         editor/src/Editor.cpp
         editor/src/SceneManagerBridge.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
