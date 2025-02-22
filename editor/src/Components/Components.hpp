@@ -1,4 +1,4 @@
-//// Components.hpp ///////////////////////////////////////////////////////////////
+//// Components.hpp ///////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,52 +13,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <imgui.h>
+#include <glm/glm.hpp>
+#include <string>
 
 namespace nexo::editor {
 
-	struct ChannelLabel {
-		std::string label;
-		float fixedWidth = -1.0f;
-	};
-
-	struct Badge {
-		std::string label;
-		ImVec2 size;
-		ImU32 bg;
-		ImU32 bgHovered;
-		ImU32 bgActive;
-		ImU32 txtColor;
-	};
-
-	struct DragFloat {
-		std::string label;
-		float *value;
-		float speed;
-		float min;
-		float max;
-		ImU32 bg;
-		ImU32 bgHovered;
-		ImU32 bgActive;
-		std::string format;
-	};
-
-	struct Channels {
-		unsigned int count;
-		std::vector<Badge> badges;
-		std::vector<DragFloat> sliders;
-	};
-
-	class EntityPropertiesComponents {
+	class Components {
 		public:
-			static bool drawHeader(const std::string &label, const std::string &headerText);
 			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static void drawButtonBorder(ImU32 borderColor, ImU32 borderColorHovered, ImU32 borderColorActive, float rounding = 2.0f, ImDrawFlags flags = 0, float thickness = 3.0f);
 			static void drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg, ImU32 bgHovered, ImU32 bgActive);
-			static void drawRowLabel(const ChannelLabel &rowLabel);
-			static void drawRowDragFloat(const Channels &channels);
-			static bool drawColorButton(const std::string &label, ImVec2 size, ImVec4 color);
 			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static void drawColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked = nullptr);
+			static void drawCustomSeparatorText(const std::string &text, float textPadding, float leftSpacing, float thickness, ImU32 lineColor, ImU32 textColor);
 	};
 }
