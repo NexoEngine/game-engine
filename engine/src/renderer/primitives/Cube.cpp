@@ -94,16 +94,15 @@ namespace nexo::renderer {
 		glm::vec2 texc[] = {
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
-			glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1), glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0),
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
-			glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(1,1), glm::vec2(0,1), glm::vec2(0,0),
-			glm::vec2(1,1), glm::vec2(0,1), glm::vec2(0,0), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,1),
+			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
+			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
+			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 		};
 
 		std::copy(std::begin(texc), std::end(texc), texCoords.begin());
 		glm::vec3 norm[36];
 
-		std::cout << "PRINTING NORMALS" << std::endl;
 		for (int i = 0; i < 36; i += 3)
 		{
 			glm::vec3 normal = glm::normalize(
@@ -114,7 +113,6 @@ namespace nexo::renderer {
 			norm[i] = normal;
 			norm[i + 1] = normal;
 			norm[i + 2] = normal;
-			std::cout << "Normal for face : " << i / 3 << " { " << norm[i].x << ", " << norm[i].y << ", " << norm[i].z << " }" << std::endl;
 		}
 
 		std::copy(std::begin(norm), std::end(norm), normals.begin());
@@ -255,6 +253,59 @@ namespace nexo::renderer {
 	    if (!m_renderingScene)
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	        // Transform matrix
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
+                                    glm::scale(glm::mat4(1.0f), size);
+
+        m_storage->textureShader->setUniformMatrix("matModel", transform);
+
+        renderer::Material mat;
+        mat.albedoColor = material.albedoColor;
+        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
+        mat.specularColor = material.specularColor;
+        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
+        setMaterialUniforms(mat);
+
+        std::array<glm::vec3, 36> verts;
+        std::array<glm::vec2, 36> texCoords;
+        std::array<glm::vec3, 36> normals;
+        std::array<unsigned int, 36> indices;
+
+        genCubeMesh(verts, texCoords, normals);
+        for (unsigned int i = 0; i < 36; ++i)
+            indices[i] = i;
+
+        // Vertex data
+        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
+        for (unsigned int i = 0; i < 36; ++i)
+            {
+                m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
+                m_storage->vertexBufferPtr->texCoord = texCoords[i];
+                m_storage->vertexBufferPtr->normal = normals[i];
+                //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
+                //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
+                m_storage->vertexBufferPtr->entityID = entityID;
+                m_storage->vertexBufferPtr++;
+            }
+
+        // Index data
+        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+            m_storage->indexBufferBase[m_storage->indexCount++] = index;
+        });
+
+
+        // Update stats
+        m_storage->stats.cubeCount++;
+        const auto vertexDataSize = static_cast<unsigned int>(
+            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
+            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
+        );
+
+
+        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
+
+        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
+        flushAndReset();
     }
 
     //TODO: implement material
