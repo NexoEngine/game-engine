@@ -110,7 +110,7 @@ namespace nexo::utils {
         }
 
         if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
-            materialComponent.specularColor = { color.r, color.g, color.b };
+            materialComponent.specularColor = { color.r, color.g, color.b, color.a };
         }
 
         if (material->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) {
