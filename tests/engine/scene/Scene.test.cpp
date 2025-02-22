@@ -172,6 +172,6 @@ namespace nexo::scene {
         EXPECT_EQ(index2, 1);
 
         scene->removeLight(index1);
-        EXPECT_EQ(scene->getAmbientLight(), 0.5f); // Ensure the state is consistent
+        EXPECT_EQ(scene->getAmbientLight(), glm::vec3(0.2f)); // Ensure the state is consistent
     }
 }

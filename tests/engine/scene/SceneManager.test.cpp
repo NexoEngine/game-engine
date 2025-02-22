@@ -154,7 +154,7 @@ namespace nexo::scene {
         EXPECT_EQ(lightIndex2, 1);
 
         sceneManager->removeLightFromScene(scene, lightIndex1);
-        EXPECT_EQ(sceneManager->getSceneAmbientLightValue(scene), 0.5f); // State consistency
+        EXPECT_EQ(sceneManager->getSceneAmbientLightValue(scene), glm::vec3(0.2f)); // State consistency
     }
 
     TEST_F(SceneManagerTest, AttachAndDetachCameraToLayer) {
