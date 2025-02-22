@@ -33,7 +33,8 @@ namespace nexo::components {
         {
             auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for cube and other basic primitives
-            renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
+            //renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
+            renderer3D.drawCube(transf.pos, transf.size, material, entityID);
         }
     };
 
