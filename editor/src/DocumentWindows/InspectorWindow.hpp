@@ -18,10 +18,22 @@
 #include <imgui.h>
 
 namespace nexo::editor {
+
+	class MaterialInspector {
+		public:
+			void setup();
+			void show(int selectedEntity, const VariantData &selectedData);
+			bool drawTextureButton(const std::string &label, std::shared_ptr<renderer::Texture2D> &texture);
+		private:
+			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
+			int m_ecsEntity = -1;
+	};
+
+
     class InspectorWindow final : public ADocumentWindow {
-    public:
-        InspectorWindow();
-        ~InspectorWindow() override;
+	    public:
+	        InspectorWindow();
+	        ~InspectorWindow() override;
 
 	        void setup() override;
 	        void shutdown() override;
@@ -29,13 +41,12 @@ namespace nexo::editor {
 	        void show() override;
 	        void update() override;
 
-    private:
-        // std::unordered_map<std::type_index, void (InspectorWindow::*)()> m_componentShowFunctions;
-        std::unordered_map<std::type_index, int (*)(ecs::Entity)> m_componentShowFunctions;
+	    private:
+	        std::unordered_map<std::type_index, int (*)(ecs::Entity)> m_componentShowFunctions;
 
-        void showEntityProperties();
-        void showComponent(const std::type_index& type);
-        // void showTransformComponent();
-        // void showRendererComponent();
+			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
+
+	        void showEntityProperties();
+	        void showComponent(const std::type_index& type);
     };
 };
