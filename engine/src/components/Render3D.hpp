@@ -22,7 +22,7 @@ namespace nexo::components {
 
     struct Material {
         glm::vec4 albedoColor = glm::vec4(1.0f);
-        glm::vec3 specularColor = glm::vec3(1.0f);
+        glm::vec4 specularColor = glm::vec4(1.0f);
         glm::vec3 emissiveColor = glm::vec3(0.0f);
 
         float roughness = 0.0f;  // 0 = smooth, 1 = rough
