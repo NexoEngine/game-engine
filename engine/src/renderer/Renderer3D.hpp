@@ -36,7 +36,7 @@ namespace nexo::renderer {
     struct Material {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         int albedoTexIndex = 0; // Default: 0 (white texture)
-        glm::vec3 specularColor = glm::vec3(1.0f);
+        glm::vec4 specularColor = glm::vec4(1.0f);
         int specularTexIndex = 0; // Default: 0 (white texture)
         glm::vec3 emissiveColor = glm::vec3(0.0f);
         int emissiveTexIndex = 0; // Default: 0 (white texture)
