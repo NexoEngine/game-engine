@@ -18,6 +18,7 @@
 #include <glad/glad.h>
 
 #include "components/Components.hpp"
+#include "core/camera/PerspectiveCamera.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -441,4 +442,45 @@ namespace nexo {
     {
         return m_sceneManager.getSceneAmbientLightValue(sceneId);
     }
+
+    void Application::genAssetPreview(ecs::Entity entity)
+    {
+        glm::vec3 assetPos(0.0f);
+        glm::vec3 cameraOffset(1.5f, 1.5f, 1.5f);
+        glm::vec3 cameraPos = assetPos + cameraOffset;
+        glm::mat4 view = glm::lookAt(cameraPos, assetPos, glm::vec3(0, 1, 0));
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+
+        glm::vec3 lightOffset(-1.5f, 1.5f, 1.5f);
+        glm::vec3 lightPos = assetPos + lightOffset;
+        glm::vec3 lightDir = glm::normalize(assetPos - lightPos);
+
+        auto rendererContext = std::make_shared<renderer::RendererContext>();
+        rendererContext->renderer2D.init();
+        rendererContext->renderer3D.init();
+
+        rendererContext->renderer3D.beginScene(projection * view, cameraPos);
+
+        auto& shader = rendererContext->renderer3D.getShader();
+        shader->setUniformFloat3("ambientLight", glm::vec3(0.2f));
+        shader->setUniformInt("numPointLights", 1);
+        shader->setUniformFloat3("pointLights[0].position", lightPos);
+        shader->setUniformFloat4("pointLights[0].color", glm::vec4(1.0f)); // white light
+        shader->setUniformFloat("pointLights[0].intensity", 1.0f);
+
+        auto& renderComponent = getEntityComponent<components::RenderComponent>(entity);
+        if (renderComponent.isRendered)
+        {
+            components::TransformComponent identity;
+            identity.pos = {0.0f, 0.0f,0.0f};
+            identity.rotation = glm::vec3(0.0f);
+            identity.size = glm::vec3(1.0f);
+            renderComponent.draw(rendererContext, identity, entity);
+        }
+
+        rendererContext->renderer3D.endScene();
+    }
+
+
+
 }

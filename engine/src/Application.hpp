@@ -192,6 +192,9 @@ namespace nexo {
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
 
+
+            void genAssetPreview(ecs::Entity entity);
+
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:
             Application();
