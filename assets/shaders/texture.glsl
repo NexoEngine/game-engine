@@ -68,7 +68,7 @@ uniform vec3 ambientLight;
 struct Material {
     vec4 albedoColor;
     int albedoTexIndex; // Default: 0 (white texture)
-    vec3 specularColor;
+    vec4 specularColor;
     int specularTexIndex; // Default: 0 (white texture)
     vec3 emissiveColor;
     int emissiveTexIndex; // Default: 0 (white texture)
@@ -83,19 +83,19 @@ uniform Material material;
 
 void main()
 {
-    vec3 ambient = ambientLight * material.albedoColor.rgb;
+    vec3 ambient = ambientLight * material.albedoColor.rgb * vec3(texture(uTexture[material.albedoTexIndex], vTexCoord));
     // diffuse
     vec3 norm = normalize(vNormal);
     vec3 lightDir = normalize(pointLights[0].position - vFragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * pointLights[0].color.rgb * material.albedoColor.rgb;
+    vec3 diffuse = diff * pointLights[0].color.rgb * material.albedoColor.rgb * vec3(texture(uTexture[material.albedoTexIndex], vTexCoord));
 
     // specular
     float shininess = mix(128.0, 2.0, material.roughness);
     vec3 viewDir = normalize(camPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 specular = spec * pointLights[0].color.rgb;
+    vec3 specular = spec * pointLights[0].color.rgb * material.specularColor.rgb * vec3(texture(uTexture[material.specularTexIndex], vTexCoord));
 
     vec3 result = (ambient + diffuse + specular);
 
