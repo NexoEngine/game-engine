@@ -32,8 +32,17 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
         {
             auto renderer3D = context->renderer3D;
-            //TODO: Find a way to handle materials for cube and other basic primitives
+            //TODO: Find a way to handle materials for cube
             renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+    };
+
+    struct Tetrahedron final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
+        {
+            auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for tetrahedron
+            renderer3D.drawTetrahedron(transf.pos, transf.size, material.albedoColor, entityID);
         }
     };
 

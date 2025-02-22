@@ -75,8 +75,11 @@ namespace nexo::editor {
         // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
         app.setAmbientLightValue(_sceneID, glm::vec3(0.2f));
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
-                                                                  {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
+        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
+        //                                                           {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
+        const ecs::Entity basicCube = EntityFactory3D::createTetrahedron({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
+                                                                        {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
+
         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
         // const ecs::Entity gunModel = EntityFactory3D::createModel(Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf").string(), {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});

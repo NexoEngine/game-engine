@@ -35,6 +35,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/primitives/Mesh.cpp
         engine/src/renderer/primitives/Cube.cpp
+        engine/src/renderer/primitives/Tetrahedron.cpp
         engine/src/core/camera/PerspectiveCamera.cpp
         engine/src/core/camera/OrthographicCamera.cpp
         engine/src/core/camera/PerspectiveCameraController.cpp

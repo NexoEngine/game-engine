@@ -34,7 +34,7 @@ configure_file(${CMAKE_SOURCE_DIR}/scripts/linux/nexo-engine.desktop.in
 
 # Create symlink for the executable
 set(DEB_TEMP_GENERATED_SYMLINK_PATH "${CMAKE_BINARY_DIR}/nexoEditor-symlink")
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "../share/nexo-engine/bin/nexoEditor" ${DEB_TEMP_GENERATED_SYMLINK_PATH})
+#execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "../share/nexo-engine/bin/nexoEditor" ${DEB_TEMP_GENERATED_SYMLINK_PATH})
 
 # Install the desktop entry
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
