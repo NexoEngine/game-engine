@@ -1,4 +1,4 @@
-//// Components.cpp ///////////////////////////////////////////////////////////////
+//// Components.cpp ///////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,39 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Components.hpp"
+
 #include <imgui.h>
 
 namespace nexo::editor {
-	bool EntityPropertiesComponents::drawHeader(const std::string &label, const std::string &headerText)
-	{
-		float increasedPadding = 2.0f;
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
-		    ImVec2(ImGui::GetStyle().FramePadding.x, increasedPadding));
 
-		bool open = ImGui::TreeNodeEx(label.c_str(),
-		    ImGuiTreeNodeFlags_DefaultOpen |
-		    ImGuiTreeNodeFlags_Framed |
-		    ImGuiTreeNodeFlags_AllowItemOverlap);
-		ImGui::PopStyleVar();
-		ImGui::SetWindowFontScale(1.12f);
-
-		float arrowPosX = ImGui::GetCursorPosX();
-
-		ImGui::SameLine(0.0f, 0.0f);
-
-		float totalWidth = ImGui::GetContentRegionAvail().x + arrowPosX;
-
-		ImVec2 textSize = ImGui::CalcTextSize(headerText.c_str());
-		float textPosX = (totalWidth - textSize.x) * 0.5f;
-		ImGui::SetCursorPosX(textPosX);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1.0f));
-		ImGui::TextUnformatted(headerText.c_str());
-		ImGui::PopStyleColor();
-		ImGui::SetWindowFontScale(1.0f);
-		return open;
-	}
-
-	bool EntityPropertiesComponents::drawButton(
+	bool Components::drawButton(
 			const std::string &label,
 			const ImVec2 &size,
 			ImU32 bg,
@@ -63,13 +36,32 @@ namespace nexo::editor {
 		return clicked;
 	}
 
-	void EntityPropertiesComponents::drawDragFloat(
+	void Components::drawButtonBorder(
+			ImU32 borderColor,
+			ImU32 borderColorHovered,
+			ImU32 borderColorActive,
+			float rounding,
+			ImDrawFlags flags,
+		 	float thickness
+	) {
+		ImVec2 p_min = ImGui::GetItemRectMin();
+        ImVec2 p_max = ImGui::GetItemRectMax();
+        ImU32 color = borderColor;
+        if (ImGui::IsItemHovered())
+            color = borderColorHovered;
+        if (ImGui::IsItemActive())
+            color = borderColorActive;
+
+        ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
+	}
+
+	void Components::drawDragFloat(
 			const std::string &label,
 			float *values,  float speed,
 			float min, float max,
 			const std::string &format,
-			ImU32 bg, ImU32 bgHovered, ImU32 bgActive)
-	{
+			ImU32 bg, ImU32 bgHovered, ImU32 bgActive
+	) {
 		ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
@@ -77,70 +69,50 @@ namespace nexo::editor {
 		ImGui::PopStyleColor(3);
 	}
 
-	void EntityPropertiesComponents::drawRowLabel(const ChannelLabel &rowLabel)
+	void Components::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked)
 	{
-		ImGui::TableNextColumn();
-		if (rowLabel.fixedWidth != -1.0f)
-		{
-		    float fixedCellWidth = rowLabel.fixedWidth;
-		    ImVec2 textSize = ImGui::CalcTextSize(rowLabel.label.c_str());
-		    float offsetX = (fixedCellWidth - textSize.x) * 0.5f;
-		    float rowHeight = ImGui::GetTextLineHeightWithSpacing();
-		    float offsetY = (rowHeight - textSize.y) * 0.5f;
-		    ImVec2 cellPos = ImGui::GetCursorPos();
-		}
-		ImGui::SetWindowFontScale(1.11f);
-
-		ImGui::TextUnformatted(rowLabel.label.c_str());
-		ImGui::SetWindowFontScale(1.0f);
-	}
-
-	void EntityPropertiesComponents::drawRowDragFloat(const Channels &channels)
-	{
-		for (unsigned int i = 0; i < channels.count; ++i)
-		{
-			ImGui::TableNextColumn();
-			if (!channels.badges[i].label.empty())
-			{
-				auto &badge = channels.badges[i];
-				EntityPropertiesComponents::drawButton(badge.label, badge.size, badge.bg, badge.bgHovered, badge.bgActive, badge.txtColor);
-			}
-			ImGui::SameLine(0, 2);
-			auto &slider = channels.sliders[i];
-			EntityPropertiesComponents::drawDragFloat(
-				slider.label,
-				slider.value,
-				slider.speed,
-				slider.min,
-				slider.max,
-				slider.format,
-				slider.bg,
-				slider.bgHovered,
-				slider.bgActive);
-		}
-	}
-
-	bool EntityPropertiesComponents::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color)
-	{
-		static bool clicked = false;
 		if (ImGui::ColorButton(label.c_str(),
 								color,
                                 ImGuiColorEditFlags_NoTooltip,
                                 size))
         {
-            clicked = !clicked;
+        	if (clicked)
+            	*clicked = !*clicked;
         }
 
-        ImVec2 p_min = ImGui::GetItemRectMin();
-        ImVec2 p_max = ImGui::GetItemRectMax();
-        ImU32 borderColor = IM_COL32(150, 150, 150, 255);
-        if (ImGui::IsItemHovered())
-            borderColor = IM_COL32(200, 200, 200, 255);
-        if (ImGui::IsItemActive())
-            borderColor = IM_COL32(250, 250, 250, 255);
+        Components::drawButtonBorder(IM_COL32(150, 150, 150, 255), IM_COL32(200, 200, 200, 255), IM_COL32(250, 250, 250, 255));
+	}
 
-        // Draw the border manually using the window's draw list
-        ImGui::GetWindowDrawList()->AddRect(p_min, p_max, borderColor, 2.0f, 0, 3.0f);
-        return clicked;
+	void Components::drawCustomSeparatorText(const std::string &text, float textPadding, float leftSpacing, float thickness, ImU32 lineColor, ImU32 textColor)
+	{
+		ImGui::SetWindowFontScale(1.2f);
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float textWidth  = ImGui::CalcTextSize(text.c_str()).x;
+
+        // Compute the length of each line. Clamp to zero if the region is too small.
+        float lineWidth = (availWidth - textWidth - 2 * textPadding) * leftSpacing;
+        if (lineWidth < 0.0f)
+            lineWidth = 0.0f;
+
+        // Compute Y coordinate to draw lines so they align with the text center.
+        float lineY = pos.y + ImGui::GetTextLineHeight() * 0.5f;
+        ImU32 col = ImGui::GetColorU32(ImGuiCol_Separator);
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        ImVec2 lineStart(pos.x, lineY);
+        ImVec2 lineEnd(pos.x + lineWidth, lineY);
+        draw_list->AddLine(lineStart, lineEnd, lineColor, thickness);
+
+        ImVec2 textPos(pos.x + lineWidth + textPadding, pos.y);
+        draw_list->AddText(textPos, textColor, text.c_str());
+        ImGui::SetWindowFontScale(1.0f);
+
+        ImVec2 rightLineStart(pos.x + lineWidth + textPadding + textWidth + textPadding, lineY);
+        ImVec2 rightLineEnd(pos.x + availWidth, lineY);
+        draw_list->AddLine(rightLineStart, rightLineEnd, lineColor, thickness);
+
+        ImGui::Dummy(ImVec2(0, ImGui::GetTextLineHeight()));
 	}
 }
