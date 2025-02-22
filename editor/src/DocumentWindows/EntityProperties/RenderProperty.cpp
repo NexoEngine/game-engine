@@ -8,14 +8,16 @@
 #include <imgui.h>
 
 #include "RenderProperty.hpp"
-#include "IconsFontAwesome.h"
 #include "AEntityProperty.hpp"
-#include "Components/Components.hpp"
-#include "SceneManagerBridge.hpp"
+#include "Components/EntityPropertiesComponents.hpp"
 
+#include <imgui_internal.h>
 #include <loguru/loguru.hpp>
 
 namespace nexo::editor {
+	bool RenderProperty::showMaterialInspector = false;
+	components::Material *RenderProperty::selectedMaterial = nullptr;
+
     RenderProperty::RenderProperty(const std::string& name)
         : AEntityProperty(name)
     {
@@ -35,12 +37,14 @@ namespace nexo::editor {
         auto& renderComponent = App.getEntityComponent<components::RenderComponent>(entity);
 
         glm::vec4 *selectedEntityColor = nullptr;
+        static components::Material *selectedMaterial = nullptr;
+        static bool showMaterialInspector = false;
         if (renderComponent.type == components::RenderType::RENDER_3D)
         {
             auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
             if (renderable3D)
             {
-            	selectedEntityColor = &renderable3D->material.albedoColor;
+            	selectedMaterial = &renderable3D->material;
             }
         }
         else if (renderComponent.type == components::RenderType::RENDER_2D)
@@ -52,75 +56,72 @@ namespace nexo::editor {
                 selectedEntityColor = &color;
             }
         }
-
         bool open = EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component");
-        static bool showColorPicker = false;
         static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool sectionOpen = true;
 
         if (open)
         {
-            ImGui::SetWindowFontScale(1.2f);
+            ImGui::SetWindowFontScale(1.15f);
         	ImGui::Text("Hide");
          	ImGui::SameLine(0, 12);
          	bool hidden = !renderComponent.isRendered;
             ImGui::Checkbox("##HideCheckBox", &hidden);
             renderComponent.isRendered = !hidden;
 
-            // Text label
-            ImGui::Text("Color");
-            ImGui::SetWindowFontScale(1.0f);
-            ImGui::SameLine(0, 10);
-
-            float availableWidth = ImGui::GetContentRegionAvail().x;
-
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
-
-            // Color button
-            bool showPicker = EntityPropertiesComponents::drawColorButton(
-            	"##ColorButton",
-             	ImVec2(availableWidth - 35, 25), // Make room for the cog button
-              	ImVec4(selectedEntityColor->x, selectedEntityColor->y, selectedEntityColor->z, selectedEntityColor->w)
-            );
-
-            ImGui::PopStyleVar();
-
-            ImGui::SameLine();
-
-            float cogButtonWidth = 25;
-            float cogButtonHeight = 25;
-
-            float fontSize = ImGui::GetFontSize();
-            float verticalPadding = (cogButtonHeight - fontSize) * 0.5f;
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, verticalPadding + 2)); // Slightly add more padding to center the cog icon
-
-            // Cog button
-            if (EntityPropertiesComponents::drawButton(
-            	std::string(ICON_FA_COG) + std::string("##PickerSettings"),
-             	ImVec2(cogButtonWidth, cogButtonHeight),
-              	IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255),
-               	IM_COL32(100, 100, 100, 255), IM_COL32(255, 255, 255, 255)))
+            EntityPropertiesComponents::drawToggleButtonWithSeparator("Material", &sectionOpen);
+            if (sectionOpen)
             {
-            	ImGui::OpenPopup("ColorPickerSettings");
-            }
-            ImGui::PopStyleVar();
+                // --- Material Preview (Placeholder) ---
+                // For now, we use a dummy texture id (0), maybe store the asset image in the asset manager later ?
+                ImGui::Image(0, ImVec2(64, 64));
+                ImGui::SameLine();
 
-            if (ImGui::BeginPopup("ColorPickerSettings"))
-            {
-                ImGui::Text("Picker Mode:");
-                if (ImGui::RadioButton("Hue Wheel", colorPickerMode == ImGuiColorEditFlags_PickerHueWheel))
-                    colorPickerMode = ImGuiColorEditFlags_PickerHueWheel;
-                if (ImGui::RadioButton("Hue bar", colorPickerMode == ImGuiColorEditFlags_PickerHueBar))
-                    colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-                ImGui::EndPopup();
-            }
+                ImGui::BeginGroup();
+                {
+                    // --- Dropdown for Material Types ---
+                    static int selectedMaterialIndex = 0;
+                    const char* materialTypes[] = { "Default", "Metal", "Wood", "Plastic" };
+                    ImGui::Combo("##MaterialType", &selectedMaterialIndex, materialTypes, IM_ARRAYSIZE(materialTypes));
 
-            if (showPicker)
-            {
-                ImGui::Spacing();
-                ImGui::ColorPicker4("##ColorPickerInline",
-                                    reinterpret_cast<float*>(selectedEntityColor), colorPickerMode);
-            }
+                    // --- Material Action Buttons ---
+                    if (ImGui::Button("Create new material"))
+                    {
+                    	ImGui::OpenPopup("Create Material");
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Modify Material"))
+                    {
+                    	RenderProperty::selectedMaterial = selectedMaterial;
+                     	RenderProperty::showMaterialInspector = true;
+                    }
+                }
+                ImGui::EndGroup();
+                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
+	            if (ImGui::BeginPopupModal("Create Material", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	            {
+	                ImGui::Text("Create New Material");
+	                ImGui::Separator();
+	                static char materialName[128] = "";
+	                ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
+
+	                ImGui::Spacing();
+
+	                if (ImGui::Button("OK", ImVec2(120, 0)))
+	                {
+	                    // TODO: Insert logic to create the new material
+	                    ImGui::CloseCurrentPopup();
+	                }
+	                ImGui::SameLine();
+	                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+	                {
+	                    ImGui::CloseCurrentPopup();
+	                }
+	                ImGui::EndPopup();
+	            }
+            }
             ImGui::TreePop();
         }
 

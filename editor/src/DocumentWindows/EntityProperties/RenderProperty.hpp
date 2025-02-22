@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "ADocumentWindow.hpp"
-
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
@@ -23,6 +21,9 @@ namespace nexo::editor {
 
             static int show(ecs::Entity entity);
             void showEnd() final;
+
+            static bool showMaterialInspector;
+            static components::Material *selectedMaterial;
 
     };
 }
