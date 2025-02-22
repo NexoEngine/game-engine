@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace nexo::renderer {
 
@@ -170,6 +171,8 @@ namespace nexo::renderer {
              * (usually the screen or swap chain).
              */
             virtual void unbind() = 0;
+
+            virtual void setClearColor(const glm::vec4 &color) = 0;
 
             /**
              * @brief Retrieves the unique OpenGL ID of the framebuffer.

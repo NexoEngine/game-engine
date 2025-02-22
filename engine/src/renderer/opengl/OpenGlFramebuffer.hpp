@@ -17,6 +17,8 @@
 #include "renderer/RendererExceptions.hpp"
 
 #include <glad/glad.h>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 #include <iostream>
 
 namespace nexo::renderer {
@@ -24,12 +26,14 @@ namespace nexo::renderer {
     template<typename T>
     constexpr GLenum getGLTypeFromTemplate()
     {
-         if constexpr (std::is_same_v<T, float>)
-             return GL_FLOAT;
-         else if constexpr (std::is_same_v<T, int>)
-             return GL_INT;
-         else if constexpr (std::is_same_v<T, unsigned int>)
-             return GL_UNSIGNED_INT;
+        if constexpr (std::is_same_v<T, float>)
+            return GL_FLOAT;
+        else if constexpr (std::is_same_v<T, int>)
+            return GL_INT;
+        else if constexpr (std::is_same_v<T, unsigned int>)
+            return GL_UNSIGNED_INT;
+        else if constexpr (std::is_same_v<T, glm::vec4>)
+        	return GL_RGBA;
         return 0;
     }
 
@@ -116,6 +120,8 @@ namespace nexo::renderer {
              */
             void unbind() override;
 
+            void setClearColor(const glm::vec4 &color) override {m_clearColor = color;}
+
             [[nodiscard]] unsigned int getFramebufferId() const override;
 
             /**
@@ -167,6 +173,8 @@ namespace nexo::renderer {
             unsigned int m_id = 0;
             bool toResize = false;
             FramebufferSpecs m_specs;
+
+            glm::vec4 m_clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
             std::vector<FrameBufferTextureSpecifications> m_colorAttachmentsSpecs;
             FrameBufferTextureSpecifications m_depthAttachmentSpec;
