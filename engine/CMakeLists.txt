@@ -41,6 +41,7 @@ set(COMMON_SOURCES
         engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/primitives/Cube.cpp
         engine/src/renderer/primitives/Billboard.cpp
+        engine/src/renderer/primitives/Tetrahedron.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp
