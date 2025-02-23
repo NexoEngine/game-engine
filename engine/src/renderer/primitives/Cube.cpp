@@ -164,16 +164,6 @@ namespace nexo::renderer {
 
         // Update stats
         m_storage->stats.cubeCount++;
-        const auto vertexDataSize = static_cast<unsigned int>(
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
-        );
-
-
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
-
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
-        flushAndReset();
     }
 
     void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
@@ -296,16 +286,6 @@ namespace nexo::renderer {
 
         // Update stats
         m_storage->stats.cubeCount++;
-        const auto vertexDataSize = static_cast<unsigned int>(
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
-        );
-
-
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
-
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
-        flushAndReset();
     }
 
     //TODO: implement material
