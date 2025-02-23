@@ -150,7 +150,7 @@ namespace nexo::editor {
             app.removeLayer(sceneProps.sceneId, layerId);
             m_sceneManagerBridge->unselectEntity();
         }
-        if (ImGui::MenuItem("Add entity"))
+        if (ImGui::BeginMenu("Add entity"))
         {
         	for (int i = 0; i < IM_ARRAYSIZE(primitives3DNames); i++)
             {
