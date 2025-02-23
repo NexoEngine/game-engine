@@ -59,24 +59,18 @@ namespace nexo::layer {
             isRendered = false;
             return;
         }
-        if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
-            rendererContext->renderer2D.beginScene(m_camera->getViewProjectionMatrix());
-        else
-        {
-            rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix(), m_camera->getPosition());
-        }
         setupLights(rendererContext, sceneContext);
         for (const auto entity: m_entities)
         {
             const auto &transform = getComponent<components::TransformComponent>(entity);
             const auto &renderComponent = getComponent<components::RenderComponent>(entity);
             if (renderComponent.isRendered)
+            {
+             	rendererContext->renderer3D.beginScene(m_camera->getViewProjectionMatrix(), m_camera->getPosition());
                 renderComponent.draw(rendererContext, transform, entity);
+                rendererContext->renderer3D.endScene();
+            }
         }
-        if (m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC)
-            rendererContext->renderer2D.endScene();
-        else
-            rendererContext->renderer3D.endScene();
     }
 
     void Layer::onUpdate(Timestep ts)
