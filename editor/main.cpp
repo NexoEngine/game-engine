@@ -30,10 +30,12 @@ int main(int argc, char **argv)
         nexo::editor::Editor editor;
         const auto &sceneViewManager = nexo::editor::SceneViewManager::getInstance();
         sceneViewManager->addNewScene("Default scene", std::make_shared<nexo::editor::MainScene>("Default scene", true));
-        editor.registerWindow("Scene Tree", std::make_shared<nexo::editor::SceneTreeWindow>());
         editor.registerWindow("Scene view manager", sceneViewManager);
+
+        editor.registerWindow("Scene Tree", std::make_shared<nexo::editor::SceneTreeWindow>());
         editor.registerWindow("Inspector", std::make_shared<nexo::editor::InspectorWindow>());
         editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
+
         editor.init();
 
         while (editor.isOpen())
