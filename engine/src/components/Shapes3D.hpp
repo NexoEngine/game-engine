@@ -32,9 +32,7 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
         {
             auto renderer3D = context->renderer3D;
-            //TODO: Find a way to handle materials for cube and other basic primitives
-            //renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
-            renderer3D.drawCube(transf.pos, transf.size, material, entityID);
+            renderer3D.drawCube(transf.pos, transf.size, transf.rotation, material, entityID);
         }
     };
 
