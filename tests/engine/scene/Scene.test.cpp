@@ -56,7 +56,7 @@ namespace nexo::camera {
 namespace nexo::components {
     class MockLight : public Light {
         public:
-        MockLight() : Light(LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f) {}
+        MockLight() : Light(LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}) {}
     };
 }
 

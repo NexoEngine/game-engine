@@ -16,7 +16,7 @@ namespace nexo::scene {
 
     class MockLight : public components::Light {
         public:
-        MockLight() : Light(components::LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f) {}
+        MockLight() : Light(components::LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}) {}
     };
 
     class SceneManagerTest : public ::testing::Test {
