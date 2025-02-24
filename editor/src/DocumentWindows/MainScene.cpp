@@ -74,17 +74,63 @@ namespace nexo::editor {
         auto &app = getApp();
         // const ecs::Entity basicQuad = EntityFactory2D::createQuad({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, 45.0f);
         // app.addEntityToScene(basicQuad, _sceneID, static_cast<int>(defaultLayerId));
-        app.setAmbientLightValue(_sceneID, glm::vec3(0.2f));
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.0f, -2.0f}, {1.0f, 1.0f, 1.0f},
-                                                                  {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
+        app.setAmbientLightValue(_sceneID, glm::vec3(0.5f));
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 0.5f, 20.0f},
+                                                               {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.addEntityToScene(basicCube, _sceneID, static_cast<int>(defaultLayerId));
 
         // const ecs::Entity gunModel = EntityFactory3D::createModel(Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf").string(), {0.0f, 0.0f, -2.0f}, {0.01f, 0.01f, 0.01f}, {0.0f, 0.0f, 0.0f});
         // app.addEntityToScene(gunModel, _sceneID, static_cast<int>(defaultLayerId));
-        glm::vec3 lightPos1 = {1.0f, 1.0f, -1.0f};
+        glm::vec3 lightPos1 = {1.2f, 5.0f, 0.1f};
         glm::vec4 color1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1, 10.0f);
-        app.addLightToScene(_sceneID, pointLight1);
+        auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1);
+        //app.addLightToScene(_sceneID, pointLight1);
+
+        glm::vec3 lightPos2 = {-1.2f, 5.0f, -0.1f};
+        glm::vec4 color2 = {0.0f, 1.0f, 0.0f, 1.0f};
+        auto pointLight2 = std::make_shared<components::PointLight>(lightPos2, color2);
+        //app.addLightToScene(_sceneID, pointLight2);
+
+        glm::vec3 lightDirection = {0.2f, -1.0f, -0.3f};
+        glm::vec4 colorDir = {1.0f, 1.0f, 1.0f, 1.0f};
+        auto directionalLight = std::make_shared<components::DirectionalLight>(lightDirection, colorDir);
+        app.addLightToScene(_sceneID, directionalLight);
+
+        glm::vec3 spotDir = {0.0f, -1.0f, 0.0f};
+        glm::vec3 spotPos = {0.0f, 0.5f, -2.0f};
+        glm::vec4 colorSpot = {0.0f, 0.0f, 1.0f, 1.0f};
+        auto spotLight = std::make_shared<components::SpotLight>(spotPos, spotDir, colorSpot, glm::cos(glm::radians(40.5f)), glm::cos(glm::radians(45.5f)));
+        //app.addLightToScene(_sceneID, spotLight);
+
+        const int numCubes = 10;
+        std::mt19937 rng(std::random_device{}());
+        std::uniform_real_distribution<float> distX(-5.0f, 5.0f);   // Spread on X
+        std::uniform_real_distribution<float> distY(-5.0f, 5.0f);   // Spread on Y
+        std::uniform_real_distribution<float> distZ(-10.0f, -2.0f); // In front of camera (negative Z)
+        std::uniform_real_distribution<float> distRot(0.0f, 360.0f);  // Full rotation range
+        std::uniform_real_distribution<float> distSize(0.5f, 2.0f);   // Vary cube size
+
+
+        std::shared_ptr<renderer::Texture2D> containerDiffuseTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe(
+            "../assets/textures/container2.png").string());
+        std::shared_ptr<renderer::Texture2D> containerSpecularTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe(
+            "../assets/textures/container2_specular.png").string());
+
+        for (int i = 0; i < numCubes; ++i)
+        {
+            glm::vec3 pos(distX(rng), distY(rng), distZ(rng));
+            float cubeSize = distSize(rng);
+            glm::vec3 size(cubeSize, cubeSize, cubeSize);
+            glm::vec3 rotation(distRot(rng), distRot(rng), distRot(rng));
+            components::Material material{};
+            material.albedoTexture = containerDiffuseTexture;
+            material.metallicMap = containerSpecularTexture;
+
+            // Create a cube at the generated position with the given size, rotation, and color.
+            ecs::Entity cube = EntityFactory3D::createCube(pos, size, rotation, material);
+            app.addEntityToScene(cube, _sceneID, static_cast<int>(defaultLayerId));
+        }
+
 
         // glm::vec3 lightPos2 = {0.0f, 2.0f, 1.0f};
         // glm::vec4 color2 = {randomColor(), randomColor(), randomColor(), 1.0f};
@@ -359,6 +405,7 @@ namespace nexo::editor {
                 int data = m_framebuffer->getPixel<int>(1, mx, my);
                 if (data != -1)
                 {
+                	std::cout << "Clicked on entity with ID: " << data << std::endl;
                     const auto &viewManager = SceneViewManager::getInstance();
                     m_sceneManagerBridge->setSelectedEntity(data);
                     viewManager->setSelectedScene(_sceneID);

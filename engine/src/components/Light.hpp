@@ -15,6 +15,7 @@
 
 constexpr unsigned int MAX_DIRECTIONAL_LIGHTS = 8;
 constexpr unsigned int MAX_POINT_LIGHTS = 8;
+constexpr unsigned int MAX_SPOT_LIGHTS = 8;
 
 namespace nexo::components {
     enum class LightType {
@@ -26,34 +27,45 @@ namespace nexo::components {
     struct Light {
         Light() = default;
 
-        Light(const LightType lightType, const glm::vec4 &lightColor, const float lightIntensity) : type(lightType),
-                                                                                                    color(lightColor),
-                                                                                                    intensity(
-                                                                                                        lightIntensity)
+        Light(const LightType lightType, const glm::vec4 &lightColor) : type(lightType),
+                                                                        color(lightColor)
         {};
 
         ~Light() = default;
 
         LightType type = LightType::DIRECTIONAL;
         glm::vec4 color{};
-        float intensity{};
     };
 
     struct DirectionalLight : Light {
         explicit DirectionalLight(const glm::vec3 &lightDirection,
-                                  const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f},
-                                  const float &lightIntensity = 0.5f) : Light(LightType::DIRECTIONAL, lightColor,
-                                                                              lightIntensity),
+                                  const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}) : Light(LightType::DIRECTIONAL, lightColor),
                                                                         direction(lightDirection) {};
 
         glm::vec3 direction{};
     };
 
     struct PointLight : Light {
-        explicit PointLight(glm::vec3 lightPos, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f},
-                   const float &lightIntensity = 0.5f) : Light(LightType::POINT, lightColor, lightIntensity),
-                                                         pos(lightPos) {};
+        explicit PointLight(glm::vec3 lightPos, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}, float linear = 0.09f, float quadratic = 0.032f) : Light(LightType::POINT, lightColor),
+                                                         pos(lightPos), linear(linear), quadratic(quadratic) {};
 
         glm::vec3 pos{};
+        float constant = 1.0f;
+        float linear;
+        float quadratic;
+    };
+
+    struct SpotLight : Light {
+    	explicit SpotLight(glm::vec3 lightPos, glm::vec3 lightDir, glm::vec4 lightColor, float cutOff, float outerCutoff, float linear = 0.0014f, float quadractic = 0.000007f) : Light(LightType::SPOT, lightColor),
+     						pos(lightPos), direction(lightDir), cutOff(cutOff), outerCutoff(outerCutoff), linear(linear), quadratic(quadractic) {}
+
+     	glm::vec3 pos{};
+      	glm::vec3 direction{};
+       	float cutOff;
+       	float outerCutoff;
+
+        float constant = 1.0f;
+        float linear;
+        float quadratic;
     };
 }

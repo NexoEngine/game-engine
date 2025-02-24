@@ -29,6 +29,10 @@ namespace nexo::layer {
         shader->setUniformFloat3("ambientLight", sceneContext.lightContext.ambientLight);
         shader->setUniformInt("numDirLights", sceneContext.lightContext.nbDirectionalLights);
         shader->setUniformInt("numPointLights", sceneContext.lightContext.nbPointLights);
+        shader->setUniformInt("numSpotLights", sceneContext.lightContext.nbSpotLights);
+        unsigned int countDirLights = 0;
+        unsigned int countPointLights = 0;
+        unsigned int countSpotLights = 0;
 
         for (unsigned int i = 0; i < sceneContext.lightContext.nbLights; ++i)
         {
@@ -36,16 +40,32 @@ namespace nexo::layer {
             if (light->type == components::LightType::DIRECTIONAL)
             {
                 auto directionalLight = static_cast<components::DirectionalLight *>(light.get());
-                shader->setUniformFloat3(std::format("dirLights[{}].direction", i), directionalLight->direction);
-                shader->setUniformFloat4(std::format("dirLights[{}].color", i), directionalLight->color);
-                shader->setUniformFloat(std::format("dirLights[{}].intensity", i), directionalLight->intensity);
+                shader->setUniformFloat3(std::format("dirLights[{}].direction", countDirLights), directionalLight->direction);
+                shader->setUniformFloat4(std::format("dirLights[{}].color", countDirLights), directionalLight->color);
+                countDirLights++;
             }
             else if (light->type == components::LightType::POINT)
             {
                 auto pointLight = static_cast<components::PointLight *>(light.get());
-                shader->setUniformFloat3(std::format("pointLights[{}].position", i), pointLight->pos);
-                shader->setUniformFloat4(std::format("pointLights[{}].color", i), pointLight->color);
-                shader->setUniformFloat(std::format("pointLights[{}].intensity", i), pointLight->intensity);
+                shader->setUniformFloat3(std::format("pointLights[{}].position", countPointLights), pointLight->pos);
+                shader->setUniformFloat4(std::format("pointLights[{}].color", countPointLights), pointLight->color);
+                shader->setUniformFloat(std::format("pointLights[{}].constant", countPointLights), pointLight->constant);
+                shader->setUniformFloat(std::format("pointLights[{}].linear", countPointLights), pointLight->linear);
+                shader->setUniformFloat(std::format("pointLights[{}].quadratic", countPointLights), pointLight->quadratic);
+                countPointLights++;
+            }
+            else if (light->type == components::LightType::SPOT)
+            {
+                auto spotLight = static_cast<components::SpotLight *>(light.get());
+                shader->setUniformFloat3(std::format("spotLights[{}].position", countSpotLights), spotLight->pos);
+                shader->setUniformFloat4(std::format("spotLights[{}].color", countSpotLights), spotLight->color);
+                shader->setUniformFloat(std::format("spotLights[{}].constant", countSpotLights), spotLight->constant);
+                shader->setUniformFloat(std::format("spotLights[{}].linear", countSpotLights), spotLight->linear);
+                shader->setUniformFloat(std::format("spotLights[{}].quadratic", countSpotLights), spotLight->quadratic);
+                shader->setUniformFloat3(std::format("spotLights[{}].direction", countSpotLights), spotLight->direction);
+                shader->setUniformFloat(std::format("spotLights[{}].cutOff", countSpotLights), spotLight->cutOff);
+                shader->setUniformFloat(std::format("spotLights[{}].outerCutoff", countSpotLights), spotLight->outerCutoff);
+                countSpotLights++;
             }
         }
     }
