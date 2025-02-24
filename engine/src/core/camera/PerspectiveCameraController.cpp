@@ -79,21 +79,28 @@ namespace nexo::camera {
     void PerspectiveCameraController::handleEvent(event::EventMouseMove &event)
     {
         glm::vec2 currentMousePosition(event.x, event.y);
+
+        // If the scene is not focused, reset the last position so no large delta is computed.
+        if (!zoomOn) {
+            m_lastMousePosition = currentMousePosition;
+            return;
+        }
+
         glm::vec2 mouseDelta = (currentMousePosition - m_lastMousePosition) * m_mouseSensitivity;
         m_lastMousePosition = currentMousePosition;
 
+        // Only update the camera if the left mouse button is held and we are not resizing.
         if (!event::isMouseDown(NEXO_MOUSE_LEFT) || m_resizing)
             return;
 
         m_cameraYaw += mouseDelta.x;
         m_cameraPitch -= mouseDelta.y;
-
         m_cameraPitch = glm::clamp(m_cameraPitch, -89.0f, 89.0f);
 
         glm::vec3 front;
-        front.x = static_cast<float>(cos(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch)));
-        front.y = static_cast<float>(sin(glm::radians(m_cameraPitch)));
-        front.z = static_cast<float>(sin(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch)));
+        front.x = cos(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch));
+        front.y = sin(glm::radians(m_cameraPitch));
+        front.z = sin(glm::radians(m_cameraYaw)) * cos(glm::radians(m_cameraPitch));
         m_cameraFront = glm::normalize(front);
 
         m_cameraRight = glm::normalize(glm::cross(m_cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
