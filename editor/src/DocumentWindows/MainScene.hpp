@@ -131,7 +131,5 @@ namespace nexo::editor {
             void renderToolbar();
             void renderGizmo() const;
             void renderView();
-
-            [[nodiscard]] glm::vec2 getMouseWorldPosition() const;
     };
 }
