@@ -28,6 +28,7 @@ namespace nexo
     public:
         static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material);
         static ecs::Entity createModel(const std::string& path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
     };
 }

@@ -41,6 +41,22 @@ namespace nexo {
         return newCube;
     }
 
+    ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.rotation = rotation;
+        auto cube = std::make_shared<components::Cube>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, cube);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newCube = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newCube, renderComponent);
+        return newCube;
+    }
+
     ecs::Entity EntityFactory3D::createModel(const std::string &path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)
     {
         components::TransformComponent transform{};
