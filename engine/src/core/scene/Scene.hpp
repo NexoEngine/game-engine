@@ -32,10 +32,11 @@ namespace nexo::scene {
         LightContext() = default;
 
         glm::vec3 ambientLight;
-        std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS> m_lights;
+        std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS + MAX_SPOT_LIGHTS> m_lights;
         unsigned int nbLights = 0;
         unsigned int nbPointLights = 0;
         unsigned int nbDirectionalLights = 0;
+        unsigned int nbSpotLights = 0;
     };
 
     struct SceneContext {
@@ -135,10 +136,11 @@ namespace nexo::scene {
             glm::vec2 m_windowOffset = glm::vec2(0.0f);
             std::shared_ptr<renderer::RendererContext> m_rendererContext;
 
-            std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS> m_lights;
+            std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS + MAX_SPOT_LIGHTS> m_lights;
             unsigned int nbLights = 0;
             unsigned int nbPointLights = 0;
             unsigned int nbDirectionalLights = 0;
+            unsigned int nbSpotLights = 0;
             glm::vec3 ambientLight = glm::vec3(0.2f);
 
     };

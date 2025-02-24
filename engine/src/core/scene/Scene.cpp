@@ -191,10 +191,17 @@ namespace nexo::scene {
             LOG(NEXO_ERROR, "Scene::{}::addLight: Max number of point lights reached", name);
             return 0;
         }
+        if (light->type == components::LightType::SPOT && nbSpotLights >= MAX_SPOT_LIGHTS)
+        {
+            LOG(NEXO_ERROR, "Scene::{}::addLight: Max number of spot lights reached", name);
+            return 0;
+        }
         if (light->type == components::LightType::DIRECTIONAL)
             nbDirectionalLights++;
-        else
+        else if (light->type == components::LightType::POINT)
             nbPointLights++;
+        else
+        	nbSpotLights++;
         m_lights[nbLights] = light;
         LOG(NEXO_INFO, "Scene::{}::addLight: New light added", name);
         return nbLights++;
@@ -209,8 +216,10 @@ namespace nexo::scene {
         }
         if (m_lights[index]->type == components::LightType::DIRECTIONAL)
             nbDirectionalLights--;
-        else
+        else if (m_lights[index]->type == components::LightType::POINT)
             nbPointLights--;
+        else if (m_lights[index]->type == components::LightType::SPOT)
+        	nbSpotLights--;
         for (unsigned int i = index; i < nbLights - 1; ++i)
             m_lights[i] = m_lights[i + 1];
         m_lights[--nbLights] = nullptr;
@@ -234,6 +243,7 @@ namespace nexo::scene {
         context.lightContext.nbLights = nbLights;
         context.lightContext.nbDirectionalLights = nbDirectionalLights;
         context.lightContext.nbPointLights = nbPointLights;
+        context.lightContext.nbSpotLights = nbSpotLights;
         for (const auto &layer: m_layerStack)
         {
             if (layer->isRendered)
