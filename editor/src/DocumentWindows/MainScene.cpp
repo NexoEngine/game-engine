@@ -238,14 +238,15 @@ namespace nexo::editor {
         auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
         if (!transf)
             return;
+        glm::quat rotationQuat = glm::quat(glm::radians(transf->get().rotation));
+		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
-                                    glm::rotate(glm::mat4(1.0f), glm::radians(transf->get().rotation.z),
-                                                glm::vec3(0.0f, 0.0f, 1.0f)) *
-                                    glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, 1.0f});
+                                    rotationMat *
+                                    glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, transf->get().size.z});
         ImGuizmo::Enable(true);
         ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projectionMatrix),
                              _currentGizmoOperation,
-                             ImGuizmo::MODE::LOCAL,
+                             ImGuizmo::MODE::WORLD,
                              glm::value_ptr(transformMatrix));
 
         glm::vec3 translation(0);
@@ -293,21 +294,6 @@ namespace nexo::editor {
         ImVec2 maxBounds = {minBounds.x + windowSize.x, minBounds.y + windowSize.y};
         m_viewportBounds[0] = minBounds;
         m_viewportBounds[1] = maxBounds;
-    }
-
-    glm::vec2 MainScene::getMouseWorldPosition() const
-    {
-        const ImVec2 mousePos = ImGui::GetMousePos();
-        const float mouseX = mousePos.x - _viewPosition.x;
-        const float mouseY = mousePos.y - _viewPosition.y;
-
-        const glm::vec2 ndc = {
-            (mouseX / _viewSize.x) * 2.0f - 1.0f,
-            1.0f - (mouseY / _viewSize.y) * 2.0f
-        };
-
-        const glm::vec4 worldPos = glm::inverse(m_camera->getViewProjectionMatrix()) * glm::vec4(ndc, 0.0f, 1.0f);
-        return {worldPos.x, worldPos.y};
     }
 
     void MainScene::setHiddenLayerStatus(const bool status) const
