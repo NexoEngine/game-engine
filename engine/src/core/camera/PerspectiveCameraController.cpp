@@ -101,5 +101,3 @@ namespace nexo::camera {
     }
 
 }
-
-
