@@ -84,12 +84,12 @@ namespace nexo::editor {
         glm::vec3 lightPos1 = {1.2f, 5.0f, 0.1f};
         glm::vec4 color1 = {1.0f, 1.0f, 1.0f, 1.0f};
         auto pointLight1 = std::make_shared<components::PointLight>(lightPos1, color1);
-        //app.addLightToScene(_sceneID, pointLight1);
+        app.addLightToScene(_sceneID, pointLight1);
 
         glm::vec3 lightPos2 = {-1.2f, 5.0f, -0.1f};
         glm::vec4 color2 = {0.0f, 1.0f, 0.0f, 1.0f};
         auto pointLight2 = std::make_shared<components::PointLight>(lightPos2, color2);
-        //app.addLightToScene(_sceneID, pointLight2);
+        app.addLightToScene(_sceneID, pointLight2);
 
         glm::vec3 lightDirection = {0.2f, -1.0f, -0.3f};
         glm::vec4 colorDir = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -100,7 +100,7 @@ namespace nexo::editor {
         glm::vec3 spotPos = {0.0f, 0.5f, -2.0f};
         glm::vec4 colorSpot = {0.0f, 0.0f, 1.0f, 1.0f};
         auto spotLight = std::make_shared<components::SpotLight>(spotPos, spotDir, colorSpot, glm::cos(glm::radians(40.5f)), glm::cos(glm::radians(45.5f)));
-        //app.addLightToScene(_sceneID, spotLight);
+        app.addLightToScene(_sceneID, spotLight);
 
         const int numCubes = 10;
         std::mt19937 rng(std::random_device{}());
@@ -128,7 +128,7 @@ namespace nexo::editor {
 
             // Create a cube at the generated position with the given size, rotation, and color.
             ecs::Entity cube = EntityFactory3D::createCube(pos, size, rotation, material);
-            app.addEntityToScene(cube, _sceneID, static_cast<int>(defaultLayerId));
+            //app.addEntityToScene(cube, _sceneID, static_cast<int>(defaultLayerId));
         }
 
 
