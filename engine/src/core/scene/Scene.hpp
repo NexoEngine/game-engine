@@ -110,6 +110,9 @@ namespace nexo::scene {
 
             unsigned int addLight(const std::shared_ptr<components::Light> &light);
 
+            std::shared_ptr<components::Light> getLight(unsigned int index);
+            unsigned int getLightCount() { return nbLights; };
+
             void removeLight(unsigned int index);
 
             void setAmbientLight(const glm::vec3 ambient) { ambientLight = ambient; };

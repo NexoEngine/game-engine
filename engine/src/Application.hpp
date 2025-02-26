@@ -157,6 +157,8 @@ namespace nexo {
             void detachCamera(scene::SceneId sceneId, scene::LayerId id);
             std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
             unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
+            std::shared_ptr<components::Light> getLight(scene::SceneId sceneId, unsigned int index);
+            unsigned int getLightCount(scene::SceneId sceneId);
             void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
             void setAmbientLightValue(scene::SceneId sceneId, glm::vec3 value);
             glm::vec3 getAmbientLightValue(scene::SceneId sceneId);

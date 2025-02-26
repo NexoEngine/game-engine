@@ -70,6 +70,8 @@ namespace nexo::scene {
             std::shared_ptr<camera::Camera> getCameraLayer(SceneId sceneId, LayerId id);
 
             unsigned int addLightToScene(SceneId id, const std::shared_ptr<components::Light> &light);
+            std::shared_ptr<components::Light> getLight(SceneId sceneId, unsigned int index);
+            unsigned int getLightCount(SceneId sceneId);
             void removeLightFromScene(SceneId id, unsigned int index);
             void setSceneAmbientLightValue(SceneId id, glm::vec3 value);
             glm::vec3 getSceneAmbientLightValue(SceneId id);

@@ -207,6 +207,16 @@ namespace nexo::scene {
         return nbLights++;
     }
 
+    std::shared_ptr<components::Light> Scene::getLight(unsigned int index)
+    {
+        if (index >= nbLights)
+        {
+            LOG(NEXO_ERROR, "Scene::{}::getLight: index out of range", name);
+            return nullptr;
+        }
+        return m_lights[index];
+    }
+
     void Scene::removeLight(const unsigned int index)
     {
         if (index >= nbLights)

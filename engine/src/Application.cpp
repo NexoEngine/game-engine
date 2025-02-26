@@ -428,6 +428,16 @@ namespace nexo {
         return m_sceneManager.addLightToScene(sceneId, light);
     }
 
+    std::shared_ptr<components::Light> Application::getLight(scene::SceneId sceneId, unsigned int index)
+    {
+        return m_sceneManager.getLight(sceneId, index);
+    }
+
+    unsigned int Application::getLightCount(scene::SceneId sceneId)
+    {
+        return m_sceneManager.getLightCount(sceneId);
+    }
+
     void Application::removeLightFromScene(const scene::SceneId sceneId, const unsigned int index)
     {
         m_sceneManager.removeLightFromScene(sceneId, index);
