@@ -26,6 +26,7 @@ namespace nexo::layer {
     {
         const auto renderer3D = rendererContext->renderer3D;
         const auto& shader = renderer3D.getShader();
+        shader->bind();
         shader->setUniformFloat3("ambientLight", sceneContext.lightContext.ambientLight);
         shader->setUniformInt("numDirLights", sceneContext.lightContext.nbDirectionalLights);
         shader->setUniformInt("numPointLights", sceneContext.lightContext.nbPointLights);
@@ -68,6 +69,7 @@ namespace nexo::layer {
                 countSpotLights++;
             }
         }
+        shader->unbind();
     }
 
     void Layer::onRender(std::shared_ptr<renderer::RendererContext> &rendererContext,
