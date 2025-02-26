@@ -28,6 +28,9 @@ namespace nexo::editor {
         {SelectionType::LAYER, ICON_FA_BARS " "},
         {SelectionType::CAMERA, ICON_FA_CAMERA " "},
         {SelectionType::ENTITY, ICON_FA_CUBES " "},
+        {SelectionType::DIR_LIGHT, ICON_FA_SUN_O " "},
+        {SelectionType::POINT_LIGHT, ICON_FA_LIGHTBULB_O " "},
+        {SelectionType::SPOT_LIGHT, ICON_FA_ARROW_CIRCLE_DOWN " "}
     };
 
     using NodeId = unsigned int;
@@ -61,11 +64,15 @@ namespace nexo::editor {
         private:
             SceneObject root_;
             NodeId nextNodeId = 0;
+            unsigned int m_nbDirLights = 0;
+            unsigned int m_nbPointLights = 0;
+            unsigned int m_nbSpotLights = 0;
             std::optional<std::pair<SelectionType, int>> m_renameTarget;
             std::string m_renameBuffer;
             PopupManager m_popupManager;
 
             SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
+            SceneObject newLightNode(scene::SceneId sceneId, WindowId uiId, unsigned int lightIndex, const std::shared_ptr<components::Light> &light);
             SceneObject newLayerNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId, const std::string &layerName);
             SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId);
             SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, unsigned int layerId, ecs::Entity entity);
@@ -73,6 +80,7 @@ namespace nexo::editor {
             void handleRename(SceneObject &obj);
             bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
             void sceneSelected(const SceneObject &obj);
+            void lightSelected(const SceneObject &obj);
             void layerSelected(const SceneObject &obj) const;
             void cameraSelected(const SceneObject &obj) const;
             void entitySelected(const SceneObject &obj) const;

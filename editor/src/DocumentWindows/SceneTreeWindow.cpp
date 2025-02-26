@@ -20,6 +20,7 @@
 #include <imgui_internal.h>
 #include <random>
 
+#include "SceneManagerBridge.hpp"
 #include "SceneViewManager.hpp"
 
 namespace nexo::editor {
@@ -101,6 +102,16 @@ namespace nexo::editor {
                 m_sceneManagerBridge->setSelectedEntity(obj.nodeId);
                 m_sceneManagerBridge->setData(obj.data);
                 m_sceneManagerBridge->setSelectionType(SelectionType::LAYER);
+            } else if (obj.type == SelectionType::DIR_LIGHT || obj.type == SelectionType::POINT_LIGHT || obj.type == SelectionType::SPOT_LIGHT)
+            {
+	            if (!std::holds_alternative<LightProperties>(obj.data))
+	                return nodeOpen;
+	            auto [sceneProps, lightIndex, light] = std::get<LightProperties>(obj.data);
+	            viewManager->setSelectedScene(sceneProps.sceneId);
+
+	            m_sceneManagerBridge->setSelectedEntity(obj.nodeId);
+	            m_sceneManagerBridge->setData(obj.data);
+	            m_sceneManagerBridge->setSelectionType(SelectionType::DIR_LIGHT);
             } else if (obj.type == SelectionType::SCENE)
             {
                 if (!std::holds_alternative<SceneProperties>(obj.data))
@@ -129,6 +140,17 @@ namespace nexo::editor {
             m_popupManager.openPopup("Add New Layer");
             m_popupManager.setUserData("Add New Layer", props);
         }
+    }
+
+    void SceneTreeWindow::lightSelected(const SceneObject &obj)
+    {
+        if (!std::holds_alternative<LightProperties>(obj.data))
+            return;
+        auto props = std::get<LightProperties>(obj.data);
+        auto &app = Application::getInstance();
+
+        if (ImGui::MenuItem("Delete Light"))
+            app.removeLightFromScene(props.sceneProps.sceneId, props.index);
     }
 
     float randomFloat()
@@ -250,6 +272,8 @@ namespace nexo::editor {
             }
             if (object.type == SelectionType::SCENE)
                 sceneSelected(object);
+            else if (object.type == SelectionType::DIR_LIGHT || object.type == SelectionType::POINT_LIGHT || object.type == SelectionType::SPOT_LIGHT)
+                lightSelected(object);
             else if (object.type == SelectionType::LAYER)
                 layerSelected(object);
             else if (object.type == SelectionType::CAMERA)
@@ -381,6 +405,30 @@ namespace nexo::editor {
         return sceneNode;
     }
 
+    SceneObject SceneTreeWindow::newLightNode(scene::SceneId sceneId, WindowId uiId, unsigned int lightIndex, const std::shared_ptr<components::Light> &light)
+    {
+    	SceneObject lightNode;
+     	lightNode.nodeId = nextNodeId++;
+      	if (light->type == components::LightType::DIRECTIONAL)
+       	{
+       		lightNode.type = SelectionType::DIR_LIGHT;
+         	lightNode.uiName = ObjectTypeToIcon.at(lightNode.type) + "Directional light " + std::to_string(++m_nbDirLights);
+        }
+      	else if (light->type == components::LightType::POINT)
+       	{
+       		lightNode.type = SelectionType::POINT_LIGHT;
+         	lightNode.uiName = ObjectTypeToIcon.at(lightNode.type) + "Point light " + std::to_string(++m_nbPointLights);
+        }
+      	else if (light->type == components::LightType::SPOT)
+       	{
+       		lightNode.type = SelectionType::SPOT_LIGHT;
+         	lightNode.uiName = ObjectTypeToIcon.at(lightNode.type) + "Spot light " + std::to_string(++m_nbSpotLights);
+        }
+      	const SceneProperties sceneProperties(sceneId, uiId);
+     	lightNode.data = LightProperties(sceneProperties, lightIndex, light);
+     	return lightNode;
+    }
+
     SceneObject SceneTreeWindow::newLayerNode(const scene::SceneId sceneId, const WindowId uiId,
                                               const layer::LayerId layerId,
                                               const std::string &layerName)
@@ -435,6 +483,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::update()
     {
+    	auto &app = nexo::getApp();
         nextNodeId = 0;
         root_.uiName = "Scenes";
         root_.nodeId = nextNodeId++;
@@ -446,6 +495,17 @@ namespace nexo::editor {
         for (const auto &[sceneId, windowId]: scenes)
         {
             SceneObject sceneNode = newSceneNode(sceneId, windowId);
+            unsigned int lightCount = app.getLightCount(sceneId);
+            for (unsigned int i = 0; i < lightCount; ++i)
+            {
+            	auto light = app.getLight(sceneId, i);
+                SceneObject lightNode = newLightNode(sceneId, windowId, i, light);
+                sceneNode.children.push_back(lightNode);
+            }
+
+            m_nbPointLights = 0;
+            m_nbSpotLights = 0;
+            m_nbDirLights = 0;
 
             // Retrieve the global entities of the scene (i.e. entities that are not part of a layer)
             auto sceneEntities = m_sceneManagerBridge->getSceneGlobalEntities(sceneId);
