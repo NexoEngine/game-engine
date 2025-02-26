@@ -31,6 +31,12 @@ namespace nexo::editor {
         WindowId windowId;
     };
 
+    struct LightProperties {
+    	SceneProperties sceneProps;
+     	unsigned int index;
+    	std::shared_ptr<components::Light> light;
+    };
+
     struct LayerProperties {
         SceneProperties sceneProps;
         int layerId;
@@ -46,13 +52,16 @@ namespace nexo::editor {
         ecs::Entity entity;
     };
 
-    using VariantData = std::variant<std::monostate, EntityProperties, LayerProperties, CameraProperties, SceneProperties>;
+    using VariantData = std::variant<std::monostate, EntityProperties, LayerProperties, CameraProperties, LightProperties, SceneProperties>;
 
     enum class SelectionType {
         NONE,
         ENTITY,
         CAMERA,
         LAYER,
+        DIR_LIGHT,
+        POINT_LIGHT,
+        SPOT_LIGHT,
         SCENE,
         FOLDER,
         UNKNOWN
