@@ -321,6 +321,26 @@ namespace nexo::scene {
         return scenes.at(id).addLight(light);
     }
 
+    std::shared_ptr<components::Light> SceneManager::getLight(SceneId sceneId, unsigned int index)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager::getLight: id {} does not exist", sceneId);
+            return nullptr;
+        }
+        return scenes.at(sceneId).getLight(index);
+    }
+
+    unsigned int SceneManager::getLightCount(SceneId sceneId)
+    {
+        if (!scenes.contains(sceneId))
+        {
+            LOG(NEXO_ERROR, "SceneManager::getLightCount: id {} does not exist", sceneId);
+            return 0;
+        }
+        return scenes.at(sceneId).getLightCount();
+    }
+
     void SceneManager::removeLightFromScene(SceneId id, const unsigned int index)
     {
         if (!scenes.contains(id))
