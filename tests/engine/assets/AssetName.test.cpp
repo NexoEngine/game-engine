@@ -131,17 +131,17 @@ namespace nexo::assets {
         }
     }
 
+    static void testException(const std::string_view name, const std::string& expectedMessage)
+    {
+        try {
+            AssetName assetName(name);
+        } catch (const InvalidName& e) {
+            EXPECT_EQ(e.getMessage(), expectedMessage);
+        }
+    }
+
     TEST(AssetNameTest, AllInvalidNameExceptions)
     {
-        auto testException = [](const std::string_view name, const std::string& expectedMessage)
-        {
-            try {
-                AssetName assetName(name);
-            } catch (const InvalidName& e) {
-                EXPECT_EQ(e.getMessage(), expectedMessage);
-            }
-        };
-
         testException("", "Invalid name '': Cannot be empty.");
         testException("Invalid@Name", "Invalid name 'Invalid@Name': Allowed characters are 0-9, a-z, A-Z, '.', '_', and '-'.");
         testException(std::string(AssetNameValidator::MaxLength + 1, 'a'), "Invalid name '" + std::string(AssetNameValidator::MaxLength + 1, 'a') + "': Cannot exceed 255 characters.");
