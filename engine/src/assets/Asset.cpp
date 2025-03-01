@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Asset.hpp"
+#include "Assets/Model/ModelImporter.hpp"
 
 namespace nexo::assets {
 
