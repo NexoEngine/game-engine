@@ -34,145 +34,151 @@ namespace nexo::assets {
      * @brief Template class representing a lightweight reference to an asset.
      * @tparam TAsset The type of asset data being referenced
      *
-     * AssetRef provides a lightweight wrapper around asset data that is managed by the AssetManager.
-     * It offers convenient access to the asset data while ensuring proper resource management.
-     * The class focuses on making the common case fast by providing direct pointer access to
-     * asset data, while still maintaining safety through the AssetManager.
+     * AssetRef provides a thread-safe wrapper around asset data that is managed by the AssetManager.
+     * This class never provides direct access to the underlying asset, ensuring thread-safety
+     * and memory safety by requiring explicit locking for all operations.
      */
-    template<typename TAssetData>
+    template<typename TAsset>
     class AssetRef {
-        using TAsset = Asset<TAssetData>;
+    public:
+        /**
+         * @brief Constructs an AssetRef with the given shared_ptr to asset
+         * @param assetPtr Shared pointer to the asset
+         */
+        explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
+            : m_weakPtr(assetPtr) {}
 
-        public:
-            /**
-             * @brief Constructs an AssetRef with the given asset data pointer
-             * @param data Pointer to the asset data
-             */
-            explicit AssetRef(TAsset* data) : m_asset(data)
-            {
-                if (!data)
-                    return;
-                ++m_asset->getMetadata().referenceCount;
+        /**
+         * @brief Default constructor creates a null reference
+         */
+        AssetRef() = default;
+
+        /**
+         * @brief Locks the asset reference, providing safe access
+         * @return A shared_ptr to the asset, or empty shared_ptr if expired
+         *
+         * This is the only method for safely accessing an asset in a multithreaded environment.
+         * The returned shared_ptr will keep the asset alive for as long as it exists.
+         */
+        [[nodiscard]] std::shared_ptr<TAsset> lock() const noexcept {
+            return m_weakPtr.lock();
+        }
+
+        /**
+         * @brief Checks if the asset reference is valid
+         * @return true if the reference points to valid data, false otherwise
+         *
+         * Note: This is only a momentary check and may change in multithreaded
+         * environments. Always use lock() for actual asset access.
+         */
+        [[nodiscard]] bool isValid() const noexcept {
+            return !m_weakPtr.expired();
+        }
+
+        /**
+         * @brief Checks if the asset is fully loaded
+         * @return true if the asset is loaded, false otherwise
+         */
+        [[nodiscard]] bool isLoaded() const {
+            if (auto ptr = lock()) {
+                return ptr->isLoaded(); // Assumes TAsset has isLoaded() method
             }
+            return false;
+        }
 
-            ~AssetRef()
-            {
-                if (!m_asset)
-                    return;
-                --m_asset->getMetadata().referenceCount;
+        /**
+         * @brief Requests the AssetCatalog to reload the asset
+         */
+        void reload() {
+            if (auto ptr = lock()) {
+                // TODO: Implement reloadAsset in AssetCatalog
+                // Example: AssetCatalog::getInstance().reloadAsset(ptr);
+                LOG(NEXO_WARN, "AssetRef::reload() not implemented");
             }
+        }
 
-            /** @brief Copy constructor */
-            AssetRef(const AssetRef& other)
-            {
-                m_asset = other.m_asset;
-                ++m_asset->m_metadata.referenceCount;
+        /**
+         * @brief Requests the AssetCatalog to unload the asset but maintain the reference
+         */
+        void unload() {
+            if (auto ptr = lock()) {
+                // TODO: Implement unloadAsset in AssetCatalog
+                // Example: AssetCatalog::getInstance().unloadAsset(ptr);
+                LOG(NEXO_WARN, "AssetRef::unload() not implemented");
             }
+        }
 
-            /** @brief Copy assignment operator */
-            AssetRef& operator=(const AssetRef& other)
-            {
-                if (this == &other)
-                    return *this;
+        /**
+         * @brief Boolean conversion operator
+         * @return true if the reference is valid, false otherwise
+         *
+         * Note: This is only a momentary check and may change in multithreaded
+         * environments. Always use lock() for actual asset access.
+         */
+        explicit operator bool() const noexcept {
+            return isValid();
+        }
 
-                if (m_asset)
-                    --m_asset->m_metadata.referenceCount;
+        /**
+         * @brief Creates a null asset reference
+         * @return An empty AssetRef instance
+         */
+        [[nodiscard]] static AssetRef<TAsset> null() {
+            return AssetRef<TAsset>();
+        }
 
-                m_asset = other.m_asset;
-                ++m_asset->m_metadata.referenceCount;
+        // Standard copy/move operations
+        AssetRef(const AssetRef&) = default;
+        AssetRef& operator=(const AssetRef&) = default;
+        AssetRef(AssetRef&&) noexcept = default;
+        AssetRef& operator=(AssetRef&&) noexcept = default;
+        ~AssetRef() = default;
 
-                return *this;
-            }
-
-            /** @brief Move constructor */
-            AssetRef(AssetRef&& other) noexcept
-            {
-                m_asset = other.m_asset;
-                other.m_asset = nullptr;
-            }
-
-            /** @brief Move assignment operator */
-            AssetRef& operator=(AssetRef&& other) noexcept
-            {
-                if (this == &other)
-                    return *this;
-
-                m_asset = other.m_asset;
-                other.m_asset = nullptr;
-
-                return *this;
-            }
-
-            /**
-             * @brief Gets the raw pointer to the asset data
-             * @return Pointer to the asset data
-             */
-            [[nodiscard]] TAssetData* get() const noexcept
-            {
-                return m_asset;
-            }
-
-            /**
-             * @brief Arrow operator for accessing asset data members
-             * @return Pointer to the asset data
-             */
-            TAsset* operator->() const noexcept
-            {
-                return this->get();
-            }
-
-            /**
-             * @brief Dereference operator for accessing asset data members
-             * @return Reference to the asset data
-             */
-            TAsset& operator*() const noexcept
-            {
-                return *this->get();
-            }
-
-            /**
-             * @brief Checks if the asset reference is valid
-             * @return true if the reference points to valid data, false otherwise
-             */
-            [[nodiscard]] bool isValid() const
-            {
-                return m_asset != nullptr;
-            }
-
-            /**
-             * @brief Checks if the asset is fully loaded
-             * @return true if the asset is loaded, false otherwise
-             */
-            [[nodiscard]] bool isLoaded() const;
-
-            /** @brief Requests the AssetManager to reload the asset */
-            void reload();
-
-            /** @brief Requests the AssetManager to unload the asset but maintain the reference */
-            void unload();
-
-            /**
-             * @brief Creates a null asset reference
-             * @return An AssetRef instance with a null data pointer
-             */
-            [[nodiscard]] static AssetRef<TAsset> null()
-            {
-                return AssetRef<TAsset>(nullptr);
-            }
-
-            /**
-             * @brief Boolean conversion operator
-             * @return true if the reference is valid, false otherwise
-             */
-            explicit operator bool() const
-            {
-                return isValid();
-            }
-
-        private:
-            TAsset* m_asset; /**< Pointer to the actual asset */
+    private:
+        std::weak_ptr<TAsset> m_weakPtr;
     };
 
-    class GenericAssetRef : public AssetRef<void> {};
+    /**
+     * @brief A non-templated asset reference for generic asset storage
+     */
+    class GenericAssetRef {
+    public:
+        /**
+         * @brief Default constructor creates a null reference
+         */
+        GenericAssetRef() = default;
+
+        /**
+         * @brief Construct from any asset reference type
+         * @param ref The typed asset reference to convert
+         */
+        template<typename TAsset>
+        GenericAssetRef(const AssetRef<TAsset>& ref) : m_weakPtr(ref.lock()) {}
+
+        /**
+         * @brief Check if the reference is valid
+         * @return true if valid, false if expired
+         */
+        [[nodiscard]] bool isValid() const noexcept {
+            return !m_weakPtr.expired();
+        }
+
+        /**
+         * @brief Cast to a typed asset reference
+         * @tparam TAsset The asset type to cast to
+         * @return A typed AssetRef
+         */
+        template<typename TAsset>
+        [[nodiscard]] AssetRef<TAsset> as() const {
+            auto ptr = m_weakPtr.lock();
+            if (!ptr) {
+                return AssetRef<TAsset>::null();
+            }
+            return AssetRef<TAsset>(std::dynamic_pointer_cast<TAsset>(ptr));
+        }
+
+    private:
+        std::weak_ptr<void> m_weakPtr;
+    };
 
 } // namespace nexo::assets
