@@ -22,6 +22,7 @@
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 
+#include "AssetLocation.hpp"
 #include "AssetRef.hpp"
 
 namespace nexo::assets {
@@ -45,6 +46,7 @@ namespace nexo::assets {
     };
 
     class AssetManager;
+    class AssetCatalog;
 
     struct AssetMetadata {
         AssetType type;              //< Asset type
@@ -52,19 +54,22 @@ namespace nexo::assets {
         uint64_t referenceCount;     //< Number of references to the asset
         AssetID id;                  //< Unique identifier
         AssetManager *manager;       //< Pointer to the asset manager
+        AssetLocation location;      //< Location of the asset
     };
 
     class IAsset {
-        friend class AssetManager;
-        friend class AssetRefBase;
+        friend class AssetCatalog;
         public:
-            IAsset() = delete;
+            //IAsset() = delete;
             virtual ~IAsset() = default;
 
             [[nodiscard]] virtual const AssetMetadata& getMetadata() const { return m_metadata; }
             [[nodiscard]] virtual AssetType getType() const { return getMetadata().type; }
             [[nodiscard]] virtual AssetID getID() const { return getMetadata().id; }
             [[nodiscard]] virtual AssetStatus getStatus() const { return getMetadata().status; }
+
+            [[nodiscard]] virtual bool isLoaded() const { return getStatus() == AssetStatus::LOADED; }
+            [[nodiscard]] virtual bool isErrored() const { return getStatus() == AssetStatus::ERROR; }
         protected:
             explicit IAsset(AssetType type)
                 : m_metadata({
@@ -72,7 +77,8 @@ namespace nexo::assets {
                     .status = AssetStatus::UNLOADED,
                     .referenceCount = 0,
                     .id = boost::uuids::nil_uuid(),
-                    .manager = nullptr
+                    .manager = nullptr,
+                    .location = AssetLocation("default"),
                 })
             {
             }
@@ -85,33 +91,30 @@ namespace nexo::assets {
              */
             [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
 
-            virtual AssetStatus load() = 0;
-            virtual AssetStatus unload() = 0;
+            /*virtual AssetStatus load() = 0;
+            virtual AssetStatus unload() = 0;*/
 
     };
 
     template<typename TAssetData>
     class Asset : public IAsset {
         friend class AssetManager;
+        friend class AssetCatalog;
 
         friend class AssetRef<TAssetData>;
         public:
             virtual ~Asset() = default;
 
-            [[nodiscard]] const AssetMetadata& getMetadata() const { return m_metadata; }
-            [[nodiscard]] AssetType getType() const { return getMetadata().type; }
-            [[nodiscard]] AssetID getID() const { return getMetadata().id; }
-            [[nodiscard]] AssetStatus getStatus() const { return getMetadata().status; }
+            TAssetData *data;
+
         protected:
-            explicit Asset(AssetType type) : IAsset(type)
+            explicit Asset(AssetType type) : IAsset(type), data(nullptr)
             {
             }
-
         private:
-            TAssetData m_data;
 
-            virtual AssetStatus load() = 0;
-            virtual AssetStatus unload() = 0;
+            /*virtual AssetStatus load() = 0;
+            virtual AssetStatus unload() = 0;*/
 
     };
 
