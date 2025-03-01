@@ -17,7 +17,6 @@
 
 #include "ValidatedName.hpp"
 #include "FilenameValidator.hpp"
-#include <regex>
 
 namespace nexo::assets {
 
