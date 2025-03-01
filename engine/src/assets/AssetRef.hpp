@@ -21,9 +21,8 @@
 #include <Logger.hpp>
 #include <memory>
 
-#include "AssetConcepts.hpp"
-
 namespace nexo::assets {
+    class IAsset;
 
     template<typename TAssetData>
     class Asset;
@@ -153,7 +152,13 @@ namespace nexo::assets {
          * @param ref The typed asset reference to convert
          */
         template<typename TAsset>
-        GenericAssetRef(const AssetRef<TAsset>& ref) : m_weakPtr(ref.lock()) {}
+        explicit GenericAssetRef(const AssetRef<TAsset>& ref) : m_weakPtr(ref.lock()) {}
+
+        /**
+         * @brief Construct from a shared_ptr to an asset
+         * @param ptr The shared pointer to the asset
+         */
+        explicit GenericAssetRef(const std::shared_ptr<IAsset>& ptr) : m_weakPtr(ptr) {}
 
         /**
          * @brief Check if the reference is valid
@@ -175,6 +180,14 @@ namespace nexo::assets {
                 return AssetRef<TAsset>::null();
             }
             return AssetRef<TAsset>(std::dynamic_pointer_cast<TAsset>(ptr));
+        }
+
+        /**
+         * @brief Creates a null asset reference
+         * @return An empty GenericAssetRef instance
+         */
+        [[nodiscard]] static GenericAssetRef null() {
+            return {};
         }
 
     private:
