@@ -16,6 +16,8 @@
 
 #include "Asset.hpp"
 
+#include <fstream>
+
 namespace nexo::assets {
 
     /**
@@ -28,13 +30,44 @@ namespace nexo::assets {
             AssetImporter() = default;
             virtual ~AssetImporter() = default;
 
-            /*/**
+            /**
+             * @brief Checks if the importer can read the file at the given path.
+             *
+             * Implementations should open the file and check if related importer is compatible.
+             * @param fsPath The path to the file to check.
+             * @return True if the importer can read the file, false otherwise.
+             */
+            virtual bool canRead(std::filesystem::path fsPath) = 0;
+
+            /**
              * @brief Imports an asset from a file.
              *
-             * @param path The path to the file to import.
+             * This method should be overridden by the derived class to do the actual import.
+             *
+             * @param fsPath The path to the file to import.
              * @return The imported asset.
-             #1#
-            virtual AssetRef<Asset> import(std::filesystem::path path) = 0;*/
+             */
+            virtual IAsset *importImpl(std::filesystem::path fsPath) = 0;
+
+            /**
+             * @brief Imports an asset from a file.
+             *
+             * This method is not intended to be overridden. Implement importImpl() to do the import.
+             * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
+             *
+             * @param fsPath The path to the file to import.
+             * @return The imported asset. Or nullptr if the import failed.
+             */
+            IAsset *import(std::filesystem::path fsPath) noexcept
+            {
+                try {
+                    return importImpl(std::move(fsPath));
+                } catch (const std::exception& e) {
+                    // Log the error
+                    LOG(NEXO_ERROR, "Failed to import asset from file '{}': {}", fsPath.string(), e.what());
+                    return nullptr;
+                }
+            }
     };
 
 } // namespace nexo::assets
