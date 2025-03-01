@@ -11,7 +11,7 @@
 //  Description: Header file for the AssetRef class.
 //               An AssetRef is a reference to an asset, allowing for easy
 //               access to the asset's data. The AssetData memory is handled
-//               by the AssetManager, and the AssetRef is a lightweight
+//               by the AssetCatalog, and the AssetRef is a lightweight
 //               reference to the asset.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,71 +24,75 @@
 namespace nexo::assets {
     class IAsset;
 
-    template<typename TAssetData>
+    template <typename TAssetData>
     class Asset;
+
+    template <typename TAsset>
+    class AssetRef;
 
     class AssetManager;
 
     /**
-     * @brief Template class representing a lightweight reference to an asset.
-     * @tparam TAsset The type of asset data being referenced
-     *
-     * AssetRef provides a thread-safe wrapper around asset data that is managed by the AssetManager.
-     * This class never provides direct access to the underlying asset, ensuring thread-safety
-     * and memory safety by requiring explicit locking for all operations.
+     * @brief A non-templated asset reference for generic asset storage
      */
-    template<typename TAsset>
-    class AssetRef {
+    class GenericAssetRef {
     public:
-        /**
-         * @brief Constructs an AssetRef with the given shared_ptr to asset
-         * @param assetPtr Shared pointer to the asset
-         */
-        explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
-            : m_weakPtr(assetPtr) {}
-
         /**
          * @brief Default constructor creates a null reference
          */
-        AssetRef() = default;
+        GenericAssetRef() = default;
 
         /**
-         * @brief Locks the asset reference, providing safe access
-         * @return A shared_ptr to the asset, or empty shared_ptr if expired
-         *
-         * This is the only method for safely accessing an asset in a multithreaded environment.
-         * The returned shared_ptr will keep the asset alive for as long as it exists.
+         * @brief Construct from a shared_ptr to an asset
+         * @param ptr The shared pointer to the asset
          */
-        [[nodiscard]] std::shared_ptr<TAsset> lock() const noexcept {
-            return m_weakPtr.lock();
-        }
+        explicit GenericAssetRef(const std::shared_ptr<IAsset>& ptr) : m_weakPtr(ptr) {}
 
         /**
-         * @brief Checks if the asset reference is valid
-         * @return true if the reference points to valid data, false otherwise
-         *
-         * Note: This is only a momentary check and may change in multithreaded
-         * environments. Always use lock() for actual asset access.
+         * @brief Check if the reference is valid
+         * @return true if valid, false if expired
          */
         [[nodiscard]] bool isValid() const noexcept {
             return !m_weakPtr.expired();
         }
 
         /**
-         * @brief Checks if the asset is fully loaded
-         * @return true if the asset is loaded, false otherwise
+         * @brief Get a shared_ptr to the referenced asset
+         * @return A shared_ptr to the asset, or nullptr if expired
          */
-        [[nodiscard]] bool isLoaded() const {
-            if (auto ptr = lock()) {
-                return ptr->isLoaded(); // Assumes TAsset has isLoaded() method
-            }
-            return false;
+        // ReSharper disable once CppHiddenFunction
+        [[nodiscard]] std::shared_ptr<IAsset> lock() const noexcept {
+            return m_weakPtr.lock();
         }
 
         /**
-         * @brief Requests the AssetCatalog to reload the asset
+         * @brief Cast to a typed asset reference
+         * @tparam TAsset The asset type to cast to
+         * @return A typed AssetRef
          */
-        void reload() {
+        template<typename TAsset>
+        [[nodiscard]] class AssetRef<TAsset> as() const;  // Implemented below after AssetRef definition
+
+        /**
+         * @brief Boolean conversion operator
+         * @return true if the reference is valid, false otherwise
+         */
+        explicit operator bool() const noexcept {
+            return isValid();
+        }
+
+        /**
+         * @brief Creates a null asset reference
+         * @return An empty GenericAssetRef instance
+         */
+        [[nodiscard]] static GenericAssetRef null() {
+            return {};
+        }
+
+        /**
+         * @brief Requests the AssetCatalog to load the asset
+         */
+        void load() {
             if (auto ptr = lock()) {
                 // TODO: Implement reloadAsset in AssetCatalog
                 // Example: AssetCatalog::getInstance().reloadAsset(ptr);
@@ -107,15 +111,57 @@ namespace nexo::assets {
             }
         }
 
+
+        // Standard copy/move operations
+        GenericAssetRef(const GenericAssetRef&) = default;
+        GenericAssetRef& operator=(const GenericAssetRef&) = default;
+        GenericAssetRef(GenericAssetRef&&) noexcept = default;
+        GenericAssetRef& operator=(GenericAssetRef&&) noexcept = default;
+        virtual ~GenericAssetRef() = default;
+
+    protected:
+        std::weak_ptr<IAsset> m_weakPtr;
+    };
+
+    /**
+     * @brief Template class representing a lightweight reference to an asset.
+     * @tparam TAsset The type of asset data being referenced
+     *
+     * AssetRef provides a thread-safe wrapper around asset data that is managed by the AssetCatalog.
+     * This class never provides direct access to the underlying asset, ensuring thread-safety
+     * and memory safety by requiring explicit locking for all operations.
+     */
+    template<typename TAsset>
+    class AssetRef final : public GenericAssetRef {
+    public:
         /**
-         * @brief Boolean conversion operator
-         * @return true if the reference is valid, false otherwise
-         *
-         * Note: This is only a momentary check and may change in multithreaded
-         * environments. Always use lock() for actual asset access.
+         * @brief Default constructor creates a null reference
          */
-        explicit operator bool() const noexcept {
-            return isValid();
+        AssetRef() = default;
+
+        /**
+         * @brief Constructs an AssetRef with the given shared_ptr to asset
+         * @param assetPtr Shared pointer to the asset
+         */
+        explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
+            : GenericAssetRef(assetPtr) {}
+
+        /**
+         * @brief Locks the asset reference, providing safe access
+         * @return A shared_ptr to the asset, or empty shared_ptr if expired
+         */
+        // ReSharper disable once CppHidingFunction
+        [[nodiscard]] std::shared_ptr<TAsset> lock() const noexcept;
+
+        /**
+         * @brief Checks if the asset is fully loaded
+         * @return true if the asset is loaded, false otherwise
+         */
+        [[nodiscard]] bool isLoaded() const {
+            if (auto ptr = lock()) {
+                return ptr->isLoaded(); // Assumes TAsset has isLoaded() method
+            }
+            return false;
         }
 
         /**
@@ -125,73 +171,20 @@ namespace nexo::assets {
         [[nodiscard]] static AssetRef<TAsset> null() {
             return AssetRef<TAsset>();
         }
-
-        // Standard copy/move operations
-        AssetRef(const AssetRef&) = default;
-        AssetRef& operator=(const AssetRef&) = default;
-        AssetRef(AssetRef&&) noexcept = default;
-        AssetRef& operator=(AssetRef&&) noexcept = default;
-        ~AssetRef() = default;
-
-    private:
-        std::weak_ptr<TAsset> m_weakPtr;
     };
 
-    /**
-     * @brief A non-templated asset reference for generic asset storage
-     */
-    class GenericAssetRef {
-    public:
-        /**
-         * @brief Default constructor creates a null reference
-         */
-        GenericAssetRef() = default;
-
-        /**
-         * @brief Construct from any asset reference type
-         * @param ref The typed asset reference to convert
-         */
-        template<typename TAsset>
-        explicit GenericAssetRef(const AssetRef<TAsset>& ref) : m_weakPtr(ref.lock()) {}
-
-        /**
-         * @brief Construct from a shared_ptr to an asset
-         * @param ptr The shared pointer to the asset
-         */
-        explicit GenericAssetRef(const std::shared_ptr<IAsset>& ptr) : m_weakPtr(ptr) {}
-
-        /**
-         * @brief Check if the reference is valid
-         * @return true if valid, false if expired
-         */
-        [[nodiscard]] bool isValid() const noexcept {
-            return !m_weakPtr.expired();
+    template<typename TAsset>
+    AssetRef<TAsset> GenericAssetRef::as() const {
+        const auto ptr = m_weakPtr.lock();
+        if (!ptr) {
+            return AssetRef<TAsset>::null();
         }
+        return AssetRef<TAsset>(std::dynamic_pointer_cast<TAsset>(ptr));
+    }
 
-        /**
-         * @brief Cast to a typed asset reference
-         * @tparam TAsset The asset type to cast to
-         * @return A typed AssetRef
-         */
-        template<typename TAsset>
-        [[nodiscard]] AssetRef<TAsset> as() const {
-            auto ptr = m_weakPtr.lock();
-            if (!ptr) {
-                return AssetRef<TAsset>::null();
-            }
-            return AssetRef<TAsset>(std::dynamic_pointer_cast<TAsset>(ptr));
-        }
-
-        /**
-         * @brief Creates a null asset reference
-         * @return An empty GenericAssetRef instance
-         */
-        [[nodiscard]] static GenericAssetRef null() {
-            return {};
-        }
-
-    private:
-        std::weak_ptr<void> m_weakPtr;
-    };
-
+    template<typename TAsset>
+    std::shared_ptr<TAsset> AssetRef<TAsset>::lock() const noexcept
+    {
+        return std::static_pointer_cast<TAsset>(GenericAssetRef::lock());
+    }
 } // namespace nexo::assets
