@@ -34,6 +34,11 @@ namespace nexo::assets {
         ) : Exception(std::format("Invalid asset location '{}': {}", assetLocation, message), loc) {};
     };
 
+    /**
+     * @brief AssetLocation is a wrapper of std::string to represent the location of an asset
+     *
+     * It is used to apply our own rules on naming
+     */
     class AssetLocation {
         public:
             explicit AssetLocation(const std::string& fullLocation)
