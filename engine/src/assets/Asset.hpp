@@ -103,7 +103,10 @@ namespace nexo::assets {
 
         friend class AssetRef<TAssetData>;
         public:
-            virtual ~Asset() = default;
+            ~Asset() override
+            {
+                delete data;
+            }
 
             TAssetData *data;
 

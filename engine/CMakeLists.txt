@@ -57,6 +57,8 @@ set(COMMON_SOURCES
         engine/src/assets/AssetName.cpp
         engine/src/assets/AssetName.hpp
         engine/src/assets/AssetLocation.cpp
+        engine/src/assets/AssetCatalog.cpp
+
 )
 
 # Add API-specific sources

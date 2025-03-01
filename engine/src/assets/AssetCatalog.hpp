@@ -19,9 +19,13 @@
 #include "Asset.hpp"
 #include "Assets/Model/Model.hpp"
 #include "Assets/Model/ModelImporter.hpp"
+#include <type_traits>
+#include <typeindex>
+#include <unordered_map>
+#include <memory>
+#include <filesystem>
 
 namespace nexo::assets {
-
 
     /**
     * @class AssetCatalog
@@ -29,79 +33,123 @@ namespace nexo::assets {
     * @brief Singleton class that holds all the assets in the engine.
     */
     class AssetCatalog {
+        private:
+            // Singleton: private constructor and destructor
+            AssetCatalog();
+            ~AssetCatalog() = default;
+
         public:
-            AssetCatalog()
+            // Singleton: Meyers' Singleton Pattern
+            static AssetCatalog& getInstance()
             {
-                setupImporterInstances();
-                auto asset = createEmptyAsset<Model>(AssetLocation("/test.model"));
-                if (auto assetData = asset.lock()) {
-                    if (!assetData->isLoaded())
-                        assetData->data = new ModelData();
-                    assetData->data->scene = nullptr;
-                }
+                static AssetCatalog s_instance;
+                return s_instance;
             }
 
-            /*void addAsset(AssetID id, AssetRef<Asset> asset);
-            void removeAsset(AssetID id);
-            void removeAsset(AssetRef<Asset> asset);
+            // Singleton: delete copy constructor and assignment operator
+            AssetCatalog(AssetCatalog const&)   = delete;
+            void operator=(AssetCatalog const&) = delete;
 
-            [[nodiscard]] AssetRef<Asset> getAsset(AssetID id) const;
-            [[nodiscard]] AssetRef<Asset> getAsset(const std::string &name) const;
+            /**
+             * @brief Delete an asset from the catalog.
+             * @param id The ID of the asset to delete.
+             */
+            void deleteAsset(AssetID id);
 
-            [[nodiscard]] bool hasAsset(AssetID id) const;
-            [[nodiscard]] bool hasAsset(const std::string &name) const;
+            /**
+             * @brief Delete an asset from the catalog.
+             * @param asset The asset to delete.
+             */
+            void deleteAsset(const GenericAssetRef& asset);
 
-            [[nodiscard]] std::size_t size() const;
-*/
-            /*void importAsset(std::string_view location);
-            void importAsset(const AssetLocation& location);*/
+            /**
+             * @brief Get an asset by its ID.
+             * @param id The ID of the asset to get.
+             * @return A reference to the asset, or a null reference if the asset does not exist.
+             */
+            [[nodiscard]] GenericAssetRef getAsset(AssetID id) const;
+
+            /**
+             * @brief Get all assets in the catalog.
+             * @return A vector of all assets in the catalog.
+             */
+            [[nodiscard]] std::vector<GenericAssetRef> getAssets() const;
+
+            /**
+             * @breif Get all assets of a specific type in the catalog.
+             * @tparam AssetType The type of asset to get. (e.g. Model, Texture)
+             * @return A vector of all assets of the specified type in the catalog.
+             */
+            template <typename AssetType>
+                requires std::derived_from<AssetType, IAsset>
+            [[nodiscard]] std::vector<AssetRef<AssetType>> getAssetsOfType() const;
 
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> importAsset(const AssetLocation& location, const std::filesystem::path& fsPath)
-            {
-                const auto importer = m_importers.at(std::type_index(typeid(AssetType)));
-                IAsset *asset = importer->import(fsPath);
-                if (asset->getID().is_nil())
-                    asset->m_metadata.id = boost::uuids::random_generator()();
-                asset->m_metadata.location = location;
+            AssetRef<AssetType> importAsset(const AssetLocation& location, const std::filesystem::path& fsPath);
 
-                auto shared_ptr = std::make_shared<AssetType>(importer->import(fsPath));
-                m_assets[asset->getID()] = shared_ptr;
-                return AssetRef<AssetType>(shared_ptr);
-            }
+            GenericAssetRef importAsset(const AssetLocation& location, const std::filesystem::path& fsPath);
 
             template <typename AssetType, typename... Args>
                 requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> createEmptyAsset(const AssetLocation& location, Args&&... args)
-            {
-                auto shared_ptr = std::make_shared<AssetType>(std::forward<Args>(args)...);
-                shared_ptr->m_metadata.location = location;
-                return AssetRef<AssetType>(shared_ptr);
-            }
+            AssetRef<AssetType> createEmptyAsset(const AssetLocation& location, Args&&... args);
 
         private:
-
-            void setupImporterInstances()
-            {
-                registerImporter<Model, ModelImporter>();
-            }
-            ~AssetCatalog() = default;
+            void setupImporterInstances();
 
             template <typename AssetType, typename TAssetImporter>
-            void registerImporter()
-            {
-                auto importer = std::make_shared<TAssetImporter>();
-                m_importers[std::type_index(typeid(AssetType))] = importer;
-            }
+                requires std::derived_from<AssetType, IAsset>
+                      && std::derived_from<TAssetImporter, AssetImporter>
+            void registerImporter();
 
             std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
-            //std::unordered_map<AssetLocation, AssetID> m_assetIdByLocation;
-
             std::unordered_map<std::type_index, std::shared_ptr<AssetImporter>> m_importers;
-
-
     };
 
+    template<typename AssetType>
+        requires std::derived_from<AssetType, IAsset>
+    std::vector<AssetRef<AssetType>> AssetCatalog::getAssetsOfType() const
+    {
+        std::vector<AssetRef<AssetType>> assets;
+        for (const auto& [id, asset] : m_assets) {
+            if (asset->getType() == AssetType::TYPE)
+                assets.emplace_back(std::static_pointer_cast<AssetType>(asset));
+        }
+        return assets;
+    }
+
+    template<typename AssetType>
+        requires std::derived_from<AssetType, IAsset>
+    AssetRef<AssetType> AssetCatalog::importAsset(const AssetLocation& location, const std::filesystem::path& fsPath)
+    {
+        const auto importer = m_importers.at(std::type_index(typeid(AssetType)));
+        IAsset *asset = importer->import(fsPath);
+        if (asset->getID().is_nil())
+            asset->m_metadata.id = boost::uuids::random_generator()();
+        asset->m_metadata.location = location;
+
+        std::shared_ptr<AssetType> shared_ptr(dynamic_cast<AssetType*>(asset));
+        assert(shared_ptr != nullptr);
+        m_assets[asset->getID()] = shared_ptr;
+        return AssetRef<AssetType>(shared_ptr);
+    }
+
+    template<typename AssetType, typename ... Args>
+        requires std::derived_from<AssetType, IAsset>
+    AssetRef<AssetType> AssetCatalog::createEmptyAsset(const AssetLocation& location, Args&&... args)
+    {
+        auto shared_ptr = std::make_shared<AssetType>(std::forward<Args>(args)...);
+        shared_ptr->m_metadata.location = location;
+        return AssetRef<AssetType>(shared_ptr);
+    }
+
+    template<typename AssetType, typename TAssetImporter>
+        requires std::derived_from<AssetType, IAsset>
+              && std::derived_from<TAssetImporter, AssetImporter>
+    void AssetCatalog::registerImporter()
+    {
+        auto importer = std::make_shared<TAssetImporter>();
+        m_importers[std::type_index(typeid(AssetType))] = importer;
+    }
 
 } // namespace nexo::assets
