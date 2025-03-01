@@ -8,7 +8,7 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        07/12/2024
-//  Description: TODO: desc
+//  Description: Unit tests for the AssetLocation class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
