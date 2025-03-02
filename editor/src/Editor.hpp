@@ -49,9 +49,22 @@ namespace nexo::editor {
     };
 
     class Editor {
-        public:
+        private:
+            // Singleton: private constructor and destructor
             Editor();
             ~Editor() = default;
+
+        public:
+            // Singleton: Meyers' Singleton Pattern
+            static Editor& getInstance()
+            {
+                static Editor s_instance;
+                return s_instance;
+            }
+
+            // Singleton: delete copy constructor and assignment operator
+            Editor(Editor const&)         = delete;
+            void operator=(Editor const&) = delete;
 
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
