@@ -46,7 +46,8 @@ namespace nexo::editor {
 
 			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
 
-	        void showEntityProperties();
+	        void showEntityProperties(ecs::Entity entity);
+			void showLightProperties(const LightProperties &lightProps);
 	        void showComponent(const std::type_index& type);
     };
 };

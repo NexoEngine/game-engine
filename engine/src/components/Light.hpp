@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/glm.hpp>
+
 constexpr unsigned int MAX_DIRECTIONAL_LIGHTS = 8;
 constexpr unsigned int MAX_POINT_LIGHTS = 8;
 constexpr unsigned int MAX_SPOT_LIGHTS = 8;

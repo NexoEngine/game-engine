@@ -19,6 +19,8 @@
 
 #include "EntityProperties/RenderProperty.hpp"
 #include "EntityProperties/TransformProperty.hpp"
+#include "Components/EntityPropertiesComponents.hpp"
+#include "SceneManagerBridge.hpp"
 #include "tinyfiledialogs.h"
 
 #include "Components/Components.hpp"
@@ -178,13 +180,21 @@ namespace nexo::editor
         ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
 
-
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        const int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
+        if (selectedEntity != -1)
         {
-            LOG(NEXO_INFO, "right click on inspector\n");
+        	if (m_sceneManagerBridge->getSelectionType() == SelectionType::ENTITY && std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData()))
+         	{
+          		const auto& [layerProps, entity] = std::get<EntityProperties>(m_sceneManagerBridge->getData());
+            	showEntityProperties(entity);
+          	}
+           if (m_sceneManagerBridge->getSelectionType() == SelectionType::DIR_LIGHT && std::holds_alternative<LightProperties>(m_sceneManagerBridge->getData()))
+           {
+           		const auto &lightProps = std::get<LightProperties>(m_sceneManagerBridge->getData());
+             	showLightProperties(lightProps);
+           }
         }
 
-        showEntityProperties();
         ImGui::End();
 
         if (RenderProperty::showMaterialInspector)
@@ -198,13 +208,9 @@ namespace nexo::editor
 
     }
 
-    void InspectorWindow::showEntityProperties()
+    void InspectorWindow::showEntityProperties(ecs::Entity entity)
     {
-        const int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
         auto const& App = getApp();
-        if (selectedEntity == -1) return;
-        if (!std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData())) return;
-        const auto& [layerProps, entity] = std::get<EntityProperties>(m_sceneManagerBridge->getData());
 
         const std::vector<std::type_index> componentsType = App.getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
@@ -214,6 +220,15 @@ namespace nexo::editor
                 m_componentShowFunctions[type](entity);
             }
         }
+    }
+
+    void InspectorWindow::showLightProperties(const LightProperties& lightProps)
+    {
+    	bool open = EntityPropertiesComponents::drawHeader("##LightNode", "Light Properties");
+     	if (open)
+      	{
+       		ImGui::TreePop();
+       	}
     }
 
     void InspectorWindow::update()
