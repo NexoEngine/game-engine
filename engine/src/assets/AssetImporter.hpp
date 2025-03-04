@@ -15,6 +15,7 @@
 #pragma once
 
 #include "Asset.hpp"
+#include "AssetImporterContext.hpp"
 
 #include <fstream>
 
