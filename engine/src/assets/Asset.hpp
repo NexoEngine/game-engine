@@ -34,14 +34,25 @@ namespace nexo::assets {
         MUSIC,
         FONT,
         SHADER,
-        SCRIPT
+        SCRIPT,
+        _COUNT
+    };
+
+    const std::array<std::string, static_cast<int>(AssetType::_COUNT)> AssetTypeNames = {
+        "Texture",
+        "Model",
+        "Sound",
+        "Music",
+        "Font",
+        "Shader",
+        "Script"
     };
 
     using AssetID = boost::uuids::uuid;
 
     enum class AssetStatus {
-        LOADED,
         UNLOADED,
+        LOADED,
         ERROR
     };
 
@@ -70,6 +81,19 @@ namespace nexo::assets {
 
             [[nodiscard]] virtual bool isLoaded() const { return getStatus() == AssetStatus::LOADED; }
             [[nodiscard]] virtual bool isErrored() const { return getStatus() == AssetStatus::ERROR; }
+
+            /**
+             * @brief Get the asset data pointer
+             * @return Raw pointer to the asset data
+             */
+            [[nodiscard]] virtual void* getRawData() const = 0;
+
+            /**
+             * @brief Set the asset data pointer
+             * @param rawData Raw pointer to the asset data
+             * @note This transfers ownership of the data to the asset, which will delete it in its destructor
+             */
+            virtual void setRawData(void* rawData) = 0;
         protected:
             explicit IAsset(AssetType type)
                 : m_metadata({
@@ -109,6 +133,16 @@ namespace nexo::assets {
             }
 
             TAssetData *data;
+
+        // Implementation of IAsset virtual methods
+        [[nodiscard]] void* getRawData() const override {
+            return data;
+        }
+
+        void setRawData(void* rawData) override {
+            delete data;  // Clean up existing data
+            data = static_cast<TAssetData*>(rawData);  // Set new data
+        }
 
         protected:
             explicit Asset(AssetType type) : IAsset(type), data(nullptr)
