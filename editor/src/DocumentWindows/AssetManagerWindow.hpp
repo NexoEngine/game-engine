@@ -17,6 +17,8 @@
 #include <vector>
 #include <string>
 #include <imgui.h>
+#include <assets/Asset.hpp>
+#include <assets/AssetRef.hpp>
 
 namespace nexo::editor {
 
@@ -64,16 +66,16 @@ namespace nexo::editor {
             } color;
         };
 
-        std::vector<Asset> assets;
-        std::vector<int> selectedAssets;
-        LayoutSettings layout;
+        std::vector<Asset> m_assets;
+        std::vector<int> m_selectedAssets;
+        LayoutSettings m_layout;
 
         void calculateLayout(float availWidth);
         void drawMenuBar();
         void drawAssetsGrid();
-        void drawAsset(const Asset& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize);
+        void drawAsset(const assets::GenericAssetRef& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize);
         void handleSelection(int index, bool isSelected);
-        ImU32 getAssetTypeOverlayColor(int type) const;
+        ImU32 getAssetTypeOverlayColor(assets::AssetType type) const;
     };
 
 } // namespace nexo::editor
