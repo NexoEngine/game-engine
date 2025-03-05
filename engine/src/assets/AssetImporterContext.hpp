@@ -21,6 +21,7 @@
 
 #include "AssetImportParameters.hpp"
 
+#include "Asset.hpp"
 
 namespace nexo::assets {
     struct AssetDependency;
@@ -64,49 +65,42 @@ namespace nexo::assets {
             AssetImporterContext() = default;
             ~AssetImporterContext() = default;
 
+            /**
+             * @brief Set the main asset data for this context
+             * @param data The main asset data
+             * @note This method must be called by the importer to set the main asset data
+             */
+            void setMainAssetData(IAsset *data);
 
-            void setMainAssetData(IAsset *data) {
-                m_mainAsset = std::shared_ptr<IAsset>(data);
-            }
+            /**
+             * @brief Get the main asset data for this context
+             * @return The main asset data
+             */
+            [[nodiscard]] GenericAssetRef getMainAsset() const;
 
-            [[nodiscard]] GenericAssetRef getMainAsset() const {
-                return GenericAssetRef(m_mainAsset);
-            }
-
+            /**
+             * @brief Add a dependency to the context
+             * @tparam AssetType The type of asset to add as a dependency
+             * @param input The input data for the importer
+             * @return A reference to the dependency asset
+             */
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
             [[nodiscard]] GenericAssetRef addDependency(const ImporterInputVariant& input);
 
-            [[nodiscard]] const std::vector<AssetDependency>& getDependencies() const {
-                return m_dependencies;
-            }
+            [[nodiscard]] const std::vector<AssetDependency>& getDependencies() const;
 
-        template <typename ParamType>
+            template <typename ParamType>
         requires std::derived_from<ParamType, ImportParametersBase>
-        void setParameters(const ParamType& params) {
-                        m_jsonParameters = params.toJson();
-                    }
+        void setParameters(const ParamType& params);
 
-        void setParameters(const nlohmann::json& params) {
-            m_jsonParameters = params;
-        }
+            void setParameters(const nlohmann::json& params);
 
-        template <typename ParamType>
+            template <typename ParamType>
             requires std::derived_from<ParamType, ImportParametersBase>
-        [[nodiscard]] ParamType getParameters() const {
-                ParamType params;
-                if (!m_jsonParameters.is_null()) {
-                    params.fromJson(m_jsonParameters);
-                }
-                return params;
-            }
+        [[nodiscard]] ParamType getParameters() const;
 
-        [[nodiscard]] nlohmann::json getParameters() const {
-            return m_jsonParameters;
-        }
-
-
-
+            [[nodiscard]] nlohmann::json getParameters() const;
     };
 
     /**
