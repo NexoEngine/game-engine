@@ -17,32 +17,14 @@
 #include <string>
 #include <vector>
 #include <nlohmann/json.hpp>
+#include "json.hpp"
 
 namespace nexo::assets {
 
     /**
-     * @brief Base class for all import parameter structs
-     */
-    struct ImportParametersBase {
-        /**
-         * @brief Convert parameters to JSON
-         * @return JSON representation of parameters
-         */
-        virtual nlohmann::json toJson() const = 0;
-
-        /**
-         * @brief Apply JSON values to parameters
-         * @param j JSON object to apply
-         */
-        virtual void fromJson(const nlohmann::json& j) = 0;
-
-        virtual ~ImportParametersBase() = default;
-    };
-
-    /**
      * @brief Import parameters for 3D models
      */
-    struct ModelImportParameters : public ImportParametersBase {
+    struct ModelImportParameters {
         // Mesh processing options
         bool calculateTangentSpace = false;
         bool joinIdenticalVertices = true;
@@ -79,7 +61,7 @@ namespace nexo::assets {
     /**
      * @brief Import parameters for textures
      */
-    struct TextureImportParameters : public ImportParametersBase {
+    struct TextureImportParameters {
         bool generateMipmaps = true;
         bool convertToSRGB = true;
         bool flipVertically = true;
