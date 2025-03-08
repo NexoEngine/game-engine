@@ -14,6 +14,8 @@
 
 #include "AssetCatalog.hpp"
 
+#include <Path.hpp>
+
 namespace nexo::assets {
     AssetCatalog::AssetCatalog()
     {
@@ -27,6 +29,8 @@ namespace nexo::assets {
         if (const auto assetData = asset.lock()) {
             m_assets[assetData->getID()] = assetData;
         }
+        std::filesystem::path path = nexo::Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf");
+        importAsset<Model>(AssetLocation("my_package::9mn@foo/bar/"), ImporterFileInput{path});
     }
 
     void AssetCatalog::deleteAsset(AssetID id)
@@ -68,40 +72,58 @@ namespace nexo::assets {
                });
     }
 
-    GenericAssetRef AssetCatalog::importAsset(const AssetLocation& location, const std::filesystem::path& fsPath)
+    GenericAssetRef AssetCatalog::importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant)
     {
         auto importersMap = m_importers.getImporters();
         for (const auto& importers: importersMap | std::views::values) {
             if (importers.empty())
                 continue;
-            if (const auto asset = importAssetTryImporters(location, fsPath, importers))
+            if (const auto asset = importAssetTryImporters(location, inputVariant, importers))
                 return asset;
         }
         return GenericAssetRef::null();
     }
 
     GenericAssetRef AssetCatalog::importAssetUsingImporter(const AssetLocation& location,
-        const std::filesystem::path& fsPath, const std::shared_ptr<AssetImporter>& importer)
+        const ImporterInputVariant& inputVariant, const std::shared_ptr<AssetImporter>& importer)
     {
-        IAsset *asset = importer->import(fsPath);
+        AssetImporterContext ctx;
+        ctx.input = inputVariant;
+        ctx.location = location;
+        importer->import(ctx);
+        auto asset = ctx.getMainAsset();
         if (!asset)
             return GenericAssetRef::null();
         if (asset->getID().is_nil())
             asset->m_metadata.id = boost::uuids::random_generator()();
-        asset->m_metadata.location = location;
+        if (asset->m_metadata.location == AssetLocation("default"))
+            asset->m_metadata.location = location;
 
-        const std::shared_ptr<IAsset> shared_ptr(asset);
-        m_assets[asset->getID()] = shared_ptr;
-        return GenericAssetRef(shared_ptr);
+        m_assets[asset->getID()] = asset;
+
+        for (const auto& dep: ctx.getDependencies()) {
+            GenericAssetRef depAssetRef = GenericAssetRef::null();
+            if (dep.importer != nullptr) {
+                depAssetRef = importAssetUsingImporter(ctx.location, ctx.input, dep.importer);
+            } else {
+                const auto& importerList = m_importers.getImportersForType(dep.typeIdx);
+                depAssetRef = importAssetTryImporters(dep.ctx.location, dep.ctx.input, importerList);
+            }
+            if (const auto depAsset = depAssetRef.lock()) {
+                depAsset->m_metadata.location = dep.ctx.location;
+            }
+        }
+
+        return GenericAssetRef(asset);
     }
 
     GenericAssetRef AssetCatalog::importAssetTryImporters(const AssetLocation& location,
-        const std::filesystem::path& fsPath, const std::vector<std::shared_ptr<AssetImporter>>& importers)
+        const ImporterInputVariant& inputVariant, const std::vector<std::shared_ptr<AssetImporter>>& importers)
     {
         std::vector<std::shared_ptr<AssetImporter>> untriedImporters;
         for (const auto& importer : importers) {
-            if (importer->canRead(fsPath)) {
-                auto asset = importAssetUsingImporter(location, fsPath, importer);
+            if (importer->canRead(inputVariant)) {
+                auto asset = importAssetUsingImporter(location, inputVariant, importer);
                 if (asset)
                     return asset;
             } else {
@@ -110,7 +132,7 @@ namespace nexo::assets {
         }
         // If "compatibles" importers failed, try even "incompatibles" ones
         for (const auto& importer : untriedImporters) {
-            auto asset = importAssetUsingImporter(location, fsPath, importer);
+            auto asset = importAssetUsingImporter(location, inputVariant, importer);
             if (asset)
                 return asset;
         }

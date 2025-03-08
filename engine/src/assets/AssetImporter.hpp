@@ -35,20 +35,20 @@ namespace nexo::assets {
              * @brief Checks if the importer can read the file at the given path.
              *
              * Implementations should open the file and check if related importer is compatible.
-             * @param fsPath The path to the file to check.
+             * @param inputVariant The input variant to check. Can be a file path or memory buffer.
              * @return True if the importer can read the file, false otherwise.
              */
-            virtual bool canRead(std::filesystem::path fsPath) = 0;
+            virtual bool canRead(const ImporterInputVariant& inputVariant) = 0;
 
             /**
              * @brief Imports an asset from a file.
              *
              * This method should be overridden by the derived class to do the actual import.
+             * @warning Implementation MUST set the main asset data using AssetImporterContext::setMainAssetData() before return
              *
-             * @param fsPath The path to the file to import.
-             * @return The imported asset.
+             * @param ctx The context for the import.
              */
-            virtual IAsset *importImpl(std::filesystem::path fsPath) = 0;
+            virtual void importImpl(AssetImporterContext& ctx) = 0;
 
             /**
              * @brief Imports an asset from a file.
@@ -56,17 +56,19 @@ namespace nexo::assets {
              * This method is not intended to be overridden. Implement importImpl() to do the import.
              * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
              *
-             * @param fsPath The path to the file to import.
-             * @return The imported asset. Or nullptr if the import failed.
+             * @param ctx The context for the import.
              */
-            IAsset *import(std::filesystem::path fsPath) noexcept
+            void import(AssetImporterContext& ctx) noexcept
             {
                 try {
-                    return importImpl(std::move(fsPath));
+                    importImpl(ctx);
+                    if (ctx.getMainAsset() == nullptr) {
+                        LOG(NEXO_ERROR, "Importer did not set main asset data in context");
+                        return;
+                    }
                 } catch (const std::exception& e) {
                     // Log the error
-                    LOG(NEXO_ERROR, "Failed to import asset from file '{}': {}", fsPath.string(), e.what());
-                    return nullptr;
+                    LOG(NEXO_ERROR, "Failed to import asset from file '{}': {}", ctx.location.getPath(), e.what());
                 }
             }
     };

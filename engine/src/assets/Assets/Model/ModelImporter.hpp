@@ -28,28 +28,55 @@ namespace nexo::assets {
 
     class ModelImporter final : public AssetImporter {
         public:
-            static constexpr std::array FILE_EXTENSIONS{".obj", ".fbx", ".3ds", ".blend", ".dae", ".ply", ".stl", ".x3d"};
-
             ModelImporter() = default;
             ~ModelImporter() override = default;
 
-            bool canRead(const std::filesystem::path fsPath) override
+            bool canRead(const ImporterInputVariant& inputVariant) override
             {
+                const char* extension = nullptr;
+                if (std::holds_alternative<ImporterFileInput>(inputVariant))
+                    extension = std::get<ImporterFileInput>(inputVariant).filePath.extension().string().c_str();
+                if (std::holds_alternative<ImporterMemoryInput>(inputVariant)) {
+                    const auto& mem = std::get<ImporterMemoryInput>(inputVariant);
+                    if (mem.fileExtension)
+                        extension = mem.fileExtension->c_str();
+                }
+                if (!extension)
+                    return false;
                 const Assimp::Importer importer;
-                return importer.IsExtensionSupported(fsPath.extension().string());
+                return importer.IsExtensionSupported(extension);
             }
 
-            Model* importImpl(std::filesystem::path fsPath) override
+            void importImpl(AssetImporterContext& ctx) override
             {
-                const auto model = new Model();
-                const aiScene *scene = model->importer.ReadFile(fsPath.string(),
-                    aiProcess_Triangulate
+                const auto model = std::make_shared<Model>();
+                auto param = ctx.getParameters<ModelImportParameters>();
+                int flags = aiProcess_Triangulate
                     | aiProcess_FlipUVs
-                    | aiProcess_GenNormals);
-                if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-                    return nullptr;
+                    | aiProcess_GenNormals;
+                if (param.calculateTangentSpace)
+                    flags |= aiProcess_CalcTangentSpace;
+                if (param.joinIdenticalVertices)
+                    flags |= aiProcess_JoinIdenticalVertices;
+                if (param.generateSmoothNormals)
+                    flags |= aiProcess_GenSmoothNormals;
+                if (param.optimizeMeshes)
+                    flags |= aiProcess_OptimizeMeshes;
+                const aiScene* scene = nullptr;
+                if (std::holds_alternative<ImporterFileInput>(ctx.input))
+                    scene = model->importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath, flags);
+                if (std::holds_alternative<ImporterMemoryInput>(ctx.input)) {
+                    auto memInput = std::get<ImporterMemoryInput>(ctx.input);
+                    scene = model->importer.ReadFileFromMemory(memInput.memoryData.data(), memInput.memoryData.size(), flags, memInput.fileExtension ? memInput.fileExtension->c_str() : nullptr);
+                }
+                if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+                    //log error TODO: improve error handling in importers
+                    auto error = model->importer.GetErrorString();
+                    LOG(NEXO_ERROR, "Error while importing model: {}: {}", ctx.location.getPath(), error);
+                }
+                model->data = new ModelData();
                 model->data->scene = scene;
-                return model;
+                ctx.setMainAssetData(model);
             }
     };
 

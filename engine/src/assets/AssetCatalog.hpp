@@ -103,12 +103,12 @@ namespace nexo::assets {
 
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> importAsset(const AssetLocation& location, const std::filesystem::path& fsPath);
+            AssetRef<AssetType> importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
 
 
-            GenericAssetRef importAsset(const AssetLocation& location, const std::filesystem::path& fsPath);
-            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const std::filesystem::path& fsPath, const std::shared_ptr<AssetImporter>& importer);
-            GenericAssetRef importAssetTryImporters(const AssetLocation& location, const std::filesystem::path& fsPath, const std::vector<std::shared_ptr<AssetImporter>>& importers);
+            GenericAssetRef importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
+            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::shared_ptr<AssetImporter>& importer);
+            GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<std::shared_ptr<AssetImporter>>& importers);
 
             template <typename AssetType, typename... Args>
                 requires std::derived_from<AssetType, IAsset>
@@ -152,10 +152,10 @@ namespace nexo::assets {
 
     template<typename AssetType>
         requires std::derived_from<AssetType, IAsset>
-    AssetRef<AssetType> AssetCatalog::importAsset(const AssetLocation& location, const std::filesystem::path& fsPath)
+    AssetRef<AssetType> AssetCatalog::importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant)
     {
         auto importers = m_importers.getImportersForType<AssetType>();
-        return importAssetTryImporters(location, fsPath, importers).template as<AssetType>();
+        return importAssetTryImporters(location, inputVariant, importers).template as<AssetType>();
     }
 
     template<typename AssetType, typename ... Args>
