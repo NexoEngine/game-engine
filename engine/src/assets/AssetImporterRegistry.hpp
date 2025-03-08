@@ -151,14 +151,10 @@ namespace nexo::assets {
         auto& importersVec = m_importers[typeIdx];
         auto& importersDetailsVec = m_importersDetails[typeIdx];
 
-        for (size_t i = 0; i < importersVec.size(); ++i) {
-            if (importersDetailsVec[i].priority < priority) {
-                importersVec.insert(importersVec.begin() + static_cast<long>(i), importer);
-                importersDetailsVec.insert(importersDetailsVec.begin() + static_cast<long>(i), {priority});
-                return;
-            }
-        }
-
+        size_t i = 0;
+        for (; i < importersVec.size() && importersDetailsVec[i].priority < priority; ++i);
+        importersVec.insert(importersVec.begin() + static_cast<long>(i), importer);
+        importersDetailsVec.insert(importersDetailsVec.begin() + static_cast<long>(i), {priority});
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
