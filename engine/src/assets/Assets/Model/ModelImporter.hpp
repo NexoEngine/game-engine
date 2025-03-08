@@ -33,16 +33,14 @@ namespace nexo::assets {
 
             bool canRead(const ImporterInputVariant& inputVariant) override
             {
-                const char* extension = nullptr;
+                std::string extension;
                 if (std::holds_alternative<ImporterFileInput>(inputVariant))
-                    extension = std::get<ImporterFileInput>(inputVariant).filePath.extension().string().c_str();
+                    extension = std::get<ImporterFileInput>(inputVariant).filePath.extension().string();
                 if (std::holds_alternative<ImporterMemoryInput>(inputVariant)) {
                     const auto& mem = std::get<ImporterMemoryInput>(inputVariant);
                     if (mem.fileExtension)
-                        extension = mem.fileExtension->c_str();
+                        extension = mem.fileExtension.value();
                 }
-                if (!extension)
-                    return false;
                 const Assimp::Importer importer;
                 return importer.IsExtensionSupported(extension);
             }
