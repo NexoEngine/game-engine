@@ -85,6 +85,22 @@ namespace nexo::assets {
                 _path = extractedPath;
             }
 
+            bool operator==(const AssetLocation& asset_location) const
+            {
+                return _name == asset_location._name && _packName == asset_location._packName && _path == asset_location._path;
+            }
+
+            bool operator==(const std::string& fullLocation) const
+            {
+                std::string extractedPackName;
+                std::string extractedAssetName;
+                std::string extractedPath;
+
+                parseFullLocation(fullLocation, extractedAssetName, extractedPath, extractedPackName);
+
+                return _name == AssetName(extractedAssetName) && _packName == AssetPackName(extractedPackName) && _path == extractedPath;
+            }
+
             /**
             * @brief Parse a full asset location string into its components
             * @param fullLocation The full location string to parse
@@ -113,6 +129,7 @@ namespace nexo::assets {
                 } else {
                     extractedPath.clear();
                 }
+                // TODO: maybe trim spaces?
                 extractedAssetName = fullLocation;
             }
 
