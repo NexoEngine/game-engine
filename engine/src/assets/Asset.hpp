@@ -145,7 +145,7 @@ namespace nexo::assets {
         }
 
         protected:
-            explicit Asset(AssetType type) : IAsset(type), data(nullptr)
+            explicit Asset(const AssetType type) : IAsset(type), data(nullptr)
             {
             }
         private:
