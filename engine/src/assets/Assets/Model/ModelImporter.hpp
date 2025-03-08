@@ -62,7 +62,7 @@ namespace nexo::assets {
                     flags |= aiProcess_OptimizeMeshes;
                 const aiScene* scene = nullptr;
                 if (std::holds_alternative<ImporterFileInput>(ctx.input))
-                    scene = model->importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath, flags);
+                    scene = model->importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
                 if (std::holds_alternative<ImporterMemoryInput>(ctx.input)) {
                     auto memInput = std::get<ImporterMemoryInput>(ctx.input);
                     scene = model->importer.ReadFileFromMemory(memInput.memoryData.data(), memInput.memoryData.size(), flags, memInput.fileExtension ? memInput.fileExtension->c_str() : nullptr);
