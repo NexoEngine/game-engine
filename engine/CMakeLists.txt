@@ -46,6 +46,7 @@ set(COMMON_SOURCES
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
         engine/src/systems/OnSceneDeletedSystem.cpp
+        engine/src/systems/PhysicsSystem.cpp
 )
 
 # Add API-specific sources
@@ -96,6 +97,10 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+
+# joltphysics
+find_package(Jolt CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)

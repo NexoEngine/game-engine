@@ -30,6 +30,7 @@
 #include "components/Light.hpp"
 
 #include "systems/OnSceneDeletedSystem.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -212,6 +213,8 @@ namespace nexo {
             std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
+            system::PhysicsSystem physicsSystem;
     };
 }
 
