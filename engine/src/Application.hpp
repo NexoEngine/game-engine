@@ -31,6 +31,7 @@
 
 #include "systems/CameraSystem.hpp"
 #include "systems/LightSystem.hpp"
+#include "systems/PhysicsSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
@@ -271,5 +272,7 @@ namespace nexo {
             std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
+            system::PhysicsSystem physicsSystem;
     };
 }

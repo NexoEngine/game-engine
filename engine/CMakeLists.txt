@@ -52,6 +52,7 @@ set(COMMON_SOURCES
         engine/src/systems/RenderCommandSystem.cpp
         engine/src/systems/RenderBillboardSystem.cpp
         engine/src/systems/LightSystem.cpp
+        engine/src/systems/PhysicsSystem.cpp
         engine/src/systems/ScriptingSystem.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
@@ -126,6 +127,10 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+
+# joltphysics
+find_package(Jolt CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 ###########################################
 # Scripting
