@@ -49,6 +49,8 @@ set(COMMON_SOURCES
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderSystem.cpp
         engine/src/systems/LightSystem.cpp
+        engine/src/systems/OnSceneDeletedSystem.cpp
+        engine/src/systems/PhysicsSystem.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
@@ -112,6 +114,10 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+
+# joltphysics
+find_package(Jolt CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
