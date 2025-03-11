@@ -375,6 +375,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::show()
     {
+    	return;
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
@@ -483,6 +484,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::update()
     {
+        return;
     	auto &app = nexo::getApp();
         nextNodeId = 0;
         root_.uiName = "Scenes";

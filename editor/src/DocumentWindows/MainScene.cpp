@@ -18,6 +18,8 @@
 
 #include "EntityFactory2D.hpp"
 #include "EntityFactory3D.hpp"
+#include "LightFactory.hpp"
+#include "CameraFactory.hpp"
 #include "Nexo.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
@@ -65,7 +67,7 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
         auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_newCamera = EntityFactoryUtils::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
+        m_newCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
         app.getNewSceneManager().getScene(m_newSceneId).addEntity(m_newCamera);
         if (m_defaultScene)
             loadDefaultEntities(layerId);
@@ -89,15 +91,19 @@ namespace nexo::editor {
     void MainScene::loadDefaultEntities(const scene::LayerId defaultLayerId) const
     {
         auto &app = getApp();
-        ecs::Entity lights = EntityFactoryUtils::createLights(glm::vec3(0.5f));
-        auto &lightComponent = app.m_coordinator->getComponent<components::LightComponent>(lights);
-        lightComponent.addPointLight({1.2f, 5.0f, 0.1f});
-        lightComponent.addDirectionalLight({0.2f, -1.0f, -0.3f});
-        lightComponent.addSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f});
-        app.getNewSceneManager().getScene(m_newSceneId).addEntity(lights);
+        scene::NewScene &scene = app.getNewSceneManager().getScene(m_newSceneId);
+        ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
+        scene.addEntity(ambientLight);
+        ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
+        scene.addEntity(pointLight);
+        ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
+        scene.addEntity(directionalLight);
+        ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
+        scene.addEntity(spotLight);
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 0.5f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.getNewSceneManager().getScene(m_newSceneId).addEntity(basicCube);
+
     }
 
     void MainScene::setupWindow()
@@ -341,11 +347,6 @@ namespace nexo::editor {
         auto &app = getApp();
 
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_newCamera);
-        //cameraComponent.m_renderTarget->bind();
-        //renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 1.0f});
-        //renderer::RenderCommand::clear();
-     		//	cameraComponent.m_renderTarget->clearAttachment<int>(1, -1);
-
         runEngine(m_newSceneId, RenderingType::FRAMEBUFFER);
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
         {
@@ -375,7 +376,6 @@ namespace nexo::editor {
                 }
             }
         }
-        //cameraComponent.m_renderTarget->unbind();
     }
 
     void MainScene::addDefaultCameraToLayer(const scene::LayerId id) const
