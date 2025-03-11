@@ -1,4 +1,4 @@
-//// SceneComponents.hpp //////////////////////////////////////////////////////
+//// RenderSystem.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,25 +7,17 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        12/11/2024
-//  Description: Header file for the scene components
+//  Date:        09/03/2025
+//  Description: Header file for the render system
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include <set>
+#include "ecs/System.hpp"
 
-namespace nexo::components {
-
-    struct InActiveScene {
-        std::set<unsigned int> sceneIds;
-    };
-
-    struct SceneTag {
-    	unsigned int id;
-    	bool isActive = true;
-     	bool isRendered = true;
-    };
-
+namespace nexo::system {
+	class RenderSystem : public ecs::System {
+		public:
+			void update();
+	};
 }
