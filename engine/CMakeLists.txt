@@ -44,11 +44,16 @@ set(COMMON_SOURCES
         engine/src/core/layer/LayerStack.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
+        engine/src/core/scene/NewScene.cpp
+        engine/src/core/scene/NewSceneManager.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Components.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
         engine/src/systems/OnSceneDeletedSystem.cpp
+        engine/src/systems/CameraSystem.cpp
+        engine/src/systems/RenderSystem.cpp
+        engine/src/systems/LightSystem.cpp
 )
 
 # Add API-specific sources
