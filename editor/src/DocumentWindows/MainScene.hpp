@@ -58,6 +58,8 @@ namespace nexo::editor {
             std::shared_ptr<camera::CameraController> m_camera;
             std::set<scene::LayerId> m_hiddenLayers;
             scene::SceneId _sceneID{};
+            int m_newSceneId = -1;
+            ecs::Entity m_newCamera;
 
             std::shared_ptr<renderer::Framebuffer> m_framebuffer;
 
