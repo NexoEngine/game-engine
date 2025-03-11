@@ -16,15 +16,21 @@
 
 #include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
+#include <sys/types.h>
 
 #include "components/Components.hpp"
 #include "components/Camera.hpp"
+#include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Uuid.hpp"
 #include "core/camera/PerspectiveCamera.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include "systems/CameraSystem.hpp"
+#include "systems/lights/DirectionalLightsSystem.hpp"
+#include "systems/lights/PointLightsSystem.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -56,7 +62,11 @@ namespace nexo {
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
-        m_coordinator->registerComponent<components::LightComponent>();
+        m_coordinator->registerComponent<components::AmbientLightComponent>();
+        m_coordinator->registerComponent<components::PointLightComponent>();
+        m_coordinator->registerComponent<components::DirectionalLightComponent>();
+        m_coordinator->registerComponent<components::SpotLightComponent>();
+        m_coordinator->registerComponent<components::UuidComponent>();
         components::RenderContext renderContext;
         renderContext.renderer3D.init();
         m_coordinator->registerSingletonComponent<components::RenderContext>(renderContext);
@@ -157,24 +167,32 @@ namespace nexo {
         signatureOnSceneDelete.set(m_coordinator->getComponentType<components::InActiveScene>());
         m_coordinator->setSystemSignature<system::OnSceneDeleted>(signatureOnSceneDelete);
 
-        m_cameraContextSystem = m_coordinator->registerSystem<system::CameraContextSystem>();
-        ecs::Signature signatureCameraContextSystem;
-        signatureCameraContextSystem.set(m_coordinator->getComponentType<components::CameraComponent>());
-        signatureCameraContextSystem.set(m_coordinator->getComponentType<components::SceneTag>());
-        m_coordinator->setSystemSignature<system::CameraContextSystem>(signatureCameraContextSystem);
+        m_cameraContextSystem = registerSystem<system::CameraContextSystem,
+        								       components::CameraComponent,
+        								       components::SceneTag>();
 
-        m_renderSystem = m_coordinator->registerSystem<system::RenderSystem>();
-        ecs::Signature signatureRenderSystem;
-        signatureRenderSystem.set(m_coordinator->getComponentType<components::RenderComponent>());
-        signatureRenderSystem.set(m_coordinator->getComponentType<components::TransformComponent>());
-        signatureRenderSystem.set(m_coordinator->getComponentType<components::SceneTag>());
-        m_coordinator->setSystemSignature<system::RenderSystem>(signatureRenderSystem);
+        m_renderSystem = registerSystem<system::RenderSystem,
+        				      		    components::RenderComponent,
+        						        components::TransformComponent,
+        								components::SceneTag>();
 
-        m_lightSystem = m_coordinator->registerSystem<system::LightSystem>();
-        ecs::Signature signatureLightSystem;
-        signatureLightSystem.set(m_coordinator->getComponentType<components::LightComponent>());
-        signatureLightSystem.set(m_coordinator->getComponentType<components::SceneTag>());
-        m_coordinator->setSystemSignature<system::LightSystem>(signatureLightSystem);
+        auto pointLightSystem = registerSystem<system::PointLightsSystem,
+        								       components::PointLightComponent,
+        								       components::SceneTag>();
+
+        auto directionalLightSystem = registerSystem<system::DirectionalLightsSystem,
+        											 components::DirectionalLightComponent,
+        											 components::SceneTag>();
+
+        auto spotLightSystem = registerSystem<system::SpotLightsSystem,
+        									  components::SpotLightComponent,
+        									  components::SceneTag>();
+
+        auto ambientLightSystem = registerSystem<system::AmbientLightSystem,
+        										 components::AmbientLightComponent,
+        										 components::SceneTag>();
+
+        m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
     }
 
     Application::Application()

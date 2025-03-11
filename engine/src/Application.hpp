@@ -216,6 +216,18 @@ namespace nexo {
             void registerSignalListeners();
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
+            template<typename System, typename... Components>
+            std::shared_ptr<System> registerSystem()
+            {
+	            auto system = m_coordinator->registerSystem<System>();
+
+	            ecs::Signature signature;
+	            (signature.set(m_coordinator->getComponentType<Components>()), ...);
+
+	            m_coordinator->setSystemSignature<System>(signature);
+
+	            return system;
+            }
             void registerSystems();
 
             void displayProfileResults() const;
