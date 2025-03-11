@@ -13,6 +13,8 @@ set(COMMON_SOURCES
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
+        engine/src/LightFactory.cpp
+        engine/src/CameraFactory.cpp
         engine/src/Application.cpp
         engine/src/Application.cpp
         engine/src/renderer/Window.cpp
@@ -54,6 +56,10 @@ set(COMMON_SOURCES
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderSystem.cpp
         engine/src/systems/LightSystem.cpp
+        engine/src/systems/lights/AmbientLightSystem.cpp
+        engine/src/systems/lights/PointLightsSystem.cpp
+        engine/src/systems/lights/DirectionalLightsSystem.cpp
+        engine/src/systems/lights/SpotLightsSystem.cpp
 )
 
 # Add API-specific sources
