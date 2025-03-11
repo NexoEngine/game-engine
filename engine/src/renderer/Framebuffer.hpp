@@ -245,6 +245,8 @@ namespace nexo::renderer {
              */
             [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
 
+            virtual unsigned int getDepthAttachmentId() const = 0;
+
             /**
              * @brief Creates a framebuffer based on the provided specifications.
              *
