@@ -25,11 +25,15 @@
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
+#include "core/scene/NewSceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
 #include "components/Light.hpp"
 
 #include "systems/OnSceneDeletedSystem.hpp"
+#include "systems/CameraSystem.hpp"
+#include "systems/RenderSystem.hpp"
+#include "systems/LightSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -194,6 +198,7 @@ namespace nexo {
             }
 
             scene::SceneManager &getSceneManager() { return m_sceneManager; };
+            scene::NewSceneManager &getNewSceneManager() { return m_newSceneManager; }
 
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
@@ -218,6 +223,7 @@ namespace nexo {
 
             scene::SceneId m_nextSceneId = 0;
             scene::SceneManager m_sceneManager;
+            scene::NewSceneManager m_newSceneManager;
 
             bool m_isRunning = true;
             bool m_isMinimized = false;
@@ -229,6 +235,9 @@ namespace nexo {
             int m_eventDebugFlags{};
 
             std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
+            std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
+            std::shared_ptr<system::RenderSystem> m_renderSystem;
+            std::shared_ptr<system::LightSystem> m_lightSystem;
 
             std::vector<ProfileResult> m_profilesResults;
     };

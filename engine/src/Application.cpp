@@ -18,6 +18,9 @@
 #include <glad/glad.h>
 
 #include "components/Components.hpp"
+#include "components/Camera.hpp"
+#include "components/RenderContext.hpp"
+#include "components/SceneComponents.hpp"
 #include "core/camera/PerspectiveCamera.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
@@ -51,6 +54,13 @@ namespace nexo {
     {
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
+        m_coordinator->registerComponent<components::SceneTag>();
+        m_coordinator->registerComponent<components::CameraComponent>();
+        m_coordinator->registerComponent<components::LightComponent>();
+        components::RenderContext renderContext;
+        renderContext.renderer3D.init();
+        m_coordinator->registerSingletonComponent<components::RenderContext>(renderContext);
+
         m_coordinator->registerComponent<components::InActiveScene>();
     }
 
@@ -146,6 +156,25 @@ namespace nexo {
         ecs::Signature signatureOnSceneDelete;
         signatureOnSceneDelete.set(m_coordinator->getComponentType<components::InActiveScene>());
         m_coordinator->setSystemSignature<system::OnSceneDeleted>(signatureOnSceneDelete);
+
+        m_cameraContextSystem = m_coordinator->registerSystem<system::CameraContextSystem>();
+        ecs::Signature signatureCameraContextSystem;
+        signatureCameraContextSystem.set(m_coordinator->getComponentType<components::CameraComponent>());
+        signatureCameraContextSystem.set(m_coordinator->getComponentType<components::SceneTag>());
+        m_coordinator->setSystemSignature<system::CameraContextSystem>(signatureCameraContextSystem);
+
+        m_renderSystem = m_coordinator->registerSystem<system::RenderSystem>();
+        ecs::Signature signatureRenderSystem;
+        signatureRenderSystem.set(m_coordinator->getComponentType<components::RenderComponent>());
+        signatureRenderSystem.set(m_coordinator->getComponentType<components::TransformComponent>());
+        signatureRenderSystem.set(m_coordinator->getComponentType<components::SceneTag>());
+        m_coordinator->setSystemSignature<system::RenderSystem>(signatureRenderSystem);
+
+        m_lightSystem = m_coordinator->registerSystem<system::LightSystem>();
+        ecs::Signature signatureLightSystem;
+        signatureLightSystem.set(m_coordinator->getComponentType<components::LightComponent>());
+        signatureLightSystem.set(m_coordinator->getComponentType<components::SceneTag>());
+        m_coordinator->setSystemSignature<system::LightSystem>(signatureLightSystem);
     }
 
     Application::Application()
@@ -201,6 +230,7 @@ namespace nexo {
         registerEcsComponents();
         registerSystems();
         m_sceneManager.setCoordinator(m_coordinator);
+        m_newSceneManager.setCoordinator(m_coordinator);
 
         LOG(NEXO_DEV, "Application initialized");
     }
@@ -212,12 +242,23 @@ namespace nexo {
         m_lastFrameTime = time;
         auto scenesIds = m_sceneManager.getSceneIDs();
 
+
+
         if (!m_isMinimized)
         {
-            if (m_sceneManager.isSceneActive(sceneId))
-                m_sceneManager.getScene(sceneId).onUpdate(timestep);
-            if (m_sceneManager.isSceneRendered(sceneId))
-                m_sceneManager.getScene(sceneId).onRender();
+        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
+         	renderContext.sceneRendered = sceneId;
+        	if (m_newSceneManager.getScene(sceneId).isRendered())
+			{
+				m_cameraContextSystem->update();
+				m_lightSystem->update();
+				m_renderSystem->update();
+				renderContext.reset();
+			}
+            //if (m_sceneManager.isSceneActive(sceneId))
+               // m_sceneManager.getScene(sceneId).onUpdate(timestep);
+            //if (m_sceneManager.isSceneRendered(sceneId))
+                //m_sceneManager.getScene(sceneId).onRender();
         }
 
         // Update (swap buffers and poll events)
