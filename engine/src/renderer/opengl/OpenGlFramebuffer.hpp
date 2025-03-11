@@ -143,11 +143,16 @@ namespace nexo::renderer {
             {
                 if (attachmentIndex >= m_colorAttachments.size())
                     THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+
                 glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-                constexpr GLenum type = getGLTypeFromTemplate<T>();
-                T pixelData;
+
                 auto &textureFormat = m_colorAttachmentsSpecs[attachmentIndex].textureFormat;
-                glReadPixels(x, y, 1, 1, framebufferTextureFormatToOpenGlFormat(textureFormat), type, &pixelData);
+                GLenum format = framebufferTextureFormatToOpenGlFormat(textureFormat);
+                GLenum type = getGLTypeFromTemplate<T>();
+
+                T pixelData;
+                glReadPixels(x, y, 1, 1, format, type, &pixelData);
+
                 return pixelData;
             }
             void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const override;
@@ -168,7 +173,7 @@ namespace nexo::renderer {
             [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
 
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
-            [[nodiscard]] unsigned int getDepthAttachmentId() const { return m_depthAttachment; }
+            [[nodiscard]] unsigned int getDepthAttachmentId() const override { return m_depthAttachment; }
         private:
             unsigned int m_id = 0;
             bool toResize = false;

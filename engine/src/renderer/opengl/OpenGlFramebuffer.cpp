@@ -17,6 +17,8 @@
 
 #include <iostream>
 #include <utility>
+#include <glm/gtc/type_ptr.hpp>
+
 
 namespace nexo::renderer {
 
@@ -277,13 +279,16 @@ namespace nexo::renderer {
     void OpenGlFramebuffer::bind()
     {
         if (toResize)
-            invalidate();
+        {
+         	invalidate();
+          	toResize = false;
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
 
-        glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()
