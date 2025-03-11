@@ -13,6 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EntityFactory3D.hpp"
+#include "components/Light.hpp"
+#include "components/Transform.hpp"
+#include "components/Camera.hpp"
 #include "core/exceptions/Exceptions.hpp"
 #include "Application.hpp"
 
@@ -73,6 +76,37 @@ namespace nexo {
         Application::m_coordinator->addComponent<components::TransformComponent>(newModel, transform);
         Application::m_coordinator->addComponent<components::RenderComponent>(newModel, renderComponent);
         return newModel;
+    }
+
+    ecs::Entity EntityFactoryUtils::createPerspectiveCamera(glm::vec3 pos, unsigned int width,
+    									               unsigned int height, std::shared_ptr<renderer::Framebuffer> renderTarget,
+                            				           float fov, float nearPlane, float farPlane)
+    {
+		components::TransformComponent transform{};
+		transform.pos = pos;
+
+		components::CameraComponent camera{};
+		camera.width = width;
+		camera.height = height;
+		camera.fov = fov;
+		camera.nearPlane = nearPlane;
+		camera.farPlane = farPlane;
+		camera.type = components::CameraType::PERSPECTIVE;
+		camera.m_renderTarget = renderTarget;
+
+		ecs::Entity newCamera = Application::m_coordinator->createEntity();
+		Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
+		Application::m_coordinator->addComponent<components::CameraComponent>(newCamera, camera);
+		return newCamera;
+    }
+
+    ecs::Entity EntityFactoryUtils::createLights(glm::vec3 ambientColor)
+    {
+        ecs::Entity newLight = Application::m_coordinator->createEntity();
+        components::LightComponent lightComponent;
+        lightComponent.ambientLight = ambientColor;
+        Application::m_coordinator->addComponent<components::LightComponent>(newLight, lightComponent);
+        return newLight;
     }
 }
 

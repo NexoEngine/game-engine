@@ -20,6 +20,7 @@
 
 #include "ecs/ECSExceptions.hpp"
 #include "components/Components.hpp"
+#include "renderer/Framebuffer.hpp"
 
 namespace nexo
 {
@@ -30,6 +31,14 @@ namespace nexo
                                       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
         static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material);
         static ecs::Entity createModel(const std::string& path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
+    };
+
+    class EntityFactoryUtils {
+    	public:
+     		static ecs::Entity createPerspectiveCamera(glm::vec3 pos, unsigned int width,
+       									               unsigned int height, std::shared_ptr<renderer::Framebuffer> renderTarget = nullptr,
+                               				           float fov = 45.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+       		static ecs::Entity createLights(glm::vec3 ambientColor);
     };
 }
 
