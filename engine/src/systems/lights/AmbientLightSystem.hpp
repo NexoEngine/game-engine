@@ -1,4 +1,4 @@
-//// LightSystem.cpp ///////////////////////////////////////////////////////////////
+//// AmbientLightSystem.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,19 +7,17 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        09/03/2025
-//  Description: Source file for the light system
+//  Date:        11/03/2025
+//  Description: Header file for the ambient light system
 //
 ///////////////////////////////////////////////////////////////////////////////
+#pragma once
 
-#include "LightSystem.hpp"
+#include "ecs/System.hpp"
 
 namespace nexo::system {
-	void LightSystem::update()
-	{
-		m_ambientLightSystem->update();
-		m_directionalLightSystem->update();
-		m_pointLightSystem->update();
-		m_spotLightSystem->update();
-	}
+	class AmbientLightSystem : public ecs::System {
+		public:
+			void update();
+	};
 }

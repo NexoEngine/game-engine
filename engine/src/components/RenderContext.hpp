@@ -23,7 +23,7 @@ namespace nexo::components {
 		int sceneRendered = -1;
 		renderer::Renderer3D renderer3D;
 		std::queue<CameraContext> cameras;
-		LightComponent sceneLights;
+		LightContext sceneLights;
 
 		void reset()
 		{

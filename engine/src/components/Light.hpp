@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <array>
 
@@ -40,32 +41,52 @@ namespace nexo::components {
         glm::vec4 color{};
     };
 
-    struct DirectionalLight : Light {
-    	DirectionalLight() = default;
-        explicit DirectionalLight(const glm::vec3 &lightDirection,
-                                  const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}) : Light(LightType::DIRECTIONAL, lightColor),
-                                                                        direction(lightDirection) {};
-
-        glm::vec3 direction{};
+    struct AmbientLightComponent {
+        glm::vec3 color{};
     };
 
-    struct PointLight : Light {
-    	PointLight() = default;
-        explicit PointLight(glm::vec3 lightPos, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}, float linear = 0.09f, float quadratic = 0.032f) : Light(LightType::POINT, lightColor),
-                                                         pos(lightPos), linear(linear), quadratic(quadratic) {};
+    struct DirectionalLightComponent {
+    	DirectionalLightComponent() = default;
+        explicit DirectionalLightComponent(const glm::vec3 &lightDirection,
+                                  		   const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f}) :
+        	direction(lightDirection), color(lightColor) {};
+
+        glm::vec3 direction{};
+        glm::vec3 color{};
+    };
+
+    struct PointLightComponent {
+    	PointLightComponent() = default;
+        explicit PointLightComponent(glm::vec3 lightPos,
+		        					const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f},
+		             				float linear = 0.09f,
+			                		float quadratic = 0.032f) :
+            pos(lightPos), color(lightColor),
+            linear(linear), quadratic(quadratic) {};
 
         glm::vec3 pos{};
+        glm::vec3 color{};
         float constant = 1.0f;
         float linear;
         float quadratic;
     };
 
-    struct SpotLight : Light {
-    	SpotLight() = default;
-    	explicit SpotLight(glm::vec3 lightPos, glm::vec3 lightDir, glm::vec4 lightColor, float cutOff, float outerCutoff, float linear = 0.0014f, float quadractic = 0.000007f) : Light(LightType::SPOT, lightColor),
-     						pos(lightPos), direction(lightDir), cutOff(cutOff), outerCutoff(outerCutoff), linear(linear), quadratic(quadractic) {}
+    struct SpotLightComponent {
+    	SpotLightComponent() = default;
+    	explicit SpotLightComponent(glm::vec3 lightPos,
+     							   glm::vec3 lightDir,
+             					   glm::vec3 lightColor,
+                   				   float cutOff,
+                          		   float outerCutoff,
+                          		   float linear = 0.0014f,
+                          		   float quadractic = 0.000007f) :
+     		pos(lightPos), color(lightColor),
+       		direction(lightDir), cutOff(cutOff),
+         	outerCutoff(outerCutoff), linear(linear),
+          	quadratic(quadractic) {}
 
      	glm::vec3 pos{};
+      	glm::vec3 color{};
       	glm::vec3 direction{};
        	float cutOff;
        	float outerCutoff;
@@ -75,25 +96,13 @@ namespace nexo::components {
         float quadratic;
     };
 
-    struct LightComponent {
+    struct LightContext {
     	glm::vec3 ambientLight;
-     	std::array<PointLight, MAX_POINT_LIGHTS> pointLights;
+     	std::array<PointLightComponent, MAX_POINT_LIGHTS> pointLights;
       	unsigned int pointLightCount = 0;
-     	std::array<SpotLight, MAX_SPOT_LIGHTS> spotLights;
+     	std::array<SpotLightComponent, MAX_SPOT_LIGHTS> spotLights;
       	unsigned int spotLightCount = 0;
-     	std::array<DirectionalLight, MAX_DIRECTIONAL_LIGHTS> directionalLights;
+     	std::array<DirectionalLightComponent, MAX_DIRECTIONAL_LIGHTS> directionalLights;
       	unsigned int directionalLightCount = 0;
-
-      	void addPointLight(glm::vec3 lightPos, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}, float linear = 0.09f, float quadratic = 0.032f) {
-      		pointLights[pointLightCount++] = PointLight(lightPos, lightColor, linear, quadratic);
-      	}
-
-      	void addSpotLight(glm::vec3 lightPos, glm::vec3 lightDir, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}, float cutOff = glm::cos(glm::radians(12.5f)), float outerCutoff = glm::cos(glm::radians(15.0f)), float linear = 0.0014f, float quadratic = 0.000007f) {
-      		spotLights[spotLightCount++] = SpotLight(lightPos, lightDir, lightColor, cutOff, outerCutoff, linear, quadratic);
-      	}
-
-      	void addDirectionalLight(glm::vec3 lightDir, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f}) {
-      		directionalLights[directionalLightCount++] = DirectionalLight(lightDir, lightColor);
-      	}
     };
 }
