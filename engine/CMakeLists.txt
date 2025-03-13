@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add source files
 set(COMMON_SOURCES
         common/Exception.cpp
+        common/math/Vector.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
