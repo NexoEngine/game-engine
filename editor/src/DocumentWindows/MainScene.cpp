@@ -69,11 +69,10 @@ namespace nexo::editor {
         auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
         m_newCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
         app.getNewSceneManager().getScene(m_newSceneId).addEntity(m_newCamera);
+        components::PerspectiveCameraController controller;
+        app.m_coordinator->addComponent<components::PerspectiveCameraController>(m_newCamera, controller);
         if (m_defaultScene)
             loadDefaultEntities(layerId);
-
-
-
     }
 
     void MainScene::setupImguizmo() const
