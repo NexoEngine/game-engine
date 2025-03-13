@@ -14,6 +14,8 @@
 #pragma once
 
 #include "Transform.hpp"
+#include "math/Vector.hpp"
+#include "core/event/Input.hpp"
 #include "renderer/Framebuffer.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -53,27 +55,29 @@ namespace nexo::components {
 
 		glm::mat4 getViewMatrix(const TransformComponent &transf) const
 		{
-			glm::mat4 world = glm::mat4(1.0f);
+			glm::vec3 front;
+			glm::vec3 right;
+			glm::vec3 up;
 
-		    // Apply translation.
-		    world = glm::translate(world, transf.pos);
-
-		    // Apply rotations.
-		    world = glm::rotate(world, glm::radians(transf.rotation.x), glm::vec3(1, 0, 0));
-		    world = glm::rotate(world, glm::radians(transf.rotation.y), glm::vec3(0, 1, 0));
-		    world = glm::rotate(world, glm::radians(transf.rotation.z), glm::vec3(0, 0, 1));
-
-		    return glm::inverse(world);
+			math::extractCameraComponents(transf.rotation, front, right, up);
+			return glm::lookAt(transf.pos, transf.pos + front, up);
 		}
 
 		void resize(unsigned int newWidth, unsigned int newHeight)
 		{
 			width = newWidth;
 			height = newHeight;
+			resizing = true;
 			if (m_renderTarget) {
 				m_renderTarget->resize(newWidth, newHeight);
 			}
 		}
+	};
+
+	struct PerspectiveCameraController {
+		PerspectiveCameraController() { lastMousePosition = event::getMousePosition();}
+		glm::vec2 lastMousePosition;
+		float mouseSensitivity = 0.1f;
 	};
 
 	struct CameraContext {

@@ -250,6 +250,7 @@ namespace nexo {
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
             std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
+            std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
 
             std::vector<ProfileResult> m_profilesResults;
     };

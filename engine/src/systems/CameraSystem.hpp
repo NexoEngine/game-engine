@@ -14,10 +14,24 @@
 #pragma once
 
 #include "ecs/System.hpp"
+#include "Timestep.hpp"
+#include "core/event/Event.hpp"
+#include "core/event/WindowEvent.hpp"
 
 namespace nexo::system {
 	class CameraContextSystem : public ecs::System {
 		public:
 			void update();
+	};
+
+	class PerspectiveCameraControllerSystem : public ecs::System, LISTENS_TO(
+        event::EventMouseScroll,
+        event::EventMouseMove) {
+		public:
+			PerspectiveCameraControllerSystem();
+			void update(const Timestep ts);
+
+            void handleEvent(event::EventMouseScroll &event) override;
+            void handleEvent(event::EventMouseMove &event) override;
 	};
 }

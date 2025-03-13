@@ -23,6 +23,7 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "core/camera/PerspectiveCamera.hpp"
 #include "core/event/Input.hpp"
@@ -67,6 +68,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::DirectionalLightComponent>();
         m_coordinator->registerComponent<components::SpotLightComponent>();
         m_coordinator->registerComponent<components::UuidComponent>();
+        m_coordinator->registerComponent<components::PerspectiveCameraController>();
         components::RenderContext renderContext;
         renderContext.renderer3D.init();
         m_coordinator->registerSingletonComponent<components::RenderContext>(renderContext);
@@ -171,6 +173,12 @@ namespace nexo {
         								       components::CameraComponent,
         								       components::SceneTag>();
 
+        m_perspectiveCameraControllerSystem = registerSystem<system::PerspectiveCameraControllerSystem,
+        										components::TransformComponent,
+        										components::CameraComponent,
+                  								components::PerspectiveCameraController,
+        										components::SceneTag>();
+
         m_renderSystem = registerSystem<system::RenderSystem,
         				      		    components::RenderComponent,
         						        components::TransformComponent,
@@ -259,19 +267,20 @@ namespace nexo {
         const Timestep timestep = time - m_lastFrameTime;
         m_lastFrameTime = time;
         auto scenesIds = m_sceneManager.getSceneIDs();
-
-
+       	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
-        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
          	renderContext.sceneRendered = sceneId;
         	if (m_newSceneManager.getScene(sceneId).isRendered())
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
-				renderContext.reset();
+			}
+			if (m_newSceneManager.getScene(sceneId).isActive())
+			{
+				m_perspectiveCameraControllerSystem->update(timestep);
 			}
             //if (m_sceneManager.isSceneActive(sceneId))
                // m_sceneManager.getScene(sceneId).onUpdate(timestep);
@@ -284,6 +293,7 @@ namespace nexo {
             m_window->onUpdate();
         // Dispatch events to active scenes
         m_eventManager->dispatchEvents(m_sceneManager.getScene(sceneId), m_sceneManager.isSceneActive(sceneId));
+        renderContext.reset();
         if (m_displayProfileResult)
             displayProfileResults();
     }
