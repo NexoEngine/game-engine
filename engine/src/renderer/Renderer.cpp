@@ -27,23 +27,4 @@ namespace nexo::renderer {
     {
         RenderCommand::setViewport(0, 0, width, height);
     }
-
-    void Renderer::beginScene(const camera::OrthographicCamera &camera)
-    {
-        _sceneData->projectionMatrix = camera.getViewProjectionMatrix();
-    }
-
-    void Renderer::endScene()
-    {
-    }
-
-    void Renderer::submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform)
-    {
-        shader->bind();
-        shader->setUniformMatrix("viewProjection", _sceneData->projectionMatrix);
-        shader->setUniformMatrix("transform", transform);
-
-        vertexArray->bind();
-        RenderCommand::drawIndexed(vertexArray);
-    }
 }

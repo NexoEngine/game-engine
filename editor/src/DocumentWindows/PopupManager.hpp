@@ -16,8 +16,6 @@
 #include <unordered_map>
 #include <string>
 
-#include "SceneManagerBridge.hpp"
-
 namespace nexo::editor {
     class PopupManager {
         public:
@@ -26,9 +24,6 @@ namespace nexo::editor {
             bool showPopup(const std::string &popupName);
             void closePopup() const;
             void closePopupInContext() const;
-
-            VariantData &getUserData(const std::string &popupName);
-            void setUserData(const std::string &popupName, const VariantData &data);
 
         private:
             struct TransparentHasher {
@@ -39,6 +34,5 @@ namespace nexo::editor {
             };
 
             std::unordered_map<std::string, bool, TransparentHasher, std::equal_to<>> m_popups;
-            std::unordered_map<std::string, VariantData, TransparentHasher, std::equal_to<>> m_userData;
     };
 }

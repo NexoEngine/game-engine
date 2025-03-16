@@ -20,7 +20,7 @@
 #include "EntityProperties/RenderProperty.hpp"
 #include "EntityProperties/TransformProperty.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
-#include "SceneManagerBridge.hpp"
+#include "context/Selector.hpp"
 #include "tinyfiledialogs.h"
 
 #include "Components/Components.hpp"
@@ -77,17 +77,13 @@ namespace nexo::editor
 		return textureModified;
 	}
 
-	void MaterialInspector::show(int selectedEntity, const VariantData &selectedData)
+	void MaterialInspector::show(int selectedEntity)
 	{
 		static bool materialModified = true;
 		if (selectedEntity != -1)
 		{
-			if (std::holds_alternative<EntityProperties>(selectedData))
-			{
-				const auto& [layerProps, entity] = std::get<EntityProperties>(selectedData);
-				if (m_ecsEntity != entity)
-					m_ecsEntity = entity;
-			}
+			if (m_ecsEntity != selectedEntity)
+				m_ecsEntity = selectedEntity;
    		}
 
 		if (m_ecsEntity == -1)
@@ -179,20 +175,15 @@ namespace nexo::editor
                                 ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
+        auto &selector = Selector::get();
+        const int selectedEntity = selector.getSelectedEntity();
 
-        const int selectedEntity = m_sceneManagerBridge->getSelectedEntity();
         if (selectedEntity != -1)
         {
-        	if (m_sceneManagerBridge->getSelectionType() == SelectionType::ENTITY && std::holds_alternative<EntityProperties>(m_sceneManagerBridge->getData()))
+        	if (selector.getSelectionType() == SelectionType::ENTITY)
          	{
-          		const auto& [layerProps, entity] = std::get<EntityProperties>(m_sceneManagerBridge->getData());
-            	showEntityProperties(entity);
+            	showEntityProperties(selectedEntity);
           	}
-           if (m_sceneManagerBridge->getSelectionType() == SelectionType::DIR_LIGHT && std::holds_alternative<LightProperties>(m_sceneManagerBridge->getData()))
-           {
-           		const auto &lightProps = std::get<LightProperties>(m_sceneManagerBridge->getData());
-             	showLightProperties(lightProps);
-           }
         }
 
         ImGui::End();
@@ -201,7 +192,7 @@ namespace nexo::editor
         {
 			ImGui::Begin("Material Inspector", &RenderProperty::showMaterialInspector);
 			{
-				m_materialInspector->show(m_sceneManagerBridge->getSelectedEntity(), m_sceneManagerBridge->getData());
+				m_materialInspector->show(selectedEntity);
 			}
 			ImGui::End();
         }
@@ -220,15 +211,6 @@ namespace nexo::editor
                 m_componentShowFunctions[type](entity);
             }
         }
-    }
-
-    void InspectorWindow::showLightProperties(const LightProperties& lightProps)
-    {
-    	bool open = EntityPropertiesComponents::drawHeader("##LightNode", "Light Properties");
-     	if (open)
-      	{
-       		ImGui::TreePop();
-       	}
     }
 
     void InspectorWindow::update()

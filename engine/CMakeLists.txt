@@ -38,22 +38,12 @@ set(COMMON_SOURCES
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/primitives/Mesh.cpp
         engine/src/renderer/primitives/Cube.cpp
-        engine/src/core/camera/PerspectiveCamera.cpp
-        engine/src/core/camera/OrthographicCamera.cpp
-        engine/src/core/camera/PerspectiveCameraController.cpp
-        engine/src/core/camera/OrthographicCameraController.cpp
-        engine/src/core/camera/Camera.cpp
-        engine/src/core/layer/Layer.cpp
-        engine/src/core/layer/LayerStack.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
-        engine/src/core/scene/NewScene.cpp
-        engine/src/core/scene/NewSceneManager.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Components.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
-        engine/src/systems/OnSceneDeletedSystem.cpp
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderSystem.cpp
         engine/src/systems/LightSystem.cpp

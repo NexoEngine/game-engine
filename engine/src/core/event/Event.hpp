@@ -110,11 +110,10 @@ namespace nexo::event {
             emitEvent(std::make_shared<EventType>(std::forward<Args>(args)...));
         }
 
-        void dispatchEvents(scene::Scene &scene, bool isActive);
+        void dispatchEvents();
 
     private:
         std::unordered_map<std::type_index, std::vector<BaseListener *>> m_listeners;
         std::queue<std::shared_ptr<IEvent>> m_eventQueue;
     };
 }
-

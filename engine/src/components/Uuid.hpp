@@ -18,7 +18,7 @@
 
 namespace nexo::components {
 	//TODO: Implement a safer uuid generator
-	static inline std::string genUuid()
+	inline std::string genUuid()
 	{
 		static std::random_device dev;
 		static std::mt19937 rng(dev());

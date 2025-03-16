@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PopupManager.hpp"
+#include "Logger.hpp"
 
 #include <imgui.h>
 
@@ -56,20 +57,5 @@ namespace nexo::editor {
             m_popups.at(popupModalName) = false;
         }
         return ImGui::BeginPopupModal(popupModalName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-    }
-
-    VariantData &PopupManager::getUserData(const std::string &popupName)
-    {
-        if (!m_userData.contains(popupName))
-        {
-            static VariantData defaultValue = std::monostate{};
-            return defaultValue;
-        }
-        return m_userData.at(popupName);
-    }
-
-    void PopupManager::setUserData(const std::string &popupName, const VariantData &data)
-    {
-        m_userData[popupName] = data;
     }
 }

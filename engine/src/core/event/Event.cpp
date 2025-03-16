@@ -14,11 +14,10 @@
 
 #include "Event.hpp"
 #include "Listener.hpp"
-#include "core/scene/Scene.hpp"
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents(scene::Scene &scene, bool isActive) {
+    void EventManager::dispatchEvents() {
         while (!m_eventQueue.empty()) {
             auto event = m_eventQueue.front();
             m_eventQueue.pop();
@@ -31,9 +30,6 @@ namespace nexo::event {
                         break;
                 }
             }
-
-            if (!event->consumed && isActive)
-                scene.dispatchEventToLayers(*event);
         }
     }
 }

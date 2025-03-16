@@ -13,11 +13,11 @@ set(SRCS
         editor/main.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
+        editor/src/context/Selector.cpp
         editor/src/Components/Components.cpp
         editor/src/Components/EntityPropertiesComponents.cpp
         editor/src/Components/Widgets.cpp
         editor/src/Editor.cpp
-        editor/src/SceneManagerBridge.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
         editor/src/DocumentWindows/MainScene.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp

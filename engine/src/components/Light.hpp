@@ -23,6 +23,7 @@ constexpr unsigned int MAX_SPOT_LIGHTS = 8;
 
 namespace nexo::components {
     enum class LightType {
+        AMBIENT,
         DIRECTIONAL,
         POINT,
         SPOT,

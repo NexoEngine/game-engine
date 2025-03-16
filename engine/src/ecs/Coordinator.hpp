@@ -17,6 +17,7 @@
 #include <memory>
 #include <any>
 
+#include "Components.hpp"
 #include "System.hpp"
 #include "SingletonComponent.hpp"
 #include "Entity.hpp"
@@ -171,6 +172,29 @@ namespace nexo::ecs {
 
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
+            template<typename... Components>
+            std::set<Entity> getAllEntitiesWith()
+            {
+	            Signature requiredSignature;
+	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+
+				std::uint32_t checkedEntities = 0;
+				std::uint32_t livingEntities = m_entityManager->getLivingEntityCount();
+    			std::set<Entity> result;
+				for (Entity i = 0; i < MAX_ENTITIES; ++i)
+				{
+					Signature entitySignature = m_entityManager->getSignature(i);
+					if (entitySignature.none())
+						continue;
+					if ((entitySignature & requiredSignature) == requiredSignature)
+						result.insert(i);
+					checkedEntities++;
+					if (checkedEntities > livingEntities)
+						break;
+				}
+				return result;
+            }
+
             /**
             * @brief Gets the component type ID for a specific component type.
             *
@@ -223,7 +247,3 @@ namespace nexo::ecs {
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
     };
 }
-
-
-
-

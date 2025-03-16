@@ -15,17 +15,31 @@
 
 #include "ADocumentWindow.hpp"
 #include "IconsFontAwesome.h"
+#include "Nexo.hpp"
+#include "core/scene/SceneManager.hpp"
+#include "context/Selector.hpp"
+
 #include "PopupManager.hpp"
 
 #include <unordered_map>
 #include <utility>
 #include <imgui.h>
+#include <map>
 
 namespace nexo::editor {
 
+	struct SceneProperties {
+        scene::SceneId sceneId;
+        WindowId windowId;
+    };
+
+    struct EntityProperties {
+        SceneProperties sceneProperties;
+        ecs::Entity entity;
+    };
+
     const std::unordered_map<SelectionType, std::string> ObjectTypeToIcon = {
         {SelectionType::SCENE, ICON_FA_MAP_O " "},
-        {SelectionType::LAYER, ICON_FA_BARS " "},
         {SelectionType::CAMERA, ICON_FA_CAMERA " "},
         {SelectionType::ENTITY, ICON_FA_CUBES " "},
         {SelectionType::DIR_LIGHT, ICON_FA_SUN_O " "},
@@ -33,18 +47,16 @@ namespace nexo::editor {
         {SelectionType::SPOT_LIGHT, ICON_FA_ARROW_CIRCLE_DOWN " "}
     };
 
-    using NodeId = unsigned int;
-
     struct SceneObject {
-        NodeId nodeId;
         std::string uiName;
+        std::string uuid;
         SelectionType type;
-        VariantData data;
+        EntityProperties data;
         std::vector<SceneObject> children;
 
-        explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {}, NodeId id = 0,
-                    SelectionType type = SelectionType::NONE, VariantData data = {})
-            : nodeId(id), uiName(std::move(name)), type(type), data(std::move(data)), children(std::move(children)) {}
+        explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {},
+                    SelectionType type = SelectionType::NONE, EntityProperties data = {})
+            : uiName(std::move(name)), type(type), data(std::move(data)), children(std::move(children)) {}
     };
 
     class SceneTreeWindow : public ADocumentWindow {
@@ -63,30 +75,55 @@ namespace nexo::editor {
 
         private:
             SceneObject root_;
-            NodeId nextNodeId = 0;
             unsigned int m_nbDirLights = 0;
             unsigned int m_nbPointLights = 0;
             unsigned int m_nbSpotLights = 0;
-            std::optional<std::pair<SelectionType, int>> m_renameTarget;
+            std::optional<std::pair<SelectionType, std::string>> m_renameTarget;
             std::string m_renameBuffer;
             PopupManager m_popupManager;
 
+
+            template<typename... Components>
+            void generateNodes(
+            	std::map<scene::SceneId, SceneObject> &scenes,
+            	std::function<SceneObject(scene::SceneId, WindowId, ecs::Entity)> nodeCreator)
+            {
+            	auto &app = getApp();
+            	std::set<ecs::Entity> entities = app.m_coordinator->getAllEntitiesWith<Components...>();
+             	for (ecs::Entity entity : entities)
+				{
+					const auto& sceneTag = app.m_coordinator->getComponent<components::SceneTag>(entity);
+					auto it = scenes.find(sceneTag.id);
+					if (it != scenes.end())
+					{
+						// Use the provided node-creation function to create a new SceneObject for this entity.
+						SceneObject newNode = nodeCreator(it->second.data.sceneProperties.sceneId, it->second.data.sceneProperties.windowId, entity);
+
+						// Add the new node to the children of the corresponding scene node.
+						it->second.children.push_back(newNode);
+					}
+				}
+            }
+
             SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
-            SceneObject newLightNode(scene::SceneId sceneId, WindowId uiId, unsigned int lightIndex, const std::shared_ptr<components::Light> &light);
-            SceneObject newLayerNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId, const std::string &layerName);
-            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, layer::LayerId layerId);
-            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, unsigned int layerId, ecs::Entity entity);
+
+            void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName);
+            SceneObject newDirectionalLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
+            SceneObject newSpotLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
+            SceneObject newPointLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
+
+            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity cameraEntity);
+
+            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity);
 
             void handleRename(SceneObject &obj);
             bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
             void sceneSelected(const SceneObject &obj);
             void lightSelected(const SceneObject &obj);
-            void layerSelected(const SceneObject &obj) const;
             void cameraSelected(const SceneObject &obj) const;
             void entitySelected(const SceneObject &obj) const;
             void showNode(SceneObject &object);
             void sceneContextMenu();
             void sceneCreationMenu();
-            void layerCreationMenu();
     };
 }

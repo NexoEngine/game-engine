@@ -25,7 +25,6 @@
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "core/camera/PerspectiveCamera.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -164,11 +163,6 @@ namespace nexo {
 
     void Application::registerSystems()
     {
-        m_onSceneDeleteSystem = m_coordinator->registerSystem<system::OnSceneDeleted>();
-        ecs::Signature signatureOnSceneDelete;
-        signatureOnSceneDelete.set(m_coordinator->getComponentType<components::InActiveScene>());
-        m_coordinator->setSystemSignature<system::OnSceneDeleted>(signatureOnSceneDelete);
-
         m_cameraContextSystem = registerSystem<system::CameraContextSystem,
         								       components::CameraComponent,
         								       components::SceneTag>();
@@ -255,8 +249,7 @@ namespace nexo {
         m_coordinator->init();
         registerEcsComponents();
         registerSystems();
-        m_sceneManager.setCoordinator(m_coordinator);
-        m_newSceneManager.setCoordinator(m_coordinator);
+        m_SceneManager.setCoordinator(m_coordinator);
 
         LOG(NEXO_DEV, "Application initialized");
     }
@@ -266,33 +259,28 @@ namespace nexo {
         const auto time = static_cast<float>(glfwGetTime());
         const Timestep timestep = time - m_lastFrameTime;
         m_lastFrameTime = time;
-        auto scenesIds = m_sceneManager.getSceneIDs();
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
          	renderContext.sceneRendered = sceneId;
-        	if (m_newSceneManager.getScene(sceneId).isRendered())
+        	if (m_SceneManager.getScene(sceneId).isRendered())
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
 			}
-			if (m_newSceneManager.getScene(sceneId).isActive())
+			if (m_SceneManager.getScene(sceneId).isActive())
 			{
 				m_perspectiveCameraControllerSystem->update(timestep);
 			}
-            //if (m_sceneManager.isSceneActive(sceneId))
-               // m_sceneManager.getScene(sceneId).onUpdate(timestep);
-            //if (m_sceneManager.isSceneRendered(sceneId))
-                //m_sceneManager.getScene(sceneId).onRender();
         }
 
         // Update (swap buffers and poll events)
         if (renderingType == RenderingType::WINDOW)
             m_window->onUpdate();
         // Dispatch events to active scenes
-        m_eventManager->dispatchEvents(m_sceneManager.getScene(sceneId), m_sceneManager.isSceneActive(sceneId));
+        m_eventManager->dispatchEvents();
         renderContext.reset();
         if (m_displayProfileResult)
             displayProfileResults();
@@ -303,223 +291,15 @@ namespace nexo {
         return m_coordinator->createEntity();
     }
 
-    void Application::destroyEntity(const ecs::Entity entity)
+    void Application::deleteEntity(ecs::Entity entity)
     {
-        LOG(NEXO_DEV, "Entity {} destroyed", entity);
-        m_coordinator->destroyEntity(entity);
-        m_sceneManager.entityDestroyed(entity);
-    }
-
-    scene::SceneId Application::createScene(const std::string &sceneName, const bool active)
-    {
-        return m_sceneManager.createScene(sceneName, active);
-    }
-
-    void Application::deleteScene(const scene::SceneId sceneId)
-    {
-        m_sceneManager.deleteScene(sceneId);
-        m_onSceneDeleteSystem->onSceneDelete(sceneId);
-    }
-
-    scene::LayerId Application::addNewLayer(const scene::SceneId sceneId, const std::string &layerName)
-    {
-        return m_sceneManager.addLayer(sceneId, layerName);
-    }
-
-    scene::LayerId Application::addNewOverlay(const scene::SceneId sceneId, const std::string &overlayName)
-    {
-        return m_sceneManager.addOverlay(sceneId, overlayName);
-    }
-
-    void Application::removeLayer(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity: layerEntities)
-            removeEntityFromScene(entity, sceneId, static_cast<int>(id));
-        m_sceneManager.removeLayer(sceneId, id);
-    }
-
-    void Application::removeOverlay(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        std::set<ecs::Entity> layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity: layerEntities)
-            removeEntityFromScene(entity, sceneId, static_cast<int>(id));
-        m_sceneManager.removeOverlay(sceneId, id);
-    }
-
-    void Application::activateScene(const scene::SceneId sceneId)
-    {
-        if (m_sceneManager.isSceneActive(sceneId))
-            return;
-        m_sceneManager.setSceneActiveStatus(sceneId, true);
-        auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (const auto entity: sceneEntities)
-        {
-            auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-            if (activeSceneComponent)
-                activeSceneComponent->get().sceneIds.insert(sceneId);
-            else
-            {
-                components::InActiveScene newActiveSceneComponent;
-                newActiveSceneComponent.sceneIds.insert(sceneId);
-                m_coordinator->addComponent<components::InActiveScene>(entity, newActiveSceneComponent);
-            }
-        }
-    }
-
-    void Application::activateLayer(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        if (m_sceneManager.isLayerActive(sceneId, id))
-            return;
-        m_sceneManager.setLayerActiveStatus(sceneId, id, true);
-        auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity: layerEntities)
-        {
-            auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-            if (activeSceneComponent)
-                activeSceneComponent->get().sceneIds.insert(sceneId);
-            else
-            {
-                components::InActiveScene newActiveSceneComponent;
-                newActiveSceneComponent.sceneIds.insert(sceneId);
-                m_coordinator->addComponent<components::InActiveScene>(entity, newActiveSceneComponent);
-            }
-        }
-    }
-
-    void Application::deactivateScene(const scene::SceneId sceneId)
-    {
-        if (!m_sceneManager.isSceneActive(sceneId))
-            return;
-        m_sceneManager.setSceneActiveStatus(sceneId, false);
-        auto sceneEntities = m_sceneManager.getAllSceneEntities(sceneId);
-        for (const auto entity: sceneEntities)
-        {
-            auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-            if (activeSceneComponent)
-            {
-                activeSceneComponent->get().sceneIds.erase(sceneId);
-                if (activeSceneComponent->get().sceneIds.empty())
-                    m_coordinator->removeComponent<components::InActiveScene>(entity);
-            }
-        }
-    }
-
-    void Application::deactivateLayer(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        if (!m_sceneManager.isLayerActive(sceneId, id))
-            return;
-        m_sceneManager.setLayerActiveStatus(sceneId, id, false);
-        auto layerEntities = m_sceneManager.getLayerEntities(sceneId, id);
-        for (const auto entity: layerEntities)
-        {
-            auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-            if (activeSceneComponent)
-            {
-                activeSceneComponent->get().sceneIds.erase(sceneId);
-                if (activeSceneComponent->get().sceneIds.empty())
-                    m_coordinator->removeComponent<components::InActiveScene>(entity);
-            }
-        }
-    }
-
-    void Application::setSceneRenderStatus(const scene::SceneId sceneId, const bool status)
-    {
-        m_sceneManager.setSceneRenderStatus(sceneId, status);
-    }
-
-    void Application::setLayerRenderStatus(const scene::SceneId sceneId, const scene::LayerId id, const bool status)
-    {
-        m_sceneManager.setLayerRenderStatus(sceneId, id, status);
-    }
-
-    void Application::addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, const int layerId)
-    {
-        LOG(NEXO_DEV, "Added entity {} to scene {}", entity, sceneId);
-        if (layerId != -1)
-        {
-            m_sceneManager.addEntityToLayer(entity, sceneId, layerId);
-            if (!m_sceneManager.isSceneActive(sceneId) || !m_sceneManager.isLayerActive(sceneId, layerId))
-                return;
-        } else
-        {
-            m_sceneManager.addGlobalEntity(entity, sceneId);
-            if (!m_sceneManager.isSceneActive(sceneId))
-                return;
-        }
-        auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-        if (activeSceneComponent)
-        {
-            activeSceneComponent->get().sceneIds.insert(sceneId);
-            return;
-        }
-        components::InActiveScene newActiveSceneComponent;
-        newActiveSceneComponent.sceneIds.insert(sceneId);
-        m_coordinator->addComponent<components::InActiveScene>(entity, newActiveSceneComponent);
-    }
-
-    void Application::removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, const int layerId)
-    {
-        LOG(NEXO_DEV, "Removed entity {} from scene {}", entity, sceneId);
-        if (layerId != -1)
-            m_sceneManager.removeEntityFromLayer(entity, sceneId, layerId);
-        else
-            m_sceneManager.removeGlobalEntity(entity, sceneId);
-        if (!m_sceneManager.isSceneActive(sceneId))
-            return;
-        auto activeSceneComponent = m_coordinator->tryGetComponent<components::InActiveScene>(entity);
-        if (activeSceneComponent)
-        {
-            activeSceneComponent->get().sceneIds.erase(sceneId);
-            if (activeSceneComponent->get().sceneIds.empty())
-                m_coordinator->removeComponent<components::InActiveScene>(entity);
-        }
-    }
-
-    void Application::attachCamera(const scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera,
-                                   const scene::LayerId id)
-    {
-        m_sceneManager.attachCameraToLayer(sceneId, camera, id);
-    }
-
-    void Application::detachCamera(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        m_sceneManager.detachCameraFromLayer(sceneId, id);
-    }
-
-    std::shared_ptr<camera::Camera> Application::getCamera(const scene::SceneId sceneId, const scene::LayerId id)
-    {
-        return m_sceneManager.getCameraLayer(sceneId, id);
-    }
-
-    unsigned int Application::addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light)
-    {
-        return m_sceneManager.addLightToScene(sceneId, light);
-    }
-
-    std::shared_ptr<components::Light> Application::getLight(scene::SceneId sceneId, unsigned int index)
-    {
-        return m_sceneManager.getLight(sceneId, index);
-    }
-
-    unsigned int Application::getLightCount(scene::SceneId sceneId)
-    {
-        return m_sceneManager.getLightCount(sceneId);
-    }
-
-    void Application::removeLightFromScene(const scene::SceneId sceneId, const unsigned int index)
-    {
-        m_sceneManager.removeLightFromScene(sceneId, index);
-    }
-
-    void Application::setAmbientLightValue(scene::SceneId sceneId, glm::vec3 value)
-    {
-        m_sceneManager.setSceneAmbientLightValue(sceneId, value);
-    }
-
-    glm::vec3 Application::getAmbientLightValue(scene::SceneId sceneId)
-    {
-        return m_sceneManager.getSceneAmbientLightValue(sceneId);
+    	const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+     	if (tag)
+		{
+			unsigned int sceneId = tag->get().id;
+			m_SceneManager.getScene(sceneId).removeEntity(entity);
+		}
+		m_coordinator->destroyEntity(entity);
     }
 
     void Application::genAssetPreview(ecs::Entity entity)

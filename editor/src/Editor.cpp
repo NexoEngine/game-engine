@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "DocumentWindows/SceneViewManager.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
@@ -76,7 +77,6 @@ namespace nexo::editor {
         LOG(NEXO_INFO, "Editor initialized");
         LOG(NEXO_ERROR, "Error log test");
         LOG(NEXO_WARN, "Warning log test");
-        m_sceneManagerBridge = std::make_shared<SceneManagerBridge>();
     }
 
     void Editor::setupLogs()
@@ -228,13 +228,13 @@ namespace nexo::editor {
     void Editor::registerWindow(const std::string &name,
                             std::shared_ptr<IDocumentWindow> window)
     {
-        window->setSceneManager(m_sceneManagerBridge);
         m_windows[name] = std::move(window);
         LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }
 
     void Editor::init() const
     {
+    	SceneViewManager::get().setup();
         for (const auto &[_, window]: m_windows)
         {
             window->setup();
@@ -356,6 +356,8 @@ namespace nexo::editor {
         drawMenuBar();
         //ImGui::ShowDemoWindow();
 
+        SceneViewManager::get().show();
+
         for (const auto &[_, window]: m_windows)
         {
             if (window->isOpened())
@@ -400,6 +402,7 @@ namespace nexo::editor {
 
     void Editor::update() const
     {
+    	SceneViewManager::get().update();
         for (const auto &[_, window]: m_windows)
         {
             window->update();

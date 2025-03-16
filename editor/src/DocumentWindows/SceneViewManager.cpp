@@ -13,8 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneViewManager.hpp"
-
-std::shared_ptr<nexo::editor::SceneViewManager> nexo::editor::SceneViewManager::m_instance = nullptr;
+#include "context/Selector.hpp"
 
 namespace nexo::editor {
     ImGuiDockNode *SceneViewManager::getDockNodeForWindow(const char *windowName)
@@ -31,7 +30,6 @@ namespace nexo::editor {
     {
         for (const auto &[_, scene]: m_scenes)
         {
-            scene->setSceneManager(m_sceneManagerBridge);
             scene->setup();
         }
     }
@@ -49,16 +47,15 @@ namespace nexo::editor {
             LOG(NEXO_ERROR, "SceneViewManager::duplicateSceneView: scene {} not found", uiId);
             return;
         }
-        const auto scene = m_scenes.at(uiId);
-        const std::string sceneName = scene->getName();
-        const auto newScene = std::make_shared<MainScene>(*scene);
-        const std::string newSceneName = std::format("{} - View {}", newScene->getName(), scene->idView++);
-        newScene->setName(newSceneName);
-        newScene->setupFramebuffer();
-        newScene->windowId = nextWindowId++;
-        if (const ImGuiDockNode *dockNode = getDockNodeForWindow(sceneName.c_str()))
-            ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
-        m_scenes[newScene->windowId] = newScene;
+        //const auto scene = m_scenes.at(uiId);
+        //const std::string sceneName = scene->getName();
+        //const auto newScene = std::make_shared<MainScene>(*scene);
+        //const std::string newSceneName = std::format("{} - View {}", newScene->getName(), scene->idView++);
+        //newScene->setName(newSceneName);
+        //newScene->windowId = nextWindowId++;
+        //if (const ImGuiDockNode *dockNode = getDockNodeForWindow(sceneName.c_str()))
+        //    ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
+        //m_scenes[newScene->windowId] = newScene;
     }
 
     void SceneViewManager::addNewScene(const std::string &sceneName, const std::shared_ptr<MainScene> &scene)
@@ -70,7 +67,6 @@ namespace nexo::editor {
         {
             newScene = std::make_shared<MainScene>(sceneName);
             newScene->setup();
-            newScene->setSceneManager(m_sceneManagerBridge);
         }
         const std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
         if (!targetWindow.empty())
@@ -89,51 +85,11 @@ namespace nexo::editor {
             return;
         }
         const auto scene = m_scenes.at(uiId);
-        m_sceneManagerBridge->unselectEntity();
+        Selector::get().unselectEntity();
         auto &app = nexo::getApp();
-        app.deleteScene(scene->getSceneId());
+        app.getSceneManager().deleteScene(scene->getSceneId());
         m_scenes.erase(uiId);
         m_openScenes.clear();
-    }
-
-    void SceneViewManager::hideLayer(WindowId uiId, const scene::LayerId layerId) const
-    {
-        if (!m_scenes.contains(uiId))
-        {
-            LOG(NEXO_ERROR, "SceneViewManager::hideLayer: scene {} not found", uiId);
-            return;
-        }
-        m_scenes.at(uiId)->hideLayer(layerId);
-    }
-
-    void SceneViewManager::showLayer(WindowId uiId, const scene::LayerId layerId) const
-    {
-        if (!m_scenes.contains(uiId))
-        {
-            LOG(NEXO_ERROR, "SceneViewManager::showLayer: scene {} not found", uiId);
-            return;
-        }
-        m_scenes.at(uiId)->showLayer(layerId);
-    }
-
-    bool SceneViewManager::isLayerHidden(WindowId uiId, const scene::LayerId layerId) const
-    {
-        if (!m_scenes.contains(uiId))
-        {
-            LOG(NEXO_ERROR, "SceneViewManager::isLayerHidden: scene {} not found", uiId);
-            return false;
-        }
-        return m_scenes.at(uiId)->isLayerHidden(layerId);
-    }
-
-    void SceneViewManager::addDefaultCameraToLayer(WindowId uiId, const scene::LayerId layerId) const
-    {
-        if (!m_scenes.contains(uiId))
-        {
-            LOG(NEXO_ERROR, "SceneViewManager::addDefaultCameraToLayer: scene {} not found", uiId);
-            return;
-        }
-        m_scenes.at(uiId)->addDefaultCameraToLayer(layerId);
     }
 
     const std::string &SceneViewManager::getSceneName(WindowId uiId) const

@@ -25,12 +25,10 @@
 #include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "core/scene/NewSceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
 #include "components/Light.hpp"
 
-#include "systems/OnSceneDeletedSystem.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/LightSystem.hpp"
@@ -139,34 +137,7 @@ namespace nexo {
             bool isRunning() const { return m_isRunning; };
 
             ecs::Entity createEntity() const;
-            void destroyEntity(ecs::Entity entity);
-
-            scene::SceneId createScene(const std::string &sceneName, bool active = true);
-            void deleteScene(scene::SceneId sceneId);
-            scene::LayerId addNewLayer(scene::SceneId sceneId, const std::string &layerName = "Default Layer");
-            scene::LayerId addNewOverlay(scene::SceneId sceneId, const std::string &overlayName = "Default Overlay");
-            void removeLayer(scene::SceneId sceneId, scene::LayerId id);
-            void removeOverlay(scene::SceneId sceneId, scene::LayerId id);
-            void activateScene(scene::SceneId sceneId);
-            void activateLayer(scene::SceneId, scene::LayerId id);
-            void deactivateScene(scene::SceneId sceneId);
-            void deactivateLayer(scene::SceneId sceneId, scene::LayerId id);
-            void setSceneRenderStatus(scene::SceneId sceneId, bool status);
-            void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
-            bool isSceneActive(const scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
-            bool isSceneRendered(const scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
-            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id);
-            void detachCamera(scene::SceneId sceneId, scene::LayerId id);
-            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
-            unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
-            std::shared_ptr<components::Light> getLight(scene::SceneId sceneId, unsigned int index);
-            unsigned int getLightCount(scene::SceneId sceneId);
-            void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
-            void setAmbientLightValue(scene::SceneId sceneId, glm::vec3 value);
-            glm::vec3 getAmbientLightValue(scene::SceneId sceneId);
-
+            void deleteEntity(ecs::Entity entity);
 
             static Application &getInstance()
             {
@@ -197,8 +168,7 @@ namespace nexo {
                 return m_coordinator->getAllComponents(entity);
             }
 
-            scene::SceneManager &getSceneManager() { return m_sceneManager; };
-            scene::NewSceneManager &getNewSceneManager() { return m_newSceneManager; }
+            scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
@@ -234,8 +204,7 @@ namespace nexo {
             static std::unique_ptr<Application> _instance;
 
             scene::SceneId m_nextSceneId = 0;
-            scene::SceneManager m_sceneManager;
-            scene::NewSceneManager m_newSceneManager;
+            scene::SceneManager m_SceneManager;
 
             bool m_isRunning = true;
             bool m_isMinimized = false;
@@ -246,7 +215,6 @@ namespace nexo {
 
             int m_eventDebugFlags{};
 
-            std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
             std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;

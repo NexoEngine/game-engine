@@ -16,22 +16,20 @@
 
 #include <Path.hpp>
 
-#include "EntityFactory2D.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
 #include "CameraFactory.hpp"
 #include "Nexo.hpp"
 #include "components/Camera.hpp"
-#include "components/Light.hpp"
+#include "components/Uuid.hpp"
 #include "math/Matrix.hpp"
-#include "core/camera/PerspectiveCameraController.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <random>
 
 #include "SceneViewManager.hpp"
-#include "Primitive.hpp"
 
 namespace nexo::editor {
 
@@ -45,21 +43,15 @@ namespace nexo::editor {
     {
         setupImguizmo();
         setupWindow();
-        setupFramebuffer();
         setupScene();
     }
 
     void MainScene::setupScene()
     {
         auto &app = getApp();
-        _sceneID = app.createScene(m_sceneName);
 
-        const scene::LayerId layerId = app.addNewLayer(_sceneID, "Layer 1");
-        m_camera = std::make_shared<camera::PerspectiveCameraController>(_viewSize.x / _viewSize.y);
-        //m_camera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
-        app.attachCamera(_sceneID, m_camera, layerId);
         // New handling
-        m_newSceneId = app.getNewSceneManager().createScene(m_sceneName);
+        m_sceneId = app.getSceneManager().createScene(m_sceneName);
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
             renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
@@ -67,12 +59,13 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
         auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_newCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
-        app.getNewSceneManager().getScene(m_newSceneId).addEntity(m_newCamera);
+        m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
+        m_cameras.insert(m_activeCamera);
+        app.getSceneManager().getScene(m_sceneId).addEntity(m_activeCamera);
         components::PerspectiveCameraController controller;
-        app.m_coordinator->addComponent<components::PerspectiveCameraController>(m_newCamera, controller);
+        app.m_coordinator->addComponent<components::PerspectiveCameraController>(m_activeCamera, controller);
         if (m_defaultScene)
-            loadDefaultEntities(layerId);
+            loadDefaultEntities();
     }
 
     void MainScene::setupImguizmo() const
@@ -87,10 +80,10 @@ namespace nexo::editor {
         return dist(rng);
     }
 
-    void MainScene::loadDefaultEntities(const scene::LayerId defaultLayerId) const
+    void MainScene::loadDefaultEntities() const
     {
         auto &app = getApp();
-        scene::NewScene &scene = app.getNewSceneManager().getScene(m_newSceneId);
+        scene::Scene &scene = app.getSceneManager().getScene(m_sceneId);
         ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
         scene.addEntity(ambientLight);
         ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
@@ -101,8 +94,7 @@ namespace nexo::editor {
         scene.addEntity(spotLight);
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 0.5f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
-        app.getNewSceneManager().getScene(m_newSceneId).addEntity(basicCube);
-
+        app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
     }
 
     void MainScene::setupWindow()
@@ -117,19 +109,17 @@ namespace nexo::editor {
     void MainScene::shutdown()
     {}
 
-    void MainScene::setupFramebuffer()
-    {
-        renderer::FramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {
-            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
-        };
-        framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
-        framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
-        m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
-    }
-
     void MainScene::handleKeyEvents()
     {}
+
+    void MainScene::deleteCamera(ecs::Entity cameraId)
+    {
+    	if (cameraId == m_activeCamera)
+    		m_activeCamera = -1;
+    	m_cameras.erase(cameraId);
+    	if (!m_cameras.empty())
+    		m_activeCamera = *m_cameras.begin();
+    }
 
     void MainScene::renderToolbar()
     {
@@ -223,20 +213,20 @@ namespace nexo::editor {
     void MainScene::renderGizmo() const
     {
         const auto &coord = nexo::Application::m_coordinator;
-        if (const auto &viewManager = SceneViewManager::getInstance();
-            m_sceneManagerBridge->getSelectionType() != SelectionType::ENTITY ||
-            viewManager->getSelectedScene() != static_cast<int>(m_newSceneId))
+        auto &selector = Selector::get();
+        if (const auto &viewManager = SceneViewManager::get();
+            selector.getSelectionType() != SelectionType::ENTITY ||
+            viewManager.getSelectedScene() != static_cast<int>(m_sceneId))
             return;
-        auto &selectionData = m_sceneManagerBridge->getData();
-        if (!std::holds_alternative<EntityProperties>(selectionData))
-            return;
-        const ecs::Entity entity = std::get<EntityProperties>(selectionData).entity;
-        ImGuizmo::SetOrthographic(m_camera->getMode() == camera::CameraMode::ORTHOGRAPHIC);
+        const ecs::Entity entity = selector.getSelectedEntity();
+        const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
+        const auto &cameraComponent = coord->getComponent<components::CameraComponent>(m_activeCamera);
+        ImGuizmo::SetOrthographic(cameraComponent.type == components::CameraType::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
         ImGuizmo::SetID(static_cast<int>(entity));
         ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
-        glm::mat4 viewMatrix = m_camera->getViewMatrix();
-        glm::mat4 projectionMatrix = m_camera->getProjectionMatrix();
+        glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformCameraComponent);
+        glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
         auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
         if (!transf)
             return;
@@ -269,7 +259,7 @@ namespace nexo::editor {
     {
         auto viewPortOffset = ImGui::GetCursorPos();
         auto &app = getApp();
-       	auto cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_newCamera);
+       	auto cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
 
         // Resize handling
         if (ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -298,12 +288,6 @@ namespace nexo::editor {
         m_viewportBounds[1] = maxBounds;
     }
 
-    void MainScene::setHiddenLayerStatus(const bool status) const
-    {
-        for (const auto hiddenLayer: m_hiddenLayers)
-            m_sceneManagerBridge->setLayerRenderStatus(_sceneID, hiddenLayer, status);
-    }
-
     void MainScene::show()
     {
         //setHiddenLayerStatus(false);
@@ -316,16 +300,17 @@ namespace nexo::editor {
             _viewPosition = ImGui::GetCursorScreenPos();
 
             m_focused = ImGui::IsWindowFocused();
-            app.getNewSceneManager().getScene(m_newSceneId).setActiveStatus(m_focused);
+            app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
             //m_sceneManagerBridge->setSceneActiveStatus(_sceneID, m_focused);
             //m_camera->zoomOn = m_focused;
             if (m_focused)
             {
-                if (const auto &viewManager = SceneViewManager::getInstance();
-                    viewManager->getSelectedScene() != static_cast<int>(_sceneID))
+                if (auto &viewManager = SceneViewManager::get();
+                    viewManager.getSelectedScene() != static_cast<int>(m_sceneId))
                 {
-                    viewManager->setSelectedScene(m_newSceneId);
-                    m_sceneManagerBridge->unselectEntity();
+                	auto &selector = Selector::get();
+                    viewManager.setSelectedScene(m_sceneId);
+                    selector.unselectEntity();
                 }
             }
 
@@ -345,8 +330,8 @@ namespace nexo::editor {
         handleKeyEvents();
         auto &app = getApp();
 
-        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_newCamera);
-        runEngine(m_newSceneId, RenderingType::FRAMEBUFFER);
+        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
         {
             auto [mx, my] = ImGui::GetMousePos();
@@ -361,28 +346,25 @@ namespace nexo::editor {
             	cameraComponent.m_renderTarget->bind();
                 int data = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
                 cameraComponent.m_renderTarget->unbind();
+                auto &selector = Selector::get();
                 if (data != -1)
                 {
                 	std::cout << "Clicked on entity with ID: " << data << std::endl;
-                    const auto &viewManager = SceneViewManager::getInstance();
-                    m_sceneManagerBridge->setSelectedEntity(data);
-                    viewManager->setSelectedScene(m_newSceneId);
-                    m_sceneManagerBridge->setSelectionType(SelectionType::ENTITY);
+                    auto &viewManager = SceneViewManager::get();
+                    auto uuid = app.m_coordinator->tryGetComponent<components::UuidComponent>(data);
+                    if (uuid)
+                    {
+	                   	selector.setSelectedEntity(uuid->get().uuid, data);
+	                    selector.setSelectionType(SelectionType::ENTITY);
+                    }
+                    viewManager.setSelectedScene(m_sceneId);
                 }
                 else
                 {
-                    m_sceneManagerBridge->unselectEntity();
+                	selector.unselectEntity();
                 }
             }
         }
-    }
-
-    void MainScene::addDefaultCameraToLayer(const scene::LayerId id) const
-    {
-        auto &layerStack = m_sceneManagerBridge->getSceneLayers(_sceneID);
-        const std::shared_ptr<layer::Layer> layer = layerStack[id];
-        const auto newCamera = std::make_shared<camera::OrthographicCameraController>(_viewSize.x / _viewSize.y, true);
-        layer->attachCamera(newCamera);
     }
 
 }

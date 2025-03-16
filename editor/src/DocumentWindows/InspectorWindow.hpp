@@ -22,7 +22,7 @@ namespace nexo::editor {
 	class MaterialInspector {
 		public:
 			void setup();
-			void show(int selectedEntity, const VariantData &selectedData);
+			void show(int selectedEntity);
 			bool drawTextureButton(const std::string &label, std::shared_ptr<renderer::Texture2D> &texture);
 		private:
 			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
@@ -47,7 +47,6 @@ namespace nexo::editor {
 			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
 
 	        void showEntityProperties(ecs::Entity entity);
-			void showLightProperties(const LightProperties &lightProps);
 	        void showComponent(const std::type_index& type);
     };
 };
