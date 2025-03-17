@@ -31,6 +31,7 @@ namespace nexo::components {
 	struct CameraComponent {
 		unsigned int width;
 		unsigned int height;
+		bool viewportLocked = false;
 		float fov = 45.0f;
 		float nearPlane = 0.1f;
 		float farPlane = 1000.0f;
