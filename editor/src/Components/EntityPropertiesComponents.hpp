@@ -41,6 +41,7 @@ namespace nexo::editor {
 		ImU32 bg;
 		ImU32 bgHovered;
 		ImU32 bgActive;
+		ImU32 textColor;
 		std::string format;
 	};
 
@@ -54,7 +55,25 @@ namespace nexo::editor {
 		public:
 			static bool drawHeader(const std::string &label, const std::string &headerText);
 			static void drawRowLabel(const ChannelLabel &rowLabel);
-			static bool drawRowDragFloat1(const char *uniqueLabel, const std::string &badgeLabel, float *value, float minValue = -FLT_MAX, float maxValue = FLT_MAX, float speed = 0.3f);
+			static bool drawRowDragFloat1(
+				const char *uniqueLabel,
+				const std::string &badgeLabel,
+				float *value,
+				float minValue = -FLT_MAX,
+				float maxValue = FLT_MAX,
+				float speed = 0.3f);
+			static bool drawRowDragFloat2(
+				const char *uniqueLabel,
+				const std::string &badLabelX,
+				const std::string &badLabelY,
+				float *values,
+				float minValue = -FLT_MAX,
+				float maxValue = FLT_MAX,
+				float speed = 0.3f,
+				std::vector<ImU32> badgeColor = {},
+				std::vector<ImU32> textBadgeColor = {},
+				bool inactive = false
+			);
 			static bool drawRowDragFloat3(
 				const char *uniqueLabel,
 				const std::string &badLabelX,
@@ -63,7 +82,9 @@ namespace nexo::editor {
 				float *values,
 				float minValue = -FLT_MAX,
 				float maxValue = FLT_MAX,
-				float speed = 0.3f
+				float speed = 0.3f,
+				std::vector<ImU32> badgeColors = {},
+				std::vector<ImU32> textBadgeColors = {}
 			);
 			static bool drawRowDragFloat(const Channels &channels);
 			static bool drawToggleButtonWithSeparator(const std::string &label, bool* toggled);
