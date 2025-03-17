@@ -57,12 +57,12 @@ namespace nexo::renderer {
             void bind() const override;
             void unbind() const override;
 
-            void setUniformFloat(const std::string &name, const float value) const override;
-            void setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
-            void setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
-            void setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const override;
-            void setUniformInt(const std::string &name, int value) const override;
-            void setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
+            bool setUniformFloat(const std::string &name, const float value) const override;
+            bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
+            bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
+            bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const override;
+            bool setUniformInt(const std::string &name, int value) const override;
+            bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
 
             void bindStorageBuffer(unsigned int index) const override;
             void bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const override;
