@@ -59,7 +59,6 @@ namespace nexo::assets {
         ERROR
     };
 
-    class AssetManager;
     class AssetCatalog;
     class AssetImporter;
 
@@ -68,7 +67,6 @@ namespace nexo::assets {
         AssetStatus status;          //< Asset status
         uint64_t referenceCount;     //< Number of references to the asset
         AssetID id;                  //< Unique identifier
-        AssetManager *manager;       //< Pointer to the asset manager
         AssetLocation location;      //< Location of the asset
     };
 
@@ -106,7 +104,6 @@ namespace nexo::assets {
                     .status = AssetStatus::UNLOADED,
                     .referenceCount = 0,
                     .id = boost::uuids::nil_uuid(),
-                    .manager = nullptr,
                     .location = AssetLocation("default"),
                 })
             {
@@ -127,7 +124,6 @@ namespace nexo::assets {
 
     template<typename TAssetData, AssetType TAssetType>
     class Asset : public IAsset {
-        friend class AssetManager;
         friend class AssetCatalog;
 
         friend class AssetRef<TAssetData>;

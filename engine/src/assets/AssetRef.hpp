@@ -32,8 +32,6 @@ namespace nexo::assets {
     template <typename TAsset>
     class AssetRef;
 
-    class AssetManager;
-
     /**
      * @brief A non-templated asset reference for generic asset storage
      */

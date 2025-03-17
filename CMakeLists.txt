@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 project(client CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
