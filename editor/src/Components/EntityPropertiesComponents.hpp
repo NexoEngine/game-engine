@@ -54,6 +54,12 @@ namespace nexo::editor {
 		public:
 			static bool drawHeader(const std::string &label, const std::string &headerText);
 			static void drawRowLabel(const ChannelLabel &rowLabel);
+			static void drawRowDragFloat3(
+				const char *uniqueLabel,
+				const std::string &badLabelX,
+				const std::string &badLabelY,
+				const std::string &badLabelZ,
+				float *values);
 			static void drawRowDragFloat(const Channels &channels);
 			static bool drawToggleButtonWithSeparator(const std::string &label, bool* toggled);
 	};

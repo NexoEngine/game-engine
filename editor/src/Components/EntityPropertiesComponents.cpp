@@ -92,6 +92,50 @@ namespace nexo::editor {
 		}
 	}
 
+	void EntityPropertiesComponents::drawRowDragFloat3(
+		const char *uniqueLabel,
+		const std::string &badLabelX,
+		const std::string &badLabelY,
+		const std::string &badLabelZ,
+		float *values)
+	{
+		std::string labelStr = uniqueLabel;
+		std::string labelX = std::string("##X") + labelStr;
+		std::string labelY = std::string("##Y") + labelStr;
+		std::string labelZ = std::string("##Z") + labelStr;
+
+		std::string badgeLabelX = badLabelX + std::string("##") + labelStr;
+		std::string badgeLabelY = badLabelY + std::string("##") + labelStr;
+		std::string badgeLabelZ = badLabelZ + std::string("##") + labelStr;
+
+		ImGui::TableNextRow();
+
+		ChannelLabel chanLabel;
+		chanLabel.label = std::string(uniqueLabel);
+		chanLabel.fixedWidth = -1.0f;
+
+		float badgeSize = ImGui::GetFrameHeight();
+		std::vector<Badge> badges;
+		badges.reserve(3);
+		badges.push_back(Badge(badgeLabelX, ImVec2(badgeSize, badgeSize), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)));
+		badges.push_back(Badge(badgeLabelY, ImVec2(badgeSize, badgeSize), IM_COL32(0, 80, 0, 255), IM_COL32(0, 80, 0, 255), IM_COL32(0, 80, 0, 255), IM_COL32(180, 255, 180, 255)));
+		badges.push_back(Badge(badgeLabelZ, ImVec2(badgeSize, badgeSize), IM_COL32(0, 0, 80, 255), IM_COL32(0, 0, 80, 255), IM_COL32(0, 0, 80, 255), IM_COL32(180, 180, 255, 255)));
+
+		std::vector<DragFloat> sliders;
+		sliders.reserve(3);
+		sliders.push_back(DragFloat(labelX, &values[0], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+		sliders.push_back(DragFloat(labelY, &values[1], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+		sliders.push_back(DragFloat(labelZ, &values[2], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+
+		Channels channels;
+		channels.count = 3;
+		channels.badges = badges;
+		channels.sliders = sliders;
+
+		EntityPropertiesComponents::drawRowLabel(chanLabel);
+		EntityPropertiesComponents::drawRowDragFloat(channels);
+	}
+
 	bool EntityPropertiesComponents::drawToggleButtonWithSeparator(const std::string &label, bool* toggled)
 	{
 		bool clicked = false;
