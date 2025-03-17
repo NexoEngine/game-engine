@@ -50,46 +50,25 @@ namespace nexo::renderer {
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         if (!data)
             THROW_EXCEPTION(FileNotFoundException, path);
-        m_width = width;
-        m_height = height;
-
-        GLenum internalFormat = 0;
-        GLenum dataFormat = 0;
-
-        if (channels == 4)
-        {
-            internalFormat = GL_RGBA8;
-            dataFormat = GL_RGBA;
-        }
-        else if (channels == 3)
-        {
-            internalFormat = GL_RGB8;
-            dataFormat = GL_RGB;
-        }
-        else
-        {
-            stbi_image_free(data);
-            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, path);
-        }
-
-        m_internalFormat = internalFormat;
-        m_dataFormat = dataFormat;
-
-        glGenTextures(1, &m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        stbi_image_free(data);
+        ingestDataFromStb(data, width, height, channels, path);
     }
 
     OpenGlTexture2D::~OpenGlTexture2D()
     {
         glDeleteTextures(1, &m_id);
+    }
+
+    OpenGlTexture2D::OpenGlTexture2D(const uint8_t* buffer, unsigned int len)
+    {
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+        //TODO: Set this conditionnaly based on the type of texture
+        //stbi_set_flip_vertically_on_load(1);
+        stbi_uc *data = stbi_load_from_memory(buffer, len, &width, &height, &channels, 0);
+        if (!data)
+            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, "(buffer)");
+        ingestDataFromStb(data, width, height, channels, "(buffer)");
     }
 
     unsigned int OpenGlTexture2D::getMaxTextureSize() const
@@ -108,6 +87,42 @@ namespace nexo::renderer {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(m_width), static_cast<int>(m_height), GL_RGBA, GL_UNSIGNED_BYTE, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    void OpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
+        const std::string& debugPath)
+    {
+        m_width = width;
+        m_height = height;
+
+        GLenum internalFormat = 0;
+        GLenum dataFormat = 0;
+
+        if (channels == 4) {
+            internalFormat = GL_RGBA8;
+            dataFormat = GL_RGBA;
+        } else if (channels == 3) {
+            internalFormat = GL_RGB8;
+            dataFormat = GL_RGB;
+        } else {
+            stbi_image_free(data);
+            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, debugPath);
+        }
+
+        m_internalFormat = internalFormat;
+        m_dataFormat = dataFormat;
+
+        glGenTextures(1, &m_id);
+        glBindTexture(GL_TEXTURE_2D, m_id);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        stbi_image_free(data);
+    }
+
 
     void OpenGlTexture2D::bind(const unsigned int slot) const
     {
