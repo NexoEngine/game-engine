@@ -23,7 +23,9 @@
 #include "EntityProperties/DirectionalLightProperty.hpp"
 #include "EntityProperties/PointLightProperty.hpp"
 #include "EntityProperties/SpotLightProperty.hpp"
+#include "EntityProperties/CameraProperty.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
+#include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "components/SceneComponents.hpp"
 #include "context/Selector.hpp"
@@ -167,6 +169,7 @@ namespace nexo::editor
         m_componentShowFunctions[typeid(components::DirectionalLightComponent)] = &DirectionalLightProperty::show;
         m_componentShowFunctions[typeid(components::PointLightComponent)] = &PointLightProperty::show;
         m_componentShowFunctions[typeid(components::SpotLightComponent)] = &SpotLightProperty::show;
+        m_componentShowFunctions[typeid(components::CameraComponent)] = &CameraProperty::show;
     }
 
     InspectorWindow::~InspectorWindow() = default;
