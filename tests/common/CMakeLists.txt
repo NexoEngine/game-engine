@@ -24,6 +24,7 @@ include_directories("./common")
 set(COMMON_SOURCES
     common/Exception.cpp
     common/math/Matrix.cpp
+    common/math/Vector.cpp
 )
 
 add_executable(common_tests
@@ -32,6 +33,7 @@ add_executable(common_tests
     ${BASEDIR}/Matrix.test.cpp
     ${BASEDIR}/Path.test.cpp
     ${BASEDIR}/Exceptions.test.cpp
+    ${BASEDIR}/Vector.test.cpp
 )
 
 # Find glm and add its include directories
