@@ -32,6 +32,7 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/DirectionalLightProperty.cpp
         editor/src/DocumentWindows/EntityProperties/PointLightProperty.cpp
         editor/src/DocumentWindows/EntityProperties/SpotLightProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/CameraProperty.cpp
 )
 
 # Windows App Icon
