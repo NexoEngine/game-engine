@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SRCS
         common/Exception.cpp
         common/math/Matrix.cpp
+        common/math/Light.cpp
         editor/main.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
@@ -27,6 +28,10 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/AEntityProperty.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/AmbientLightProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/DirectionalLightProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/PointLightProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/SpotLightProperty.cpp
 )
 
 # Windows App Icon
