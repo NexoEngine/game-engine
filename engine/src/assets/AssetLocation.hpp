@@ -46,6 +46,27 @@ namespace nexo::assets {
                 setLocation(fullLocation);
             }
 
+            AssetLocation& setName(const AssetName& name)
+            {
+                _name = name;
+                return *this;
+            }
+
+            AssetLocation& setPath(const std::string& path)
+            {
+                _path = path;
+                return *this;
+            }
+
+            AssetLocation& setPackName(const std::optional<std::reference_wrapper<const AssetPackName>>& packName)
+            {
+                _packName = packName;
+                return *this;
+            }
+
+            [[nodiscard]] const AssetName& getName() const { return _name; }
+            [[nodiscard]] std::optional<std::reference_wrapper<const AssetPackName>> getPackName() { return _packName; }
+
             [[nodiscard]] std::optional<std::reference_wrapper<const AssetPackName>> getPackName() const { return _packName; }
             [[nodiscard]] const AssetName& getAssetName() const { return _name; }
             [[nodiscard]] const std::string& getPath() const { return _path; }
