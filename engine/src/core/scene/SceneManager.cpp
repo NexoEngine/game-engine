@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneManager.hpp"
+#include "Exception.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include <cmath>
 
 namespace nexo::scene {
@@ -25,6 +27,8 @@ namespace nexo::scene {
 
 	unsigned int SceneManager::createScene(const std::string &name)
 	{
+		if (!m_coordinator)
+			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
 		Scene newScene = Scene(name, m_coordinator);
 		m_scenes.emplace(newScene.getId(), newScene);
 

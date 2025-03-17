@@ -33,5 +33,10 @@ namespace nexo::core {
                 "Failure to load model : " + filePath + " : " + errorStr, loc) {};
     };
 
-
+    class SceneManagerLifecycleException : public Exception {
+    	public:
+     		explicit SceneManagerLifecycleException(const std::string &message,
+                                           const std::source_location loc = std::source_location::current())
+                : Exception(message, loc) {}
+    };
 }

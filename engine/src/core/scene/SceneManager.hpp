@@ -29,7 +29,7 @@ namespace nexo::scene {
 			Scene &getScene(unsigned int id);
 
 		private:
-			std::shared_ptr<ecs::Coordinator> m_coordinator;
+			std::shared_ptr<ecs::Coordinator> m_coordinator = nullptr;
 			std::unordered_map<unsigned int, Scene> m_scenes;
 
 	};
