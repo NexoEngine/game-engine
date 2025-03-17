@@ -32,11 +32,6 @@ namespace nexo::event {
             MOCK_METHOD(void, handleEvent, (TestEvent&), (override));
     };
 
-    class MockScene : public scene::Scene {
-        public:
-            MOCK_METHOD(void, dispatchEventToLayers, (IEvent&), (override));
-    };
-
     TEST(EventManagerTest, RegisterListener) {
         EventManager manager;
         MockListener listener("MockListener");
@@ -67,8 +62,7 @@ namespace nexo::event {
         EXPECT_CALL(listener, handleEvent(::testing::_)).Times(1);
 
         manager.emitEvent(testEvent);
-        MockScene mockScene;
-        manager.dispatchEvents(mockScene, false);
+        manager.dispatchEvents();
     }
 
     TEST(EventManagerTest, EventConsumption) {
@@ -85,12 +79,9 @@ namespace nexo::event {
             .WillOnce([](TestEvent& event) { event.consumed = true; });
         // The second listener should not receive anything since the first listener consumed the event
         EXPECT_CALL(listener2, handleEvent(::testing::_)).Times(0);
-        // Same for the scene itself
-        MockScene mockScene;
-        EXPECT_CALL(mockScene, dispatchEventToLayers(::testing::_)).Times(0);
 
         manager.emitEvent(testEvent);
-        manager.dispatchEvents(mockScene, true);
+        manager.dispatchEvents();
     }
 
     TEST(EventManagerTest, DispatchToSceneIfNotConsumed) {
@@ -102,12 +93,9 @@ namespace nexo::event {
         auto testEvent = std::make_shared<TestEvent>(5);
         // The listener should receive the event but not consume it
         EXPECT_CALL(listener, handleEvent(::testing::_)).Times(1);
-        MockScene mockScene;
-        // So the scene should also receive it
-        EXPECT_CALL(mockScene, dispatchEventToLayers(::testing::_)).Times(1);
 
         manager.emitEvent(testEvent);
-        manager.dispatchEvents(mockScene, true);
+        manager.dispatchEvents();
     }
 
     TEST(EventManagerTest, MultipleListenersSameEvent) {
@@ -123,21 +111,8 @@ namespace nexo::event {
         EXPECT_CALL(listener1, handleEvent(::testing::_)).Times(1);
         EXPECT_CALL(listener2, handleEvent(::testing::_)).Times(1);
 
-        MockScene mockScene;
         manager.emitEvent(testEvent);
-        manager.dispatchEvents(mockScene, false);
-    }
-
-    TEST(EventManagerTest, NoListenerForEvent) {
-        EventManager manager;
-        auto testEvent = std::make_shared<TestEvent>(5);
-
-        // Validate that even with no listener the scene dispatch works
-        MockScene mockScene;
-        EXPECT_CALL(mockScene, dispatchEventToLayers(::testing::_)).Times(1);
-
-        manager.emitEvent(testEvent);
-        manager.dispatchEvents(mockScene, true);
+        manager.dispatchEvents();
     }
 
     class AnotherTestEvent : public Event<AnotherTestEvent> {
@@ -168,10 +143,9 @@ namespace nexo::event {
         EXPECT_CALL(listener1, handleEvent(::testing::_)).Times(1);
         EXPECT_CALL(listener2, handleEvent(::testing::_)).Times(1);
 
-        MockScene mockScene;
         manager.emitEvent(testEvent);
         manager.emitEvent(anotherEvent);
-        manager.dispatchEvents(mockScene, false);
+        manager.dispatchEvents();
     }
 
     TEST(EventManagerTest, UnregisterListenerBeforeDispatch) {
@@ -185,9 +159,8 @@ namespace nexo::event {
         // The handle event should not be called since we are not listening anymore
         EXPECT_CALL(listener, handleEvent(::testing::_)).Times(0);
 
-        MockScene mockScene;
         manager.emitEvent(testEvent);
-        manager.dispatchEvents(mockScene, false);
+        manager.dispatchEvents();
     }
 
     TEST(EventManagerTest, EmitMultipleEventsQuickly) {
@@ -203,8 +176,7 @@ namespace nexo::event {
         manager.emitEvent(std::make_shared<TestEvent>(2));
         manager.emitEvent(std::make_shared<TestEvent>(3));
 
-        MockScene mockScene;
-        manager.dispatchEvents(mockScene, false);
+        manager.dispatchEvents();
     }
 
     class MultiEventListener : public Listens<TestEvent, AnotherTestEvent> {
@@ -229,10 +201,8 @@ namespace nexo::event {
         EXPECT_CALL(listener, handleEvent(::testing::An<TestEvent&>())).Times(1);
         EXPECT_CALL(listener, handleEvent(::testing::An<AnotherTestEvent&>())).Times(1);
 
-        MockScene mockScene;
         manager.emitEvent(testEvent);
         manager.emitEvent(anotherEvent);
-        manager.dispatchEvents(mockScene, false);
+        manager.dispatchEvents();
     }
 }
-
