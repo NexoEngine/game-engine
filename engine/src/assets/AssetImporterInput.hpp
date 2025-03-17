@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include <variant>
+#include <vector>
+#include <filesystem>
+
 namespace nexo::assets {
 
     // Import from file, importer should open and read the file
