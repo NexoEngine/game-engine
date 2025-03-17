@@ -20,6 +20,6 @@
 namespace nexo::editor {
 	class Widgets {
 		public:
-			static bool drawColorEditor(const std::string &label, glm::vec4 *selectedEntityColor, ImGuiColorEditFlags *colorPickerMode, bool *showPicker);
+			static bool drawColorEditor(const std::string &label, glm::vec4 *selectedEntityColor, ImGuiColorEditFlags *colorPickerMode, bool *showPicker, ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None);
 	};
 }

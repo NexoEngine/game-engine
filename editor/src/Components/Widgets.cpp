@@ -21,7 +21,8 @@ namespace nexo::editor {
 			const std::string &label,
 			glm::vec4 *selectedEntityColor,
 			ImGuiColorEditFlags *colorPickerMode,
-			bool *showPicker
+			bool *showPicker,
+			ImGuiColorEditFlags colorButtonFlags
 	) {
         float availableWidth = ImGui::GetContentRegionAvail().x;
         bool colorModified = false;
@@ -34,7 +35,8 @@ namespace nexo::editor {
            	colorButton.c_str(),
            	ImVec2(availableWidth - 35, 25), // Make room for the cog button
            	ImVec4(selectedEntityColor->x, selectedEntityColor->y, selectedEntityColor->z, selectedEntityColor->w),
-            showPicker
+            showPicker,
+            colorButtonFlags
         );
 
         ImGui::PopStyleVar();
