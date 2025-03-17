@@ -89,9 +89,9 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                drawRowWithDragFloat("Position", &pos.x);
-                drawRowWithDragFloat("Rotation", &rotation.x);
-                drawRowWithDragFloat("Scale", &size.x);
+                EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &pos.x);
+                EntityPropertiesComponents::drawRowDragFloat3("Rotation", "X", "Y", "Z", &rotation.x);
+                EntityPropertiesComponents::drawRowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 
                 ImGui::EndTable();
             }
