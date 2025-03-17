@@ -34,17 +34,11 @@ namespace nexo::assets {
      *
      * @brief Represents a 3D model asset.
      */
-    class Model final : public Asset<ModelData> {
-        friend ModelImporter;
+    class Model final : public Asset<ModelData, AssetType::MODEL> {
         public:
-            explicit Model() : Asset(AssetType::MODEL)
-            {
-            }
+            Model() = default;
 
             ~Model() override = default;
-
-        private:
-            Assimp::Importer importer;
     };
 
 }

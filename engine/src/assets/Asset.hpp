@@ -27,7 +27,10 @@
 
 namespace nexo::assets {
 
+    constexpr unsigned short ASSET_MAX_DEPENDENCIES = 10000;
+
     enum class AssetType {
+        UNKNOWN,
         TEXTURE,
         MODEL,
         SOUND,
@@ -58,6 +61,7 @@ namespace nexo::assets {
 
     class AssetManager;
     class AssetCatalog;
+    class AssetImporter;
 
     struct AssetMetadata {
         AssetType type;              //< Asset type
@@ -70,6 +74,7 @@ namespace nexo::assets {
 
     class IAsset {
         friend class AssetCatalog;
+        friend class AssetImporter;
         public:
             //IAsset() = delete;
             virtual ~IAsset() = default;
@@ -93,11 +98,11 @@ namespace nexo::assets {
              * @param rawData Raw pointer to the asset data
              * @note This transfers ownership of the data to the asset, which will delete it in its destructor
              */
-            virtual void setRawData(void* rawData) = 0;
+            virtual IAsset& setRawData(void* rawData) = 0;
         protected:
-            explicit IAsset(AssetType type)
+            explicit IAsset()
                 : m_metadata({
-                    .type = type,
+                    .type = AssetType::UNKNOWN,
                     .status = AssetStatus::UNLOADED,
                     .referenceCount = 0,
                     .id = boost::uuids::nil_uuid(),
@@ -107,7 +112,7 @@ namespace nexo::assets {
             {
             }
 
-        private:
+        public:
             AssetMetadata m_metadata;
 
             /**
@@ -120,34 +125,64 @@ namespace nexo::assets {
 
     };
 
-    template<typename TAssetData>
+    template<typename TAssetData, AssetType TAssetType>
     class Asset : public IAsset {
         friend class AssetManager;
         friend class AssetCatalog;
 
         friend class AssetRef<TAssetData>;
         public:
-            ~Asset() override
+            virtual ~Asset() override
             {
                 delete data;
             }
 
             TAssetData *data;
 
-        // Implementation of IAsset virtual methods
-        [[nodiscard]] void* getRawData() const override {
-            return data;
-        }
+            // Implementation of IAsset virtual methods
+            [[nodiscard]] void* getRawData() const override {
+                return data;
+            }
 
-        void setRawData(void* rawData) override {
-            delete data;  // Clean up existing data
-            data = static_cast<TAssetData*>(rawData);  // Set new data
-        }
+            IAsset& setRawData(void* rawData) override {
+                delete data;  // Clean up existing data
+                if (rawData == nullptr) {
+                    m_metadata.status = AssetStatus::UNLOADED;
+                } else {
+
+                    m_metadata.status = AssetStatus::LOADED;
+                }
+                data = static_cast<TAssetData*>(rawData);
+                return *this;
+            }
+
+            [[nodiscard]] TAssetData* getData() const {
+                return data;
+            }
+
+            Asset& setData(TAssetData* newData) {
+                delete data;
+                if (newData == nullptr) {
+                    m_metadata.status = AssetStatus::UNLOADED;
+                } else {
+                    m_metadata.status = AssetStatus::LOADED;
+                }
+                data = newData;
+                return *this;
+            }
 
         protected:
-            explicit Asset(const AssetType type) : IAsset(type), data(nullptr)
+            explicit Asset() : data(nullptr)
             {
+                m_metadata.type = TAssetType;
             }
+
+            explicit Asset(TAssetData* data) : data(data)
+            {
+                m_metadata.type = TAssetType;
+                m_metadata.status = AssetStatus::LOADED;
+            }
+
         private:
 
             /*virtual AssetStatus load() = 0;
