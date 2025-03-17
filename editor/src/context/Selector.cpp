@@ -56,7 +56,12 @@ namespace nexo::editor {
 	const std::string &Selector::getUiHandle(const std::string &uuid, const std::string &defaultHandle)
 	{
 		auto it = m_uiHandles.find(uuid);
-    	return (it != m_uiHandles.end() && !it->second.empty()) ? it->second : defaultHandle;
+		if (it == m_uiHandles.end())
+		{
+			m_uiHandles[uuid] = defaultHandle;
+			return defaultHandle;
+		}
+    	return it->second;
 	}
 
 	void Selector::setUiHandle(const std::string &uuid, const std::string &handle)
