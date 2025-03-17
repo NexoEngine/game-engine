@@ -259,14 +259,15 @@ namespace nexo::editor {
     {
         auto viewPortOffset = ImGui::GetCursorPos();
         auto &app = getApp();
-       	auto cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+       	auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
 
         // Resize handling
         if (ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             _viewSize.x != viewportPanelSize.x || _viewSize.y != viewportPanelSize.y)
         {
-         	cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
-          							static_cast<unsigned int>(viewportPanelSize.y));
+        		cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
+        							static_cast<unsigned int>(viewportPanelSize.y));
+
             //m_framebuffer->resize(static_cast<unsigned int>(viewportPanelSize.x),
                                   //static_cast<unsigned int>(viewportPanelSize.y));
             _viewSize.x = viewportPanelSize.x;
