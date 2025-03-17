@@ -42,7 +42,7 @@ namespace nexo::assets {
                 auto asset = new Texture();
                 std::shared_ptr<renderer::Texture> rendererTexture;
                 if (std::holds_alternative<ImporterFileInput>(ctx.input))
-                    rendererTexture = renderer::Texture2D::create(std::get<ImporterFileInput>(ctx.input).filePath);
+                    rendererTexture = renderer::Texture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
                 else {
                     auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
                     rendererTexture = renderer::Texture2D::create(data.data(), data.size());
@@ -65,7 +65,7 @@ namespace nexo::assets {
 
             bool canReadFile(const ImporterFileInput& input)
             {
-                const int ok = stbi_info(input.filePath.c_str(), nullptr, nullptr, nullptr);
+                const int ok = stbi_info(input.filePath.string().c_str(), nullptr, nullptr, nullptr);
                 return ok;
             }
 
