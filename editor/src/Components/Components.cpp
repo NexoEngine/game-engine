@@ -69,11 +69,12 @@ namespace nexo::editor {
 		ImGui::PopStyleColor(3);
 	}
 
-	void Components::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked)
+	void Components::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked, ImGuiColorEditFlags flags)
 	{
+		flags |= ImGuiColorEditFlags_NoTooltip;
 		if (ImGui::ColorButton(label.c_str(),
 								color,
-                                ImGuiColorEditFlags_NoTooltip,
+                                flags,
                                 size))
         {
         	if (clicked)
