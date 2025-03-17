@@ -55,14 +55,6 @@ namespace nexo::assets {
                 int flags = aiProcess_Triangulate
                     | aiProcess_FlipUVs
                     | aiProcess_GenNormals;
-                /*if (param.calculateTangentSpace)
-                    flags |= aiProcess_CalcTangentSpace;
-                if (param.joinIdenticalVertices)
-                    flags |= aiProcess_JoinIdenticalVertices;
-                if (param.generateSmoothNormals)
-                    flags |= aiProcess_GenSmoothNormals;
-                if (param.optimizeMeshes)
-                    flags |= aiProcess_OptimizeMeshes;*/
                 const aiScene* scene = nullptr;
                 if (std::holds_alternative<ImporterFileInput>(ctx.input))
                     scene = m_importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
@@ -75,7 +67,6 @@ namespace nexo::assets {
                     auto error = m_importer.GetErrorString();
                     LOG(NEXO_ERROR, "Error while importing model: {}: {}", ctx.location.getPath(), error);
                 }
-                m_model->data = new ModelData();
                 m_model->data->scene = scene;
                 ctx.setMainAsset(m_model);
             }

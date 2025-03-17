@@ -24,8 +24,6 @@ namespace nexo::assets {
         std::shared_ptr<renderer::Texture> texture;
     };
 
-    class TextureImporter;
-
     /**
      * @class Texture
      *
