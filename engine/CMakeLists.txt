@@ -21,8 +21,8 @@ list(APPEND COMMON_SOURCES
     engine/src/renderer/Window.cpp
     engine/src/assets/Asset.cpp
     engine/src/assets/AssetCatalog.cpp
+    engine/src/assets/AssetImporter.cpp
     engine/src/assets/AssetImporterContext.cpp
-    engine/src/assets/AssetImporterRegistry.cpp
     engine/src/assets/AssetManager.cpp
     engine/src/assets/AssetRef.cpp
     engine/src/core/event/Event.cpp

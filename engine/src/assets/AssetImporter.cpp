@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "AssetImporterRegistry.hpp"
+#include "AssetImporter.hpp"
 #include "AssetImporterBase.hpp"
 #include "AssetCatalog.hpp"
 

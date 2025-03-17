@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "AssetImporterRegistry.hpp"
+#include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
 #include "Asset.hpp"
 
