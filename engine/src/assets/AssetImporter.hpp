@@ -40,6 +40,7 @@ namespace nexo::assets {
             using ImporterMap = std::map<std::type_index, std::vector<AssetImporterBase *>>;
 
             AssetImporter();
+            ~AssetImporter();
 
             template<typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
