@@ -212,7 +212,7 @@ namespace nexo::renderer {
 
         ////// Validate float uniform //////
         const float floatValue = 1.0f;
-        EXPECT_NO_THROW(shader.setUniformFloat("uFloat", floatValue));
+        EXPECT_EQ(shader.setUniformFloat("uFloat", floatValue), 1);
         // Validate location retrieval
         GLint floatUniformLocation = glGetUniformLocation(shader.getProgramId(), "uFloat");
         ASSERT_NE(floatUniformLocation, -1); // Ensure the uniform location is valid
@@ -223,7 +223,7 @@ namespace nexo::renderer {
 
         ////// Validate float vec3 uniform //////
         glm::vec3 vec3Value(1.0f, 2.0f, 3.0f);
-        EXPECT_NO_THROW(shader.setUniformFloat3("uVec3", vec3Value));
+        EXPECT_EQ(shader.setUniformFloat3("uVec3", vec3Value), 1);
         // Validate location retrieval
         GLint vec3UniformLocation = glGetUniformLocation(shader.getProgramId(), "uVec3");
         ASSERT_NE(vec3UniformLocation, -1);
@@ -234,7 +234,7 @@ namespace nexo::renderer {
 
         ////// Validate float vec4 uniform //////
         glm::vec4 vec4Value(1.0f, 2.0f, 3.0f, 4.0f);
-        EXPECT_NO_THROW(shader.setUniformFloat4("uVec4", vec4Value));
+        EXPECT_EQ(shader.setUniformFloat4("uVec4", vec4Value), 1);
         // Validate location retrieval
         GLint vec4UniformLocation = glGetUniformLocation(shader.getProgramId(), "uVec4");
         ASSERT_NE(vec4UniformLocation, -1);
@@ -246,7 +246,7 @@ namespace nexo::renderer {
 
         ////// Validate float mat4x4 uniform //////
         glm::mat4 matrixValue(1.0f);
-        EXPECT_NO_THROW(shader.setUniformMatrix("uModel", matrixValue));
+        EXPECT_EQ(shader.setUniformMatrix("uModel", matrixValue), 1);
         // Validate location retrieval
         GLint matrixUniformLocation = glGetUniformLocation(shader.getProgramId(), "uModel");
         ASSERT_NE(matrixUniformLocation, -1);
@@ -257,7 +257,7 @@ namespace nexo::renderer {
 
         ////// Validate int uniform //////
         const int intValue = 1;
-        EXPECT_NO_THROW(shader.setUniformInt("uInt", intValue));
+        EXPECT_EQ(shader.setUniformInt("uInt", intValue), 1);
         // Validate location retrieval
         GLint intUniformLocation = glGetUniformLocation(shader.getProgramId(), "uInt");
         ASSERT_NE(intUniformLocation, -1);
@@ -268,7 +268,7 @@ namespace nexo::renderer {
 
         ////// Validate int array uniform //////
         const int intArrayValues[] = {1, 2, 3};
-        EXPECT_NO_THROW(shader.setUniformIntArray("uIntArray", intArrayValues, 3));
+        EXPECT_EQ(shader.setUniformIntArray("uIntArray", intArrayValues, 3), 1);
 
         for (int i = 0; i < 3; ++i) {
             // Validate location retrieval
@@ -291,18 +291,17 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, InvalidUniformName)
     {
-    	GTEST_SKIP();
         OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
         shader.bind();
 
         // Validate failure on invalid uniform name
-        EXPECT_THROW(shader.setUniformFloat("invalidUniformFloat", 1.0f), ShaderInvalidUniform);
-        EXPECT_THROW(shader.setUniformFloat3("invalidUniformFloat3", glm::vec3(1.0f)), ShaderInvalidUniform);
-        EXPECT_THROW(shader.setUniformFloat4("invalidUniformFloat4", glm::vec4(1.0f)), ShaderInvalidUniform);
-        EXPECT_THROW(shader.setUniformInt("invalidUniformInt", 1), ShaderInvalidUniform);
-        EXPECT_THROW(shader.setUniformMatrix("invalidUniformFloatMatrix4x4", glm::mat4(1.0f)), ShaderInvalidUniform);
+        EXPECT_EQ(shader.setUniformFloat("invalidUniformFloat", 1.0f), 0);
+        EXPECT_EQ(shader.setUniformFloat3("invalidUniformFloat3", glm::vec3(1.0f)), 0);
+        EXPECT_EQ(shader.setUniformFloat4("invalidUniformFloat4", glm::vec4(1.0f)), 0);
+        EXPECT_EQ(shader.setUniformInt("invalidUniformInt", 1), 0);
+        EXPECT_EQ(shader.setUniformMatrix("invalidUniformFloatMatrix4x4", glm::mat4(1.0f)), 0);
         int testArray[] = {1, 2, 3};
-        EXPECT_THROW(shader.setUniformIntArray("invalidUniformIntArray", testArray, 3), ShaderInvalidUniform);
+        EXPECT_EQ(shader.setUniformIntArray("invalidUniformIntArray", testArray, 3), 0);
         shader.unbind();
     }
 
