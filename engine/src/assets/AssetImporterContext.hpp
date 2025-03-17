@@ -38,37 +38,37 @@ namespace nexo::assets {
     struct AssetImporterContext {
         public:
             ImporterInputVariant input;                          //< Input data for the importer
-            std::shared_ptr<IAsset> parentAsset;                 //< Parent asset (if any)
             AssetLocation location = AssetLocation("default"); //< Future location of the asset in the catalog
 
             AssetImporterContext() = default;
             ~AssetImporterContext() = default;
 
             /**
-             * @brief Set the main asset data for this context
-             * @param data The main asset data
+             * @brief Set the main asset for this context
+             * @param asset The main asset
              * @note This method must be called by the importer to set the main asset data
              */
-            void setMainAssetData(const std::shared_ptr<IAsset>& data);
+            void setMainAsset(IAsset* asset);
 
             /**
              * @brief Get the main asset data for this context
              * @return The main asset data
              */
-            [[nodiscard]] const std::shared_ptr<IAsset>& getMainAsset() const;
+            [[nodiscard]] IAsset* getMainAsset() const;
 
             /**
-             * @brief Add a dependency to the context
-             * @tparam AssetType The type of asset to add as a dependency
-             * @param input The input data for the importer
-             * @param importer The importer to use for this dependency (default: nullptr) (if null, auto-select)
-             * @return A reference to the dependency asset
+             * @brief Add dependency to main asset.
+             *
+             * Main asset will be considered parent of these dependencies.
+             * @param dependency The dependency to add
              */
-            template <typename AssetType>
-                requires std::derived_from<AssetType, IAsset>
-            GenericAssetRef addDependency(const ImporterInputVariant& input, std::shared_ptr<AssetImporter> importer = nullptr);
+            void addDependency(const GenericAssetRef& dependency);
 
-            [[nodiscard]] const std::vector<AssetDependency>& getDependencies() const;
+            /**
+             * @brief Get a vector of all dependencies for this context
+             * @return A vector of all dependencies' asset references
+             */
+            [[nodiscard]] const std::vector<GenericAssetRef>& getDependencies() const;
 
             template <typename ParamType>
                 requires JSONSerializable<ParamType>
@@ -82,44 +82,43 @@ namespace nexo::assets {
 
             [[nodiscard]] json getParameters() const;
 
+            template <typename AssetType>
+                requires std::derived_from<AssetType, IAsset>
+            AssetLocation genUniqueDependencyName();
+
+
         private:
-            std::shared_ptr<IAsset> m_mainAsset;         //< Main asset being imported, resulting asset (MUST be set by importer)
-            std::vector<AssetDependency> m_dependencies; //< Dependencies to import
+
+
+            IAsset *m_mainAsset = nullptr;         //< Main asset being imported, resulting asset (MUST be set by importer)
+            std::vector<GenericAssetRef> m_dependencies; //< Dependencies to import
             json m_jsonParameters;             //< JSON parameters for the importer
+            unsigned int m_depUniqueId = 0;            //< Unique ID for the dependency name
     };
 
-    /**
-     * @brief Represents a dependency asset to be imported
-     */
-    struct AssetDependency {
-        std::shared_ptr<IAsset> asset;           //< Ptr to this dependency asset (to later update the assetData inside)
-        std::shared_ptr<AssetImporter> importer; //< Ptr to the importer for this dependency, if null, auto-select
-        std::type_index typeIdx;                 //< Type index of the dependency asset
-        AssetImporterContext ctx;                //< Import context for this dependency
-    };
 
-    template<typename AssetType> requires std::derived_from<AssetType, IAsset>
-    GenericAssetRef AssetImporterContext::addDependency(const ImporterInputVariant& input, std::shared_ptr<AssetImporter> importer)
+    template <typename AssetType>
+        requires std::derived_from<AssetType, IAsset>
+    AssetLocation AssetImporterContext::genUniqueDependencyName()
     {
-        auto asset = std::make_shared<AssetType>();
-        auto ref = GenericAssetRef(asset);
+        auto depLoc = AssetLocation(
+            std::format("{}_{}{}", location.getFullLocation(), AssetTypeNames[AssetType::getType()], ++m_depUniqueId)
+        );
+        if (!AssetCatalog::getInstance().getAsset(depLoc))
+            return depLoc;
 
-        std::string depLocation = std::format("{}_{}{}",
-            location.getFullLocation(), AssetTypeNames[asset->getType()], std::to_string(m_dependencies.size()));
-
-        AssetImporterContext ctx;
-        ctx.input = input;
-        ctx.parentAsset = m_mainAsset;
-        ctx.location = AssetLocation(depLocation);
-
-        const AssetDependency dep {
-            .asset = asset,
-            .ctx = ctx,
-            .typeIdx = std::type_index(typeid(AssetType)),
-            .importer = importer
-        };
-        m_dependencies.push_back(dep);
-        return ref;
+        // If the location already exists, we need to generate a new one
+        auto name = std::string(location.getName());
+        while (AssetCatalog::getInstance().getAsset(depLoc)) {
+            std::string newName = name + std::to_string(++m_depUniqueId);
+            depLoc.setName(newName);
+            if (m_depUniqueId > ASSET_MAX_DEPENDENCIES) {
+                // Prevent infinite loop
+                LOG(NEXO_ERROR, "Failed to generate unique name for asset: {}: couldn't find unique id", depLoc.getFullLocation());
+                break;
+            }
+        }
+        return depLoc;
     }
 
     template<typename ParamType> requires JSONSerializable<ParamType>
