@@ -67,8 +67,9 @@ namespace nexo::editor {
 		ImGui::SetWindowFontScale(1.0f);
 	}
 
-	void EntityPropertiesComponents::drawRowDragFloat(const Channels &channels)
+	bool EntityPropertiesComponents::drawRowDragFloat(const Channels &channels)
 	{
+		bool clicked = false;
 		for (unsigned int i = 0; i < channels.count; ++i)
 		{
 			ImGui::TableNextColumn();
@@ -79,7 +80,7 @@ namespace nexo::editor {
 			}
 			ImGui::SameLine(0, 2);
 			auto &slider = channels.sliders[i];
-			Components::drawDragFloat(
+			clicked = Components::drawDragFloat(
 				slider.label,
 				slider.value,
 				slider.speed,
@@ -88,16 +89,52 @@ namespace nexo::editor {
 				slider.format,
 				slider.bg,
 				slider.bgHovered,
-				slider.bgActive);
+				slider.bgActive) || clicked;
 		}
+		return clicked;
 	}
 
-	void EntityPropertiesComponents::drawRowDragFloat3(
+	bool EntityPropertiesComponents::drawRowDragFloat1(const char *uniqueLabel, const std::string &badgeLabel, float *value, float minValue, float maxValue, float speed)
+	{
+		std::string labelStr = uniqueLabel;
+		std::string labelX = std::string("##X") + labelStr;
+
+		std::string badgeLabelX = (badgeLabel.empty()) ? "" : badgeLabel + std::string("##") + labelStr;
+
+		ImGui::TableNextRow();
+
+		ChannelLabel chanLabel;
+		chanLabel.label = std::string(uniqueLabel);
+		chanLabel.fixedWidth = -1.0f;
+
+		float badgeSize = ImGui::GetFrameHeight();
+		std::vector<Badge> badges;
+		badges.reserve(1);
+		badges.push_back(Badge(badgeLabelX, ImVec2(badgeSize, badgeSize), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)));
+
+		std::vector<DragFloat> sliders;
+		sliders.reserve(1);
+		sliders.push_back(DragFloat(labelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+
+		Channels channels;
+		channels.count = 1;
+		channels.badges = badges;
+		channels.sliders = sliders;
+
+		EntityPropertiesComponents::drawRowLabel(chanLabel);
+		return EntityPropertiesComponents::drawRowDragFloat(channels);
+	}
+
+	bool EntityPropertiesComponents::drawRowDragFloat3(
 		const char *uniqueLabel,
 		const std::string &badLabelX,
 		const std::string &badLabelY,
 		const std::string &badLabelZ,
-		float *values)
+		float *values,
+		float minValue,
+		float maxValue,
+		float speed
+	)
 	{
 		std::string labelStr = uniqueLabel;
 		std::string labelX = std::string("##X") + labelStr;
@@ -123,9 +160,9 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(3);
-		sliders.push_back(DragFloat(labelX, &values[0], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-		sliders.push_back(DragFloat(labelY, &values[1], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
-		sliders.push_back(DragFloat(labelZ, &values[2], 0.3f, -FLT_MAX, FLT_MAX, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+		sliders.push_back(DragFloat(labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+		sliders.push_back(DragFloat(labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
+		sliders.push_back(DragFloat(labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), "%.2f"));
 
 		Channels channels;
 		channels.count = 3;
@@ -133,7 +170,7 @@ namespace nexo::editor {
 		channels.sliders = sliders;
 
 		EntityPropertiesComponents::drawRowLabel(chanLabel);
-		EntityPropertiesComponents::drawRowDragFloat(channels);
+		return EntityPropertiesComponents::drawRowDragFloat(channels);
 	}
 
 	bool EntityPropertiesComponents::drawToggleButtonWithSeparator(const std::string &label, bool* toggled)

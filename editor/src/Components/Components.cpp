@@ -55,7 +55,7 @@ namespace nexo::editor {
         ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
 	}
 
-	void Components::drawDragFloat(
+	bool Components::drawDragFloat(
 			const std::string &label,
 			float *values,  float speed,
 			float min, float max,
@@ -65,8 +65,9 @@ namespace nexo::editor {
 		ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
-		ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
+		bool clicked = ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
 		ImGui::PopStyleColor(3);
+		return clicked;
 	}
 
 	void Components::drawColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked, ImGuiColorEditFlags flags)
