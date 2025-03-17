@@ -18,15 +18,17 @@
 #include <assimp/Importer.hpp>
 #include <assimp/Importer.hpp>
 
-#include "assets/AssetImporter.hpp"
-#include "assets/Assets/Model/Model.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "assets/AssetImporterBase.hpp"
+#include "assets/Assets/Model/Model.hpp"
+#include "ModelParameters.hpp"
+
 namespace nexo::assets {
 
-    class ModelImporter final : public AssetImporter {
+    class ModelImporter final : public AssetImporterBase {
         public:
             ModelImporter() = default;
             ~ModelImporter() override = default;
@@ -47,35 +49,40 @@ namespace nexo::assets {
 
             void importImpl(AssetImporterContext& ctx) override
             {
-                const auto model = std::make_shared<Model>();
-                auto param = ctx.getParameters<ModelImportParameters>();
+                m_model = new Model();
+                m_model->setData(new ModelData());
+                const auto param = ctx.getParameters<ModelImportParameters>();
                 int flags = aiProcess_Triangulate
                     | aiProcess_FlipUVs
                     | aiProcess_GenNormals;
-                if (param.calculateTangentSpace)
+                /*if (param.calculateTangentSpace)
                     flags |= aiProcess_CalcTangentSpace;
                 if (param.joinIdenticalVertices)
                     flags |= aiProcess_JoinIdenticalVertices;
                 if (param.generateSmoothNormals)
                     flags |= aiProcess_GenSmoothNormals;
                 if (param.optimizeMeshes)
-                    flags |= aiProcess_OptimizeMeshes;
+                    flags |= aiProcess_OptimizeMeshes;*/
                 const aiScene* scene = nullptr;
                 if (std::holds_alternative<ImporterFileInput>(ctx.input))
-                    scene = model->importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
+                    scene = m_importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
                 if (std::holds_alternative<ImporterMemoryInput>(ctx.input)) {
                     auto memInput = std::get<ImporterMemoryInput>(ctx.input);
-                    scene = model->importer.ReadFileFromMemory(memInput.memoryData.data(), memInput.memoryData.size(), flags, memInput.fileExtension ? memInput.fileExtension->c_str() : nullptr);
+                    scene = m_importer.ReadFileFromMemory(memInput.memoryData.data(), memInput.memoryData.size(), flags, memInput.fileExtension ? memInput.fileExtension->c_str() : nullptr);
                 }
                 if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
                     //log error TODO: improve error handling in importers
-                    auto error = model->importer.GetErrorString();
+                    auto error = m_importer.GetErrorString();
                     LOG(NEXO_ERROR, "Error while importing model: {}: {}", ctx.location.getPath(), error);
                 }
-                model->data = new ModelData();
-                model->data->scene = scene;
-                ctx.setMainAssetData(model);
+                m_model->data = new ModelData();
+                m_model->data->scene = scene;
+                ctx.setMainAsset(m_model);
             }
+
+        protected:
+            Model *m_model = nullptr; //< Model being imported
+            Assimp::Importer m_importer;              //< Assimp importer instance
     };
 
 } // namespace nexo::assets
