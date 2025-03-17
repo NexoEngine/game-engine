@@ -43,9 +43,9 @@ TEST_F(ExtractCameraComponentsTest, IdentityRotation) {
     glm::vec3 expectedRight(0.0f, 0.0f, 1.0f);
     glm::vec3 expectedUp(0.0f, 1.0f, 0.0f);
 
-    nexo::utils::expectVec3Near(front, expectedFront);
-    nexo::utils::expectVec3Near(right, expectedRight);
-    nexo::utils::expectVec3Near(up, expectedUp);
+    EXPECT_VEC3_NEAR(front, expectedFront, 0.01f);
+    EXPECT_VEC3_NEAR(right, expectedRight, 0.01f);
+    EXPECT_VEC3_NEAR(up, expectedUp, 0.01f);
 }
 
 TEST_F(ExtractCameraComponentsTest, ArbitraryRotation) {
@@ -70,9 +70,9 @@ TEST_F(ExtractCameraComponentsTest, ArbitraryRotation) {
     glm::vec3 expectedRight = glm::normalize(glm::cross(expectedFront, glm::vec3(0.0f, 1.0f, 0.0f)));
     glm::vec3 expectedUp = glm::normalize(glm::cross(expectedRight, expectedFront));
 
-    nexo::utils::expectVec3Near(front, expectedFront);
-    nexo::utils::expectVec3Near(right, expectedRight);
-    nexo::utils::expectVec3Near(up, expectedUp);
+    EXPECT_VEC3_NEAR(front, expectedFront, 0.01f);
+    EXPECT_VEC3_NEAR(right, expectedRight, 0.01f);
+    EXPECT_VEC3_NEAR(up, expectedUp, 0.01f);
 }
 
 TEST_F(ExtractCameraComponentsTest, NonZeroRotation) {
@@ -93,7 +93,7 @@ TEST_F(ExtractCameraComponentsTest, NonZeroRotation) {
     glm::vec3 expectedRight = glm::normalize(glm::cross(expectedFront, glm::vec3(0.0f, 1.0f, 0.0f)));
     glm::vec3 expectedUp = glm::normalize(glm::cross(expectedRight, expectedFront));
 
-    nexo::utils::expectVec3Near(front, expectedFront);
-    nexo::utils::expectVec3Near(right, expectedRight);
-    nexo::utils::expectVec3Near(up, expectedUp);
+    EXPECT_VEC3_NEAR(front, expectedFront, 0.01f);
+    EXPECT_VEC3_NEAR(right, expectedRight, 0.01f);
+    EXPECT_VEC3_NEAR(up, expectedUp, 0.01f);
 }
