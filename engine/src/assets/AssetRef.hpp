@@ -24,7 +24,9 @@
 namespace nexo::assets {
     class IAsset;
 
-    template <typename TAssetData>
+    enum class AssetType;
+
+    template <typename TAssetData, AssetType TAssetType>
     class Asset;
 
     template <typename TAsset>
