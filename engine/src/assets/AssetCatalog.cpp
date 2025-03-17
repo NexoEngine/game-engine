@@ -42,6 +42,16 @@ namespace nexo::assets {
         return GenericAssetRef(m_assets.at(id));
     }
 
+    GenericAssetRef AssetCatalog::getAsset(const AssetLocation& location) const
+    {
+        // TODO: implement a tree for folders and assets instead of doing O(n) search
+        for (const auto& asset: m_assets | std::views::values) {
+            if (asset->m_metadata.location == location)
+                return GenericAssetRef(asset);
+        }
+        return GenericAssetRef::null();
+    }
+
     std::vector<GenericAssetRef> AssetCatalog::getAssets() const
     {
         std::vector<GenericAssetRef> assets;
@@ -60,76 +70,16 @@ namespace nexo::assets {
                });
     }
 
-    GenericAssetRef AssetCatalog::importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant)
+    GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, IAsset* asset)
     {
-        auto importersMap = m_importers.getImporters();
-        for (const auto& importers: importersMap | std::views::values) {
-            if (importers.empty())
-                continue;
-            if (const auto asset = importAssetTryImporters(location, inputVariant, importers))
-                return asset;
-        }
-        return GenericAssetRef::null();
-    }
-
-    GenericAssetRef AssetCatalog::importAssetUsingImporter(const AssetLocation& location,
-        const ImporterInputVariant& inputVariant, const std::shared_ptr<AssetImporter>& importer)
-    {
-        AssetImporterContext ctx;
-        ctx.input = inputVariant;
-        ctx.location = location;
-        importer->import(ctx);
-        auto asset = ctx.getMainAsset();
         if (!asset)
             return GenericAssetRef::null();
-        if (asset->getID().is_nil())
-            asset->m_metadata.id = boost::uuids::random_generator()();
-        if (asset->m_metadata.location == AssetLocation("default"))
-            asset->m_metadata.location = location;
-
-        m_assets[asset->getID()] = asset;
-
-        for (const auto& dep: ctx.getDependencies()) {
-            GenericAssetRef depAssetRef = GenericAssetRef::null();
-            if (dep.importer != nullptr) {
-                depAssetRef = importAssetUsingImporter(ctx.location, ctx.input, dep.importer);
-            } else {
-                const auto& importerList = m_importers.getImportersForType(dep.typeIdx);
-                depAssetRef = importAssetTryImporters(dep.ctx.location, dep.ctx.input, importerList);
-            }
-            if (const auto depAsset = depAssetRef.lock()) {
-                depAsset->m_metadata.location = dep.ctx.location;
-            }
-        }
-
-        return GenericAssetRef(asset);
-    }
-
-    GenericAssetRef AssetCatalog::importAssetTryImporters(const AssetLocation& location,
-        const ImporterInputVariant& inputVariant, const std::vector<std::shared_ptr<AssetImporter>>& importers)
-    {
-        std::vector<std::shared_ptr<AssetImporter>> untriedImporters;
-        for (const auto& importer : importers) {
-            if (importer->canRead(inputVariant)) {
-                auto asset = importAssetUsingImporter(location, inputVariant, importer);
-                if (asset)
-                    return asset;
-            } else {
-                untriedImporters.push_back(importer);
-            }
-        }
-        // If "compatibles" importers failed, try even "incompatibles" ones
-        for (const auto& importer : untriedImporters) {
-            auto asset = importAssetUsingImporter(location, inputVariant, importer);
-            if (asset)
-                return asset;
-        }
-        return GenericAssetRef::null();
-    }
-
-    void AssetCatalog::setupImporterInstances()
-    {
-        m_importers.registerImporter<Model, ModelImporter>(100);
+        auto shared_ptr = std::shared_ptr<IAsset>(asset);
+        shared_ptr->m_metadata.location = location;
+        if (shared_ptr->m_metadata.id.is_nil())
+            shared_ptr->m_metadata.id = boost::uuids::random_generator()();
+        m_assets[shared_ptr->m_metadata.id] = shared_ptr;
+        return GenericAssetRef(shared_ptr);
     }
 
 } // namespace nexo::assets
