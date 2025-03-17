@@ -196,17 +196,28 @@ namespace nexo::editor {
 
     }
 
-    void AssetManagerWindow::handleSelection(int index, bool isSelected) {
+    void AssetManagerWindow::handleSelection(int index, bool isSelected)
+    {
         LOG(NEXO_INFO, "Asset {} {}", index, isSelected ? "deselected" : "selected");
         if (ImGui::GetIO().KeyCtrl) {
             if (isSelected)
-                m_selectedAssets.erase(std::remove(m_selectedAssets.begin(), m_selectedAssets.end(), index), m_selectedAssets.end());
+                m_selectedAssets.erase(index);
             else
-                m_selectedAssets.push_back(index);
-        }
-        else {
+                m_selectedAssets.insert(index);
+        } else if (ImGui::GetIO().KeyShift) {
+            const int latestSelected = m_selectedAssets.empty() ? 0 : *m_selectedAssets.rbegin();
+            if (latestSelected <= index) {
+                for (int i = latestSelected ; i <= index; ++i) {
+                    m_selectedAssets.insert(i);
+                }
+            } else {
+                for (int i = index; i <= latestSelected; ++i) {
+                    m_selectedAssets.insert(i);
+                }
+            }
+        } else {
             m_selectedAssets.clear();
-            m_selectedAssets.push_back(index);
+            m_selectedAssets.insert(index);
         }
     }
 
