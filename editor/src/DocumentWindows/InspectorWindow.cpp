@@ -19,8 +19,15 @@
 
 #include "EntityProperties/RenderProperty.hpp"
 #include "EntityProperties/TransformProperty.hpp"
+#include "EntityProperties/AmbientLightProperty.hpp"
+#include "EntityProperties/DirectionalLightProperty.hpp"
+#include "EntityProperties/PointLightProperty.hpp"
+#include "EntityProperties/SpotLightProperty.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
+#include "components/Light.hpp"
+#include "components/SceneComponents.hpp"
 #include "context/Selector.hpp"
+#include "core/scene/SceneManager.hpp"
 #include "tinyfiledialogs.h"
 
 #include "Components/Components.hpp"
@@ -156,6 +163,10 @@ namespace nexo::editor
     	m_materialInspector = std::make_shared<MaterialInspector>();
         m_componentShowFunctions[typeid(components::TransformComponent)] = &TransformProperty::show;
         m_componentShowFunctions[typeid(components::RenderComponent)] = &RenderProperty::show;
+        m_componentShowFunctions[typeid(components::AmbientLightComponent)] = &AmbientLightProperty::show;
+        m_componentShowFunctions[typeid(components::DirectionalLightComponent)] = &DirectionalLightProperty::show;
+        m_componentShowFunctions[typeid(components::PointLightComponent)] = &PointLightProperty::show;
+        m_componentShowFunctions[typeid(components::SpotLightComponent)] = &SpotLightProperty::show;
     }
 
     InspectorWindow::~InspectorWindow() = default;
@@ -180,10 +191,14 @@ namespace nexo::editor
 
         if (selectedEntity != -1)
         {
-        	if (selector.getSelectionType() == SelectionType::ENTITY)
-         	{
-            	showEntityProperties(selectedEntity);
-          	}
+            if (selector.getSelectionType() == SelectionType::SCENE)
+            {
+                showSceneProperties(selectedEntity);
+            }
+            else
+            {
+                showEntityProperties(selectedEntity);
+            }
         }
 
         ImGui::End();
@@ -197,6 +212,48 @@ namespace nexo::editor
 			ImGui::End();
         }
 
+    }
+
+    void InspectorWindow::showSceneProperties(scene::SceneId sceneId)
+    {
+		auto &app = getApp();
+		auto &selector = Selector::get();
+		scene::SceneManager &manager = app.getSceneManager();
+		scene::Scene &scene = manager.getScene(sceneId);
+		std::string uiHandle = selector.getUiHandle(scene.getUuid(), "");
+
+		// Remove the icon prefix
+		size_t spacePos = uiHandle.find(' ');
+		if (spacePos != std::string::npos)
+			uiHandle = uiHandle.substr(spacePos + 1);
+
+		bool open = EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle);
+
+		if (open)
+		{
+			ImGui::Spacing();
+	  		ImGui::SetWindowFontScale(1.15f);
+			ImGui::Columns(2, "sceneProps");
+			ImGui::SetColumnWidth(0, 80);
+
+			ImGui::Text("Hide");
+			ImGui::NextColumn();
+			bool hidden = !scene.isRendered();
+			std::cout << hidden << std::endl;
+			ImGui::Checkbox("##HideCheckBox", &hidden);
+			scene.setRenderStatus(!hidden);
+			ImGui::NextColumn();
+
+			ImGui::Text("Pause");
+			ImGui::NextColumn();
+			bool paused = !scene.isActive();
+			ImGui::Checkbox("##PauseCheckBox", &paused);
+			scene.setActiveStatus(!paused);
+			ImGui::NextColumn();
+
+			ImGui::Columns(1);
+   			ImGui::TreePop();
+		}
     }
 
     void InspectorWindow::showEntityProperties(ecs::Entity entity)

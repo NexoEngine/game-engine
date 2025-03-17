@@ -14,6 +14,7 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "core/scene/SceneManager.hpp"
 
 #include <imgui.h>
 
@@ -46,7 +47,7 @@ namespace nexo::editor {
 
 			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
 
+			void showSceneProperties(scene::SceneId sceneId);
 	        void showEntityProperties(ecs::Entity entity);
-	        void showComponent(const std::type_index& type);
     };
 };
