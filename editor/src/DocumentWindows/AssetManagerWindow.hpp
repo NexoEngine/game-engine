@@ -49,6 +49,7 @@ namespace nexo::editor {
 				float overlaySize = 6.0f;
 				float overlayPadding = 5.0f;
 				float cornerRadius = 5.0f;
+				float selectedBoxThickness = 4.0f;
 			} size;
 
             struct LayoutColors {
@@ -56,6 +57,8 @@ namespace nexo::editor {
                 ImU32 thumbnailBgHovered;
                 ImU32 thumbnailBgSelected;
                 ImU32 thumbnailBgSelectedHovered;
+
+            	ImU32 selectedBoxColor;
 
                 ImU32 titleBg;
                 ImU32 titleBgHovered;

@@ -1,4 +1,4 @@
-//// AssetImporter.hpp ////////////////////////////////////////////////////////
+//// AssetImporterBase.hpp ////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -8,7 +8,7 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        05/12/2024
-//  Description: Header file for the AssetImporter class
+//  Description: Header file for the AssetImporterBase class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -22,14 +22,14 @@
 namespace nexo::assets {
 
     /**
-     * @class AssetImporter
+     * @class AssetImporterBase
      *
      * @brief Interface for importing assets into the engine.
      */
-    class AssetImporter {
+    class AssetImporterBase {
         public:
-            AssetImporter() = default;
-            virtual ~AssetImporter() = default;
+            AssetImporterBase() = default;
+            virtual ~AssetImporterBase() = default;
 
             /**
              * @brief Checks if the importer can read the file at the given path.
@@ -51,6 +51,15 @@ namespace nexo::assets {
             virtual void importImpl(AssetImporterContext& ctx) = 0;
 
             /**
+             * @brief Apply post-processing steps to the imported asset.
+             *
+             * This method should be overridden by the derived class to do the post-processing.
+             *
+             * @param ctx The context for the import.
+             */
+            virtual void applyPostProcessingImpl(AssetImporterContext& ctx) = 0;
+
+            /**
              * @brief Imports an asset from a file.
              *
              * This method is not intended to be overridden. Implement importImpl() to do the import.
@@ -69,6 +78,24 @@ namespace nexo::assets {
                 } catch (const std::exception& e) {
                     // Log the error
                     LOG(NEXO_ERROR, "Failed to import asset from file '{}': {}", ctx.location.getPath(), e.what());
+                }
+            }
+
+            /**
+             * @brief Apply post-processing steps to the imported asset.
+             *
+             * This method is not intended to be overridden. Implement applyPostProcessingImpl() to do the post-processing.
+             * This method is a wrapper of applyPostProcessingImpl() that for example catches exceptions thrown by applyPostProcessingImpl().
+             *
+             * @param ctx The context for the import.
+             */
+            void applyPostProcessing(AssetImporterContext& ctx) noexcept
+            {
+                try {
+                    applyPostProcessingImpl(ctx);
+                } catch (const std::exception& e) {
+                    // Log the error
+                    LOG(NEXO_ERROR, "Failed to apply post-processing to asset from file '{}': {}", ctx.location.getPath(), e.what());
                 }
             }
     };

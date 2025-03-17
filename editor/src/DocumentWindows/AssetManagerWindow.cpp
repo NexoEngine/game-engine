@@ -14,26 +14,12 @@
 
 #include "AssetManagerWindow.hpp"
 #include <algorithm>
-
-// AssetManagerWindow.hpp ///////////////////////////////////////////////////
-//
-//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
-//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
-//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
-//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
-//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
-//
-//  Author:      Guillaume HEIN
-//  Date:        18/11/2024
-//  Description: Source file for the AssetManagerWindow class
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#include "AssetManagerWindow.hpp"
-#include <algorithm>
+#include <Path.hpp>
 #include <assets/Asset.hpp>
 #include <assets/AssetCatalog.hpp>
 #include <assets/AssetRef.hpp>
+#include <assets/Assets/Model/Model.hpp>
+#include <assets/Assets/Texture/Texture.hpp>
 
 namespace nexo::editor {
 
@@ -42,6 +28,29 @@ namespace nexo::editor {
         for (int i = 0; i < 100; ++i) {
             m_assets.push_back({ "Asset " + std::to_string(i), i % 3 }); // Alternate types
         }
+
+        auto& catalog = assets::AssetCatalog::getInstance();
+
+        const auto asset = new assets::Model();
+
+        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), asset);
+
+
+
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            auto assetRef9mn = importer.importAssetAuto(assets::AssetLocation("my_package::9mn@foo/bar/"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../assets/textures/logo_nexo.png");
+            assets::ImporterFileInput fileInput{path};
+            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@foo/bar/"), fileInput);
+        }
+
+
     }
 
     void AssetManagerWindow::shutdown() {
@@ -80,6 +89,8 @@ namespace nexo::editor {
 		m_layout.color.thumbnailBgHovered = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
 		m_layout.color.thumbnailBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
 		m_layout.color.thumbnailBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+
+        m_layout.color.selectedBoxColor = ImGui::GetColorU32(ImGuiCol_TabSelectedOverline);
 
 		m_layout.color.titleBg = ImGui::GetColorU32(ImGuiCol_Header);
 		m_layout.color.titleBgHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
@@ -137,6 +148,19 @@ namespace nexo::editor {
         ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
 
+        // Add selection border
+        if (isSelected) {
+            // Draw a distinctive border around selected items
+            drawList->AddRect(
+                ImVec2(itemPos.x - 1, itemPos.y - 1),
+                ImVec2(itemEnd.x + 1, itemEnd.y + 1),
+                m_layout.color.selectedBoxColor,
+                m_layout.size.cornerRadius,
+                0,
+                m_layout.size.selectedBoxThickness
+            );
+        }
+
         // Draw thumbnail
         ImVec2 thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
         drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
@@ -154,19 +178,22 @@ namespace nexo::editor {
         drawList->AddRectFilled(ImVec2(itemPos.x, thumbnailEnd.y), ImVec2(itemEnd.x, itemEnd.y), m_layout.color.titleBg);
         drawList->AddText(textPos, m_layout.color.titleText, assetName);
 
+        // Position the cursor for the invisible button
+        ImGui::SetCursorScreenPos(itemPos);
+
         // Handle input
         if (ImGui::InvisibleButton("##item", itemSize)) {
             handleSelection(index, isSelected);
         }
-        // on hover show tooltip
-        if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::Text("%s", assetData->getMetadata().location.getFullLocation().c_str());
-            ImGui::EndTooltip();
+
+        // On Hover show asset location
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip)) {
+            ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
         }
 
-
         ImGui::PopID();
+
+
     }
 
     void AssetManagerWindow::handleSelection(int index, bool isSelected) {
