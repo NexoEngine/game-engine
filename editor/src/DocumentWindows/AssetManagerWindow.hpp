@@ -15,6 +15,7 @@
 #pragma once
 #include <ADocumentWindow.hpp>
 #include <vector>
+#include <set>
 #include <string>
 #include <imgui.h>
 #include <assets/Asset.hpp>
@@ -70,7 +71,7 @@ namespace nexo::editor {
         };
 
         std::vector<Asset> m_assets;
-        std::vector<int> m_selectedAssets;
+        std::set<int> m_selectedAssets;
         LayoutSettings m_layout;
 
         void calculateLayout(float availWidth);
