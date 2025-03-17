@@ -24,6 +24,7 @@ namespace nexo::editor {
 		SCENE,
 		CAMERA,
 		DIR_LIGHT,
+		AMBIENT_LIGHT,
 		SPOT_LIGHT,
 		POINT_LIGHT,
 		ENTITY
