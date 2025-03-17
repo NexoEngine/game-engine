@@ -19,18 +19,6 @@
 namespace nexo::assets {
     AssetCatalog::AssetCatalog()
     {
-        setupImporterInstances();
-        const auto asset = createEmptyAsset<Model>(AssetLocation("my_package::My_Model@foo/bar/"));
-        if (const auto assetData = asset.lock()) {
-            if (!assetData->isLoaded())
-                assetData->data = new ModelData();
-            assetData->data->scene = nullptr;
-        }
-        if (const auto assetData = asset.lock()) {
-            m_assets[assetData->getID()] = assetData;
-        }
-        std::filesystem::path path = nexo::Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf");
-        importAsset<Model>(AssetLocation("my_package::9mn@foo/bar/"), ImporterFileInput{path});
     }
 
     void AssetCatalog::deleteAsset(AssetID id)
