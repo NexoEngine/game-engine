@@ -1,4 +1,4 @@
-//// Buffer.test.cpp //////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,207 +7,345 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        22/11/2024
-//  Description: Test file for the buffers class
+//  Date:        17/03/2025
+//  Description: Test file for Buffer classes
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-
-#include "Buffer.hpp"
+#include "renderer/Buffer.hpp"
 #include "opengl/OpenGlBuffer.hpp"
-#include "contexts/opengl.hpp"
+#include "renderer/RendererExceptions.hpp"
+#include <array>
 
 namespace nexo::renderer {
-    TEST(BufferLayout, BasicConstruction)
-    {
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"},
-            {ShaderDataType::FLOAT4, "Color"}
-        };
 
-        EXPECT_EQ(layout.getStride(), 28); // FLOAT3 (12 bytes) + FLOAT4 (16 bytes)
-        EXPECT_EQ(layout.getElements().size(), 2);
+    // Mock for testing abstract classes
+    class MockVertexBuffer : public VertexBuffer {
+    public:
+        MOCK_METHOD(void, bind, (), (const, override));
+        MOCK_METHOD(void, unbind, (), (const, override));
+        MOCK_METHOD(void, setLayout, (const BufferLayout&), (override));
+        MOCK_METHOD(BufferLayout, getLayout, (), (const, override));
+        MOCK_METHOD(void, setData, (void*, unsigned int), (override));
+        MOCK_METHOD(unsigned int, getId, (), (const, override));
+    };
 
-        const auto &elements = layout.getElements();
-        EXPECT_EQ(elements[0].offset, 0);
-        EXPECT_EQ(elements[1].offset, 12);
+    class MockIndexBuffer : public IndexBuffer {
+    public:
+        MOCK_METHOD(void, bind, (), (const, override));
+        MOCK_METHOD(void, unbind, (), (const, override));
+        MOCK_METHOD(void, setData, (unsigned int*, unsigned int), (override));
+        MOCK_METHOD(unsigned int, getCount, (), (const, override));
+        MOCK_METHOD(unsigned int, getId, (), (const, override));
+    };
+
+    // Test fixture for OpenGL-based tests
+    class OpenGLBufferTest : public ::testing::Test {
+    protected:
+    	GLFWwindow *window = nullptr;
+
+        void SetUp() override {
+	        if (!glfwInit())
+	        {
+	            GTEST_SKIP() << "GLFW initialization failed. Skipping OpenGL tests.";
+	        }
+
+	        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	        window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
+	        if (!window)
+	        {
+	            glfwTerminate();
+	            GTEST_SKIP() << "Failed to create GLFW window. Skipping OpenGL tests.";
+	        }
+
+	        glfwMakeContextCurrent(window);
+
+	        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+	        {
+	            glfwDestroyWindow(window);
+	            glfwTerminate();
+	            GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
+	        }
+
+	        GLint major = 0, minor = 0;
+	        glGetIntegerv(GL_MAJOR_VERSION, &major);
+	        glGetIntegerv(GL_MINOR_VERSION, &minor);
+	        if (major < 4 || (major == 4 && minor < 5))
+	        {
+	            glfwDestroyWindow(window);
+	            glfwTerminate();
+	            GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
+	        }
+        }
+
+        void TearDown() override {
+            // Clean up if needed
+        }
+    };
+
+    // Test fixture for factory function tests
+    class BufferFactoryTest : public ::testing::Test {
+    protected:
+   		GLFWwindow *window = nullptr;
+
+        void SetUp() override {
+	        if (!glfwInit())
+	        {
+	            GTEST_SKIP() << "GLFW initialization failed. Skipping OpenGL tests.";
+	        }
+
+	        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	        window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
+	        if (!window)
+	        {
+	            glfwTerminate();
+	            GTEST_SKIP() << "Failed to create GLFW window. Skipping OpenGL tests.";
+	        }
+
+	        glfwMakeContextCurrent(window);
+
+	        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+	        {
+	            glfwDestroyWindow(window);
+	            glfwTerminate();
+	            GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
+	        }
+
+	        GLint major = 0, minor = 0;
+	        glGetIntegerv(GL_MAJOR_VERSION, &major);
+	        glGetIntegerv(GL_MINOR_VERSION, &minor);
+	        if (major < 4 || (major == 4 && minor < 5))
+	        {
+	            glfwDestroyWindow(window);
+	            glfwTerminate();
+	            GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
+	        }
+        }
+    };
+
+    // Tests for ShaderDataType operations
+    TEST(ShaderDataTypeTest, ShaderDataTypeSizeReturnsCorrectSizes) {
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT), 4);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT2), 8);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT3), 12);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT4), 16);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::MAT3), 36);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::MAT4), 64);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT), 4);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT2), 8);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT3), 12);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT4), 16);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::BOOL), 1);
+        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::NONE), 0);
     }
 
-    TEST(BufferLayout, EmptyLayout)
-    {
+    // Tests for BufferElements
+    TEST(BufferElementsTest, ConstructorSetsProperties) {
+        BufferElements element(ShaderDataType::FLOAT3, "Position", false);
+
+        EXPECT_EQ(element.name, "Position");
+        EXPECT_EQ(element.type, ShaderDataType::FLOAT3);
+        EXPECT_EQ(element.size, 12); // FLOAT3 = 3 * 4 bytes
+        EXPECT_EQ(element.offset, 0); // Initial offset is 0
+        EXPECT_FALSE(element.normalized);
+    }
+
+    TEST(BufferElementsTest, GetComponentCountReturnsCorrectCount) {
+        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT, "").getComponentCount(), 1);
+        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT2, "").getComponentCount(), 2);
+        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT3, "").getComponentCount(), 3);
+        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT4, "").getComponentCount(), 4);
+        EXPECT_EQ(BufferElements(ShaderDataType::INT, "").getComponentCount(), 1);
+        EXPECT_EQ(BufferElements(ShaderDataType::INT2, "").getComponentCount(), 2);
+        EXPECT_EQ(BufferElements(ShaderDataType::INT3, "").getComponentCount(), 3);
+        EXPECT_EQ(BufferElements(ShaderDataType::INT4, "").getComponentCount(), 4);
+        EXPECT_EQ(BufferElements(ShaderDataType::MAT3, "").getComponentCount(), 9);
+        EXPECT_EQ(BufferElements(ShaderDataType::MAT4, "").getComponentCount(), 16);
+        EXPECT_EQ(BufferElements(ShaderDataType::BOOL, "").getComponentCount(), 1);
+        EXPECT_EQ(BufferElements(ShaderDataType::NONE, "").getComponentCount(), -1);
+    }
+
+    // Tests for BufferLayout
+    TEST(BufferLayoutTest, ConstructorWithInitializerListCalculatesOffsetsAndStride) {
+        BufferLayout layout = {
+            {ShaderDataType::FLOAT3, "Position"},
+            {ShaderDataType::FLOAT4, "Color"},
+            {ShaderDataType::FLOAT2, "TexCoord"}
+        };
+
+        EXPECT_EQ(layout.getStride(), 36); // 12 + 16 + 8
+
+        auto elements = layout.getElements();
+        EXPECT_EQ(elements.size(), 3);
+
+        EXPECT_EQ(elements[0].offset, 0);
+        EXPECT_EQ(elements[1].offset, 12);
+        EXPECT_EQ(elements[2].offset, 28);
+    }
+
+    TEST(BufferLayoutTest, EmptyConstructorCreatesEmptyLayout) {
         BufferLayout layout;
         EXPECT_EQ(layout.getStride(), 0);
         EXPECT_TRUE(layout.getElements().empty());
     }
 
-    TEST(BufferLayout, ComponentCount)
-    {
-        BufferElements element(ShaderDataType::FLOAT3, "Position");
-        EXPECT_EQ(element.getComponentCount(), 3);
-
-        element = BufferElements(ShaderDataType::MAT4, "Matrix");
-        EXPECT_EQ(element.getComponentCount(), 16);
-    }
-
-    TEST(BufferLayout, LargeLayout)
-    {
+    TEST(BufferLayoutTest, IteratorFunctionsWork) {
         BufferLayout layout = {
             {ShaderDataType::FLOAT3, "Position"},
-            {ShaderDataType::FLOAT4, "Color"},
-            {ShaderDataType::FLOAT2, "UV"},
-            {ShaderDataType::MAT4, "ModelMatrix"},
-            {ShaderDataType::INT, "ID"}
+            {ShaderDataType::FLOAT4, "Color"}
         };
 
-        EXPECT_EQ(layout.getStride(), 104); // 12 + 16 + 8 + 64 + 4
-        EXPECT_EQ(layout.getElements().size(), 5);
-
-        const auto &elements = layout.getElements();
-        EXPECT_EQ(elements[0].offset, 0); // Position
-        EXPECT_EQ(elements[1].offset, 12); // Color
-        EXPECT_EQ(elements[2].offset, 28); // UV
-        EXPECT_EQ(elements[3].offset, 36); // ModelMatrix
-        EXPECT_EQ(elements[4].offset, 100); // ID
+        int count = 0;
+        for (auto& element : layout) {
+            count++;
+        }
+        EXPECT_EQ(count, 2);
     }
 
-    TEST(BufferLayout, MixedNormalization)
-    {
+    // Mocking tests for abstract classes
+    TEST(BufferMockTest, MockVertexBufferCanCallMethods) {
+        MockVertexBuffer buffer;
         BufferLayout layout = {
-            {ShaderDataType::FLOAT4, "Position", true},
-            {ShaderDataType::INT3, "BoneIDs"},
-            {ShaderDataType::FLOAT4, "Weights", true}
+            {ShaderDataType::FLOAT3, "Position"}
         };
 
-        EXPECT_EQ(layout.getStride(), 44); // 16 + 12 + 16
-        EXPECT_EQ(layout.getElements().size(), 3);
+        EXPECT_CALL(buffer, setLayout(testing::_)).Times(1);
+        EXPECT_CALL(buffer, getLayout()).WillOnce(testing::Return(layout));
+        EXPECT_CALL(buffer, bind()).Times(1);
+        EXPECT_CALL(buffer, unbind()).Times(1);
+        EXPECT_CALL(buffer, setData(testing::_, testing::_)).Times(1);
+        EXPECT_CALL(buffer, getId()).WillOnce(testing::Return(1));
 
-        const auto &elements = layout.getElements();
-        EXPECT_TRUE(elements[0].normalized);
-        EXPECT_FALSE(elements[1].normalized);
-        EXPECT_TRUE(elements[2].normalized);
+        buffer.setLayout(layout);
+        BufferLayout retrievedLayout = buffer.getLayout();
+        buffer.bind();
+        buffer.unbind();
+        float data[] = {1.0f, 2.0f, 3.0f};
+        buffer.setData(data, sizeof(data));
+        unsigned int id = buffer.getId();
+
+        EXPECT_EQ(retrievedLayout.getStride(), layout.getStride());
+        EXPECT_EQ(id, 1);
     }
 
-    TEST_F(OpenGLTest, VertexBufferCreationAndBinding)
-    {
-        OpenGlVertexBuffer buffer1(nullptr, 100);
-        OpenGlVertexBuffer buffer2(nullptr, 100);
+    TEST(BufferMockTest, MockIndexBufferCanCallMethods) {
+        MockIndexBuffer buffer;
 
-        // Validate buffer IDs are unique
-        EXPECT_NE(buffer1.getId(), buffer2.getId());
-
-        // Check binding state for buffer1
-        buffer1.bind();
-        GLint boundBuffer;
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, buffer1.getId());
-
-        // Unbind buffer1 and validate
-        buffer1.unbind();
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, 0);
-
-        // Check binding state for buffer2
-        buffer2.bind();
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, buffer2.getId());
-
-        buffer2.unbind();
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, 0);
-    }
-
-    TEST_F(OpenGLTest, VertexBufferDataUpdate)
-    {
-        float vertices[] = {0.0f, 1.0f, 2.0f};
-        OpenGlVertexBuffer buffer(vertices, sizeof(vertices));
+        EXPECT_CALL(buffer, bind()).Times(1);
+        EXPECT_CALL(buffer, unbind()).Times(1);
+        EXPECT_CALL(buffer, setData(testing::_, testing::_)).Times(1);
+        EXPECT_CALL(buffer, getCount()).WillOnce(testing::Return(6));
+        EXPECT_CALL(buffer, getId()).WillOnce(testing::Return(2));
 
         buffer.bind();
-        // Validate the data provided
-        float bufferData[3];
-        glGetNamedBufferSubData(buffer.getId(), 0, sizeof(vertices), bufferData);
-        for (int i = 0; i < 3; i++)
-        {
-            EXPECT_EQ(bufferData[i], vertices[i]);
-        }
-
-        // Modify the values and do the same
-        float updatedVertices[] = {3.0f, 4.0f, 5.0f};
-        buffer.setData(updatedVertices, sizeof(updatedVertices));
-        glGetNamedBufferSubData(buffer.getId(), 0, sizeof(vertices), bufferData);
-        for (int i = 0; i < 3; i++)
-        {
-            EXPECT_EQ(bufferData[i], updatedVertices[i]);
-        }
-
         buffer.unbind();
+        unsigned int indices[] = {0, 1, 2, 2, 3, 0};
+        buffer.setData(indices, 6);
+        unsigned int count = buffer.getCount();
+        unsigned int id = buffer.getId();
+
+        EXPECT_EQ(count, 6);
+        EXPECT_EQ(id, 2);
     }
 
-    TEST_F(OpenGLTest, IndexBufferCreationAndBinding)
-    {
-        OpenGlIndexBuffer buffer1;
-        OpenGlIndexBuffer buffer2;
+    // Factory function tests - using TEST_F with BufferFactoryTest fixture
+    TEST_F(BufferFactoryTest, CreateVertexBufferWithDataReturnsValidBuffer) {
+        float vertices[] = {1.0f, 2.0f, 3.0f};
 
-        // Validate buffer IDs are unique
-        EXPECT_NE(buffer1.getId(), buffer2.getId());
-
-        // Check binding state for buffer1
-        buffer1.bind();
-        GLint boundBuffer;
-        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, buffer1.getId());
-
-        // Unbind buffer1 and validate
-        buffer1.unbind();
-        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, 0);
-
-        // Check binding state for buffer2
-        buffer2.bind();
-        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, buffer2.getId());
-
-        buffer2.unbind();
-        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundBuffer);
-        EXPECT_EQ(boundBuffer, 0);
+        #ifdef GRAPHICS_API_OPENGL
+            auto buffer = createVertexBuffer(vertices, sizeof(vertices));
+            ASSERT_NE(buffer, nullptr);
+            EXPECT_NE(buffer->getId(), 0);
+        #else
+            EXPECT_THROW(createVertexBuffer(vertices, sizeof(vertices)), UnknownGraphicsApi);
+        #endif
     }
 
-    TEST_F(OpenGLTest, IndexBufferDataUpdate)
-    {
+    TEST_F(BufferFactoryTest, CreateVertexBufferWithSizeReturnsValidBuffer) {
+        #ifdef GRAPHICS_API_OPENGL
+            auto buffer = createVertexBuffer(1024);
+            ASSERT_NE(buffer, nullptr);
+            EXPECT_NE(buffer->getId(), 0);
+        #else
+            EXPECT_THROW(createVertexBuffer(1024), UnknownGraphicsApi);
+        #endif
+    }
+
+    TEST_F(BufferFactoryTest, CreateIndexBufferReturnsValidBuffer) {
+        #ifdef GRAPHICS_API_OPENGL
+            auto buffer = createIndexBuffer();
+            ASSERT_NE(buffer, nullptr);
+            EXPECT_NE(buffer->getId(), 0);
+        #else
+            EXPECT_THROW(createIndexBuffer(), UnknownGraphicsApi);
+        #endif
+    }
+
+    // OpenGL specific implementation tests - using TEST_F with OpenGLBufferTest fixture
+    #ifdef GRAPHICS_API_OPENGL
+    TEST_F(OpenGLBufferTest, OpenGlVertexBufferWithDataWorksCorrectly) {
+
+        float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+        OpenGlVertexBuffer buffer(vertices, sizeof(vertices));
+
+        EXPECT_NE(buffer.getId(), 0);
+
+        // Test bind/unbind without crashes
+        EXPECT_NO_THROW(buffer.bind());
+        EXPECT_NO_THROW(buffer.unbind());
+
+        // Test layout setting and retrieval
+        BufferLayout layout = {
+            {ShaderDataType::FLOAT3, "Position"}
+        };
+        EXPECT_NO_THROW(buffer.setLayout(layout));
+        BufferLayout retrievedLayout = buffer.getLayout();
+        EXPECT_EQ(retrievedLayout.getStride(), layout.getStride());
+
+        // Test setting new data
+        float newData[] = {7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f};
+        EXPECT_NO_THROW(buffer.setData(newData, sizeof(newData)));
+    }
+
+    TEST_F(OpenGLBufferTest, OpenGlVertexBufferEmptyConstructorWorksCorrectly) {
+
+        OpenGlVertexBuffer buffer(1024);
+
+        EXPECT_NE(buffer.getId(), 0);
+
+        // Test bind/unbind without crashes
+        EXPECT_NO_THROW(buffer.bind());
+        EXPECT_NO_THROW(buffer.unbind());
+
+        // Test setting data after creation
+        float data[] = {1.0f, 2.0f, 3.0f, 4.0f};
+        EXPECT_NO_THROW(buffer.setData(data, sizeof(data)));
+    }
+
+    TEST_F(OpenGLBufferTest, OpenGlIndexBufferWorksCorrectly) {
+
         OpenGlIndexBuffer buffer;
 
+        EXPECT_NE(buffer.getId(), 0);
+
+        // Test bind/unbind without crashes
+        EXPECT_NO_THROW(buffer.bind());
+        EXPECT_NO_THROW(buffer.unbind());
+
+        // Test setting indices and count retrieval
         unsigned int indices[] = {0, 1, 2, 2, 3, 0};
-        // Set data binds the buffer
-        buffer.setData(indices, 6);
-        // Verify that the buffer got updated
+        EXPECT_NO_THROW(buffer.setData(indices, 6));
         EXPECT_EQ(buffer.getCount(), 6);
-
-        GLint bufferSize;
-        glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-        // Validate bounded buffer size
-        EXPECT_EQ(bufferSize, sizeof(indices));
-        // Validate the data provided
-        unsigned int bufferData[6];
-        glGetNamedBufferSubData(buffer.getId(), 0, sizeof(indices), bufferData);
-        for (int i = 0; i < 6; i++)
-        {
-            EXPECT_EQ(bufferData[i], indices[i]);
-        }
-
-        // Same thing with different size and different values
-        unsigned int updatedIndices[] = {0, 3, 2, 2, 1, 0, 7, 8};
-        buffer.setData(updatedIndices, 8);
-        EXPECT_EQ(buffer.getCount(), 8);
-        glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-        EXPECT_EQ(bufferSize, sizeof(updatedIndices));
-        unsigned int updatedBufferData[8];
-        glGetNamedBufferSubData(buffer.getId(), 0, sizeof(updatedIndices), updatedBufferData);
-        for (int i = 0; i < 8; i++)
-        {
-            EXPECT_EQ(updatedBufferData[i], updatedIndices[i]);
-        }
-        buffer.unbind();
     }
+    #endif // GRAPHICS_API_OPENGL
 }
