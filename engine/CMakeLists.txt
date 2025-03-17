@@ -58,7 +58,7 @@ set(COMMON_SOURCES
         engine/src/assets/AssetName.hpp
         engine/src/assets/AssetLocation.cpp
         engine/src/assets/AssetCatalog.cpp
-        engine/src/assets/AssetImporterRegistry.cpp
+        engine/src/assets/AssetImporter.cpp
         engine/src/assets/AssetImporterContext.cpp
 )
 
