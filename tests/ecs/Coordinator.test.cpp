@@ -26,6 +26,18 @@ namespace nexo::ecs {
         int data;
     };
 
+    struct ComponentA {
+        int value;
+    };
+
+    struct ComponentB {
+        float data;
+    };
+
+    struct TestSingletonComponent {
+        int value;
+    };
+
     // Mock System for testing
     class MockSystem : public System {
         public:
@@ -37,6 +49,9 @@ namespace nexo::ecs {
         void SetUp() override {
             coordinator = std::make_unique<Coordinator>();
             coordinator->init();
+
+            coordinator->registerComponent<ComponentA>();
+            coordinator->registerComponent<ComponentB>();
         }
 
         std::unique_ptr<Coordinator> coordinator;
@@ -166,5 +181,125 @@ namespace nexo::ecs {
         EXPECT_EQ(std::any_cast<TestComponent>(value).data, 42);
     }
 
-    //TODO: Add tests for the singleton components
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_NoMatch) {
+        Entity e1 = coordinator->createEntity();
+        ComponentA compA{10};
+        coordinator->addComponent(e1, compA);
+
+        std::set<Entity> result = coordinator->getAllEntitiesWith<ComponentA, ComponentB>();
+        EXPECT_TRUE(result.empty());
+    }
+
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_SingleMatch) {
+        Entity e1 = coordinator->createEntity();
+        coordinator->addComponent(e1, ComponentA{10});
+
+        Entity e2 = coordinator->createEntity();
+        coordinator->addComponent(e2, ComponentA{20});
+        coordinator->addComponent(e2, ComponentB{3.14f});
+
+        std::set<Entity> result = coordinator->getAllEntitiesWith<ComponentA, ComponentB>();
+        EXPECT_EQ(result.size(), 1);
+        EXPECT_TRUE(result.find(e2) != result.end());
+    }
+
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_MultipleMatches) {
+        Entity e1 = coordinator->createEntity();
+        coordinator->addComponent(e1, ComponentA{1});
+        coordinator->addComponent(e1, ComponentB{1.0f});
+
+        Entity e2 = coordinator->createEntity();
+        coordinator->addComponent(e2, ComponentA{2});
+        coordinator->addComponent(e2, ComponentB{2.0f});
+
+        Entity e3 = coordinator->createEntity();
+        coordinator->addComponent(e3, ComponentA{3});
+        coordinator->addComponent(e3, ComponentB{3.0f});
+
+        std::set<Entity> result = coordinator->getAllEntitiesWith<ComponentA, ComponentB>();
+        EXPECT_EQ(result.size(), 3);
+        EXPECT_TRUE(result.find(e1) != result.end());
+        EXPECT_TRUE(result.find(e2) != result.end());
+        EXPECT_TRUE(result.find(e3) != result.end());
+    }
+
+    TEST_F(CoordinatorTest, DestroyedEntityNotReturned) {
+        // Create an entity with both components.
+        Entity e1 = coordinator->createEntity();
+        coordinator->addComponent(e1, ComponentA{10});
+        coordinator->addComponent(e1, ComponentB{2.5f});
+
+        // Verify it is returned.
+        std::set<Entity> result = coordinator->getAllEntitiesWith<ComponentA, ComponentB>();
+        EXPECT_TRUE(result.find(e1) != result.end());
+
+        // Destroy the entity.
+        coordinator->destroyEntity(e1);
+
+        result = coordinator->getAllEntitiesWith<ComponentA, ComponentB>();
+        EXPECT_TRUE(result.find(e1) == result.end());
+    }
+
+    TEST_F(CoordinatorTest, TryGetComponentWorks) {
+        Entity e1 = coordinator->createEntity();
+        ComponentA compA{100};
+        coordinator->addComponent(e1, compA);
+
+        std::optional<std::reference_wrapper<ComponentA>> optComp = coordinator->tryGetComponent<ComponentA>(e1);
+        ASSERT_TRUE(optComp.has_value());
+        EXPECT_EQ(optComp->get().value, 100);
+
+        // For an entity without ComponentB, tryGetComponent should return empty.
+        std::optional<std::reference_wrapper<ComponentB>> optCompB = coordinator->tryGetComponent<ComponentB>(e1);
+        EXPECT_FALSE(optCompB.has_value());
+    }
+
+    TEST_F(CoordinatorTest, SingletonComponent_RegisterAndGet) {
+        // Define a singleton component.
+        TestSingletonComponent singleton{42};
+
+        // Register the singleton.
+        EXPECT_NO_THROW(coordinator->registerSingletonComponent<TestSingletonComponent>(singleton));
+
+        // Retrieve it and check its value.
+        TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
+        EXPECT_EQ(retrieved.value, 42);
+    }
+
+    TEST_F(CoordinatorTest, SingletonComponent_Remove) {
+        // Define a singleton component.
+        TestSingletonComponent singleton{77};
+        coordinator->registerSingletonComponent<TestSingletonComponent>(singleton);
+
+        // Check that it can be retrieved.
+        {
+            TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
+            EXPECT_EQ(retrieved.value, 77);
+        }
+
+        // Remove the singleton.
+        EXPECT_NO_THROW(coordinator->removeSingletonComponent<TestSingletonComponent>());
+
+        // After removal, trying to get the singleton should throw.
+        EXPECT_THROW({
+            coordinator->getSingletonComponent<TestSingletonComponent>();
+        }, std::exception);
+    }
+
+    TEST_F(CoordinatorTest, SingletonComponent_ReRegister) {
+        TestSingletonComponent comp1{100};
+        coordinator->registerSingletonComponent<TestSingletonComponent>(comp1);
+        {
+            TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
+            EXPECT_EQ(retrieved.value, 100);
+        }
+        // Remove and register a new value.
+        coordinator->removeSingletonComponent<TestSingletonComponent>();
+        TestSingletonComponent comp2{200};
+        coordinator->registerSingletonComponent<TestSingletonComponent>(comp2);
+        {
+            TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
+            EXPECT_EQ(retrieved.value, 200);
+        }
+    }
 }
