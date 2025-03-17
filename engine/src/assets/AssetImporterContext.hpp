@@ -19,29 +19,16 @@
 #include <variant>
 #include <unordered_map>
 
-#include "AssetImportParameters.hpp"
-
 #include "Asset.hpp"
+#include "AssetCatalog.hpp"
+#include "AssetImporterInput.hpp"
 #include "json.hpp"
 
 namespace nexo::assets {
     struct AssetDependency;
 
-    class AssetCatalog;
+    class AssetImporterBase;
     class AssetImporter;
-
-    // Import from file, importer should open and read the file
-    struct ImporterFileInput {
-        std::filesystem::path filePath; //< File path to import
-    };
-
-    // Import from memory buffer, importer should read from the buffer
-    struct ImporterMemoryInput {
-        std::vector<uint8_t> memoryData;          //< Memory buffer
-        std::optional<std::string> fileExtension; //< For format detection with memory sources (MUST start with a dot, e.g.: .png)
-    };
-
-    using ImporterInputVariant = std::variant<ImporterFileInput, ImporterMemoryInput>;
 
     /**
      * @class AssetImporterContext
