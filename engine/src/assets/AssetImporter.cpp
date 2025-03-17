@@ -26,6 +26,15 @@ namespace nexo::assets {
         registerImporter<Model, ModelImporter>(90);
     }
 
+    AssetImporter::~AssetImporter()
+    {
+        for (auto& [typeIdx, importers]: m_importers) {
+            for (auto& importer: importers) {
+                delete importer;
+            }
+        }
+    }
+
     GenericAssetRef AssetImporter::importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant)
     {
         for (const auto& importers: m_importers | std::views::values) {
