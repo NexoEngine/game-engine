@@ -16,17 +16,22 @@
 
 namespace nexo::assets {
 
-    void AssetImporterContext::setMainAssetData(const std::shared_ptr<IAsset>& data)
+    void AssetImporterContext::setMainAsset(IAsset* asset)
     {
-        m_mainAsset = data;
+        m_mainAsset = asset;
     }
 
-    const std::shared_ptr<IAsset>& AssetImporterContext::getMainAsset() const
+    IAsset* AssetImporterContext::getMainAsset() const
     {
         return m_mainAsset;
     }
 
-    const std::vector<AssetDependency>& AssetImporterContext::getDependencies() const
+    void AssetImporterContext::addDependency(const GenericAssetRef& dependency)
+    {
+        m_dependencies.push_back(dependency);
+    }
+
+    const std::vector<GenericAssetRef>& AssetImporterContext::getDependencies() const
     {
         return m_dependencies;
     }
