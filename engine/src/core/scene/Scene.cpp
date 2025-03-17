@@ -48,8 +48,9 @@ namespace nexo::scene {
 		m_active = active;
 		for (const ecs::Entity entity : m_entities)
 		{
-			components::SceneTag &tag = m_coordinator->getComponent<components::SceneTag>(entity);
-			tag.isActive = active;
+			auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+			if (tag)
+				tag->get().isActive = active;
 		}
 	}
 
@@ -58,8 +59,9 @@ namespace nexo::scene {
 		m_rendered = rendered;
 		for (const ecs::Entity entity : m_entities)
 		{
-			components::SceneTag &tag = m_coordinator->getComponent<components::SceneTag>(entity);
-			tag.isRendered = rendered;
+			auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+			if (tag)
+				tag->get().isRendered = rendered;
 		}
 	}
 
