@@ -60,13 +60,14 @@ namespace nexo::editor {
 			float *values,  float speed,
 			float min, float max,
 			const std::string &format,
-			ImU32 bg, ImU32 bgHovered, ImU32 bgActive
+			ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 textColor
 	) {
+		ImGui::PushStyleColor(ImGuiCol_Text, 		   textColor);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
 		bool clicked = ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
-		ImGui::PopStyleColor(3);
+		ImGui::PopStyleColor(4);
 		return clicked;
 	}
 
