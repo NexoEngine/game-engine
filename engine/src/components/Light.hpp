@@ -22,25 +22,6 @@ constexpr unsigned int MAX_POINT_LIGHTS = 8;
 constexpr unsigned int MAX_SPOT_LIGHTS = 8;
 
 namespace nexo::components {
-    enum class LightType {
-        AMBIENT,
-        DIRECTIONAL,
-        POINT,
-        SPOT,
-    };
-
-    struct Light {
-        Light() = default;
-
-        Light(const LightType lightType, const glm::vec4 &lightColor) : type(lightType),
-                                                                        color(lightColor)
-        {};
-
-        ~Light() = default;
-
-        LightType type = LightType::DIRECTIONAL;
-        glm::vec4 color{};
-    };
 
     struct AmbientLightComponent {
         glm::vec3 color{};
@@ -67,6 +48,7 @@ namespace nexo::components {
 
         glm::vec3 pos{};
         glm::vec3 color{};
+        float maxDistance = 50.0f;
         float constant = 1.0f;
         float linear;
         float quadratic;
@@ -80,7 +62,7 @@ namespace nexo::components {
                    				   float cutOff,
                           		   float outerCutoff,
                           		   float linear = 0.0014f,
-                          		   float quadractic = 0.000007f) :
+                          		   float quadractic = 0.0007) :
      		pos(lightPos), color(lightColor),
        		direction(lightDir), cutOff(cutOff),
          	outerCutoff(outerCutoff), linear(linear),
@@ -89,6 +71,7 @@ namespace nexo::components {
      	glm::vec3 pos{};
       	glm::vec3 color{};
       	glm::vec3 direction{};
+        float maxDistance = 325.0f;
        	float cutOff;
        	float outerCutoff;
 
