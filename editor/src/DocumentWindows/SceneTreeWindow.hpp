@@ -42,6 +42,7 @@ namespace nexo::editor {
         {SelectionType::SCENE, ICON_FA_MAP_O " "},
         {SelectionType::CAMERA, ICON_FA_CAMERA " "},
         {SelectionType::ENTITY, ICON_FA_CUBES " "},
+        {SelectionType::AMBIENT_LIGHT, ICON_FA_ADJUST " "},
         {SelectionType::DIR_LIGHT, ICON_FA_SUN_O " "},
         {SelectionType::POINT_LIGHT, ICON_FA_LIGHTBULB_O " "},
         {SelectionType::SPOT_LIGHT, ICON_FA_ARROW_CIRCLE_DOWN " "}
@@ -108,6 +109,7 @@ namespace nexo::editor {
             SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
 
             void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName);
+            SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
             SceneObject newDirectionalLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
             SceneObject newSpotLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
             SceneObject newPointLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);

@@ -251,6 +251,7 @@ namespace nexo::editor {
         auto &viewManager = SceneViewManager::get();
         std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + viewManager.getSceneName(uiId);
         sceneNode.data.sceneProperties = SceneProperties(sceneId, uiId);
+        sceneNode.data.entity = sceneId;
         sceneNode.type = SelectionType::SCENE;
         auto &app = Application::getInstance();
         auto &selector = Selector::get();
@@ -273,6 +274,15 @@ namespace nexo::editor {
          	lightNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
         } else
         	lightNode.uiName = uiName;
+    }
+
+    SceneObject SceneTreeWindow::newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity)
+    {
+    	SceneObject lightNode;
+    	lightNode.type = SelectionType::AMBIENT_LIGHT;
+     	std::string uiName = ObjectTypeToIcon.at(lightNode.type) + "Ambient light ";
+      	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
+       	return lightNode;
     }
 
     SceneObject SceneTreeWindow::newDirectionalLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity)
@@ -348,6 +358,8 @@ namespace nexo::editor {
     {
     	auto &app = nexo::getApp();
         root_.uiName = "Scenes";
+        root_.data.entity = -1;
+        root_.type = SelectionType::NONE;
         root_.children.clear();
         m_nbPointLights = 0;
         m_nbDirLights = 0;
@@ -361,6 +373,11 @@ namespace nexo::editor {
         	sceneNodes[sceneId] = newSceneNode(sceneId, windowId);
         }
 
+        generateNodes<components::AmbientLightComponent, components::SceneTag>(
+        	sceneNodes,
+    	    [this](scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) -> SceneObject {
+              return this->newAmbientLightNode(sceneId, uiId, entity);
+         });
         generateNodes<components::DirectionalLightComponent, components::SceneTag>(
         	sceneNodes,
     	    [this](scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) -> SceneObject {
