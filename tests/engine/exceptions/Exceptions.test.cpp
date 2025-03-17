@@ -40,4 +40,16 @@ namespace nexo::core {
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
         EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
     }
+
+    TEST(ExceptionsTest, SceneManagerLifecycleException) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2; // Account for the next line
+
+        SceneManagerLifecycleException ex("Coordinator not set before creating scene");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("Coordinator not set before creating scene"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
 }
