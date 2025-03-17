@@ -35,9 +35,6 @@ namespace nexo::scene {
 			void setName(const std::string& newName) { m_sceneName = newName; }
 			unsigned int getId() const {return m_id;};
 			const std::string &getUuid() const {return m_uuid;}
-
-			void render();
-			void update();
 		private:
 			unsigned int m_id = nextSceneId++;
 			std::string m_sceneName;

@@ -64,14 +64,4 @@ namespace nexo::scene {
 				tag->get().isRendered = rendered;
 		}
 	}
-
-	void Scene::render()
-	{
-
-	}
-
-	void Scene::update()
-	{
-
-	}
 }
