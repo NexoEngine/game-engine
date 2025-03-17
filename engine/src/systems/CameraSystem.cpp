@@ -70,6 +70,7 @@ namespace nexo::system {
             if (!tag.isActive || sceneRendered != tag.id)
                 continue;
             auto &cameraComponent = coord->getComponent<components::CameraComponent>(entity);
+            cameraComponent.resizing = false;
             auto &transform = coord->getComponent<components::TransformComponent>(entity);
 
    	        glm::vec3 front;
