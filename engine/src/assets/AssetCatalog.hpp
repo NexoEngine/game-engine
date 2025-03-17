@@ -14,18 +14,12 @@
 
 #pragma once
 
-#include "AssetImporter.hpp"
 #include "AssetImporterRegistry.hpp"
 #include "AssetLocation.hpp"
 #include "Asset.hpp"
-#include "Assets/Model/Model.hpp"
-#include "Assets/Model/ModelImporter.hpp"
 
-#include <type_traits>
-#include <typeindex>
 #include <unordered_map>
 #include <memory>
-#include <filesystem>
 
 namespace nexo::assets {
 
@@ -72,6 +66,13 @@ namespace nexo::assets {
             [[nodiscard]] GenericAssetRef getAsset(AssetID id) const;
 
             /**
+             * @brief Get an asset by its location.
+             * @param location The location of the asset to get.
+             * @return A reference to the asset, or a null reference if the asset does not exist.
+             */
+            [[nodiscard]] GenericAssetRef getAsset(const AssetLocation& location) const;
+
+            /**
              * @brief Get all assets in the catalog.
              * @return A vector of all assets in the catalog.
              */
@@ -101,24 +102,9 @@ namespace nexo::assets {
                 requires std::derived_from<AssetType, IAsset>
             [[nodiscard]] std::ranges::view auto getAssetsOfTypeView() const;
 
-            template <typename AssetType>
-                requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
-
-
-            GenericAssetRef importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
-            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::shared_ptr<AssetImporter>& importer);
-            GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<std::shared_ptr<AssetImporter>>& importers);
-
-            template <typename AssetType, typename... Args>
-                requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> createEmptyAsset(const AssetLocation& location, Args&&... args);
-
+            GenericAssetRef registerAsset(const AssetLocation& location, IAsset *asset);
         private:
-            void setupImporterInstances();
-
             std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
-            AssetImporterRegistry m_importers;
     };
 
     template<typename AssetType>
@@ -148,24 +134,6 @@ namespace nexo::assets {
                | std::views::transform([](const auto& asset) {
                    return std::static_pointer_cast<AssetType>(asset);
                });
-    }
-
-    template<typename AssetType>
-        requires std::derived_from<AssetType, IAsset>
-    AssetRef<AssetType> AssetCatalog::importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant)
-    {
-        auto importers = m_importers.getImportersForType<AssetType>();
-        return importAssetTryImporters(location, inputVariant, importers).template as<AssetType>();
-    }
-
-    template<typename AssetType, typename ... Args>
-        requires std::derived_from<AssetType, IAsset>
-    AssetRef<AssetType> AssetCatalog::createEmptyAsset(const AssetLocation& location, Args&&... args)
-    {
-        auto shared_ptr = std::make_shared<AssetType>(std::forward<Args>(args)...);
-        shared_ptr->m_metadata.location = location;
-        m_assets[shared_ptr->getID()] = shared_ptr;
-        return AssetRef<AssetType>(shared_ptr);
     }
 
 } // namespace nexo::assets
