@@ -27,8 +27,6 @@ namespace nexo::assets {
         const aiScene *scene;
     };
 
-    class ModelImporter;
-
     /**
      * @class Model
      *
