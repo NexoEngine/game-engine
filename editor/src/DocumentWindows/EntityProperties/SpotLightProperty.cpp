@@ -46,36 +46,34 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                EntityPropertiesComponents::drawRowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x);
-                EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &spotComponent.pos.x);
+                EntityPropertiesComponents::drawRowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x, -FLT_MAX, FLT_MAX, 0.1f);
+                EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &spotComponent.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
+
 
                 ImGui::EndTable();
             }
 
-            ImGui::Spacing();
-            ImGui::Text("Distance");
-            ImGui::SameLine();
-            if (ImGui::DragFloat("##DistanceSlider", &spotComponent.maxDistance, 1.0f, 1.0f, 3250.0f))
+            if (ImGui::BeginTable("InspectorCutOffSpotTable", 2, ImGuiTableFlags_SizingStretchProp))
             {
-                auto [lin, quad] = math::computeAttenuationFromDistance(spotComponent.maxDistance);
-                spotComponent.constant = 1.0f;
-                spotComponent.linear = lin;
-                spotComponent.quadratic = quad;
+	            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+	            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+                if (EntityPropertiesComponents::drawRowDragFloat1("Distance", "", &spotComponent.maxDistance, 1.0f, 3250.0f, 1.0f))
+                {
+					auto [lin, quad] = math::computeAttenuationFromDistance(spotComponent.maxDistance);
+					spotComponent.linear = lin;
+					spotComponent.quadratic = quad;
+                }
+                float innerCutOffDegrees = glm::degrees(glm::acos(spotComponent.cutOff));
+                float outerCutOffDegrees = glm::degrees(glm::acos(spotComponent.outerCutoff));
+                if (EntityPropertiesComponents::drawRowDragFloat1("Inner cut off", "", &innerCutOffDegrees, 0.0f, outerCutOffDegrees, 0.5f))
+                	spotComponent.cutOff = glm::cos(glm::radians(innerCutOffDegrees));
+                if (EntityPropertiesComponents::drawRowDragFloat1("Outer cut off", "", &outerCutOffDegrees, innerCutOffDegrees, 90.0f, 0.5f))
+                	spotComponent.outerCutoff = glm::cos(glm::radians(outerCutOffDegrees));
+
+                ImGui::EndTable();
             }
 
-            ImGui::Spacing();
-            ImGui::Text("Inner cutoff");
-            ImGui::SameLine();
-            float innerCutOffDegrees = glm::degrees(glm::acos(spotComponent.cutOff));
-            float outerCutOffDegrees = glm::degrees(glm::acos(spotComponent.outerCutoff));
-            ImGui::DragFloat("##InnerCutOffSlider", &innerCutOffDegrees, 0.5f, 0.0f, outerCutOffDegrees);
-            spotComponent.cutOff = glm::cos(glm::radians(innerCutOffDegrees));
-
-            ImGui::Spacing();
-            ImGui::Text("Outer cutoff");
-            ImGui::SameLine();
-            ImGui::DragFloat("##OuterCutOffSlider", &outerCutOffDegrees, 0.5f, innerCutOffDegrees, 90.0f);
-            spotComponent.outerCutoff = glm::cos(glm::radians(outerCutOffDegrees));
             ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
