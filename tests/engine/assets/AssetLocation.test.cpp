@@ -152,4 +152,99 @@ namespace nexo::assets {
         EXPECT_EQ(location.getFullLocation(), "myPack::myAsset");
     }
 
+    TEST(AssetLocationTest, SetName)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+
+        const std::string newName = "newAssetName";
+        location.setName(newName);
+        EXPECT_EQ(location.getFullLocation(), std::format("myPack::{}@path/to/asset", newName));
+    }
+
+    TEST(AssetLocationTest, InvalidSetName)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+        EXPECT_THROW({
+            location.setName("");
+        }, InvalidName);
+
+        EXPECT_THROW({
+            location.setName("newAssetName@");
+        }, InvalidName);
+    }
+
+    TEST(AssetLocationTest, SetPath)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+        const std::string newPath = "new/path/to/asset";
+        location.setPath(newPath);
+        EXPECT_EQ(location.getFullLocation(), std::format("myPack::myAsset@{}", newPath));
+    }
+
+    TEST(AssetLocationTest, SetPackName)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+        const std::string newPackName = "newPackName";
+        location.setPackName(newPackName);
+        EXPECT_EQ(location.getFullLocation(), std::format("{}::myAsset@path/to/asset", newPackName));
+    }
+
+    TEST(AssetLocationTest, ClearPackName)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+        location.clearPackName();
+        EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
+    }
+
+    TEST(AssetLocationTest, InvalidSetPackNameEmpty)
+    {
+        AssetLocation location("myPack::myAsset@path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
+
+        EXPECT_THROW({
+            location.setPackName("");
+        }, InvalidName);
+
+        EXPECT_THROW({
+            location.setPackName("myPack::");
+        }, InvalidName);
+    }
+
+    TEST(AssetLocationTest, EqualityOperators)
+    {
+        const std::string fullLocationEq1 = "myPack::myAsset@path/to/asset";
+        const std::string fullLocationEq2 = "myPack::myAsset@path/to/asset";
+        const std::string fullLocationNeq = "myPack::myAsset@path/to/otherAsset";
+
+        const AssetLocation locationEq1(fullLocationEq1);
+        const AssetLocation locationEq2(fullLocationEq2);
+        const AssetLocation locationNeq(fullLocationNeq);
+
+        EXPECT_EQ(locationEq1, locationEq2);
+        EXPECT_EQ(locationEq1, fullLocationEq2);
+
+        EXPECT_EQ(locationEq2, locationEq1);
+        EXPECT_EQ(locationEq2, fullLocationEq1);
+
+        EXPECT_NE(locationEq1, locationNeq);
+        EXPECT_NE(locationEq2, locationNeq);
+        EXPECT_NE(locationNeq, locationEq1);
+        EXPECT_NE(locationNeq, locationEq2);
+        EXPECT_NE(locationNeq, fullLocationEq1);
+        EXPECT_NE(fullLocationNeq, locationEq1);
+        EXPECT_NE(fullLocationNeq, locationEq2);
+
+        EXPECT_EQ(locationNeq, fullLocationNeq);
+    }
+
 } // namespace nexo::assets

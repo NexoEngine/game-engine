@@ -57,9 +57,15 @@ namespace nexo::assets {
                 return *this;
             }
 
-            AssetLocation& setPackName(const std::optional<std::reference_wrapper<const AssetPackName>>& packName)
+            AssetLocation& setPackName(const AssetPackName& packName)
             {
                 _packName = packName;
+                return *this;
+            }
+
+            AssetLocation& clearPackName()
+            {
+                _packName.reset();
                 return *this;
             }
 
@@ -120,9 +126,9 @@ namespace nexo::assets {
                 _path = extractedPath;
             }
 
-            bool operator==(const AssetLocation& asset_location) const
+            bool operator==(const AssetLocation& assetLocation) const
             {
-                return _name == asset_location._name && _packName == asset_location._packName && _path == asset_location._path;
+                return _name == assetLocation._name && _packName == assetLocation._packName && _path == assetLocation._path;
             }
 
             bool operator==(const std::string& fullLocation) const
