@@ -29,6 +29,11 @@ namespace nexo::assets {
 
     constexpr unsigned short ASSET_MAX_DEPENDENCIES = 10000;
 
+    /**
+     * @brief Asset types
+     * @note The order of the enum is important, as it is used to index into the AssetTypeNames array.
+     *       Make sure to update the array if you add new asset types.
+     */
     enum class AssetType {
         UNKNOWN,
         TEXTURE,
@@ -41,7 +46,12 @@ namespace nexo::assets {
         _COUNT
     };
 
+    /**
+     * @brief Array of asset type names
+     * @note The order of the array must match the order of the AssetType enum.
+     */
     const std::array<std::string, static_cast<int>(AssetType::_COUNT)> AssetTypeNames = {
+
         "Texture",
         "Model",
         "Sound",
@@ -51,6 +61,10 @@ namespace nexo::assets {
         "Script"
     };
 
+    /**
+     * @brief Asset ID type
+     * @note This is a UUID that uniquely identifies an asset. Alias of boost::uuids::uuid.
+     */
     using AssetID = boost::uuids::uuid;
 
     enum class AssetStatus {
