@@ -24,9 +24,31 @@ namespace nexo::assets {
 
     class TextureImporter final : public AssetImporterBase {
         public:
-            TextureImporter() = default;
-            ~TextureImporter() override = default;
+            /**
+ * @brief Default constructs a TextureImporter object.
+ *
+ * Initializes a new instance of the TextureImporter class using the default settings.
+ */
+TextureImporter() = default;
+            /**
+ * @brief Default destructor for TextureImporter.
+ *
+ * This defaulted destructor ensures that the TextureImporter is properly cleaned up,
+ * delegating resource management to the base class.
+ */
+~TextureImporter() override = default;
 
+            /**
+             * @brief Determines if the provided input variant contains a valid texture source.
+             *
+             * This function inspects the input variant and checks if it holds either a file-based or 
+             * memory-based texture input. It delegates the validation to the corresponding helper 
+             * function (canReadFile or canReadMemory) based on the input type. Returns false if the 
+             * variant does not match any supported input type.
+             *
+             * @param inputVariant The variant input encapsulating either a file or memory resource.
+             * @return true if the input is valid and readable; otherwise, false.
+             */
             bool canRead(const ImporterInputVariant& inputVariant) override
             {
                 if (std::holds_alternative<ImporterFileInput>(inputVariant))
@@ -37,6 +59,17 @@ namespace nexo::assets {
                 return false;
             }
 
+            /**
+             * @brief Imports a texture asset using the provided importer context.
+             *
+             * This method creates a new texture asset by examining the input contained in the context.
+             * If the input is file-based, it loads the texture from the specified file path; otherwise, it
+             * creates the texture from in-memory data. A new texture data object is then instantiated,
+             * associating the renderer texture with the asset, and a unique identifier is generated for
+             * the asset's metadata. Finally, the asset is set as the main asset in the context.
+             *
+             * @param ctx The importer context containing input data and used to store the main asset.
+             */
             void importImpl(AssetImporterContext& ctx) override
             {
                 auto asset = new Texture();
@@ -57,12 +90,30 @@ namespace nexo::assets {
 
         protected:
 
+            /**
+             * @brief Checks if the memory input contains valid texture image data.
+             *
+             * This function verifies that the memory buffer provided in the input
+             * holds valid image information, using stb_image's functionality.
+             *
+             * @param input Memory input containing the texture data.
+             * @return True if valid image information is detected, false otherwise.
+             */
             bool canReadMemory(const ImporterMemoryInput& input)
             {
                 const int ok = stbi_info_from_memory(input.memoryData.data(), input.memoryData.size(), nullptr, nullptr, nullptr);
                 return ok;
             }
 
+            /**
+             * @brief Checks if the file specified in the input contains valid image header data.
+             *
+             * This function uses stb_image's stbi_info to verify that the file at the provided file path
+             * can be recognized as an image, meaning it possesses the necessary header information for further processing.
+             *
+             * @param input File input containing the path to the image asset.
+             * @return true if the file is readable as an image; false otherwise.
+             */
             bool canReadFile(const ImporterFileInput& input)
             {
                 const int ok = stbi_info(input.filePath.string().c_str(), nullptr, nullptr, nullptr);

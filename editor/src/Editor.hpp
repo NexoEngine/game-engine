@@ -52,19 +52,42 @@ namespace nexo::editor {
         private:
             // Singleton: private constructor and destructor
             Editor();
-            ~Editor() = default;
+            /**
+ * @brief Destroys the Editor instance.
+ *
+ * This default destructor cleans up the Editor singleton using the compiler-generated behavior.
+ */
+~Editor() = default;
 
         public:
-            // Singleton: Meyers' Singleton Pattern
+            /**
+             * @brief Retrieves the singleton instance of the Editor.
+             *
+             * Implements the Meyers' Singleton pattern to lazily initialize and return the single Editor instance.
+             * The instance is created on the first call in a thread-safe manner (guaranteed by the C++11 standard).
+             *
+             * @return Editor& A reference to the Editor singleton instance.
+             */
             static Editor& getInstance()
             {
                 static Editor s_instance;
                 return s_instance;
             }
 
-            // Singleton: delete copy constructor and assignment operator
+            /**
+ * @brief Deleted copy constructor to enforce singleton behavior.
+ *
+ * This function is explicitly deleted to prevent copying of the Editor instance,
+ * ensuring that only one instance of the Editor class exists.
+ */
             Editor(Editor const&)         = delete;
-            void operator=(Editor const&) = delete;
+            /**
+ * @brief Deleted assignment operator to enforce the Singleton design pattern.
+ *
+ * This operator is explicitly deleted to prevent assignment of the Editor instance,
+ * ensuring that only a single instance exists.
+ */
+void operator=(Editor const&) = delete;
 
             /**
              * @brief Initializes the engine, setting up necessary components and systems.

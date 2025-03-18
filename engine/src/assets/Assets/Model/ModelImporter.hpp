@@ -27,9 +27,29 @@ namespace nexo::assets {
 
     class ModelImporter final : public AssetImporterBase {
         public:
-            ModelImporter() = default;
-            ~ModelImporter() override = default;
+            /**
+ * @brief Constructs a new ModelImporter object.
+ *
+ * Initializes a new instance of the ModelImporter class with default settings.
+ */
+ModelImporter() = default;
+            /**
+ * @brief Default destructor for ModelImporter.
+ *
+ * Overrides the AssetImporterBase destructor.
+ */
+~ModelImporter() override = default;
 
+            /**
+             * @brief Determines if the input variant's file extension is supported.
+             *
+             * Extracts the file extension from the input variant, which may represent either a file-based input or a memory-based input.
+             * For file inputs, the extension is obtained from the file path. For memory inputs, the extension is taken from the provided
+             * file extension value if available. A temporary Assimp importer instance is then used to check if this extension is supported.
+             *
+             * @param inputVariant Variant containing file or memory input details.
+             * @return true if the file extension is supported by Assimp, false otherwise.
+             */
             bool canRead(const ImporterInputVariant& inputVariant) override
             {
                 std::string extension;
@@ -44,6 +64,16 @@ namespace nexo::assets {
                 return importer.IsExtensionSupported(extension);
             }
 
+            /**
+             * @brief Imports a 3D model using the Assimp library.
+             *
+             * This method initializes a new Model instance and its associated data, then attempts to load a 3D scene using Assimp.
+             * It configures processing flags for triangulation, UV flipping, and normal generation, and reads the scene from either a file
+             * or memory based on the input provided in the asset importer context. If the scene is null, incomplete, or missing a root node,
+             * an error is logged. Upon successfully loading the scene, the model is set as the main asset in the context.
+             *
+             * @param ctx The asset importer context containing input data and import parameters.
+             */
             void importImpl(AssetImporterContext& ctx) override
             {
                 m_model = new Model();

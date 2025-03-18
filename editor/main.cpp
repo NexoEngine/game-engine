@@ -21,6 +21,19 @@
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
 
+/**
+ * @brief Entry point for the Nexo Editor application.
+ *
+ * Initializes logging and retrieves singleton instances for the editor and scene view manager. Sets up the default scene 
+ * and registers the main application windows including the Scene Tree, Scene View Manager, Console, and Asset Manager.
+ * Enters the main loop where it continuously renders and updates the editor until it is closed, ensuring a consistent 
+ * frame rate by adjusting the sleep duration based on frame execution time. If a nexo::Exception is thrown, the error is 
+ * logged and the application exits with a non-zero status.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @return int Returns 0 on normal shutdown, or 1 if an exception occurs.
+ */
 int main(int argc, char **argv)
 {
     try {

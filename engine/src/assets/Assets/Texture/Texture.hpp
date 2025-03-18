@@ -31,9 +31,20 @@ namespace nexo::assets {
      */
     class Texture final : public Asset<TextureData, AssetType::TEXTURE> {
         public:
-            Texture() = default;
+            /**
+ * @brief Default constructs a Texture object.
+ *
+ * This constructor initializes a Texture instance using default initialization.
+ */
+Texture() = default;
 
-            ~Texture() override = default;
+            /**
+ * @brief Default destructor for the Texture class.
+ *
+ * Overrides the base class destructor and ensures proper cleanup of managed resources
+ * using the default implementation.
+ */
+~Texture() override = default;
     };
 
 }

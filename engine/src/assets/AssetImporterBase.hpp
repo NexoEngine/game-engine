@@ -29,8 +29,19 @@ namespace nexo::assets {
      */
     class AssetImporterBase {
         public:
-            AssetImporterBase() = default;
-            virtual ~AssetImporterBase() = default;
+            /**
+ * @brief Default constructor for the AssetImporterBase class.
+ *
+ * Initializes a new instance of the AssetImporterBase, serving as the base
+ * interface for asset importers.
+ */
+AssetImporterBase() = default;
+            /**
+ * @brief Virtual destructor for AssetImporterBase.
+ *
+ * Ensures proper cleanup of resources in derived classes when an object is deleted via a base class pointer.
+ */
+virtual ~AssetImporterBase() = default;
 
             /**
              * @brief Checks if the importer can read the file at the given path.
@@ -52,12 +63,16 @@ namespace nexo::assets {
             virtual void importImpl(AssetImporterContext& ctx) = 0;
 
             /**
-             * @brief Imports an asset from a file.
+             * @brief Imports an asset by wrapping a call to the asset importer implementation.
              *
-             * This method is not intended to be overridden. Implement importImpl() to do the import.
-             * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
+             * This non-overridable method invokes importImpl() to perform the actual asset import. It catches
+             * any exceptions thrown during the process, logging an error message that includes the file path from
+             * the context. After importImpl() returns, it also verifies that the main asset data has been set in the
+             * provided context; if not, it logs an error.
              *
-             * @param ctx The context for the import.
+             * Derived classes should override importImpl() to implement custom asset importing behavior.
+             *
+             * @param ctx The asset importer context containing import parameters and storage for the main asset.
              */
             void import(AssetImporterContext& ctx) noexcept
             {

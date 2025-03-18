@@ -34,9 +34,19 @@ namespace nexo::assets {
      */
     class Model final : public Asset<ModelData, AssetType::MODEL> {
         public:
-            Model() = default;
+            /**
+ * @brief Default constructor for the Model class.
+ *
+ * Creates a new Model instance using default initialization.
+ */
+Model() = default;
 
-            ~Model() override = default;
+            /**
+ * @brief Default destructor for the Model class.
+ *
+ * This destructor overrides the base class destructor to ensure proper cleanup of Model instances.
+ */
+~Model() override = default;
     };
 
 }

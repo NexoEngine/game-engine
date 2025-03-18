@@ -16,6 +16,15 @@
 
 namespace nexo::assets {
 
+    /**
+     * @brief Sets the asset's location.
+     *
+     * Updates the asset's name, path, and optional asset pack name.
+     *
+     * @param name The asset's name.
+     * @param path The asset's file or logical path.
+     * @param packName (Optional) A reference to the asset pack name, if applicable.
+     */
     void AssetLocation::setLocation(
         const AssetName& name,
         const std::string& path,

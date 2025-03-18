@@ -60,7 +60,15 @@ namespace nexo::assets {
          * @brief Get a shared_ptr to the referenced asset
          * @return A shared_ptr to the asset, or nullptr if expired
          */
-        // ReSharper disable once CppHiddenFunction
+        /**
+         * @brief Acquires a shared pointer to the referenced asset.
+         *
+         * This function attempts to lock the underlying weak pointer to obtain a shared pointer
+         * to the asset. If the asset is still available, a valid shared pointer is returned;
+         * otherwise, an empty shared pointer is provided.
+         *
+         * @return std::shared_ptr<IAsset> A shared pointer to the asset if available, or an empty pointer if not.
+         */
         [[nodiscard]] std::shared_ptr<IAsset> lock() const noexcept {
             return m_weakPtr.lock();
         }
@@ -90,7 +98,11 @@ namespace nexo::assets {
         }
 
         /**
-         * @brief Requests the AssetCatalog to load the asset
+         * @brief Requests that the AssetCatalog load the referenced asset.
+         *
+         * This function attempts to lock the asset pointer and, if the asset is valid,
+         * initiates a load request via the AssetCatalog. Note that the actual loading
+         * functionality is currently pending implementation.
          */
         void load() {
             if (auto ptr = lock()) {
@@ -101,7 +113,13 @@ namespace nexo::assets {
         }
 
         /**
-         * @brief Requests the AssetCatalog to unload the asset but maintain the reference
+         * @brief Unloads the asset while retaining its reference.
+         *
+         * If the asset is valid (i.e., can be locked), this method attempts to initiate an unload
+         * operation via the AssetCatalog. Currently, the unload functionality is not implemented,
+         * and a warning is logged instead.
+         *
+         * @note The asset reference is maintained regardless of the unload operation.
          */
         void unload() {
             if (auto ptr = lock()) {
@@ -112,12 +130,46 @@ namespace nexo::assets {
         }
 
 
-        // Standard copy/move operations
+        /**
+ * @brief Copy constructor.
+ *
+ * Constructs a new GenericAssetRef by copying the internal state of the provided instance,
+ * ensuring that the asset reference remains shared.
+ */
         GenericAssetRef(const GenericAssetRef&) = default;
-        GenericAssetRef& operator=(const GenericAssetRef&) = default;
-        GenericAssetRef(GenericAssetRef&&) noexcept = default;
-        GenericAssetRef& operator=(GenericAssetRef&&) noexcept = default;
-        virtual ~GenericAssetRef() = default;
+        /**
+ * @brief Default copy assignment operator.
+ *
+ * Copies the asset reference state from the provided instance using the compiler-generated implementation.
+ *
+ * @param other The GenericAssetRef instance to copy from.
+ * @return Reference to this updated instance.
+ */
+GenericAssetRef& operator=(const GenericAssetRef&) = default;
+        /**
+ * @brief Move constructs a new GenericAssetRef by transferring the resources from another instance.
+ *
+ * The moved-from object remains in a valid but unspecified state.
+ *
+ * @param other The GenericAssetRef instance to move from.
+ */
+GenericAssetRef(GenericAssetRef&&) noexcept = default;
+        /**
+ * @brief Move assignment operator.
+ *
+ * Transfers ownership of the underlying asset reference from the given rvalue to this instance.
+ * This operator uses the default implementation and is marked noexcept.
+ *
+ * @return A reference to this object.
+ */
+GenericAssetRef& operator=(GenericAssetRef&&) noexcept = default;
+        /**
+ * @brief Virtual destructor for GenericAssetRef.
+ *
+ * This default virtual destructor guarantees that any resources held by
+ * derived classes are correctly released upon object destruction.
+ */
+virtual ~GenericAssetRef() = default;
 
     protected:
         std::weak_ptr<IAsset> m_weakPtr;
@@ -140,9 +192,14 @@ namespace nexo::assets {
         AssetRef() = default;
 
         /**
-         * @brief Constructs an AssetRef with the given shared_ptr to asset
-         * @param assetPtr Shared pointer to the asset
-         */
+             * @brief Constructs a typed AssetRef from a shared pointer to an asset.
+             *
+             * This constructor initializes an AssetRef with the provided shared pointer,
+             * enabling type-safe asset management. If the given pointer is null, the reference
+             * will represent a null asset.
+             *
+             * @param assetPtr Shared pointer to an asset of type TAsset.
+             */
         explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
             : GenericAssetRef(assetPtr) {}
 
@@ -154,8 +211,13 @@ namespace nexo::assets {
         [[nodiscard]] std::shared_ptr<TAsset> lock() const noexcept;
 
         /**
-         * @brief Checks if the asset is fully loaded
-         * @return true if the asset is loaded, false otherwise
+         * @brief Determines whether the referenced asset is fully loaded.
+         *
+         * This method attempts to lock the asset reference and, if successful, returns the result
+         * of the asset's isLoaded() method. If the reference is invalid, the asset is considered
+         * not loaded and the function returns false.
+         *
+         * @return true if the asset is valid and fully loaded; false otherwise.
          */
         [[nodiscard]] bool isLoaded() const {
             if (auto ptr = lock()) {
@@ -174,6 +236,15 @@ namespace nexo::assets {
     };
 
     template<typename TAsset>
+    /**
+     * @brief Converts a generic asset reference to a typed asset reference.
+     *
+     * This method attempts to lock the weak pointer to obtain a shared pointer to the asset. If the asset is unavailable,
+     * it returns a null typed reference; otherwise, it dynamically casts the asset pointer to the specified type.
+     *
+     * @tparam TAsset The asset type to which the reference is cast.
+     * @return AssetRef<TAsset> A typed asset reference, or a null reference if the asset could not be locked.
+     */
     AssetRef<TAsset> GenericAssetRef::as() const {
         const auto ptr = m_weakPtr.lock();
         if (!ptr) {
@@ -183,6 +254,15 @@ namespace nexo::assets {
     }
 
     template<typename TAsset>
+    /**
+     * @brief Retrieves a type-safe shared pointer to the asset.
+     *
+     * This method locks the underlying generic asset reference and casts the resulting
+     * shared pointer to the specific asset type TAsset. If the asset reference is invalid,
+     * the returned shared pointer will be null.
+     *
+     * @return std::shared_ptr<TAsset> Shared pointer to the asset of type TAsset, or null if unavailable.
+     */
     std::shared_ptr<TAsset> AssetRef<TAsset>::lock() const noexcept
     {
         return std::static_pointer_cast<TAsset>(GenericAssetRef::lock());

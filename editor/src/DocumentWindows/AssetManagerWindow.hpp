@@ -25,7 +25,13 @@ namespace nexo::editor {
 
     class AssetManagerWindow final : public ADocumentWindow {
     public:
-        AssetManagerWindow() = default;
+        /**
+ * @brief Default constructor for AssetManagerWindow.
+ *
+ * Creates an instance of AssetManagerWindow without performing any initialization.
+ * Call setup() after construction to initialize the window.
+ */
+AssetManagerWindow() = default;
 
         void setup() override;
         void shutdown() override;
