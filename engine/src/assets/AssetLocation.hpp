@@ -18,7 +18,6 @@
 
 #include <optional>
 #include <string>
-#include <filesystem>
 
 #include "AssetName.hpp"
 #include "AssetPackName.hpp"
