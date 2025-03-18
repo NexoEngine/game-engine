@@ -112,7 +112,6 @@ namespace nexo::editor {
     }
 
     void AssetManagerWindow::drawAssetsGrid() {
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
         ImVec2 startPos = ImGui::GetCursorScreenPos();
 
         ImGuiListClipper clipper;
