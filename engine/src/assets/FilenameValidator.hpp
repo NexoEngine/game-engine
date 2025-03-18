@@ -15,6 +15,10 @@
 
 #pragma once
 
+#include <regex>
+#include <optional>
+#include <string_view>
+
 namespace nexo::assets {
     struct FilenameValidator {
         static inline const auto ValidationRegex = std::regex("^[a-zA-Z0-9._-]*$");
