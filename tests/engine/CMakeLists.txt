@@ -36,6 +36,7 @@ add_executable(engine_tests
     ${BASEDIR}/scene/SceneManager.test.cpp
     ${BASEDIR}/assets/AssetName.test.cpp
     ${BASEDIR}/assets/AssetLocation.test.cpp
+    ${BASEDIR}/assets/AssetRef.test.cpp
         # Add other engine test files here
 )
 
