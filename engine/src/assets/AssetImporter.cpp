@@ -1,4 +1,4 @@
-//// AssetImporterRegistry.cpp ////////////////////////////////////////////////
+//// AssetImporter.cpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -28,8 +28,8 @@ namespace nexo::assets {
 
     AssetImporter::~AssetImporter()
     {
-        for (auto& [typeIdx, importers]: m_importers) {
-            for (auto& importer: importers) {
+        for (auto& importers: m_importers | std::views::values) {
+            for (const auto& importer: importers) {
                 delete importer;
             }
         }
