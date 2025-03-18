@@ -17,7 +17,6 @@ set(COMMON_SOURCES
         engine/src/LightFactory.cpp
         engine/src/CameraFactory.cpp
         engine/src/Application.cpp
-        engine/src/Application.cpp
         engine/src/renderer/Window.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
