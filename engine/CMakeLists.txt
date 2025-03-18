@@ -17,7 +17,6 @@ list(APPEND COMMON_SOURCES
     engine/src/EntityFactory2D.cpp
     engine/src/EntityFactory3D.cpp
     engine/src/Application.cpp
-    engine/src/Application.cpp
     engine/src/renderer/Window.cpp
     engine/src/assets/Asset.cpp
     engine/src/assets/AssetCatalog.cpp
