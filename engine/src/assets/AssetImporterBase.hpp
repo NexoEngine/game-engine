@@ -29,8 +29,20 @@ namespace nexo::assets {
      */
     class AssetImporterBase {
         public:
-            AssetImporterBase() = default;
-            virtual ~AssetImporterBase() = default;
+            /**
+ * @brief Default constructor for AssetImporterBase.
+ *
+ * Constructs a new instance of AssetImporterBase with default initialization.
+ */
+AssetImporterBase() = default;
+            /**
+ * @brief Default virtual destructor for AssetImporterBase.
+ *
+ * This destructor ensures that derived asset importer objects are properly
+ * destroyed, enabling safe and complete resource cleanup when an instance is
+ * deleted through a base class pointer.
+ */
+virtual ~AssetImporterBase() = default;
 
             /**
              * @brief Checks if the importer can read the file at the given path.
@@ -52,12 +64,14 @@ namespace nexo::assets {
             virtual void importImpl(AssetImporterContext& ctx) = 0;
 
             /**
-             * @brief Imports an asset from a file.
+             * @brief Executes a safe asset import operation.
              *
-             * This method is not intended to be overridden. Implement importImpl() to do the import.
-             * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
+             * This method wraps the implementation-specific import routine (importImpl()) to perform asset import while ensuring robust error handling. 
+             * It invokes importImpl() with the provided context, then verifies that the main asset data has been set; if not, it logs an error. 
+             * Any exceptions thrown during the import process are caught and logged along with the asset path from the context. 
+             * This method is non-overridable and should remain unchanged in derived classes.
              *
-             * @param ctx The context for the import.
+             * @param ctx Import context carrying asset details and used for storing the main asset data.
              */
             void import(AssetImporterContext& ctx) noexcept
             {

@@ -65,6 +65,17 @@ namespace nexo::editor {
         THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
+    /**
+     * @brief Sets the error callback for the specified window.
+     *
+     * Retrieves the error callback from the OpenGL-specific ImGui backend and assigns it
+     * to the given window. This function only supports the OpenGL graphics API; if the
+     * graphics API is not OpenGL, a BackendRendererApiNotSupported exception is thrown.
+     *
+     * @param window The window on which to set the error callback.
+     *
+     * @throws BackendRendererApiNotSupported if the graphics API is not OpenGL.
+     */
     void ImGuiBackend::setErrorCallback([[maybe_unused]] const std::shared_ptr<renderer::Window> &window)
     {
         #ifdef GRAPHICS_API_OPENGL

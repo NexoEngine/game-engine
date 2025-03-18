@@ -102,6 +102,18 @@ namespace nexo::editor {
         m_isEntitySelected = false;
     }
 
+    /**
+     * @brief Renames a scene or layer.
+     *
+     * Updates the name of a scene or a layer based on the provided selection type and variant data.
+     * For a scene, the variant data must hold SceneProperties (containing the scene ID);
+     * for a layer, it must hold LayerProperties (including scene properties and a layer ID).
+     * If the variant does not contain the expected data for the specified type, no renaming occurs.
+     *
+     * @param type The selection type indicating whether the object is a scene or a layer.
+     * @param data Variant data holding the properties of the selected object.
+     * @param newName The new name to assign to the scene or layer.
+     */
     void SceneManagerBridge::renameObject(const SelectionType type, VariantData &data, const std::string &newName) const
     {
         if (type == SelectionType::SCENE && std::holds_alternative<SceneProperties>(data))

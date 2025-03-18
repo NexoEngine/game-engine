@@ -40,6 +40,17 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * @brief Constructs an OpenGL 2D texture by loading image data from a file.
+     *
+     * Loads the image from the specified file path using stb_image, retrieving its width, height, and channel count.
+     * If the image data cannot be loaded, a FileNotFoundException is thrown.
+     * Upon successful loading, the image data is ingested using ingestDataFromStb(), which sets up the texture.
+     *
+     * @param path The file path of the texture image.
+     *
+     * @throws FileNotFoundException Thrown if the image at the given path cannot be loaded.
+     */
     OpenGlTexture2D::OpenGlTexture2D(const std::string &path)
     {
         int width = 0;
@@ -53,11 +64,30 @@ namespace nexo::renderer {
         ingestDataFromStb(data, width, height, channels, path);
     }
 
+    /**
+     * @brief Releases the OpenGL texture resource.
+     *
+     * Deletes the texture associated with this instance by calling glDeleteTextures 
+     * with the texture identifier.
+     */
     OpenGlTexture2D::~OpenGlTexture2D()
     {
         glDeleteTextures(1, &m_id);
     }
 
+    /**
+     * @brief Constructs a 2D texture from an in-memory image buffer.
+     *
+     * This constructor loads image data from the provided memory buffer using stb_image's
+     * stbi_load_from_memory. On successful loading, it initializes the texture by processing
+     * the image data with ingestDataFromStb. If the image data cannot be loaded due to an
+     * unsupported format, it throws a TextureUnsupportedFormat exception.
+     *
+     * @param buffer Pointer to the image data buffer.
+     * @param len Size of the image data buffer in bytes.
+     *
+     * @throws TextureUnsupportedFormat if the image data cannot be loaded from the buffer.
+     */
     OpenGlTexture2D::OpenGlTexture2D(const uint8_t* buffer, unsigned int len)
     {
         int width = 0;
@@ -71,6 +101,13 @@ namespace nexo::renderer {
         ingestDataFromStb(data, width, height, channels, "(buffer)");
     }
 
+    /**
+     * @brief Retrieves the maximum texture size supported by the OpenGL implementation.
+     *
+     * This function queries OpenGL for the maximum allowed texture size and returns it as an unsigned integer.
+     *
+     * @return The maximum texture size.
+     */
     unsigned int OpenGlTexture2D::getMaxTextureSize() const
     {
         int maxTextureSize = 0;
@@ -78,6 +115,19 @@ namespace nexo::renderer {
         return static_cast<unsigned int>(maxTextureSize);
     }
 
+    /**
+     * @brief Updates the entire texture with new pixel data.
+     *
+     * Validates that the provided data size matches the expected texture size, calculated as
+     * width * height * (4 for GL_RGBA or 3 otherwise). If the sizes do not match, a
+     * TextureSizeMismatch exception is thrown.
+     *
+     * The function binds the texture, updates its entire content using glTexSubImage2D, and then unbinds it.
+     *
+     * @param data Pointer to the new texture data.
+     * @param size Size, in bytes, of the new data.
+     * @throws TextureSizeMismatch if the provided size does not match the expected texture size.
+     */
     void OpenGlTexture2D::setData(void *data, const unsigned int size)
     {
         if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
@@ -88,6 +138,23 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * @brief Processes STB image data and initializes an OpenGL 2D texture.
+     *
+     * This method sets the texture's dimensions and determines the appropriate OpenGL internal 
+     * and data formats based on the number of color channels (supports 3 for RGB and 4 for RGBA). 
+     * It generates an OpenGL texture, binds it, uploads the image data, configures filtering and 
+     * wrapping parameters, and then frees the image data. If an unsupported channel count is provided, 
+     * the image data is freed and a TextureUnsupportedFormat exception is thrown.
+     *
+     * @param data Pointer to image data loaded by STB; the data is freed within this method.
+     * @param width Width of the image in pixels.
+     * @param height Height of the image in pixels.
+     * @param channels Number of color channels; must be 3 (RGB) or 4 (RGBA).
+     * @param debugPath Debug identifier (e.g., file path) used for error reporting if the format is unsupported.
+     *
+     * @throws TextureUnsupportedFormat if the image's channel count is not 3 or 4.
+     */
     void OpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
         const std::string& debugPath)
     {
@@ -124,12 +191,27 @@ namespace nexo::renderer {
     }
 
 
+    /**
+     * @brief Binds the texture to a specified texture unit.
+     *
+     * Activates the texture unit using `glActiveTexture` and binds the texture to the `GL_TEXTURE_2D` target.
+     *
+     * @param slot The texture unit slot to which this texture will be bound.
+     */
     void OpenGlTexture2D::bind(const unsigned int slot) const
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_id);
     }
 
+    /**
+     * @brief Unbinds the texture from the specified texture unit.
+     *
+     * This method sets the active OpenGL texture unit to the given slot and unbinds any 2D texture
+     * by binding texture ID 0.
+     *
+     * @param slot The texture unit index from which the texture is unbound.
+     */
     void OpenGlTexture2D::unbind(const unsigned int slot) const
     {
         glActiveTexture(GL_TEXTURE0 + slot);

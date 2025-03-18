@@ -21,6 +21,19 @@
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
 
+/**
+ * @brief Entry point for the nexo editor application.
+ *
+ * Initializes logging via loguru and sets up the editor by registering its main components,
+ * including the Scene Tree, Scene View Manager, Console, and Asset Manager windows. A default
+ * scene is created and added before entering the main loop, which renders and updates the editor
+ * at approximately 60 FPS. The editor shuts down gracefully when closed, or, in the event of a
+ * nexo::Exception, logs the error and exits with a non-zero status.
+ *
+ * @param argc Standard command line argument count.
+ * @param argv Standard command line argument vector.
+ * @return int Returns 0 on successful shutdown, or 1 if an exception is caught.
+ */
 int main(int argc, char **argv)
 {
     try {

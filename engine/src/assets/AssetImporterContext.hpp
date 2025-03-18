@@ -38,10 +38,19 @@ namespace nexo::assets {
     struct AssetImporterContext {
         public:
             ImporterInputVariant input;                          //< Input data for the importer
-            AssetLocation location = AssetLocation("default"); //< Future location of the asset in the catalog
+            AssetLocation location = AssetLocation("default"); /**
+ * @brief Default constructor for AssetImporterContext.
+ *
+ * Initializes a new AssetImporterContext with default member values.
+ */
 
             AssetImporterContext() = default;
-            ~AssetImporterContext() = default;
+            /**
+ * @brief Default destructor for AssetImporterContext.
+ *
+ * Cleans up the AssetImporterContext instance using the compiler-generated default behavior.
+ */
+~AssetImporterContext() = default;
 
             /**
              * @brief Set the main asset for this context
@@ -99,6 +108,16 @@ namespace nexo::assets {
 
     template <typename AssetType>
         requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Generates a unique asset location for a dependency.
+     *
+     * Constructs a new asset location by combining the current asset's full location, the asset type, 
+     * and an incremented dependency counter. If the generated location is already present in the asset catalog, 
+     * the function iteratively updates the name by appending the counter until a unique location is found or 
+     * the maximum allowed dependencies (ASSET_MAX_DEPENDENCIES) is exceeded. In the latter case, an error is logged.
+     *
+     * @return AssetLocation A unique dependency location.
+     */
     AssetLocation AssetImporterContext::genUniqueDependencyName()
     {
         auto depLoc = AssetLocation(
@@ -122,12 +141,29 @@ namespace nexo::assets {
     }
 
     template<typename ParamType> requires JSONSerializable<ParamType>
+    /**
+     * @brief Serializes the provided import parameters into JSON.
+     *
+     * Converts the given parameters into a JSON object and stores the result in the
+     * context's internal JSON representation, allowing later retrieval and use.
+     *
+     * @param params The asset import parameters to serialize. Must be a JSON serializable type.
+     */
     void AssetImporterContext::setParameters(const ParamType& params)
     {
         to_json(m_jsonParameters, params);
     }
 
     template<typename ParamType> requires JSONSerializable<ParamType>
+    /**
+     * @brief Retrieves the importer parameters as a deserialized object.
+     *
+     * This function deserializes the internal JSON parameters into a corresponding
+     * instance of ParamType using the from_json function. If the stored JSON parameters
+     * are null, it returns a default-initialized ParamType.
+     *
+     * @return ParamType An instance of the importer parameters.
+     */
     ParamType AssetImporterContext::getParameters() const
     {
         ParamType params;

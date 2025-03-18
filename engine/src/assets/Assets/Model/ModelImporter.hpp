@@ -27,9 +27,28 @@ namespace nexo::assets {
 
     class ModelImporter final : public AssetImporterBase {
         public:
-            ModelImporter() = default;
-            ~ModelImporter() override = default;
+            /**
+ * @brief Default constructor for the ModelImporter class.
+ *
+ * Instantiates a new ModelImporter object using the compiler-generated default initialization.
+ */
+ModelImporter() = default;
+            /**
+ * @brief Destroys the ModelImporter instance and releases associated resources.
+ *
+ * As a default destructor, it ensures proper cleanup when a ModelImporter object is destroyed.
+ */
+~ModelImporter() override = default;
 
+            /**
+             * @brief Determines whether the file extension from the input variant is supported by Assimp.
+             *
+             * Extracts the file extension from the input variant—which can represent either a file-based or memory-based input—and
+             * checks if it is recognized by Assimp.
+             *
+             * @param inputVariant The variant that holds input data with an associated file extension.
+             * @return true if Assimp supports the file extension; false otherwise.
+             */
             bool canRead(const ImporterInputVariant& inputVariant) override
             {
                 std::string extension;
@@ -44,6 +63,16 @@ namespace nexo::assets {
                 return importer.IsExtensionSupported(extension);
             }
 
+            /**
+             * @brief Imports a 3D model using the Assimp library.
+             *
+             * This method creates a new Model instance with associated ModelData, then retrieves import
+             * parameters and configures processing flags for Assimp. It attempts to load the model scene
+             * either from a file path or memory, depending on the input type provided in the import
+             * context. If the scene is invalid, incomplete, or missing a root node, an error is logged.
+             * On success, the scene is stored in the model data and the model is registered as the main asset
+             * within the provided context.
+             */
             void importImpl(AssetImporterContext& ctx) override
             {
                 m_model = new Model();

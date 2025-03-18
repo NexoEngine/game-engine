@@ -32,6 +32,15 @@ namespace nexo::assets {
             "LPT8", "LPT9"
         };
 
+        /**
+         * @brief Validates a filename against predefined asset naming rules.
+         *
+         * Checks if the filename is non-empty, does not exceed 255 characters, contains only allowed characters
+         * (alphanumeric, '.', '_', and '-'), and is not a reserved keyword.
+         *
+         * @param name The filename to validate.
+         * @return std::optional<std::string> An error message if the filename is invalid; std::nullopt if it is valid.
+         */
         [[nodiscard]] static std::optional<std::string> validate(std::string_view name)
         {
             if (name.empty())

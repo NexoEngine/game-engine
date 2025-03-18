@@ -93,11 +93,33 @@ namespace nexo::assets {
              */
             [[nodiscard]] bool hasImportersForType(const std::type_index& typeIdx) const;
 
-            void setCustomContext(AssetImporterContext *ctx) { m_customCtx = ctx; }
+            /**
+ * @brief Sets the custom context for asset importing operations.
+ *
+ * This method assigns a new custom context that can be used by the asset importer to
+ * alter or extend its behavior during asset import processes.
+ *
+ * @param ctx Pointer to the new custom context.
+ */
+void setCustomContext(AssetImporterContext *ctx) { m_customCtx = ctx; }
 
-            void clearCustomContext() { m_customCtx = nullptr; }
+            /**
+ * @brief Clears the custom context for asset importing.
+ *
+ * Resets the custom context pointer to nullptr so that subsequent asset import
+ * operations will use the default context.
+ */
+void clearCustomContext() { m_customCtx = nullptr; }
 
-            AssetImporterContext *getCustomContext() const { return m_customCtx; }
+            /**
+ * @brief Retrieves the custom context set for asset importing.
+ *
+ * Returns the pointer to the custom context that has been configured for this importer.
+ * If no custom context has been set, the function returns nullptr.
+ *
+ * @return AssetImporterContext* Pointer to the current custom context, or nullptr if not set.
+ */
+AssetImporterContext *getCustomContext() const { return m_customCtx; }
 
             void setParameters(const json& params);
 
@@ -159,6 +181,16 @@ namespace nexo::assets {
 
     template<typename AssetType, typename ImporterType> requires std::derived_from<AssetType, IAsset> && std::
         derived_from<ImporterType, AssetImporterBase>
+    /**
+     * @brief Registers a new importer instance for a specific asset type.
+     *
+     * Creates a new instance of the importer (of type ImporterType) and registers it for the asset type defined by AssetType.
+     * The importer is added with the specified priority, which influences the order in which importers are invoked during asset importing.
+     *
+     * @tparam AssetType The asset type with which the importer is associated.
+     * @tparam ImporterType The concrete importer type to instantiate and register.
+     * @param priority The registration priority for the importer (default is 0).
+     */
     void AssetImporter::registerImporter(int priority)
     {
         auto importer = new ImporterType();
@@ -166,6 +198,18 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Registers an asset importer instance for a specified asset type.
+     *
+     * This function registers an importer for the asset type provided as a template parameter. It ensures
+     * that the importer is inserted into the registry's list in sorted order based on the given priority.
+     * If no importer list or details exist for the asset type, the corresponding containers are created.
+     *
+     * @tparam AssetType The asset type for which the importer is being registered.
+     * @param importer Pointer to the asset importer instance.
+     * @param priority Priority level that determines the importer's order; importers with lower priority values
+     * are placed before those with higher values.
+     */
     void AssetImporter::registerImporter(AssetImporterBase *importer, int priority)
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
@@ -187,6 +231,17 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Imports an asset of type AssetType from a specified location.
+     *
+     * Retrieves the registered importers for the given asset type and attempts to import the asset using them.
+     * If no importer is found, the function logs an error and returns a null asset reference.
+     *
+     * @tparam AssetType The type of asset to import.
+     * @param location The source location from which to import the asset.
+     * @param inputVariant Additional data required for the import process.
+     * @return AssetRef<AssetType> A reference to the imported asset or a null reference if no suitable importer is registered.
+     */
     AssetRef<AssetType> AssetImporter::importAsset(const AssetLocation& location,
         const ImporterInputVariant& inputVariant)
     {
@@ -199,6 +254,16 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Retrieves the registered asset importers for the specified asset type.
+     *
+     * This template function deduces the runtime type of the asset using `typeid` and returns a constant reference
+     * to the vector of importers associated with that type. It delegates the retrieval to the overload that
+     * uses a `std::type_index` for the lookup.
+     *
+     * @tparam AssetType The asset type for which the importers are being retrieved.
+     * @return A constant reference to a vector containing pointers to the asset importer instances for the specified type.
+     */
     const std::vector<AssetImporterBase *>& AssetImporter::getImportersForType() const
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
@@ -207,6 +272,15 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Checks if any importer is registered for a specified asset type.
+     *
+     * This templated function converts the asset type provided as a template parameter to a runtime type index
+     * and determines if any importer is registered for that asset type.
+     *
+     * @tparam AssetType The asset type to check for registered importers.
+     * @return true if at least one importer is registered for the specified asset type, false otherwise.
+     */
     bool AssetImporter::hasImportersForType() const
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
@@ -214,6 +288,13 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Unregisters all importers associated with the specified asset type.
+     *
+     * This method removes all registered importer instances and their corresponding details for the asset type determined by the template parameter.
+     *
+     * @tparam AssetType The asset type for which importers should be unregistered.
+     */
     void AssetImporter::unregisterAllImportersForType()
     {
         const auto typeIdx = std::type_index(typeid(AssetType));

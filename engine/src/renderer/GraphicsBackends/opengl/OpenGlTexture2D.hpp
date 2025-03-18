@@ -87,8 +87,20 @@ namespace nexo::renderer {
              */
             OpenGlTexture2D(const uint8_t *buffer, unsigned int len);
 
-            [[nodiscard]] unsigned int getWidth() const override {return m_width;};
-            [[nodiscard]] unsigned int getHeight() const override {return m_height;};
+            /**
+ * @brief Returns the width of the texture.
+ *
+ * @return unsigned int The texture's width in pixels.
+ */
+[[nodiscard]] unsigned int getWidth() const override {return m_width;};
+            /**
+ * @brief Retrieves the height of the texture.
+ *
+ * Returns the height of the texture in pixels.
+ *
+ * @return The texture height in pixels.
+ */
+[[nodiscard]] unsigned int getHeight() const override {return m_height;};
 
             /**
             * @brief Retrieves the maximum texture size supported by the OpenGL context.
