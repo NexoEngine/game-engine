@@ -51,8 +51,12 @@ namespace nexo::assets {
         float globalScale = 1.0f;
 
         // Texture options
-        enum class TextureQuality { Low, Medium, High };
-        TextureQuality textureQuality = TextureQuality::Medium;
+        enum class TextureQuality {
+            LOW = 0,
+            MEDIUM = 1,
+            HIGH = 2
+        };
+        TextureQuality textureQuality = TextureQuality::MEDIUM;
         bool convertToUncompressed = false;
 
         NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportPostProcessParameters,
@@ -69,6 +73,14 @@ namespace nexo::assets {
             convertToUncompressed
         );
     };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM(ModelImportPostProcessParameters::TextureQuality,
+        {
+            {ModelImportPostProcessParameters::TextureQuality::LOW, "LOW"},
+            {ModelImportPostProcessParameters::TextureQuality::MEDIUM, "MEDIUM"},
+            {ModelImportPostProcessParameters::TextureQuality::HIGH, "HIGH"}
+        }
+    );
 
 
 } // namespace nexo::assets
