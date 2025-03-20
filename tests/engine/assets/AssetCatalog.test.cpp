@@ -29,20 +29,20 @@ namespace nexo::assets {
     };
 
     class AssetCatalogTest : public ::testing::Test {
-    protected:
-        AssetCatalogTest() : assetCatalog() {
-        }
+        protected:
+            AssetCatalogTest() : assetCatalog() {
+            }
 
-        ~AssetCatalogTest() override {
-        }
+            ~AssetCatalogTest() override {
+            }
 
-        void SetUp() override {
-        }
+            void SetUp() override {
+            }
 
-        void TearDown() override {
-        }
+            void TearDown() override {
+            }
 
-        MockAssetCatalog assetCatalog;
+            MockAssetCatalog assetCatalog;
     };
 
     TEST_F(AssetCatalogTest, RegisterAndRetrieveAssetById) {
@@ -239,6 +239,111 @@ namespace nexo::assets {
         EXPECT_EQ(assetsView.size(), 0);
     }
 
-    // TODO: Tests for getAssetsOfType and getAssetsOfTypeView would need to be added once the static_assert in these methods is resolved
+    class AssetCatalogSingletonTest : public ::testing::Test {
+        protected:
+        AssetCatalogSingletonTest() {
+        }
 
+        ~AssetCatalogSingletonTest() override {
+        }
+
+        // Do not call AssetCatalog::getInstance() before tests
+        // to avoid creating the singleton instance before the test SingletonCreationMultithreaded
+
+        void TearDown() override {
+            // Clean up the singleton instance
+            const auto assets = AssetCatalog::getInstance().getAssets();
+            for (auto& asset : assets) {
+                AssetCatalog::getInstance().deleteAsset(asset);
+            }
+        }
+    };
+
+    TEST_F(AssetCatalogSingletonTest, SingletonCreationMultithreaded)
+    {
+        // Get instance at the same time on multiple threads, verify that they are the same
+        std::vector<std::thread> threads;
+
+        std::vector<AssetCatalog *> instances;
+        std::mutex instancesMutex;
+
+        constexpr int numThreads = 5;
+
+        for (int i = 0; i < numThreads; ++i) {
+            threads.emplace_back([&instances, &instancesMutex]() {
+                auto& instance = AssetCatalog::getInstance();
+                EXPECT_TRUE(instance.getAssetsView().empty());
+
+                // Store the instance in a thread-safe manner
+                instancesMutex.lock();
+                instances.push_back(&instance);
+                instancesMutex.unlock();
+            });
+        }
+        for (auto& thread : threads) {
+            thread.join();
+        }
+        // Check that all instances are the same
+        for (const auto& instance : instances) {
+            EXPECT_EQ(instance, &AssetCatalog::getInstance());
+        }
+    }
+
+    TEST_F(AssetCatalogSingletonTest, SingletonInstance)
+    {
+        auto& instance1 = AssetCatalog::getInstance();
+        auto& instance2 = AssetCatalog::getInstance();
+
+        EXPECT_EQ(&instance1, &instance2);
+        EXPECT_TRUE(AssetCatalog::getInstance().getAssetsView().empty());
+    }
+
+    TEST_F(AssetCatalogSingletonTest, SingletonRegisterAndRetrieve)
+    {
+        auto& instance = AssetCatalog::getInstance();
+
+        const AssetLocation location("text@test/texture");
+        const auto textureAsset = new Texture();
+        const auto ref = instance.registerAsset(location, textureAsset);
+        ASSERT_TRUE(ref.isValid());
+
+        const auto id = ref.lock()->getID();
+
+        // Retrieve by ID
+        const auto retrievedRef = instance.getAsset(id);
+
+        EXPECT_TRUE(retrievedRef.isValid());
+        EXPECT_EQ(retrievedRef.lock()->getID(), id);
+    }
+
+    TEST_F(AssetCatalogSingletonTest, SingletonShouldBeEmpty)
+    {
+        EXPECT_TRUE(AssetCatalog::getInstance().getAssetsView().empty());
+    }
+
+    TEST_F(AssetCatalogSingletonTest, SingletonDeleteAsset)
+    {
+        auto& instance = AssetCatalog::getInstance();
+
+        const AssetLocation location("text@test/texture");
+        const auto textureAsset = new Texture();
+        const auto ref = instance.registerAsset(location, textureAsset);
+        ASSERT_TRUE(ref.isValid());
+
+        const auto id = ref.lock()->getID();
+
+        // Delete by ID
+        instance.deleteAsset(id);
+
+        // Asset should no longer be retrievable
+        const auto retrievedRef = instance.getAsset(id);
+        EXPECT_FALSE(retrievedRef.isValid());
+        EXPECT_FALSE(retrievedRef);
+        EXPECT_FALSE(retrievedRef.lock());
+        EXPECT_FALSE(ref.isValid());
+        EXPECT_FALSE(ref);
+    }
+
+
+    // TODO: Tests for getAssetsOfType and getAssetsOfTypeView would need to be added once the static_assert in these methods is resolved
 } // namespace nexo::assets
