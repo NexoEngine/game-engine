@@ -13,6 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DocumentWindows/SceneViewManager.hpp"
+#include "DocumentWindows/InspectorWindow.hpp"
+#include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
@@ -24,6 +26,8 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
+
+ImGuiID g_materialInspectorDockID = 0;
 
 namespace nexo::utils {
     loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
@@ -300,7 +304,7 @@ namespace nexo::editor {
             // Step 1: Split off the rightmost column for Material Inspector.
             // We'll reserve 20% of the width for the Material Inspector.
             ImGuiID materialInspectorNode, remainingNode;
-            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.15f, &materialInspectorNode, &remainingNode);
+            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.20f, &materialInspectorNode, &remainingNode);
             // 'materialInspectorNode' will hold "Material Inspector"
             // 'remainingNode' now covers the remaining 80% of the dockspace.
 
@@ -334,9 +338,19 @@ namespace nexo::editor {
             ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
             ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
 
+            g_materialInspectorDockID = materialInspectorNode;
+
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
+
+        if (g_materialInspectorDockID == 0)
+        {
+	        int materialId = findWindowDockIDFromConfig("Material Inspector");
+	        if (materialId != 0)
+	        	g_materialInspectorDockID = materialId;
+        }
+
 
         // Render the dockspace
         ImGui::DockSpaceOverViewport(viewport->ID);
@@ -345,6 +359,7 @@ namespace nexo::editor {
 
     void Editor::render()
     {
+    	getApp().beginFrame();
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_WindowBg].w = 0.0f; // 0.0f for full transparency
         ImGuiBackend::begin();
@@ -397,6 +412,7 @@ namespace nexo::editor {
         }
 
         ImGui::Render();
+
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
@@ -407,5 +423,7 @@ namespace nexo::editor {
         {
             window->update();
         }
+        getApp().endFrame();
+
     }
 }
