@@ -22,11 +22,18 @@ namespace nexo::assets {
 
     class AssetCatalogTest : public ::testing::Test {
     protected:
+        AssetCatalogTest() : assetCatalog() {
+        }
+
+        ~AssetCatalogTest() override {
+        }
+
         void SetUp() override {
         }
 
         void TearDown() override {
         }
+
         AssetCatalog assetCatalog;
     };
 
