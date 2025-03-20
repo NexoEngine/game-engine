@@ -14,13 +14,15 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 
 namespace nexo::components {
 
     struct TransformComponent final {
         glm::vec3 pos;
         glm::vec3 size;
-        glm::vec3 rotation;
+        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     };
 
 }
