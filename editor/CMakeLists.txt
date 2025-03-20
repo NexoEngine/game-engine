@@ -18,6 +18,8 @@ set(SRCS
         editor/src/Components/Components.cpp
         editor/src/Components/EntityPropertiesComponents.cpp
         editor/src/Components/Widgets.cpp
+        editor/src/utils/ScenePreview.cpp
+        editor/src/utils/Config.cpp
         editor/src/Editor.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
         editor/src/DocumentWindows/MainScene.cpp
