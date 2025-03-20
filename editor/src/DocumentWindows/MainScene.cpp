@@ -92,7 +92,7 @@ namespace nexo::editor {
         scene.addEntity(directionalLight);
         ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
         scene.addEntity(spotLight);
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 0.5f, 20.0f},
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
     }
@@ -101,8 +101,8 @@ namespace nexo::editor {
     {
         constexpr auto pos = ImVec2(118, 24);
         constexpr auto size = ImVec2(1280, 720);
-        ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
+        //ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+        //ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         _viewSize = size;
     }
 
@@ -230,8 +230,7 @@ namespace nexo::editor {
         auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
         if (!transf)
             return;
-        glm::quat rotationQuat = glm::quat(glm::radians(transf->get().rotation));
-		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
+		glm::mat4 rotationMat = glm::toMat4(transf->get().quat);
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
                                     rotationMat *
                                     glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, transf->get().size.z});
@@ -244,13 +243,15 @@ namespace nexo::editor {
         glm::vec3 translation(0);
         glm::vec3 rotation(0);
         glm::vec3 scale(0);
+        glm::quat quaternion;
 
-        math::decomposeTransformEuler(transformMatrix, translation, rotation, scale);
+        //math::decomposeTransformEuler(transformMatrix, translation, rotation, scale);
+        math::decomposeTransformQuat(transformMatrix, translation, quaternion, scale);
 
         if (ImGuizmo::IsUsing())
         {
             transf->get().pos = translation;
-            transf->get().rotation = glm::degrees(rotation);
+            transf->get().quat = quaternion;
             transf->get().size = scale;
         }
     }
@@ -265,11 +266,9 @@ namespace nexo::editor {
         if (ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             _viewSize.x != viewportPanelSize.x || _viewSize.y != viewportPanelSize.y)
         {
-        		cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
+        	cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
         							static_cast<unsigned int>(viewportPanelSize.y));
 
-            //m_framebuffer->resize(static_cast<unsigned int>(viewportPanelSize.x),
-                                  //static_cast<unsigned int>(viewportPanelSize.y));
             _viewSize.x = viewportPanelSize.x;
             _viewSize.y = viewportPanelSize.y;
         }
@@ -291,7 +290,6 @@ namespace nexo::editor {
 
     void MainScene::show()
     {
-        //setHiddenLayerStatus(false);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
 
@@ -302,8 +300,6 @@ namespace nexo::editor {
 
             m_focused = ImGui::IsWindowFocused();
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
-            //m_sceneManagerBridge->setSceneActiveStatus(_sceneID, m_focused);
-            //m_camera->zoomOn = m_focused;
             if (m_focused)
             {
                 if (auto &viewManager = SceneViewManager::get();
@@ -320,12 +316,10 @@ namespace nexo::editor {
         }
         ImGui::End();
         ImGui::PopStyleVar();
-        //setHiddenLayerStatus(true);
     }
 
     void MainScene::update()
     {
-        //setHiddenLayerStatus(false);
         if (!m_opened)
             return;
         handleKeyEvents();
@@ -333,7 +327,7 @@ namespace nexo::editor {
 
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing())
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
