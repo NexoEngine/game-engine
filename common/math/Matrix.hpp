@@ -18,4 +18,5 @@
 
 namespace nexo::math {
     void decomposeTransformEuler(const glm::mat4 &mat, glm::vec3 &outTranslation, glm::vec3 &outRotation, glm::vec3 &outScale);
+    void decomposeTransformQuat(const glm::mat4 &mat, glm::vec3 &outTranslation, glm::quat &outRotation, glm::vec3 &outScale);
 }
