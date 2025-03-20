@@ -61,19 +61,11 @@ namespace nexo::assets {
         return assets;
     }
 
-    std::ranges::view auto AssetCatalog::getAssetsView() const
-    {
-        return m_assets
-               | std::views::values
-               | std::views::transform([](const auto& asset) {
-                   return GenericAssetRef(asset);
-               });
-    }
-
     GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, IAsset* asset)
     {
         if (!asset)
             return GenericAssetRef::null();
+        // TODO: implement error handling if already exists (once we have the folder tree)
         auto shared_ptr = std::shared_ptr<IAsset>(asset);
         shared_ptr->m_metadata.location = location;
         if (shared_ptr->m_metadata.id.is_nil())
