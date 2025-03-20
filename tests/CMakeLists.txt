@@ -31,7 +31,7 @@ set(TEST_MAIN_FILES
 )
 
 # Add global macro to set NEXO_TESTING to 1
-add_definitions(-DNEXO_TESTING=1)
+add_compile_definitions(NEXO_TESTING)
 message(STATUS "Set global MACRO: NEXO_TESTING = 1")
 
 include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
