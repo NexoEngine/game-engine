@@ -200,6 +200,7 @@ namespace nexo::renderer {
 
         void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
         void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID = -1) const;
         void drawCube(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
 
         /**
