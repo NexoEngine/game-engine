@@ -38,6 +38,7 @@ namespace nexo::components
 
         virtual void draw(std::shared_ptr<renderer::RendererContext> &context,
                           const TransformComponent &transf, int entityID) const = 0;
+        virtual std::shared_ptr<Renderable> clone() const = 0;
     };
 
     struct Renderable2D final : Renderable
@@ -55,6 +56,13 @@ namespace nexo::components
         {
             shape->draw(context, transform, sprite, entityID);
         }
+
+        std::shared_ptr<Renderable> clone() const override
+        {
+            //std::shared_ptr<Shape2D> clonedShape = shape ? shape->clone() : nullptr;
+            //return std::make_shared<Renderable2D>(sprite, clonedShape);
+            return nullptr;
+        }
     };
 
     struct Renderable3D final : Renderable {
@@ -67,6 +75,12 @@ namespace nexo::components
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) const override
         {
             shape->draw(context, transf, material, entityID);
+        }
+
+        std::shared_ptr<Renderable> clone() const override
+        {
+            std::shared_ptr<Shape3D> clonedShape = shape ? shape->clone() : nullptr;
+            return std::make_shared<Renderable3D>(material, clonedShape);
         }
     };
 
@@ -88,6 +102,17 @@ namespace nexo::components
         {
             if (isRendered && renderable)
                 renderable->draw(context, transform, entityID);
+        }
+
+        RenderComponent clone() const {
+            RenderComponent copy;
+            copy.isRendered = isRendered;
+            copy.type = type;
+            if (renderable)
+                copy.renderable = renderable->clone();
+            else
+                copy.renderable = nullptr;
+            return copy;
         }
     };
 }

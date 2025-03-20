@@ -33,15 +33,15 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite, int entityID) const override
         {
             const auto renderer2D = context->renderer2D;
-            if (sprite.sprite != nullptr)
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.sprite, entityID);
-            else if (sprite.texture != nullptr)
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.texture, entityID);
-            else
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.color, entityID);
+            //if (sprite.sprite != nullptr)
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.sprite, entityID);
+            //else if (sprite.texture != nullptr)
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.texture, entityID);
+            //else
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.color, entityID);
         }
     };
 }

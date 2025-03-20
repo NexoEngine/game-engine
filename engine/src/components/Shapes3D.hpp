@@ -18,6 +18,8 @@
 #include "renderer/RendererContext.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <optional>
 
 namespace nexo::components {
@@ -26,13 +28,18 @@ namespace nexo::components {
         virtual ~Shape3D() = default;
 
         virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
+        virtual std::shared_ptr<Shape3D> clone() const = 0;
     };
 
     struct Cube final : Shape3D {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) override
         {
             auto renderer3D = context->renderer3D;
-            renderer3D.drawCube(transf.pos, transf.size, transf.rotation, material, entityID);
+            renderer3D.drawCube(transf.pos, transf.size, transf.quat, material, entityID);
+        }
+
+        std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Cube>(*this);
         }
     };
 
@@ -63,6 +70,15 @@ namespace nexo::components {
             for (const auto &child: children)
                 child->draw(renderer3D, localTransform, entityID);
         }
+
+        std::shared_ptr<MeshNode> clone() const {
+            auto newNode = std::make_shared<MeshNode>();
+            newNode->transform = transform;
+            newNode->meshes = meshes; // Assumes Mesh is copyable.
+            for (const auto &child: children)
+                newNode->children.push_back(child->clone());
+            return newNode;
+        }
     };
 
     struct Model final : Shape3D {
@@ -81,13 +97,13 @@ namespace nexo::components {
                 //TODO: find a better way than recalculating each time, maybe cache the matrix in the component ?
                 const glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transf.pos);
 
-                const glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.x),
-                                                        glm::vec3(1.0f, 0.0f, 0.0f));
-                const glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.y),
-                                                        glm::vec3(0.0f, 1.0f, 0.0f));
-                const glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.z),
-                                                        glm::vec3(0.0f, 0.0f, 1.0f));
-                const glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
+                //const glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.x),
+                                                        //glm::vec3(1.0f, 0.0f, 0.0f));
+                //const glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.y),
+                                                        //glm::vec3(0.0f, 1.0f, 0.0f));
+                //const glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.z),
+                                                        //glm::vec3(0.0f, 0.0f, 1.0f));
+                const glm::mat4 rotationMatrix = glm::toMat4(transf.quat);
 
                 const glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transf.size);
 
@@ -95,6 +111,10 @@ namespace nexo::components {
 
                 root->draw(renderer3D, transformMatrix, entityID);
             }
+        }
+
+        std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Model>(root ? root->clone() : nullptr);
         }
     };
 
