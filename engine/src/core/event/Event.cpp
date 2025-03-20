@@ -17,19 +17,27 @@
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents() {
-        while (!m_eventQueue.empty()) {
+    void EventManager::dispatchEvents()
+    {
+    	unsigned int size = m_eventQueue.size();
+        while (size--) {
             auto event = m_eventQueue.front();
-            m_eventQueue.pop();
+            m_eventQueue.pop_front();
 
             std::type_index typeIndex(typeid(*event));
             if (m_listeners.contains(typeIndex)) {
                 for (auto *listener : m_listeners[typeIndex]) {
                     event->trigger(*listener);
                     if (event->consumed)
-                        break;
+                    	break;
                 }
             }
+            m_eventQueue.push_back(event);
         }
+    }
+
+    void EventManager::clearEvents()
+    {
+    	m_eventQueue.clear();
     }
 }

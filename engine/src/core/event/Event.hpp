@@ -101,7 +101,7 @@ namespace nexo::event {
 
         template <typename EventType>
         void emitEvent(std::shared_ptr<EventType> event) {
-            m_eventQueue.push(event);
+            m_eventQueue.push_back(event);
         }
 
         // Use variadic arguments to forward the arguments to the constructor of the event
@@ -111,9 +111,10 @@ namespace nexo::event {
         }
 
         void dispatchEvents();
+        void clearEvents();
 
     private:
         std::unordered_map<std::type_index, std::vector<BaseListener *>> m_listeners;
-        std::queue<std::shared_ptr<IEvent>> m_eventQueue;
+        std::deque<std::shared_ptr<IEvent>> m_eventQueue;
     };
 }
