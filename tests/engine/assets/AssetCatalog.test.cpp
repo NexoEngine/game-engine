@@ -20,6 +20,14 @@
 
 namespace nexo::assets {
 
+    class MockAssetCatalog : public AssetCatalog {
+        public:
+            MockAssetCatalog() = default;
+            ~MockAssetCatalog() = default;
+
+            // Mock methods if needed
+    };
+
     class AssetCatalogTest : public ::testing::Test {
     protected:
         AssetCatalogTest() : assetCatalog() {
@@ -34,12 +42,12 @@ namespace nexo::assets {
         void TearDown() override {
         }
 
-        AssetCatalog assetCatalog;
+        MockAssetCatalog assetCatalog;
     };
 
     TEST_F(AssetCatalogTest, RegisterAndRetrieveAssetById) {
         // Register an asset
-        AssetLocation location("text@test/texture");
+        const AssetLocation location("text@test/texture");
         const auto textureAsset = new Texture();
         const auto ref = assetCatalog.registerAsset(location, textureAsset);
         ASSERT_TRUE(ref.isValid());
@@ -55,7 +63,7 @@ namespace nexo::assets {
 
     TEST_F(AssetCatalogTest, RegisterAndRetrieveAssetByLocation) {
         // Register an asset
-        AssetLocation location("text@test/texture");
+        const AssetLocation location("text@test/texture");
         const auto textureAsset = new Texture();
         const auto ref = assetCatalog.registerAsset(location, textureAsset);
         ASSERT_TRUE(ref.isValid());
@@ -72,14 +80,14 @@ namespace nexo::assets {
     TEST_F(AssetCatalogTest, DeleteAssetById) {
         AssetLocation location("text@test/texture");
         const auto textureAsset = new Texture();
-        auto ref = assetCatalog.registerAsset(location, textureAsset);
-        auto id = ref.lock()->getID();
+        const auto ref = assetCatalog.registerAsset(location, textureAsset);
+        const auto id = ref.lock()->getID();
 
         // Delete by ID
         assetCatalog.deleteAsset(id);
 
         // Asset should no longer be retrievable
-        auto retrievedRef = assetCatalog.getAsset(id);
+        const auto retrievedRef = assetCatalog.getAsset(id);
         EXPECT_FALSE(retrievedRef.isValid());
         EXPECT_FALSE(retrievedRef);
         EXPECT_FALSE(retrievedRef.lock());
@@ -92,13 +100,13 @@ namespace nexo::assets {
     TEST_F(AssetCatalogTest, DeleteAssetByReference) {
         AssetLocation location("text@test/texture");
         const auto textureAsset = new Texture();
-        auto ref = assetCatalog.registerAsset(location, textureAsset);
+        const auto ref = assetCatalog.registerAsset(location, textureAsset);
 
         // Delete by reference
         assetCatalog.deleteAsset(ref);
 
         // Asset should no longer be retrievable
-        auto retrievedRef = assetCatalog.getAsset(location);
+        const auto retrievedRef = assetCatalog.getAsset(location);
         EXPECT_FALSE(retrievedRef.isValid());
         EXPECT_FALSE(retrievedRef);
         EXPECT_FALSE(retrievedRef.lock());
@@ -202,7 +210,7 @@ namespace nexo::assets {
 
     TEST_F(AssetCatalogTest, GetNonExistentAssetReturnsInvalidRef) {
         // Try to get asset with non-existent ID
-        AssetID nonExistentId;  // Default-constructed UUID should be nil
+        constexpr AssetID nonExistentId;  // Default-constructed UUID should be nil
         auto ref = assetCatalog.getAsset(nonExistentId);
 
         EXPECT_FALSE(ref.isValid());
@@ -220,18 +228,17 @@ namespace nexo::assets {
 
     TEST_F(AssetCatalogTest, GetNoAssets)
     {
-        AssetLocation nonExistentLocation("test@does/not/exist");
+        const AssetLocation nonExistentLocation("test@does/not/exist");
         assetCatalog.registerAsset(nonExistentLocation, nullptr);
 
         assetCatalog.deleteAsset(AssetID{});
-        auto assets = assetCatalog.getAssets();
+        const auto assets = assetCatalog.getAssets();
         EXPECT_EQ(assets.size(), 0);
 
         auto assetsView = assetCatalog.getAssetsView();
         EXPECT_EQ(assetsView.size(), 0);
     }
 
-// Note: Tests for getAssetsOfType and getAssetsOfTypeView would need to be added
-// once the static_assert in these methods is resolved
+    // TODO: Tests for getAssetsOfType and getAssetsOfTypeView would need to be added once the static_assert in these methods is resolved
 
 } // namespace nexo::assets
