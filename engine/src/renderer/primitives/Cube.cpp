@@ -364,6 +364,59 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
+    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID) const
+    {
+    if (!m_renderingScene)
+	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	                    "Renderer not rendering a scene, make sure to call beginScene first");
+
+		glm::mat4 rotationMat = glm::toMat4(rotation);
+		// Transform matrix
+       const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
+       							rotationMat *
+                                   glm::scale(glm::mat4(1.0f), size);
+
+       m_storage->textureShader->setUniformMatrix("matModel", transform);
+
+       renderer::Material mat;
+       mat.albedoColor = material.albedoColor;
+       mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
+       mat.specularColor = material.specularColor;
+       mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
+       setMaterialUniforms(mat);
+
+       std::array<glm::vec3, 36> verts;
+       std::array<glm::vec2, 36> texCoords;
+       std::array<glm::vec3, 36> normals;
+       std::array<unsigned int, 36> indices;
+
+       genCubeMesh(verts, texCoords, normals);
+       for (unsigned int i = 0; i < 36; ++i)
+           indices[i] = i;
+
+       // Vertex data
+       auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
+       for (unsigned int i = 0; i < 36; ++i)
+       {
+           m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
+           m_storage->vertexBufferPtr->texCoord = texCoords[i];
+           m_storage->vertexBufferPtr->normal = normals[i];
+           //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
+           //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
+           m_storage->vertexBufferPtr->entityID = entityID;
+           m_storage->vertexBufferPtr++;
+       }
+
+       // Index data
+       std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+           m_storage->indexBufferBase[m_storage->indexCount++] = index;
+       });
+
+
+       // Update stats
+       m_storage->stats.cubeCount++;
+    }
+
     void Renderer3D::drawCube(const glm::mat4& transform, const components::Material &material, int entityID) const
     {
 	    if (!m_renderingScene)
