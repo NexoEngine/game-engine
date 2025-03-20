@@ -84,7 +84,12 @@ namespace nexo::assets {
 
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
-            AssetLocation genUniqueDependencyName();
+            AssetLocation genUniqueDependencyLocation();
+
+            static AssetName formatUniqueName(const std::string& name, const AssetType type, unsigned int id)
+            {
+                return AssetName(std::format("{}_{}{}", name, getAssetTypeName(type), id));
+            }
 
 
         private:
@@ -99,19 +104,17 @@ namespace nexo::assets {
 
     template <typename AssetType>
         requires std::derived_from<AssetType, IAsset>
-    AssetLocation AssetImporterContext::genUniqueDependencyName()
+    AssetLocation AssetImporterContext::genUniqueDependencyLocation()
     {
-        auto depLoc = AssetLocation(
-            std::format("{}_{}{}", location.getFullLocation(), AssetTypeNames[AssetType::getType()], ++m_depUniqueId)
-        );
+        auto depLoc = AssetLocation(location.getFullLocation());
+        depLoc.setName(formatUniqueName(location.getName().data(), AssetType::TYPE, ++m_depUniqueId));
+
         if (!AssetCatalog::getInstance().getAsset(depLoc))
             return depLoc;
 
         // If the location already exists, we need to generate a new one
-        auto name = std::string(location.getName());
         while (AssetCatalog::getInstance().getAsset(depLoc)) {
-            std::string newName = name + std::to_string(++m_depUniqueId);
-            depLoc.setName(newName);
+            depLoc.setName(formatUniqueName(location.getName().data(), AssetType::TYPE, ++m_depUniqueId));
             if (m_depUniqueId > ASSET_MAX_DEPENDENCIES) {
                 // Prevent infinite loop
                 LOG(NEXO_ERROR, "Failed to generate unique name for asset: {}: couldn't find unique id", depLoc.getFullLocation());
