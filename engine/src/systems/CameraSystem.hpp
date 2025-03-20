@@ -34,4 +34,13 @@ namespace nexo::system {
             void handleEvent(event::EventMouseScroll &event) override;
             void handleEvent(event::EventMouseMove &event) override;
 	};
+
+	class PerspectiveCameraTargetSystem : public ecs::System, LISTENS_TO(
+		event::EventMouseScroll,
+        event::EventMouseMove) {
+		public:
+			PerspectiveCameraTargetSystem();
+            void handleEvent(event::EventMouseMove &event) override;
+            void handleEvent(event::EventMouseScroll &event) override;
+	};
 }
