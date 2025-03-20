@@ -70,7 +70,9 @@ namespace nexo {
 
             void init();
 
+            void beginFrame();
             void run(scene::SceneId sceneId, RenderingType renderingType);
+            void endFrame();
 
             void handleEvent(event::EventKey &event) override
             {
@@ -212,6 +214,7 @@ namespace nexo {
             std::shared_ptr<renderer::Window> m_window;
 
             float m_lastFrameTime = 0.0f;
+            Timestep m_currentTimestep;
 
             int m_eventDebugFlags{};
 
@@ -219,6 +222,7 @@ namespace nexo {
             std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
+            std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
 
             std::vector<ProfileResult> m_profilesResults;
     };

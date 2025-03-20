@@ -68,6 +68,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::SpotLightComponent>();
         m_coordinator->registerComponent<components::UuidComponent>();
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
+        m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
         components::RenderContext renderContext;
         renderContext.renderer3D.init();
         m_coordinator->registerSingletonComponent<components::RenderContext>(renderContext);
@@ -173,6 +174,12 @@ namespace nexo {
                   								components::PerspectiveCameraController,
         										components::SceneTag>();
 
+        m_perspectiveCameraTargetSystem = registerSystem<system::PerspectiveCameraTargetSystem,
+        										components::TransformComponent,
+                  								components::CameraComponent,
+                          						components::PerspectiveCameraTarget,
+                                				components::SceneTag>();
+
         m_renderSystem = registerSystem<system::RenderSystem,
         				      		    components::RenderComponent,
         						        components::TransformComponent,
@@ -254,11 +261,15 @@ namespace nexo {
         LOG(NEXO_DEV, "Application initialized");
     }
 
+    void Application::beginFrame()
+    {
+	    const auto time = static_cast<float>(glfwGetTime());
+	    m_currentTimestep = time - m_lastFrameTime;
+	    m_lastFrameTime = time;
+    }
+
     void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
     {
-        const auto time = static_cast<float>(glfwGetTime());
-        const Timestep timestep = time - m_lastFrameTime;
-        m_lastFrameTime = time;
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
@@ -272,18 +283,22 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneId).isActive())
 			{
-				m_perspectiveCameraControllerSystem->update(timestep);
+				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
 
         // Update (swap buffers and poll events)
         if (renderingType == RenderingType::WINDOW)
             m_window->onUpdate();
-        // Dispatch events to active scenes
         m_eventManager->dispatchEvents();
         renderContext.reset();
         if (m_displayProfileResult)
             displayProfileResults();
+    }
+
+    void Application::endFrame()
+    {
+    	m_eventManager->clearEvents();
     }
 
     ecs::Entity Application::createEntity() const
@@ -332,7 +347,7 @@ namespace nexo {
         {
             components::TransformComponent identity;
             identity.pos = {0.0f, 0.0f,0.0f};
-            identity.rotation = glm::vec3(0.0f);
+            //identity.rotation = glm::vec3(0.0f);
             identity.size = glm::vec3(1.0f);
             renderComponent.draw(rendererContext, identity, entity);
         }
