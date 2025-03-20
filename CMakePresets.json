@@ -10,6 +10,7 @@
             "description": "Default configuration with vcpkg",
             "hidden": false,
             "binaryDir": "${sourceDir}/build",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
