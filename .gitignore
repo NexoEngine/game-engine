@@ -58,7 +58,9 @@ src/client/client
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
-**/.idea/
+.idea/*
+!cmake.xml
+!sonarlint.xml
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -148,7 +150,6 @@ B-CPP-500_rtype.pdf
 *.log
 
 # Jetbrains IDEs
-.idea/
 build/
 
 vcpkg*/
