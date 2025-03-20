@@ -17,9 +17,6 @@
 #include <Path.hpp>
 
 namespace nexo::assets {
-    AssetCatalog::AssetCatalog()
-    {
-    }
 
     void AssetCatalog::deleteAsset(AssetID id)
     {

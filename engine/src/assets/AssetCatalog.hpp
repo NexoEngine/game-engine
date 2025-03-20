@@ -39,7 +39,7 @@ namespace nexo::assets {
 
         private:
             // Singleton: private constructor and destructor
-            AssetCatalog();
+            AssetCatalog() = default;
             ~AssetCatalog() = default;
 
         public:
