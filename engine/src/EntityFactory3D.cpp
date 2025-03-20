@@ -32,7 +32,7 @@ namespace nexo {
 
         transform.pos = pos;
         transform.size = size;
-        transform.rotation = rotation;
+        transform.quat = glm::quat(rotation);
         components::Material material{};
         material.albedoColor = color;
         auto cube = std::make_shared<components::Cube>();
@@ -53,7 +53,7 @@ namespace nexo {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.rotation = rotation;
+        transform.quat = glm::quat(rotation);
         auto cube = std::make_shared<components::Cube>();
         auto renderable = std::make_shared<components::Renderable3D>(material, cube);
         components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
@@ -71,7 +71,7 @@ namespace nexo {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.rotation = rotation;
+        transform.quat = glm::quat(rotation);
         components::Material material{};
         std::shared_ptr<components::MeshNode> rootNode = utils::loadModel(path);
         auto model = std::make_shared<components::Model>(rootNode);

@@ -24,7 +24,7 @@ namespace nexo {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = {size.x, size.y, 1.0f};
-        transform.rotation = {0.0f, 0.0f, rotation};
+        //transform.rotation = {0.0f, 0.0f, rotation};
         components::SpriteComponent sprite;
         sprite.color = color;
         auto quad = std::make_shared<components::Quad>();
