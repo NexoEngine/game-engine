@@ -24,6 +24,7 @@
 
 #include "AssetLocation.hpp"
 #include "AssetRef.hpp"
+#include "json.hpp"
 
 namespace nexo::assets {
 
@@ -46,20 +47,45 @@ namespace nexo::assets {
         _COUNT
     };
 
+
+
     /**
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.
      */
-    const std::array<std::string, static_cast<int>(AssetType::_COUNT)> AssetTypeNames = {
-
-        "Texture",
-        "Model",
-        "Sound",
-        "Music",
-        "Font",
-        "Shader",
-        "Script"
+    constexpr const char *AssetTypeNames[] = {
+        "UNKNOWN",
+        "TEXTURE",
+        "MODEL",
+        "SOUND",
+        "MUSIC",
+        "FONT",
+        "SHADER",
+        "SCRIPT"
     };
+
+    static_assert(
+        static_cast<int>(AssetType::_COUNT) == std::size(AssetTypeNames),
+        "AssetTypeNames array size must match AssetType enum size"
+    );
+
+    constexpr const char *getAssetTypeName(AssetType type) {
+        return AssetTypeNames[static_cast<int>(type)];
+    }
+
+    inline void to_json(nlohmann::json& j, AssetType type) {
+        j = getAssetTypeName(type);
+    }
+
+    inline void from_json(const nlohmann::json& j, AssetType& type) {
+        for (int i = 0; i < static_cast<int>(AssetType::_COUNT); ++i) {
+            if (j == AssetTypeNames[i]) {
+                type = static_cast<AssetType>(i);
+                return;
+            }
+        }
+        type = AssetType::UNKNOWN;
+    }
 
     /**
      * @brief Asset ID type
@@ -142,6 +168,8 @@ namespace nexo::assets {
 
         friend class AssetRef<TAssetData>;
         public:
+            static constexpr AssetType TYPE = TAssetType;
+
             virtual ~Asset() override
             {
                 delete data;
