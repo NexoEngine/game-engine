@@ -24,7 +24,7 @@ namespace nexo::editor {
 		public:
 			void setup();
 			void show(int selectedEntity);
-			bool drawTextureButton(const std::string &label, std::shared_ptr<renderer::Texture2D> &texture);
+
 		private:
 			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
 			int m_ecsEntity = -1;
