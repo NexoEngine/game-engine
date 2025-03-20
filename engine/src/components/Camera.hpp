@@ -17,6 +17,7 @@
 #include "math/Vector.hpp"
 #include "core/event/Input.hpp"
 #include "renderer/Framebuffer.hpp"
+#include "ecs/Entity.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -56,12 +57,9 @@ namespace nexo::components {
 
 		glm::mat4 getViewMatrix(const TransformComponent &transf) const
 		{
-			glm::vec3 front;
-			glm::vec3 right;
-			glm::vec3 up;
-
-			math::extractCameraComponents(transf.rotation, front, right, up);
-			return glm::lookAt(transf.pos, transf.pos + front, up);
+		    glm::vec3 forward = transf.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+		    glm::vec3 upVec = transf.quat * glm::vec3(0.0f, 1.0f, 0.0f);
+		    return glm::lookAt(transf.pos, transf.pos + forward, upVec);
 		}
 
 		void resize(unsigned int newWidth, unsigned int newHeight)
@@ -79,6 +77,15 @@ namespace nexo::components {
 		PerspectiveCameraController() { lastMousePosition = event::getMousePosition();}
 		glm::vec2 lastMousePosition;
 		float mouseSensitivity = 0.1f;
+		float yaw = 0.0f;
+		float pitch = 0.0f;
+	};
+
+	struct PerspectiveCameraTarget {
+		glm::vec2 lastMousePosition = event::getMousePosition();
+		float mouseSensitivity = 0.1f;
+		float distance = 5.0f;
+		ecs::Entity targetEntity;
 	};
 
 	struct CameraContext {
