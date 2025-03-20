@@ -17,7 +17,7 @@
 #include "components/Uuid.hpp"
 
 namespace nexo::scene {
-	Scene::Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator) : m_sceneName(sceneName), m_coordinator(coordinator)
+	Scene::Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator, bool editorOnly) : m_sceneName(sceneName), m_coordinator(coordinator), isEditor(editorOnly)
 	{
 		m_uuid = components::genUuid();
 	}

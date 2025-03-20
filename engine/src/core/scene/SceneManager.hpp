@@ -25,6 +25,7 @@ namespace nexo::scene {
 			void setCoordinator(const std::shared_ptr<ecs::Coordinator> &coordinator);
 
 			unsigned int createScene(const std::string &name);
+			unsigned int createEditorScene(const std::string &name);
 			void deleteScene(unsigned int id);
 			Scene &getScene(unsigned int id);
 

@@ -20,7 +20,7 @@ namespace nexo::scene {
 	inline unsigned int nextSceneId = 0;
 	class Scene {
 		public:
-			Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator);
+			Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator, bool editorOnly = false);
 			~Scene();
 
 			void addEntity(ecs::Entity entity);
@@ -44,5 +44,6 @@ namespace nexo::scene {
 
 			bool m_active = true;
 			bool m_rendered = true;
+			bool isEditor = false;
 	};
 }

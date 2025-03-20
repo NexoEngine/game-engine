@@ -35,6 +35,16 @@ namespace nexo::scene {
 		return newScene.getId();
 	}
 
+	unsigned int SceneManager::createEditorScene(const std::string &name)
+	{
+		if (!m_coordinator)
+			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
+		Scene newScene = Scene(name, m_coordinator, true);
+		m_scenes.emplace(newScene.getId(), newScene);
+
+		return newScene.getId();
+	}
+
 	void SceneManager::deleteScene(unsigned int id)
 	{
 		m_scenes.erase(id);
