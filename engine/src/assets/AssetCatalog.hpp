@@ -21,10 +21,6 @@
 #include <unordered_map>
 #include <memory>
 
-#ifdef NEXO_TESTING
-class AssetCatalogTest;
-#endif
-
 namespace nexo::assets {
 
     /**
@@ -33,11 +29,7 @@ namespace nexo::assets {
     * @brief Singleton class that holds all the assets in the engine.
     */
     class AssetCatalog {
-#ifdef NEXO_TESTING
-        friend class AssetCatalogTest;
-#endif
-
-        private:
+        protected:
             // Singleton: private constructor and destructor
             AssetCatalog() = default;
             ~AssetCatalog() = default;
