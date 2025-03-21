@@ -64,9 +64,9 @@ namespace nexo::assets {
 
     TEST_F(AssetImporterContextTest, SetAndGetMainAsset)
     {
-        auto* asset = new Texture();
-        context.setMainAsset(asset);
-        EXPECT_EQ(context.getMainAsset(), asset);
+        Texture asset;
+        context.setMainAsset(&asset);
+        EXPECT_EQ(context.getMainAsset(), &asset);
     }
 
     TEST_F(AssetImporterContextTest, GetDependenciesEmptyOnCreation)
