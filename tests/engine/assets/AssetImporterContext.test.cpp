@@ -79,14 +79,14 @@ namespace nexo::assets {
         // Register an asset first to get a valid reference
         auto& catalog = AssetCatalog::getInstance();
         auto* asset = new Texture();
-        auto ref = catalog.registerAsset(AssetLocation("test@texture/dependency"), asset);
+        const auto ref = catalog.registerAsset(AssetLocation("test@texture/dependency"), asset);
         EXPECT_TRUE(ref);
 
         // Add as dependency
         context.addDependency(ref);
 
         // Check dependency was added
-        auto dependencies = context.getDependencies();
+        const auto dependencies = context.getDependencies();
         ASSERT_EQ(dependencies.size(), 1);
         EXPECT_EQ(dependencies[0].lock()->getID(), ref.lock()->getID());
     }
@@ -98,8 +98,8 @@ namespace nexo::assets {
         // Create and register multiple assets
         auto* texture = new Texture();
         auto* model = new Model();
-        auto textureRef = catalog.registerAsset(AssetLocation("text@path"), texture);
-        auto modelRef = catalog.registerAsset(AssetLocation("model@path"), model);
+        const auto textureRef = catalog.registerAsset(AssetLocation("text@path"), texture);
+        const auto modelRef = catalog.registerAsset(AssetLocation("model@path"), model);
         EXPECT_TRUE(textureRef);
         EXPECT_TRUE(modelRef);
 
@@ -108,7 +108,7 @@ namespace nexo::assets {
         context.addDependency(modelRef);
 
         // Check dependencies were added
-        auto dependencies = context.getDependencies();
+        const auto dependencies = context.getDependencies();
         ASSERT_EQ(dependencies.size(), 2);
         EXPECT_EQ(dependencies[0].lock()->getID(), textureRef.lock()->getID());
         EXPECT_EQ(dependencies[1].lock()->getID(), modelRef.lock()->getID());
@@ -167,7 +167,7 @@ namespace nexo::assets {
         context.location = AssetLocation("test@folder/main");
 
         // Generate a name
-        auto depName1 = context.genUniqueDependencyLocation<Texture>();
+        const auto depName1 = context.genUniqueDependencyLocation<Texture>();
         EXPECT_EQ(depName1.getFullLocation(), "test_TEXTURE1@folder/main");
 
         // Register an asset with that name
@@ -189,7 +189,7 @@ namespace nexo::assets {
         context.location = AssetLocation("test@folder/main");
 
         // Generate a name
-        auto depName1 = context.genUniqueDependencyLocation<Model>();
+        const auto depName1 = context.genUniqueDependencyLocation<Model>();
 
         // Register an asset with that name
         auto& catalog = AssetCatalog::getInstance();
