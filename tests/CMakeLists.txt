@@ -36,20 +36,20 @@ include(${CMAKE_CURRENT_LIST_DIR}/renderer/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/ecs/CMakeLists.txt)
 
 # Add tests
-gtest_add_tests(TARGET engine_tests
-                TEST_LIST engineTestsList
+gtest_discover_tests(engine_tests
+                     TEST_LIST engineTestsList
 )
-gtest_add_tests(TARGET common_tests
-                TEST_LIST commonTestsList
+gtest_discover_tests(common_tests
+                     TEST_LIST commonTestsList
 )
-gtest_add_tests(TARGET renderer_tests
-        TEST_LIST rendererTestsList
+gtest_discover_tests(renderer_tests
+                     TEST_LIST rendererTestsList
 )
-gtest_add_tests(TARGET ecs_tests
-        TEST_LIST ecsTestsList
+gtest_discover_tests(ecs_tests
+                     TEST_LIST ecsTestsList
 )
 
-# Core engine tests
+                     # Core engine tests
 set_tests_properties(${engineTestsList} PROPERTIES LABELS "engine")
 # Common tests
 set_tests_properties(${commonTestsList} PROPERTIES LABELS "common")
