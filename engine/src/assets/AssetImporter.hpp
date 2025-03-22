@@ -46,9 +46,9 @@ namespace nexo::assets {
                 requires std::derived_from<AssetType, IAsset>
             AssetRef<AssetType> importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
             GenericAssetRef importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant);
-            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, AssetImporterBase *importer);
+            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, AssetImporterBase *importer) const;
             GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase *>&
-                importers);
+                importers) const;
 
             /**
              * @brief Get all registered importers for an asset type
