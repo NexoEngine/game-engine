@@ -36,8 +36,9 @@ add_executable(engine_tests
     ${BASEDIR}/assets/AssetName.test.cpp
     ${BASEDIR}/assets/AssetRef.test.cpp
     ${BASEDIR}/assets/AssetImporterContext.test.cpp
+    ${BASEDIR}/assets/AssetImporter.test.cpp
         # Add other engine test files here
 )
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(engine_tests GTest::gtest GTest::gmock nexoRenderer)
+target_link_libraries(engine_tests PRIVATE GTest::gtest GTest::gmock nexoRenderer)
