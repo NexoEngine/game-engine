@@ -43,16 +43,24 @@ namespace nexo::ecs {
      */
      template <typename T>
      class SingletonComponent final : public ISingletonComponent {
-         public:
-             // Templated constructor for perfect forwarding.
-             template<typename U>
-             explicit SingletonComponent(U&& instance) : _instance(std::forward<U>(instance)) {}
+     public:
+         /**
+          * @brief Templated constructor for perfect forwarding.
+          *
+          * This constructor is enabled only when the argument is an rvalue,
+          * preventing accidental copying of objects of type T.
+          *
+          * @tparam U The type of the provided instance.
+          * @param instance The instance to be moved into the singleton.
+          */
+         template<typename U, typename = std::enable_if_t<std::is_rvalue_reference_v<U&&>>>
+         explicit SingletonComponent(U&& instance) : _instance(std::forward<U>(instance)) {}
 
-             T &getInstance() {
-                 return _instance;
-             }
-         private:
-             T _instance;
+         T &getInstance() {
+             return _instance;
+         }
+     private:
+         T _instance;
      };
 
 
