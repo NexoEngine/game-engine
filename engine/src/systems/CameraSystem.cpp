@@ -23,6 +23,7 @@
 #include "core/event/WindowEvent.hpp"
 #include "math/Vector.hpp"
 #include <glm/gtc/quaternion.hpp>
+#include <numbers>
 
 namespace nexo::system {
 	void CameraContextSystem::update()
@@ -230,8 +231,8 @@ namespace nexo::system {
 	        float deltaY = targetComp.lastMousePosition.y - currentMousePosition.y;
 
 	        // Compute rotation angles based on screen dimensions.
-	        float xAngle = deltaX * (2.0f * M_PI / cameraComponent.width);
-	        float yAngle = deltaY * (M_PI / cameraComponent.height);
+	        float xAngle = deltaX * (2.0f * std::numbers::pi_v<float> / cameraComponent.width);
+	        float yAngle = deltaY * (std::numbers::pi_v<float> / cameraComponent.height);
 
 	        // Prevent excessive pitch rotation when the camera is nearly vertical.
 	        glm::vec3 front = glm::normalize(transformTarget.pos - transformCamera.pos);
