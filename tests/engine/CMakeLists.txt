@@ -24,6 +24,7 @@ include_directories("./common")
 
 # Add engine test source files
 add_executable(engine_tests
+	${TEST_MAIN_FILES}
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/event/WindowEvent.test.cpp
     ${BASEDIR}/exceptions/Exceptions.test.cpp
