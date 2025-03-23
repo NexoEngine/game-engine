@@ -259,7 +259,7 @@ namespace nexo::ecs {
         TestSingletonComponent singleton{42};
 
         // Register the singleton.
-        EXPECT_NO_THROW(coordinator->registerSingletonComponent<TestSingletonComponent>(singleton));
+        EXPECT_NO_THROW(coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(singleton)));
 
         // Retrieve it and check its value.
         TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
@@ -269,7 +269,7 @@ namespace nexo::ecs {
     TEST_F(CoordinatorTest, SingletonComponent_Remove) {
         // Define a singleton component.
         TestSingletonComponent singleton{77};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(singleton);
+        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(singleton));
 
         // Check that it can be retrieved.
         {
@@ -288,7 +288,7 @@ namespace nexo::ecs {
 
     TEST_F(CoordinatorTest, SingletonComponent_ReRegister) {
         TestSingletonComponent comp1{100};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(comp1);
+        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(comp1));
         {
             TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
             EXPECT_EQ(retrieved.value, 100);
@@ -296,7 +296,7 @@ namespace nexo::ecs {
         // Remove and register a new value.
         coordinator->removeSingletonComponent<TestSingletonComponent>();
         TestSingletonComponent comp2{200};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(comp2);
+        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(comp2));
         {
             TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
             EXPECT_EQ(retrieved.value, 200);
