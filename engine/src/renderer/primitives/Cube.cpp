@@ -80,14 +80,14 @@ namespace nexo::renderer {
      	float y = 0.5f;
      	float z = 0.5f;
 
-      	glm::vec3 a0 = glm::vec3(+x, +y, +z); // 0.5, 0.5, 0.5 -> Front face en haut a droite
-		glm::vec3 a1 = glm::vec3(-x, +y, +z); // -0.5, 0.5, 0.5 -> Front face en haut a gauche
-		glm::vec3 a2 = glm::vec3(-x, -y, +z); // -0.5, -0.5, 0.5 -> Front face en bas a gauche
-		glm::vec3 a3 = glm::vec3(+x, -y, +z); // 0.5, -0.5, 0.5 -> Front face en bas a droite
-		glm::vec3 a4 = glm::vec3(+x, +y, -z); // 0.5, 0.5, -0.5 -> Back face en haut a droite
-		glm::vec3 a5 = glm::vec3(-x, +y, -z); // -0.5, 0.5, -0.5 -> Back face en haut a gauche
-		glm::vec3 a6 = glm::vec3(-x, -y, -z); // -0.5, -0.5, -0.5 -> Back face en bas a gauche
-		glm::vec3 a7 = glm::vec3(+x, -y, -z); // 0.5, -0.5, -0.5 -> Back face en bas a droite
+      	glm::vec3 a0 = {+x, +y, +z}; // 0.5, 0.5, 0.5 -> Front face top right
+		glm::vec3 a1 = {-x, +y, +z}; // -0.5, 0.5, 0.5 -> Front face top left
+		glm::vec3 a2 = {-x, -y, +z}; // -0.5, -0.5, 0.5 -> Front face bottom left
+		glm::vec3 a3 = {+x, -y, +z}; // 0.5, -0.5, 0.5 -> Front face bottom right
+		glm::vec3 a4 = {+x, +y, -z}; // 0.5, 0.5, -0.5 -> Back face top right
+		glm::vec3 a5 = {-x, +y, -z}; // -0.5, 0.5, -0.5 -> Back face top left
+		glm::vec3 a6 = {-x, -y, -z}; // -0.5, -0.5, -0.5 -> Back face bottom left
+		glm::vec3 a7 = {+x, -y, -z}; // 0.5, -0.5, -0.5 -> Back face bottom right
 
 		glm::vec3 verts[] = {
 				a1, a2, a3, a3, a0, a1,
@@ -98,7 +98,7 @@ namespace nexo::renderer {
 				a5, a6, a2, a2, a1, a5
 		};
 
-		std::copy(std::begin(verts), std::end(verts), vertices.begin());
+		std::ranges::copy(verts, vertices.begin());
 
 		glm::vec2 texc[] = {
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
@@ -109,7 +109,7 @@ namespace nexo::renderer {
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 		};
 
-		std::copy(std::begin(texc), std::end(texc), texCoords.begin());
+		std::ranges::copy(texc, texCoords.begin());
 		glm::vec3 norm[36];
 
 		for (int i = 0; i < 36; i += 3)
@@ -124,7 +124,7 @@ namespace nexo::renderer {
 			norm[i + 2] = normal;
 		}
 
-		std::copy(std::begin(norm), std::end(norm), normals.begin());
+		std::ranges::copy(norm, normals.begin());
     }
 
 	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, int entityID) const
@@ -166,7 +166,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -180,7 +180,7 @@ namespace nexo::renderer {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
-		glm::quat rotationQuat = glm::quat(glm::radians(rotation));
+		glm::quat rotationQuat = glm::radians(rotation);
 		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
 
 	    const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -216,7 +216,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -260,7 +260,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -310,7 +310,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -325,7 +325,7 @@ namespace nexo::renderer {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
-		glm::quat rotationQuat = glm::quat(glm::radians(rotation));
+		glm::quat rotationQuat = glm::radians(rotation);
 		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
 		// Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -364,7 +364,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -417,7 +417,7 @@ namespace nexo::renderer {
        }
 
        // Index data
-       std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+       std::ranges::for_each(indices, [this](unsigned int index) {
            m_storage->indexBufferBase[m_storage->indexCount++] = index;
        });
 
@@ -464,7 +464,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index) {
+        std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 

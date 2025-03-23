@@ -352,7 +352,7 @@ namespace nexo::renderer {
          * @param texture The texture to look up.
          * @return float The texture index.
          */
-        [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D>& texture) const;
+        [[nodiscard]] int getTextureIndex(const std::shared_ptr<Texture2D>& texture) const;
 
         /**
          * @brief Sets material-related uniforms in the texture shader.

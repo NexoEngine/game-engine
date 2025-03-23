@@ -137,9 +137,9 @@ namespace nexo::renderer {
         m_storage->textureSlotIndex = 1;
     }
 
-    float Renderer3D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
+    int Renderer3D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
     {
-        float textureIndex = 0.0f;
+        int textureIndex = 0.0f;
 
         if (!texture)
             return textureIndex;
@@ -148,14 +148,14 @@ namespace nexo::renderer {
         {
             if (*m_storage->textureSlots[i].get() == *texture)
             {
-                textureIndex = static_cast<float>(i);
+                textureIndex = i;
                 break;
             }
         }
 
         if (textureIndex == 0)
         {
-            textureIndex = static_cast<float>(m_storage->textureSlotIndex);
+            textureIndex = m_storage->textureSlotIndex;
             m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
             m_storage->textureSlotIndex++;
         }
