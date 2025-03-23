@@ -255,11 +255,8 @@ namespace nexo::ecs {
     }
 
     TEST_F(CoordinatorTest, SingletonComponent_RegisterAndGet) {
-        // Define a singleton component.
-        TestSingletonComponent singleton{42};
-
         // Register the singleton.
-        EXPECT_NO_THROW(coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(singleton)));
+        EXPECT_NO_THROW(coordinator->registerSingletonComponent<TestSingletonComponent>(42));
 
         // Retrieve it and check its value.
         TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
@@ -267,9 +264,8 @@ namespace nexo::ecs {
     }
 
     TEST_F(CoordinatorTest, SingletonComponent_Remove) {
-        // Define a singleton component.
-        TestSingletonComponent singleton{77};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(singleton));
+        // Register the singleton.
+        coordinator->registerSingletonComponent<TestSingletonComponent>(77);
 
         // Check that it can be retrieved.
         {
@@ -287,16 +283,14 @@ namespace nexo::ecs {
     }
 
     TEST_F(CoordinatorTest, SingletonComponent_ReRegister) {
-        TestSingletonComponent comp1{100};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(comp1));
+        coordinator->registerSingletonComponent<TestSingletonComponent>(100);
         {
             TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
             EXPECT_EQ(retrieved.value, 100);
         }
         // Remove and register a new value.
         coordinator->removeSingletonComponent<TestSingletonComponent>();
-        TestSingletonComponent comp2{200};
-        coordinator->registerSingletonComponent<TestSingletonComponent>(std::move(comp2));
+        coordinator->registerSingletonComponent<TestSingletonComponent>(200);
         {
             TestSingletonComponent &retrieved = coordinator->getSingletonComponent<TestSingletonComponent>();
             EXPECT_EQ(retrieved.value, 200);

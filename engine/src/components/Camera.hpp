@@ -64,7 +64,7 @@ namespace nexo::components {
         [[nodiscard]] glm::mat4 getProjectionMatrix() const
         {
             if (type == CameraType::PERSPECTIVE) {
-                return glm::perspective(glm::radians(fov), static_cast<float>(width) / height, nearPlane, farPlane);
+                return glm::perspective(glm::radians(fov), static_cast<float>(width) / static_cast<float>(height), nearPlane, farPlane);
             }
             return glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, nearPlane, farPlane);
         }

@@ -25,7 +25,10 @@ namespace nexo::components {
 		std::queue<CameraContext> cameras;
 		LightContext sceneLights;
 
-		RenderContext() = default;
+		RenderContext()
+		{
+			renderer3D.init();
+		}
 
 		RenderContext(RenderContext&& other) noexcept
 		    : sceneRendered(other.sceneRendered),
@@ -34,6 +37,13 @@ namespace nexo::components {
 		        sceneLights(std::move(other.sceneLights))
 		{
 		}
+
+        ~RenderContext()
+        {
+            renderer3D.shutdown();
+
+            reset();
+        }
 
 		void reset()
 		{

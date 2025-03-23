@@ -17,23 +17,26 @@
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents()
-    {
-    	size_t size = m_eventQueue.size();
-        while (size--) {
-            auto event = m_eventQueue.front();
-            m_eventQueue.pop_front();
+	void EventManager::dispatchEvents()
+	{
+	    size_t size = m_eventQueue.size();
+	    while (size--) {
+	        auto event = m_eventQueue.front();
+	        m_eventQueue.pop_front();
 
-            if (std::type_index typeIndex(typeid(*event)); m_listeners.contains(typeIndex)) {
-                for (auto *listener : m_listeners[typeIndex]) {
-                    event->trigger(*listener);
-                    if (event->consumed)
-                    	break;
-                }
-            }
-            m_eventQueue.push_back(event);
-        }
-    }
+	        // Store a reference to the event to avoid evaluating *event with side effects.
+	        const IEvent &ev = *event;
+	        if (const std::type_index typeIndex(typeid(ev)); m_listeners.contains(typeIndex)) {
+	            for (auto *listener : m_listeners[typeIndex]) {
+	                event->trigger(*listener);
+	                if (event->consumed)
+	                    break;
+	            }
+	        }
+	        m_eventQueue.push_back(event);
+	    }
+	}
+
 
     void EventManager::clearEvents()
     {

@@ -74,6 +74,19 @@ namespace nexo::editor {
 			std::string m_selectedUuid;
 			int m_selectedEntity = -1;
 			SelectionType m_selectionType = SelectionType::NONE;
-			std::unordered_map<std::string, std::string> m_uiHandles;
+
+			struct TransparentHasher {
+			    using is_transparent = void; // Marks this hasher as transparent for heterogeneous lookup
+
+			    size_t operator()(std::string_view key) const noexcept {
+			        return std::hash<std::string_view>{}(key);
+			    }
+
+			    size_t operator()(const std::string &key) const noexcept {
+			        return std::hash<std::string>{}(key);
+			    }
+			};
+
+    		std::unordered_map<std::string, std::string, TransparentHasher, std::equal_to<>> m_uiHandles;
 	};
 }

@@ -62,7 +62,7 @@ namespace nexo::components {
                    				   float cutOff,
                           		   float outerCutoff,
                           		   float linear = 0.0014f,
-                          		   float quadractic = 0.0007) :
+                          		   float quadractic = 0.0007f) :
      		pos(lightPos), color(lightColor),
        		direction(lightDir), cutOff(cutOff),
          	outerCutoff(outerCutoff), linear(linear),

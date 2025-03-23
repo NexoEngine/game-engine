@@ -45,16 +45,18 @@ namespace nexo::ecs {
      class SingletonComponent final : public ISingletonComponent {
      public:
          /**
-          * @brief Templated constructor for perfect forwarding.
+          * @brief Templated constructor that perfectly forwards arguments to construct the instance.
           *
-          * This constructor is enabled only when the argument is an rvalue,
-          * preventing accidental copying of objects of type T.
+          * This constructor is enabled only when T is constructible from the provided arguments.
           *
-          * @tparam U The type of the provided instance.
-          * @param instance The instance to be moved into the singleton.
+          * @tparam Args The types of constructor arguments.
+          * @param args Arguments forwarded to T's constructor.
           */
-         template<typename U, typename = std::enable_if_t<std::is_rvalue_reference_v<U&&>>>
-         explicit SingletonComponent(U&& instance) : _instance(std::forward<U>(instance)) {}
+         template<typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
+         explicit SingletonComponent(Args&&... args)
+             : _instance(std::forward<Args>(args)...)
+         {
+         }
 
          T &getInstance() {
              return _instance;
@@ -74,24 +76,24 @@ namespace nexo::ecs {
         public:
 
 			/**
-			* @brief Registers a singleton component.
+			* @brief Registers a singleton component in place by forwarding constructor arguments.
 			*
-			* If a singleton component of the same type is already registered, a warning is logged.
+			* This method constructs the singleton directly in the manager using the provided arguments.
 			*
 			* @tparam T The type of the singleton component.
-			* @param component The instance of the component to register.
+			* @tparam Args The types of the constructor arguments.
+			* @param args Arguments to construct an instance of T.
 			*/
-            template <typename T>
-            void registerSingletonComponent(T&& component) {
-                using Decayed = std::decay_t<T>;
-                std::type_index typeName(typeid(Decayed));
-                if (m_singletonComponents.contains(typeName))
-                {
-                    LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
-                    return;
-                }
-                m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<Decayed>>(std::forward<T>(component))});
-            }
+			template <typename T, typename... Args>
+			void registerSingletonComponent(Args&&... args) {
+			using Decayed = std::decay_t<T>;
+			std::type_index typeName(typeid(Decayed));
+			if (m_singletonComponents.contains(typeName)) {
+			    LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
+			    return;
+			}
+			m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<Decayed>>(std::forward<Args>(args)...)});
+			}
 
             /**
              * @brief Retrieves a singleton component instance.

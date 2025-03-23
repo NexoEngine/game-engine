@@ -36,6 +36,6 @@ namespace nexo::system {
      */
 	class RenderSystem : public ecs::System {
 		public:
-			void update();
+			void update() const;
 	};
 }

@@ -84,7 +84,7 @@ namespace nexo::editor::utils {
 
         // Start with an initial offset vector.
         // Here we assume the camera initially lies along the positive Z axis (relative to the target).
-        glm::vec3 initialOffset = glm::vec3(0.0f, 0.0f, distance);
+        glm::vec3 initialOffset = {0.0f, 0.0f, distance};
 
         // Create an incremental quaternion for horizontal rotation (yaw) about the world up.
         glm::quat qYaw = glm::angleAxis(defaultYaw, glm::vec3(0, 1, 0));
@@ -129,7 +129,7 @@ namespace nexo::editor::utils {
 	static void setupPreviewLights(scene::SceneId sceneId, ecs::Entity entityCopy)
 	{
 		auto &app = getApp();
-		auto &transformComponent = app.m_coordinator->getComponent<components::TransformComponent>(entityCopy);
+		auto &transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
 		app.getSceneManager().getScene(sceneId).addEntity(entityCopy);
         ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});

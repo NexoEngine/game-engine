@@ -77,10 +77,10 @@ namespace nexo::ecs {
              * @tparam T Class that should inherit from SingletonComponent class
              * @param component
              */
-			template <typename T>
-			void registerSingletonComponent(T &&component) {
-			    m_singletonComponentManager->registerSingletonComponent<T>(std::forward<T>(component));
-			}
+             template <typename T, typename... Args>
+             void registerSingletonComponent(Args&&... args) {
+                 m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
+             }
 
             /**
             * @brief Adds a component to an entity, updates its signature, and notifies systems.

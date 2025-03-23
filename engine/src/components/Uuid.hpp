@@ -38,8 +38,6 @@ namespace nexo::components {
 	}
 
 	struct UuidComponent {
-		UuidComponent() : uuid(genUuid()) {};
-
-		std::string uuid;
+		std::string uuid = genUuid();
 	};
 }

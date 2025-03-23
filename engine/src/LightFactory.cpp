@@ -22,7 +22,7 @@ namespace nexo {
 	ecs::Entity LightFactory::createAmbientLight(glm::vec3 color)
 	{
 		ecs::Entity newAmbientLight = Application::m_coordinator->createEntity();
-		components::AmbientLightComponent newAmbientLightComponent(color);
+		components::AmbientLightComponent newAmbientLightComponent{color};
 		Application::m_coordinator->addComponent<components::AmbientLightComponent>(newAmbientLight, newAmbientLightComponent);
   		components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newAmbientLight, uuid);

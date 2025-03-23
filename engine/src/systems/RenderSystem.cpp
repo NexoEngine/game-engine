@@ -83,7 +83,7 @@ namespace nexo::system {
         shader->unbind();
 	}
 
-	void RenderSystem::update()
+	void RenderSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
