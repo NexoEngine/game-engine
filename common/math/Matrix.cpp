@@ -62,7 +62,7 @@ namespace nexo::math {
         outScale.z = glm::length(glm::vec3(mat[2][0], mat[2][1], mat[2][2]));
 
         // Extract rotation matrix and remove scaling by normalizing the basis vectors.
-        glm::mat3 rotationMatrix = glm::mat3(mat);
+        glm::mat3 rotationMatrix = mat;
         if (outScale.x != 0) rotationMatrix[0] /= outScale.x;
         if (outScale.y != 0) rotationMatrix[1] /= outScale.y;
         if (outScale.z != 0) rotationMatrix[2] /= outScale.z;

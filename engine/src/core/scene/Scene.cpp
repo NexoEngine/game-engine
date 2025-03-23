@@ -13,11 +13,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Scene.hpp"
+
+#include <utility>
 #include "components/SceneComponents.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo::scene {
-	Scene::Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator, bool editorOnly) : m_sceneName(sceneName), m_coordinator(coordinator), isEditor(editorOnly)
+	Scene::Scene(std::string sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator, const bool editorOnly) : m_sceneName(std::move(sceneName)), m_coordinator(coordinator), isEditor(editorOnly)
 	{
 		m_uuid = components::genUuid();
 	}
@@ -30,20 +32,20 @@ namespace nexo::scene {
 		}
 	}
 
-	void Scene::addEntity(ecs::Entity entity)
+	void Scene::addEntity(const ecs::Entity entity)
 	{
-		components::SceneTag tag{m_id, true, true};
+		const components::SceneTag tag{m_id, true, true};
 		m_coordinator->addComponent<components::SceneTag>(entity, tag);
 		m_entities.insert(entity);
 	}
 
-	void Scene::removeEntity(ecs::Entity entity)
+	void Scene::removeEntity(const ecs::Entity entity)
 	{
 		m_coordinator->removeComponent<components::SceneTag>(entity);
 		m_entities.erase(entity);
 	}
 
-	void Scene::setActiveStatus(bool active)
+	void Scene::setActiveStatus(const bool active)
 	{
 		m_active = active;
 		for (const ecs::Entity entity : m_entities)
@@ -54,7 +56,7 @@ namespace nexo::scene {
 		}
 	}
 
-	void Scene::setRenderStatus(bool rendered)
+	void Scene::setRenderStatus(const bool rendered)
 	{
 		m_rendered = rendered;
 		for (const ecs::Entity entity : m_entities)

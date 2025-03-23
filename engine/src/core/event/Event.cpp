@@ -19,13 +19,12 @@ namespace nexo::event {
 
     void EventManager::dispatchEvents()
     {
-    	unsigned int size = m_eventQueue.size();
+    	size_t size = m_eventQueue.size();
         while (size--) {
             auto event = m_eventQueue.front();
             m_eventQueue.pop_front();
 
-            std::type_index typeIndex(typeid(*event));
-            if (m_listeners.contains(typeIndex)) {
+            if (std::type_index typeIndex(typeid(*event)); m_listeners.contains(typeIndex)) {
                 for (auto *listener : m_listeners[typeIndex]) {
                     event->trigger(*listener);
                     if (event->consumed)

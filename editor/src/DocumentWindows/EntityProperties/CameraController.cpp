@@ -17,14 +17,11 @@
 #include "Components/EntityPropertiesComponents.hpp"
 
 namespace nexo::editor {
-	int CameraController::show(ecs::Entity entity)
+	int CameraController::show(const ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& controllerComponent = App.getEntityComponent<components::PerspectiveCameraController>(entity);
+        auto& controllerComponent = Application::getEntityComponent<components::PerspectiveCameraController>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##ControllerNode", "Camera Controller");
-
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##ControllerNode", "Camera Controller"))
         {
        		ImGui::Spacing();
 

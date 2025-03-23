@@ -189,7 +189,7 @@ namespace nexo::ecs {
              * @param entity The target entity identifier.
              * @return std::vector<std::type_index> A list of type indices for each component the entity has.
              */
-            std::vector<std::type_index> getAllComponentTypes(const Entity entity) const;
+            std::vector<std::type_index> getAllComponentTypes(Entity entity) const;
 
             /**
              * @brief Retrieves all components associated with an entity.
@@ -206,7 +206,7 @@ namespace nexo::ecs {
              * @return std::set<Entity> A set of entities that contain all the specified components.
              */
             template<typename... Components>
-            std::set<Entity> getAllEntitiesWith()
+            std::set<Entity> getAllEntitiesWith() const
             {
 	            Signature requiredSignature;
 	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);

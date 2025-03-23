@@ -32,6 +32,6 @@ namespace nexo::system {
      */
 	class AmbientLightSystem : public ecs::System {
 		public:
-			void update();
+			void update() const ;
 	};
 }

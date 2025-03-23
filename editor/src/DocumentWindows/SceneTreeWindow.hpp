@@ -111,15 +111,14 @@ namespace nexo::editor {
             template<typename... Components>
             void generateNodes(
             	std::map<scene::SceneId, SceneObject> &scenes,
-            	std::function<SceneObject(scene::SceneId, WindowId, ecs::Entity)> nodeCreator)
+            	const std::function<SceneObject(scene::SceneId, WindowId, ecs::Entity)> &nodeCreator)
             {
             	auto &app = getApp();
-            	std::set<ecs::Entity> entities = app.m_coordinator->getAllEntitiesWith<Components...>();
-             	for (ecs::Entity entity : entities)
+            	const std::set<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
+             	for (const ecs::Entity entity : entities)
 				{
-					const auto& sceneTag = app.m_coordinator->getComponent<components::SceneTag>(entity);
-					auto it = scenes.find(sceneTag.id);
-					if (it != scenes.end())
+					const auto& sceneTag = nexo::Application::m_coordinator->getComponent<components::SceneTag>(entity);
+                    if (auto it = scenes.find(sceneTag.id); it != scenes.end())
 					{
 						// Use the provided node-creation function to create a new SceneObject for this entity.
 						SceneObject newNode = nodeCreator(it->second.data.sceneProperties.sceneId, it->second.data.sceneProperties.windowId, entity);

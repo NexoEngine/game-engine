@@ -19,8 +19,6 @@
 #include "Components/EntityPropertiesComponents.hpp"
 #include "math/Vector.hpp"
 
-#include <loguru/loguru.hpp>
-
 namespace nexo::editor {
     TransformProperty::TransformProperty(const std::string& name)
         : AEntityProperty(name)
@@ -28,9 +26,7 @@ namespace nexo::editor {
 
     }
 
-    TransformProperty::~TransformProperty()
-    {
-    }
+    TransformProperty::~TransformProperty() = default;
 
     void TransformProperty::update()
     {
@@ -39,14 +35,11 @@ namespace nexo::editor {
 
     int TransformProperty::show(ecs::Entity entity)
     {
-        auto const& App = getApp();
-        auto& [pos, size, quat] = App.getEntityComponent<components::TransformComponent>(entity);
-
-        bool open = EntityPropertiesComponents::drawHeader("##TransformNode", "Transform Component");
+        auto& [pos, size, quat] = Application::getEntityComponent<components::TransformComponent>(entity);
 
         static glm::vec3 lastDisplayedEuler(0.0f);
 
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##TransformNode", "Transform Component"))
         {
             // Increase cell padding so rows have more space:
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
@@ -62,7 +55,7 @@ namespace nexo::editor {
 
                 EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &pos.x);
 
-                glm::vec3 computedEuler = math::customQuatToEuler(quat);
+                const glm::vec3 computedEuler = math::customQuatToEuler(quat);
 
                 lastDisplayedEuler = computedEuler;
                 glm::vec3 rotation = lastDisplayedEuler;
@@ -70,10 +63,9 @@ namespace nexo::editor {
                 // Draw the Rotation row.
                 // When the user edits the rotation, we compute the delta from the last displayed Euler,
                 // convert that delta into an incremental quaternion, and update the master quaternion.
-                bool changed = EntityPropertiesComponents::drawRowDragFloat3("Rotation", "X", "Y", "Z", &rotation.x);
-                if (changed) {
-                    glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
-                    glm::quat deltaQuat = glm::quat(glm::radians(deltaEuler));
+                if (EntityPropertiesComponents::drawRowDragFloat3("Rotation", "X", "Y", "Z", &rotation.x)) {
+                    const glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
+                    const glm::quat deltaQuat = glm::radians(deltaEuler);
                     quat = glm::normalize(deltaQuat * quat);
                     lastDisplayedEuler = math::customQuatToEuler(quat);
                     rotation = lastDisplayedEuler;
@@ -86,10 +78,5 @@ namespace nexo::editor {
             ImGui::TreePop();
         }
         return true;
-    }
-
-    void TransformProperty::showEnd()
-    {
-        AEntityProperty::showEnd();
     }
 }

@@ -20,14 +20,12 @@
 #include "Components/Components.hpp"
 
 namespace nexo::editor {
-	int CameraProperty::show(ecs::Entity entity)
+	int CameraProperty::show(const ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& cameraComponent = App.getEntityComponent<components::CameraComponent>(entity);
+        auto& cameraComponent = Application::getEntityComponent<components::CameraComponent>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##CameraNode", "Camera");
-        if (open)
-        {
+		if (EntityPropertiesComponents::drawHeader("##CameraNode", "Camera"))
+		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
 			if (ImGui::BeginTable("InspectorViewPortParams", 4,
 				ImGuiTableFlags_SizingStretchProp))
@@ -46,27 +44,25 @@ namespace nexo::editor {
              	textBadgeColors.push_back(IM_COL32(200, 200, 200, 255));
              	textBadgeColors.push_back(IM_COL32(200, 200, 200, 255));
 
-            	bool inactive = !cameraComponent.viewportLocked;
 
-				if (EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, inactive))
+				if (const bool inactive = !cameraComponent.viewportLocked; EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, inactive))
 				{
 					if (cameraComponent.viewportLocked)
-						cameraComponent.resize(viewPort.x, viewPort.y);
+						cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
 				}
 
 				ImGui::TableSetColumnIndex(3);
 
-				float lockButtonWidth = 25;
-				float lockButtonHeight = 25;
-				std::string icon = (cameraComponent.viewportLocked) ? std::string(ICON_FA_LOCK) : std::string(ICON_FA_UNLOCK);
+				constexpr float lockButtonWidth = 25;
+				constexpr float lockButtonHeight = 25;
+				const std::string icon = (cameraComponent.viewportLocked) ? std::string(ICON_FA_LOCK) : std::string(ICON_FA_UNLOCK);
 
-				float fontSize = ImGui::GetFontSize();
-				float verticalPadding = (lockButtonHeight - fontSize) * 0.5f;
+				const float fontSize = ImGui::GetFontSize();
+				const float verticalPadding = (lockButtonHeight - fontSize) * 0.5f;
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, verticalPadding + 2)); // Slightly add more textPaddingding to center the cog icon
-				std::string viewportSettings = std::string("##ViewPortSettings");
 
 				// Cog button
-				if (Components::drawButton(
+				if (const std::string viewportSettings = "##ViewPortSettings"; Components::drawButton(
 					icon + viewportSettings,
 					ImVec2(lockButtonWidth, lockButtonHeight),
 					IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255),

@@ -33,36 +33,25 @@ namespace nexo::renderer {
             {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}
         };
 
-        constexpr unsigned int cubeIndices[36] = {
-            // Front face
-            0, 1, 2, 2, 3, 0,
-            // Back face
-            4, 5, 6, 6, 7, 4,
-            // Bottom face
-            0, 1, 5, 5, 4, 0,
-            // Top face
-            3, 2, 6, 6, 7, 3,
-            // Left face
-            0, 3, 7, 7, 4, 0,
-            // Right face
-            1, 2, 6, 6, 5, 1
-        };
+    constexpr unsigned int cubeIndices[36] = {
+        // Front face
+        0, 1, 2, 2, 3, 0,
+        // Back face
+        4, 5, 6, 6, 7, 4,
+        // Bottom face
+        0, 1, 5, 5, 4, 0,
+        // Top face
+        3, 2, 6, 6, 7, 3,
+        // Left face
+        0, 3, 7, 7, 4, 0,
+        // Right face
+        1, 2, 6, 6, 5, 1
+    };
 
-        static const glm::vec3 vertexNormals[8] = {
-            glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), // Vertex 0
-            glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)),  // Vertex 1
-            glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)),   // Vertex 2
-            glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)),  // Vertex 3
-            glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)),  // Vertex 4
-            glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)),   // Vertex 5
-            glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)),    // Vertex 6
-            glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f))    // Vertex 7
-        };
-
-        constexpr glm::vec2 textureCoords[4] = {
-            {0.0f, 0.0f}, {1.0f, 0.0f},
-            {1.0f, 1.0f}, {0.0f, 1.0f}
-        };
+    constexpr glm::vec2 textureCoords[4] = {
+        {0.0f, 0.0f}, {1.0f, 0.0f},
+        {1.0f, 1.0f}, {0.0f, 1.0f}
+    };
 
 
 	/**
@@ -127,7 +116,7 @@ namespace nexo::renderer {
 		std::ranges::copy(norm, normals.begin());
     }
 
-	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, int entityID) const
+	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, const int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -143,17 +132,16 @@ namespace nexo::renderer {
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -180,8 +168,8 @@ namespace nexo::renderer {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
-		glm::quat rotationQuat = glm::radians(rotation);
-		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
+		const glm::quat rotationQuat = glm::radians(rotation);
+		const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
 
 	    const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
 									rotationMat *
@@ -193,17 +181,16 @@ namespace nexo::renderer {
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -216,7 +203,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -237,17 +224,16 @@ namespace nexo::renderer {
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -260,7 +246,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -287,17 +273,16 @@ namespace nexo::renderer {
         mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -310,7 +295,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -325,8 +310,8 @@ namespace nexo::renderer {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
-		glm::quat rotationQuat = glm::radians(rotation);
-		glm::mat4 rotationMat = glm::toMat4(rotationQuat);
+		const glm::quat rotationQuat = glm::radians(rotation);
+		const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
 		// Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
         							rotationMat *
@@ -341,17 +326,16 @@ namespace nexo::renderer {
         mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -364,7 +348,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -379,7 +363,7 @@ namespace nexo::renderer {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
-		glm::mat4 rotationMat = glm::toMat4(rotation);
+		const glm::mat4 rotationMat = glm::toMat4(rotation);
 		// Transform matrix
        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
        							rotationMat *
@@ -394,17 +378,16 @@ namespace nexo::renderer {
        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
        setMaterialUniforms(mat);
 
-       std::array<glm::vec3, 36> verts;
-       std::array<glm::vec2, 36> texCoords;
-       std::array<glm::vec3, 36> normals;
-       std::array<unsigned int, 36> indices;
+       std::array<glm::vec3, 36> verts{};
+       std::array<glm::vec2, 36> texCoords{};
+       std::array<glm::vec3, 36> normals{};
+       std::array<unsigned int, 36> indices{};
 
        genCubeMesh(verts, texCoords, normals);
        for (unsigned int i = 0; i < 36; ++i)
            indices[i] = i;
 
        // Vertex data
-       auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
        for (unsigned int i = 0; i < 36; ++i)
        {
            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -417,7 +400,7 @@ namespace nexo::renderer {
        }
 
        // Index data
-       std::ranges::for_each(indices, [this](unsigned int index) {
+       std::ranges::for_each(indices, [this](const unsigned int index) {
            m_storage->indexBufferBase[m_storage->indexCount++] = index;
        });
 
@@ -441,17 +424,16 @@ namespace nexo::renderer {
         mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 36> verts;
-        std::array<glm::vec2, 36> texCoords;
-        std::array<glm::vec3, 36> normals;
-        std::array<unsigned int, 36> indices;
+        std::array<glm::vec3, 36> verts{};
+        std::array<glm::vec2, 36> texCoords{};
+        std::array<glm::vec3, 36> normals{};
+        std::array<unsigned int, 36> indices{};
 
         genCubeMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 36; ++i)
             indices[i] = i;
 
         // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
         for (unsigned int i = 0; i < 36; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -464,7 +446,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 

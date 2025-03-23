@@ -15,8 +15,6 @@
 
 #include "ADocumentWindow.hpp"
 
-#include <imgui.h>
-
 namespace nexo::editor {
 
 	class InterfaceEntityProperty {
@@ -37,12 +35,12 @@ namespace nexo::editor {
         public:
             ~AEntityProperty() override;
 
-            virtual void update() override;
-            virtual void showEnd() override;
+            void update() override;
+            void showEnd() override;
             static int show(ecs::Entity entity);
 
         protected:
-            explicit AEntityProperty(const std::string& name);
+            explicit AEntityProperty(std::string  name);
 
             std::string _name;
 

@@ -71,7 +71,7 @@ namespace nexo::editor {
 			}
 
 		private:
-			std::string m_selectedUuid = "";
+			std::string m_selectedUuid;
 			int m_selectedEntity = -1;
 			SelectionType m_selectionType = SelectionType::NONE;
 			std::unordered_map<std::string, std::string> m_uiHandles;

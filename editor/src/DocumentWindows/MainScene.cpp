@@ -51,19 +51,19 @@ namespace nexo::editor {
         auto &app = getApp();
 
         // New handling
-        m_sceneId = app.getSceneManager().createScene(m_sceneName);
+        m_sceneId = static_cast<int>(app.getSceneManager().createScene(m_sceneName));
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
             renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(_viewSize.y);
-        auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, _viewSize.x, _viewSize.y, renderTarget);
+        const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
+        m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(_viewSize.x), static_cast<unsigned int>(_viewSize.y), renderTarget);
         m_cameras.insert(m_activeCamera);
         app.getSceneManager().getScene(m_sceneId).addEntity(m_activeCamera);
         components::PerspectiveCameraController controller;
-        app.m_coordinator->addComponent<components::PerspectiveCameraController>(m_activeCamera, controller);
+        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(m_activeCamera, controller);
         if (m_defaultScene)
             loadDefaultEntities();
     }
@@ -73,24 +73,17 @@ namespace nexo::editor {
         ImGuizmo::SetOrthographic(true);
     }
 
-    float randomColor()
-    {
-        static std::mt19937 rng(std::random_device{}());
-        static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-        return dist(rng);
-    }
-
     void MainScene::loadDefaultEntities() const
     {
         auto &app = getApp();
         scene::Scene &scene = app.getSceneManager().getScene(m_sceneId);
-        ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
+        const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
         scene.addEntity(ambientLight);
-        ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
+        const ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
         scene.addEntity(pointLight);
-        ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
+        const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
         scene.addEntity(directionalLight);
-        ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
+        const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
         scene.addEntity(spotLight);
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
@@ -99,10 +92,7 @@ namespace nexo::editor {
 
     void MainScene::setupWindow()
     {
-        constexpr auto pos = ImVec2(118, 24);
         constexpr auto size = ImVec2(1280, 720);
-        //ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
-        //ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         _viewSize = size;
     }
 
@@ -112,7 +102,7 @@ namespace nexo::editor {
     void MainScene::handleKeyEvents()
     {}
 
-    void MainScene::deleteCamera(ecs::Entity cameraId)
+    void MainScene::deleteCamera(const ecs::Entity cameraId)
     {
     	if (cameraId == m_activeCamera)
     		m_activeCamera = -1;
@@ -123,8 +113,6 @@ namespace nexo::editor {
 
     void MainScene::renderToolbar()
     {
-        // static bool chose_primitive = false;
-        // ImVec2 buttonSize = ImVec2(40, 40);
         constexpr float padding = 0.0f;
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(padding, padding));
@@ -213,10 +201,10 @@ namespace nexo::editor {
     void MainScene::renderGizmo() const
     {
         const auto &coord = nexo::Application::m_coordinator;
-        auto &selector = Selector::get();
+        auto const &selector = Selector::get();
         if (const auto &viewManager = SceneViewManager::get();
             selector.getSelectionType() != SelectionType::ENTITY ||
-            viewManager.getSelectedScene() != static_cast<int>(m_sceneId))
+            viewManager.getSelectedScene() != m_sceneId)
             return;
         const ecs::Entity entity = selector.getSelectedEntity();
         const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
@@ -227,10 +215,10 @@ namespace nexo::editor {
         ImGuizmo::SetRect(_viewPosition.x, _viewPosition.y, _viewSize.x, _viewSize.y);
         glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformCameraComponent);
         glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
-        auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
+        const auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
         if (!transf)
             return;
-		glm::mat4 rotationMat = glm::toMat4(transf->get().quat);
+        const glm::mat4 rotationMat = glm::toMat4(transf->get().quat);
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
                                     rotationMat *
                                     glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, transf->get().size.z});
@@ -241,11 +229,9 @@ namespace nexo::editor {
                              glm::value_ptr(transformMatrix));
 
         glm::vec3 translation(0);
-        glm::vec3 rotation(0);
         glm::vec3 scale(0);
         glm::quat quaternion;
 
-        //math::decomposeTransformEuler(transformMatrix, translation, rotation, scale);
         math::decomposeTransformQuat(transformMatrix, translation, quaternion, scale);
 
         if (ImGuizmo::IsUsing())
@@ -258,12 +244,11 @@ namespace nexo::editor {
 
     void MainScene::renderView()
     {
-        auto viewPortOffset = ImGui::GetCursorPos();
-        auto &app = getApp();
-       	auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        const auto viewPortOffset = ImGui::GetCursorPos();
+       	auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
 
         // Resize handling
-        if (ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+        if (const ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             _viewSize.x != viewportPanelSize.x || _viewSize.y != viewportPanelSize.y)
         {
         	cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
@@ -277,13 +262,13 @@ namespace nexo::editor {
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), _viewSize, ImVec2(0, 1), ImVec2(1, 0));
 
-        auto windowSize = ImGui::GetWindowSize();
+        const auto windowSize = ImGui::GetWindowSize();
         auto minBounds = ImGui::GetWindowPos();
 
         minBounds.x += viewPortOffset.x;
         minBounds.y += viewPortOffset.y;
 
-        ImVec2 maxBounds = {minBounds.x + windowSize.x, minBounds.y + windowSize.y};
+        const ImVec2 maxBounds = {minBounds.x + windowSize.x, minBounds.y + windowSize.y};
         m_viewportBounds[0] = minBounds;
         m_viewportBounds[1] = maxBounds;
     }
@@ -303,7 +288,7 @@ namespace nexo::editor {
             if (m_focused)
             {
                 if (auto &viewManager = SceneViewManager::get();
-                    viewManager.getSelectedScene() != static_cast<int>(m_sceneId))
+                    viewManager.getSelectedScene() != m_sceneId)
                 {
                 	auto &selector = Selector::get();
                     viewManager.setSelectedScene(m_sceneId);
@@ -323,9 +308,8 @@ namespace nexo::editor {
         if (!m_opened)
             return;
         handleKeyEvents();
-        auto &app = getApp();
 
-        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
@@ -346,7 +330,7 @@ namespace nexo::editor {
                 {
                 	std::cout << "Clicked on entity with ID: " << data << std::endl;
                     auto &viewManager = SceneViewManager::get();
-                    auto uuid = app.m_coordinator->tryGetComponent<components::UuidComponent>(data);
+                    const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
                     if (uuid)
                     {
 	                   	selector.setSelectedEntity(uuid->get().uuid, data);

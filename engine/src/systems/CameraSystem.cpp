@@ -26,7 +26,7 @@
 #include <numbers>
 
 namespace nexo::system {
-	void CameraContextSystem::update()
+	void CameraContextSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
 		unsigned int sceneRendered = renderContext.sceneRendered;
@@ -55,19 +55,19 @@ namespace nexo::system {
         Application::getInstance().getEventManager()->registerListener<event::EventMouseMove>(this);
 	}
 
-	void PerspectiveCameraControllerSystem::update(const Timestep ts)
+	void PerspectiveCameraControllerSystem::update(const Timestep ts) const
     {
         auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        unsigned int sceneRendered = renderContext.sceneRendered;
+        const unsigned int sceneRendered = renderContext.sceneRendered;
         if (sceneRendered == -1)
             return;
 
-        const float translationSpeed = 5.0f;
-        float deltaTime = static_cast<float>(ts);
+        const auto deltaTime = static_cast<float>(ts);
 
         for (const auto &entity : entities)
         {
-            auto tag = coord->getComponent<components::SceneTag>(entity);
+	        constexpr float translationSpeed = 5.0f;
+	        auto tag = coord->getComponent<components::SceneTag>(entity);
             if (!tag.isActive || sceneRendered != tag.id)
                 continue;
 
@@ -96,8 +96,8 @@ namespace nexo::system {
 
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseScroll &event)
     {
-        auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        unsigned int sceneRendered = renderContext.sceneRendered;
+        auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+        const unsigned int sceneRendered = renderContext.sceneRendered;
         if (sceneRendered == -1)
             return;
 
@@ -116,8 +116,8 @@ namespace nexo::system {
 
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseMove &event)
     {
-        auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        unsigned int sceneRendered = renderContext.sceneRendered;
+        auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+        const unsigned int sceneRendered = renderContext.sceneRendered;
 
         if (sceneRendered == -1)
             return;
@@ -126,9 +126,9 @@ namespace nexo::system {
         for (const auto &camera : entities)
         {
             auto &controller = coord->getComponent<components::PerspectiveCameraController>(camera);
-            auto &cameraComponent = coord->getComponent<components::CameraComponent>(camera);
+            auto const &cameraComponent = coord->getComponent<components::CameraComponent>(camera);
             auto tag = coord->getComponent<components::SceneTag>(camera);
-            glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
+            const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
             controller.lastMousePosition = currentMousePosition;
 
 
@@ -162,7 +162,7 @@ namespace nexo::system {
 
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseScroll &event)
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
         unsigned int sceneRendered = renderContext.sceneRendered;
         if (sceneRendered == -1)
             return;
@@ -179,7 +179,7 @@ namespace nexo::system {
                 target.distance = 0.1f;
 
             auto &transformCamera = coord->getComponent<components::TransformComponent>(camera);
-            auto &transformTarget = coord->getComponent<components::TransformComponent>(target.targetEntity);
+            auto const &transformTarget = coord->getComponent<components::TransformComponent>(target.targetEntity);
 
             glm::vec3 offset = transformCamera.pos - transformTarget.pos;
             // If offset is near zero, choose a default direction.
@@ -199,7 +199,7 @@ namespace nexo::system {
 
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseMove &event)
 	{
-	    auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+	    auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
 	    unsigned int sceneRendered = renderContext.sceneRendered;
 	    if (sceneRendered == -1)
 	        return;
@@ -210,7 +210,7 @@ namespace nexo::system {
 	    {
 	        auto &targetComp = coord->getComponent<components::PerspectiveCameraTarget>(entity);
 	        auto tag = coord->getComponent<components::SceneTag>(entity);
-	        auto &cameraComponent = coord->getComponent<components::CameraComponent>(entity);
+	        auto const &cameraComponent = coord->getComponent<components::CameraComponent>(entity);
 
 	        if (!tag.isActive || sceneRendered != tag.id || cameraComponent.resizing)
 	        {
@@ -225,14 +225,14 @@ namespace nexo::system {
 	        }
 
 	        auto &transformCamera = coord->getComponent<components::TransformComponent>(entity);
-	        auto &transformTarget = coord->getComponent<components::TransformComponent>(targetComp.targetEntity);
+	        auto const &transformTarget = coord->getComponent<components::TransformComponent>(targetComp.targetEntity);
 
 	        float deltaX = targetComp.lastMousePosition.x - currentMousePosition.x;
 	        float deltaY = targetComp.lastMousePosition.y - currentMousePosition.y;
 
 	        // Compute rotation angles based on screen dimensions.
-	        float xAngle = deltaX * (2.0f * std::numbers::pi_v<float> / cameraComponent.width);
-	        float yAngle = deltaY * (std::numbers::pi_v<float> / cameraComponent.height);
+	        float xAngle = deltaX * (2.0f * std::numbers::pi_v<float> / static_cast<float>(cameraComponent.width));
+	        float yAngle = deltaY * (std::numbers::pi_v<float> / static_cast<float>(cameraComponent.height));
 
 	        // Prevent excessive pitch rotation when the camera is nearly vertical.
 	        glm::vec3 front = glm::normalize(transformTarget.pos - transformCamera.pos);

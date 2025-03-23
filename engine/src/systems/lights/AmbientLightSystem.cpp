@@ -18,10 +18,10 @@
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void AmbientLightSystem::update()
+	void AmbientLightSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
+		const unsigned int sceneRendered = renderContext.sceneRendered;
 		if (sceneRendered == -1)
 			return;
 

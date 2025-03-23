@@ -30,12 +30,9 @@
 #include "Components/EntityPropertiesComponents.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
-#include "components/SceneComponents.hpp"
 #include "context/Selector.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "tinyfiledialogs.h"
 
-#include "Components/Components.hpp"
 #include "Components/Widgets.hpp"
 
 extern ImGuiID g_materialInspectorDockID;
@@ -52,7 +49,7 @@ namespace nexo::editor
 		m_framebuffer->setClearColor({0.05f, 0.05f, 0.05f, 0.0f});
 	}
 
-	void MaterialInspector::show(int selectedEntity)
+	void MaterialInspector::show(const int selectedEntity)
 	{
 		static bool materialModified = true;
 		static utils::ScenePreviewOut previewParams;
@@ -70,7 +67,7 @@ namespace nexo::editor
 		{
 			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
 			auto &app = nexo::getApp();
-			auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
+			auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 			cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
 			app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
 			m_framebuffer = cameraComponent.m_renderTarget;
@@ -113,7 +110,7 @@ namespace nexo::editor
     void InspectorWindow::show()
     {
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
-        auto &selector = Selector::get();
+        auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();
 
         if (selectedEntity != -1)
@@ -140,11 +137,10 @@ namespace nexo::editor
 
             if (ImGui::Begin("Material Inspector", &RenderProperty::showMaterialInspector, window_flags))
             {
-	   	        ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
-	            if (currentWindow && first)
+	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow && first)
 	            {
-	                bool isDocked = currentWindow->DockIsActive;
-	                ImGuiID currentDockID = currentWindow->DockId;
+		            const bool isDocked = currentWindow->DockIsActive;
+	                const ImGuiID currentDockID = currentWindow->DockId;
 
 					//TODO: Implement a docking registry
 	                if (!isDocked || currentDockID != g_materialInspectorDockID)
@@ -157,22 +153,19 @@ namespace nexo::editor
         }
     }
 
-    void InspectorWindow::showSceneProperties(scene::SceneId sceneId)
+    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId)
     {
 		auto &app = getApp();
 		auto &selector = Selector::get();
 		scene::SceneManager &manager = app.getSceneManager();
 		scene::Scene &scene = manager.getScene(sceneId);
-		std::string uiHandle = selector.getUiHandle(scene.getUuid(), "");
+    	std::string uiHandle = selector.getUiHandle(scene.getUuid(), "");
 
 		// Remove the icon prefix
-		size_t spacePos = uiHandle.find(' ');
-		if (spacePos != std::string::npos)
+		if (size_t spacePos = uiHandle.find(' '); spacePos != std::string::npos)
 			uiHandle = uiHandle.substr(spacePos + 1);
 
-		bool open = EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle);
-
-		if (open)
+		if (EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle))
 		{
 			ImGui::Spacing();
 	  		ImGui::SetWindowFontScale(1.15f);
@@ -198,11 +191,9 @@ namespace nexo::editor
 		}
     }
 
-    void InspectorWindow::showEntityProperties(ecs::Entity entity)
+    void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
-        auto const& App = getApp();
-
-        const std::vector<std::type_index> componentsType = App.getAllEntityComponentTypes(entity);
+        const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
         {
             if (m_componentShowFunctions.contains(type))

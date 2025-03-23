@@ -19,10 +19,10 @@
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void DirectionalLightsSystem::update()
+	void DirectionalLightsSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
+		const unsigned int sceneRendered = renderContext.sceneRendered;
 		if (sceneRendered == -1)
 			return;
 
@@ -31,7 +31,7 @@ namespace nexo::system {
 			auto tag = coord->getComponent<components::SceneTag>(directionalLights);
 			if (!tag.isRendered || sceneRendered != tag.id)
 				continue;
-			auto &directionalComponent = coord->getComponent<components::DirectionalLightComponent>(directionalLights);
+			const auto &directionalComponent = coord->getComponent<components::DirectionalLightComponent>(directionalLights);
 			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalComponent;
 		}
 	}

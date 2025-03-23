@@ -13,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DocumentWindows/SceneViewManager.hpp"
-#include "DocumentWindows/InspectorWindow.hpp"
 #include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
@@ -346,7 +345,7 @@ namespace nexo::editor {
 
         if (g_materialInspectorDockID == 0)
         {
-	        int materialId = findWindowDockIDFromConfig("Material Inspector");
+	        int materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
 	        if (materialId != 0)
 	        	g_materialInspectorDockID = materialId;
         }

@@ -16,8 +16,6 @@
 #include "ADocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
 
-#include <imgui.h>
-
 namespace nexo::editor {
 
 	class MaterialInspector {
@@ -47,7 +45,7 @@ namespace nexo::editor {
 
 			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
 
-			void showSceneProperties(scene::SceneId sceneId);
+			static void showSceneProperties(scene::SceneId sceneId);
 	        void showEntityProperties(ecs::Entity entity);
     };
 };

@@ -23,17 +23,17 @@ namespace nexo::editor {
 			glm::vec4 *selectedEntityColor,
 			ImGuiColorEditFlags *colorPickerMode,
 			bool *showPicker,
-			ImGuiColorEditFlags colorButtonFlags
+			const ImGuiColorEditFlags colorButtonFlags
 	) {
-        float availableWidth = ImGui::GetContentRegionAvail().x;
+        const float availableWidth = ImGui::GetContentRegionAvail().x;
         bool colorModified = false;
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
-        std::string colorButton = std::string("##ColorButton") + label;
+        const std::string colorButton = std::string("##ColorButton") + label;
 
         // Color button
         Components::drawColorButton(
-           	colorButton.c_str(),
+           	colorButton,
            	ImVec2(availableWidth - 35, 25), // Make room for the cog button
            	ImVec4(selectedEntityColor->x, selectedEntityColor->y, selectedEntityColor->z, selectedEntityColor->w),
             showPicker,
@@ -44,14 +44,14 @@ namespace nexo::editor {
 
         ImGui::SameLine();
 
-        float cogButtonWidth = 25;
-        float cogButtonHeight = 25;
+        constexpr float cogButtonWidth = 25;
+        constexpr float cogButtonHeight = 25;
 
-        float fontSize = ImGui::GetFontSize();
-        float verticalPadding = (cogButtonHeight - fontSize) * 0.5f;
+        const float fontSize = ImGui::GetFontSize();
+        const float verticalPadding = (cogButtonHeight - fontSize) * 0.5f;
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, verticalPadding + 2)); // Slightly add more textPaddingding to center the cog icon
-        std::string pickerSettings = std::string("##PickerSettings") + label;
-        std::string colorPickerPopup = std::string("##ColorPickerPopup") + label;
+        const std::string pickerSettings = std::string("##PickerSettings") + label;
+        const std::string colorPickerPopup = std::string("##ColorPickerPopup") + label;
 
         // Cog button
         if (Components::drawButton(
@@ -74,7 +74,7 @@ namespace nexo::editor {
             ImGui::EndPopup();
         }
 
-        std::string colorPickerInline = std::string("##ColorPickerInline") + label;
+        const std::string colorPickerInline = std::string("##ColorPickerInline") + label;
         if (*showPicker)
         {
             ImGui::Spacing();
@@ -87,11 +87,11 @@ namespace nexo::editor {
 	bool Widgets::drawTextureButton(const std::string &label, std::shared_ptr<renderer::Texture2D> &texture)
 	{
 		bool textureModified = false;
-		ImVec2 previewSize(32, 32);
+		constexpr ImVec2 previewSize(32, 32);
         ImGui::PushID(label.c_str());
 
-        ImTextureID textureId = texture ? static_cast<ImTextureID>(static_cast<intptr_t>(texture->getId())) : 0;
-        std::string textureButton = std::string("##TextureButton") + label;
+        const ImTextureID textureId = texture ? static_cast<ImTextureID>(static_cast<intptr_t>(texture->getId())) : 0;
+        const std::string textureButton = std::string("##TextureButton") + label;
 
         if (ImGui::ImageButton(textureButton.c_str(), textureId, previewSize))
         {
@@ -106,7 +106,7 @@ namespace nexo::editor {
 
             if (filePath)
             {
-                std::string path(filePath);
+	            const std::string path(filePath);
                 std::shared_ptr<renderer::Texture2D> newTexture = renderer::Texture2D::create(path);
                 if (newTexture)
                 {
@@ -133,7 +133,7 @@ namespace nexo::editor {
 
 			static int currentShaderIndex = 0;
 			const char* shaderOptions[] = { "Standard", "Unlit", "CustomPBR" };
-			float availableWidth = ImGui::GetContentRegionAvail().x;
+			const float availableWidth = ImGui::GetContentRegionAvail().x;
 			ImGui::SetNextItemWidth(availableWidth);
 
 			if (ImGui::Combo("##ShaderCombo", &currentShaderIndex, shaderOptions, IM_ARRAYSIZE(shaderOptions)))

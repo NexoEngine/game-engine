@@ -93,7 +93,7 @@ namespace nexo::editor {
              * @param[in] headerText Text to display in the header
              * @return true if the header is open/expanded, false otherwise
              */
-			static bool drawHeader(const std::string &label, const std::string &headerText);
+			static bool drawHeader(const std::string &label, std::string_view headerText);
 
 			/**
              * @brief Draws a row label in the current table column

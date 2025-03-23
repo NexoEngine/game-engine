@@ -43,7 +43,7 @@ namespace nexo::scene {
 			* @param coordinator Shared pointer to the ECS Coordinator managing entities/components.
 			* @param editorOnly If true, the scene is marked as editor-only.
 			*/
-			Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator, bool editorOnly = false);
+			Scene(std::string sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator, bool editorOnly = false);
 			~Scene();
 
 			/**
@@ -74,7 +74,7 @@ namespace nexo::scene {
              * @param active True to mark the scene as active, false to deactivate.
              */
 			void setActiveStatus(bool active);
-			bool isActive() const { return m_active; }
+			[[nodiscard]] bool isActive() const { return m_active; }
 
 			/**
              * @brief Sets the rendered status for the scene.
@@ -85,12 +85,12 @@ namespace nexo::scene {
              * @param rendered True to mark the scene as rendered, false to not render.
              */
 			void setRenderStatus(bool rendered);
-			bool isRendered() const { return m_rendered; }
+			[[nodiscard]] bool isRendered() const { return m_rendered; }
 
-			const std::string& getName() const {return m_sceneName;};
+			[[nodiscard]] const std::string& getName() const {return m_sceneName;};
 			void setName(const std::string& newName) { m_sceneName = newName; }
-			unsigned int getId() const {return m_id;};
-			const std::string &getUuid() const {return m_uuid;}
+			[[nodiscard]] unsigned int getId() const {return m_id;};
+			[[nodiscard]] const std::string &getUuid() const {return m_uuid;}
 		private:
 			unsigned int m_id = nextSceneId++;
 			std::string m_sceneName;

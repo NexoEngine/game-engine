@@ -36,7 +36,7 @@ namespace nexo::system {
 	*/
 	class CameraContextSystem : public ecs::System {
 		public:
-			void update();
+			void update() const;
 	};
 
 	/**
@@ -57,7 +57,7 @@ namespace nexo::system {
         event::EventMouseMove) {
 		public:
 			PerspectiveCameraControllerSystem();
-			void update(const Timestep ts);
+			void update(Timestep ts) const;
 
             void handleEvent(event::EventMouseScroll &event) override;
             void handleEvent(event::EventMouseMove &event) override;

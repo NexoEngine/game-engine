@@ -32,6 +32,6 @@ namespace nexo::system {
      */
 	class SpotLightsSystem : public ecs::System {
 		public:
-			void update();
+			void update() const;
 	};
 }

@@ -17,12 +17,12 @@
 namespace nexo::math {
 	void extractCameraComponents(const glm::vec3 &rotation, glm::vec3 &front, glm::vec3 &right, glm::vec3 &up)
 	{
-		float pitch = rotation.x - 180.0f;
-		float yaw = rotation.y + 90.0f;
+		const float pitch = rotation.x - 180.0f;
+		const float yaw = rotation.y + 90.0f;
 
-		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		front.y = sin(glm::radians(pitch));
-		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.x = cosf(glm::radians(yaw)) * cosf(glm::radians(pitch));
+		front.y = sinf(glm::radians(pitch));
+		front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
 		front = glm::normalize(front);
 
 		right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -33,8 +33,7 @@ namespace nexo::math {
 	{
         glm::vec3 euler;
 
-        float sinp = 2.0f * (q.w * q.y - q.z * q.x);
-        if (std::abs(sinp) >= 1.0f)
+        if (float sinp = 2.0f * (q.w * q.y - q.z * q.x); std::abs(sinp) >= 1.0f)
             euler.x = std::copysign(glm::half_pi<float>(), sinp);
         else
             euler.x = std::asin(sinp);

@@ -19,10 +19,10 @@
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void PointLightsSystem::update()
+	void PointLightsSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
+		const unsigned int sceneRendered = renderContext.sceneRendered;
 		if (sceneRendered == -1)
 			return;
 
@@ -31,7 +31,7 @@ namespace nexo::system {
 			auto tag = coord->getComponent<components::SceneTag>(pointLights);
 			if (!tag.isRendered || sceneRendered != tag.id)
 				continue;
-			auto &pointComponent = coord->getComponent<components::PointLightComponent>(pointLights);
+			const auto &pointComponent = coord->getComponent<components::PointLightComponent>(pointLights);
 			renderContext.sceneLights.pointLights[renderContext.sceneLights.pointLightCount++] = pointComponent;
 		}
 	}

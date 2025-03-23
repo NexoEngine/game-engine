@@ -21,12 +21,9 @@
 namespace nexo::editor {
 	int SpotLightProperty::show(ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& spotComponent = App.getEntityComponent<components::SpotLightComponent>(entity);
+        auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##SpotNode", "Spot light");
-
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##SpotNode", "Spot light"))
         {
        		ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;

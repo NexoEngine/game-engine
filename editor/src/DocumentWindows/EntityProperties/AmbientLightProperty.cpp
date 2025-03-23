@@ -18,14 +18,11 @@
 #include "Components/Widgets.hpp"
 
 namespace nexo::editor {
-	int AmbientLightProperty::show(ecs::Entity entity)
+	int AmbientLightProperty::show(const ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& ambientComponent = App.getEntityComponent<components::AmbientLightComponent>(entity);
+        auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##AmbientNode", "Ambient light");
-
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##AmbientNode", "Ambient light"))
         {
         	ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;

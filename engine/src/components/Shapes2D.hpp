@@ -19,8 +19,6 @@
 #include "renderer/Renderer2D.hpp"
 #include "renderer/RendererContext.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace nexo::components {
 
     struct Shape2D {

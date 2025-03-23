@@ -23,13 +23,7 @@
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
-#include "components/Transform.hpp"
-#include "CameraFactory.hpp"
-#include "LightFactory.hpp"
 #include "EntityFactory3D.hpp"
-
-#include <imgui_internal.h>
-#include <loguru/loguru.hpp>
 
 namespace nexo::editor {
 	bool RenderProperty::showMaterialInspector = false;
@@ -41,9 +35,7 @@ namespace nexo::editor {
     {
     }
 
-    RenderProperty::~RenderProperty()
-    {
-    }
+    RenderProperty::~RenderProperty() = default;
 
     void RenderProperty::update()
     {
@@ -52,24 +44,23 @@ namespace nexo::editor {
 
     void RenderProperty::createMaterialPopup(ecs::Entity entity)
     {
-    	auto &app = getApp();
         ImGui::Text("Create New Material");
         ImGui::Separator();
 
-        ImVec2 availSize = ImGui::GetContentRegionAvail();
-        float totalWidth = availSize.x;
+	    const ImVec2 availSize = ImGui::GetContentRegionAvail();
+	    const float totalWidth = availSize.x;
         float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
 
         // Define layout: 60% for inspector, 40% for preview
-        float inspectorWidth = totalWidth * 0.4f;
-        float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
+	    const float inspectorWidth = totalWidth * 0.4f;
+	    const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
 
         static utils::ScenePreviewOut scenePreviewInfo;
         if (!scenePreviewInfo.sceneGenerated)
         {
         	utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
         }
-        auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(app.m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
+        auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
         ImGui::Columns(2, "MaterialPreviewColumns", false);
 
@@ -91,18 +82,14 @@ namespace nexo::editor {
 
             auto &app = getApp();
             app.run(scenePreviewInfo.sceneId, RenderingType::FRAMEBUFFER);
-            auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
-            unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
+            auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
+            const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
-            float aspectRatio = static_cast<float>(cameraComponent.width) /
-                              static_cast<float>(cameraComponent.height);
+            const float aspectRatio = static_cast<float>(cameraComponent.width) /
+                                      static_cast<float>(cameraComponent.height);
 
-            float displayHeight = totalHeight - 20;
-            float displayWidth = displayHeight * aspectRatio;
-
-            // Center the preview in the available space
-            float offsetX = (previewWidth - 8 - displayWidth) * 0.5f;
-            float offsetY = (totalHeight - displayHeight) * 0.5f;
+            const float displayHeight = totalHeight - 20;
+            const float displayWidth = displayHeight * aspectRatio;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
             ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
@@ -115,8 +102,7 @@ namespace nexo::editor {
         ImGui::Spacing();
 
         // Bottom buttons - centered
-        float buttonWidth = 120.0f;
-        float buttonsWidth = 2 * buttonWidth + ImGui::GetStyle().ItemSpacing.x;
+	    constexpr float buttonWidth = 120.0f;
 
         if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
         {
@@ -126,7 +112,7 @@ namespace nexo::editor {
             if (scenePreviewInfo.sceneGenerated)
             {
                 auto &app = getApp();
-                auto &renderComponentBase = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                auto &renderComponentBase = nexo::Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 renderComponentBase.renderable = renderable3D;
                 app.getSceneManager().deleteScene(scenePreviewInfo.sceneId);
                 scenePreviewInfo.sceneGenerated = false;
@@ -150,12 +136,8 @@ namespace nexo::editor {
 
     int RenderProperty::show(ecs::Entity entity)
     {
-    	auto const& App = getApp();
-        auto& renderComponent = App.getEntityComponent<components::RenderComponent>(entity);
+        auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
-        glm::vec4 *selectedEntityColor = nullptr;
-        static components::Material *selectedMaterial = nullptr;
-        static bool showMaterialInspector = false;
         if (renderComponent.type == components::RenderType::RENDER_3D)
         {
             auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
@@ -166,18 +148,11 @@ namespace nexo::editor {
         }
         else if (renderComponent.type == components::RenderType::RENDER_2D)
         {
-            auto renderable2D = std::dynamic_pointer_cast<components::Renderable2D>(renderComponent.renderable);
-            if (renderable2D)
-            {
-                auto& [color, texture, sprite] = renderable2D->sprite;
-                selectedEntityColor = &color;
-            }
+			//TODO: Implement sprite stuff
         }
-        bool open = EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component");
-        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-        static bool sectionOpen = true;
+    	static bool sectionOpen = true;
 
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component"))
         {
             ImGui::SetWindowFontScale(1.15f);
         	ImGui::Text("Hide");
@@ -198,12 +173,12 @@ namespace nexo::editor {
 					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
 					auto &app = nexo::getApp();
 					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-					auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
+					auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 					cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
 					app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
 					framebuffer = cameraComponent.m_renderTarget;
 					app.getSceneManager().deleteScene(previewParams.sceneId);
-					entityBase = entity;
+					entityBase = static_cast<int>(entity);
 				}
 
                 // --- Material Preview ---
@@ -227,12 +202,11 @@ namespace nexo::editor {
                     ImGui::SameLine();
                     if (ImGui::Button("Modify Material"))
                     {
-                    	RenderProperty::selectedMaterial = selectedMaterial;
                      	RenderProperty::showMaterialInspector = true;
                     }
                 }
                 ImGui::EndGroup();
-                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	            const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             }
 

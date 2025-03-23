@@ -17,7 +17,7 @@
 
 namespace nexo::editor {
 
-	bool EntityPropertiesComponents::drawHeader(const std::string &label, const std::string &headerText)
+	bool EntityPropertiesComponents::drawHeader(const std::string &label, std::string_view headerText)
 	{
 	    float increasedPadding = 2.0f;
 	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
@@ -32,16 +32,16 @@ namespace nexo::editor {
 	    ImGui::SetWindowFontScale(1.2f);
 
 	    // Horizontal centering:
-	    float arrowPosX = ImGui::GetCursorPosX();
+	    const float arrowPosX = ImGui::GetCursorPosX();
 	    ImGui::SameLine(0.0f, 0.0f);
-	    float totalWidth = ImGui::GetContentRegionAvail().x + arrowPosX;
-	    ImVec2 textSize = ImGui::CalcTextSize(headerText.c_str());
-	    float textPosX = (totalWidth - textSize.x) * 0.5f;
+	    const float totalWidth = ImGui::GetContentRegionAvail().x + arrowPosX;
+	    const ImVec2 textSize = ImGui::CalcTextSize(headerText.data());
+	    const float textPosX = (totalWidth - textSize.x) * 0.5f;
 	    ImGui::SetCursorPosX(textPosX);
     	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.5f); // This stuff seems strange, should check in the long run if there is a better way
 
 	    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
-	    ImGui::TextUnformatted(headerText.c_str());
+	    ImGui::TextUnformatted(headerText.data());
 	    ImGui::PopStyleColor();
 
 	    ImGui::SetWindowFontScale(1.0f);
@@ -76,28 +76,28 @@ namespace nexo::editor {
 			ImGui::TableNextColumn();
 			if (!channels.badges[i].label.empty())
 			{
-				auto &badge = channels.badges[i];
-				Components::drawButton(badge.label, badge.size, badge.bg, badge.bgHovered, badge.bgActive, badge.txtColor);
+				const auto &[label, size, bg, bgHovered, bgActive, txtColor] = channels.badges[i];
+				Components::drawButton(label, size, bg, bgHovered, bgActive, txtColor);
 			}
 			ImGui::SameLine(0, 2);
-			auto &slider = channels.sliders[i];
+			const auto &[label, value, speed, min, max, bg, bgHovered, bgActive, textColor, format] = channels.sliders[i];
 			clicked = Components::drawDragFloat(
-				slider.label,
-				slider.value,
-				slider.speed,
-				slider.min,
-				slider.max,
-				slider.format,
-				slider.bg,
-				slider.bgHovered,
-				slider.bgActive) || clicked;
+				label,
+				value,
+				speed,
+				min,
+				max,
+				format,
+				bg,
+				bgHovered,
+				bgActive) || clicked;
 		}
 		return clicked;
 	}
 
 	bool EntityPropertiesComponents::drawRowDragFloat1(const char *uniqueLabel, const std::string &badgeLabel, float *value, float minValue, float maxValue, float speed)
 	{
-		std::string labelStr = uniqueLabel;
+		const std::string labelStr = uniqueLabel;
 		std::string labelX = std::string("##X") + labelStr;
 
 		std::string badgeLabelX = (badgeLabel.empty()) ? "" : badgeLabel + std::string("##") + labelStr;
@@ -115,7 +115,9 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(1);
-		sliders.emplace_back(DragFloat{badgeLabelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
+		sliders.emplace_back(badgeLabelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
+		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		                     "%.2f");
 
 		Channels channels;
 		channels.count = 1;
@@ -134,17 +136,17 @@ namespace nexo::editor {
 		float minValue,
 		float maxValue,
 		float speed,
-		std::vector<ImU32> badgeColors,
+		std::vector<ImU32> badgeColor,
 		std::vector<ImU32> textBadgeColor,
-		bool inactive
+		const bool inactive
 	)
 	{
-		std::string labelStr = uniqueLabel;
+		const std::string labelStr = uniqueLabel;
 		std::string labelX = std::string("##X") + labelStr;
 		std::string labelY = std::string("##Y") + labelStr;
 
-		std::string badgeLabelX = badLabelX + std::string("##") + labelStr;
-		std::string badgeLabelY = badLabelY + std::string("##") + labelStr;
+		const std::string badgeLabelX = badLabelX + std::string("##") + labelStr;
+		const std::string badgeLabelY = badLabelY + std::string("##") + labelStr;
 
 		ImGui::TableNextRow();
 
@@ -153,22 +155,24 @@ namespace nexo::editor {
 		chanLabel.fixedWidth = -1.0f;
 
 		float badgeSize = ImGui::GetFrameHeight();
-		if (badgeColors.empty())
-			badgeColors = {IM_COL32(80, 0, 0, 255), IM_COL32(0, 80, 0, 255)};
+		if (badgeColor.empty())
+			badgeColor = {IM_COL32(80, 0, 0, 255), IM_COL32(0, 80, 0, 255)};
 		if (textBadgeColor.empty())
 			textBadgeColor = {IM_COL32(255, 180, 180, 255), IM_COL32(180, 255, 180, 255)};
 		std::vector<Badge> badges;
 		badges.reserve(2);
-		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, badgeColors[0], badgeColors[0], badgeColors[0], textBadgeColor[0]});
-		badges.emplace_back(Badge{badgeLabelY, {badgeSize, badgeSize}, badgeColors[1], badgeColors[1], badgeColors[1], textBadgeColor[1]});
+		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, badgeColor[0], badgeColor[0], badgeColor[0], textBadgeColor[0]});
+		badges.emplace_back(Badge{badgeLabelY, {badgeSize, badgeSize}, badgeColor[1], badgeColor[1], badgeColor[1], textBadgeColor[1]});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(2);
 		std::vector<ImU32> sliderColors = {IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text)};
 		if (inactive)
 			sliderColors = {IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(50, 50, 50, 255)};
-		sliders.emplace_back(DragFloat{labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"});
-		sliders.emplace_back(DragFloat{labelY, &values[1], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"});
+		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1],
+		                     sliderColors[2], sliderColors[3], "%.2f");
+		sliders.emplace_back(labelY, &values[1], speed, minValue, maxValue, sliderColors[0], sliderColors[1],
+		                     sliderColors[2], sliderColors[3], "%.2f");
 
 		Channels channels;
 		channels.count = 2;
@@ -220,9 +224,15 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(3);
-		sliders.emplace_back(DragFloat{labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
-		sliders.emplace_back(DragFloat{labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
-		sliders.emplace_back(DragFloat{labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
+		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
+		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		                     "%.2f");
+		sliders.emplace_back(labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
+		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		                     "%.2f");
+		sliders.emplace_back(labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
+		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		                     "%.2f");
 
 		Channels channels;
 		channels.count = 3;
@@ -239,20 +249,19 @@ namespace nexo::editor {
 		bool clicked = false;
         ImGui::PushID(label.c_str());
 
-        const ImVec2 buttonSize(24, 24);
-        std::string arrowLabel = "##arrow" + label;
-        if (ImGui::InvisibleButton(arrowLabel.c_str(), buttonSize))
+		constexpr ImVec2 buttonSize(24, 24);
+		if (const std::string arrowLabel = "##arrow" + label; ImGui::InvisibleButton(arrowLabel.c_str(), buttonSize))
             clicked = true;
         if (clicked)
             *toggled = !(*toggled);
 
-        ImVec2 btnPos = ImGui::GetItemRectMin();
-        ImVec2 btnSize = ImGui::GetItemRectSize();
-        ImVec2 center(btnPos.x + btnSize.x * 0.5f, btnPos.y + btnSize.y * 0.5f);
+        const ImVec2 btnPos = ImGui::GetItemRectMin();
+        const ImVec2 btnSize = ImGui::GetItemRectSize();
+        const ImVec2 center(btnPos.x + btnSize.x * 0.5f, btnPos.y + btnSize.y * 0.5f);
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        float arrowSize = 5.0f;
-        ImU32 arrowColor = ImGui::GetColorU32(ImGuiCol_Text);
+		constexpr float arrowSize = 5.0f;
+		const ImU32 arrowColor = ImGui::GetColorU32(ImGuiCol_Text);
         if (*toggled)
         {
             // Draw a downward pointing arrow
@@ -273,8 +282,8 @@ namespace nexo::editor {
         }
 
         ImGui::SameLine();
-        ImVec2 separatorPos = ImGui::GetCursorScreenPos();
-        float separatorHeight = buttonSize.y; // match button height
+        const ImVec2 separatorPos = ImGui::GetCursorScreenPos();
+		constexpr float separatorHeight = buttonSize.y; // match button height
         draw_list->AddLine(separatorPos, ImVec2(separatorPos.x, separatorPos.y + separatorHeight),
                              ImGui::GetColorU32(ImGuiCol_Separator), 1.0f);
         ImGui::Dummy(ImVec2(4, buttonSize.y));

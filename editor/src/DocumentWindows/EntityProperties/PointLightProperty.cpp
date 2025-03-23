@@ -20,14 +20,11 @@
 
 namespace nexo::editor {
 
-	int PointLightProperty::show(ecs::Entity entity)
+	int PointLightProperty::show(const ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& pointComponent = App.getEntityComponent<components::PointLightComponent>(entity);
+        auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##PointNode", "Point light");
-
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##PointNode", "Point light"))
         {
        		ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;

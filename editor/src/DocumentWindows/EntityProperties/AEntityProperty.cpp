@@ -12,12 +12,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <imgui.h>
 #include "AEntityProperty.hpp"
 
+#include <utility>
+
 namespace nexo::editor {
-    AEntityProperty::AEntityProperty(const std::string &name)
-        : _name{name}
+    AEntityProperty::AEntityProperty(std::string name)
+        : _name{std::move(name)}
     {
 
     }

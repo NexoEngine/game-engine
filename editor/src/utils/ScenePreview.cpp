@@ -21,37 +21,33 @@
 namespace nexo::editor::utils {
 	float computeBoundingSphereRadius(const components::TransformComponent &objectTransform)
 	{
-	    // Assuming objectTransform.size contains the dimensions,
-	    // a simple approximation is to take half the maximum dimension.
-	    float halfX = objectTransform.size.x * 0.5f;
-	    float halfY = objectTransform.size.y * 0.5f;
-	    float halfZ = objectTransform.size.z * 0.5f;
+	    const float halfX = objectTransform.size.x * 0.5f;
+	    const float halfY = objectTransform.size.y * 0.5f;
+	    const float halfZ = objectTransform.size.z * 0.5f;
 	    return glm::max(halfX, glm::max(halfY, halfZ));
 	}
 
 	float computeSpotlightHalfAngle(const components::TransformComponent &objectTransform, const glm::vec3 &lightPosition)
 	{
-	    float radius = computeBoundingSphereRadius(objectTransform);
-	    float distance = glm::length(objectTransform.pos - lightPosition);
+	    const float radius = computeBoundingSphereRadius(objectTransform);
+	    const float distance = glm::length(objectTransform.pos - lightPosition);
 	    // Prevent division by zero
 	    if (distance < 0.001f)
-	        return glm::radians(15.0f); // default value if too close
-	    return atan(radius / distance);
+	        return glm::radians(15.0f);
+	    return atanf(radius / distance);
 	}
 
 	static ecs::Entity copyEntity(ecs::Entity entity)
 	{
-		auto &app = getApp();
-
-		ecs::Entity entityCopy = app.m_coordinator->createEntity();
-        auto renderComponentCopy = app.m_coordinator->getComponent<components::RenderComponent>(entity).clone();
-        auto &transformComponentBase = app.m_coordinator->getComponent<components::TransformComponent>(entity);
+		const ecs::Entity entityCopy = nexo::Application::m_coordinator->createEntity();
+        const auto renderComponentCopy = nexo::Application::m_coordinator->getComponent<components::RenderComponent>(entity).clone();
+        const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         components::TransformComponent transformComponent;
         transformComponent.pos = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};
         transformComponent.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
         transformComponent.size = transformComponentBase.size;
-        app.m_coordinator->addComponent<components::RenderComponent>(entityCopy, renderComponentCopy);
-        app.m_coordinator->addComponent<components::TransformComponent>(entityCopy, transformComponent);
+        nexo::Application::m_coordinator->addComponent<components::RenderComponent>(entityCopy, renderComponentCopy);
+        nexo::Application::m_coordinator->addComponent<components::TransformComponent>(entityCopy, transformComponent);
         return entityCopy;
 	}
 
@@ -66,8 +62,8 @@ namespace nexo::editor::utils {
         };
         framebufferSpecs.width = static_cast<unsigned int>(previewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(previewSize.y);
-        auto &transformComponentBase = app.m_coordinator->getComponent<components::TransformComponent>(entity);
-        auto &transformComponent = app.m_coordinator->getComponent<components::TransformComponent>(entityCopy);
+        const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
+        const auto &transformComponent = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
         // Create the render target for the preview scene.
         auto framebuffer = renderer::Framebuffer::create(framebufferSpecs);
@@ -115,7 +111,7 @@ namespace nexo::editor::utils {
             framebufferSpecs.width, framebufferSpecs.height, framebuffer);
 
         // Update the camera's transform.
-        auto &cameraTransform = app.m_coordinator->getComponent<components::TransformComponent>(cameraId);
+        auto &cameraTransform = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
         cameraTransform.pos = cameraPos;
 
         // Compute the camera's orientation so that it looks at the target.
@@ -125,7 +121,7 @@ namespace nexo::editor::utils {
         components::PerspectiveCameraTarget cameraTarget;
         cameraTarget.targetEntity = entityCopy;
         cameraTarget.distance = transformComponentBase.size.z * 2.0f;
-        app.m_coordinator->addComponent<components::PerspectiveCameraTarget>(cameraId, cameraTarget);
+        nexo::Application::m_coordinator->addComponent<components::PerspectiveCameraTarget>(cameraId, cameraTarget);
         app.getSceneManager().getScene(sceneId).addEntity(cameraId);
         return cameraId;
 	}

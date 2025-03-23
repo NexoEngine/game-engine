@@ -39,10 +39,10 @@ namespace nexo::components {
 
     struct PointLightComponent {
     	PointLightComponent() = default;
-        explicit PointLightComponent(glm::vec3 lightPos,
+        explicit PointLightComponent(const glm::vec3 lightPos,
 		        					const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f},
-		             				float linear = 0.09f,
-			                		float quadratic = 0.032f) :
+							        const float linear = 0.09f,
+							        const float quadratic = 0.032f) :
             pos(lightPos), color(lightColor),
             linear(linear), quadratic(quadratic) {};
 
@@ -50,8 +50,8 @@ namespace nexo::components {
         glm::vec3 color{};
         float maxDistance = 50.0f;
         float constant = 1.0f;
-        float linear;
-        float quadratic;
+        float linear{};
+        float quadratic{};
     };
 
     struct SpotLightComponent {
@@ -72,12 +72,12 @@ namespace nexo::components {
       	glm::vec3 color{};
       	glm::vec3 direction{};
         float maxDistance = 325.0f;
-       	float cutOff;
-       	float outerCutoff;
+       	float cutOff{};
+       	float outerCutoff{};
 
         float constant = 1.0f;
-        float linear;
-        float quadratic;
+        float linear{};
+        float quadratic{};
     };
 
     struct LightContext {

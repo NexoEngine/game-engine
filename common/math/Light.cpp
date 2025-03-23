@@ -40,9 +40,9 @@ namespace nexo::math {
 		}
 
 		// Compute interpolation factor t in [0, 1]
-		float distLower = s_attenuationTable[lowerIndex].distance;
-		float distUpper = s_attenuationTable[upperIndex].distance;
-		float t = (distance - distLower) / (distUpper - distLower);
+		const float distLower = s_attenuationTable[lowerIndex].distance;
+		const float distUpper = s_attenuationTable[upperIndex].distance;
+		const float t = (distance - distLower) / (distUpper - distLower);
 
 		float linear = s_attenuationTable[lowerIndex].linear +
 		                t * (s_attenuationTable[upperIndex].linear - s_attenuationTable[lowerIndex].linear);

@@ -18,7 +18,7 @@
 #include <cmath>
 
 namespace nexo::scene {
-	SceneManager::SceneManager() {}
+	SceneManager::SceneManager() = default;
 
 	void SceneManager::setCoordinator(const std::shared_ptr<ecs::Coordinator> &coordinator)
 	{
@@ -29,8 +29,8 @@ namespace nexo::scene {
 	{
 		if (!m_coordinator)
 			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
-		Scene newScene = Scene(name, m_coordinator);
-		m_scenes.emplace(newScene.getId(), newScene);
+		Scene newScene = {name, m_coordinator};
+		m_scenes.try_emplace(newScene.getId(), newScene);
 
 		return newScene.getId();
 	}
@@ -39,8 +39,8 @@ namespace nexo::scene {
 	{
 		if (!m_coordinator)
 			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
-		Scene newScene = Scene(name, m_coordinator, true);
-		m_scenes.emplace(newScene.getId(), newScene);
+		Scene newScene = {name, m_coordinator, true};
+		m_scenes.try_emplace(newScene.getId(), newScene);
 
 		return newScene.getId();
 	}

@@ -18,14 +18,12 @@
 #include "components/Light.hpp"
 
 namespace nexo::editor {
-	int DirectionalLightProperty::show(ecs::Entity entity)
+	int DirectionalLightProperty::show(const ecs::Entity entity)
 	{
-		auto const& App = getApp();
-        auto& directionalComponent = App.getEntityComponent<components::DirectionalLightComponent>(entity);
+        auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
 
-        bool open = EntityPropertiesComponents::drawHeader("##DirectionalNode", "Directional light");
 
-        if (open)
+        if (EntityPropertiesComponents::drawHeader("##DirectionalNode", "Directional light"))
         {
        		ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;

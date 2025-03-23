@@ -20,10 +20,10 @@
 
 
 namespace nexo::system {
-	void SpotLightsSystem::update()
+	void SpotLightsSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
+		const unsigned int sceneRendered = renderContext.sceneRendered;
 		if (sceneRendered == -1)
 			return;
 
@@ -32,7 +32,7 @@ namespace nexo::system {
 			auto tag = coord->getComponent<components::SceneTag>(spotLights);
 			if (!tag.isRendered || sceneRendered != tag.id)
 				continue;
-			auto &spotComponent = coord->getComponent<components::SpotLightComponent>(spotLights);
+			const auto &spotComponent = coord->getComponent<components::SpotLightComponent>(spotLights);
 			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount++] = spotComponent;
 		}
 	}

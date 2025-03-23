@@ -61,13 +61,12 @@ namespace nexo::components {
          *
          * @return glm::mat4 The projection matrix.
          */
-        glm::mat4 getProjectionMatrix() const
+        [[nodiscard]] glm::mat4 getProjectionMatrix() const
         {
             if (type == CameraType::PERSPECTIVE) {
                 return glm::perspective(glm::radians(fov), static_cast<float>(width) / height, nearPlane, farPlane);
-            } else {
-                return glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, nearPlane, farPlane);
             }
+            return glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, nearPlane, farPlane);
         }
 
         /**
@@ -79,10 +78,10 @@ namespace nexo::components {
          * @param transf The transform component of the camera.
          * @return glm::mat4 The view matrix.
          */
-        glm::mat4 getViewMatrix(const TransformComponent &transf) const
+        [[nodiscard]] glm::mat4 getViewMatrix(const TransformComponent &transf) const
         {
-            glm::vec3 forward = transf.quat * glm::vec3(0.0f, 0.0f, -1.0f);
-            glm::vec3 upVec = transf.quat * glm::vec3(0.0f, 1.0f, 0.0f);
+            const glm::vec3 forward = transf.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+            const glm::vec3 upVec = transf.quat * glm::vec3(0.0f, 1.0f, 0.0f);
             return glm::lookAt(transf.pos, transf.pos + forward, upVec);
         }
 
@@ -94,7 +93,7 @@ namespace nexo::components {
          * @param newWidth The new width for the viewport.
          * @param newHeight The new height for the viewport.
          */
-        void resize(unsigned int newWidth, unsigned int newHeight)
+        void resize(const unsigned int newWidth, const unsigned int newHeight)
         {
             width = newWidth;
             height = newHeight;
@@ -114,7 +113,7 @@ namespace nexo::components {
     struct PerspectiveCameraController {
         PerspectiveCameraController() { lastMousePosition = event::getMousePosition(); }
 
-        glm::vec2 lastMousePosition;  ///< Last recorded mouse position.
+        glm::vec2 lastMousePosition{};  ///< Last recorded mouse position.
         float mouseSensitivity = 0.1f;///< Sensitivity factor for mouse movement.
         float yaw = 0.0f;             ///< Yaw angle in degrees.
         float pitch = 0.0f;           ///< Pitch angle in degrees.
