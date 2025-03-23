@@ -15,7 +15,6 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 namespace nexo::math {
@@ -78,7 +77,6 @@ namespace nexo::math {
             rotationMatrix[0] = -rotationMatrix[0];
         }
 
-        // Convert the cleaned-up rotation matrix into a quaternion.
         outRotation = glm::normalize(glm::quat_cast(rotationMatrix));
     }
 }

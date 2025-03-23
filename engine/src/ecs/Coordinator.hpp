@@ -116,6 +116,14 @@ namespace nexo::ecs {
                 m_systemManager->entitySignatureChanged(entity, signature);
             }
 
+            /**
+             * @brief Attempts to remove a component from an entity.
+             *
+             * If the component exists, it is removed and the entity's signature is updated.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity identifier.
+             */
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
@@ -151,6 +159,13 @@ namespace nexo::ecs {
                 return m_componentManager->getComponent<T>(entity);
             }
 
+            /**
+             * @brief Attempts to retrieve a component from an entity.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity identifier.
+             * @return std::optional<std::reference_wrapper<T>> A reference to the component if it exists.
+             */
             template<typename T>
             std::optional<std::reference_wrapper<T>> tryGetComponent(const Entity entity)
             {
@@ -168,10 +183,28 @@ namespace nexo::ecs {
                 return m_singletonComponentManager->getSingletonComponent<T>();
             }
 
+            /**
+             * @brief Retrieves all component types associated with an entity.
+             *
+             * @param entity The target entity identifier.
+             * @return std::vector<std::type_index> A list of type indices for each component the entity has.
+             */
             std::vector<std::type_index> getAllComponentTypes(const Entity entity) const;
 
+            /**
+             * @brief Retrieves all components associated with an entity.
+             *
+             * @param entity The target entity identifier.
+             * @return std::vector<std::pair<std::type_index, std::any>> A vector of pairs, each containing a component type and its instance.
+             */
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
+            /**
+             * @brief Retrieves all entities that have the specified components.
+             *
+             * @tparam Components The component types to filter by.
+             * @return std::set<Entity> A set of entities that contain all the specified components.
+             */
             template<typename... Components>
             std::set<Entity> getAllEntitiesWith()
             {
@@ -227,6 +260,14 @@ namespace nexo::ecs {
                 m_systemManager->setSignature<T>(signature);
             }
 
+            /**
+             * @brief Checks whether an entity has a specific component.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity.
+             * @return true If the entity has the component.
+             * @return false Otherwise.
+             */
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {

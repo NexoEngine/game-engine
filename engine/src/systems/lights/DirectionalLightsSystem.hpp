@@ -16,6 +16,20 @@
 #include "ecs/System.hpp"
 
 namespace nexo::system {
+
+	/**
+     * @brief System responsible for updating directional lights in the scene.
+     *
+     * This system iterates over all directional light entities and updates the RenderContext with the
+     * directional light components from those entities.
+     *
+     * @note Required Components on directional light entities:
+     *  - components::SceneTag
+     *  - components::DirectionalLightComponent
+     *
+     * @note Required Singleton Component:
+     *  - components::RenderContext
+     */
 	class DirectionalLightsSystem : public ecs::System {
 		public:
 			void update();

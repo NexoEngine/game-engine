@@ -22,11 +22,25 @@
 #include "ECSExceptions.hpp"
 
 namespace nexo::ecs {
+
+	/**
+	* @brief Base interface for singleton components.
+	*
+	* All singleton components must derive from this interface. It ensures proper polymorphic destruction.
+	*/
     class ISingletonComponent {
         public:
             virtual ~ISingletonComponent() = default;
     };
 
+
+    /**
+     * @brief Template class representing a singleton component.
+     *
+     * This class wraps an instance of type T as a singleton component.
+     *
+     * @tparam T The type of the singleton component.
+     */
     template <typename T>
     class SingletonComponent final : public ISingletonComponent {
         public:
@@ -39,8 +53,24 @@ namespace nexo::ecs {
             T _instance;
     };
 
+
+    /**
+     * @brief Manager for singleton components in the ECS.
+     *
+     * The SingletonComponentManager is responsible for registering, retrieving, and unregistering
+     * singleton components. Singleton components are globally unique and accessed via their type.
+     */
     class SingletonComponentManager {
         public:
+
+			/**
+			* @brief Registers a singleton component.
+			*
+			* If a singleton component of the same type is already registered, a warning is logged.
+			*
+			* @tparam T The type of the singleton component.
+			* @param component The instance of the component to register.
+			*/
             template <typename T>
             void registerSingletonComponent(T component) {
                 std::type_index typeName(typeid(T));
@@ -52,6 +82,13 @@ namespace nexo::ecs {
                 m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<T>>(std::move(component))});
             }
 
+            /**
+             * @brief Retrieves a singleton component instance.
+             *
+             * @tparam T The type of the singleton component.
+             * @return T& A reference to the registered singleton component.
+             * @throws SingletonComponentNotRegistered if the component is not registered.
+             */
             template <typename T>
             T &getSingletonComponent() {
                 const std::type_index typeName(typeid(T));
@@ -63,6 +100,14 @@ namespace nexo::ecs {
                 return componentPtr->getInstance();
             }
 
+            /**
+             * @brief Unregisters a singleton component.
+             *
+             * Removes the singleton component of type T from the manager.
+             *
+             * @tparam T The type of the singleton component.
+             * @throws SingletonComponentNotRegistered if the component is not registered.
+             */
             template <typename T>
             void unregisterSingletonComponent() {
                 const std::type_index typeName(typeid(T));

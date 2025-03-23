@@ -182,25 +182,109 @@ namespace nexo::renderer {
         void endScene() const;
 
         /**
-         * @brief Draws a 3D cube at the specified position and size.
+         * @brief Draws a cube using a specified transformation and color.
          *
-         * The cube can be drawn with a solid color or a texture.
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
          *
-         * @param position The position of the cube in the 3D space.
+         * @param position The position of the cube.
          * @param size The dimensions of the cube.
-         * @param color The color of the cube (RGBA format).
-         * @param texture Optional texture to apply to the cube.
+         * @param color The color (RGBA) of the cube.
+         * @param entityID An optional entity identifier (default is -1).
          *
-         * Overloads:
-         * - Draws a cube with a solid color or a texture.
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+
+        /**
+         * @brief Draws a cube using a specified transformation and color.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param position The position of the cube.
+         * @param size The dimensions of the cube.
+         * @param rotation The rotation of the cube.
+         * @param color The color (RGBA) of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
+
+        /**
+         * @brief Draws a cube using a specified transformation and color.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param transform The transformation matrix for the cube.
+         * @param color The color (RGBA) of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
 
+        /**
+         * @brief Draws a cube using a specified transformation and material.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param position The position of the cube.
+         * @param size The dimensions of the cube.
+         * @param material The material properties of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
+
+        /**
+         * @brief Draws a cube using a specified transformation and material.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param position The position of the cube.
+         * @param size The dimensions of the cube.
+         * @param rotation The rotation of the cube (in Euler angles, in degrees).
+         * @param material The material properties of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+
+        /**
+         * @brief Draws a cube using a specified transformation and material.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param position The position of the cube.
+         * @param size The dimensions of the cube.
+         * @param rotation The rotation of the cube (in quaternion format).
+         * @param material The material properties of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID = -1) const;
+
+        /**
+         * @brief Draws a cube using a specified transformation and color.
+         *
+         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
+         * and increments the cube count in the statistics.
+         *
+         * @param transform The transformation matrix for the cube.
+         * @param material The material properties of the cube.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
         void drawCube(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
 
         /**
@@ -248,9 +332,37 @@ namespace nexo::renderer {
         std::shared_ptr<Renderer3DStorage> m_storage;
         bool m_renderingScene = false;
 
+        /**
+         * @brief Flushes the current batched data to the GPU and issues the draw call.
+         *
+         * Binds all active textures, draws indexed geometry, updates statistics, and unbinds resources.
+         */
         void flush() const;
+
+        /**
+         * @brief Flushes the current batch and resets batching pointers.
+         */
         void flushAndReset() const;
+
+        /**
+         * @brief Returns the texture index for a given texture.
+         *
+         * Searches the texture slots for an existing binding. If not found, assigns a new slot.
+         *
+         * @param texture The texture to look up.
+         * @return float The texture index.
+         */
         [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D>& texture) const;
+
+        /**
+         * @brief Sets material-related uniforms in the texture shader.
+         *
+         * Updates uniforms for albedo, specular, emissive, roughness, metallic, and opacity properties.
+         *
+         * @param material The material whose properties are to be set.
+         *
+         * @throws RendererNotInitialized if the renderer is not initialized.
+         */
         void setMaterialUniforms(const renderer::Material& material) const;
     };
 

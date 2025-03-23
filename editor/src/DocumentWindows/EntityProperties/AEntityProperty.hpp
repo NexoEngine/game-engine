@@ -1,4 +1,4 @@
-//// InspectorWindow.hpp //////////////////////////////////////////////////////
+//// AEntityProperty.hpp //////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -18,6 +18,13 @@
 #include <imgui.h>
 
 namespace nexo::editor {
+
+	class InterfaceEntityProperty {
+		public:
+			virtual ~InterfaceEntityProperty() = default;
+			virtual int show(ecs::Entity selectedEntity) = 0;
+	};
+
     class IEntityProperty {
         public:
             virtual ~IEntityProperty() = default;

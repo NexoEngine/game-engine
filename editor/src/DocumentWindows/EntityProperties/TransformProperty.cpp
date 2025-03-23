@@ -1,15 +1,23 @@
-/*
-** EPITECH PROJECT, 2024
-** game_engine
-** File description:
-** TransformProperty.cpp
-*/
+//// TransformProperty.cpp ////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        20/03/2025
+//  Description: Source file for the transform property inspector
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #include <imgui.h>
 
 #include "TransformProperty.hpp"
 #include "AEntityProperty.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
+#include "math/Vector.hpp"
 
 #include <loguru/loguru.hpp>
 
@@ -27,24 +35,6 @@ namespace nexo::editor {
     void TransformProperty::update()
     {
 
-    }
-
-    glm::vec3 customQuatToEuler(const glm::quat &q) {
-        glm::vec3 euler;
-
-        float sinp = 2.0f * (q.w * q.y - q.z * q.x);
-        if (std::abs(sinp) >= 1.0f)
-            euler.x = std::copysign(glm::half_pi<float>(), sinp);
-        else
-            euler.x = std::asin(sinp);
-
-        euler.y = std::atan2(2.0f * (q.w * q.z + q.x * q.y),
-                             1.0f - 2.0f * (q.y * q.y + q.z * q.z));
-
-        euler.z = std::atan2(2.0f * (q.w * q.x + q.y * q.z),
-                             1.0f - 2.0f * (q.x * q.x + q.y * q.y));
-
-        return glm::degrees(euler);
     }
 
     int TransformProperty::show(ecs::Entity entity)
@@ -72,7 +62,7 @@ namespace nexo::editor {
 
                 EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &pos.x);
 
-                glm::vec3 computedEuler = customQuatToEuler(quat);
+                glm::vec3 computedEuler = math::customQuatToEuler(quat);
 
                 lastDisplayedEuler = computedEuler;
                 glm::vec3 rotation = lastDisplayedEuler;
@@ -85,7 +75,7 @@ namespace nexo::editor {
                     glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
                     glm::quat deltaQuat = glm::quat(glm::radians(deltaEuler));
                     quat = glm::normalize(deltaQuat * quat);
-                    lastDisplayedEuler = customQuatToEuler(quat);
+                    lastDisplayedEuler = math::customQuatToEuler(quat);
                     rotation = lastDisplayedEuler;
                 }
                 EntityPropertiesComponents::drawRowDragFloat3("Scale", "X", "Y", "Z", &size.x);

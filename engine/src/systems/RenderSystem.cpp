@@ -28,6 +28,21 @@
 
 namespace nexo::system {
 
+	/**
+     * @brief Sets up the lighting uniforms in the given shader.
+     *
+     * This static helper function binds the provided shader and sets uniforms for ambient, directional,
+     * point, and spot lights based on the current lightContext data. After updating the uniforms, the shader is unbound.
+     *
+     * @param shader Shared pointer to the shader used for rendering.
+     * @param lightContext The light context containing lighting information for the scene.
+     *
+     * @note The light context must contain valid values for:
+     *  - ambientLight
+     *  - directionalLights (and directionalLightCount)
+     *  - pointLights (and pointLightCount)
+     *  - spotLights (and spotLightCount)
+     */
 	static void setupLights(std::shared_ptr<renderer::Shader> shader, const components::LightContext& lightContext)
 	{
         shader->bind();

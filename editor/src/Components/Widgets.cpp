@@ -1,4 +1,4 @@
-//// Widgets.cpp ///////////////////////////////////////////////////////////////
+//// Widgets.cpp //////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -138,7 +138,7 @@ namespace nexo::editor {
 
 			if (ImGui::Combo("##ShaderCombo", &currentShaderIndex, shaderOptions, IM_ARRAYSIZE(shaderOptions)))
 			{
-			//TODO: implement shader selection
+				//TODO: implement shader selection
 			}
 		}
 		ImGui::EndGroup();
@@ -154,7 +154,7 @@ namespace nexo::editor {
 		ImGui::SetNextItemWidth(availableWidth);
 		if (ImGui::Combo("##RenderingModeCombo", &currentRenderingModeIndex, renderingModeOptions, IM_ARRAYSIZE(renderingModeOptions)))
 		{
-		//TODO: implement rendering mode
+			//TODO: implement rendering mode
 		}
 
 	    // --- Albedo texture ---

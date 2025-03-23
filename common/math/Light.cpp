@@ -1,4 +1,4 @@
-//// Light.cpp ///////////////////////////////////////////////////////////////
+//// Light.cpp ////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -44,11 +44,9 @@ namespace nexo::math {
 		float distUpper = s_attenuationTable[upperIndex].distance;
 		float t = (distance - distLower) / (distUpper - distLower);
 
-		// Interpolate linear
 		float linear = s_attenuationTable[lowerIndex].linear +
 		                t * (s_attenuationTable[upperIndex].linear - s_attenuationTable[lowerIndex].linear);
 
-		// Interpolate quadratic
 		float quadratic = s_attenuationTable[lowerIndex].quadratic +
 		                    t * (s_attenuationTable[upperIndex].quadratic - s_attenuationTable[lowerIndex].quadratic);
 

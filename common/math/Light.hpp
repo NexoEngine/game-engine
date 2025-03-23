@@ -1,4 +1,4 @@
-//// Light.hpp ///////////////////////////////////////////////////////////////
+//// Light.hpp ////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -16,7 +16,6 @@
 #include <utility>
 
 namespace nexo::math {
-	// Example data structure for your attenuation table
 	struct AttenuationData {
 	    float distance;
 	    float constant;
@@ -24,7 +23,7 @@ namespace nexo::math {
 	    float quadratic;
 	};
 
-	// Static table of recommended attenuation values
+	// Static table of attenuation values
 	static const AttenuationData s_attenuationTable[] = {
 	    // distance, constant, linear, quadratic
 	    { 7.0f,    1.0f, 0.70f,   1.8f   },
@@ -43,5 +42,15 @@ namespace nexo::math {
 
 	inline constexpr int s_attenuationCount = sizeof(s_attenuationTable) / sizeof(s_attenuationTable[0]);
 
+	/**
+     * @brief Computes the interpolated linear and quadratic attenuation factors for a given distance.
+     *
+     * The function clamps the input distance within the bounds of the attenuation table. If the distance
+     * falls between two entries in the table, it interpolates linearly between their respective linear and
+     * quadratic factors.
+     *
+     * @param distance The distance from the light source.
+     * @return A pair of floats where the first is the linear attenuation factor and the second is the quadratic attenuation factor.
+     */
 	std::pair<float, float> computeAttenuationFromDistance(float distance);
 }

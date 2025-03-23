@@ -31,22 +31,60 @@ namespace nexo::scene {
 
 namespace nexo::event {
 
+	/**
+	* @brief Base interface for all events.
+	*
+	* All events must inherit from this interface and implement the trigger() method
+	* to notify listeners when the event is emitted.
+	*/
     class IEvent {
         public:
             virtual ~IEvent() = default;
+
+            /**
+             * @brief Triggers the event for the provided listener.
+             *
+             * Derived event classes must override this method to dispatch the event to the listener.
+             *
+             * @param listener The listener to trigger the event on.
+             */
             virtual void trigger(BaseListener& listener) = 0;
 
             bool consumed = false;
     };
 
+    /**
+     * @brief Templated event class.
+     *
+     * Implements the trigger() method to dispatch the event to a listener that can handle the specific DerivedEvent type.
+     *
+     * @tparam DerivedEvent The derived event type.
+     */
     template<typename DerivedEvent>
     class Event : public IEvent {
         public:
+			/**
+			* @brief Triggers the event by calling the appropriate listener handler.
+			*
+			* Casts the event to the DerivedEvent type and dispatches it using the helper triggerListener().
+			*
+			* @param listener The listener to trigger the event on.
+			*/
             void trigger(BaseListener &listener) override
             {
                 triggerListener(static_cast<DerivedEvent&>(*this), listener);
             }
         protected:
+			/**
+			* @brief Helper function to dispatch the event to a listener.
+			*
+			* If the listener can handle the event type, its handleEvent() method is called.
+			* Otherwise, a warning is logged.
+			*
+			* @tparam T The event type.
+			* @param event The event instance.
+			* @param listener The listener to dispatch the event to.
+			*/
             template<class T>
             static void triggerListener(T &event, BaseListener &listener)
             {
@@ -66,6 +104,15 @@ namespace nexo::event {
      */
     class EventManager {
     public:
+
+		/**
+		* @brief Registers a listener for a specific event type.
+		*
+		* Adds the provided listener to the internal list for the given EventType.
+		*
+		* @tparam EventType The event type to listen for.
+		* @param listener Pointer to the listener.
+		*/
         template <typename EventType>
         void registerListener(BaseListener* listener) {
             const std::type_index typeIndex(typeid(EventType));
@@ -77,6 +124,14 @@ namespace nexo::event {
             LOG(NEXO_DEV, "EventManager(registerListeners): Registered listener {}", listener->getListenerName());
         }
 
+        /**
+         * @brief Unregisters a listener for a specific event type.
+         *
+         * Removes the provided listener from the internal list for the given EventType.
+         *
+         * @tparam EventType The event type.
+         * @param listener Pointer to the listener.
+         */
         template <typename EventType>
         void unregisterListener(BaseListener* listener) {
             const std::type_index typeIndex(typeid(EventType));
@@ -99,18 +154,44 @@ namespace nexo::event {
             }
         }
 
+        /**
+         * @brief Queues an event for dispatch.
+         *
+         * Adds the provided event to the internal event queue.
+         *
+         * @tparam EventType The event type.
+         * @param event Shared pointer to the event.
+         */
         template <typename EventType>
         void emitEvent(std::shared_ptr<EventType> event) {
             m_eventQueue.push_back(event);
         }
 
-        // Use variadic arguments to forward the arguments to the constructor of the event
+        /**
+         * @brief Constructs and emits an event with the given arguments.
+         *
+         * Forwards arguments to the event's constructor and queues the event.
+         *
+         * @tparam EventType The event type.
+         * @tparam Args The types of arguments to forward.
+         * @param args Arguments to construct the event.
+         */
         template <typename EventType, typename... Args>
         void emitEvent(Args&&... args) {
             emitEvent(std::make_shared<EventType>(std::forward<Args>(args)...));
         }
 
+        /**
+         * @brief Dispatches all queued events.
+         *
+         * Iterates through the event queue, triggers each event for its registered listeners,
+         * and re-queues the event if it was not consumed.
+         */
         void dispatchEvents();
+
+        /**
+         * @brief Clears all events from the queue.
+         */
         void clearEvents();
 
     private:

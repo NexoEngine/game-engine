@@ -138,6 +138,18 @@ namespace nexo::renderer {
              */
             void resize(unsigned int width, unsigned int height) override;
 
+
+            /**
+             * @brief Reads a pixel value from a specified attachment.
+             *
+             * Template helper that retrieves the pixel value from the given attachment at (x,y).
+             *
+             * @tparam T The expected pixel data type.
+             * @param attachmentIndex The index of the attachment.
+             * @param x X-coordinate.
+             * @param y Y-coordinate.
+             * @return T The pixel data.
+             */
             template<typename T>
             T getPixelImpl(unsigned int attachmentIndex, int x, int y) const
             {
@@ -157,6 +169,16 @@ namespace nexo::renderer {
             }
             void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const override;
 
+
+            /**
+             * @brief Clears the specified attachment with a given value.
+             *
+             * Template helper that clears the texture attached at the given index.
+             *
+             * @tparam T The type of the clear value.
+             * @param attachmentIndex The index of the attachment.
+             * @param value The value to clear the attachment to.
+             */
             template<typename T>
             void clearAttachmentImpl(unsigned int attachmentIndex, const void *value) const
             {

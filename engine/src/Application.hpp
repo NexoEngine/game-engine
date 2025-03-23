@@ -70,8 +70,38 @@ namespace nexo {
 
             void init();
 
+            /**
+             * @brief Begins a new frame by updating the timestep.
+             *
+             * Calculates the time elapsed since the last frame using glfwGetTime()
+             * and updates the current timestep. Also updates the last frame time.
+             */
             void beginFrame();
+
+            /**
+             * @brief Runs the application for the specified scene and rendering type.
+             *
+             * This function performs the following steps:
+             *  - Retrieves the RenderContext singleton and sets the current scene to be rendered.
+             *  - If the application window is not minimized:
+             *      - If the scene is marked as rendered, it updates the camera context, light, and render systems.
+             *      - If the scene is active, it updates the perspective camera controller system.
+             *  - Depending on the rendering type, it triggers a window update (swaps buffers and polls events).
+             *  - Dispatches events via the EventManager.
+             *  - Resets the RenderContext for the next frame.
+             *  - If profiling is enabled, displays the profiling results.
+             *
+             * @param sceneId The ID of the scene to render.
+             * @param renderingType The rendering mode (e.g., WINDOW or other types).
+             */
             void run(scene::SceneId sceneId, RenderingType renderingType);
+
+            /**
+             * @brief Ends the current frame by clearing processed events.
+             *
+             * Clears all the events that have been dispatched during the frame,
+             * preparing the EventManager for the next frame.
+             */
             void endFrame();
 
             void handleEvent(event::EventKey &event) override
@@ -138,7 +168,23 @@ namespace nexo {
 
             bool isRunning() const { return m_isRunning; };
 
+            /**
+             * @brief Creates a new entity.
+             *
+             * Delegates the creation to the ECS coordinator.
+             *
+             * @return ecs::Entity The newly created entity.
+             */
             ecs::Entity createEntity() const;
+
+            /**
+             * @brief Deletes an existing entity.
+             *
+             * If the entity has a SceneTag component, it is first removed from the corresponding scene,
+             * and then destroyed by the ECS coordinator.
+             *
+             * @param entity The entity to delete.
+             */
             void deleteEntity(ecs::Entity entity);
 
             static Application &getInstance()
@@ -174,9 +220,6 @@ namespace nexo {
 
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
-
-
-            void genAssetPreview(ecs::Entity entity);
 
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:

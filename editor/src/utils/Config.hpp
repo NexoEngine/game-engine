@@ -17,5 +17,15 @@
 #include <imgui.h>
 
 namespace nexo::editor {
+	/**
+	* @brief Finds and returns the dock ID of a given window from the ImGui configuration file.
+	*
+	* This function reads the configuration file (typically the imgui.ini or a custom layout file)
+	* and extracts the DockId for the window identified by @p windowName. The dock ID is returned as an
+	* ImGuiID (unsigned integer). If the window or the dock ID is not found, the function returns 0.
+	*
+	* @param windowName The name of the window whose dock ID is to be found.
+	* @return ImGuiID The dock ID corresponding to the window. Returns 0 if not found.
+	*/
 	ImGuiID findWindowDockIDFromConfig(const std::string& windowName);
 }

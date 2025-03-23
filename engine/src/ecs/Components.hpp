@@ -35,15 +35,15 @@ namespace nexo::ecs
 
     constexpr ComponentType MAX_COMPONENT_TYPE = 32;
 
-    /**
-        * @class IComponentArray
-        *
-        * @brief Interface for a component array in the ECS framework.
-        *
-        * This class defines the interface for component arrays, which are used to store
-        * components of entities in the ECS system. It provides the foundation for managing
-        * the lifecycle of components associated with entities.
-        */
+	/**
+	* @class IComponentArray
+	*
+	* @brief Interface for a component array in the ECS framework.
+	*
+	* This class defines the interface for component arrays, which are used to store
+	* components of entities in the ECS system. It provides the foundation for managing
+	* the lifecycle of components associated with entities.
+	*/
     class IComponentArray
     {
     public:
@@ -52,26 +52,26 @@ namespace nexo::ecs
         virtual void entityDestroyed(Entity entity) = 0;
     };
 
-    /**
-        * @class ComponentArray<T>
-        *
-        * @brief Templated class that manages a specific type of component for all entities.
-        *
-        * This class manages the storage, retrieval, and deletion of components of a specific type.
-        * It ensures efficient access and modification of components associated with entities.
-        *
-        * @tparam T - The type of the component this array will manage.
-        */
+	/**
+	* @class ComponentArray<T>
+	*
+	* @brief Templated class that manages a specific type of component for all entities.
+	*
+	* This class manages the storage, retrieval, and deletion of components of a specific type.
+	* It ensures efficient access and modification of components associated with entities.
+	*
+	* @tparam T - The type of the component this array will manage.
+	*/
     template <typename T>
     class ComponentArray final : public IComponentArray
     {
     public:
-        /**
-            * @brief Inserts a component for a specific entity.
-            *
-            * @param entity - The entity to which the component will be added.
-            * @param component - The component to add.
-            */
+		/**
+		* @brief Inserts a component for a specific entity.
+		*
+		* @param entity - The entity to which the component will be added.
+		* @param component - The component to add.
+		*/
         void insertData(const Entity entity, T component)
         {
             if (m_size == MAX_ENTITIES)
@@ -89,11 +89,11 @@ namespace nexo::ecs
             ++m_size;
         }
 
-        /**
-            * @brief Removes a component from a specific entity.
-            *
-            * @param entity - The entity from which the component will be removed.
-            */
+		/**
+		* @brief Removes a component from a specific entity.
+		*
+		* @param entity - The entity from which the component will be removed.
+		*/
         void removeData(const Entity entity)
         {
             if (!m_entityToIndexMap.contains(entity))
@@ -113,12 +113,12 @@ namespace nexo::ecs
             --m_size;
         }
 
-        /**
-            * @brief Retrieves a reference to a component associated with a specific entity.
-            *
-            * @param entity - The entity whose component is to be retrieved.
-            * @return T& - A reference to the requested component.
-            */
+		/**
+		* @brief Retrieves a reference to a component associated with a specific entity.
+		*
+		* @param entity - The entity whose component is to be retrieved.
+		* @return T& - A reference to the requested component.
+		*/
         T& getData(const Entity entity)
         {
             if (!m_entityToIndexMap.contains(entity))
@@ -127,11 +127,11 @@ namespace nexo::ecs
             return m_componentArray[m_entityToIndexMap[entity]];
         }
 
-        /**
-            * @brief Cleans up components associated with a destroyed entity.
-            *
-            * @param entity - The destroyed entity.
-            */
+		/**
+		* @brief Cleans up components associated with a destroyed entity.
+		*
+		* @param entity - The destroyed entity.
+		*/
         void entityDestroyed(const Entity entity) override
         {
             if (m_entityToIndexMap.contains(entity))
@@ -153,24 +153,24 @@ namespace nexo::ecs
         size_t m_size = 0;
     };
 
-    /**
-        * @class ComponentManager
-        *
-        * @brief Manages the registration and handling of components in an ECS architecture.
-        *
-        * The ComponentManager is responsible for managing different types of components in the ECS framework.
-        * It allows the registration of component types, adding and removing components to entities, and
-        * accessing components of entities.
-        */
+	/**
+	* @class ComponentManager
+	*
+	* @brief Manages the registration and handling of components in an ECS architecture.
+	*
+	* The ComponentManager is responsible for managing different types of components in the ECS framework.
+	* It allows the registration of component types, adding and removing components to entities, and
+	* accessing components of entities.
+	*/
     class ComponentManager
     {
     public:
-        /**
-            * @brief Registers a new component type in the system.
-            *
-            * Each component type is associated with a unique ComponentType ID and a ComponentArray
-            * to manage instances of the component.
-            */
+		/**
+		* @brief Registers a new component type in the system.
+		*
+		* Each component type is associated with a unique ComponentType ID and a ComponentArray
+		* to manage instances of the component.
+		*/
         template <typename T>
         void registerComponent()
         {
@@ -188,11 +188,11 @@ namespace nexo::ecs
             ++_nextComponentType;
         }
 
-        /**
-            * @brief Retrieves the ComponentType ID for a specific component type.
-            *
-            * @return ComponentType - The unique ID associated with the component type.
-            */
+		/**
+		* @brief Retrieves the ComponentType ID for a specific component type.
+		*
+		* @return ComponentType - The unique ID associated with the component type.
+		*/
         template <typename T>
         ComponentType getComponentType()
         {
@@ -203,23 +203,23 @@ namespace nexo::ecs
             return m_componentTypes[typeName];
         }
 
-        /**
-            * @brief Adds a component of a specific type to an entity.
-            *
-            * @param entity - The entity to which the component will be added.
-            * @param component - The component to add to the entity.
-            */
+		/**
+		* @brief Adds a component of a specific type to an entity.
+		*
+		* @param entity - The entity to which the component will be added.
+		* @param component - The component to add to the entity.
+		*/
         template <typename T>
         void addComponent(Entity entity, T component)
         {
             getComponentArray<T>()->insertData(entity, component);
         }
 
-        /**
-            * @brief Removes a component of a specific type from an entity.
-            *
-            * @param entity - The entity from which the component will be removed.
-            */
+		/**
+		* @brief Removes a component of a specific type from an entity.
+		*
+		* @param entity - The entity from which the component will be removed.
+		*/
         template <typename T>
         void removeComponent(Entity entity)
         {
@@ -235,12 +235,12 @@ namespace nexo::ecs
             return true;
         }
 
-        /**
-            * @brief Retrieves a reference to a component of a specific type from an entity.
-            *
-            * @param entity - The entity whose component is to be retrieved.
-            * @return T& - A reference to the requested component.
-            */
+		/**
+		* @brief Retrieves a reference to a component of a specific type from an entity.
+		*
+		* @param entity - The entity whose component is to be retrieved.
+		* @return T& - A reference to the requested component.
+		*/
         template <typename T>
         T& getComponent(Entity entity)
         {
@@ -255,11 +255,11 @@ namespace nexo::ecs
             return getComponent<T>(entity);
         }
 
-        /**
-            * @brief Retrieves a reference to all components of a specific type from an entity.
-            *
-            * @param entity - The entity whose component is to be retrieved.
-            */
+		/**
+		* @brief Retrieves a reference to all components of a specific type from an entity.
+		*
+		* @param entity - The entity whose component is to be retrieved.
+		*/
         std::vector<std::shared_ptr<IComponentArray>> getAllComponents(Entity entity)
         {
             std::vector<std::shared_ptr<IComponentArray>> components;
@@ -285,11 +285,11 @@ namespace nexo::ecs
             return components;
         }
 
-        /**
-            * @brief Handles the destruction of an entity by ensuring all associated components are removed.
-            *
-            * @param entity - The entity that has been destroyed.
-            */
+		/**
+		* @brief Handles the destruction of an entity by ensuring all associated components are removed.
+		*
+		* @param entity - The entity that has been destroyed.
+		*/
         void entityDestroyed(Entity entity) const;
 
     private:
@@ -298,11 +298,11 @@ namespace nexo::ecs
 
         ComponentType _nextComponentType{};
 
-        /**
-            * @brief Retrieves the ComponentArray associated with a specific component type.
-            *
-            * @return std::shared_ptr<ComponentArray<T>> - Shared pointer to the component array of the specified type.
-            */
+		/**
+		* @brief Retrieves the ComponentArray associated with a specific component type.
+		*
+		* @return std::shared_ptr<ComponentArray<T>> - Shared pointer to the component array of the specified type.
+		*/
         template <typename T>
         std::shared_ptr<ComponentArray<T>> getComponentArray()
         {

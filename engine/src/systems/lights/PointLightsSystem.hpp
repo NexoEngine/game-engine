@@ -16,6 +16,20 @@
 #include "ecs/System.hpp"
 
 namespace nexo::system {
+
+	/**
+     * @brief System responsible for updating point lights in the scene.
+     *
+     * This system iterates over all point light entities and updates the RenderContext with
+     * their point light components.
+     *
+     * @note Required Components on point light entities:
+     *  - components::SceneTag
+     *  - components::PointLightComponent
+     *
+     * @note Required Singleton Component:
+     *  - components::RenderContext
+     */
 	class PointLightsSystem : public ecs::System {
 		public:
 			void update();

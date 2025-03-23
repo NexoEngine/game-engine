@@ -1,4 +1,4 @@
-//// Selector.hpp ///////////////////////////////////////////////////////////////
+//// Selector.hpp /////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -30,6 +30,14 @@ namespace nexo::editor {
 		ENTITY
 	};
 
+	/**
+     * @class Selector
+     * @brief Singleton class managing entity selection state in the editor
+     *
+     * The Selector class tracks the currently selected entity, its type, and
+     * provides methods to manipulate the selection state. It also maintains
+     * entity UUID to UI handle mappings for consistent labeling in the interface.
+     */
 	class Selector {
 		public:
 			int getSelectedEntity() const;
@@ -43,6 +51,16 @@ namespace nexo::editor {
 
 			bool isEntitySelected() const;
 
+			/**
+             * @brief Gets the UI handle associated with a UUID
+             *
+             * If the UUID doesn't have an associated handle yet, the default
+             * handle is stored and returned.
+             *
+             * @param[in] uuid The UUID to look up
+             * @param[in] defaultHandle The default handle to use if none exists
+             * @return const std::string& Reference to the UI handle for the UUID
+             */
 			const std::string &getUiHandle(const std::string &uuid, const std::string &defaultHandle);
 			void setUiHandle(const std::string &uuid, const std::string &handle);
 

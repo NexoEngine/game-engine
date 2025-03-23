@@ -21,6 +21,14 @@
 #include <imgui_internal.h>
 
 namespace nexo::editor {
+	/**
+	* @class SceneViewManager
+	* @brief Singleton class managing scene views in the editor
+	*
+	* This class handles the creation, duplication, and management of scene views
+	* in the editor interface. It extends ADocumentWindow to integrate with the
+	* document window system.
+	*/
     class SceneViewManager : public ADocumentWindow {
         public:
             static SceneViewManager& get()

@@ -18,16 +18,72 @@
 
 namespace nexo::scene {
 	inline unsigned int nextSceneId = 0;
+
+	/**
+	* @class Scene
+	* @brief Represents a scene in the engine.
+	*
+	* A Scene encapsulates a collection of entities, a unique identifier, a name,
+	* and active/rendered states. It manages its entities via an ECS Coordinator.
+	*
+	* Responsibilities:
+	* - Adding and removing entities.
+	* - Managing active and rendered states for the scene and its entities.
+	* - Providing access to scene metadata (name, ID, UUID).
+	*/
 	class Scene {
 		public:
+			/**
+			* @brief Constructs a new Scene.
+			*
+			* Initializes the scene with the specified name and ECS coordinator.
+			* Optionally marks the scene as editor-only.
+			*
+			* @param sceneName The name of the scene.
+			* @param coordinator Shared pointer to the ECS Coordinator managing entities/components.
+			* @param editorOnly If true, the scene is marked as editor-only.
+			*/
 			Scene(const std::string &sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator, bool editorOnly = false);
 			~Scene();
 
+			/**
+			* @brief Adds an entity to the scene.
+			*
+			* Attaches a SceneTag component (with the scene ID and default active/rendered state)
+			* to the entity and stores it in the scene's entity set.
+			*
+			* @param entity The entity identifier to add.
+			*/
 			void addEntity(ecs::Entity entity);
+
+			/**
+             * @brief Removes an entity from the scene.
+             *
+             * Detaches the SceneTag component from the entity and removes it from the scene's entity set.
+             *
+             * @param entity The entity identifier to remove.
+             */
 			void removeEntity(ecs::Entity entity);
 
+			/**
+             * @brief Sets the active status for the scene.
+             *
+             * Updates the scene's active state and propagates the change to all entities by updating
+             * their SceneTag components.
+             *
+             * @param active True to mark the scene as active, false to deactivate.
+             */
 			void setActiveStatus(bool active);
 			bool isActive() const { return m_active; }
+
+			/**
+             * @brief Sets the rendered status for the scene.
+             *
+             * Updates the scene's rendered state and propagates the change to all entities by updating
+             * their SceneTag components.
+             *
+             * @param rendered True to mark the scene as rendered, false to not render.
+             */
 			void setRenderStatus(bool rendered);
 			bool isRendered() const { return m_rendered; }
 

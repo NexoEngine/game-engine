@@ -28,4 +28,23 @@ namespace nexo::math {
 		right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
 		up = glm::normalize(glm::cross(right, front));
 	}
+
+	glm::vec3 customQuatToEuler(const glm::quat &q)
+	{
+        glm::vec3 euler;
+
+        float sinp = 2.0f * (q.w * q.y - q.z * q.x);
+        if (std::abs(sinp) >= 1.0f)
+            euler.x = std::copysign(glm::half_pi<float>(), sinp);
+        else
+            euler.x = std::asin(sinp);
+
+        euler.y = std::atan2(2.0f * (q.w * q.z + q.x * q.y),
+                             1.0f - 2.0f * (q.y * q.y + q.z * q.z));
+
+        euler.z = std::atan2(2.0f * (q.w * q.x + q.y * q.z),
+                             1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+
+        return glm::degrees(euler);
+   	}
 }

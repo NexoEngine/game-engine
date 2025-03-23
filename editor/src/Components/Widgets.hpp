@@ -21,15 +21,57 @@
 #include "renderer/Texture.hpp"
 
 namespace nexo::editor {
+
+	/**
+     * @brief A collection of custom ImGui widget drawing functions.
+     *
+     * Provides utility functions for drawing color editors, texture buttons, and a material inspector,
+     * which can be used to simplify UI code for rendering material properties.
+     */
 	class Widgets {
 		public:
+
+			/**
+             * @brief Draws a color editor with a button and an optional inline color picker.
+             *
+             * Displays a custom color button (with a cog icon for picker settings) and, if enabled,
+             * an inline color picker. The function returns true if the color was modified.
+             *
+             * @param label A unique label identifier for the widget.
+             * @param selectedEntityColor Pointer to the glm::vec4 representing the current color.
+             * @param colorPickerMode Pointer to the ImGuiColorEditFlags for the picker mode.
+             * @param showPicker Pointer to a boolean that determines if the inline color picker is visible.
+             * @param colorButtonFlags Optional flags for the color button (default is none).
+             * @return true if the color was modified; false otherwise.
+             */
 			static bool drawColorEditor(
 				const std::string &label,
 				glm::vec4 *selectedEntityColor,
 				ImGuiColorEditFlags *colorPickerMode,
 				bool *showPicker,
 				ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None);
+
+			/**
+             * @brief Draws a texture button that displays a texture preview.
+             *
+             * When clicked, opens a file dialog to select a new texture. If a new texture is loaded,
+             * the passed texture pointer is updated and the function returns true.
+             *
+             * @param label A unique label identifier for the button.
+             * @param texture A shared pointer to the renderer::Texture2D that holds the texture.
+             * @return true if the texture was modified; false otherwise.
+             */
 			static bool drawTextureButton(const std::string &label, std::shared_ptr<renderer::Texture2D> &texture);
+
+			/**
+             * @brief Draws a material inspector widget for editing material properties.
+             *
+             * This function displays controls for shader selection, rendering mode, and textures/colors
+             * for material properties such as albedo and specular components.
+             *
+             * @param material Pointer to the components::Material to be inspected and modified.
+             * @return true if any material property was modified; false otherwise.
+             */
 			static bool drawMaterialInspector(components::Material *material);
 	};
 }

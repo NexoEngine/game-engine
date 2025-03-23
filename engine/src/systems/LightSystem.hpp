@@ -19,6 +19,19 @@
 #include "lights/SpotLightsSystem.hpp"
 
 namespace nexo::system {
+
+	/**
+     * @brief High-level system that aggregates and updates all light systems.
+     *
+     * The LightSystem manages the update calls for the various light systems:
+     * AmbientLightSystem, DirectionalLightsSystem, PointLightsSystem, and SpotLightsSystem.
+     *
+     * @note Required Subsystems:
+     *  - AmbientLightSystem
+     *  - DirectionalLightsSystem
+     *  - PointLightsSystem
+     *  - SpotLightsSystem
+     */
 	class LightSystem {
 		public:
 			LightSystem(const std::shared_ptr<AmbientLightSystem> &ambientSystem,

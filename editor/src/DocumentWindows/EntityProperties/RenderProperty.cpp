@@ -1,9 +1,16 @@
-/*
-** EPITECH PROJECT, 2024
-** game_engine
-** File description:
-** RenderProperty.cpp
-*/
+//// RenderProperty.cpp ///////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        20/03/2025
+//  Description: Source file for the render property inspector
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #include <imgui.h>
 
@@ -199,9 +206,7 @@ namespace nexo::editor {
 					entityBase = entity;
 				}
 
-
-                // --- Material Preview (Placeholder) ---
-                // For now, we use a dummy texture id (0), maybe store the asset image in the asset manager later ?
+                // --- Material Preview ---
                 if (framebuffer->getColorAttachmentId(0) != 0)
                 	ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(framebuffer->getColorAttachmentId(0))), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
 

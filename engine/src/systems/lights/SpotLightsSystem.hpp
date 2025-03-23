@@ -16,6 +16,20 @@
 #include "ecs/System.hpp"
 
 namespace nexo::system {
+
+	/**
+     * @brief System responsible for updating spot lights in the scene.
+     *
+     * This system iterates over all spot light entities and updates the RenderContext with their
+     * spot light components.
+     *
+     * @note Required Components on spot light entities:
+     *  - components::SceneTag
+     *  - components::SpotLightComponent
+     *
+     * @note Required Singleton Component:
+     *  - components::RenderContext
+     */
 	class SpotLightsSystem : public ecs::System {
 		public:
 			void update();

@@ -65,6 +65,15 @@ namespace nexo::renderer {
         };
 
 
+	/**
+	* @brief Generates the vertex, texture coordinate, and normal data for a cube mesh.
+	*
+	* Fills the provided arrays with 36 vertices, texture coordinates, and normals for a cube.
+	*
+	* @param vertices Array to store generated vertex positions.
+	* @param texCoords Array to store generated texture coordinates.
+	* @param normals Array to store generated normals.
+	*/
     static void genCubeMesh(std::array<glm::vec3, 36> &vertices, std::array<glm::vec2, 36> &texCoords, std::array<glm::vec3, 36> &normals)
     {
     	float x = 0.5f;
