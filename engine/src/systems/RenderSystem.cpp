@@ -86,9 +86,10 @@ namespace nexo::system {
 	void RenderSystem::update()
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
-		if (sceneRendered == -1)
+		if (renderContext.sceneRendered == -1)
 			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
 		setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
 

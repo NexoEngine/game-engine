@@ -113,7 +113,6 @@ namespace nexo::editor {
             	std::map<scene::SceneId, SceneObject> &scenes,
             	const std::function<SceneObject(scene::SceneId, WindowId, ecs::Entity)> &nodeCreator)
             {
-            	auto &app = getApp();
             	const std::set<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
              	for (const ecs::Entity entity : entities)
 				{

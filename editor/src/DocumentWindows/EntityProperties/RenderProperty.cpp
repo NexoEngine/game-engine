@@ -166,7 +166,7 @@ namespace nexo::editor {
             static int entityBase = -1;
             if (sectionOpen)
             {
-            	if (entityBase != entity)
+            	if (entityBase != static_cast<int>(entity))
 				{
 					//TODO: I guess all of this should be centralized in the assets
 					utils::ScenePreviewOut previewParams;

@@ -19,7 +19,7 @@
 #include "components/Components.hpp"
 
 namespace nexo {
-    ecs::Entity EntityFactory2D::createQuad(glm::vec3 pos, glm::vec2 size, float rotation, glm::vec4 color)
+    ecs::Entity EntityFactory2D::createQuad(glm::vec3 pos, glm::vec2 size, [[maybe_unused]] float rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
         transform.pos = pos;

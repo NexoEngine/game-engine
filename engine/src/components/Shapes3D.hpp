@@ -88,7 +88,7 @@ namespace nexo::components {
         explicit Model(const std::shared_ptr<MeshNode> &rootNode) : root(rootNode) {};
 
         // NOT WORKING ANYMORE
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Pass the material to the draw mesh function

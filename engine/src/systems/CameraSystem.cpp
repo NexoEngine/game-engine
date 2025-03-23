@@ -29,9 +29,10 @@ namespace nexo::system {
 	void CameraContextSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		unsigned int sceneRendered = renderContext.sceneRendered;
-		if (sceneRendered == -1)
+		if (renderContext.sceneRendered == -1)
 			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
 		for (const auto camera : entities)
 		{
@@ -58,9 +59,10 @@ namespace nexo::system {
 	void PerspectiveCameraControllerSystem::update(const Timestep ts) const
     {
         auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        const unsigned int sceneRendered = renderContext.sceneRendered;
-        if (sceneRendered == -1)
-            return;
+		if (renderContext.sceneRendered == -1)
+			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         const auto deltaTime = static_cast<float>(ts);
 
@@ -97,9 +99,10 @@ namespace nexo::system {
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseScroll &event)
     {
         auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        const unsigned int sceneRendered = renderContext.sceneRendered;
-        if (sceneRendered == -1)
-            return;
+		if (renderContext.sceneRendered == -1)
+			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         for (const auto &camera : entities)
         {
@@ -117,10 +120,10 @@ namespace nexo::system {
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseMove &event)
     {
         auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        const unsigned int sceneRendered = renderContext.sceneRendered;
+		if (renderContext.sceneRendered == -1)
+			return;
 
-        if (sceneRendered == -1)
-            return;
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         glm::vec2 currentMousePosition(event.x, event.y);
         for (const auto &camera : entities)
@@ -163,9 +166,10 @@ namespace nexo::system {
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseScroll &event)
 	{
 		auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
-        unsigned int sceneRendered = renderContext.sceneRendered;
-        if (sceneRendered == -1)
-            return;
+		if (renderContext.sceneRendered == -1)
+			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         for (const auto &camera : entities)
         {
@@ -200,9 +204,10 @@ namespace nexo::system {
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseMove &event)
 	{
 	    auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
-	    unsigned int sceneRendered = renderContext.sceneRendered;
-	    if (sceneRendered == -1)
-	        return;
+		if (renderContext.sceneRendered == -1)
+			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
 	    glm::vec2 currentMousePosition(event.x, event.y);
 

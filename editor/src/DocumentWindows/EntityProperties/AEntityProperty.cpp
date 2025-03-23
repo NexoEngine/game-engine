@@ -30,7 +30,7 @@ namespace nexo::editor {
 
     }
 
-    int AEntityProperty::show(ecs::Entity entity) {
+    int AEntityProperty::show([[maybe_unused]] ecs::Entity entity) {
         return 1;//ImGui::CollapsingHeader(_name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
     }
 

@@ -18,23 +18,23 @@
 
 namespace nexo::renderer {
 
-	void Renderer3D::drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID) const
+	void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
 	{
 
 	}
 
-    void Renderer3D::drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID) const
+    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& rotation, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
     {
 
     }
 
-    void Renderer3D::drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID) const
+    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::mat4& transform, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
     {
 
     }
 
     void Renderer3D::drawMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
+                              [[maybe_unused]] const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -45,7 +45,6 @@ namespace nexo::renderer {
             //TODO: Implement the batch rendering for meshes
             LOG(NEXO_INFO, "Max number attained");
         }
-        const float textureIndex = getTextureIndex(texture);
 
         auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
 

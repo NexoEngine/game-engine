@@ -21,9 +21,10 @@ namespace nexo::system {
 	void AmbientLightSystem::update() const
 	{
 		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
-		const unsigned int sceneRendered = renderContext.sceneRendered;
-		if (sceneRendered == -1)
+		if (renderContext.sceneRendered == -1)
 			return;
+
+		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
 		for (const auto &ambientLights : entities)
 		{

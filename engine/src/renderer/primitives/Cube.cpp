@@ -119,8 +119,10 @@ namespace nexo::renderer {
 	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, const int entityID) const
     {
         if (!m_renderingScene)
+        {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
+        }
 
         // Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -165,8 +167,10 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
     {
 	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	    }
 
 		const glm::quat rotationQuat = glm::radians(rotation);
 		const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
@@ -214,8 +218,10 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID) const
     {
 	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	    }
 
 
 		m_storage->textureShader->setUniformMatrix("matModel", transform);
@@ -257,8 +263,10 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID) const
     {
 	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	    }
 
 		// Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -307,8 +315,10 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID) const
     {
 	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	    }
 
 		const glm::quat rotationQuat = glm::radians(rotation);
 		const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
@@ -359,9 +369,12 @@ namespace nexo::renderer {
 
     void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID) const
     {
-    if (!m_renderingScene)
+	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+
+	    }
 
 		const glm::mat4 rotationMat = glm::toMat4(rotation);
 		// Transform matrix
@@ -412,8 +425,10 @@ namespace nexo::renderer {
     void Renderer3D::drawCube(const glm::mat4& transform, const components::Material &material, int entityID) const
     {
 	    if (!m_renderingScene)
+	    {
 	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
+	    }
 
 	    m_storage->textureShader->setUniformMatrix("matModel", transform);
 
