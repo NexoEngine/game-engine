@@ -19,7 +19,7 @@ namespace nexo::renderer {
 	class OpenGlShaderStorageBuffer : public ShaderStorageBuffer {
 	public:
 		explicit OpenGlShaderStorageBuffer(unsigned int size);
-		~OpenGlShaderStorageBuffer() = default;
+		~OpenGlShaderStorageBuffer() override = default;
 
 		void bind() const override;
 		void bindBase(unsigned int bindingLocation) const override;

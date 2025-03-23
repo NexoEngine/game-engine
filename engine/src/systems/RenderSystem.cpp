@@ -95,7 +95,7 @@ namespace nexo::system {
 
 		while (!renderContext.cameras.empty())
 		{
-			auto &camera = renderContext.cameras.front();
+			const auto &camera = renderContext.cameras.front();
 			if (camera.renderTarget != nullptr)
 			{
 				camera.renderTarget->bind();

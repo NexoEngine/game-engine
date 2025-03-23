@@ -88,7 +88,7 @@ namespace nexo::scene {
 			[[nodiscard]] bool isRendered() const { return m_rendered; }
 
 			[[nodiscard]] const std::string& getName() const {return m_sceneName;};
-			void setName(const std::string& newName) { m_sceneName = newName; }
+			void setName(std::string_view newName) { m_sceneName = newName; }
 			[[nodiscard]] unsigned int getId() const {return m_id;};
 			[[nodiscard]] const std::string &getUuid() const {return m_uuid;}
 		private:

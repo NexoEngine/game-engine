@@ -129,7 +129,7 @@ namespace nexo::editor::utils {
 	static void setupPreviewLights(scene::SceneId sceneId, ecs::Entity entityCopy)
 	{
 		auto &app = getApp();
-		auto &transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
+		const auto &transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
 		app.getSceneManager().getScene(sceneId).addEntity(entityCopy);
         ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});

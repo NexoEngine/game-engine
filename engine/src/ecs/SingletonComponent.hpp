@@ -43,26 +43,29 @@ namespace nexo::ecs {
      */
      template <typename T>
      class SingletonComponent final : public ISingletonComponent {
-     public:
-         /**
-          * @brief Templated constructor that perfectly forwards arguments to construct the instance.
-          *
-          * This constructor is enabled only when T is constructible from the provided arguments.
-          *
-          * @tparam Args The types of constructor arguments.
-          * @param args Arguments forwarded to T's constructor.
-          */
-         template<typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
-         explicit SingletonComponent(Args&&... args)
-             : _instance(std::forward<Args>(args)...)
-         {
-         }
+     	public:
+			/**
+			* @brief Templated constructor that perfectly forwards arguments to construct the instance.
+			*
+			* This constructor is only enabled when T is constructible from the provided arguments
+			* and none of the arguments (after decaying) is of type T (to avoid accidental copying or moving
+			* of an object of the same type).
+			*
+			* @tparam Args The types of constructor arguments.
+			* @param args Arguments forwarded to T's constructor.
+			*/
+			template<typename... Args>
+			requires (std::is_constructible_v<T, Args...> && (!std::is_same_v<std::decay_t<Args>, T> && ...))
+			explicit SingletonComponent(Args&&... args)
+			    : _instance(std::forward<Args>(args)...)
+			{
+			}
 
-         T &getInstance() {
-             return _instance;
-         }
-     private:
-         T _instance;
+	         T &getInstance() {
+	             return _instance;
+	         }
+	     private:
+	         T _instance;
      };
 
 

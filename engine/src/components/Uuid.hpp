@@ -23,7 +23,7 @@ namespace nexo::components {
 		static std::random_device dev;
 		static std::mt19937 rng(dev());
 
-		std::uniform_int_distribution<int> dist(0, 15);
+		std::uniform_int_distribution dist(0, 15);
 
 		const char *v = "0123456789abcdef";
 		constexpr bool dash[] = { false, false, false, false, true, false, true, false, true, false, true, false, false, false, false, false };

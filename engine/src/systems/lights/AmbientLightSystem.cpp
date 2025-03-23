@@ -31,7 +31,7 @@ namespace nexo::system {
 			auto tag = coord->getComponent<components::SceneTag>(ambientLights);
 			if (!tag.isRendered || sceneRendered != tag.id)
 				continue;
-			auto &ambientComponent = coord->getComponent<components::AmbientLightComponent>(ambientLights);
+			const auto &ambientComponent = coord->getComponent<components::AmbientLightComponent>(ambientLights);
 			renderContext.sceneLights.ambientLight = ambientComponent.color;
 			break;
 		}

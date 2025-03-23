@@ -25,7 +25,7 @@ namespace nexo::editor {
 		return m_selectedUuid;
 	}
 
-	void Selector::setSelectedEntity(const std::string &uuid, const int entity)
+	void Selector::setSelectedEntity(std::string_view uuid, const int entity)
 	{
 		m_selectedUuid = uuid;
 		m_selectedEntity = entity;
@@ -64,7 +64,7 @@ namespace nexo::editor {
     	return it->second;
 	}
 
-	void Selector::setUiHandle(const std::string &uuid, const std::string &handle)
+	void Selector::setUiHandle(const std::string &uuid, std::string_view handle)
 	{
 		m_uiHandles[uuid] = handle;
 	}

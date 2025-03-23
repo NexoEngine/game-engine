@@ -58,7 +58,7 @@ namespace nexo::system {
 
 	void PerspectiveCameraControllerSystem::update(const Timestep ts) const
     {
-        auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+        const auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
