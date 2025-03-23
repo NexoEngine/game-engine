@@ -54,12 +54,13 @@ namespace nexo::editor {
 		ImGui::TableNextColumn();
 		if (rowLabel.fixedWidth != -1.0f)
 		{
-		    float fixedCellWidth = rowLabel.fixedWidth;
-		    ImVec2 textSize = ImGui::CalcTextSize(rowLabel.label.c_str());
-		    float offsetX = (fixedCellWidth - textSize.x) * 0.5f;
-		    float rowHeight = ImGui::GetTextLineHeightWithSpacing();
-		    float offsetY = (rowHeight - textSize.y) * 0.5f;
-		    ImVec2 cellPos = ImGui::GetCursorPos();
+			//TODO: Implement now fixed width row label
+		    //float fixedCellWidth = rowLabel.fixedWidth;
+		    //ImVec2 textSize = ImGui::CalcTextSize(rowLabel.label.c_str());
+		    //float offsetX = (fixedCellWidth - textSize.x) * 0.5f;
+		    //float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+		    //float offsetY = (rowHeight - textSize.y) * 0.5f;
+		    //ImVec2 cellPos = ImGui::GetCursorPos();
 		}
 		ImGui::SetWindowFontScale(1.11f);
 
@@ -110,11 +111,11 @@ namespace nexo::editor {
 		float badgeSize = ImGui::GetFrameHeight();
 		std::vector<Badge> badges;
 		badges.reserve(1);
-		badges.push_back(Badge(badgeLabelX, ImVec2(badgeSize, badgeSize), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)));
+		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(1);
-		sliders.push_back(DragFloat(labelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"));
+		sliders.emplace_back(DragFloat{badgeLabelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
 
 		Channels channels;
 		channels.count = 1;
@@ -158,16 +159,16 @@ namespace nexo::editor {
 			textBadgeColor = {IM_COL32(255, 180, 180, 255), IM_COL32(180, 255, 180, 255)};
 		std::vector<Badge> badges;
 		badges.reserve(2);
-		badges.push_back(Badge(badgeLabelX, ImVec2(badgeSize, badgeSize), badgeColors[0], badgeColors[0], badgeColors[0], textBadgeColor[0]));
-		badges.push_back(Badge(badgeLabelY, ImVec2(badgeSize, badgeSize), badgeColors[1], badgeColors[1], badgeColors[1], textBadgeColor[1]));
+		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, badgeColors[0], badgeColors[0], badgeColors[0], textBadgeColor[0]});
+		badges.emplace_back(Badge{badgeLabelY, {badgeSize, badgeSize}, badgeColors[1], badgeColors[1], badgeColors[1], textBadgeColor[1]});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(2);
 		std::vector<ImU32> sliderColors = {IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text)};
 		if (inactive)
 			sliderColors = {IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(50, 50, 50, 255)};
-		sliders.push_back(DragFloat(labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"));
-		sliders.push_back(DragFloat(labelY, &values[1], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"));
+		sliders.emplace_back(DragFloat{labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"});
+		sliders.emplace_back(DragFloat{labelY, &values[1], speed, minValue, maxValue, sliderColors[0], sliderColors[1], sliderColors[2], sliderColors[3], "%.2f"});
 
 		Channels channels;
 		channels.count = 2;
@@ -213,15 +214,15 @@ namespace nexo::editor {
 			textBadgeColor = {IM_COL32(255, 180, 180, 255), IM_COL32(180, 255, 180, 255), IM_COL32(180, 180, 255, 255)};
 		std::vector<Badge> badges;
 		badges.reserve(3);
-		badges.push_back(Badge(badgeLabelX, ImVec2(badgeSize, badgeSize), badgeColors[0], badgeColors[0], badgeColors[0], textBadgeColor[0]));
-		badges.push_back(Badge(badgeLabelY, ImVec2(badgeSize, badgeSize), badgeColors[1], badgeColors[1], badgeColors[1], textBadgeColor[1]));
-		badges.push_back(Badge(badgeLabelZ, ImVec2(badgeSize, badgeSize), badgeColors[2], badgeColors[2], badgeColors[2], textBadgeColor[2]));
+		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, badgeColors[0], badgeColors[0], badgeColors[0], textBadgeColor[0]});
+		badges.emplace_back(Badge{badgeLabelY, {badgeSize, badgeSize}, badgeColors[1], badgeColors[1], badgeColors[1], textBadgeColor[1]});
+		badges.emplace_back(Badge{badgeLabelZ, {badgeSize, badgeSize}, badgeColors[2], badgeColors[2], badgeColors[2], textBadgeColor[2]});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(3);
-		sliders.push_back(DragFloat(labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"));
-		sliders.push_back(DragFloat(labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"));
-		sliders.push_back(DragFloat(labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"));
+		sliders.emplace_back(DragFloat{labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
+		sliders.emplace_back(DragFloat{labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
+		sliders.emplace_back(DragFloat{labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text), "%.2f"});
 
 		Channels channels;
 		channels.count = 3;
