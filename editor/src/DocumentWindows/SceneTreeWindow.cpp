@@ -85,7 +85,7 @@ namespace nexo::editor {
         return nodeOpen;
     }
 
-    void SceneTreeWindow::sceneSelected(const SceneObject &obj)
+    void SceneTreeWindow::sceneSelected(const SceneObject &obj) const
     {
         auto &viewManager = SceneViewManager::get();
 
@@ -93,7 +93,7 @@ namespace nexo::editor {
             viewManager.removeScene(obj.data.sceneProperties.windowId);
     }
 
-    void SceneTreeWindow::lightSelected(const SceneObject &obj)
+    void SceneTreeWindow::lightSelected(const SceneObject &obj) const
     {
         auto &app = Application::getInstance();
         auto &selector = Selector::get();
@@ -241,7 +241,7 @@ namespace nexo::editor {
         }
     }
 
-    SceneObject SceneTreeWindow::newSceneNode(const scene::SceneId sceneId, const WindowId uiId)
+    SceneObject SceneTreeWindow::newSceneNode(const scene::SceneId sceneId, const WindowId uiId) const
     {
         SceneObject sceneNode;
         auto const &viewManager = SceneViewManager::get();
@@ -256,7 +256,7 @@ namespace nexo::editor {
         return sceneNode;
     }
 
-    void SceneTreeWindow::newLightNode(SceneObject &lightNode, const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity, const std::string &uiName)
+    void SceneTreeWindow::newLightNode(SceneObject &lightNode, const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity, const std::string &uiName) const
     {
       	const SceneProperties sceneProperties{sceneId, uiId};
        	lightNode.data.sceneProperties = sceneProperties;
@@ -271,11 +271,11 @@ namespace nexo::editor {
         	lightNode.uiName = uiName;
     }
 
-    SceneObject SceneTreeWindow::newAmbientLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity)
+    SceneObject SceneTreeWindow::newAmbientLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity) const
     {
     	SceneObject lightNode;
     	lightNode.type = SelectionType::AMBIENT_LIGHT;
-        const std::string uiName = std::format("{}Ambient light ", ObjectTypeToIcon.at(lightNode.type));;
+        const std::string uiName = std::format("{}Ambient light ", ObjectTypeToIcon.at(lightNode.type));
       	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
        	return lightNode;
     }
@@ -308,7 +308,7 @@ namespace nexo::editor {
     }
 
     SceneObject SceneTreeWindow::newCameraNode(const scene::SceneId sceneId, const WindowId uiId,
-                                               const ecs::Entity cameraEntity)
+                                               const ecs::Entity cameraEntity) const
     {
         SceneObject cameraNode;
         const std::string uiName = ObjectTypeToIcon.at(SelectionType::CAMERA) + std::string("Camera");
@@ -328,7 +328,7 @@ namespace nexo::editor {
     }
 
     SceneObject SceneTreeWindow::newEntityNode(const scene::SceneId sceneId, const WindowId uiId,
-                                               const ecs::Entity entity)
+                                               const ecs::Entity entity) const
     {
      	auto &selector = Selector::get();
         SceneObject entityNode;

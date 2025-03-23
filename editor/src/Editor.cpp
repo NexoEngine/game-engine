@@ -160,17 +160,17 @@ namespace nexo::editor {
         style->PopupRounding = 4.0f;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
-        ImVec4 darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
+        auto darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
 
             // Apply the darker color to the title bar variants:
         style->Colors[ImGuiCol_TitleBg]         = darker;
         style->Colors[ImGuiCol_TitleBgActive]   = darker;
         style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
 
-        ImVec4 creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
-        ImVec4 creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
-        ImVec4 creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
-        ImVec4 brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
+        auto creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
+        auto creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
+        auto creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
+        auto brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
 
         // Apply the light cream colors to the tabs:
         style->Colors[ImGuiCol_Tab]                = creamColor;
@@ -288,7 +288,7 @@ namespace nexo::editor {
 
     void Editor::buildDockspace() const
     {
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImGuiID dockspaceID = viewport->ID;
 
         // If the dockspace node doesn't exist yet, create it
@@ -345,7 +345,7 @@ namespace nexo::editor {
 
         if (g_materialInspectorDockID == 0)
         {
-	        int materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
+	        auto materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
 	        if (materialId != 0)
 	        	g_materialInspectorDockID = materialId;
         }
@@ -380,7 +380,7 @@ namespace nexo::editor {
 
         // Gradient background handling
         {
-	        ImGuiViewport* viewport = ImGui::GetMainViewport();
+	        const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	        ImGui::SetNextWindowPos(viewport->Pos);
 	        ImGui::SetNextWindowSize(viewport->Size);
 	        ImGui::SetNextWindowViewport(viewport->ID);

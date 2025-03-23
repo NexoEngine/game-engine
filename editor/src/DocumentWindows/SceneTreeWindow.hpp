@@ -135,7 +135,7 @@ namespace nexo::editor {
              * @param uiId The UI window ID for the scene.
              * @return A SceneObject representing the scene.
              */
-            SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId);
+            SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId) const;
 
             /**
              * @brief Creates a new light node and adds properties to it.
@@ -146,7 +146,7 @@ namespace nexo::editor {
              * @param lightEntity The light entity.
              * @param uiName The UI display name.
              */
-            void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName);
+            void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName) const;
 
             /**
              * @brief Creates a new ambient light node.
@@ -156,7 +156,7 @@ namespace nexo::editor {
              * @param lightEntity The ambient light entity.
              * @return A SceneObject representing the ambient light.
              */
-            SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
+            SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity) const;
             /**
              * @brief Creates a new directional light node.
              *
@@ -195,7 +195,7 @@ namespace nexo::editor {
              * @param cameraEntity The camera entity.
              * @return A SceneObject representing the camera.
              */
-            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity cameraEntity);
+            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity cameraEntity) const;
 
             /**
              * @brief Creates a new entity node.
@@ -205,7 +205,7 @@ namespace nexo::editor {
              * @param entity The entity.
              * @return A SceneObject representing the entity.
              */
-            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity);
+            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) const;
 
             /**
              * @brief Handles the renaming of a scene object.
@@ -227,8 +227,8 @@ namespace nexo::editor {
              * @return true if the node is open; false otherwise.
              */
             bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
-            void sceneSelected(const SceneObject &obj);
-            void lightSelected(const SceneObject &obj);
+            void sceneSelected(const SceneObject &obj) const;
+            void lightSelected(const SceneObject &obj) const;
             void cameraSelected(const SceneObject &obj) const;
             void entitySelected(const SceneObject &obj) const;
             void showNode(SceneObject &object);
