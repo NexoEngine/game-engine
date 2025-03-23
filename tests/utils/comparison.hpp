@@ -14,6 +14,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace nexo::utils {
     inline void expectMat4Near(const glm::mat4& a, const glm::mat4& b, const float epsilon = 1e-5f)
@@ -25,6 +26,14 @@ namespace nexo::utils {
                 EXPECT_NEAR(a[i][j], b[i][j], epsilon) << "Mismatch at (" << i << ", " << j << ")";
             }
         }
+    }
+
+    inline void expectQuatNear(const glm::quat &a, const glm::quat &b, const float epsilon = 1e-5f)
+    {
+        EXPECT_NEAR(a.x, b.x, epsilon);
+        EXPECT_NEAR(a.y, b.y, epsilon);
+        EXPECT_NEAR(a.z, b.z, epsilon);
+        EXPECT_NEAR(a.w, b.w, epsilon);
     }
 
     inline void expectVec4Near(const glm::vec4 &a, const glm::vec4 &b, const float epsilon = 1e-5f)
@@ -56,6 +65,7 @@ namespace nexo::utils {
 }
 
 #define EXPECT_MAT4_NEAR(a, b, epsilon) nexo::utils::expectMat4Near(a, b, epsilon)
+#define EXPECT_QUAT_NEAR(a, b, epsilon) nexo::utils::expectQuatNear(a, b, epsilon)
 #define EXPECT_VEC4_NEAR(a, b, epsilon) nexo::utils::expectVec4Near(a, b, epsilon)
 #define EXPECT_VEC2_NEAR(a, b, epsilon) nexo::utils::expectVec2Near(a, b, epsilon)
 #define EXPECT_VEC3_NEAR(a, b, epsilon) nexo::utils::expectVec3Near(a, b, epsilon)
