@@ -41,17 +41,19 @@ namespace nexo::ecs {
      *
      * @tparam T The type of the singleton component.
      */
-    template <typename T>
-    class SingletonComponent final : public ISingletonComponent {
-        public:
-            explicit SingletonComponent(T instance) : _instance(instance) {};
+     template <typename T>
+     class SingletonComponent final : public ISingletonComponent {
+         public:
+             // Templated constructor for perfect forwarding.
+             template<typename U>
+             explicit SingletonComponent(U&& instance) : _instance(std::forward<U>(instance)) {}
 
-            T &getInstance() {
-                return _instance;
-            }
-        private:
-            T _instance;
-    };
+             T &getInstance() {
+                 return _instance;
+             }
+         private:
+             T _instance;
+     };
 
 
     /**
@@ -72,14 +74,15 @@ namespace nexo::ecs {
 			* @param component The instance of the component to register.
 			*/
             template <typename T>
-            void registerSingletonComponent(T component) {
-                std::type_index typeName(typeid(T));
+            void registerSingletonComponent(T&& component) {
+                using Decayed = std::decay_t<T>;
+                std::type_index typeName(typeid(Decayed));
                 if (m_singletonComponents.contains(typeName))
                 {
                     LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
                     return;
                 }
-                m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<T>>(std::move(component))});
+                m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<Decayed>>(std::forward<T>(component))});
             }
 
             /**

@@ -105,28 +105,24 @@ namespace nexo::editor {
              * to the corresponding scene node.
              *
              * @tparam Components Component types to filter by.
+             * @tparam NodeCreator Type of the node creator function.
              * @param scenes Map of scene IDs to their SceneObject nodes.
              * @param nodeCreator Function that creates a SceneObject given a scene ID, UI window ID, and entity.
              */
-            template<typename... Components>
-            void generateNodes(
-            	std::map<scene::SceneId, SceneObject> &scenes,
-            	const std::function<SceneObject(scene::SceneId, WindowId, ecs::Entity)> &nodeCreator)
-            {
-            	const std::set<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
-             	for (const ecs::Entity entity : entities)
-				{
-					const auto& sceneTag = nexo::Application::m_coordinator->getComponent<components::SceneTag>(entity);
-                    if (auto it = scenes.find(sceneTag.id); it != scenes.end())
-					{
-						// Use the provided node-creation function to create a new SceneObject for this entity.
-						SceneObject newNode = nodeCreator(it->second.data.sceneProperties.sceneId, it->second.data.sceneProperties.windowId, entity);
-
-						// Add the new node to the children of the corresponding scene node.
-						it->second.children.push_back(newNode);
-					}
-				}
-            }
+             template<typename... Components, typename NodeCreator>
+             void generateNodes(std::map<scene::SceneId, SceneObject> &scenes, NodeCreator nodeCreator)
+             {
+                 const std::set<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
+                 for (const ecs::Entity entity : entities)
+                 {
+                     const auto& sceneTag = nexo::Application::m_coordinator->getComponent<components::SceneTag>(entity);
+                     if (auto it = scenes.find(sceneTag.id); it != scenes.end())
+                     {
+                         SceneObject newNode = nodeCreator(it->second.data.sceneProperties.sceneId, it->second.data.sceneProperties.windowId, entity);
+                         it->second.children.push_back(newNode);
+                     }
+                 }
+             }
 
             /**
              * @brief Creates a new scene node.

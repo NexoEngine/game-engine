@@ -71,7 +71,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
         components::RenderContext renderContext;
         renderContext.renderer3D.init();
-        m_coordinator->registerSingletonComponent<components::RenderContext>(renderContext);
+        m_coordinator->registerSingletonComponent<components::RenderContext>(std::move(renderContext));
 
         m_coordinator->registerComponent<components::InActiveScene>();
     }

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <utility>
+#include <array>
 
 namespace nexo::math {
 	struct AttenuationData {
@@ -40,7 +41,7 @@ namespace nexo::math {
 	    { 3250.0f, 1.0f, 0.0014f, 0.000007f}
 	};
 
-	inline constexpr int s_attenuationCount = sizeof(s_attenuationTable) / sizeof(s_attenuationTable[0]);
+	inline constexpr int s_attenuationCount = std::size(s_attenuationTable);
 
 	/**
      * @brief Computes the interpolated linear and quadratic attenuation factors for a given distance.
