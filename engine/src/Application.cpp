@@ -51,6 +51,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::InActiveScene>();
+        m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -198,6 +199,7 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
+        physicsSystem.Init(*m_coordinator);
         registerSystems();
         m_sceneManager.setCoordinator(m_coordinator);
 

@@ -15,6 +15,7 @@
 #ifndef PHYSICS_SYSTEM_HPP
 #define PHYSICS_SYSTEM_HPP
 
+#include <Coordinator.hpp>
 #include <iostream>
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
@@ -29,6 +30,10 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
+#include <Coordinator.hpp>
+#include <Entity.hpp>
+#include <components/PhysicsBodyComponent.hpp>
+#include <components/Transform.hpp>
 #include <vector>
 
 namespace nexo::system {
@@ -160,6 +165,9 @@ namespace nexo::system {
         void Update(float deltaTime);
 
         JPH::BodyID CreateBody(const JPH::Vec3& position, JPH::EMotionType motionType, ShapeType shapeType);
+
+        void SyncTransformsToBodies(const std::vector<ecs::Entity> &entities, ecs::Coordinator &coordinator) const;
+
         void ApplyForce(JPH::BodyID bodyID, const JPH::Vec3& force);
         void SetGravity(const JPH::Vec3& gravity);
         void ActivateBody(JPH::BodyID bodyID);

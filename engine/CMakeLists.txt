@@ -47,6 +47,7 @@ set(COMMON_SOURCES
         engine/src/ecs/System.cpp
         engine/src/systems/OnSceneDeletedSystem.cpp
         engine/src/systems/PhysicsSystem.cpp
+        engine/src/systems/PhysicsSystemWrapper.cpp
 )
 
 # Add API-specific sources
