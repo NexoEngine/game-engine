@@ -29,12 +29,6 @@ ImGuiID g_materialInspectorDockID = 0;
 
 namespace nexo::editor {
 
-    /**
-     * @brief Shuts down the editor.
-     *
-     * This method finalizes the editor shutdown process by logging the closing event, 
-     * destroying all active windows via the window registry, and terminating the ImGui backend.
-     */
     void Editor::shutdown() const
     {
         LOG(NEXO_INFO, "Closing editor");
@@ -43,16 +37,6 @@ namespace nexo::editor {
         ImGuiBackend::shutdown();
     }
 
-    /**
-     * @brief Initializes the core engine and configures ImGui components.
-     *
-     * This function sets up essential engine features, including:
-     * - On Linux, configuring the window's Wayland app ID and window manager class if WAYLAND_APP_ID is defined. A warning is issued if the macro is undefined.
-     * - Initializing the engine core via nexo::init().
-     * - Creating and initializing the ImGui context along with its backend error callback.
-     * - Setting the path for ImGui's default layout configuration.
-     * - Applying a dark color style and configuring ImGuizmo with the current ImGui context.
-     */
     void Editor::setupEngine() const
     {
         auto const &app = Application::getInstance();
@@ -147,16 +131,6 @@ namespace nexo::editor {
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
-    /**
-     * @brief Configures and loads fonts for the ImGui interface.
-     *
-     * Initializes the default, SourceSans, and FontAwesome fonts, adjusting the font size based on the
-     * provided horizontal and vertical DPI scaling factors. Merges FontAwesome icons with the primary font
-     * and initializes the backend font atlas.
-     *
-     * @param scaleFactorX Horizontal DPI scaling factor.
-     * @param scaleFactorY Vertical DPI scaling factor.
-     */
     void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY) const
     {
         ImFontConfig fontConfig;
@@ -196,11 +170,6 @@ namespace nexo::editor {
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
-    /**
-     * @brief Initializes the editor.
-     *
-     * Configures the application engine, sets up the UI style, and initializes the window registry.
-     */
     void Editor::init() const
     {
 		setupEngine();
@@ -208,24 +177,11 @@ namespace nexo::editor {
 		m_windowRegistry.setup();
     }
 
-    /**
-     * @brief Checks if the editor is currently open.
-     *
-     * The editor is considered open when it has not been signaled to quit, the application window is open, and the application is still running.
-     *
-     * @return true if the editor is open, false otherwise.
-     */
     bool Editor::isOpen() const
     {
         return !m_quit && nexo::getApp().isWindowOpen() && nexo::getApp().isRunning();
     }
 
-    /**
-     * @brief Draws the main menu bar for the editor.
-     *
-     * Constructs the main menu bar UI component which features the "File" menu. Selecting the "Exit" option in the menu
-     * sets a flag to signal that the editor should quit.
-     */
     void Editor::drawMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
@@ -241,15 +197,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Constructs and configures the editor's dockspace layout.
-     *
-     * This method initializes the dockspace on the main viewport using ImGui's DockBuilder API.
-     * It subdivides the viewport into designated regions for key UI components such as the main scene,
-     * console, scene tree, inspector, and material inspector. The dock nodes are registered with the
-     * window registry to maintain a consistent layout. If a dockspace already exists but the registry
-     * is not yet populated, the dock IDs are retrieved from the configuration.
-     */
     void Editor::buildDockspace()
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -328,12 +275,6 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-
-    /**
-     * @brief Renders the editor's user interface.
-     *
-     * This function handles the complete rendering cycle for the editor. It initiates a new frame, configures the ImGui and ImGuizmo contexts, and builds the UI layout including the dockspace and main menu bar. Registered windows are rendered afterwards, and a full-viewport gradient background is drawn before finalizing the frame.
-     */
     void Editor::render()
     {
     	getApp().beginFrame();
@@ -387,11 +328,6 @@ namespace nexo::editor {
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
-    /**
-     * @brief Updates the editor's state for the current frame.
-     *
-     * This function updates the window registry to process pending window changes and then signals the application to conclude the current frame.
-     */
     void Editor::update() const
     {
     	m_windowRegistry.update();

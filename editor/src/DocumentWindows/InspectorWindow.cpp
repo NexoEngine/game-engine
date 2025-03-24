@@ -41,22 +41,9 @@ extern ImGuiID g_materialInspectorDockID;
 
 namespace nexo::editor
 {
-    /**
- * @brief Default destructor for the InspectorWindow.
- *
- * The default implementation ensures proper cleanup of InspectorWindow instances without any explicit resource deallocation.
- */
-InspectorWindow::~InspectorWindow() = default;
 
-    /**
-     * @brief Initializes the property handlers for various entity component types.
-     *
-     * This method populates the internal map that links component type identifiers (obtained via
-     * typeid) to their corresponding property display handlers, such as TransformProperty,
-     * RenderProperty, and various light and camera properties. These handlers are constructed
-     * with the current InspectorWindow instance and later used to display component-specific
-     * properties in the inspector UI.
-     */
+	InspectorWindow::~InspectorWindow() = default;
+
     void InspectorWindow::setup()
     {
 		m_entityProperties[typeid(components::TransformComponent)] = std::make_shared<TransformProperty>(*this);
@@ -69,23 +56,11 @@ InspectorWindow::~InspectorWindow() = default;
 		m_entityProperties[typeid(components::PerspectiveCameraController)] = std::make_shared<CameraController>(*this);
     }
 
-    /**
-     * @brief Shuts down the inspector window.
-     *
-     * This method is intended for cleanup operations when the inspector window is closed.
-     * Currently, it does not perform any actions.
-     */
     void InspectorWindow::shutdown()
     {
+    	// Nothing to clear for now
     }
 
-    /**
-     * @brief Renders the Inspector window.
-     *
-     * Opens an ImGui window titled "Inspector" and, on its first display, configures docking by calling
-     * firstDockSetup("Inspector"). It retrieves the currently selected entity via the Selector singleton and,
-     * if a valid selection exists, displays either scene or entity properties depending on the selection type.
-     */
     void InspectorWindow::show()
     {
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
@@ -109,16 +84,6 @@ InspectorWindow::~InspectorWindow() = default;
         ImGui::End();
     }
 
-    /**
-     * @brief Displays the scene's properties in the inspector UI.
-     *
-     * Retrieves the scene corresponding to the provided SceneId and renders UI controls that allow toggling the scene's
-     * render and active statuses. The UI is configured with two columns where the "Hide" checkbox inverts the scene's
-     * rendering state and the "Pause" checkbox inverts its active state. An icon prefix is removed from the scene's UI handle
-     * before display.
-     *
-     * @param sceneId The identifier of the scene whose properties are to be displayed.
-     */
     void InspectorWindow::showSceneProperties(const scene::SceneId sceneId) const
     {
 		auto &app = getApp();
@@ -157,15 +122,6 @@ InspectorWindow::~InspectorWindow() = default;
 		}
     }
 
-    /**
-     * @brief Renders the UI for the properties of an entity's components.
-     *
-     * Iterates through all component types associated with the given entity and,
-     * for each type that has a registered property handler in the m_entityProperties map,
-     * invokes its show() method to display the component's properties in the inspector.
-     *
-     * @param entity The entity whose component properties are being displayed.
-     */
     void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
         const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);
@@ -180,5 +136,6 @@ InspectorWindow::~InspectorWindow() = default;
 
     void InspectorWindow::update()
     {
+    	// Nothing to update here
     }
 }

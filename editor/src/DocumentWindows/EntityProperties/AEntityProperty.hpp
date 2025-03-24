@@ -23,13 +23,7 @@ namespace nexo::editor {
 
     class IEntityProperty {
         public:
-            /**
- * @brief Virtual destructor for IEntityProperty.
- *
- * Ensures that derived classes are properly cleaned up when an object is
- * deleted through a pointer to an IEntityProperty.
- */
-virtual ~IEntityProperty() = default;
+            virtual ~IEntityProperty() = default;
 
             virtual bool show(ecs::Entity entity) = 0;
     };
@@ -37,14 +31,14 @@ virtual ~IEntityProperty() = default;
     class AEntityProperty : public IEntityProperty {
     	public:
    			/**
- * @brief Constructs an AEntityProperty instance.
- *
- * Initializes the entity property by storing a reference to the provided InspectorWindow,
- * which is used for displaying and managing entity properties in the editor.
- *
- * @param inspector Reference to the InspectorWindow associated with this property.
- */
-explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
+			 * @brief Constructs an AEntityProperty instance.
+			 *
+			 * Initializes the entity property by storing a reference to the provided InspectorWindow,
+			 * which is used for displaying and managing entity properties in the editor.
+			 *
+			 * @param inspector Reference to the InspectorWindow associated with this property.
+			 */
+			explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
       	protected:
        		InspectorWindow &m_inspector;
     };

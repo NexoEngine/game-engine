@@ -19,6 +19,17 @@ namespace nexo::editor {
 	class CameraProperty : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
+
+			/**
+			 * @brief Displays and updates the camera properties UI.
+			 *
+			 * Retrieves the camera component from the given ECS entity and renders a user interface for adjusting
+			 * camera settings. The UI includes controls for modifying viewport dimensions (with a lock toggle), field of view,
+			 * near plane, far plane, and the clear color using ImGui.
+			 *
+			 * @param entity The entity containing the camera component.
+			 * @return true Always returns true to indicate the UI was rendered.
+			 */
 			bool show(ecs::Entity entity) override;
 	};
 }

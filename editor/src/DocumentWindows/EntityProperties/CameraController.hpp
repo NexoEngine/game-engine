@@ -19,6 +19,16 @@ namespace nexo::editor {
 	class CameraController : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
+
+			/**
+			 * @brief Renders the camera controller UI.
+			 *
+			 * Retrieves the PerspectiveCameraController component from the specified entity and displays its settings,
+			 * including a control for adjusting mouse sensitivity, using an ImGui layout.
+			 *
+			 * @param entity The entity that holds the camera controller component.
+			 * @return true after processing the UI elements.
+			 */
 			bool show(ecs::Entity entity) override;
 	};
 }

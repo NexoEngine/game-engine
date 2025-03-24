@@ -27,36 +27,49 @@
 
 namespace nexo::editor {
 
-
     class Editor {
         public:
-            /**
- * @brief Default constructor for the Editor class.
- *
- * Creates an instance of Editor with default member initialization.
- */
-Editor() = default;
-            /**
- * @brief Default destructor for the Editor class.
- *
- * Automatically handles cleanup when an Editor instance is destroyed.
- */
-~Editor() = default;
+        	Editor() = default;
+         	~Editor() = default;
 
-            /**
-             * @brief Initializes the engine, setting up necessary components and systems.
-             */
+			/**
+			* @brief Initializes the editor.
+			*
+			* Configures the application engine, sets up the UI style, and initializes the window registry.
+			*/
             void init() const;
 
+            /**
+             * @brief Checks if the editor is currently open.
+             *
+             * The editor is considered open when it has not been signaled to quit, the application window is open, and the application is still running.
+             *
+             * @return true if the editor is open, false otherwise.
+             */
             [[nodiscard]] bool isOpen() const;
 
-
+            /**
+             * @brief Updates the editor's state for the current frame.
+             *
+             * This function updates the window registry to process pending window changes and then signals the application to conclude the current frame.
+             */
             void update() const;
+
+            /**
+             * @brief Renders the editor's user interface.
+             *
+             * This function handles the complete rendering cycle for the editor. It initiates a new frame, configures the ImGui and ImGuizmo contexts, and builds the UI layout including the dockspace and main menu bar. Registered windows are rendered afterwards, and a full-viewport gradient background is drawn before finalizing the frame.
+             */
             void render();
+
+            /**
+             * @brief Shuts down the editor.
+             *
+             * This method finalizes the editor shutdown process by logging the closing event,
+             * destroying all active windows via the window registry, and terminating the ImGui backend.
+             */
             void shutdown() const;
 
-            template<typename T>
-            requires std::derived_from<T, IDocumentWindow>
             /**
              * @brief Registers a new window of type T.
              *
@@ -65,13 +78,14 @@ Editor() = default;
              *
              * @tparam T The concrete window type to register, which must inherit from IDocumentWindow.
              */
+            template<typename T>
+            requires std::derived_from<T, IDocumentWindow>
             void registerWindow()
             {
             	auto window = std::make_shared<T>(m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
             }
 
-            template<typename T>
             /**
              * @brief Retrieves a registered window of type T.
              *
@@ -82,15 +96,55 @@ Editor() = default;
              * @tparam T The type of the window to retrieve. Must derive from IDocumentWindow.
              * @return std::shared_ptr<T> A shared pointer to the registered window of type T, or an empty pointer if none exists.
              */
+            template<typename T>
             std::shared_ptr<T> getWindow()
             {
             	return m_windowRegistry.getWindow<T>();
             }
         private:
+
+	        /**
+	         * @brief Initializes the core engine and configures ImGui components.
+	         *
+	         * This function sets up essential engine features, including:
+	         * - On Linux, configuring the window's Wayland app ID and window manager class if WAYLAND_APP_ID is defined. A warning is issued if the macro is undefined.
+	         * - Initializing the engine core via nexo::init().
+	         * - Creating and initializing the ImGui context along with its backend error callback.
+	         * - Setting the path for ImGui's default layout configuration.
+	         * - Applying a dark color style and configuring ImGuizmo with the current ImGui context.
+	         */
             void setupEngine() const;
             void setupStyle() const;
+
+            /**
+             * @brief Configures and loads fonts for the ImGui interface.
+             *
+             * Initializes the default, SourceSans, and FontAwesome fonts, adjusting the font size based on the
+             * provided horizontal and vertical DPI scaling factors. Merges FontAwesome icons with the primary font
+             * and initializes the backend font atlas.
+             *
+             * @param scaleFactorX Horizontal DPI scaling factor.
+             * @param scaleFactorY Vertical DPI scaling factor.
+             */
             void setupFonts(float scaleFactorX, float scaleFactorY) const;
+
+            /**
+             * @brief Constructs and configures the editor's dockspace layout.
+             *
+             * This method initializes the dockspace on the main viewport using ImGui's DockBuilder API.
+             * It subdivides the viewport into designated regions for key UI components such as the main scene,
+             * console, scene tree, inspector, and material inspector. The dock nodes are registered with the
+             * window registry to maintain a consistent layout. If a dockspace already exists but the registry
+             * is not yet populated, the dock IDs are retrieved from the configuration.
+             */
             void buildDockspace();
+
+            /**
+             * @brief Draws the main menu bar for the editor.
+             *
+             * Constructs the main menu bar UI component which features the "File" menu. Selecting the "Exit" option in the menu
+             * sets a flag to signal that the editor should quit.
+             */
             void drawMenuBar();
 
             bool m_quit = false;

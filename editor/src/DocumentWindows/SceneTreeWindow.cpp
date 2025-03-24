@@ -28,13 +28,7 @@
 
 namespace nexo::editor {
 
-    /**
-     * @brief Destructor for the SceneTreeWindow.
-     *
-     * This default destructor cleans up the SceneTreeWindow instance upon destruction.
-     */
-    SceneTreeWindow::~SceneTreeWindow()
-    = default;
+    SceneTreeWindow::~SceneTreeWindow() = default;
 
     void SceneTreeWindow::setup()
     {}
@@ -71,18 +65,6 @@ namespace nexo::editor {
         ImGui::EndGroup();
     }
 
-    /**
-     * @brief Renders a scene object as a selectable tree node.
-     *
-     * This function displays the scene object as a tree node using a unique label and specified flags.
-     * If the node is expanded and clicked, it updates the global selection state—setting the selected 
-     * entity, its type, and the associated scene.
-     *
-     * @param obj The scene object to be displayed.
-     * @param uniqueLabel A unique identifier used for the tree node label.
-     * @param baseFlags ImGui tree node flags to customize the node's appearance.
-     * @return true if the tree node is open (expanded); false otherwise.
-     */
     bool SceneTreeWindow::handleSelection(const SceneObject &obj, const std::string &uniqueLabel,
                                           const ImGuiTreeNodeFlags baseFlags) const
     {
@@ -100,14 +82,6 @@ namespace nexo::editor {
         return nodeOpen;
     }
 
-    /**
-     * @brief Displays a context menu option to delete a scene.
-     *
-     * Presents a "Delete Scene" menu item. When selected, it removes the scene associated
-     * with the given scene object from the scene view manager using the scene's unique window ID.
-     *
-     * @param obj The scene object representing the scene to be deleted.
-     */
     void SceneTreeWindow::sceneSelected(const SceneObject &obj) const
     {
         auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
@@ -116,14 +90,6 @@ namespace nexo::editor {
             viewManager->removeScene(obj.data.sceneProperties.windowId);
     }
 
-    /**
-     * @brief Displays a context menu option to delete a light node.
-     *
-     * When the "Delete Light" menu item is selected, this function unselects the currently selected entity
-     * and deletes the light entity associated with the provided scene object.
-     *
-     * @param obj The scene object representing the light node to delete.
-     */
     void SceneTreeWindow::lightSelected(const SceneObject &obj) const
     {
         auto &app = Application::getInstance();
@@ -135,15 +101,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Displays a context menu option for deleting a camera.
-     *
-     * When the "Delete Camera" menu item is selected, the function retrieves the active SceneViewManager,
-     * finds the scene associated with the camera's window identifier, and deletes the camera entity from that scene.
-     * It also clears any current selection and notifies the application to delete the camera entity.
-     *
-     * @param obj The scene object representing the camera to be deleted.
-     */
     void SceneTreeWindow::cameraSelected(const SceneObject &obj) const
     {
     	auto &app = Application::getInstance();
@@ -231,14 +188,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Displays a modal popup for creating a new scene.
-     *
-     * Renders a popup with an input field prompting the user to enter a scene name. When the "Create"
-     * button is pressed with a non-empty name, it attempts to add the new scene via the SceneViewManager
-     * fetched from the window registry, logging a warning if the creation fails due to a non-unique name.
-     * The popup is closed either upon successful scene creation or when the "Cancel" button is clicked.
-     */
     void SceneTreeWindow::sceneCreationMenu()
     {
         if (m_popupManager.showPopupModal("Create New Scene"))
@@ -270,14 +219,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Renders and manages the Scene Tree window.
-     *
-     * Initializes and displays the Scene Tree window using ImGui by setting its initial position and size.
-     * On the first opening, it performs a docking setup, and then renders the hierarchical scene nodes
-     * if present. Additionally, it handles right-click actions to open the context menu and invokes
-     * context and creation menus for scene management.
-     */
     void SceneTreeWindow::show()
     {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
@@ -300,18 +241,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Creates a new scene node for the scene tree.
-     *
-     * Constructs and initializes a SceneObject to represent a scene within the scene tree UI.
-     * The node's properties are configured using the provided scene and UI identifiers: scene properties 
-     * and type are set from these identifiers, the scene's unique UUID is obtained from the Scene Manager,
-     * and a UI handle is generated by concatenating a scene icon with the scene name from the Scene View Manager.
-     *
-     * @param sceneId The unique identifier of the scene.
-     * @param uiId The identifier for the scene's UI element.
-     * @return SceneObject The newly created scene node with initialized properties.
-     */
     SceneObject SceneTreeWindow::newSceneNode(const scene::SceneId sceneId, const WindowId uiId) const
     {
         SceneObject sceneNode;
@@ -418,15 +347,6 @@ namespace nexo::editor {
         return entityNode;
     }
 
-    /**
-     * @brief Rebuilds the scene tree GUI by clearing old nodes and repopulating it with current scene data.
-     *
-     * This function resets the root node and light counters, retrieves the list of open scenes from the 
-     * SceneViewManager via the window registry, and creates a new scene node for each open scene. 
-     * It then generates child nodes for ambient, directional, point, and spot lights, as well as cameras 
-     * and generic entities using a templated generateNodes method. Finally, it appends these nodes as children 
-     * to the root node, effectively updating the scene tree display.
-     */
     void SceneTreeWindow::update()
     {
         root_.uiName = "Scene Tree";

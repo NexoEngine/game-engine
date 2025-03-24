@@ -39,14 +39,14 @@ namespace nexo::editor {
             [[nodiscard]] bool isOpened() const override { return m_opened; }
 
             /**
- * @brief Retrieves the open state of the document window.
- *
- * Returns a reference to the internal boolean that tracks whether the window is open.
- * This reference is primarily intended for ImGui integration, allowing direct manipulation
- * of the window's visibility state.
- *
- * @return A reference to the window's open state.
- */
+			 * @brief Retrieves the open state of the document window.
+			 *
+			 * Returns a reference to the internal boolean that tracks whether the window is open.
+			 * This reference is primarily intended for ImGui integration, allowing direct manipulation
+			 * of the window's visibility state.
+			 *
+			 * @return A reference to the window's open state.
+			 */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
             /**

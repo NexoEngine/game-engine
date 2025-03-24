@@ -22,38 +22,17 @@
 #include "exceptions/Exceptions.hpp"
 
 namespace nexo::editor {
-	/**
-	 * @brief No setup actions are required for the MaterialInspector.
-	 *
-	 * This method is intentionally left empty as the initialization needs are handled elsewhere.
-	 */
+
 	void MaterialInspector::setup()
 	{
 		// No need to setup anything
 	}
 
-	/**
-	 * @brief Shuts down the Material Inspector.
-	 *
-	 * No explicit cleanup is performed as the framebuffer's destructor automatically handles resource deallocation.
-	 */
 	void MaterialInspector::shutdown()
 	{
 		// No need to delete anything since the destructor of the framebuffer will handle it
 	}
 
-	/**
-	 * @brief Renders the material inspector for the selected entity.
-	 *
-	 * When a valid entity is provided (i.e., `selectedEntity` is not -1) and differs from the current entity,
-	 * this method marks the material as modified and regenerates a scene preview. If the material has been modified,
-	 * it updates the preview by running a framebuffer render pass, displays the resulting image using ImGui,
-	 * and processes potential material changes through the inspector widget.
-	 *
-	 * @param selectedEntity The identifier of the selected entity. A value of -1 indicates no valid selection.
-	 *
-	 * @throw BackendRendererApiFatalFailure Thrown if the framebuffer fails to initialize.
-	 */
 	void MaterialInspector::renderMaterialInspector(int selectedEntity)
 	{
 		bool &materialModified = m_materialModified;
@@ -97,13 +76,6 @@ namespace nexo::editor {
 		}
 	}
 
-	/**
-	 * @brief Displays the Material Inspector window.
-	 *
-	 * This method retrieves the selected entity and the inspector window, then renders the Material Inspector UI using ImGui.
-	 * It sets up appropriate window flags, performs a first-time docking setup when necessary, and delegates material
-	 * rendering to renderMaterialInspector() if the Material Inspector is visible.
-	 */
 	void MaterialInspector::show()
 	{
   		auto const &selector = Selector::get();
@@ -125,11 +97,6 @@ namespace nexo::editor {
         }
 	}
 
-	/**
-	 * @brief No update actions are performed.
-	 *
-	 * This method is provided to adhere to the interface without requiring any update logic.
-	 */
 	void MaterialInspector::update()
 	{
 		// No need to update anything

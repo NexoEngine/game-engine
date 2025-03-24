@@ -101,16 +101,7 @@ namespace nexo::editor {
         return color;
     }
 
-    /**
-     * @brief Processes a loguru message and adds it to the console log.
-     *
-     * Converts a loguru message to the internal log format and appends it to the ConsoleWindow's log list.
-     * The userData pointer is cast to a ConsoleWindow instance, which is then used to record the message details,
-     * including verbosity, message content, and prefix.
-     *
-     * @param userData Pointer to the ConsoleWindow instance.
-     * @param message The loguru message carrying the log details.
-     */
+
     void ConsoleWindow::loguruCallback([[maybe_unused]] void *userData,
                                 const loguru::Message &message)
     {
@@ -122,16 +113,7 @@ namespace nexo::editor {
         });
     }
 
-    /**
-     * @brief Constructs and initializes a ConsoleWindow.
-     *
-     * This constructor sets up the console's logging functionality by registering a loguru callback via
-     * loguru::add_callback to route log messages to the console (using the static loguruCallback) and by
-     * establishing an engine log callback that maps custom LogLevel messages to loguru verbosity levels
-     * using nexoLevelToLoguruLevel before logging them with VLOG_F.
-     *
-     * @param registry The window registry used to register this console window.
-     */
+
     ConsoleWindow::ConsoleWindow(WindowRegistry &registry) : ADocumentWindow(registry)
     {
 		loguru::add_callback(LOGURU_CALLBACK_NAME, &ConsoleWindow::loguruCallback,
@@ -144,46 +126,21 @@ namespace nexo::editor {
 		Logger::setCallback(engineLogCallback);
     };
 
-    /**
-     * @brief Placeholder for setup operations.
-     *
-     * This method is intentionally left empty since all necessary setup, including logging initialization,
-     * is performed in the constructor. It remains available for potential future setup procedures.
-     */
     void ConsoleWindow::setup()
     {
     	//All the setup is made in the constructor because the rest of the editor needs the log setup before setting up the windows
     }
 
-    /**
-     * @brief Clears all stored log entries during shutdown.
-     *
-     * This method resets the console's log by invoking clearLog(), ensuring that all previous
-     * log entries are removed as part of the shutdown process.
-     */
     void ConsoleWindow::shutdown()
     {
     	clearLog();
     }
 
-    /**
-     * @brief Appends a log message to the console's log collection.
-     *
-     * This method adds the provided log message to the internal container, ensuring it is available
-     * for display in the console window.
-     *
-     * @param message The log message to append.
-     */
     void ConsoleWindow::addLog(const LogMessage &message)
     {
         m_logs.push_back(message);
     }
 
-    /**
-     * @brief Clears all log entries and display items.
-     *
-     * Removes all log messages from the internal storage and resets the list of display items.
-     */
     void ConsoleWindow::clearLog()
     {
     	m_logs.clear();
@@ -211,13 +168,6 @@ namespace nexo::editor {
         addLog("# {}\n", command_line);
     }
 
-    /**
-     * @brief Updates the horizontal padding for log entries.
-     *
-     * Iterates over the stored log messages to compute the maximum width of the verbosity tag text for
-     * messages that are currently visible (filtered by selected verbosity levels). The computed maximum
-     * width is then increased by the spacing defined in the ImGui style to ensure proper alignment in the UI.
-     */
     void ConsoleWindow::calcLogPadding()
     {
         m_logPadding = 0.0f;
@@ -291,17 +241,6 @@ namespace nexo::editor {
         ImGui::EndPopup();
     }
 
-    /**
-     * @brief Renders the console window interface.
-     *
-     * This method initializes and displays the console window using ImGui. It sets a predefined window size and
-     * creates a scrolling region to display log messages filtered by selected verbosity levels. When the console is
-     * opened for the first time, it performs an initial docking setup. The function also adjusts log padding for proper
-     * alignment and automatically scrolls to the bottom if new messages have been added.
-     *
-     * An input field is provided for entering commands, which are executed upon pressing Enter, with the input buffer
-     * cleared afterward. Additionally, a popup for adjusting verbosity settings is available, accessible via a button.
-     */
     void ConsoleWindow::show()
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
@@ -349,12 +288,6 @@ namespace nexo::editor {
         ImGui::End();
     }
 
-
-    /**
-     * @brief Placeholder update method for the console window.
-     *
-     * This method is intentionally left empty as no update operations are required.
-     */
     void ConsoleWindow::update()
     {
     	//No need to update anything

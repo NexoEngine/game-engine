@@ -19,6 +19,17 @@ namespace nexo::editor {
 	class AmbientLightProperty : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
+
+			/**
+			 * @brief Renders the ambient light properties UI for the specified entity.
+			 *
+			 * Retrieves the ambient light component associated with the entity and displays
+			 * a header along with a color editor widget. When the header is open, the widget
+			 * allows the user to modify the ambient light color, which is then applied to the component.
+			 *
+			 * @param entity The ECS entity whose ambient light properties are to be displayed.
+			 * @return Always returns true.
+			 */
 			bool show(ecs::Entity entity) override;
 	};
 }

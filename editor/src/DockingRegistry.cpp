@@ -16,29 +16,12 @@
 #include <optional>
 
 namespace nexo::editor {
-	/**
-	 * @brief Registers or updates a docking identifier for a specified name.
-	 *
-	 * This method associates the provided docking ID with the given name within the registry,
-	 * allowing for subsequent retrieval when needed.
-	 *
-	 * @param name The name key for the docking entry.
-	 * @param id The docking identifier to be associated with the name.
-	 */
+
 	void DockingRegistry::setDockId(const std::string& name, ImGuiID id)
 	{
 		dockIds[name] = id;
 	}
 
-	/**
-	 * @brief Retrieves the dock ID associated with the specified name.
-	 *
-	 * This method searches the internal registry for the given name and returns the dock ID
-	 * wrapped in an optional if found. If the name does not exist in the registry, it returns an empty optional.
-	 *
-	 * @param name The name identifier of the dock.
-	 * @return std::optional<ImGuiID> Optional containing the dock ID if found; otherwise, std::nullopt.
-	 */
 	std::optional<ImGuiID> DockingRegistry::getDockId(const std::string& name) const
 	{
 		auto it = dockIds.find(name);

@@ -27,17 +27,7 @@
 #include "DocumentWindows/MaterialInspector.hpp"
 
 namespace nexo::editor {
-    /**
-     * @brief Displays a popup modal for creating a new material.
-     *
-     * Renders a two-column popup using ImGui where the left panel accepts material inputs (name and properties)
-     * via a material inspector, and the right panel shows a live preview of the material rendered in a framebuffer.
-     * If a preview scene hasn’t been generated yet, it is created for the specified dimensions. When the user confirms 
-     * by clicking "OK", the material is linked to the entity's render component and the preview scene is cleaned up; 
-     * clicking "Cancel" simply deletes the preview scene.
-     *
-     * @param entity The entity associated with the material being created.
-     */
+
     void RenderProperty::createMaterialPopup(ecs::Entity entity) const
     {
         ImGui::Text("Create New Material");
@@ -130,18 +120,6 @@ namespace nexo::editor {
         }
     }
 
-    /**
-     * @brief Displays and manages the render properties UI for the specified entity.
-     *
-     * This function retrieves the render component of the given entity and renders a user interface 
-     * for its render properties using ImGui. It configures the material inspector for 3D entities and 
-     * sets up a placeholder for 2D entities. When the material section is active, a scene preview is generated, 
-     * allowing the user to view the material in a framebuffer. The UI also offers controls to toggle entity 
-     * visibility, select a material type from a dropdown, and open popups to create or modify materials.
-     *
-     * @param entity The entity whose render properties are to be displayed.
-     * @return true Always returns true after processing the UI elements.
-     */
     bool RenderProperty::show(ecs::Entity entity)
     {
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);

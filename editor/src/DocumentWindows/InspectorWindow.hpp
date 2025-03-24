@@ -27,19 +27,28 @@ namespace nexo::editor {
 			using ADocumentWindow::ADocumentWindow;
 	        ~InspectorWindow() override;
 
+			/**
+			* @brief Initializes the property handlers for various entity component types.
+			*
+			* This method populates the internal map that links component type identifiers (obtained via
+			* typeid) to their corresponding property display handlers, such as TransformProperty,
+			* RenderProperty, and various light and camera properties. These handlers are constructed
+			* with the current InspectorWindow instance and later used to display component-specific
+			* properties in the inspector UI.
+			*/
 	        void setup() override;
 	        void shutdown() override;
 
+			/**
+			* @brief Renders the Inspector window.
+			*
+			* Opens an ImGui window titled "Inspector" and, on its first display, configures docking by calling
+			* firstDockSetup("Inspector"). It retrieves the currently selected entity via the Selector singleton and,
+			* if a valid selection exists, displays either scene or entity properties depending on the selection type.
+			*/
 	        void show() override;
 	        void update() override;
 
-			/**
-			* @brief Sets the visibility flag for the sub-inspector identified by type T.
-			*
-			* @tparam T The sub-inspector type.
-			* @param visible True if the sub-inspector should be visible, false otherwise.
-			*/
-			template<typename T>
 			/**
 			 * @brief Sets the visibility flag for the sub-inspector associated with type T.
 			 *
@@ -49,39 +58,27 @@ namespace nexo::editor {
 			 *
 			 * @param visible The desired visibility state (true for visible, false for hidden).
 			 */
+			template<typename T>
 			void setSubInspectorVisibility(bool visible)
 			{
 			    m_subInspectorVisibility[std::type_index(typeid(T))] = visible;
 			}
 
 			/**
-			* @brief Sets the associated data for the sub-inspector identified by type T.
-			*
-			* @tparam T The sub-inspector type.
-			* @param data Pointer to a components::Material instance, or nullptr.
-			*/
-			template<typename T>
-			/**
 			 * @brief Associates material data with a sub-inspector of the specified type.
 			 *
-			 * Maps the type index of the templated sub-inspector (T) to the provided material data. 
+			 * Maps the type index of the templated sub-inspector (T) to the provided material data.
 			 * If an entry for the given type already exists, it is updated with the new data.
 			 *
 			 * @tparam T The type of the sub-inspector.
 			 * @param data Pointer to the material data to associate with the sub-inspector.
 			 */
+			template<typename T>
 			void setSubInspectorData(components::Material *data)
 			{
 			    m_subInspectorData[std::type_index(typeid(T))] = data;
 			}
 
-			/**
-			* @brief Gets the visibility flag for the sub-inspector identified by type T.
-			*
-			* @tparam T The sub-inspector type.
-			* @return bool True if the sub-inspector is marked as visible; false if not found.
-			*/
-			template<typename T>
 			/**
 			 * @brief Retrieves the visibility flag for a specific sub-inspector type.
 			 *
@@ -91,23 +88,13 @@ namespace nexo::editor {
 			 * @tparam T The type of the sub-inspector.
 			 * @return true if the sub-inspector is marked as visible; otherwise, false.
 			 */
+			template<typename T>
 			bool getSubInspectorVisibility() const
 			{
 			    auto it = m_subInspectorVisibility.find(std::type_index(typeid(T)));
 			    return (it != m_subInspectorVisibility.end()) ? it->second : false;
 			}
 
-			/**
-			* @brief Gets a modifiable reference to the visibility flag for the sub-inspector of type T.
-			*
-			* This function returns a reference to the boolean stored in m_subInspectorVisibility
-			* associated with the sub-inspector type T. If the entry does not exist, it is default-initialized
-			* (to false) and inserted into the map.
-			*
-			* @tparam T The type representing the sub-inspector.
-			* @return bool& A modifiable reference to the visibility flag.
-			*/
-			template<typename T>
 			/**
 			 * @brief Retrieves a modifiable reference to the visibility flag for a sub-inspector.
 			 *
@@ -118,21 +105,12 @@ namespace nexo::editor {
 			 * @tparam T The sub-inspector type.
 			 * @return bool& A modifiable reference to the visibility flag for the specified sub-inspector.
 			 */
+			template<typename T>
 			bool& getSubInspectorVisibility()
 			{
 			    return m_subInspectorVisibility[std::type_index(typeid(T))];
 			}
 
-			/**
-			* @brief Gets the associated data for the sub-inspector identified by type T.
-			*
-			* The returned variant will either contain a pointer to a components::Material or std::monostate
-			* if no data was set.
-			*
-			* @tparam T The sub-inspector type.
-			* @return std::variant<std::monostate, components::Material*> The stored data.
-			*/
-			template<typename T>
 			/**
 			 * @brief Retrieves the material data associated with the specified sub-inspector type.
 			 *
@@ -144,6 +122,7 @@ namespace nexo::editor {
 			 * @return std::variant<std::monostate, components::Material*> A variant holding a pointer to components::Material if set,
 			 *         or std::monostate if no data is available.
 			 */
+			template<typename T>
 			std::variant<std::monostate, components::Material*> getSubInspectorData() const
 			{
 			    auto it = m_subInspectorData.find(std::type_index(typeid(T)));
@@ -155,7 +134,27 @@ namespace nexo::editor {
 			std::unordered_map<std::type_index, bool> m_subInspectorVisibility;
    			std::unordered_map<std::type_index, std::variant<std::monostate, components::Material *>> m_subInspectorData;
 
+			/**
+			* @brief Displays the scene's properties in the inspector UI.
+			*
+			* Retrieves the scene corresponding to the provided SceneId and renders UI controls that allow toggling the scene's
+			* render and active statuses. The UI is configured with two columns where the "Hide" checkbox inverts the scene's
+			* rendering state and the "Pause" checkbox inverts its active state. An icon prefix is removed from the scene's UI handle
+			* before display.
+			*
+			* @param sceneId The identifier of the scene whose properties are to be displayed.
+			*/
 			void showSceneProperties(scene::SceneId sceneId) const;
+
+			/**
+			* @brief Renders the UI for the properties of an entity's components.
+			*
+			* Iterates through all component types associated with the given entity and,
+			* for each type that has a registered property handler in the m_entityProperties map,
+			* invokes its show() method to display the component's properties in the inspector.
+			*
+			* @param entity The entity whose component properties are being displayed.
+			*/
 	        void showEntityProperties(ecs::Entity entity);
     };
 };
