@@ -32,6 +32,20 @@ namespace nexo::editor {
         }
     }
 
+    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
+    {
+        switch (level)
+        {
+            case LogLevel::FATAL: return loguru::Verbosity_FATAL;
+            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case LogLevel::WARN: return loguru::Verbosity_WARNING;
+            case LogLevel::INFO: return loguru::Verbosity_INFO;
+            case LogLevel::DEBUG: return loguru::Verbosity_1;
+            case LogLevel::DEV: return loguru::Verbosity_2;
+        }
+        return loguru::Verbosity_INVALID;
+    }
+
     static constexpr ImVec4 getVerbosityColor(loguru::Verbosity level)
     {
         ImVec4 color;
@@ -54,19 +68,46 @@ namespace nexo::editor {
         return color;
     }
 
-    ConsoleWindow::~ConsoleWindow()
+    void ConsoleWindow::loguruCallback([[maybe_unused]] void *userData,
+                                const loguru::Message &message)
     {
-        clearLog();
+        const auto console = static_cast<ConsoleWindow *>(userData);
+        console->addLog({
+            .verbosity = message.verbosity,
+            .message = message.message,
+            .prefix = message.prefix
+        });
     }
 
+    ConsoleWindow::ConsoleWindow(WindowRegistry &registry) : ADocumentWindow(registry)
+    {
+		loguru::add_callback(LOGURU_CALLBACK_NAME, &ConsoleWindow::loguruCallback,
+		                         this, loguru::Verbosity_MAX);
+
+		auto engineLogCallback = [](const LogLevel level, const std::string &message) {
+		    const auto loguruLevel = nexoLevelToLoguruLevel(level);
+		    VLOG_F(loguruLevel, "%s", message.c_str());
+		};
+		Logger::setCallback(engineLogCallback);
+    };
+
     void ConsoleWindow::setup()
-    {}
+    {
+    }
 
     void ConsoleWindow::shutdown()
-    {}
+    {
+    	clearLog();
+    }
+
+    void ConsoleWindow::addLog(const LogMessage &message)
+    {
+        m_logs.push_back(message);
+    }
 
     void ConsoleWindow::clearLog()
     {
+    	m_logs.clear();
         items.clear();
     }
 
@@ -94,7 +135,7 @@ namespace nexo::editor {
     void ConsoleWindow::calcLogPadding()
     {
         m_logPadding = 0.0f;
-        for (const auto &[verbosity, message, prefix]: _editor.getLogs())
+        for (const auto &[verbosity, message, prefix]: m_logs)
         {
             if (!selectedVerbosityLevels.contains(verbosity))
                 continue;
@@ -176,7 +217,7 @@ namespace nexo::editor {
             calcLogPadding();
 
         auto id = 0;
-        for (const auto &[verbosity, message, prefix]: _editor.getLogs())
+        for (const auto &[verbosity, message, prefix]: m_logs)
         {
             if (!selectedVerbosityLevels.contains(verbosity))
                 continue;

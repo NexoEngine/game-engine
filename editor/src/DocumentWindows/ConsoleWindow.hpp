@@ -19,12 +19,21 @@
 
 namespace nexo::editor {
 
+	constexpr auto LOGURU_CALLBACK_NAME = "GEE";
+
+    struct LogMessage {
+        loguru::Verbosity verbosity;
+        std::string message;
+        std::string prefix;
+    };
+
     class ConsoleWindow final : public ADocumentWindow {
         public:
-            explicit ConsoleWindow(const Editor& editor)
-                : _editor(editor) {}
-
-            ~ConsoleWindow() override;
+            explicit ConsoleWindow(WindowRegistry &registry);
+            ~ConsoleWindow() override
+            {
+                loguru::remove_callback(LOGURU_CALLBACK_NAME);
+            };
 
             void setup() override;
             void shutdown() override;
@@ -49,9 +58,10 @@ namespace nexo::editor {
                 loguru::Verbosity_INFO,
             };
 
-            const Editor& _editor;
+            std::vector<LogMessage> m_logs;
 
             void clearLog();
+            void addLog(const LogMessage& message);
             void displayLog(loguru::Verbosity verbosity, const std::string &msg) const;
             void showVerbositySettingsPopup();
             /**
@@ -59,6 +69,8 @@ namespace nexo::editor {
             * The logs should be aligned based on the longest verbosity level prefix.
             */
             void calcLogPadding();
+
+            static void loguruCallback(void *userData, const loguru::Message& message);
     };
 
 }

@@ -21,6 +21,7 @@ set(SRCS
         editor/src/utils/ScenePreview.cpp
         editor/src/utils/Config.cpp
         editor/src/Editor.cpp
+        editor/src/WindowRegistry.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
         editor/src/DocumentWindows/MainScene.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp

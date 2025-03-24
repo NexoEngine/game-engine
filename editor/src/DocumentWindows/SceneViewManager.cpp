@@ -28,10 +28,6 @@ namespace nexo::editor {
 
     void SceneViewManager::setup()
     {
-        for (const auto &[_, scene]: m_scenes)
-        {
-            scene->setup();
-        }
     }
 
     void SceneViewManager::shutdown()
@@ -58,16 +54,10 @@ namespace nexo::editor {
         //m_scenes[newScene->windowId] = newScene;
     }
 
-    void SceneViewManager::addNewScene(const std::string &sceneName, const std::shared_ptr<MainScene> &scene)
+    void SceneViewManager::addNewScene(const std::string &sceneName, bool defaultScene)
     {
-        std::shared_ptr<MainScene> newScene;
-        if (scene != nullptr)
-            newScene = scene;
-        else
-        {
-            newScene = std::make_shared<MainScene>(sceneName);
-            newScene->setup();
-        }
+        std::shared_ptr<MainScene> newScene = std::make_shared<MainScene>(m_windowRegistry, sceneName, defaultScene);
+        newScene->setup();
         const std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
         if (!targetWindow.empty())
         {

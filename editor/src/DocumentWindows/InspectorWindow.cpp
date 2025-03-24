@@ -89,9 +89,14 @@ namespace nexo::editor
 		}
 	}
 
-    InspectorWindow::InspectorWindow()
+    InspectorWindow::~InspectorWindow() = default;
+
+    void InspectorWindow::setup()
     {
+
     	m_materialInspector = std::make_shared<MaterialInspector>(*this);
+    	m_materialInspector->setup();
+
 
 		m_entityProperties[typeid(components::TransformComponent)] = std::make_shared<TransformProperty>(*this);
 		m_entityProperties[typeid(components::RenderComponent)] = std::make_shared<RenderProperty>(*this);
@@ -101,13 +106,6 @@ namespace nexo::editor
 		m_entityProperties[typeid(components::SpotLightComponent)] = std::make_shared<SpotLightProperty>(*this);
 		m_entityProperties[typeid(components::CameraComponent)] = std::make_shared<CameraProperty>(*this);
 		m_entityProperties[typeid(components::PerspectiveCameraController)] = std::make_shared<CameraController>(*this);
-    }
-
-    InspectorWindow::~InspectorWindow() = default;
-
-    void InspectorWindow::setup()
-    {
-    	m_materialInspector->setup();
     }
 
     void InspectorWindow::shutdown()

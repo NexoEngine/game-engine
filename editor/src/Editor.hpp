@@ -15,37 +15,13 @@
 #pragma once
 
 #define L_DEBUG 1
-#include <vector>
 #include <loguru/loguru.hpp>
 #include <memory>
-#include <unordered_map>
 
-#include "IDocumentWindow.hpp"
-#include "DocumentWindows/SceneViewManager.hpp"
-#include "Nexo.hpp"
+#include "WindowRegistry.hpp"
 
 namespace nexo::editor {
-    constexpr auto LOGURU_CALLBACK_NAME = "GEE";
 
-    struct LogMessage {
-        loguru::Verbosity verbosity;
-        std::string message;
-        std::string prefix;
-    };
-
-    struct TransparentStringHash {
-        using is_transparent = void; // Enable heterogeneous lookup
-        std::size_t operator()(const std::string_view key) const noexcept {
-            return std::hash<std::string_view>{}(key);
-        }
-    };
-
-    struct TransparentStringEqual {
-        using is_transparent = void; // Enable heterogeneous lookup
-        bool operator()(const std::string_view lhs, const std::string_view rhs) const noexcept {
-            return lhs == rhs;
-        }
-    };
 
     class Editor {
         public:
@@ -55,32 +31,36 @@ namespace nexo::editor {
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
              */
-            void init() const;
+            void init();
 
             [[nodiscard]] bool isOpen() const;
 
 
-            void update() const;
+            void update();
             void render();
-            void shutdown() const;
+            void shutdown();
 
-            void registerWindow(const std::string& name, std::shared_ptr<IDocumentWindow> window);
-            void addLog(const LogMessage& message);
-            [[nodiscard]] const std::vector<LogMessage>& getLogs() const;
+            template<typename T>
+            void registerWindow()
+            {
+            	auto window = std::make_shared<T>(m_windowRegistry);
+             	m_windowRegistry.registerWindow<T>(window);
+            }
+
+            template<typename T>
+            std::shared_ptr<T> getWindow()
+            {
+            	return m_windowRegistry.getWindow<T>();
+            }
         private:
-            void setupLogs();
             void setupEngine() const;
             void setupStyle() const;
             void setupFonts(float scaleFactorX, float scaleFactorY) const;
             void buildDockspace() const;
             void drawMenuBar();
 
-            static void loguruCallback(void *userData, const loguru::Message& message);
-
             bool m_quit = false;
             bool m_showDemoWindow = false;
-            std::unordered_map<std::string, std::shared_ptr<IDocumentWindow>, TransparentStringHash, TransparentStringEqual> m_windows;
-
-            std::vector<LogMessage> m_logs;
+            WindowRegistry m_windowRegistry;
     };
 }

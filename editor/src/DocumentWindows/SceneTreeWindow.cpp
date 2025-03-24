@@ -27,8 +27,6 @@
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
-    SceneTreeWindow::SceneTreeWindow()
-    = default;
 
     SceneTreeWindow::~SceneTreeWindow()
     = default;
@@ -76,21 +74,21 @@ namespace nexo::editor {
             return nodeOpen;
         if (ImGui::IsItemClicked())
         {
-	        auto &viewManager = SceneViewManager::get();
+	        auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
 	        auto &selector = Selector::get();
         	selector.setSelectedEntity(obj.uuid, obj.data.entity);
          	selector.setSelectionType(obj.type);
-          	viewManager.setSelectedScene(obj.data.sceneProperties.sceneId);
+          	viewManager->setSelectedScene(obj.data.sceneProperties.sceneId);
         }
         return nodeOpen;
     }
 
     void SceneTreeWindow::sceneSelected(const SceneObject &obj) const
     {
-        auto &viewManager = SceneViewManager::get();
+        auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
 
         if (ImGui::MenuItem("Delete Scene"))
-            viewManager.removeScene(obj.data.sceneProperties.windowId);
+            viewManager->removeScene(obj.data.sceneProperties.windowId);
     }
 
     void SceneTreeWindow::lightSelected(const SceneObject &obj) const
@@ -110,8 +108,8 @@ namespace nexo::editor {
     	auto &selector = Selector::get();
         if (ImGui::MenuItem("Delete Camera"))
         {
-        	auto &viewManager = SceneViewManager::get();
-         	viewManager.getScene(obj.data.sceneProperties.windowId)->deleteCamera(obj.data.entity);
+        	auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
+         	viewManager->getScene(obj.data.sceneProperties.windowId)->deleteCamera(obj.data.entity);
         	selector.unselectEntity();
         	app.deleteEntity(obj.data.entity);
         }
@@ -204,8 +202,8 @@ namespace nexo::editor {
             {
                 if (const std::string newSceneName(sceneNameBuffer); !newSceneName.empty())
                 {
-                    auto &viewManager = SceneViewManager::get();
-                    viewManager.addNewScene(sceneNameBuffer);
+                    auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
+                    viewManager->addNewScene(sceneNameBuffer);
                     memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
 
                     m_popupManager.closePopupInContext();
@@ -244,8 +242,8 @@ namespace nexo::editor {
     SceneObject SceneTreeWindow::newSceneNode(const scene::SceneId sceneId, const WindowId uiId) const
     {
         SceneObject sceneNode;
-        auto const &viewManager = SceneViewManager::get();
-        const std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + viewManager.getSceneName(uiId);
+        auto const &viewManager = m_windowRegistry.getWindow<SceneViewManager>();
+        const std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + viewManager->getSceneName(uiId);
         sceneNode.data.sceneProperties = SceneProperties{sceneId, uiId};
         sceneNode.data.entity = sceneId;
         sceneNode.type = SelectionType::SCENE;
@@ -358,7 +356,7 @@ namespace nexo::editor {
         m_nbSpotLights = 0;
 
         // Retrieves the scenes that are displayed on the GUI
-        auto scenes = SceneViewManager::get().getOpenScenes();
+        auto &scenes = m_windowRegistry.getWindow<SceneViewManager>()->getOpenScenes();
         std::map<scene::SceneId, SceneObject> sceneNodes;
         for (const auto &[sceneId, windowId] : scenes)
         {

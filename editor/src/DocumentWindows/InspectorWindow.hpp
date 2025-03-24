@@ -39,7 +39,7 @@ namespace nexo::editor {
 
     class InspectorWindow final : public ADocumentWindow {
 	    public:
-	        InspectorWindow();
+			explicit InspectorWindow(WindowRegistry &registry) : ADocumentWindow(registry) {};
 	        ~InspectorWindow() override;
 
 	        void setup() override;

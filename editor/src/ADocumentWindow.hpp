@@ -16,11 +16,12 @@
 
 #include "IDocumentWindow.hpp"
 #include "Nexo.hpp"
+#include "WindowRegistry.hpp"
 
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
-            explicit ADocumentWindow()
+            explicit ADocumentWindow(WindowRegistry &windowRegistry) : m_windowRegistry(windowRegistry)
             {
                 windowId = nextWindowId++;
             };
@@ -40,5 +41,7 @@ namespace nexo::editor {
         protected:
             bool m_opened = true;
             bool m_focused = false;
+
+            WindowRegistry &m_windowRegistry;
     };
 }

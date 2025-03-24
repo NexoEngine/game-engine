@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "ADocumentWindow.hpp"
 #include "MainScene.hpp"
 #include "SceneTreeWindow.hpp"
 
@@ -31,17 +32,12 @@ namespace nexo::editor {
 	*/
     class SceneViewManager : public ADocumentWindow {
         public:
-            static SceneViewManager& get()
-            {
-            	static SceneViewManager instance;
-				return instance;
-            }
-
+        	explicit SceneViewManager(WindowRegistry &registry) : ADocumentWindow(registry) {};
             void setup() override;
             void shutdown() override;
             void show() override;
             void update() override;
-            void addNewScene(const std::string &sceneName, const std::shared_ptr<MainScene>& scene = nullptr);
+            void addNewScene(const std::string &sceneName, bool defaultScene = false);
             void duplicateSceneView(WindowId uiId);
             void removeScene(WindowId uiId);
             std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };

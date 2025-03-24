@@ -20,6 +20,7 @@
 #include "LightFactory.hpp"
 #include "CameraFactory.hpp"
 #include "Nexo.hpp"
+#include "WindowRegistry.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
 #include "math/Matrix.hpp"
@@ -33,11 +34,12 @@
 
 namespace nexo::editor {
 
-    MainScene::MainScene(std::string sceneName, const bool defaultScene) : m_sceneName(std::move(sceneName)),
-                                                                           m_defaultScene(defaultScene) {}
-
-    MainScene::~MainScene()
-    = default;
+    MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) : m_sceneName(std::move(sceneName)),
+                                                                           m_defaultScene(defaultScene),
+                                                                           m_windowRegistry(windowRegistry)
+    {
+    	windowId = nextWindowId++;
+    }
 
     void MainScene::setup()
     {
@@ -198,13 +200,13 @@ namespace nexo::editor {
         ImGui::PopStyleVar();
     }
 
-    void MainScene::renderGizmo() const
+    void MainScene::renderGizmo()
     {
         const auto &coord = nexo::Application::m_coordinator;
         auto const &selector = Selector::get();
-        if (const auto &viewManager = SceneViewManager::get();
-            selector.getSelectionType() != SelectionType::ENTITY ||
-            viewManager.getSelectedScene() != m_sceneId)
+        const auto &sceneViewManager = m_windowRegistry.getWindow<SceneViewManager>();
+        if (selector.getSelectionType() != SelectionType::ENTITY ||
+            sceneViewManager->getSelectedScene() != m_sceneId)
             return;
         const ecs::Entity entity = selector.getSelectedEntity();
         const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
@@ -287,11 +289,11 @@ namespace nexo::editor {
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
             if (m_focused)
             {
-                if (auto &viewManager = SceneViewManager::get();
-                    viewManager.getSelectedScene() != m_sceneId)
+                if (auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
+                    viewManager->getSelectedScene() != m_sceneId)
                 {
                 	auto &selector = Selector::get();
-                    viewManager.setSelectedScene(m_sceneId);
+                    viewManager->setSelectedScene(m_sceneId);
                     selector.unselectEntity();
                 }
             }
@@ -329,14 +331,14 @@ namespace nexo::editor {
                 if (data != -1)
                 {
                 	std::cout << "Clicked on entity with ID: " << data << std::endl;
-                    auto &viewManager = SceneViewManager::get();
+                    auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
                     const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
                     if (uuid)
                     {
 	                   	selector.setSelectedEntity(uuid->get().uuid, data);
 	                    selector.setSelectionType(SelectionType::ENTITY);
                     }
-                    viewManager.setSelectedScene(m_sceneId);
+                    viewManager->setSelectedScene(m_sceneId);
                 }
                 else
                 {

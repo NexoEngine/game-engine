@@ -14,20 +14,23 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "WindowRegistry.hpp"
 #include "core/scene/SceneManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
-        class MainScene final : public ADocumentWindow {
+        class MainScene{
         public:
-            explicit MainScene(std::string sceneName, bool defaultScene = false);
-            ~MainScene() override;
+            explicit MainScene(WindowRegistry &windowRegistry,std::string sceneName, bool defaultScene = false);
+            ~MainScene() = default;
 
-            void setup() override;
-            void shutdown() override;
-            void show() override;
-            void update() override;
+            void setup();
+            void shutdown();
+            void show();
+            void update();
+
+            bool isOpened() const { return m_opened; }
 
             [[nodiscard]] const std::string &getName() const {return m_sceneName;};
             void setName(const std::string_view name) { m_sceneName = name; };
@@ -38,15 +41,20 @@ namespace nexo::editor {
 
             // Strictly used for display purposes when having multiple view of one scene
             unsigned int idView = 0;
+            WindowId windowId;
         private:
             std::string m_sceneName;
             bool m_defaultScene = false;
+            bool m_opened = true;
+            bool m_focused = false;
             ImVec2 _viewSize = {0, 0};
             ImVec2 _viewPosition = {0, 0};
             ImVec2 m_viewportBounds[2];
             int _targetFPS = 60;
             ImGuizmo::OPERATION _currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE _currentGizmoMode = ImGuizmo::WORLD;
+
+            WindowRegistry &m_windowRegistry;
 
             int m_sceneId = -1;
             std::set<ecs::Entity> m_cameras;
@@ -117,7 +125,7 @@ namespace nexo::editor {
             void handleKeyEvents();
 
             void renderToolbar();
-            void renderGizmo() const;
+            void renderGizmo();
             void renderView();
     };
 }
