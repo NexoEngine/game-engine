@@ -15,7 +15,6 @@
 #include "OpenGlWindow.hpp"
 
 #include <stb_image.h>
-#include <core/exceptions/Exceptions.hpp>
 
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"

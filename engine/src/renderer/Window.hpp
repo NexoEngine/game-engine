@@ -16,9 +16,10 @@
 
 #include <filesystem>
 #include <memory>
-
-#include "core/event/Event.hpp"
-#include "core/event/WindowEvent.hpp"
+#include <functional>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace nexo::renderer {
 

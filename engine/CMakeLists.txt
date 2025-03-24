@@ -10,9 +10,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add source files
 set(COMMON_SOURCES
         common/Exception.cpp
+        common/math/Vector.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
+        engine/src/LightFactory.cpp
+        engine/src/CameraFactory.cpp
         engine/src/Application.cpp
         engine/src/Application.cpp
         engine/src/renderer/Window.cpp
@@ -23,6 +26,7 @@ set(COMMON_SOURCES
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderStorageBuffer.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
         engine/src/renderer/Renderer.cpp
@@ -32,20 +36,21 @@ set(COMMON_SOURCES
         engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
-        engine/src/core/camera/PerspectiveCamera.cpp
-        engine/src/core/camera/OrthographicCamera.cpp
-        engine/src/core/camera/PerspectiveCameraController.cpp
-        engine/src/core/camera/OrthographicCameraController.cpp
-        engine/src/core/camera/Camera.cpp
-        engine/src/core/layer/Layer.cpp
-        engine/src/core/layer/LayerStack.cpp
+        engine/src/renderer/primitives/Mesh.cpp
+        engine/src/renderer/primitives/Cube.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Components.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
-        engine/src/systems/OnSceneDeletedSystem.cpp
+        engine/src/systems/CameraSystem.cpp
+        engine/src/systems/RenderSystem.cpp
+        engine/src/systems/LightSystem.cpp
+        engine/src/systems/lights/AmbientLightSystem.cpp
+        engine/src/systems/lights/PointLightsSystem.cpp
+        engine/src/systems/lights/DirectionalLightsSystem.cpp
+        engine/src/systems/lights/SpotLightsSystem.cpp
 )
 
 # Add API-specific sources
@@ -56,6 +61,7 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlVertexArray.cpp
             engine/src/renderer/opengl/OpenGlTexture2D.cpp
             engine/src/renderer/opengl/OpenGlShader.cpp
+            engine/src/renderer/opengl/OpenGlShaderStorageBuffer.cpp
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
     )

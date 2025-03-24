@@ -19,8 +19,6 @@
 #include "renderer/Renderer2D.hpp"
 #include "renderer/RendererContext.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace nexo::components {
 
     struct Shape2D {
@@ -30,18 +28,17 @@ namespace nexo::components {
     };
 
     struct Quad final : Shape2D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const SpriteComponent &sprite, int entityID) const override
+        void draw([[maybe_unused]] std::shared_ptr<renderer::RendererContext> &context, [[maybe_unused]] const TransformComponent &transf, [[maybe_unused]] const SpriteComponent &sprite, [[maybe_unused]] int entityID) const override
         {
-            const auto renderer2D = context->renderer2D;
-            if (sprite.sprite != nullptr)
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.sprite, entityID);
-            else if (sprite.texture != nullptr)
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.texture, entityID);
-            else
-                renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
-                                               sprite.color, entityID);
+            //if (sprite.sprite != nullptr)
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.sprite, entityID);
+            //else if (sprite.texture != nullptr)
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.texture, entityID);
+            //else
+            //    renderer2D.drawQuad(transf.pos, {transf.size.x, transf.size.y}, transf.rotation.z,
+            //                                   sprite.color, entityID);
         }
     };
 }

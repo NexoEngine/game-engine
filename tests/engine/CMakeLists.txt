@@ -24,16 +24,13 @@ include_directories("./common")
 
 # Add engine test source files
 add_executable(engine_tests
-    ${TEST_MAIN_FILES}
-    ${BASEDIR}/camera/OrthographicCamera.test.cpp
-    ${BASEDIR}/camera/PerspectiveCamera.test.cpp
+	${TEST_MAIN_FILES}
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/event/WindowEvent.test.cpp
     ${BASEDIR}/exceptions/Exceptions.test.cpp
-    ${BASEDIR}/layer/LayerStack.test.cpp
-    ${BASEDIR}/layer/Layer.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp
     ${BASEDIR}/scene/SceneManager.test.cpp
+    ${BASEDIR}/components/Camera.test.cpp
         # Add other engine test files here
 )
 

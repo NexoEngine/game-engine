@@ -47,6 +47,8 @@ set(RENDERER_SOURCES
         engine/src/renderer/opengl/OpenGlShader.cpp
         engine/src/renderer/opengl/OpenGlRendererApi.cpp
         engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+        engine/src/renderer/primitives/Cube.cpp
+        engine/src/renderer/primitives/Mesh.cpp
 )
 
 add_executable(renderer_tests

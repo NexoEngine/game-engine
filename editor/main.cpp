@@ -16,9 +16,11 @@
 #include "src/DocumentWindows/ConsoleWindow.hpp"
 #include "src/DocumentWindows/MainScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
+#include "src/DocumentWindows/InspectorWindow.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
+#include <DocumentWindows/InspectorWindow.hpp>
 
 int main(int argc, char **argv)
 {
@@ -26,11 +28,14 @@ int main(int argc, char **argv)
         loguru::init(argc, argv);
         loguru::g_stderr_verbosity = loguru::Verbosity_3;
         nexo::editor::Editor editor;
-        const auto &sceneViewManager = nexo::editor::SceneViewManager::getInstance();
-        sceneViewManager->addNewScene("Default scene", std::make_shared<nexo::editor::MainScene>("Default scene", true));
+        auto &sceneViewManager = nexo::editor::SceneViewManager::get();
+        auto defaultScene = std::make_shared<nexo::editor::MainScene>("Default scene", true);
+        sceneViewManager.addNewScene("Default scene", defaultScene);
+
         editor.registerWindow("Scene Tree", std::make_shared<nexo::editor::SceneTreeWindow>());
-        editor.registerWindow("Scene view manager", sceneViewManager);
+        editor.registerWindow("Inspector", std::make_shared<nexo::editor::InspectorWindow>());
         editor.registerWindow("Console", std::make_shared<nexo::editor::ConsoleWindow>(editor));
+
         editor.init();
 
         while (editor.isOpen())
@@ -50,6 +55,4 @@ int main(int argc, char **argv)
         LOG_EXCEPTION(e);
         return 1;
     }
-
 }
-

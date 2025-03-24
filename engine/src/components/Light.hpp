@@ -13,47 +13,80 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <array>
+
 constexpr unsigned int MAX_DIRECTIONAL_LIGHTS = 8;
 constexpr unsigned int MAX_POINT_LIGHTS = 8;
+constexpr unsigned int MAX_SPOT_LIGHTS = 8;
 
 namespace nexo::components {
-    enum class LightType {
-        DIRECTIONAL,
-        POINT,
-        SPOT,
+
+    struct AmbientLightComponent {
+        glm::vec3 color{};
     };
 
-    struct Light {
-        Light() = default;
-
-        Light(const LightType lightType, const glm::vec4 &lightColor, const float lightIntensity) : type(lightType),
-                                                                                                    color(lightColor),
-                                                                                                    intensity(
-                                                                                                        lightIntensity)
-        {};
-
-        ~Light() = default;
-
-        LightType type = LightType::DIRECTIONAL;
-        glm::vec4 color{};
-        float intensity{};
-    };
-
-    struct DirectionalLight : Light {
-        explicit DirectionalLight(const glm::vec3 &lightDirection,
-                                  const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f},
-                                  const float &lightIntensity = 0.5f) : Light(LightType::DIRECTIONAL, lightColor,
-                                                                              lightIntensity),
-                                                                        direction(lightDirection) {};
+    struct DirectionalLightComponent {
+    	DirectionalLightComponent() = default;
+        explicit DirectionalLightComponent(const glm::vec3 &lightDirection,
+                                  		   const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f}) :
+        	direction(lightDirection), color(lightColor) {};
 
         glm::vec3 direction{};
+        glm::vec3 color{};
     };
 
-    struct PointLight : Light {
-        explicit PointLight(glm::vec3 lightPos, const glm::vec4 &lightColor = {1.0f, 1.0f, 1.0f, 1.0f},
-                   const float &lightIntensity = 0.5f) : Light(LightType::POINT, lightColor, lightIntensity),
-                                                         pos(lightPos) {};
+    struct PointLightComponent {
+    	PointLightComponent() = default;
+        explicit PointLightComponent(const glm::vec3 lightPos,
+		        					const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f},
+							        const float linear = 0.09f,
+							        const float quadratic = 0.032f) :
+            pos(lightPos), color(lightColor),
+            linear(linear), quadratic(quadratic) {};
 
         glm::vec3 pos{};
+        glm::vec3 color{};
+        float maxDistance = 50.0f;
+        float constant = 1.0f;
+        float linear{};
+        float quadratic{};
+    };
+
+    struct SpotLightComponent {
+    	SpotLightComponent() = default;
+    	explicit SpotLightComponent(glm::vec3 lightPos,
+     							   glm::vec3 lightDir,
+             					   glm::vec3 lightColor,
+                   				   float cutOff,
+                          		   float outerCutoff,
+                          		   float linear = 0.0014f,
+                          		   float quadractic = 0.0007f) :
+     		pos(lightPos), color(lightColor),
+       		direction(lightDir), cutOff(cutOff),
+         	outerCutoff(outerCutoff), linear(linear),
+          	quadratic(quadractic) {}
+
+     	glm::vec3 pos{};
+      	glm::vec3 color{};
+      	glm::vec3 direction{};
+        float maxDistance = 325.0f;
+       	float cutOff{};
+       	float outerCutoff{};
+
+        float constant = 1.0f;
+        float linear{};
+        float quadratic{};
+    };
+
+    struct LightContext {
+    	glm::vec3 ambientLight;
+     	std::array<PointLightComponent, MAX_POINT_LIGHTS> pointLights;
+      	unsigned int pointLightCount = 0;
+     	std::array<SpotLightComponent, MAX_SPOT_LIGHTS> spotLights;
+      	unsigned int spotLightCount = 0;
+     	std::array<DirectionalLightComponent, MAX_DIRECTIONAL_LIGHTS> directionalLights;
+      	unsigned int directionalLightCount = 0;
     };
 }

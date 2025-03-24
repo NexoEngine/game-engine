@@ -29,7 +29,9 @@
 #include "Timer.hpp"
 #include "components/Light.hpp"
 
-#include "systems/OnSceneDeletedSystem.hpp"
+#include "systems/CameraSystem.hpp"
+#include "systems/RenderSystem.hpp"
+#include "systems/LightSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -61,10 +63,46 @@ namespace nexo {
     ) {
         public:
             ~Application() override = default;
+            Application(const Application&) = delete;
+            Application& operator=(const Application&) = delete;
+            Application(Application&&) = delete;
+            Application& operator=(Application&&) = delete;
 
             void init();
 
+            /**
+             * @brief Begins a new frame by updating the timestep.
+             *
+             * Calculates the time elapsed since the last frame using glfwGetTime()
+             * and updates the current timestep. Also updates the last frame time.
+             */
+            void beginFrame();
+
+            /**
+             * @brief Runs the application for the specified scene and rendering type.
+             *
+             * This function performs the following steps:
+             *  - Retrieves the RenderContext singleton and sets the current scene to be rendered.
+             *  - If the application window is not minimized:
+             *      - If the scene is marked as rendered, it updates the camera context, light, and render systems.
+             *      - If the scene is active, it updates the perspective camera controller system.
+             *  - Depending on the rendering type, it triggers a window update (swaps buffers and polls events).
+             *  - Dispatches events via the EventManager.
+             *  - Resets the RenderContext for the next frame.
+             *  - If profiling is enabled, displays the profiling results.
+             *
+             * @param sceneId The ID of the scene to render.
+             * @param renderingType The rendering mode (e.g., WINDOW or other types).
+             */
             void run(scene::SceneId sceneId, RenderingType renderingType);
+
+            /**
+             * @brief Ends the current frame by clearing processed events.
+             *
+             * Clears all the events that have been dispatched during the frame,
+             * preparing the EventManager for the next frame.
+             */
+            void endFrame();
 
             void handleEvent(event::EventKey &event) override
             {
@@ -130,33 +168,24 @@ namespace nexo {
 
             bool isRunning() const { return m_isRunning; };
 
+            /**
+             * @brief Creates a new entity.
+             *
+             * Delegates the creation to the ECS coordinator.
+             *
+             * @return ecs::Entity The newly created entity.
+             */
             ecs::Entity createEntity() const;
-            void destroyEntity(ecs::Entity entity);
 
-            scene::SceneId createScene(const std::string &sceneName, bool active = true);
-            void deleteScene(scene::SceneId sceneId);
-            scene::LayerId addNewLayer(scene::SceneId sceneId, const std::string &layerName = "Default Layer");
-            scene::LayerId addNewOverlay(scene::SceneId sceneId, const std::string &overlayName = "Default Overlay");
-            void removeLayer(scene::SceneId sceneId, scene::LayerId id);
-            void removeOverlay(scene::SceneId sceneId, scene::LayerId id);
-            void activateScene(scene::SceneId sceneId);
-            void activateLayer(scene::SceneId, scene::LayerId id);
-            void deactivateScene(scene::SceneId sceneId);
-            void deactivateLayer(scene::SceneId sceneId, scene::LayerId id);
-            void setSceneRenderStatus(scene::SceneId sceneId, bool status);
-            void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
-            bool isSceneActive(const scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
-            bool isSceneRendered(const scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
-            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id);
-            void detachCamera(scene::SceneId sceneId, scene::LayerId id);
-            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
-            unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
-            void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
-            void setAmbientLightValue(scene::SceneId sceneId, float value);
-            float getAmbientLightValue(scene::SceneId sceneId);
-
+            /**
+             * @brief Deletes an existing entity.
+             *
+             * If the entity has a SceneTag component, it is first removed from the corresponding scene,
+             * and then destroyed by the ECS coordinator.
+             *
+             * @param entity The entity to delete.
+             */
+            void deleteEntity(ecs::Entity entity);
 
             static Application &getInstance()
             {
@@ -177,7 +206,17 @@ namespace nexo {
                 return m_coordinator->getComponent<T>(entity);
             }
 
-            scene::SceneManager &getSceneManager() { return m_sceneManager; };
+            static std::vector<std::type_index> getAllEntityComponentTypes(const ecs::Entity entity)
+            {
+                return m_coordinator->getAllComponentTypes(entity);
+            }
+
+            static std::vector<std::pair<std::type_index, std::any>> getAllEntityComponents(const ecs::Entity entity)
+            {
+                return m_coordinator->getAllComponents(entity);
+            }
+
+            scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
             [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
@@ -192,13 +231,25 @@ namespace nexo {
             void registerSignalListeners();
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
+            template<typename System, typename... Components>
+            std::shared_ptr<System> registerSystem()
+            {
+	            auto system = m_coordinator->registerSystem<System>();
+
+	            ecs::Signature signature;
+	            (signature.set(m_coordinator->getComponentType<Components>()), ...);
+
+	            m_coordinator->setSystemSignature<System>(signature);
+
+	            return system;
+            }
             void registerSystems();
 
             void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
 
             scene::SceneId m_nextSceneId = 0;
-            scene::SceneManager m_sceneManager;
+            scene::SceneManager m_SceneManager;
 
             bool m_isRunning = true;
             bool m_isMinimized = false;
@@ -206,13 +257,16 @@ namespace nexo {
             std::shared_ptr<renderer::Window> m_window;
 
             float m_lastFrameTime = 0.0f;
+            Timestep m_currentTimestep;
 
             int m_eventDebugFlags{};
 
-            std::shared_ptr<system::OnSceneDeleted> m_onSceneDeleteSystem;
+            std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
+            std::shared_ptr<system::RenderSystem> m_renderSystem;
+            std::shared_ptr<system::LightSystem> m_lightSystem;
+            std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
+            std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
 
             std::vector<ProfileResult> m_profilesResults;
     };
 }
-
-

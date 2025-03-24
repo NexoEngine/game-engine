@@ -15,7 +15,6 @@
 #pragma once
 
 #include "IDocumentWindow.hpp"
-#include "SceneManagerBridge.hpp"
 #include "Nexo.hpp"
 
 namespace nexo::editor {
@@ -37,15 +36,9 @@ namespace nexo::editor {
              */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
-            void setSceneManager(std::shared_ptr<SceneManagerBridge> bridge) override
-            {
-                m_sceneManagerBridge = bridge;
-            };
             WindowId windowId;
         protected:
             bool m_opened = true;
             bool m_focused = false;
-
-            std::shared_ptr<SceneManagerBridge> m_sceneManagerBridge;
     };
 }

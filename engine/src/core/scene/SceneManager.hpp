@@ -1,4 +1,4 @@
-//// SceneManager.hpp /////////////////////////////////////////////////////////
+//// SceneManager.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,83 +7,89 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        08/11/2024
+//  Date:        07/03/2025
 //  Description: Header file for the scene manager class
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <utility>
-
-#include "Scene.hpp"
 #include "ecs/Coordinator.hpp"
+#include "Scene.hpp"
 
 namespace nexo::scene {
-    using SceneId = unsigned int;
-    using LayerId = unsigned int;
+	using SceneId = unsigned int;
 
-    class SceneManager {
-        public:
-            void setCoordinator(std::shared_ptr<ecs::Coordinator> coordinator) { m_coordinator = std::move(coordinator); };
-            [[nodiscard]] std::vector<SceneId> getSceneIDs() const;
+	/**
+	* @class SceneManager
+	* @brief Manages multiple scenes within the engine.
+	*
+	* The SceneManager is responsible for creating, storing, and deleting scenes.
+	* It also provides access to individual scenes by their unique ID.
+	*
+	* Responsibilities:
+	* - Creating both runtime and editor-only scenes.
+	* - Deleting scenes.
+	* - Providing access to scenes by ID.
+	*
+	* Note: A valid ECS Coordinator must be set via setCoordinator() before creating scenes.
+	*/
+	class SceneManager {
+		public:
+			SceneManager();
 
-            [[nodiscard]] std::vector<ecs::Entity> getAllEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllActiveEntities() const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllSceneEntities(SceneId sceneId) const;
-            [[nodiscard]] std::vector<ecs::Entity> getAllSceneRenderedEntities(SceneId sceneId) const;
-            std::set<ecs::Entity> getSceneGlobalEntities(SceneId sceneId) const;
-            std::set<ecs::Entity> getLayerEntities(SceneId sceneId, LayerId id) const;
+			/**
+             * @brief Sets the ECS Coordinator used for scene entity management.
+             *
+             * @param coordinator Shared pointer to the ECS Coordinator.
+             */
+			void setCoordinator(const std::shared_ptr<ecs::Coordinator> &coordinator);
 
-            Scene &getScene(SceneId sceneId);
-            const std::string &getSceneName(SceneId sceneId) const;
+			/**
+             * @brief Creates a new runtime scene.
+             *
+             * Constructs a new scene with the given name and registers it with the manager.
+             *
+             * @param name The name for the new scene.
+             * @return unsigned int The unique ID of the created scene.
+             *
+             * @throws core::SceneManagerLifecycleException if the coordinator is not set.
+             */
+			unsigned int createScene(const std::string &name);
 
-            LayerId addLayer(SceneId sceneId, const std::string &layerName = "Default layer");
-            void removeLayer(SceneId sceneId, LayerId id);
-            LayerId addOverlay(SceneId sceneId, const std::string &overlayName = "Default overlay");
-            void removeOverlay(SceneId sceneId, LayerId id);
-            const layer::LayerStack &getSceneLayers(SceneId sceneId) const;
-            void setLayerName(SceneId sceneId, LayerId id, const std::string_view &newName) const;
+			/**
+             * @brief Creates a new editor-only scene.
+             *
+             * Constructs a new scene intended only for the editor with the given name and registers it.
+             *
+             * @param name The name for the new editor scene.
+             * @return unsigned int The unique ID of the created editor scene.
+             *
+             * @throws core::SceneManagerLifecycleException if the coordinator is not set.
+             */
+			unsigned int createEditorScene(const std::string &name);
 
-            void addEntityToLayer(ecs::Entity entity, SceneId sceneId, LayerId id);
-            void addGlobalEntity(ecs::Entity entity, SceneId sceneId);
+			/**
+             * @brief Deletes a scene by its unique ID.
+             *
+             * Removes the scene from the manager.
+             *
+             * @param id The unique ID of the scene to delete.
+             */
+			void deleteScene(unsigned int id);
 
-            void removeEntityFromLayer(ecs::Entity entity, SceneId sceneId, LayerId id);
-            void removeGlobalEntity(ecs::Entity entity, SceneId sceneId);
+			/**
+             * @brief Retrieves a scene by its unique ID.
+             *
+             * @param id The unique ID of the scene.
+             * @return Scene& Reference to the scene.
+             *
+             * @throws std::out_of_range if the scene is not found.
+             */
+			Scene &getScene(unsigned int id);
 
-            void entityDestroyed(ecs::Entity entity);
+		private:
+			std::shared_ptr<ecs::Coordinator> m_coordinator = nullptr;
+			std::unordered_map<unsigned int, Scene> m_scenes;
 
-            SceneId createScene(const std::string& sceneName, bool active = true);
-            void deleteScene(SceneId id);
-
-            void setSceneRenderStatus(const SceneId sceneId, const bool status) { scenes.at(sceneId).isRendered = status; };
-            void setLayerRenderStatus(const SceneId sceneId, const LayerId id, const bool status) {scenes[sceneId].setLayerRenderStatus(status, id); };
-            bool isSceneRendered(const SceneId sceneId) { return scenes[sceneId].isRendered; };
-            bool isLayerRendered(const SceneId sceneId, const LayerId id) {return scenes[sceneId].getLayerRenderStatus(id); };
-
-            void setSceneActiveStatus(const SceneId sceneId, const bool status) { scenes[sceneId].isActive = status; };
-            void setLayerActiveStatus(const SceneId sceneId, const LayerId id, const bool status) { scenes[sceneId].setLayerActiveStatus(status, id); };
-            bool isSceneActive(const SceneId sceneId) { return scenes[sceneId].isActive; };
-            bool isLayerActive(const SceneId sceneId, const LayerId id) {return scenes[sceneId].getLayerActiveStatus(id); };
-
-            void attachCameraToLayer(SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, LayerId id);
-            void detachCameraFromLayer(SceneId sceneId, LayerId id);
-            std::shared_ptr<camera::Camera> getCameraLayer(SceneId sceneId, LayerId id);
-
-            unsigned int addLightToScene(SceneId id, const std::shared_ptr<components::Light> &light);
-            void removeLightFromScene(SceneId id, unsigned int index);
-            void setSceneAmbientLightValue(SceneId id, float value);
-            float getSceneAmbientLightValue(SceneId id);
-
-            void setWindowOffset(SceneId id, glm::vec2 offset);
-            glm::vec2 getWindowOffset(SceneId id);
-        private:
-            std::shared_ptr<ecs::Coordinator> m_coordinator;
-            std::unordered_map<SceneId, Scene> scenes;
-            std::set<SceneId> m_activeScenes;
-
-            SceneId m_nextSceneId = 0;
-            LayerId m_nextLayerId = 0;
-    };
-
+	};
 }
-

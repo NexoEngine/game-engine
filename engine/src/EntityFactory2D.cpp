@@ -19,17 +19,17 @@
 #include "components/Components.hpp"
 
 namespace nexo {
-    ecs::Entity EntityFactory2D::createQuad(glm::vec3 pos, glm::vec2 size, float rotation, glm::vec4 color)
+    ecs::Entity EntityFactory2D::createQuad(glm::vec3 pos, glm::vec2 size, [[maybe_unused]] float rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = {size.x, size.y, 1.0f};
-        transform.rotation = {0.0f, 0.0f, rotation};
+        //transform.rotation = {0.0f, 0.0f, rotation};
         components::SpriteComponent sprite;
         sprite.color = color;
         auto quad = std::make_shared<components::Quad>();
         auto renderable = std::make_shared<components::Renderable2D>(sprite, quad);
-        components::RenderComponent renderComponent(renderable);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_2D);
 
         ecs::Entity newQuad = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newQuad, transform);

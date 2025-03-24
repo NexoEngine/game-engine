@@ -12,6 +12,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "DocumentWindows/SceneViewManager.hpp"
+#include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
@@ -23,6 +25,8 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
+
+ImGuiID g_materialInspectorDockID = 0;
 
 namespace nexo::utils {
     loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
@@ -76,7 +80,6 @@ namespace nexo::editor {
         LOG(NEXO_INFO, "Editor initialized");
         LOG(NEXO_ERROR, "Error log test");
         LOG(NEXO_WARN, "Warning log test");
-        m_sceneManagerBridge = std::make_shared<SceneManagerBridge>();
     }
 
     void Editor::setupLogs()
@@ -157,11 +160,32 @@ namespace nexo::editor {
         style->PopupRounding = 4.0f;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
-        ImVec4 *colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_Tab] = ImVec4(0.26f, 0.52f, 0.83f, 0.93f);
-        colors[ImGuiCol_TabHovered] = ImVec4(0.12f, 0.52f, 0.99f, 0.80f);
-        colors[ImGuiCol_TabActive] = ImVec4(0.06f, 0.32f, 0.63f, 1.00f);
-        colors[ImGuiCol_TableHeaderBg] = ImVec4(0.15f, 0.44f, 0.79f, 1.00f);
+        auto darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
+
+            // Apply the darker color to the title bar variants:
+        style->Colors[ImGuiCol_TitleBg]         = darker;
+        style->Colors[ImGuiCol_TitleBgActive]   = darker;
+        style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
+
+        auto creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
+        auto creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
+        auto creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
+        auto brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
+
+        // Apply the light cream colors to the tabs:
+        style->Colors[ImGuiCol_Tab]                = creamColor;
+        style->Colors[ImGuiCol_TabHovered]         = creamHovered;
+        style->Colors[ImGuiCol_TabActive]          = brighterActive;
+        style->Colors[ImGuiCol_TabUnfocused]       = creamColor;
+        style->Colors[ImGuiCol_TabUnfocusedActive] = creamActive;
+        style->Colors[ImGuiCol_TabSelectedOverline] = ImVec4(1, 1, 1, 1);
+        style->Colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(1, 1, 1, 0);
+
+        style->Colors[ImGuiCol_Header]                = creamColor;
+        style->Colors[ImGuiCol_HeaderHovered]         = creamHovered;
+        style->Colors[ImGuiCol_HeaderActive]          = creamActive;
+
+        // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
@@ -207,13 +231,13 @@ namespace nexo::editor {
     void Editor::registerWindow(const std::string &name,
                             std::shared_ptr<IDocumentWindow> window)
     {
-        window->setSceneManager(m_sceneManagerBridge);
         m_windows[name] = std::move(window);
         LOG(NEXO_INFO, "Registered window: {}", name.c_str());
     }
 
     void Editor::init() const
     {
+    	SceneViewManager::get().setup();
         for (const auto &[_, window]: m_windows)
         {
             window->setup();
@@ -264,38 +288,79 @@ namespace nexo::editor {
 
     void Editor::buildDockspace() const
     {
-        if (const ImGuiID dockspaceID = ImGui::GetMainViewport()->ID; !ImGui::DockBuilderGetNode(dockspaceID))
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const ImGuiID dockspaceID = viewport->ID;
+
+        // If the dockspace node doesn't exist yet, create it
+        if (!ImGui::DockBuilderGetNode(dockspaceID))
         {
             ImGui::DockBuilderRemoveNode(dockspaceID);
-            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+            ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
+            ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->Size);
 
-            ImGui::DockBuilderSetNodeSize(dockspaceID, ImGui::GetMainViewport()->Size);
+            // ─────────────────────────────────────────────
+            // Step 1: Split off the rightmost column for Material Inspector.
+            // We'll reserve 20% of the width for the Material Inspector.
+            ImGuiID materialInspectorNode, remainingNode;
+            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.20f, &materialInspectorNode, &remainingNode);
+            // 'materialInspectorNode' will hold "Material Inspector"
+            // 'remainingNode' now covers the remaining 80% of the dockspace.
 
-            ImGuiID topNode;
-            ImGuiID rightNode;
-            ImGuiID bottomNode;
-            ImGuiID leftNode;
+            // ─────────────────────────────────────────────
+            // Step 2: Split the remaining node horizontally into two columns.
+            // Left column (main scene and console) will take 70% of the remaining width,
+            // and the middle column (scene tree and Inspector) takes the other 30%.
+            ImGuiID mainSceneColumn, inspectorColumn;
+            ImGui::DockBuilderSplitNode(remainingNode, ImGuiDir_Right, 0.2f, &inspectorColumn, &mainSceneColumn);
+            // 'mainSceneColumn' is ~70% of the remaining space.
+            // 'inspectorColumn' is ~30% of the remaining space.
 
-            // Split the main dockspace vertically (70% for the main scene)
-            ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.7f, &leftNode, &rightNode);
-            // Split the right part horizontally (50/50 between the console and the scene tree)
-            ImGui::DockBuilderSplitNode(rightNode, ImGuiDir_Up, 0.5f, &topNode, &bottomNode);
+            // ─────────────────────────────────────────────
+            // Step 3: In the left column (main scene), split vertically.
+            // The main scene will be on top (70% height) and the console below (30% height).
+            ImGuiID mainSceneTop, consoleNode;
+            ImGui::DockBuilderSplitNode(mainSceneColumn, ImGuiDir_Down, 0.3f, &consoleNode, &mainSceneTop);
 
-            // Attach the default scene to the left side of the window
-            ImGui::DockBuilderDockWindow("Default scene", leftNode);
-            // Attach the scene tree to the top of the right part
-            ImGui::DockBuilderDockWindow("Scene Tree", topNode);
-            // Attach the console to the bottom of the right part
-            ImGui::DockBuilderDockWindow("Console", bottomNode);
+            // ─────────────────────────────────────────────
+            // Step 4: In the middle column (inspector column), split vertically.
+            // The scene tree goes on top and the Inspector (replacing the old console) goes below.
+            // Here, we use a 50/50 split (adjust the ratio if needed).
+            ImGuiID sceneTreeNode, inspectorNode;
+            ImGui::DockBuilderSplitNode(inspectorColumn, ImGuiDir_Down, 0.5f, &inspectorNode, &sceneTreeNode);
 
+            // ─────────────────────────────────────────────
+            // Dock the windows into their corresponding nodes.
+            ImGui::DockBuilderDockWindow("Default scene", mainSceneTop);
+            ImGui::DockBuilderDockWindow("Console", consoleNode);
+            ImGui::DockBuilderDockWindow("Scene Tree", sceneTreeNode);
+            ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
+            ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
+
+            g_materialInspectorDockID = materialInspectorNode;
+
+            // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
+
+        if (g_materialInspectorDockID == 0)
+        {
+	        auto materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
+	        if (materialId != 0)
+	        	g_materialInspectorDockID = materialId;
+        }
+
+
+        // Render the dockspace
+        ImGui::DockSpaceOverViewport(viewport->ID);
     }
+
 
     void Editor::render()
     {
+    	getApp().beginFrame();
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_WindowBg].w = 0.0f; // 0.0f for full transparency
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -305,21 +370,59 @@ namespace nexo::editor {
         drawMenuBar();
         //ImGui::ShowDemoWindow();
 
+        SceneViewManager::get().show();
+
         for (const auto &[_, window]: m_windows)
         {
             if (window->isOpened())
                 window->show();
         }
 
+        // Gradient background handling
+        {
+	        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	        ImGui::SetNextWindowPos(viewport->Pos);
+	        ImGui::SetNextWindowSize(viewport->Size);
+	        ImGui::SetNextWindowViewport(viewport->ID);
+	        ImGui::Begin("Background", nullptr,
+	                        ImGuiWindowFlags_NoDecoration |
+	                        ImGuiWindowFlags_NoInputs |
+	                        ImGuiWindowFlags_NoFocusOnAppearing |
+	                        ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+	        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	        ImU32 darkBase = IM_COL32(20, 20, 20, 255);
+
+	        ImU32 col_top_left     = darkBase;
+	        ImU32 col_bottom_right = darkBase;
+
+	        // Subtle blue tint
+	        ImU32 col_bottom_left  = IM_COL32(20, 20, 40, 255);
+
+	        // Subtle fuchsia tint.
+	        ImU32 col_top_right    = IM_COL32(30, 20, 30, 255);
+
+	        draw_list->AddRectFilledMultiColor(
+	            viewport->Pos,
+	            ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
+	            col_top_left, col_top_right, col_bottom_right, col_bottom_left);
+
+	        ImGui::End();
+        }
+
         ImGui::Render();
+
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
     void Editor::update() const
     {
+    	SceneViewManager::get().update();
         for (const auto &[_, window]: m_windows)
         {
             window->update();
         }
+        getApp().endFrame();
+
     }
 }

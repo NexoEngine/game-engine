@@ -17,6 +17,8 @@
 
 #include <iostream>
 #include <utility>
+#include <glm/gtc/type_ptr.hpp>
+
 
 namespace nexo::renderer {
 
@@ -277,13 +279,16 @@ namespace nexo::renderer {
     void OpenGlFramebuffer::bind()
     {
         if (toResize)
-            invalidate();
+        {
+         	invalidate();
+          	toResize = false;
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()
@@ -322,6 +327,8 @@ namespace nexo::renderer {
         // Add more types here when necessary
         if (ti == typeid(int))
             clearAttachmentImpl<int>(attachmentIndex, value);
+        else if (ti == typeid(glm::vec4))
+            clearAttachmentImpl<glm::vec4>(attachmentIndex, value);
         else
             THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
     }

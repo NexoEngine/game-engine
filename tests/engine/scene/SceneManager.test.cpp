@@ -1,203 +1,284 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      iMeaNz
+//  Date:        17/03/2025
+//  Description: Test file for the SceneManager class
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "core/scene/SceneManager.hpp"
-#include "core/layer/Layer.hpp"
-#include "components/Light.hpp"
-#include "core/camera/Camera.hpp"
+#include "core/scene/Scene.hpp"
+#include "core/exceptions/Exceptions.hpp"
+#include "ecs/Coordinator.hpp"
+
+// Forward declarations to avoid circular dependencies
+namespace nexo::ecs {
+    class Coordinator;
+}
 
 namespace nexo::scene {
-    class MockCamera : public camera::Camera {
-        public:
-        MOCK_METHOD(void, onUpdate, (Timestep), (override));
-        MOCK_METHOD(const glm::mat4&, getViewProjectionMatrix, (), (const, override));
-        MOCK_METHOD(const glm::vec3&, getPosition, (), (const, override));
-        MOCK_METHOD(camera::CameraMode, getMode, (), (const, override));
-    };
 
-    class MockLight : public components::Light {
-        public:
-        MockLight() : Light(components::LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f) {}
-    };
+// Create a mock for the Coordinator class
+class MockCoordinator : public nexo::ecs::Coordinator {
+public:
+    // Define the Entity type to match what's used in the real code
+    using Entity = std::uint32_t;
 
-    class SceneManagerTest : public ::testing::Test {
-        protected:
-        void SetUp() override {
-            Application::getInstance();
-            nexo::init();
-            sceneManager = std::make_unique<SceneManager>();
-        }
+    MOCK_METHOD(Entity, createEntity, (), ());
+    MOCK_METHOD(void, destroyEntity, (Entity), ());
 
-        std::unique_ptr<SceneManager> sceneManager;
-    };
+    // Additional methods the Coordinator might need for Scene operations
+};
 
-    TEST_F(SceneManagerTest, CreateAndDeleteScenes) {
-        SceneId scene1 = sceneManager->createScene("Scene1");
-        SceneId scene2 = sceneManager->createScene("Scene2");
+class SceneManagerTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Reset nextSceneId to ensure predictable scene IDs in tests
+        nexo::scene::nextSceneId = 0;
 
-        EXPECT_EQ(sceneManager->getSceneName(scene1), "Scene1");
-        EXPECT_EQ(sceneManager->getSceneName(scene2), "Scene2");
+        // Create a mock coordinator
+        mockCoordinator = std::make_shared<MockCoordinator>();
 
-        sceneManager->deleteScene(scene1);
-        EXPECT_EQ(sceneManager->getSceneName(scene1), ""); // Scene1 no longer exists
-        EXPECT_EQ(sceneManager->getSceneName(scene2), "Scene2"); // Scene2 still exists
+        // This cast is necessary since Scene expects a shared_ptr<ecs::Coordinator>
+        coordinator = std::static_pointer_cast<nexo::ecs::Coordinator>(mockCoordinator);
+
+        // Create a fresh SceneManager for each test
+        manager = std::make_unique<SceneManager>();
+        manager->setCoordinator(coordinator);
     }
 
-    TEST_F(SceneManagerTest, AddAndRemoveLayersAndOverlays) {
-#ifdef _WIN32
-        // TODO: fix test (see #100)
-        GTEST_SKIP() << "Test crashes on the CI on Windows, skipping for now.";
-#endif
-        SceneId scene = sceneManager->createScene("Main Scene");
+    std::shared_ptr<MockCoordinator> mockCoordinator;
+    std::shared_ptr<nexo::ecs::Coordinator> coordinator;
+    std::unique_ptr<SceneManager> manager;
+};
 
-        LayerId layer1 = sceneManager->addLayer(scene, "Layer1");
-        LayerId overlay1 = sceneManager->addOverlay(scene, "Overlay1");
-
-        EXPECT_EQ(sceneManager->getSceneLayers(scene).size(), 2); // Layer + Overlay
-
-        sceneManager->removeLayer(scene, layer1);
-        EXPECT_EQ(sceneManager->getSceneLayers(scene).size(), 1); // Only Overlay remains
-
-        sceneManager->removeOverlay(scene, overlay1);
-        EXPECT_EQ(sceneManager->getSceneLayers(scene).size(), 0); // All removed
-    }
-
-    TEST_F(SceneManagerTest, HandleLayerAndOverlayNames) {
-        SceneId scene = sceneManager->createScene("Name Test Scene");
-
-        LayerId layer = sceneManager->addLayer(scene, "Layer1");
-        LayerId overlay = sceneManager->addOverlay(scene, "Overlay1");
-
-        sceneManager->setLayerName(scene, layer, "RenamedLayer");
-        sceneManager->setLayerName(scene, overlay, "RenamedOverlay");
-
-        EXPECT_EQ(sceneManager->getSceneLayers(scene)[0]->name, "RenamedOverlay");
-        EXPECT_EQ(sceneManager->getSceneLayers(scene)[1]->name, "RenamedLayer");
-    }
-
-    TEST_F(SceneManagerTest, AddAndRemoveEntities) {
-        SceneId scene = sceneManager->createScene("Entity Scene");
-
-        ecs::Entity entity1 = 1;
-        ecs::Entity entity2 = 2;
-
-        auto &app = getApp();
-        app.m_coordinator->addComponent<components::TransformComponent>(entity2, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity2, components::RenderComponent{});
-
-        sceneManager->addGlobalEntity(entity1, scene);
-        EXPECT_TRUE(sceneManager->getSceneGlobalEntities(scene).contains(entity1));
-
-        LayerId layer1 = sceneManager->addLayer(scene, "Layer1");
-        sceneManager->addEntityToLayer(entity2, scene, layer1);
-        EXPECT_TRUE(sceneManager->getLayerEntities(scene, layer1).contains(entity2));
-
-        sceneManager->removeGlobalEntity(entity1, scene);
-        EXPECT_FALSE(sceneManager->getSceneGlobalEntities(scene).contains(entity1));
-
-        sceneManager->removeEntityFromLayer(entity2, scene, layer1);
-        EXPECT_FALSE(sceneManager->getLayerEntities(scene, layer1).contains(entity2));
-    }
-
-    TEST_F(SceneManagerTest, GetAllRenderedEntities) {
-        SceneId scene1 = sceneManager->createScene("Scene1");
-        ecs::Entity entity1 = 1;
-        ecs::Entity entity2 = 2;
-        ecs::Entity entity3 = 3;
-        ecs::Entity entity4 = 4;
-
-        auto &app = getApp();
-        app.m_coordinator->addComponent<components::TransformComponent>(entity1, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity1, components::RenderComponent{});
-        app.m_coordinator->addComponent<components::TransformComponent>(entity2, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity2, components::RenderComponent{});
-        app.m_coordinator->addComponent<components::TransformComponent>(entity3, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity3, components::RenderComponent{});
-        app.m_coordinator->addComponent<components::TransformComponent>(entity4, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity4, components::RenderComponent{});
-
-        LayerId layer1 = sceneManager->addLayer(scene1, "Layer1");
-        sceneManager->addEntityToLayer(entity1, scene1, layer1);
-        sceneManager->addEntityToLayer(entity2, scene1, layer1);
-        LayerId layer2 = sceneManager->addLayer(scene1, "Layer2");
-        sceneManager->addEntityToLayer(entity3, scene1, layer2);
-        sceneManager->addEntityToLayer(entity4, scene1, layer2);
-
-        sceneManager->setLayerRenderStatus(scene1, layer1, false);
-        sceneManager->setLayerRenderStatus(scene1, layer2, false);
-        auto renderedEntities = sceneManager->getAllSceneRenderedEntities(scene1);
-        EXPECT_TRUE(renderedEntities.empty());
-
-        sceneManager->setLayerRenderStatus(scene1, layer1, true);
-        renderedEntities = sceneManager->getAllSceneRenderedEntities(scene1);
-        EXPECT_EQ(renderedEntities.size(), 2);
-        EXPECT_TRUE(std::find(renderedEntities.begin(), renderedEntities.end(), entity1) != renderedEntities.end());
-        EXPECT_TRUE(std::find(renderedEntities.begin(), renderedEntities.end(), entity2) != renderedEntities.end());
-
-        sceneManager->setLayerRenderStatus(scene1, layer1, false);
-        sceneManager->setLayerRenderStatus(scene1, layer2, true);
-        renderedEntities = sceneManager->getAllSceneRenderedEntities(scene1);
-        EXPECT_EQ(renderedEntities.size(), 2);
-        EXPECT_TRUE(std::find(renderedEntities.begin(), renderedEntities.end(), entity3) != renderedEntities.end());
-        EXPECT_TRUE(std::find(renderedEntities.begin(), renderedEntities.end(), entity4) != renderedEntities.end());
-    }
-
-    TEST_F(SceneManagerTest, AddAndRemoveLights) {
-        SceneId scene = sceneManager->createScene("Lighting Scene");
-
-        auto light1 = std::make_shared<MockLight>();
-        auto light2 = std::make_shared<MockLight>();
-
-        unsigned int lightIndex1 = sceneManager->addLightToScene(scene, light1);
-        unsigned int lightIndex2 = sceneManager->addLightToScene(scene, light2);
-
-        EXPECT_EQ(lightIndex1, 0);
-        EXPECT_EQ(lightIndex2, 1);
-
-        sceneManager->removeLightFromScene(scene, lightIndex1);
-        EXPECT_EQ(sceneManager->getSceneAmbientLightValue(scene), 0.5f); // State consistency
-    }
-
-    TEST_F(SceneManagerTest, AttachAndDetachCameraToLayer) {
-        SceneId scene = sceneManager->createScene("Camera Scene");
-        auto mockCamera = std::make_shared<MockCamera>();
-
-        LayerId layer = sceneManager->addLayer(scene, "Layer1");
-        sceneManager->attachCameraToLayer(scene, mockCamera, layer);
-
-        EXPECT_EQ(sceneManager->getCameraLayer(scene, layer), mockCamera);
-
-        sceneManager->detachCameraFromLayer(scene, layer);
-        EXPECT_EQ(sceneManager->getCameraLayer(scene, layer), nullptr);
-    }
-
-    TEST_F(SceneManagerTest, SceneAndLayerStatuses) {
-        SceneId scene = sceneManager->createScene("Status Scene");
-
-        LayerId layer = sceneManager->addLayer(scene, "Layer1");
-        sceneManager->setSceneRenderStatus(scene, false);
-        EXPECT_FALSE(sceneManager->isSceneRendered(scene));
-
-        sceneManager->setLayerRenderStatus(scene, layer, false);
-        EXPECT_FALSE(sceneManager->isLayerRendered(scene, layer));
-
-        sceneManager->setSceneActiveStatus(scene, false);
-        EXPECT_FALSE(sceneManager->isSceneActive(scene));
-
-        sceneManager->setLayerActiveStatus(scene, layer, false);
-        EXPECT_FALSE(sceneManager->isLayerActive(scene, layer));
-    }
-
-    TEST_F(SceneManagerTest, EntityDestroyedPropagation) {
-        SceneId scene = sceneManager->createScene("Entity Scene");
-
-        ecs::Entity entity = 1;
-        LayerId layer = sceneManager->addLayer(scene, "Layer1");
-
-        sceneManager->addGlobalEntity(entity, scene);
-        sceneManager->addEntityToLayer(entity, scene, layer);
-
-        sceneManager->entityDestroyed(entity);
-        EXPECT_FALSE(sceneManager->getSceneGlobalEntities(scene).contains(entity));
-        EXPECT_FALSE(sceneManager->getLayerEntities(scene, layer).contains(entity));
-    }
+TEST_F(SceneManagerTest, Constructor) {
+    // Test that SceneManager is properly constructed
+    SceneManager newManager;
+    // No assertions needed, just verifying it constructs without crashing
+    SUCCEED();
 }
+
+TEST_F(SceneManagerTest, SetCoordinator) {
+    // Test that we can set a coordinator
+    SceneManager newManager;
+    newManager.setCoordinator(coordinator);
+    // No assertions needed, just verifying it sets without crashing
+    SUCCEED();
+}
+
+TEST_F(SceneManagerTest, CreateScene) {
+    // Test creating a scene
+    std::string sceneName = "TestScene";
+    unsigned int sceneId = manager->createScene(sceneName);
+
+    // Scene IDs should start at 0
+    EXPECT_EQ(sceneId, 0);
+
+    // Verify we can retrieve the scene we just created
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), sceneName);
+    EXPECT_EQ(scene.getId(), sceneId);
+}
+
+TEST_F(SceneManagerTest, CreateMultipleScenes) {
+    // Test creating multiple scenes
+    std::string sceneName1 = "TestScene1";
+    std::string sceneName2 = "TestScene2";
+    std::string sceneName3 = "TestScene3";
+
+    unsigned int sceneId1 = manager->createScene(sceneName1);
+    unsigned int sceneId2 = manager->createScene(sceneName2);
+    unsigned int sceneId3 = manager->createScene(sceneName3);
+
+    // Scene IDs should be sequential
+    EXPECT_EQ(sceneId1, 0);
+    EXPECT_EQ(sceneId2, 1);
+    EXPECT_EQ(sceneId3, 2);
+
+    // Verify we can retrieve all scenes we created
+    Scene& scene1 = manager->getScene(sceneId1);
+    Scene& scene2 = manager->getScene(sceneId2);
+    Scene& scene3 = manager->getScene(sceneId3);
+
+    EXPECT_EQ(scene1.getName(), sceneName1);
+    EXPECT_EQ(scene2.getName(), sceneName2);
+    EXPECT_EQ(scene3.getName(), sceneName3);
+
+    EXPECT_EQ(scene1.getId(), sceneId1);
+    EXPECT_EQ(scene2.getId(), sceneId2);
+    EXPECT_EQ(scene3.getId(), sceneId3);
+}
+
+TEST_F(SceneManagerTest, DeleteScene) {
+    // Test deleting a scene
+    std::string sceneName = "TestScene";
+    unsigned int sceneId = manager->createScene(sceneName);
+
+    // Verify the scene exists
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), sceneName);
+
+    // Delete the scene
+    manager->deleteScene(sceneId);
+
+    // Verify the scene no longer exists - should throw std::out_of_range
+    EXPECT_THROW(manager->getScene(sceneId), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, DeleteSceneAndCreateNew) {
+    // Test deleting a scene and creating a new one
+    std::string sceneName1 = "TestScene1";
+    unsigned int sceneId1 = manager->createScene(sceneName1);
+
+    // Delete the scene
+    manager->deleteScene(sceneId1);
+
+    // Create a new scene
+    std::string sceneName2 = "TestScene2";
+    unsigned int sceneId2 = manager->createScene(sceneName2);
+
+    // The new scene should have a new ID despite the deletion
+    // Note: This tests the current implementation. If the behavior is supposed
+    // to reuse IDs, this test would need to be adjusted.
+    EXPECT_EQ(sceneId2, 1);
+
+    // Verify the new scene exists
+    Scene& scene2 = manager->getScene(sceneId2);
+    EXPECT_EQ(scene2.getName(), sceneName2);
+    EXPECT_EQ(scene2.getId(), sceneId2);
+}
+
+TEST_F(SceneManagerTest, GetNonExistentScene) {
+    // Test getting a scene that doesn't exist
+    EXPECT_THROW(manager->getScene(999), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, DeleteNonExistentScene) {
+    // Test deleting a scene that doesn't exist
+    // This should not throw an exception based on the current implementation
+    // If the behavior is supposed to throw, this test would need to be adjusted
+    EXPECT_NO_THROW(manager->deleteScene(999));
+}
+
+TEST_F(SceneManagerTest, CreateAndModifyScene) {
+    // Test creating a scene and then modifying it
+    std::string originalName = "OriginalName";
+    std::string newName = "NewName";
+    unsigned int sceneId = manager->createScene(originalName);
+
+    // Get the scene and modify it
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), originalName);
+
+    scene.setName(newName);
+
+    // Verify the modification persisted
+    Scene& updatedScene = manager->getScene(sceneId);
+    EXPECT_EQ(updatedScene.getName(), newName);
+}
+
+TEST_F(SceneManagerTest, SceneLifecycle) {
+    // Test the entire lifecycle of a scene
+
+    // Create scene
+    std::string sceneName = "LifecycleScene";
+    unsigned int sceneId = manager->createScene(sceneName);
+
+    // Verify creation
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), sceneName);
+
+    // Modify scene
+    scene.setActiveStatus(false);
+    EXPECT_FALSE(scene.isActive());
+
+    scene.setRenderStatus(false);
+    EXPECT_FALSE(scene.isRendered());
+
+    scene.setName("ModifiedLifecycleScene");
+    EXPECT_EQ(scene.getName(), "ModifiedLifecycleScene");
+
+    // Re-get scene to ensure modifications persisted
+    Scene& modifiedScene = manager->getScene(sceneId);
+    EXPECT_EQ(modifiedScene.getName(), "ModifiedLifecycleScene");
+    EXPECT_FALSE(modifiedScene.isActive());
+    EXPECT_FALSE(modifiedScene.isRendered());
+
+    // Delete scene
+    manager->deleteScene(sceneId);
+
+    // Verify deletion
+    EXPECT_THROW(manager->getScene(sceneId), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, CreateSceneWithoutCoordinator) {
+    // Test creating a scene without setting a coordinator
+    SceneManager newManager;
+
+    // Since the coordinator is necessary for Scene construction,
+    // this should throw an exception or handle the null coordinator gracefully
+    // depending on the implementation
+    std::string sceneName = "TestScene";
+    EXPECT_THROW(newManager.createScene(sceneName), core::SceneManagerLifecycleException);
+}
+
+TEST_F(SceneManagerTest, CreateDeleteMultipleScenes) {
+    // Test creating and deleting multiple scenes in various orders
+
+    // Create several scenes
+    unsigned int sceneId1 = manager->createScene("Scene1");
+    unsigned int sceneId2 = manager->createScene("Scene2");
+    unsigned int sceneId3 = manager->createScene("Scene3");
+    unsigned int sceneId4 = manager->createScene("Scene4");
+
+    // Delete scenes in a mixed order
+    manager->deleteScene(sceneId2);
+    manager->deleteScene(sceneId4);
+
+    // Verify the correct scenes still exist
+    EXPECT_NO_THROW(manager->getScene(sceneId1));
+    EXPECT_THROW(manager->getScene(sceneId2), std::out_of_range);
+    EXPECT_NO_THROW(manager->getScene(sceneId3));
+    EXPECT_THROW(manager->getScene(sceneId4), std::out_of_range);
+
+    // Create some new scenes
+    unsigned int sceneId5 = manager->createScene("Scene5");
+    unsigned int sceneId6 = manager->createScene("Scene6");
+
+    // Verify all expected scenes exist
+    EXPECT_NO_THROW(manager->getScene(sceneId1));
+    EXPECT_THROW(manager->getScene(sceneId2), std::out_of_range);
+    EXPECT_NO_THROW(manager->getScene(sceneId3));
+    EXPECT_THROW(manager->getScene(sceneId4), std::out_of_range);
+    EXPECT_NO_THROW(manager->getScene(sceneId5));
+    EXPECT_NO_THROW(manager->getScene(sceneId6));
+
+    // Verify the scene IDs are as expected
+    EXPECT_EQ(sceneId5, 4);
+    EXPECT_EQ(sceneId6, 5);
+}
+
+TEST_F(SceneManagerTest, CreateSceneAfterReset) {
+    // Test creating a scene after resetting the SceneManager
+    unsigned int sceneId1 = manager->createScene("Scene1");
+    EXPECT_EQ(sceneId1, 0);
+
+    // Reset the SceneManager
+    manager.reset(new SceneManager());
+    manager->setCoordinator(coordinator);
+
+    // Create a new scene - should start from ID 1 since nextSceneId is static
+    unsigned int sceneId2 = manager->createScene("Scene2");
+    EXPECT_EQ(sceneId2, 1);
+}
+
+} // namespace nexo::scene

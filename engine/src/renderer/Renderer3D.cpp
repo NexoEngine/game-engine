@@ -22,7 +22,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include <array>
 #include <Path.hpp>
-#include <algorithm>
 
 namespace nexo::renderer {
 
@@ -36,10 +35,10 @@ namespace nexo::renderer {
         // Layout
         const BufferLayout cubeVertexBufferLayout = {
             {ShaderDataType::FLOAT3, "aPos"},
-            {ShaderDataType::FLOAT4, "aColor"},
             {ShaderDataType::FLOAT2, "aTexCoord"},
-            {ShaderDataType::FLOAT, "aTexIndex"},
             {ShaderDataType::FLOAT3, "aNormal"},
+            {ShaderDataType::FLOAT3, "aTangent"},
+            {ShaderDataType::FLOAT3, "aBiTangent"},
             {ShaderDataType::INT, "aEntityID"}
         };
         m_storage->vertexBuffer->setLayout(cubeVertexBufferLayout);
@@ -122,6 +121,11 @@ namespace nexo::renderer {
         m_storage->stats.drawCalls++;
         m_storage->vertexArray->unbind();
         m_storage->vertexBuffer->unbind();
+        m_storage->textureShader->unbind();
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
+        {
+            m_storage->textureSlots[i]->unbind(i);
+        }
     }
 
     void Renderer3D::flushAndReset() const
@@ -133,45 +137,25 @@ namespace nexo::renderer {
         m_storage->textureSlotIndex = 1;
     }
 
-    void Renderer3D::generateCubeVertices(const glm::mat4 &transform, const glm::vec4 &color, float textureIndex,
-                                          const glm::vec2 *textureCoords) const
+    int Renderer3D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
     {
-        constexpr glm::vec3 positions[8] = {
-            {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
-            {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-            {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f},
-            {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}
-        };
+        int textureIndex = 0.0f;
 
-        for (unsigned int i = 0; i < 8; ++i)
-        {
-            m_storage->vertexBufferPtr->position = transform * glm::vec4(positions[i], 1.0f);
-
-            m_storage->vertexBufferPtr->color = color;
-            m_storage->vertexBufferPtr->texCoord = textureCoords[i % 4];
-            m_storage->vertexBufferPtr->texIndex = textureIndex;
-            m_storage->vertexBufferPtr++;
-        }
-
-        m_storage->indexCount += 36;
-    }
-
-    float Renderer3D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
-    {
-        float textureIndex = 0.0f;
+        if (!texture)
+            return textureIndex;
 
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             if (*m_storage->textureSlots[i].get() == *texture)
             {
-                textureIndex = static_cast<float>(i);
+                textureIndex = i;
                 break;
             }
         }
 
         if (textureIndex == 0)
         {
-            textureIndex = static_cast<float>(m_storage->textureSlotIndex);
+            textureIndex = m_storage->textureSlotIndex;
             m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
             m_storage->textureSlotIndex++;
         }
@@ -179,174 +163,23 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, int entityID) const
+    void Renderer3D::setMaterialUniforms(const renderer::Material& material) const
     {
-        if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        constexpr glm::vec3 cubePositions[8] = {
-            {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
-            {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-            {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f},
-            {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}
-        };
+        if (!m_storage)
+            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
 
-        constexpr unsigned int cubeIndices[36] = {
-            // Front face
-            0, 1, 2, 2, 3, 0,
-            // Back face
-            4, 5, 6, 6, 7, 4,
-            // Bottom face
-            0, 1, 5, 5, 4, 0,
-            // Top face
-            3, 2, 6, 6, 7, 3,
-            // Left face
-            0, 3, 7, 7, 4, 0,
-            // Right face
-            1, 2, 6, 6, 5, 1
-        };
-
-        static const glm::vec3 vertexNormals[8] = {
-            glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), // Vertex 0
-            glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)),  // Vertex 1
-            glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)),   // Vertex 2
-            glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)),  // Vertex 3
-            glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)),  // Vertex 4
-            glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)),   // Vertex 5
-            glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)),    // Vertex 6
-            glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f))    // Vertex 7
-        };
-
-        constexpr glm::vec2 textureCoords[4] = {
-            {0.0f, 0.0f}, {1.0f, 0.0f},
-            {1.0f, 1.0f}, {0.0f, 1.0f}
-        };
-
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                                    glm::scale(glm::mat4(1.0f), size);
-
-        // Check buffer limits
-        if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + 8 > m_storage->maxVertices ||
-            m_storage->indexCount + 36 > m_storage->maxIndices)
-        {
-            flushAndReset();
-        }
-
-        // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < 8; ++i)
-        {
-            m_storage->vertexBufferPtr->position = transform * glm::vec4(cubePositions[i], 1.0f);
-            m_storage->vertexBufferPtr->color = color;
-            m_storage->vertexBufferPtr->texCoord = textureCoords[i % 4];
-            m_storage->vertexBufferPtr->texIndex = 0.0f; // White texture
-            m_storage->vertexBufferPtr->normal = vertexNormals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(cubeIndices, [this, vertexOffset](unsigned int index) {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index + vertexOffset;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
-    {
-        if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        constexpr glm::vec3 cubePositions[8] = {
-            {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f},
-            {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-            {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f},
-            {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}
-        };
-
-        constexpr unsigned int cubeIndices[36] = {
-            0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4,
-            0, 1, 5, 5, 4, 0, 3, 2, 6, 6, 7, 3,
-            0, 3, 7, 7, 4, 0, 1, 2, 6, 6, 5, 1
-        };
-
-        constexpr glm::vec2 textureCoords[4] = {
-            {0.0f, 0.0f}, {1.0f, 0.0f},
-            {1.0f, 1.0f}, {0.0f, 1.0f}
-        };
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                                    glm::scale(glm::mat4(1.0f), size);
-
-        // Check buffer limits
-        if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + 8 > m_storage->maxVertices ||
-            m_storage->indexCount + 36 > m_storage->maxIndices)
-        {
-            flushAndReset();
-        }
-
-        const float textureIndex = getTextureIndex(texture);
-
-        // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < 8; ++i)
-        {
-            m_storage->vertexBufferPtr->position = transform * glm::vec4(cubePositions[i], 1.0f);
-            m_storage->vertexBufferPtr->color = {1.0f, 1.0f, 1.0f, 1.0f};
-            m_storage->vertexBufferPtr->texCoord = textureCoords[i % 4];
-            m_storage->vertexBufferPtr->texIndex = textureIndex;
-            m_storage->vertexBufferPtr->normal = glm::normalize(cubePositions[i]);
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(cubeIndices, [this, vertexOffset](unsigned int index) {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index + vertexOffset;
-        });
-
-
-        m_storage->stats.cubeCount++;
-    }
-
-    void Renderer3D::drawMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
-    {
-        if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + vertices.size() > m_storage->maxVertices ||
-            m_storage->indexCount + indices.size() > m_storage->maxIndices)
-        {
-            //TODO: Implement the batch rendering for meshes
-            LOG(NEXO_INFO, "Max number attained");
-        }
-        const float textureIndex = getTextureIndex(texture);
-
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-
-
-        for (const auto &vertex: vertices)
-        {
-            m_storage->vertexBufferPtr->position = vertex.position;
-            m_storage->vertexBufferPtr->color = {1.0f, 1.0f, 1.0f, 1.0f};
-            m_storage->vertexBufferPtr->texCoord = vertex.texCoord;
-            m_storage->vertexBufferPtr->texIndex = textureIndex;
-            m_storage->vertexBufferPtr->normal = vertex.normal;
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        for (const auto &index : indices)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index + vertexOffset;
-        }
+        m_storage->textureShader->setUniformFloat4("material.albedoColor", material.albedoColor);
+        m_storage->textureShader->setUniformInt("material.albedoTexIndex", material.albedoTexIndex);
+        m_storage->textureShader->setUniformFloat4("material.specularColor", material.specularColor);
+        m_storage->textureShader->setUniformInt("material.specularTexIndex", material.specularTexIndex);
+        m_storage->textureShader->setUniformFloat3("material.emissiveColor", material.emissiveColor);
+        m_storage->textureShader->setUniformInt("material.emissiveTexIndex", material.emissiveTexIndex);
+        m_storage->textureShader->setUniformFloat("material.roughness", material.roughness);
+        m_storage->textureShader->setUniformInt("material.roughnessTexIndex", material.roughnessTexIndex);
+        m_storage->textureShader->setUniformFloat("material.metallic", material.metallic);
+        m_storage->textureShader->setUniformInt("material.metallicTexIndex", material.metallicTexIndex);
+        m_storage->textureShader->setUniformFloat("material.opacity", material.opacity);
+        m_storage->textureShader->setUniformInt("material.opacityTexIndex", material.opacityTexIndex);
     }
 
     void Renderer3D::resetStats() const

@@ -14,19 +14,27 @@
 #pragma once
 
 #include "MainScene.hpp"
+#include "SceneTreeWindow.hpp"
 
 #include <map>
 #include <string>
 #include <imgui_internal.h>
 
 namespace nexo::editor {
+	/**
+	* @class SceneViewManager
+	* @brief Singleton class managing scene views in the editor
+	*
+	* This class handles the creation, duplication, and management of scene views
+	* in the editor interface. It extends ADocumentWindow to integrate with the
+	* document window system.
+	*/
     class SceneViewManager : public ADocumentWindow {
         public:
-            static std::shared_ptr<SceneViewManager>& getInstance()
+            static SceneViewManager& get()
             {
-                if (!m_instance)
-                    m_instance = std::make_shared<SceneViewManager>();
-                return m_instance;
+            	static SceneViewManager instance;
+				return instance;
             }
 
             void setup() override;
@@ -38,11 +46,6 @@ namespace nexo::editor {
             void removeScene(WindowId uiId);
             std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
 
-            void hideLayer(WindowId uiId, scene::LayerId layerId) const;
-            void showLayer(WindowId uiId, scene::LayerId layerId) const;
-            [[nodiscard]] bool isLayerHidden(WindowId uiId, scene::LayerId layerId) const;
-            void addDefaultCameraToLayer(WindowId uiId, scene::LayerId layerId) const;
-
             std::vector<SceneProperties> &getOpenScenes() { return m_openScenes; };
 
             [[nodiscard]] int getSelectedScene() const { return selectedScene; };
@@ -51,7 +54,6 @@ namespace nexo::editor {
         private:
             std::vector<SceneProperties> m_openScenes;
 
-            static std::shared_ptr<SceneViewManager> m_instance;
             std::map<WindowId, std::shared_ptr<MainScene>> m_scenes;
             int selectedScene = -1;
 
