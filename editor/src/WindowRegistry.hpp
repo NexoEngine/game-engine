@@ -25,6 +25,7 @@ namespace nexo::editor {
 	class WindowRegistry {
 		public:
 			template<typename T>
+			requires std::derived_from<T, IDocumentWindow>
 			void registerWindow(std::shared_ptr<T> window)
 			{
 				m_windows[typeid(T)] = window;

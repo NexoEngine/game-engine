@@ -14,7 +14,9 @@
 
 #pragma once
 
+#include "ADocumentWindow.hpp"
 #include "Exception.hpp"
+#include "IDocumentWindow.hpp"
 #include "exceptions/Exceptions.hpp"
 #define L_DEBUG 1
 #include <loguru/loguru.hpp>
@@ -44,10 +46,9 @@ namespace nexo::editor {
             void shutdown() const;
 
             template<typename T>
+            requires std::derived_from<T, IDocumentWindow>
             void registerWindow()
             {
-            	if (!std::is_base_of_v<IDocumentWindow, T>)
-             		THROW_EXCEPTION(InvalidWindowRegistration, typeid(T));
             	auto window = std::make_shared<T>(m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
             }
