@@ -15,6 +15,7 @@
 
 #include "IDocumentWindow.hpp"
 #include "DockingRegistry.hpp"
+#include "exceptions/Exceptions.hpp"
 
 #include <unordered_map>
 #include <typeindex>
@@ -33,9 +34,7 @@ namespace nexo::editor {
 			std::shared_ptr<T> getWindow()
 			{
 				if (m_windows.find(typeid(T)) == m_windows.end())
-				{
-					throw std::runtime_error("Window not registered");
-				}
+					THROW_EXCEPTION(WindowNotRegistered, typeid(T));
 				return std::static_pointer_cast<T>(m_windows[typeid(T)]);
 			}
 
