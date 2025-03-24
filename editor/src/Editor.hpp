@@ -34,19 +34,19 @@ namespace nexo::editor {
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
              */
-            void init();
+            void init() const;
 
             [[nodiscard]] bool isOpen() const;
 
 
-            void update();
+            void update() const;
             void render();
-            void shutdown();
+            void shutdown() const;
 
             template<typename T>
             void registerWindow()
             {
-            	if (!std::is_base_of<IDocumentWindow, T>::value)
+            	if (!std::is_base_of_v<IDocumentWindow, T>)
              		THROW_EXCEPTION(InvalidWindowRegistration, typeid(T));
             	auto window = std::make_shared<T>(m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
