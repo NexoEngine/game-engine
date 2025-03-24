@@ -33,7 +33,7 @@ namespace nexo::editor {
 			template<typename T>
 			std::shared_ptr<T> getWindow()
 			{
-				if (m_windows.find(typeid(T)) == m_windows.end())
+				if (!m_windows.contains(typeid(T)))
 					THROW_EXCEPTION(WindowNotRegistered, typeid(T));
 				return std::static_pointer_cast<T>(m_windows[typeid(T)]);
 			}
