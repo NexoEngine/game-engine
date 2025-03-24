@@ -34,11 +34,11 @@
 
 namespace nexo::editor {
 
-    MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) : m_sceneName(std::move(sceneName)),
+    MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) : windowId(nextWindowId++),
+                                                                           m_sceneName(std::move(sceneName)),
                                                                            m_defaultScene(defaultScene),
                                                                            m_windowRegistry(windowRegistry)
     {
-    	windowId = nextWindowId++;
     }
 
     void MainScene::setup()
@@ -334,7 +334,6 @@ namespace nexo::editor {
                 auto &selector = Selector::get();
                 if (data != -1)
                 {
-                	std::cout << "Clicked on entity with ID: " << data << std::endl;
                     auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
                     const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
                     if (uuid)
