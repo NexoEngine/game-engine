@@ -17,6 +17,9 @@
 #include "DocumentWindows/EntityProperties/AEntityProperty.hpp"
 #include "core/scene/SceneManager.hpp"
 
+#include <variant>
+#include <unordered_map>
+
 namespace nexo::editor {
 
 	class InspectorWindow;
