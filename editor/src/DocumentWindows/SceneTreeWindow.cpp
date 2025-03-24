@@ -226,6 +226,8 @@ namespace nexo::editor {
 
         if (ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse))
         {
+	       	if (m_firstOpened)
+	        	firstDockSetup("Scene Tree");
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
                     ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())

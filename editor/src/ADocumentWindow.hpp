@@ -18,6 +18,8 @@
 #include "Nexo.hpp"
 #include "WindowRegistry.hpp"
 
+#include <imgui_internal.h>
+
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
@@ -37,10 +39,25 @@ namespace nexo::editor {
              */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
+            void firstDockSetup(const std::string &windowName)
+            {
+	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); m_firstOpened && currentWindow)
+		        {
+					const bool isDocked = currentWindow->DockIsActive;
+					const ImGuiID currentDockID = currentWindow->DockId;
+
+					if (!isDocked || currentDockID != m_windowRegistry.getDockId(windowName))
+						currentWindow->DockId = m_windowRegistry.getDockId(windowName);
+					m_firstOpened = false;
+		        }
+            }
+
             WindowId windowId;
         protected:
             bool m_opened = true;
             bool m_focused = false;
+
+            bool m_firstOpened = true;
 
             WindowRegistry &m_windowRegistry;
     };

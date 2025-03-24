@@ -209,6 +209,8 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin("Console", &m_opened, ImGuiWindowFlags_NoCollapse);
+       	if (m_firstOpened)
+        	firstDockSetup("Console");
 
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);
