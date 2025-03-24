@@ -24,6 +24,7 @@
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
+#include "DocumentWindows/MaterialInspector.hpp"
 
 namespace nexo::editor {
     void RenderProperty::createMaterialPopup(ecs::Entity entity)

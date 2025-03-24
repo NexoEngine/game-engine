@@ -22,21 +22,6 @@
 
 namespace nexo::editor {
 
-	class InspectorWindow;
-
-	class MaterialInspector {
-		public:
-			MaterialInspector(InspectorWindow &inspector) : m_inspector(inspector) {};
-			void setup();
-			void show(int selectedEntity);
-
-		private:
-			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
-			int m_ecsEntity = -1;
-			InspectorWindow &m_inspector;
-	};
-
-
     class InspectorWindow final : public ADocumentWindow {
 	    public:
 			explicit InspectorWindow(WindowRegistry &registry) : ADocumentWindow(registry) {};
@@ -121,8 +106,6 @@ namespace nexo::editor {
 
 			std::unordered_map<std::type_index, bool> m_subInspectorVisibility;
    			std::unordered_map<std::type_index, std::variant<std::monostate, components::Material *>> m_subInspectorData;
-
-			std::shared_ptr<MaterialInspector> m_materialInspector = nullptr;
 
 			void showSceneProperties(scene::SceneId sceneId);
 	        void showEntityProperties(ecs::Entity entity);
