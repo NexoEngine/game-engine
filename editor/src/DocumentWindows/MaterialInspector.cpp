@@ -61,7 +61,7 @@ namespace nexo::editor {
 			app.getSceneManager().deleteScene(previewParams.sceneId);
 		}
 		if (!m_framebuffer)
-			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failedd to initialize framebuffer in Material Inspector window");
+			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failed to initialize framebuffer in Material Inspector window");
 		// --- Material preview ---
 		if (m_framebuffer->getColorAttachmentId(0) != 0)
 			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
