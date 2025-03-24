@@ -35,6 +35,13 @@ namespace nexo::editor {
                 : Exception(std::format("Window not registered: {}. Make sure the window is registered in the WindowRegistry before accessing it.", windowTypeIndex.name()), loc) {}
     };
 
+    class InvalidWindowRegistration final : public Exception {
+    	public:
+     		explicit InvalidWindowRegistration(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Invalid window registration: {}. Make sure the window derives from IDocumentWindow class.", windowTypeIndex.name()), loc) {}
+    };
+
+
     class BackendRendererApiNotSupported final : public Exception {
         public:
             explicit BackendRendererApiNotSupported(const std::string &backendApiName,
