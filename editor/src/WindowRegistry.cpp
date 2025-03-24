@@ -16,7 +16,7 @@
 
 namespace nexo::editor {
 
-	void WindowRegistry::setup()
+	void WindowRegistry::setup() const
 	{
 		for (auto &[_, window]: m_windows)
         {
@@ -24,7 +24,7 @@ namespace nexo::editor {
         }
 	}
 
-	void WindowRegistry::shutdown()
+	void WindowRegistry::shutdown() const
 	{
 		for (const auto &[_, window]: m_windows)
         {
@@ -42,7 +42,7 @@ namespace nexo::editor {
 		return m_dockingRegistry.getDockId(name);
 	}
 
-	void WindowRegistry::update()
+	void WindowRegistry::update() const
 	{
 		for (const auto &[_, window]: m_windows)
         {
@@ -50,7 +50,7 @@ namespace nexo::editor {
         }
 	}
 
-	void WindowRegistry::render()
+	void WindowRegistry::render() const
 	{
 		for (const auto &[_, window]: m_windows)
         {

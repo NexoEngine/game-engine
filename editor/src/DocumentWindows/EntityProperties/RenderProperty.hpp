@@ -22,7 +22,7 @@ namespace nexo::editor {
         public:
         	using AEntityProperty::AEntityProperty;
             bool show(ecs::Entity entity) override;
-            void createMaterialPopup(ecs::Entity entity);
+            void createMaterialPopup(ecs::Entity entity) const;
         private:
         	PopupManager m_popupManager;
     };

@@ -107,7 +107,7 @@ namespace nexo::editor {
 			std::unordered_map<std::type_index, bool> m_subInspectorVisibility;
    			std::unordered_map<std::type_index, std::variant<std::monostate, components::Material *>> m_subInspectorData;
 
-			void showSceneProperties(scene::SceneId sceneId);
+			void showSceneProperties(scene::SceneId sceneId) const;
 	        void showEntityProperties(ecs::Entity entity);
     };
 };

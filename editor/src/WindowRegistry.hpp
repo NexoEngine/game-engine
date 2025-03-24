@@ -41,10 +41,10 @@ namespace nexo::editor {
 			void setDockId(const std::string& name, ImGuiID id);
 			ImGuiID getDockId(const std::string& name) const;
 
-			void setup();
-			void shutdown();
-			void update();
-			void render();
+			void setup() const;
+			void shutdown() const;
+			void update() const;
+			void render() const;
 
 		private:
 			std::unordered_map<std::type_index, std::shared_ptr<IDocumentWindow>> m_windows;

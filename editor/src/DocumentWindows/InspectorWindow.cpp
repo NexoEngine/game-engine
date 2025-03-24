@@ -82,7 +82,7 @@ namespace nexo::editor
         ImGui::End();
     }
 
-    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId)
+    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId) const
     {
 		auto &app = getApp();
 		auto &selector = Selector::get();

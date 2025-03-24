@@ -27,7 +27,7 @@
 #include "DocumentWindows/MaterialInspector.hpp"
 
 namespace nexo::editor {
-    void RenderProperty::createMaterialPopup(ecs::Entity entity)
+    void RenderProperty::createMaterialPopup(ecs::Entity entity) const
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
