@@ -13,7 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PhysicsSystem.hpp"
-#include <iostream>
+
+namespace nexo::components {
+    struct PhysicsBodyComponent;
+    struct TransformComponent;
+}
+
+namespace nexo::ecs {
+    class Coordinator;
+}
+
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() {
         std::cout << "Init Jolt Physics..." << std::endl;
@@ -69,6 +78,19 @@ namespace nexo::system {
         JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
         return body->GetID();
+    }
+
+    void PhysicsSystem::SyncTransformsToBodies(const std::vector<ecs::Entity>& entities, ecs::Coordinator& coordinator) const {
+        for (const auto& entity : entities) {
+            if (!coordinator.entityHasComponent<components::TransformComponent>(entity) ||
+                !coordinator.entityHasComponent<components::PhysicsBodyComponent>(entity))
+                continue;
+
+            auto& transform = coordinator.getComponent<components::TransformComponent>(entity);
+            auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
+            JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
+            physicsSystem->GetBodyInterface().SetPosition(bodyComp.bodyID, position, JPH::EActivation::Activate);
+        }
     }
 
     void PhysicsSystem::ApplyForce(JPH::BodyID bodyID, const JPH::Vec3& force) {
