@@ -468,6 +468,33 @@ namespace nexo::ecs {
             std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;
             void addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component);
 
+            /**
+            * @brief Retrieves all entities that have all the specified components.
+            *
+            * This method iterates over all entities and returns a list of those that possess
+            * each of the given component types. It uses the current signature of each entity
+            * to determine component ownership.
+            *
+            * @tparam ComponentTypes - A variadic list of component types to filter by.
+            * @return std::vector<Entity> - A list of entities matching all specified component types.
+            */
+            template<typename... ComponentTypes>
+            std::vector<Entity> getEntitiesWithComponents() const
+            {
+                std::vector<Entity> result;
+                for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
+                {
+                    bool hasAll = (entityHasComponent<ComponentTypes>(entity) && ...);
+                    if (hasAll)
+                    {
+                        result.push_back(entity);
+                    }
+                }
+                return result;
+            }
+
+        void updateSystemEntities() const;
+
         private:
             template<typename Component>
             void processComponentSignature(Signature& required, Signature& excluded) const {
