@@ -54,6 +54,6 @@ namespace nexo::editor {
             int selectedScene = -1;
 
             static ImGuiDockNode* getDockNodeForWindow(const char* windowName);
-            bool checkSceneNameDuplicate(const std::string &sceneName);
+            bool checkSceneNameDuplicate(std::string_view sceneName) const;
     };
 }

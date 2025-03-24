@@ -15,6 +15,8 @@
 #include "SceneViewManager.hpp"
 #include "context/Selector.hpp"
 
+#include <algorithm>
+
 namespace nexo::editor {
     ImGuiDockNode *SceneViewManager::getDockNodeForWindow(const char *windowName)
     {
@@ -55,14 +57,11 @@ namespace nexo::editor {
         //m_scenes[newScene->windowId] = newScene;
     }
 
-    bool SceneViewManager::checkSceneNameDuplicate(const std::string &sceneName)
+    bool SceneViewManager::checkSceneNameDuplicate(std::string_view sceneName) const
     {
-        for (const auto &scene : m_scenes)
-        {
-            if (scene.second->getName() == sceneName)
-                return true;
-        }
-        return false;
+	    return std::ranges::any_of(m_scenes, [&sceneName](const auto &scene) {
+	        return scene.second->getName() == sceneName;
+	    });
     }
 
     bool SceneViewManager::addNewScene(const std::string &sceneName, bool defaultScene)
