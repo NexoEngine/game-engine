@@ -37,7 +37,7 @@ namespace nexo::editor {
 		m_dockingRegistry.setDockId(name, id);
 	}
 
-	ImGuiID WindowRegistry::getDockId(const std::string& name) const
+	std::optional<ImGuiID> WindowRegistry::getDockId(const std::string& name) const
 	{
 		return m_dockingRegistry.getDockId(name);
 	}

@@ -40,7 +40,7 @@ namespace nexo::editor {
 			}
 
 			void setDockId(const std::string& name, ImGuiID id);
-			ImGuiID getDockId(const std::string& name) const;
+			std::optional<ImGuiID> getDockId(const std::string& name) const;
 
 			void setup() const;
 			void shutdown() const;

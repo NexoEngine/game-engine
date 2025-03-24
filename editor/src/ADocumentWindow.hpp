@@ -45,9 +45,10 @@ namespace nexo::editor {
 		        {
 					const bool isDocked = currentWindow->DockIsActive;
 					const ImGuiID currentDockID = currentWindow->DockId;
+					auto dockId = m_windowRegistry.getDockId(windowName);
 
-					if (!isDocked || currentDockID != m_windowRegistry.getDockId(windowName))
-						currentWindow->DockId = m_windowRegistry.getDockId(windowName);
+					if (!isDocked || (dockId && currentDockID != *dockId))
+						currentWindow->DockId = *dockId;
 					m_firstOpened = false;
 		        }
             }
