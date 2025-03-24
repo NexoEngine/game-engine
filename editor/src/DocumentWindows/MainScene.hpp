@@ -14,6 +14,7 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "IDocumentWindow.hpp"
 #include "WindowRegistry.hpp"
 #include "core/scene/SceneManager.hpp"
 #include <imgui.h>
@@ -42,7 +43,7 @@ namespace nexo::editor {
             void deleteCamera(ecs::Entity cameraId);
 
         private:
-        	WindowId windowId;
+        	WindowId windowId = nextWindowId++;
             std::string m_sceneName;
             bool m_defaultScene = false;
             bool m_opened = true;

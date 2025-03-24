@@ -34,7 +34,7 @@
 
 namespace nexo::editor {
 
-    MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) : windowId(nextWindowId++),
+    MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) :
                                                                            m_sceneName(std::move(sceneName)),
                                                                            m_defaultScene(defaultScene),
                                                                            m_windowRegistry(windowRegistry)
