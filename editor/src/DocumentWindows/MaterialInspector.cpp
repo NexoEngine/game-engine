@@ -15,6 +15,7 @@
 #include "MaterialInspector.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
 #include "Exception.hpp"
+#include "components/Render.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "Components/Widgets.hpp"
@@ -38,12 +39,17 @@ namespace nexo::editor {
 		bool &materialModified = m_materialModified;
 		static utils::ScenePreviewOut previewParams;
 
-		if (selectedEntity != -1)
+		if (selectedEntity != -1 && m_ecsEntity != selectedEntity)
 		{
-			if (m_ecsEntity != selectedEntity)
+			auto renderComp = Application::m_coordinator->tryGetComponent<components::RenderComponent>(selectedEntity);
+			if (renderComp)
 			{
 				m_ecsEntity = selectedEntity;
 				materialModified = true;
+			}
+			else
+			{
+				m_ecsEntity = -1;
 			}
    		}
 
