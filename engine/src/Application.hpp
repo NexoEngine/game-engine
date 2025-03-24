@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
+#include <systems/PhysicsSystemWrapper.hpp>
 
 #include "Types.hpp"
 #include "renderer/Window.hpp"
