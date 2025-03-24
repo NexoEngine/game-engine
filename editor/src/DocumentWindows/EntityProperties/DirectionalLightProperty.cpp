@@ -18,6 +18,17 @@
 #include "components/Light.hpp"
 
 namespace nexo::editor {
+	/**
+	 * @brief Renders the UI for editing a directional light's properties.
+	 *
+	 * Retrieves the directional light component from the specified entity and displays interactive UI elements
+	 * to modify its color and direction. The UI includes a color editor for the light's color and a table with
+	 * drag controls to adjust the X, Y, and Z components of its directional vector. All changes are directly
+	 * applied to the component.
+	 *
+	 * @param entity The ECS entity associated with the directional light component.
+	 * @return true after successfully rendering the UI.
+	 */
 	bool DirectionalLightProperty::show(const ecs::Entity entity)
 	{
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);

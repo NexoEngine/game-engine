@@ -22,16 +22,42 @@
 #include "exceptions/Exceptions.hpp"
 
 namespace nexo::editor {
+	/**
+	 * @brief No-op setup method.
+	 *
+	 * This method intentionally does nothing since no initialization is required for the MaterialInspector.
+	 */
 	void MaterialInspector::setup()
 	{
 		// No need to setup anything
 	}
 
+	/**
+	 * @brief Shuts down the Material Inspector.
+	 *
+	 * No explicit cleanup is required as the framebuffer's destructor automatically handles resource deallocation.
+	 */
 	void MaterialInspector::shutdown()
 	{
 		// No need to delete anything since the destructor of the framebuffer will handle it
 	}
 
+	/**
+	 * @brief Renders the material inspector view for the selected entity.
+	 *
+	 * This function updates and displays the material inspector window. If the provided
+	 * entity identifier differs from the current one, it updates the target and marks the
+	 * material as modified. When a modification occurs, the function generates a scene preview,
+	 * updates the associated camera's clear color, and executes the renderer to refresh the framebuffer.
+	 * It subsequently cleans up the temporary preview scene and, if a valid framebuffer is available,
+	 * displays its content using ImGui. Finally, it retrieves and forwards the material data to the
+	 * material inspector widget for further modifications.
+	 *
+	 * @param selectedEntity The identifier of the entity whose material is being inspected.
+	 *                       A value of -1 indicates an invalid entity, resulting in an early return.
+	 *
+	 * @throws BackendRendererApiFatalFailure If the framebuffer fails to initialize.
+	 */
 	void MaterialInspector::renderMaterialInspector(int selectedEntity)
 	{
 		bool &materialModified = m_materialModified;
@@ -61,7 +87,7 @@ namespace nexo::editor {
 			app.getSceneManager().deleteScene(previewParams.sceneId);
 		}
 		if (!m_framebuffer)
-			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failed to initialize framebuffer in Material Inspector window");
+			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failedd to initialize framebuffer in Material Inspector window");
 		// --- Material preview ---
 		if (m_framebuffer->getColorAttachmentId(0) != 0)
 			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
@@ -75,6 +101,14 @@ namespace nexo::editor {
 		}
 	}
 
+	/**
+	 * @brief Displays and renders the Material Inspector window.
+	 *
+	 * Retrieves the currently selected entity and checks whether the Material Inspector
+	 * sub-window is visible within the Inspector window. If visible, it opens an ImGui window
+	 * with proper window flags, performs an initial docking setup on the first invocation, 
+	 * and then calls renderMaterialInspector() to render the material details.
+	 */
 	void MaterialInspector::show()
 	{
   		auto const &selector = Selector::get();
@@ -96,6 +130,11 @@ namespace nexo::editor {
         }
 	}
 
+	/**
+	 * @brief No update actions required.
+	 *
+	 * This method is intentionally left empty as the material inspector does not require periodic updates.
+	 */
 	void MaterialInspector::update()
 	{
 		// No need to update anything

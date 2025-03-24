@@ -27,6 +27,17 @@
 #include "DocumentWindows/MaterialInspector.hpp"
 
 namespace nexo::editor {
+    /**
+     * @brief Renders a popup interface for creating a new material.
+     *
+     * This function draws a two-column popup using ImGui where the left panel serves as a material inspector
+     * for entering and modifying material properties, and the right panel displays a live preview of the new material.
+     * A static scene preview is generated on the first call if it has not already been created. The popup includes
+     * bottom-centered "OK" and "Cancel" buttons; confirming applies the new material to the entity's render component
+     * and cleans up the preview, while canceling simply deletes the preview scene.
+     *
+     * @param entity The entity for which the new material is being created.
+     */
     void RenderProperty::createMaterialPopup(ecs::Entity entity) const
     {
         ImGui::Text("Create New Material");
@@ -119,6 +130,20 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Renders the UI for managing an entity's render properties.
+     *
+     * This function displays a properties panel for the render component of the specified entity.
+     * For 3D render components, it updates the material inspector with the entity's material data.
+     * The UI includes a header with a visibility toggle, a section for a material preview, a dropdown
+     * for selecting material types, and buttons to create or modify the material. A popup is shown
+     * for creating a new material, and material handling for 2D components is not yet implemented.
+     *
+     * @param entity The entity whose render properties are being managed.
+     * @return true Always returns true after rendering the UI.
+     *
+     * @note The function uses static variables to maintain UI state (e.g., section visibility and preview data).
+     */
     bool RenderProperty::show(ecs::Entity entity)
     {
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);

@@ -20,6 +20,16 @@
 
 namespace nexo::editor {
 
+	/**
+	 * @brief Displays and allows editing of a point light's properties.
+	 *
+	 * Retrieves the point light component for the provided entity and renders an interactive GUI panel 
+	 * for adjusting its attributes, including color, position, and maximum distance. When the maximum 
+	 * distance is modified, the light's attenuation coefficients (linear and quadratic) are recalculated.
+	 *
+	 * @param entity The entity whose point light component is being displayed and edited.
+	 * @return true after successfully rendering the point light properties UI.
+	 */
 	bool PointLightProperty::show(const ecs::Entity entity)
 	{
         auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);

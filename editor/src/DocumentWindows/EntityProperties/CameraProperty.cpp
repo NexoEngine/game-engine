@@ -20,6 +20,16 @@
 #include "Components/Components.hpp"
 
 namespace nexo::editor {
+	/**
+	 * @brief Displays the camera properties interface.
+	 *
+	 * Retrieves the camera component for the specified entity and renders an interactive UI
+	 * for modifying camera parameters, including viewport size (with a toggle for locking),
+	 * field of view, near and far clipping planes, and the clear color.
+	 *
+	 * @param entity The entity whose camera settings are to be displayed.
+	 * @return true if the UI is rendered successfully.
+	 */
 	bool CameraProperty::show(const ecs::Entity entity)
 	{
         auto& cameraComponent = Application::getEntityComponent<components::CameraComponent>(entity);

@@ -41,8 +41,20 @@ extern ImGuiID g_materialInspectorDockID;
 
 namespace nexo::editor
 {
-    InspectorWindow::~InspectorWindow() = default;
+    /**
+ * @brief Default destructor for InspectorWindow.
+ *
+ * This destructor relies on compiler-generated cleanup and does not perform any custom actions.
+ */
+InspectorWindow::~InspectorWindow() = default;
 
+    /**
+     * @brief Initializes the mapping between component types and their respective property handlers.
+     *
+     * This method registers each supported component type with an instance of its corresponding property class,
+     * storing them in the internal `m_entityProperties` map. Each property is constructed using the current instance
+     * of InspectorWindow, ensuring the inspector can later display and manage the properties of selected entities.
+     */
     void InspectorWindow::setup()
     {
 		m_entityProperties[typeid(components::TransformComponent)] = std::make_shared<TransformProperty>(*this);
@@ -55,10 +67,22 @@ namespace nexo::editor
 		m_entityProperties[typeid(components::PerspectiveCameraController)] = std::make_shared<CameraController>(*this);
     }
 
+    /**
+     * @brief Shuts down the InspectorWindow.
+     *
+     * This function finalizes the shutdown procedures, though no cleanup actions are currently implemented.
+     */
     void InspectorWindow::shutdown()
     {
     }
 
+    /**
+     * @brief Renders the Inspector window and displays properties based on the current selection.
+     *
+     * Opens an ImGui window titled "Inspector" and, if it is opened for the first time, initializes it via a dock setup.
+     * The method retrieves the currently selected item from the Selector singleton and, if a valid selection exists,
+     * displays either scene-specific properties (if the selection type is SCENE) or entity-specific properties.
+     */
     void InspectorWindow::show()
     {
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
@@ -82,6 +106,15 @@ namespace nexo::editor
         ImGui::End();
     }
 
+    /**
+     * @brief Displays a UI panel for managing scene properties.
+     *
+     * Retrieves the scene using the provided scene identifier and renders a two-column ImGui panel
+     * where users can toggle the scene's visibility ("Hide") and activity status ("Pause").
+     * The function processes a UI handle by removing any icon prefix before rendering the header.
+     *
+     * @param sceneId Identifier of the scene whose properties are to be displayed.
+     */
     void InspectorWindow::showSceneProperties(const scene::SceneId sceneId) const
     {
 		auto &app = getApp();
@@ -120,6 +153,14 @@ namespace nexo::editor
 		}
     }
 
+    /**
+     * @brief Displays the property panels for each component attached to the specified entity.
+     *
+     * This function retrieves all component types associated with the entity and, for each type registered in the
+     * property mapping, invokes the corresponding display method to render its properties.
+     *
+     * @param entity The entity whose component properties are to be shown.
+     */
     void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
         const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);

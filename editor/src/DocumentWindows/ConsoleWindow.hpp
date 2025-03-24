@@ -30,6 +30,11 @@ namespace nexo::editor {
     class ConsoleWindow final : public ADocumentWindow {
         public:
             explicit ConsoleWindow(WindowRegistry &registry);
+            /**
+             * @brief Destructor for ConsoleWindow.
+             *
+             * Removes the registered loguru callback identified by LOGURU_CALLBACK_NAME to ensure that no further logging messages are routed to this console window after its destruction.
+             */
             ~ConsoleWindow() override
             {
                 loguru::remove_callback(LOGURU_CALLBACK_NAME);

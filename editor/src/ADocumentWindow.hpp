@@ -23,6 +23,13 @@
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
+            /**
+             * @brief Constructs a new ADocumentWindow.
+             *
+             * Initializes a document window with the provided WindowRegistry for managing docking and registers a unique window identifier.
+             *
+             * @param windowRegistry The registry object used for window docking and management.
+             */
             explicit ADocumentWindow(WindowRegistry &windowRegistry) : m_windowRegistry(windowRegistry)
             {
                 windowId = nextWindowId++;
@@ -33,22 +40,34 @@ namespace nexo::editor {
             [[nodiscard]] bool isOpened() const override { return m_opened; }
 
             /**
-             * @brief Get the opened value
-             * @note Used to give a ref to ImGui
-             * @return ref to bool _opened
-             */
+ * @brief Returns a reference to the window's open state.
+ *
+ * Provides access to the internal boolean flag that indicates whether the document window is open.
+ * This reference is intended for use by GUI components (such as ImGui) to directly update and track the window's visibility.
+ *
+ * @return bool& A reference to the open state flag.
+ */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
+            /**
+             * @brief Configures the docking for the window on its first opening.
+             *
+             * On its first invocation, if the current ImGui window is valid, this function checks whether
+             * the window is docked and if its current dock ID matches the one obtained from the window registry
+             * for the provided window name. If the window is not docked or the dock IDs do not match, it assigns
+             * the correct dock ID. This setup is performed only once per window instance.
+             *
+             * @param windowName The name used to retrieve the corresponding dock ID from the window registry.
+             */
             void firstDockSetup(const std::string &windowName)
             {
 	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); m_firstOpened && currentWindow)
 		        {
 					const bool isDocked = currentWindow->DockIsActive;
 					const ImGuiID currentDockID = currentWindow->DockId;
-					auto dockId = m_windowRegistry.getDockId(windowName);
 
-					if (!isDocked || (dockId && currentDockID != *dockId))
-						currentWindow->DockId = *dockId;
+					if (!isDocked || currentDockID != m_windowRegistry.getDockId(windowName))
+						currentWindow->DockId = m_windowRegistry.getDockId(windowName);
 					m_firstOpened = false;
 		        }
             }

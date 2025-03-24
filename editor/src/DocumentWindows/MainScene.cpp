@@ -34,6 +34,15 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Constructs a MainScene.
+     *
+     * Initializes a MainScene instance with a given scene name and a flag indicating if it is a default scene.
+     * The provided window registry is used for dynamic window management.
+     *
+     * @param sceneName The identifier used for the scene.
+     * @param defaultScene Set to true if the scene should be initialized as a default scene.
+     */
     MainScene::MainScene(WindowRegistry &windowRegistry, std::string sceneName, const bool defaultScene) :
                                                                            m_sceneName(std::move(sceneName)),
                                                                            m_defaultScene(defaultScene),
@@ -41,6 +50,14 @@ namespace nexo::editor {
     {
     }
 
+    /**
+     * @brief Initializes the main scene components.
+     *
+     * This function configures the essential parts of the main scene by consecutively setting up:
+     * - The transform gizmo (ImGuizmo) for object manipulation.
+     * - The view window with its default dimensions.
+     * - The scene elements, including camera setup and default entities when applicable.
+     */
     void MainScene::setup()
     {
         setupImguizmo();
@@ -92,22 +109,47 @@ namespace nexo::editor {
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
     }
 
+    /**
+     * @brief Sets the initial view size for the scene window.
+     *
+     * Configures the scene's view dimensions to a default 1280x720 pixels.
+     */
     void MainScene::setupWindow()
     {
         constexpr auto size = ImVec2(1280, 720);
         _viewSize = size;
     }
 
+    /**
+     * @brief Performs shutdown operations for the main scene.
+     *
+     * This const method is a placeholder for potential cleanup logic, such as releasing scene resources.
+     * Currently, it does not perform any actual deletion or cleanup.
+     */
     void MainScene::shutdown() const
     {
     	// Should probably check if it is necessary to delete the scene here ? (const for now)
     }
 
+    /**
+     * @brief Processes key input events.
+     *
+     * This method is a placeholder for future key event handling logic.
+     */
     void MainScene::handleKeyEvents() const
     {
     	// Will be implemeneted later
     }
 
+    /**
+     * @brief Deletes a camera entity from the scene.
+     *
+     * Removes the specified camera from the collection. If the removed camera was active,
+     * the active camera is reset to an invalid state (-1) and, if any cameras remain, the first
+     * available camera becomes active.
+     *
+     * @param cameraId Identifier of the camera entity to remove.
+     */
     void MainScene::deleteCamera(const ecs::Entity cameraId)
     {
     	if (cameraId == m_activeCamera)
@@ -117,6 +159,13 @@ namespace nexo::editor {
     		m_activeCamera = *m_cameras.begin();
     }
 
+    /**
+     * @brief Renders the toolbar UI for scene controls.
+     *
+     * Displays controls to switch between orthographic and perspective camera modes, opens a popup for adding primitives,
+     * and provides a draggable widget to adjust the target FPS. The toolbar is positioned relative to the current view and
+     * styled with minimal item spacing.
+     */
     void MainScene::renderToolbar()
     {
         constexpr float padding = 0.0f;
@@ -204,6 +253,14 @@ namespace nexo::editor {
         ImGui::PopStyleVar();
     }
 
+    /**
+     * @brief Renders and applies a transformation gizmo for the currently selected entity.
+     *
+     * If an entity is selected in the current scene, this method configures and displays the ImGuizmo manipulation
+     * widget using the active camera's view and projection matrices. It enables users to adjust the entity's position,
+     * rotation, and scale. When the gizmo is active, any modifications are decomposed from the resulting transformation
+     * matrix and applied to the entity's transform component.
+     */
     void MainScene::renderGizmo()
     {
         const auto &coord = nexo::Application::m_coordinator;
@@ -279,6 +336,14 @@ namespace nexo::editor {
         m_viewportBounds[1] = maxBounds;
     }
 
+    /**
+     * @brief Displays the main scene window and handles scene activation.
+     *
+     * This function configures and shows the main scene window using ImGui with custom style and size constraints.
+     * It updates the scene's focus state and active status, synchronizes the SceneViewManager with the current scene,
+     * and clears any previous entity selection if the window is focused. Finally, it calls the functions to render both
+     * the scene view and its transformation gizmos.
+     */
     void MainScene::show()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -309,6 +374,16 @@ namespace nexo::editor {
         ImGui::PopStyleVar();
     }
 
+    /**
+     * @brief Updates the main scene state by processing user input and rendering.
+     *
+     * If the scene is open, this method handles key events and triggers a framebuffer rendering pass.
+     * It then detects left mouse click events (provided no gizmo manipulation is active and the scene is focused)
+     * by adjusting the cursor position relative to the viewport and flipping its y-coordinate to match OpenGL's format.
+     * The function retrieves pixel data from the camera's render target to determine if an entity was clicked.
+     * If a valid entity is detected, it is selected using the global selector and the scene is marked as active;
+     * otherwise, any active selection is cleared.
+     */
     void MainScene::update()
     {
         if (!m_opened)

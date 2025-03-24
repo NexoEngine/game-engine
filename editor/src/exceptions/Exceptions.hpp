@@ -24,20 +24,47 @@ namespace nexo::editor {
 
     class FileNotFoundException final : public Exception {
         public:
-            explicit FileNotFoundException(const std::string &filePath,
+            /**
+                 * @brief Constructs a FileNotFoundException.
+                 *
+                 * This exception is used to indicate that a file could not be located. It creates an error message by prefixing
+                 * the file path with "File not found: ".
+                 *
+                 * @param filePath The path of the file that was not found.
+                 * @param loc The source location where the exception is instantiated (defaults to the current source location).
+                 */
+                explicit FileNotFoundException(const std::string &filePath,
                                            const std::source_location loc = std::source_location::current())
                 : Exception("File not found: " + filePath, loc) {}
     };
 
     class WindowNotRegistered final : public Exception {
     	public:
-     		explicit WindowNotRegistered(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
+     		/**
+                 * @brief Constructs a WindowNotRegistered exception.
+                 *
+                 * This exception is thrown when an attempt is made to access a window that has not been registered in the WindowRegistry.
+                 * The error message is generated using the provided window type index, which identifies the unregistered window.
+                 *
+                 * @param windowTypeIndex The type index of the unregistered window.
+                 * @param loc Optional source location for debugging purposes, defaulting to the current location.
+                 */
+                explicit WindowNotRegistered(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Window not registered: {}. Make sure the window is registered in the WindowRegistry before accessing it.", windowTypeIndex.name()), loc) {}
     };
 
     class BackendRendererApiNotSupported final : public Exception {
         public:
-            explicit BackendRendererApiNotSupported(const std::string &backendApiName,
+            /**
+                 * @brief Constructs an exception indicating an unsupported backend render API.
+                 *
+                 * This exception is thrown when the provided backend render API is not supported.
+                 * It formats an error message including the name of the unsupported API.
+                 *
+                 * @param backendApiName The name of the backend render API that is not supported.
+                 * @param loc The source location where the exception was thrown (defaults to the current location).
+                 */
+                explicit BackendRendererApiNotSupported(const std::string &backendApiName,
                                                     const std::source_location loc = std::source_location::current())
                 : Exception("Backend render API not supported: " + backendApiName, loc) {}
     };

@@ -18,6 +18,16 @@
 #include "Components/Widgets.hpp"
 
 namespace nexo::editor {
+	/**
+	 * @brief Renders the ambient light properties panel for the given entity.
+	 *
+	 * Retrieves the AmbientLightComponent associated with the specified entity and displays a header along with a color picker
+	 * for editing the ambient light's color. If the header is successfully rendered, the function adds spacing and presents
+	 * a color editor widget to update the component's color value.
+	 *
+	 * @param entity The entity whose ambient light component is being displayed and modified.
+	 * @return bool Always returns true, indicating that the properties panel was processed.
+	 */
 	bool AmbientLightProperty::show(const ecs::Entity entity)
 	{
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);

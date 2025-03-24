@@ -37,10 +37,19 @@ namespace nexo::editor {
             void shutdown() override;
             void show() override;
             void update() override;
-            bool addNewScene(const std::string &sceneName, bool defaultScene = false);
+            void addNewScene(const std::string &sceneName, bool defaultScene = false);
             void duplicateSceneView(WindowId uiId);
             void removeScene(WindowId uiId);
-            std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
+            /**
+ * @brief Retrieves the main scene associated with the specified window identifier.
+ *
+ * This method accesses the internal scene mapping to obtain the shared pointer
+ * to the MainScene corresponding to the provided window ID.
+ *
+ * @param uiId Identifier of the window whose scene is requested.
+ * @return std::shared_ptr<MainScene> The shared pointer to the MainScene associated with the given window ID.
+ */
+std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
 
             std::vector<SceneProperties> &getOpenScenes() { return m_openScenes; };
 
@@ -54,6 +63,5 @@ namespace nexo::editor {
             int selectedScene = -1;
 
             static ImGuiDockNode* getDockNodeForWindow(const char* windowName);
-            bool checkSceneNameDuplicate(const std::string &sceneName);
     };
 }

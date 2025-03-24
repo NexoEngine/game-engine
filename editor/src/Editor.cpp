@@ -29,6 +29,12 @@ ImGuiID g_materialInspectorDockID = 0;
 
 namespace nexo::editor {
 
+    /**
+     * @brief Shuts down the editor.
+     *
+     * This function gracefully terminates the editor by logging the shutdown process,
+     * releasing resources managed by the window registry, and cleaning up the ImGui backend.
+     */
     void Editor::shutdown() const
     {
         LOG(NEXO_INFO, "Closing editor");
@@ -37,6 +43,15 @@ namespace nexo::editor {
         ImGuiBackend::shutdown();
     }
 
+    /**
+     * @brief Initializes the application engine and configures UI contexts.
+     *
+     * This function sets up the core engine components and the graphical user interface. On Linux systems,
+     * it configures Wayland-specific window settings if the WAYLAND_APP_ID is defined; otherwise, it logs a warning.
+     * After initializing the engine via nexo::init(), it sets the ImGui error callback, creates an ImGui context,
+     * and initializes the ImGui backend. It also assigns a default INI file path for layout configuration, applies
+     * a dark style, and configures the ImGuizmo context and state for enhanced UI manipulation.
+     */
     void Editor::setupEngine() const
     {
         auto const &app = Application::getInstance();
@@ -131,6 +146,16 @@ namespace nexo::editor {
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
+    /**
+     * @brief Initializes and configures fonts for the editor UI.
+     *
+     * This function sets up the ImGui fonts by loading the default font and a custom font from file,
+     * adjusting the font size according to the provided horizontal and vertical DPI scaling factors.
+     * It also initializes the font atlas and merges an icon font to enable icon rendering within the interface.
+     *
+     * @param scaleFactorX Horizontal DPI scaling factor used to adjust the base font size.
+     * @param scaleFactorY Vertical DPI scaling factor used to adjust the base font size.
+     */
     void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY) const
     {
         ImFontConfig fontConfig;
@@ -170,6 +195,12 @@ namespace nexo::editor {
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
+    /**
+     * @brief Initializes the editor's core components.
+     *
+     * Sets up the application engine, configures the UI style, and initializes the window registry,
+     * preparing the editor for rendering and interaction.
+     */
     void Editor::init() const
     {
 		setupEngine();
@@ -177,11 +208,25 @@ namespace nexo::editor {
 		m_windowRegistry.setup();
     }
 
+    /**
+     * @brief Determines whether the editor is currently active.
+     *
+     * This function returns true if the editor has not been signaled to quit, and if the main application window 
+     * remains open and running.
+     *
+     * @return True if the editor is active; false otherwise.
+     */
     bool Editor::isOpen() const
     {
         return !m_quit && nexo::getApp().isWindowOpen() && nexo::getApp().isRunning();
     }
 
+    /**
+     * @brief Renders the main menu bar with a File menu.
+     *
+     * Constructs the primary menu bar using ImGui and includes a "File" menu containing an "Exit" option.
+     * Selecting "Exit" sets the application's quit flag, allowing the main loop to terminate gracefully.
+     */
     void Editor::drawMenuBar()
     {
         if (ImGui::BeginMainMenuBar())
@@ -197,6 +242,16 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Constructs and registers the docking layout for the editor's UI.
+     *
+     * This function initializes the main dockspace using the primary viewport and divides it into
+     * designated regions for various editor panels. It reserves 20% of the space on the right for the
+     * "Material Inspector" and splits the remaining area into columns and rows to host the "Default scene",
+     * "Console", "Scene Tree", and "Inspector" panels. The computed docking IDs are then registered with
+     * the window registry to facilitate consistent layout management, and the global material inspector dock ID
+     * is updated.
+     */
     void Editor::buildDockspace()
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -276,6 +331,13 @@ namespace nexo::editor {
     }
 
 
+    /**
+     * @brief Renders the editor's user interface and background.
+     *
+     * Initiates the frame by starting the ImGui context with a fully transparent background, sets up the docking space,
+     * and renders the main menu bar. It then delegates the rendering of registered editor windows to the window registry,
+     * and draws a custom gradient background covering the main viewport before finalizing the ImGui frame.
+     */
     void Editor::render()
     {
     	getApp().beginFrame();
@@ -329,6 +391,12 @@ namespace nexo::editor {
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
+    /**
+     * @brief Updates the state of the window registry and finalizes the current frame.
+     *
+     * Refreshes all registered UI components by updating the window registry and signals the application
+     * to conclude rendering the current frame.
+     */
     void Editor::update() const
     {
     	m_windowRegistry.update();

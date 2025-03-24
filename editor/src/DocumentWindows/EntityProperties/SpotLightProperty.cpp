@@ -19,6 +19,19 @@
 #include "math/Light.hpp"
 
 namespace nexo::editor {
+	/**
+	 * @brief Displays and edits the spotlight properties for the specified entity.
+	 *
+	 * This function retrieves the spotlight component associated with the given entity and
+	 * generates a user interface for modifying its parameters. The UI includes a header section,
+	 * a color editor for the spotlight's color, and tables for updating the direction, position,
+	 * maximum distance, and cutoff values. When the maximum distance is adjusted, the function
+	 * recalculates the corresponding linear and quadratic attenuation factors. Additionally,
+	 * cutoff angles are converted between radians and degrees to facilitate intuitive user input.
+	 *
+	 * @param entity The entity whose spotlight component properties are to be displayed and edited.
+	 * @return true Indicates that the spotlight properties were successfully rendered.
+	 */
 	bool SpotLightProperty::show(ecs::Entity entity)
 	{
         auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
