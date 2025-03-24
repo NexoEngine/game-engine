@@ -203,7 +203,8 @@ namespace nexo::editor {
                 if (const std::string newSceneName(sceneNameBuffer); !newSceneName.empty())
                 {
                     auto viewManager = m_windowRegistry.getWindow<SceneViewManager>();
-                    viewManager->addNewScene(sceneNameBuffer);
+                    if (!viewManager->addNewScene(sceneNameBuffer))
+                        LOG(NEXO_WARN, "Failed to create scene, check if the name is unique");
                     memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
 
                     m_popupManager.closePopupInContext();

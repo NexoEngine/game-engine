@@ -37,7 +37,7 @@ namespace nexo::editor {
             void shutdown() override;
             void show() override;
             void update() override;
-            void addNewScene(const std::string &sceneName, bool defaultScene = false);
+            bool addNewScene(const std::string &sceneName, bool defaultScene = false);
             void duplicateSceneView(WindowId uiId);
             void removeScene(WindowId uiId);
             std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
@@ -54,5 +54,6 @@ namespace nexo::editor {
             int selectedScene = -1;
 
             static ImGuiDockNode* getDockNodeForWindow(const char* windowName);
+            bool checkSceneNameDuplicate(const std::string &sceneName);
     };
 }

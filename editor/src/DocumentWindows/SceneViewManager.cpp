@@ -55,8 +55,20 @@ namespace nexo::editor {
         //m_scenes[newScene->windowId] = newScene;
     }
 
-    void SceneViewManager::addNewScene(const std::string &sceneName, bool defaultScene)
+    bool SceneViewManager::checkSceneNameDuplicate(const std::string &sceneName)
     {
+        for (const auto &scene : m_scenes)
+        {
+            if (scene.second->getName() == sceneName)
+                return true;
+        }
+        return false;
+    }
+
+    bool SceneViewManager::addNewScene(const std::string &sceneName, bool defaultScene)
+    {
+    	if (checkSceneNameDuplicate(sceneName))
+     		return false;
         auto newScene = std::make_shared<MainScene>(m_windowRegistry, sceneName, defaultScene);
         newScene->setup();
         const std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
@@ -66,6 +78,7 @@ namespace nexo::editor {
                 ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
         }
         m_scenes[newScene->getWindowId()] = newScene;
+        return true;
     }
 
     void SceneViewManager::removeScene(WindowId uiId)
