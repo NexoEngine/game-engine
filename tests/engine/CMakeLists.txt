@@ -30,6 +30,7 @@ add_executable(engine_tests
     ${BASEDIR}/exceptions/Exceptions.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp
     ${BASEDIR}/scene/SceneManager.test.cpp
+    ${BASEDIR}/components/Camera.test.cpp
         # Add other engine test files here
 )
 
