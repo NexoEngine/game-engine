@@ -15,25 +15,11 @@
 #include <imgui.h>
 
 #include "TransformProperty.hpp"
-#include "AEntityProperty.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
 #include "math/Vector.hpp"
 
 namespace nexo::editor {
-    TransformProperty::TransformProperty(const std::string& name)
-        : AEntityProperty(name)
-    {
-
-    }
-
-    TransformProperty::~TransformProperty() = default;
-
-    void TransformProperty::update()
-    {
-
-    }
-
-    int TransformProperty::show(ecs::Entity entity)
+    bool TransformProperty::show(ecs::Entity entity)
     {
         auto& [pos, size, quat] = Application::getEntityComponent<components::TransformComponent>(entity);
 

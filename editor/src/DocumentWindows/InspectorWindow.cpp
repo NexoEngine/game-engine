@@ -16,6 +16,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <variant>
 
 #include "Application.hpp"
 #include "EntityProperties/RenderProperty.hpp"
@@ -26,6 +27,7 @@
 #include "EntityProperties/SpotLightProperty.hpp"
 #include "EntityProperties/CameraProperty.hpp"
 #include "EntityProperties/CameraController.hpp"
+#include "components/Transform.hpp"
 #include "utils/ScenePreview.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
 #include "components/Camera.hpp"
@@ -80,20 +82,25 @@ namespace nexo::editor
 			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 
-		materialModified = Widgets::drawMaterialInspector(RenderProperty::selectedMaterial);
+		auto materialVariant = m_inspector.getSubInspectorData<MaterialInspector>();
+		if (std::holds_alternative<components::Material*>(materialVariant)) {
+		    auto materialPtr = std::get<components::Material*>(materialVariant);
+			materialModified = Widgets::drawMaterialInspector(materialPtr);
+		}
 	}
 
     InspectorWindow::InspectorWindow()
     {
-    	m_materialInspector = std::make_shared<MaterialInspector>();
-        m_componentShowFunctions[typeid(components::TransformComponent)] = &TransformProperty::show;
-        m_componentShowFunctions[typeid(components::RenderComponent)] = &RenderProperty::show;
-        m_componentShowFunctions[typeid(components::AmbientLightComponent)] = &AmbientLightProperty::show;
-        m_componentShowFunctions[typeid(components::DirectionalLightComponent)] = &DirectionalLightProperty::show;
-        m_componentShowFunctions[typeid(components::PointLightComponent)] = &PointLightProperty::show;
-        m_componentShowFunctions[typeid(components::SpotLightComponent)] = &SpotLightProperty::show;
-        m_componentShowFunctions[typeid(components::CameraComponent)] = &CameraProperty::show;
-        m_componentShowFunctions[typeid(components::PerspectiveCameraController)] = &CameraController::show;
+    	m_materialInspector = std::make_shared<MaterialInspector>(*this);
+
+		m_entityProperties[typeid(components::TransformComponent)] = std::make_shared<TransformProperty>(*this);
+		m_entityProperties[typeid(components::RenderComponent)] = std::make_shared<RenderProperty>(*this);
+		m_entityProperties[typeid(components::AmbientLightComponent)] = std::make_shared<AmbientLightProperty>(*this);
+		m_entityProperties[typeid(components::DirectionalLightComponent)] = std::make_shared<DirectionalLightProperty>(*this);
+		m_entityProperties[typeid(components::PointLightComponent)] = std::make_shared<PointLightProperty>(*this);
+		m_entityProperties[typeid(components::SpotLightComponent)] = std::make_shared<SpotLightProperty>(*this);
+		m_entityProperties[typeid(components::CameraComponent)] = std::make_shared<CameraProperty>(*this);
+		m_entityProperties[typeid(components::PerspectiveCameraController)] = std::make_shared<CameraController>(*this);
     }
 
     InspectorWindow::~InspectorWindow() = default;
@@ -127,7 +134,7 @@ namespace nexo::editor
 
         ImGui::End();
 
-        if (RenderProperty::showMaterialInspector)
+        if (getSubInspectorVisibility<MaterialInspector>())
         {
         	static bool first = true;
 
@@ -135,7 +142,7 @@ namespace nexo::editor
             if (first)
             	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            if (ImGui::Begin("Material Inspector", &RenderProperty::showMaterialInspector, window_flags))
+            if (ImGui::Begin("Material Inspector", &getSubInspectorVisibility<MaterialInspector>(), window_flags))
             {
 	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow && first)
 	            {
@@ -196,9 +203,9 @@ namespace nexo::editor
         const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
         {
-            if (m_componentShowFunctions.contains(type))
+            if (m_entityProperties.contains(type))
             {
-                m_componentShowFunctions[type](entity);
+                m_entityProperties[type]->show(entity);
             }
         }
     }

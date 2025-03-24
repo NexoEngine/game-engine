@@ -19,7 +19,7 @@
 #include "math/Light.hpp"
 
 namespace nexo::editor {
-	int SpotLightProperty::show(ecs::Entity entity)
+	bool SpotLightProperty::show(ecs::Entity entity)
 	{
         auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
 

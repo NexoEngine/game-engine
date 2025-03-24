@@ -16,34 +16,22 @@
 #include "ADocumentWindow.hpp"
 
 namespace nexo::editor {
+	class InspectorWindow;
+}
 
-	class InterfaceEntityProperty {
-		public:
-			virtual ~InterfaceEntityProperty() = default;
-			virtual int show(ecs::Entity selectedEntity) = 0;
-	};
+namespace nexo::editor {
 
     class IEntityProperty {
         public:
             virtual ~IEntityProperty() = default;
 
-            virtual void update() = 0;
-            virtual void showEnd() = 0;
+            virtual bool show(ecs::Entity entity) = 0;
     };
 
     class AEntityProperty : public IEntityProperty {
-        public:
-            ~AEntityProperty() override;
-
-            void update() override;
-            void showEnd() override;
-            static int show(ecs::Entity entity);
-
-        protected:
-            explicit AEntityProperty(std::string  name);
-
-            std::string _name;
-
+    	public:
+   			AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
+      	protected:
+       		InspectorWindow &m_inspector;
     };
-
 };

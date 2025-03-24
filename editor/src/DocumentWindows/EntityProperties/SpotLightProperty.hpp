@@ -18,6 +18,7 @@
 namespace nexo::editor {
 	class SpotLightProperty : public AEntityProperty {
 		public:
-			static int show(ecs::Entity entity);
+			using AEntityProperty::AEntityProperty;
+			bool show(ecs::Entity entity) override;
 	};
 }

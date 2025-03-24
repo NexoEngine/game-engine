@@ -18,7 +18,7 @@
 #include "Components/Widgets.hpp"
 
 namespace nexo::editor {
-	int AmbientLightProperty::show(const ecs::Entity entity)
+	bool AmbientLightProperty::show(const ecs::Entity entity)
 	{
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
 

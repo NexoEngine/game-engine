@@ -18,7 +18,7 @@
 #include "components/Light.hpp"
 
 namespace nexo::editor {
-	int DirectionalLightProperty::show(const ecs::Entity entity)
+	bool DirectionalLightProperty::show(const ecs::Entity entity)
 	{
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
 

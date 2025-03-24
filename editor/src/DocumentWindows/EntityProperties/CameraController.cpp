@@ -17,7 +17,7 @@
 #include "Components/EntityPropertiesComponents.hpp"
 
 namespace nexo::editor {
-	int CameraController::show(const ecs::Entity entity)
+	bool CameraController::show(const ecs::Entity entity)
 	{
         auto& controllerComponent = Application::getEntityComponent<components::PerspectiveCameraController>(entity);
 

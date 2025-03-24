@@ -20,7 +20,7 @@
 #include "Components/Components.hpp"
 
 namespace nexo::editor {
-	int CameraProperty::show(const ecs::Entity entity)
+	bool CameraProperty::show(const ecs::Entity entity)
 	{
         auto& cameraComponent = Application::getEntityComponent<components::CameraComponent>(entity);
 

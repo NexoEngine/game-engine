@@ -20,7 +20,7 @@
 
 namespace nexo::editor {
 
-	int PointLightProperty::show(const ecs::Entity entity)
+	bool PointLightProperty::show(const ecs::Entity entity)
 	{
         auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
 

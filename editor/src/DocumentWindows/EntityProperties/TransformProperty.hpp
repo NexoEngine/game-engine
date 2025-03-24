@@ -14,17 +14,12 @@
 
 #pragma once
 
-#include "ADocumentWindow.hpp"
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
     class TransformProperty : public nexo::editor::AEntityProperty {
         public:
-            explicit TransformProperty(const std::string& name);
-            ~TransformProperty();
-
-            void update();
-
-            static int show(ecs::Entity entity);
+        	using AEntityProperty::AEntityProperty;
+            bool show(ecs::Entity entity);
     };
 }
