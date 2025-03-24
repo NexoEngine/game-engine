@@ -30,6 +30,7 @@ namespace nexo::editor {
 
 			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
 			int m_ecsEntity = -1;
+			bool m_materialModified = true;
 	};
 
 }

@@ -34,13 +34,16 @@ namespace nexo::editor {
 
 	void MaterialInspector::renderMaterialInspector(int selectedEntity)
 	{
-		static bool materialModified = true;
+		bool &materialModified = m_materialModified;
 		static utils::ScenePreviewOut previewParams;
 
 		if (selectedEntity != -1)
 		{
 			if (m_ecsEntity != selectedEntity)
+			{
 				m_ecsEntity = selectedEntity;
+				materialModified = true;
+			}
    		}
 
 		if (m_ecsEntity == -1)
