@@ -20,13 +20,13 @@
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
-        class MainScene{
+    class MainScene {
         public:
             explicit MainScene(WindowRegistry &windowRegistry,std::string sceneName, bool defaultScene = false);
             ~MainScene() = default;
 
             void setup();
-            void shutdown();
+            void shutdown() const;
             void show();
             void update();
 
@@ -36,13 +36,13 @@ namespace nexo::editor {
             void setName(const std::string_view name) { m_sceneName = name; };
 
             [[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
+            [[nodiscard]] WindowId getWindowId() const { return windowId; }
+            void setWindowId(WindowId id) { windowId = id; }
 
             void deleteCamera(ecs::Entity cameraId);
 
-            // Strictly used for display purposes when having multiple view of one scene
-            unsigned int idView = 0;
-            WindowId windowId;
         private:
+        	WindowId windowId;
             std::string m_sceneName;
             bool m_defaultScene = false;
             bool m_opened = true;
@@ -122,7 +122,7 @@ namespace nexo::editor {
             //     engine::addEntityToScene(hemisphere, engine::editor::Main3DScene::_sceneID);
             // }
 
-            void handleKeyEvents();
+            void handleKeyEvents() const;
 
             void renderToolbar();
             void renderGizmo();

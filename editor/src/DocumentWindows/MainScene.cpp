@@ -98,11 +98,15 @@ namespace nexo::editor {
         _viewSize = size;
     }
 
-    void MainScene::shutdown()
-    {}
+    void MainScene::shutdown() const
+    {
+    	// Should probably check if it is necessary to delete the scene here ? (const for now)
+    }
 
-    void MainScene::handleKeyEvents()
-    {}
+    void MainScene::handleKeyEvents() const
+    {
+    	// Will be implemeneted later
+    }
 
     void MainScene::deleteCamera(const ecs::Entity cameraId)
     {
