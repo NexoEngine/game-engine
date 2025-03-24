@@ -32,7 +32,7 @@ namespace nexo::editor {
 
 	void MaterialInspector::shutdown()
 	{
-
+		// No need to delete anything since the destructor of the framebuffer will handle it
 	}
 
 	void MaterialInspector::renderMaterialInspector(int selectedEntity)
@@ -97,6 +97,6 @@ namespace nexo::editor {
 
 	void MaterialInspector::update()
 	{
-
+		// No need to update anything
 	}
 }

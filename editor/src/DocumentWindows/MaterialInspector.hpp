@@ -26,9 +26,7 @@ namespace nexo::editor {
          	void update() override;
 
 		private:
-
 			void renderMaterialInspector(int selectedEntity);
-
 
 			std::shared_ptr<renderer::Framebuffer> m_framebuffer = nullptr;
 			int m_ecsEntity = -1;

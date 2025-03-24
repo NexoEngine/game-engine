@@ -93,6 +93,7 @@ namespace nexo::editor {
 
     void ConsoleWindow::setup()
     {
+    	//All the setup is made in the constructor because the rest of the editor needs the log setup before setting up the windows
     }
 
     void ConsoleWindow::shutdown()
@@ -254,5 +255,7 @@ namespace nexo::editor {
 
 
     void ConsoleWindow::update()
-    {}
+    {
+    	//No need to update anything
+    }
 }
