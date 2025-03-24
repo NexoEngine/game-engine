@@ -25,7 +25,7 @@ namespace nexo::editor {
 
     class Editor {
         public:
-            Editor();
+            Editor() = default;
             ~Editor() = default;
 
             /**

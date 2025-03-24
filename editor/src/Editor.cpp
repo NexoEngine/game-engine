@@ -37,10 +37,6 @@ namespace nexo::editor {
         ImGuiBackend::shutdown();
     }
 
-    Editor::Editor()
-    {
-    }
-
     void Editor::setupEngine() const
     {
         auto const &app = Application::getInstance();
