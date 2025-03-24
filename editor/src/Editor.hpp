@@ -56,7 +56,7 @@ namespace nexo::editor {
             void setupEngine() const;
             void setupStyle() const;
             void setupFonts(float scaleFactorX, float scaleFactorY) const;
-            void buildDockspace() const;
+            void buildDockspace();
             void drawMenuBar();
 
             bool m_quit = false;

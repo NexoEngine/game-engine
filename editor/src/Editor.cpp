@@ -201,10 +201,11 @@ namespace nexo::editor {
         }
     }
 
-    void Editor::buildDockspace() const
+    void Editor::buildDockspace()
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImGuiID dockspaceID = viewport->ID;
+        static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
         if (!ImGui::DockBuilderGetNode(dockspaceID))
@@ -252,19 +253,27 @@ namespace nexo::editor {
             ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
             ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
 
+            m_windowRegistry.setDockId("Default scene", mainSceneTop);
+            m_windowRegistry.setDockId("Console", consoleNode);
+            m_windowRegistry.setDockId("Scene Tree", sceneTreeNode);
+            m_windowRegistry.setDockId("Inspector", inspectorNode);
+            m_windowRegistry.setDockId("Material Inspector", materialInspectorNode);
+            dockingRegistryFilled = true;
+
             g_materialInspectorDockID = materialInspectorNode;
 
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-
-        if (g_materialInspectorDockID == 0)
+        else if (!dockingRegistryFilled)
         {
-	        auto materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
-	        if (materialId != 0)
-	        	g_materialInspectorDockID = materialId;
+        	m_windowRegistry.setDockId("Default scene", findWindowDockIDFromConfig("Default scene"));
+        	m_windowRegistry.setDockId("Console", findWindowDockIDFromConfig("Console"));
+        	m_windowRegistry.setDockId("Scene Tree", findWindowDockIDFromConfig("Scene Tree"));
+        	m_windowRegistry.setDockId("Inspector", findWindowDockIDFromConfig("Inspector"));
+        	m_windowRegistry.setDockId("Material Inspector", findWindowDockIDFromConfig("Material Inspector"));
+         	dockingRegistryFilled = true;
         }
-
 
         // Render the dockspace
         ImGui::DockSpaceOverViewport(viewport->ID);
