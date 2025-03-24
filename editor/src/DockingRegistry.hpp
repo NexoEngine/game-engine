@@ -15,8 +15,9 @@
 
 #include <unordered_map>
 #include <imgui.h>
-#include <typeindex>
 #include <string>
+
+#include "utils/TransparentStringHash.hpp"
 
 namespace nexo::editor {
 
@@ -26,6 +27,6 @@ namespace nexo::editor {
 			ImGuiID getDockId(const std::string& name) const;
 
 		private:
-			std::unordered_map<std::string, ImGuiID> dockIds;
+			std::unordered_map<std::string, ImGuiID, TransparentStringHash, std::equal_to<>> dockIds;
 	};
 }
