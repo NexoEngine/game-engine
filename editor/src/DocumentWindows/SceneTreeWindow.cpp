@@ -358,7 +358,7 @@ namespace nexo::editor {
         m_nbSpotLights = 0;
 
         // Retrieves the scenes that are displayed on the GUI
-        auto &scenes = m_windowRegistry.getWindow<SceneViewManager>()->getOpenScenes();
+        const auto &scenes = m_windowRegistry.getWindow<SceneViewManager>()->getOpenScenes();
         std::map<scene::SceneId, SceneObject> sceneNodes;
         for (const auto &[sceneId, windowId] : scenes)
         {

@@ -18,7 +18,7 @@ namespace nexo::editor {
 
 	void WindowRegistry::setup() const
 	{
-		for (auto &[_, window]: m_windows)
+		for (const auto &[_, window]: m_windows)
         {
             window->setup();
         }
