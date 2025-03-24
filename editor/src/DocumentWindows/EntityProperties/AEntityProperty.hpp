@@ -30,7 +30,7 @@ namespace nexo::editor {
 
     class AEntityProperty : public IEntityProperty {
     	public:
-   			AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
+   			explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
       	protected:
        		InspectorWindow &m_inspector;
     };
