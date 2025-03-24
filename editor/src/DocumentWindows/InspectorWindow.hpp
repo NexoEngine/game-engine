@@ -40,6 +40,15 @@ namespace nexo::editor {
 			* @param visible True if the sub-inspector should be visible, false otherwise.
 			*/
 			template<typename T>
+			/**
+			 * @brief Sets the visibility flag for the sub-inspector associated with type T.
+			 *
+			 * This template method updates the internal mapping of sub-inspector visibility,
+			 * associating the specified visibility state with the sub-inspector corresponding
+			 * to type T.
+			 *
+			 * @param visible The desired visibility state (true for visible, false for hidden).
+			 */
 			void setSubInspectorVisibility(bool visible)
 			{
 			    m_subInspectorVisibility[std::type_index(typeid(T))] = visible;
@@ -52,6 +61,15 @@ namespace nexo::editor {
 			* @param data Pointer to a components::Material instance, or nullptr.
 			*/
 			template<typename T>
+			/**
+			 * @brief Associates material data with a sub-inspector of the specified type.
+			 *
+			 * Maps the type index of the templated sub-inspector (T) to the provided material data. 
+			 * If an entry for the given type already exists, it is updated with the new data.
+			 *
+			 * @tparam T The type of the sub-inspector.
+			 * @param data Pointer to the material data to associate with the sub-inspector.
+			 */
 			void setSubInspectorData(components::Material *data)
 			{
 			    m_subInspectorData[std::type_index(typeid(T))] = data;
@@ -64,6 +82,15 @@ namespace nexo::editor {
 			* @return bool True if the sub-inspector is marked as visible; false if not found.
 			*/
 			template<typename T>
+			/**
+			 * @brief Retrieves the visibility flag for a specific sub-inspector type.
+			 *
+			 * This function checks if a visibility flag has been set for the sub-inspector designated by the template parameter T.
+			 * If no flag is found, it returns false.
+			 *
+			 * @tparam T The type of the sub-inspector.
+			 * @return true if the sub-inspector is marked as visible; otherwise, false.
+			 */
 			bool getSubInspectorVisibility() const
 			{
 			    auto it = m_subInspectorVisibility.find(std::type_index(typeid(T)));
@@ -81,6 +108,16 @@ namespace nexo::editor {
 			* @return bool& A modifiable reference to the visibility flag.
 			*/
 			template<typename T>
+			/**
+			 * @brief Retrieves a modifiable reference to the visibility flag for a sub-inspector.
+			 *
+			 * This template method returns a reference to the boolean flag representing the visibility
+			 * of the sub-inspector associated with type T. If the flag does not exist, it is default-
+			 * initialized (typically to false) and inserted.
+			 *
+			 * @tparam T The sub-inspector type.
+			 * @return bool& A modifiable reference to the visibility flag for the specified sub-inspector.
+			 */
 			bool& getSubInspectorVisibility()
 			{
 			    return m_subInspectorVisibility[std::type_index(typeid(T))];
@@ -96,6 +133,17 @@ namespace nexo::editor {
 			* @return std::variant<std::monostate, components::Material*> The stored data.
 			*/
 			template<typename T>
+			/**
+			 * @brief Retrieves the material data associated with the specified sub-inspector type.
+			 *
+			 * This templated function searches for data in the sub-inspector data map using the type index of T.
+			 * If an entry for T exists, it returns the associated pointer to a material; otherwise, it returns a variant
+			 * containing std::monostate to indicate that no data is set.
+			 *
+			 * @tparam T The sub-inspector type used to look up the associated data.
+			 * @return std::variant<std::monostate, components::Material*> A variant holding a pointer to components::Material if set,
+			 *         or std::monostate if no data is available.
+			 */
 			std::variant<std::monostate, components::Material*> getSubInspectorData() const
 			{
 			    auto it = m_subInspectorData.find(std::type_index(typeid(T)));

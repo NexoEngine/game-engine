@@ -19,6 +19,18 @@
 #include "math/Vector.hpp"
 
 namespace nexo::editor {
+    /**
+     * @brief Displays and edits the transform properties of an entity using an ImGui interface.
+     *
+     * Retrieves the transform component (position, scale, and rotation quaternion) of the given entity,
+     * displaying the values in an ImGui table. The rotation is converted from a quaternion to Euler angles
+     * to allow intuitive editing; any changes in Euler angles are applied incrementally back to the quaternion,
+     * ensuring it remains normalized. The method adjusts UI styling to improve row spacing and returns a boolean
+     * indicating successful display.
+     *
+     * @param entity The entity whose transform properties are rendered.
+     * @return true Always returns true after displaying the properties.
+     */
     bool TransformProperty::show(ecs::Entity entity)
     {
         auto& [pos, size, quat] = Application::getEntityComponent<components::TransformComponent>(entity);

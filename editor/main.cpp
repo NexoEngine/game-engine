@@ -24,6 +24,18 @@
 #include <core/exceptions/Exceptions.hpp>
 #include <DocumentWindows/InspectorWindow.hpp>
 
+/**
+ * @brief Entry point for the nexo editor application.
+ *
+ * Initializes logging via loguru, registers essential editor windows using template-based registration,
+ * and adds a default scene to the SceneViewManager. The function then enters a main loop that renders and
+ * updates the editor while maintaining a steady frame rate by adjusting sleep time based on frame processing duration.
+ * If a nexo::Exception is thrown, it is logged and the application terminates with a non-zero exit status.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @return int Returns 0 on successful execution or 1 if an exception occurs.
+ */
 int main(int argc, char **argv)
 {
     try {

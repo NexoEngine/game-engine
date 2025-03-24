@@ -40,7 +40,19 @@ namespace nexo::editor {
             bool addNewScene(const std::string &sceneName, bool defaultScene = false);
             void duplicateSceneView(WindowId uiId);
             void removeScene(WindowId uiId);
-            std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
+            /**
+ * @brief Retrieves the MainScene associated with the given window identifier.
+ *
+ * This function accesses the internal scene mapping and returns the shared pointer
+ * to the MainScene linked to the provided window identifier. Since it uses std::map::at,
+ * a std::out_of_range exception is thrown if the identifier does not exist.
+ *
+ * @param uiId The unique identifier of the window whose scene is requested.
+ * @return std::shared_ptr<MainScene> A shared pointer to the corresponding MainScene.
+ *
+ * @throws std::out_of_range If the window identifier is not found in the internal map.
+ */
+std::shared_ptr<MainScene> getScene(const WindowId uiId) {return m_scenes.at(uiId); };
 
             std::vector<SceneProperties> &getOpenScenes() { return m_openScenes; };
 
