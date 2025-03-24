@@ -42,6 +42,7 @@ namespace nexo::editor {
             case LogLevel::INFO: return loguru::Verbosity_INFO;
             case LogLevel::DEBUG: return loguru::Verbosity_1;
             case LogLevel::DEV: return loguru::Verbosity_2;
+            default: return loguru::Verbosity_INVALID;
         }
         return loguru::Verbosity_INVALID;
     }
