@@ -32,7 +32,7 @@ namespace nexo::editor {
     class WindowNotRegistered final : public Exception {
     	public:
      		explicit WindowNotRegistered(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
-                : Exception(std::format("Window not registered: {}", windowTypeIndex.name()), loc) {}
+                : Exception(std::format("Window not registered: {}. Make sure the window is registered in the WindowRegistry before accessing it.", windowTypeIndex.name()), loc) {}
     };
 
     class BackendRendererApiNotSupported final : public Exception {
