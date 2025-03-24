@@ -17,6 +17,8 @@
 #include "Exception.hpp"
 
 #include <source_location>
+#include <typeindex>
+#include <format>
 
 namespace nexo::editor {
 
@@ -25,6 +27,12 @@ namespace nexo::editor {
             explicit FileNotFoundException(const std::string &filePath,
                                            const std::source_location loc = std::source_location::current())
                 : Exception("File not found: " + filePath, loc) {}
+    };
+
+    class WindowNotRegistered final : public Exception {
+    	public:
+     		explicit WindowNotRegistered(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Window not registered: {}", windowTypeIndex.name()), loc) {}
     };
 
     class BackendRendererApiNotSupported final : public Exception {
