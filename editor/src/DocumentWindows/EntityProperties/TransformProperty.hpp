@@ -20,6 +20,6 @@ namespace nexo::editor {
     class TransformProperty : public nexo::editor::AEntityProperty {
         public:
         	using AEntityProperty::AEntityProperty;
-            bool show(ecs::Entity entity);
+            bool show(ecs::Entity entity) override;
     };
 }
