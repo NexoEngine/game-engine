@@ -14,20 +14,17 @@
 
 #include "MaterialInspector.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
+#include "Exception.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "Components/Widgets.hpp"
 #include "context/Selector.hpp"
+#include "exceptions/Exceptions.hpp"
 
 namespace nexo::editor {
 	void MaterialInspector::setup()
 	{
-		renderer::FramebufferSpecs framebufferSpecs;
-		framebufferSpecs.attachments = {renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth};
-		framebufferSpecs.width = static_cast<unsigned int>(64);
-		framebufferSpecs.height = static_cast<unsigned int>(64);
-		m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
-		m_framebuffer->setClearColor({0.05f, 0.05f, 0.05f, 0.0f});
+		// No need to setup anything
 	}
 
 	void MaterialInspector::shutdown()
@@ -60,7 +57,8 @@ namespace nexo::editor {
 			materialModified = false;
 			app.getSceneManager().deleteScene(previewParams.sceneId);
 		}
-
+		if (!m_framebuffer)
+			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failedd to initialize framebuffer in Material Inspector window");
 		// --- Material preview ---
 		if (m_framebuffer->getColorAttachmentId(0) != 0)
 			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
