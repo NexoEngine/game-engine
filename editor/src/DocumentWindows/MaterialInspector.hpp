@@ -19,7 +19,7 @@ namespace nexo::editor {
 
 	class MaterialInspector : public ADocumentWindow {
 		public:
-			explicit MaterialInspector(WindowRegistry &registry) : ADocumentWindow(registry) {};
+			using ADocumentWindow::ADocumentWindow;
 			void setup() override;
 			void show() override;
         	void shutdown() override;

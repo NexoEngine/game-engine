@@ -32,7 +32,7 @@ namespace nexo::editor {
 	*/
     class SceneViewManager : public ADocumentWindow {
         public:
-        	explicit SceneViewManager(WindowRegistry &registry) : ADocumentWindow(registry) {};
+       		using ADocumentWindow::ADocumentWindow;
             void setup() override;
             void shutdown() override;
             void show() override;

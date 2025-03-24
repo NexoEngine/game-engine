@@ -76,7 +76,7 @@ namespace nexo::editor {
      */
     class SceneTreeWindow : public ADocumentWindow {
         public:
-        	explicit SceneTreeWindow(WindowRegistry &registry) : ADocumentWindow(registry) {};
+       		using ADocumentWindow::ADocumentWindow;
             ~SceneTreeWindow() override;
 
             void setup() override;
