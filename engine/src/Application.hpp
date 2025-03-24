@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
+#include <systems/PhysicsSystemWrapper.hpp>
 
 #include "Types.hpp"
 #include "renderer/Window.hpp"
@@ -28,6 +29,7 @@
 #include "Logger.hpp"
 #include "Timer.hpp"
 #include "components/Light.hpp"
+#include "components/PhysicsBodyComponent.hpp"
 
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderSystem.hpp"
@@ -263,6 +265,7 @@ namespace nexo {
 
             std::vector<ProfileResult> m_profilesResults;
 
-            system::PhysicsSystem physicsSystem;
+            system::PhysicsSystemWrapper physicsSystem;
+
     };
 }

@@ -77,6 +77,7 @@ namespace nexo {
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
+        m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -231,6 +232,7 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
+        physicsSystem.Init(*m_coordinator);
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
