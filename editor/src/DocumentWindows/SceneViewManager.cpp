@@ -28,6 +28,7 @@ namespace nexo::editor {
 
     void SceneViewManager::setup()
     {
+    	// No need to setup anything since the scene's setup are done when adding it
     }
 
     void SceneViewManager::shutdown()
@@ -56,7 +57,7 @@ namespace nexo::editor {
 
     void SceneViewManager::addNewScene(const std::string &sceneName, bool defaultScene)
     {
-        std::shared_ptr<MainScene> newScene = std::make_shared<MainScene>(m_windowRegistry, sceneName, defaultScene);
+        auto newScene = std::make_shared<MainScene>(m_windowRegistry, sceneName, defaultScene);
         newScene->setup();
         const std::string targetWindow = !m_scenes.empty() ? m_scenes.begin()->second->getName() : "";
         if (!targetWindow.empty())
@@ -64,7 +65,7 @@ namespace nexo::editor {
             if (const ImGuiDockNode *dockNode = getDockNodeForWindow(targetWindow.c_str()))
                 ImGui::DockBuilderDockWindow(newScene->getName().c_str(), dockNode->ID);
         }
-        m_scenes[newScene->windowId] = newScene;
+        m_scenes[newScene->getWindowId()] = newScene;
     }
 
     void SceneViewManager::removeScene(WindowId uiId)
@@ -108,7 +109,7 @@ namespace nexo::editor {
             {
                 SceneProperties openScene{};
                 openScene.sceneId = scene->getSceneId();
-                openScene.windowId = scene->windowId;
+                openScene.windowId = scene->getWindowId();
 
                 m_openScenes.push_back(openScene);
             }
