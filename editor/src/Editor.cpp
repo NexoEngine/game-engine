@@ -29,7 +29,7 @@ ImGuiID g_materialInspectorDockID = 0;
 
 namespace nexo::editor {
 
-    void Editor::shutdown()
+    void Editor::shutdown() const
     {
         LOG(NEXO_INFO, "Closing editor");
         LOG(NEXO_INFO, "All windows destroyed");
@@ -170,7 +170,7 @@ namespace nexo::editor {
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
-    void Editor::init()
+    void Editor::init() const
     {
 		setupEngine();
 		setupStyle();
@@ -329,7 +329,7 @@ namespace nexo::editor {
         ImGuiBackend::end(nexo::getApp().getWindow());
     }
 
-    void Editor::update()
+    void Editor::update() const
     {
     	m_windowRegistry.update();
         getApp().endFrame();
