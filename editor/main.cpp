@@ -18,6 +18,7 @@
 #include "src/DocumentWindows/MainScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 #include "src/DocumentWindows/InspectorWindow.hpp"
+#include "src/DocumentWindows/MaterialInspector.hpp"
 
 #include <thread>
 #include <core/exceptions/Exceptions.hpp>
@@ -34,6 +35,7 @@ int main(int argc, char **argv)
         editor.registerWindow<nexo::editor::SceneTreeWindow>();
         editor.registerWindow<nexo::editor::InspectorWindow>();
         editor.registerWindow<nexo::editor::ConsoleWindow>();
+        editor.registerWindow<nexo::editor::MaterialInspector>();
 
         editor.init();
         editor.getWindow<nexo::editor::SceneViewManager>()->addNewScene("Default scene", true);
