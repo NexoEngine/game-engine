@@ -24,21 +24,64 @@ namespace nexo::editor {
     class MainScene {
         public:
             explicit MainScene(WindowRegistry &windowRegistry,std::string sceneName, bool defaultScene = false);
-            ~MainScene() = default;
+            /**
+ * @brief Default destructor for MainScene.
+ *
+ * This destructor is defaulted and performs no custom cleanup.
+ */
+~MainScene() = default;
 
             void setup();
             void shutdown() const;
             void show();
             void update();
 
-            bool isOpened() const { return m_opened; }
+            /**
+ * @brief Indicates whether the scene is currently open.
+ *
+ * This function returns the state of the scene, reflecting if it is actively open and available for interaction.
+ *
+ * @return true if the scene is open; false otherwise.
+ */
+bool isOpened() const { return m_opened; }
 
-            [[nodiscard]] const std::string &getName() const {return m_sceneName;};
-            void setName(const std::string_view name) { m_sceneName = name; };
+            /**
+ * @brief Retrieves the name of the scene.
+ *
+ * @return A constant reference to the scene name.
+ */
+[[nodiscard]] const std::string &getName() const {return m_sceneName;};
+            /**
+ * @brief Sets the scene's name.
+ *
+ * Updates the internal identifier of the scene to the provided value.
+ *
+ * @param name New name for the scene.
+ */
+void setName(const std::string_view name) { m_sceneName = name; };
 
-            [[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
-            [[nodiscard]] WindowId getWindowId() const { return windowId; }
-            void setWindowId(WindowId id) { windowId = id; }
+            /**
+ * @brief Retrieves the unique identifier of the scene.
+ *
+ * @return scene::SceneId The identifier of this scene.
+ */
+[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
+            /**
+ * @brief Retrieves the unique identifier for the window.
+ *
+ * This function returns the unique window ID, which is used to reference and manage the associated window within the application.
+ *
+ * @return WindowId Unique identifier for the window.
+ */
+[[nodiscard]] WindowId getWindowId() const { return windowId; }
+            /**
+ * @brief Sets the unique identifier for the window.
+ *
+ * Updates the internal window ID to the specified value, which is used to uniquely identify the window associated with the scene.
+ *
+ * @param id The new window identifier.
+ */
+void setWindowId(WindowId id) { windowId = id; }
 
             void deleteCamera(ecs::Entity cameraId);
 

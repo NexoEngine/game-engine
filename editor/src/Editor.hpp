@@ -30,8 +30,18 @@ namespace nexo::editor {
 
     class Editor {
         public:
-            Editor() = default;
-            ~Editor() = default;
+            /**
+ * @brief Default constructor for the Editor class.
+ *
+ * Creates an instance of Editor with default member initialization.
+ */
+Editor() = default;
+            /**
+ * @brief Default destructor for the Editor class.
+ *
+ * Automatically handles cleanup when an Editor instance is destroyed.
+ */
+~Editor() = default;
 
             /**
              * @brief Initializes the engine, setting up necessary components and systems.
@@ -47,6 +57,14 @@ namespace nexo::editor {
 
             template<typename T>
             requires std::derived_from<T, IDocumentWindow>
+            /**
+             * @brief Registers a new window of type T.
+             *
+             * This templated function creates an instance of window type T using the editor's window registry and registers it with the registry.
+             * T must be derived from IDocumentWindow.
+             *
+             * @tparam T The concrete window type to register, which must inherit from IDocumentWindow.
+             */
             void registerWindow()
             {
             	auto window = std::make_shared<T>(m_windowRegistry);
@@ -54,6 +72,16 @@ namespace nexo::editor {
             }
 
             template<typename T>
+            /**
+             * @brief Retrieves a registered window of type T.
+             *
+             * This template method returns a shared pointer to a window instance of type T from the editor's window registry.
+             * The window type T must be derived from IDocumentWindow. If no window of the specified type is registered, an empty
+             * shared pointer is returned.
+             *
+             * @tparam T The type of the window to retrieve. Must derive from IDocumentWindow.
+             * @return std::shared_ptr<T> A shared pointer to the registered window of type T, or an empty pointer if none exists.
+             */
             std::shared_ptr<T> getWindow()
             {
             	return m_windowRegistry.getWindow<T>();

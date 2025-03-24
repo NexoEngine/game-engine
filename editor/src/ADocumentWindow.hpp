@@ -23,6 +23,12 @@
 namespace nexo::editor {
     class ADocumentWindow : public IDocumentWindow {
         public:
+            /**
+             * @brief Constructs a new ADocumentWindow instance with a unique window ID.
+             *
+             * Initializes the document window by storing a reference to the provided WindowRegistry and assigning a unique window
+             * identifier. This setup is essential for integrating the window with the docking management system.
+             */
             explicit ADocumentWindow(WindowRegistry &windowRegistry) : m_windowRegistry(windowRegistry)
             {
                 windowId = nextWindowId++;
@@ -33,12 +39,23 @@ namespace nexo::editor {
             [[nodiscard]] bool isOpened() const override { return m_opened; }
 
             /**
-             * @brief Get the opened value
-             * @note Used to give a ref to ImGui
-             * @return ref to bool _opened
-             */
+ * @brief Retrieves the open state of the document window.
+ *
+ * Returns a reference to the internal boolean that tracks whether the window is open.
+ * This reference is primarily intended for ImGui integration, allowing direct manipulation
+ * of the window's visibility state.
+ *
+ * @return A reference to the window's open state.
+ */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
+            /**
+             * @brief Configures the initial docking for the document window.
+             *
+             * On its first call, this function retrieves the current ImGui window and verifies its docking state. It fetches the expected dock identifier for the given window name from the WindowRegistry. If the window is not currently docked or its dock ID does not match the expected ID, the function updates the ImGui window's dock ID accordingly. The operation is performed only once, as the first-open flag is set to false after execution.
+             *
+             * @param windowName The name used to retrieve the expected dock identifier from the WindowRegistry.
+             */
             void firstDockSetup(const std::string &windowName)
             {
 	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); m_firstOpened && currentWindow)
