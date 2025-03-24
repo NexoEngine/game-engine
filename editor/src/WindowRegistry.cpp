@@ -32,6 +32,16 @@ namespace nexo::editor {
         }
 	}
 
+	void WindowRegistry::setDockId(const std::string& name, ImGuiID id)
+	{
+		m_dockingRegistry.setDockId(name, id);
+	}
+
+	ImGuiID WindowRegistry::getDockId(const std::string& name) const
+	{
+		return m_dockingRegistry.getDockId(name);
+	}
+
 	void WindowRegistry::update()
 	{
 		for (const auto &[_, window]: m_windows)

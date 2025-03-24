@@ -14,6 +14,7 @@
 #pragma once
 
 #include "IDocumentWindow.hpp"
+#include "DockingRegistry.hpp"
 
 #include <unordered_map>
 #include <typeindex>
@@ -38,6 +39,9 @@ namespace nexo::editor {
 				return std::static_pointer_cast<T>(m_windows[typeid(T)]);
 			}
 
+			void setDockId(const std::string& name, ImGuiID id);
+			ImGuiID getDockId(const std::string& name) const;
+
 			void setup();
 			void shutdown();
 			void update();
@@ -45,5 +49,7 @@ namespace nexo::editor {
 
 		private:
 			std::unordered_map<std::type_index, std::shared_ptr<IDocumentWindow>> m_windows;
+
+			DockingRegistry m_dockingRegistry;
 	};
 }
