@@ -18,17 +18,23 @@ namespace nexo::editor {
 
 	void WindowRegistry::setup() const
 	{
-		for (const auto &[_, window]: m_windows)
+		for (const auto &[_, windows]: m_windows)
         {
-            window->setup();
+            for (const auto &window : windows)
+            {
+                window->setup();
+            }
         }
 	}
 
 	void WindowRegistry::shutdown() const
 	{
-		for (const auto &[_, window]: m_windows)
+		for (const auto &[_, windows]: m_windows)
         {
-            window->shutdown();
+            for (const auto &window : windows)
+            {
+                window->shutdown();
+            }
         }
 	}
 
@@ -44,18 +50,24 @@ namespace nexo::editor {
 
 	void WindowRegistry::update() const
 	{
-		for (const auto &[_, window]: m_windows)
+		for (const auto &[_, windows]: m_windows)
         {
-            window->update();
+            for (const auto &window : windows)
+            {
+                window->update();
+            }
         }
 	}
 
 	void WindowRegistry::render() const
 	{
-		for (const auto &[_, window]: m_windows)
+		for (const auto &[_, windows]: m_windows)
         {
-            if (window->isOpened())
-                window->show();
+            for (const auto &window : windows)
+            {
+                if (window->isOpened())
+                    window->show();
+            }
         }
 	}
 }

@@ -16,12 +16,22 @@
 #include "IDocumentWindow.hpp"
 #include "DockingRegistry.hpp"
 #include "exceptions/Exceptions.hpp"
+#include "Logger.hpp"
 
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
+#include <vector>
+#include <algorithm>
+#include <ranges>
 
 namespace nexo::editor {
+
+	template<typename T>
+	std::shared_ptr<T> castWindow(const std::shared_ptr<IDocumentWindow>& ptr) {
+	    return std::static_pointer_cast<T>(ptr);
+	}
+
 	class WindowRegistry {
 		public:
 
@@ -39,26 +49,71 @@ namespace nexo::editor {
 			requires std::derived_from<T, IDocumentWindow>
 			void registerWindow(std::shared_ptr<T> window)
 			{
-				m_windows[typeid(T)] = window;
+			    auto &windowsOfType = m_windows[typeid(T)];
+			    if (std::ranges::any_of(windowsOfType, [&](const auto &existingWindow) {
+			            return existingWindow->getWindowName() == window->getWindowName();
+			        }))
+			    {
+			        THROW_EXCEPTION(WindowAlreadyRegistered, typeid(T), window->getWindowName());
+			    }
+			    windowsOfType.push_back(window);
 			}
 
 			/**
-			 * @brief Retrieves a registered window of the specified type.
+			 * @brief Retrieves a registered window of the specified type and name.
 			 *
-			 * This template function checks whether a window of type T has been registered.
-			 * If the window is not found, it throws a WindowNotRegistered exception.
-			 * Otherwise, it returns the window as a shared pointer of type T.
+			 * This template function checks whether a window of type T with the given name has been registered.
+			 * If the window is found, it returns the window as a weak pointer of type T.
+			 * Otherwise, it returns an empty weak pointer.
 			 *
 			 * @tparam T The type of the window, which must derive from IDocumentWindow.
-			 * @return std::shared_ptr<T> A shared pointer to the registered window.
-			 * @throws WindowNotRegistered Thrown if no window of the specified type is registered.
+			 * @param windowName The unique name of the window to look for.
+			 * @return std::weak_ptr<T> A weak pointer to the registered window if found; otherwise, an empty weak pointer.
 			 */
 			template<typename T>
-			std::shared_ptr<T> getWindow()
+			requires std::derived_from<T, IDocumentWindow>
+			std::weak_ptr<T> getWindow(const std::string &windowName) const
 			{
-				if (!m_windows.contains(typeid(T)))
-					THROW_EXCEPTION(WindowNotRegistered, typeid(T));
-				return std::static_pointer_cast<T>(m_windows[typeid(T)]);
+			    auto it = m_windows.find(typeid(T));
+			    if (it == m_windows.end())
+				{
+					LOG(NEXO_WARN, "Window of type {} not found", typeid(T).name());
+     				return {};
+				}
+
+			    auto &windowsOfType = it->second;
+			    auto found = std::ranges::find_if(windowsOfType, [&windowName](const auto &w) {
+			        return w->getWindowName() == windowName;
+			    });
+
+			    if (found == windowsOfType.end())
+				{
+					LOG(NEXO_WARN, "Window of type {} with name {} not found", typeid(T).name(), windowName);
+     				return {};
+				}
+
+			    return std::static_pointer_cast<T>(*found);
+			}
+
+
+
+			template<typename T>
+			requires std::derived_from<T, IDocumentWindow>
+			std::ranges::transform_view<
+			    std::ranges::ref_view<const std::vector<std::shared_ptr<IDocumentWindow>>>,
+			    std::shared_ptr<T>(*)(const std::shared_ptr<IDocumentWindow>&)
+			>
+			getWindows() const
+			{
+			    // Helper: non-capturing function for casting:
+			    std::shared_ptr<T>(*caster)(const std::shared_ptr<IDocumentWindow>&) = &castWindow<T>;
+
+			    auto it = m_windows.find(typeid(T));
+			    if (it == m_windows.end()) {
+			        static const std::vector<std::shared_ptr<IDocumentWindow>> empty;
+			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);
+			    }
+			    return std::ranges::transform_view(std::ranges::ref_view(it->second), caster);
 			}
 
 			/**
@@ -113,7 +168,7 @@ namespace nexo::editor {
 			void render() const;
 
 		private:
-			std::unordered_map<std::type_index, std::shared_ptr<IDocumentWindow>> m_windows;
+			std::unordered_map<std::type_index, std::vector<std::shared_ptr<IDocumentWindow>>> m_windows;
 
 			DockingRegistry m_dockingRegistry;
 	};
