@@ -130,6 +130,7 @@ namespace nexo::assets {
 
         // Clean up
         importer.unregisterAllImportersForType<Texture>();
+        delete mockImporter;
     }
 
     TEST_F(AssetImporterTest, ImportAssetAutoFailureNoImporters)
