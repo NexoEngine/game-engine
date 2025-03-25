@@ -23,7 +23,6 @@ namespace nexo::editor {
     class EditorScene : public ADocumentWindow {
         public:
         	using ADocumentWindow::ADocumentWindow;
-            ~EditorScene() = default;
 
             /**
              * @brief Initializes the main scene.
@@ -91,7 +90,7 @@ namespace nexo::editor {
             int m_sceneId = -1;
             std::string m_sceneUuid;
             std::set<ecs::Entity> m_cameras;
-            unsigned int m_activeCamera = -1;
+            int m_activeCamera = -1;
 
             /**
              * @brief Sets the main scene window's view size.
@@ -112,7 +111,7 @@ namespace nexo::editor {
              * a popup placeholder for adding primitive entities, and a draggable input for adjusting the target frames per second (FPS).
              * The toolbar is positioned relative to the current view to align with the scene layout.
              */
-            void renderToolbar();
+            void renderToolbar() const;
 
             /**
              * @brief Renders the transformation gizmo for the selected entity.

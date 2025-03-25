@@ -16,5 +16,15 @@
 #include <string>
 
 namespace nexo::editor::utils {
+	/**
+	* @brief Removes the icon prefix from a string.
+	*
+	* This function assumes that an icon is prefixed to the string followed by a space.
+	* It searches for the first space in the string and returns the substring following that space.
+	* If no space is found, the original string is returned unchanged.
+	*
+	* @param str The input string that may contain an icon prefix.
+	* @return std::string The string with the icon prefix removed.
+	*/
 	std::string removeIconPrefix(const std::string &str);
 }

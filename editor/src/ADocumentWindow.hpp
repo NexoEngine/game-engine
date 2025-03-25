@@ -52,11 +52,15 @@ namespace nexo::editor {
             [[nodiscard]] const std::string &getWindowName() const override { return m_windowName; }
 
             /**
-             * @brief Configures the initial docking for the document window.
+             * @brief Initializes the docking configuration for the document window on its first display.
              *
-             * On its first call, this function retrieves the current ImGui window and verifies its docking state. It fetches the expected dock identifier for the given window name from the WindowRegistry. If the window is not currently docked or its dock ID does not match the expected ID, the function updates the ImGui window's dock ID accordingly. The operation is performed only once, as the first-open flag is set to false after execution.
+             * This function retrieves the current ImGui window and checks its docking state to ensure it aligns with the expected
+             * configuration from the WindowRegistry. On the first open (when m_firstOpened is true), if the window is not actively
+             * docked or its current dock ID does not match the expected ID obtained via the provided window name, the function assigns
+             * the expected dock ID to the window. If the window is already docked but the dock IDs still differ, the current dock ID is
+             * saved to the WindowRegistry. The m_firstOpened flag is then set to false so that the docking configuration is applied only once.
              *
-             * @param windowName The name used to retrieve the expected dock identifier from the WindowRegistry.
+             * @param windowName The name used to look up the expected dock identifier in the WindowRegistry.
              */
             void firstDockSetup(const std::string &windowName)
             {

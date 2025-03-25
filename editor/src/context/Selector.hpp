@@ -44,7 +44,18 @@ namespace nexo::editor {
 			const std::string &getSelectedUuid() const;
 			void setSelectedEntity(std::string_view uuid, int entity);
 
+			/**
+			* @brief Sets the currently selected scene
+			*
+			* @param[in] scene The scene entity ID to select
+			*/
 			void setSelectedScene(int scene);
+
+			/**
+			* @brief Gets the currently selected scene
+			*
+			* @return int The entity ID of the selected scene, or -1 if no scene is selected
+			*/
 			int getSelectedScene() const;
 
 			void unselectEntity();
@@ -65,6 +76,13 @@ namespace nexo::editor {
              * @return const std::string& Reference to the UI handle for the UUID
              */
 			const std::string &getUiHandle(const std::string &uuid, const std::string &defaultHandle);
+
+			/**
+			* @brief Sets the UI handle associated with a UUID
+			*
+			* @param[in] uuid The UUID to set the handle for
+			* @param[in] handle The handle to set
+			*/
 			void setUiHandle(const std::string &uuid, std::string_view handle);
 
 			static Selector &get()

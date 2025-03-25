@@ -36,15 +36,16 @@ namespace nexo::editor {
 		public:
 
 			/**
-			 * @brief Registers a document window instance in the registry.
-			 *
-			 * This function stores a shared pointer to a window of type T in an internal map,
-			 * using the type's typeid as the key for later retrieval. Registering a window of a
-			 * given type will overwrite any previous registration of the same type.
-			 *
-			 * @tparam T The window type, which must derive from IDocumentWindow.
-			 * @param window A shared pointer to the window instance to register.
-			 */
+			* @brief Adds a document window instance to the registry.
+			*
+			* This function registers a document window of type T by storing its shared pointer in an
+			* internal map keyed by the window's type identifier. Before adding the new window, it checks
+			* whether a window with the same name is already registered under the same type. If such a window
+			* exists, a WindowAlreadyRegistered exception is thrown to prevent duplicate entries.
+			*
+			* @tparam T The concrete window type derived from IDocumentWindow.
+			* @param window A shared pointer to the window instance to be registered.
+			*/
 			template<typename T>
 			requires std::derived_from<T, IDocumentWindow>
 			void registerWindow(std::shared_ptr<T> window)
@@ -95,8 +96,18 @@ namespace nexo::editor {
 			    return std::static_pointer_cast<T>(*found);
 			}
 
-
-
+			/**
+			* @brief Retrieves a range view of document windows cast to a specified derived type.
+			*
+			* This function returns a std::ranges::transform_view over the vector of document windows stored in
+			* m_windows for the type T. The transformation is performed using a non-capturing helper function,
+			* castWindow<T>, which casts each std::shared_ptr<IDocumentWindow> to a std::shared_ptr<T>.
+			*
+			* If no windows of the requested type T are found in m_windows, an empty range is returned.
+			*
+			* @tparam T The derived type of IDocumentWindow to retrieve.
+			* @return A transform_view range over the vector of document windows cast to std::shared_ptr<T>.
+			*/
 			template<typename T>
 			requires std::derived_from<T, IDocumentWindow>
 			std::ranges::transform_view<

@@ -27,7 +27,7 @@ namespace nexo::editor {
      * @param level The loguru verbosity level to convert.
      * @return std::string The string label corresponding to the provided verbosity level.
      */
-    static constexpr std::string verbosityToString(const loguru::Verbosity level)
+    static inline std::string verbosityToString(const loguru::Verbosity level)
     {
         switch (level)
         {

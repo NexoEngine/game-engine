@@ -29,7 +29,6 @@ namespace nexo::editor {
 			 * attenuation factors, while the cutoff angles are presented in degrees for easier modification.
 			 *
 			 * @param entity The entity whose spotlight component will be edited.
-			 * @return true Always returns true, indicating that the properties editor was displayed successfully.
 			 */
 			void show(ecs::Entity entity) override;
 	};

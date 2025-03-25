@@ -29,7 +29,8 @@ namespace nexo::editor {
 	     * @param s The input string to hash.
 	     * @return size_t The computed hash value.
 	     */
-	    size_t operator()(const std::string &s) const noexcept {
+	    size_t operator()(const std::string &s) const noexcept
+		{
 	        return std::hash<std::string>{}(s);
 	    }
 
@@ -42,7 +43,8 @@ namespace nexo::editor {
 	     * @param s The string view whose hash is to be computed.
 	     * @return The computed hash value.
 	     */
-	    size_t operator()(std::string_view s) const noexcept {
+	    size_t operator()(std::string_view s) const noexcept
+		{
 	        return std::hash<std::string_view>{}(s);
 	    }
 
@@ -55,7 +57,10 @@ namespace nexo::editor {
 	     * @param s A null-terminated C-string to be hashed.
 	     * @return size_t The computed hash value for the input string.
 	     */
-	    size_t operator()(const char* s) const noexcept {
+	    size_t operator()(const char* s) const noexcept
+		{
+			if (!s)
+				return 0;
 	        return std::hash<std::string_view>{}(s);
 	    }
 	};

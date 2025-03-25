@@ -88,7 +88,7 @@ namespace nexo::editor {
         return nodeOpen;
     }
 
-    void SceneTreeWindow::sceneSelected(const SceneObject &obj) const
+    void SceneTreeWindow::sceneSelected([[maybe_unused]] const SceneObject &obj) const
     {
     	//TODO: Delete scene
     }

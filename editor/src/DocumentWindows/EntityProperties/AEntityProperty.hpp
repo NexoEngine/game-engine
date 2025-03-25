@@ -16,10 +16,8 @@
 #include "ADocumentWindow.hpp"
 
 namespace nexo::editor {
-	class InspectorWindow;
-}
 
-namespace nexo::editor {
+	class InspectorWindow;
 
     class IEntityProperty {
         public:

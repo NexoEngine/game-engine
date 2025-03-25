@@ -71,12 +71,14 @@ namespace nexo::editor {
             void shutdown() const;
 
             /**
-             * @brief Registers a new window of type T.
+             * @brief Creates and registers a new window of type T.
              *
-             * This templated function creates an instance of window type T using the editor's window registry and registers it with the registry.
-             * T must be derived from IDocumentWindow.
+             * This function instantiates a new window of type T using the provided name and the editor's window registry.
+             * The new window is then registered with the registry so that it can be retrieved later. The type T must be
+             * derived from IDocumentWindow.
              *
-             * @tparam T The concrete window type to register, which must inherit from IDocumentWindow.
+             * @tparam T The type of the window to create and register. Must inherit from IDocumentWindow.
+             * @param name The name to assign to the new window.
              */
             template<typename T>
             requires std::derived_from<T, IDocumentWindow>
@@ -87,16 +89,18 @@ namespace nexo::editor {
             }
 
             /**
-             * @brief Retrieves a registered window of type T.
+             * @brief Retrieves a registered window of type T by its name.
              *
-             * This template method returns a weak pointer to a window instance of type T from the editor's window registry.
-             * The window type T must be derived from IDocumentWindow. If no window of the specified type is registered, an empty
+             * This function returns a weak pointer to a window instance of type T from the editor's window registry.
+             * The type T must be derived from IDocumentWindow. If no window with the specified name is registered, an empty
              * weak pointer is returned.
              *
-             * @tparam T The type of the window to retrieve. Must derive from IDocumentWindow.
-             * @return std::weak_ptr<T> A weak pointer to the registered window of type T, or an empty pointer if none exists.
+             * @tparam T The type of the window to retrieve. Must inherit from IDocumentWindow.
+             * @param windowName The name of the window to retrieve.
+             * @return std::weak_ptr<T> A weak pointer to the registered window of type T, or an empty pointer if no such window exists.
              */
             template<typename T>
+            requires std::derived_from<T, IDocumentWindow>
             std::weak_ptr<T> getWindow(const std::string &windowName)
             {
             	return m_windowRegistry.getWindow<T>(windowName);

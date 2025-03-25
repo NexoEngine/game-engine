@@ -55,10 +55,10 @@ namespace nexo::editor {
         framebufferSpecs.height = static_cast<unsigned int>(m_viewSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
         m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
-        m_cameras.insert(m_activeCamera);
-        app.getSceneManager().getScene(m_sceneId).addEntity(m_activeCamera);
+        m_cameras.insert(static_cast<ecs::Entity>(m_activeCamera));
+        app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_activeCamera));
         components::PerspectiveCameraController controller;
-        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(m_activeCamera, controller);
+        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_activeCamera), controller);
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene)
@@ -112,83 +112,9 @@ namespace nexo::editor {
     		m_activeCamera = *m_cameras.begin();
     }
 
-    void EditorScene::renderToolbar()
+    void EditorScene::renderToolbar() const
     {
-        constexpr float padding = 0.0f;
-
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(padding, padding));
-        ImGui::SetCursorScreenPos(ImVec2(m_viewPosition.x + 10, m_viewPosition.y + 10));
-        if (ImGui::Button("Orthographic"))
-        {
-            // Switch to orthographic camera mode
-            //engine::camera::setMode(CameraMode::ORTHOGRAPHIC);
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Perspective"))
-        {
-            // Switch to perspective camera mode
-            //engine::camera::setMode(CameraMode::PERSPECTIVE);
-        }
-
-        // ImGui::SameLine();
-        // if (ImGui::Button(ICON_FA_HAND_POINTER, buttonSize))
-        // {
-        //     // Set cursor to normal mode
-        //     //engine::input::setCursorMode(CursorMode::NORMAL);
-        // }
-        //
-        // ImGui::SameLine();
-        // if (ImGui::Button(ICON_FA_HAND, buttonSize))
-        // {
-        //     // Set cursor to pan mode
-        //     //engine::input::setCursorMode(CursorMode::PAN);
-        // }
-        //
-        // ImGui::SameLine();
-        // if (ImGui::Button(ICON_FA_ARROWS_SPIN, buttonSize))
-        // {
-        //     // Set cursor to rotate mode
-        //     //engine::input::setCursorMode(CursorMode::ROTATE);
-        // }
-        //
-        // ImGui::SameLine();
-        // if (ImGui::Button(ICON_FA_CUBE, buttonSize))
-        // {
-        //     ImGui::OpenPopup("add_primitive");
-        // }
-
-        ImGui::SameLine();
-        if (ImGui::BeginPopup("add_primitive"))
-        {
-            // const char *primitives_names[] = {
-            //     "  Cube", "  Plan", "  Sphere",\
-            //     "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",\
-            //     "  Hemisphere"
-            // };
-            // PrimitiveFunction add_primitive_fct[] = {
-            //     &Main3DScene::add_cube,
-            //     &Main3DScene::add_plan,
-            //     &Main3DScene::add_sphere,
-            //     &Main3DScene::add_cylinder,
-            //     &Main3DScene::add_cone,
-            //     &Main3DScene::add_polygon,
-            //     &Main3DScene::add_torus,
-            //     &Main3DScene::add_knot,
-            //     &Main3DScene::add_hemisphere
-            // };
-            ImGui::SeparatorText(" Add primitive ");
-            // for (int i = 0; i < IM_ARRAYSIZE(primitives_names); i++)
-            // {
-            //     if (ImGui::Selectable(primitives_names[i], &chose_primitive))
-            //     {
-            //         (this->*add_primitive_fct[i])();
-            //     }
-            // }
-
-            ImGui::EndPopup();
-        }
-        ImGui::PopStyleVar();
+    	// Empty for now, will add it later
     }
 
     void EditorScene::renderGizmo()
@@ -271,7 +197,6 @@ namespace nexo::editor {
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto &selector = Selector::get();
 
-
         if (ImGui::Begin(m_windowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
         	auto &app = getApp();
@@ -280,21 +205,17 @@ namespace nexo::editor {
 
             m_focused = ImGui::IsWindowFocused();
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
-            if (m_focused)
+            if (m_focused && selector.getSelectedScene() != m_sceneId)
             {
-                if (auto &selector = Selector::get();
-                    selector.getSelectedScene() != m_sceneId)
-                {
-                    selector.setSelectedScene(m_sceneId);
-                    selector.unselectEntity();
-                }
+                selector.setSelectedScene(m_sceneId);
+                selector.unselectEntity();
             }
 
             if (m_activeCamera == -1)
             {
 	            // No active camera, render the text at the center of the screen
 	            ImVec2 textSize = ImGui::CalcTextSize("No active camera");
-	            ImVec2 textPos = ImVec2((m_viewSize.x - textSize.x) / 2, (m_viewSize.y - textSize.y) / 2);
+	            auto textPos = ImVec2((m_viewSize.x - textSize.x) / 2, (m_viewSize.y - textSize.y) / 2);
 
 	            ImGui::SetCursorScreenPos(textPos);
 	            ImGui::Text("No active camera");
@@ -317,7 +238,7 @@ namespace nexo::editor {
             return;
         handleKeyEvents();
 
-        auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
@@ -328,26 +249,25 @@ namespace nexo::editor {
             // Flip the y-coordinate to match opengl texture format (maybe make it modular in some way)
             my = m_viewSize.y - my;
 
-            if (mx >= 0 && my >= 0 && mx < m_viewSize.x && my < m_viewSize.y)
+            // Mouse is not inside the viewport
+            if (!(mx >= 0 && my >= 0 && mx < m_viewSize.x && my < m_viewSize.y))
+            	return;
+
+           	cameraComponent.m_renderTarget->bind();
+            int data = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
+            cameraComponent.m_renderTarget->unbind();
+            if (data == -1)
             {
-            	cameraComponent.m_renderTarget->bind();
-                int data = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
-                cameraComponent.m_renderTarget->unbind();
-                if (data != -1)
-                {
-                    const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
-                    if (uuid)
-                    {
-	                   	selector.setSelectedEntity(uuid->get().uuid, data);
-	                    selector.setSelectionType(SelectionType::ENTITY);
-                    }
-                    selector.setSelectedScene(m_sceneId);
-                }
-                else
-                {
-                	selector.unselectEntity();
-                }
+            	selector.unselectEntity();
+             	return;
             }
+            const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
+            if (uuid)
+            {
+               	selector.setSelectedEntity(uuid->get().uuid, data);
+                selector.setSelectionType(SelectionType::ENTITY);
+            }
+            selector.setSelectedScene(m_sceneId);
         }
     }
 
