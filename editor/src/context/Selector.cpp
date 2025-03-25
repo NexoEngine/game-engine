@@ -31,6 +31,16 @@ namespace nexo::editor {
 		m_selectedEntity = entity;
 	}
 
+	void Selector::setSelectedScene(int scene)
+	{
+		m_selectedScene = scene;
+	}
+
+	int Selector::getSelectedScene() const
+	{
+		return m_selectedScene;
+	}
+
 	void Selector::unselectEntity()
 	{
 		m_selectionType = SelectionType::NONE;

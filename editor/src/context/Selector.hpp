@@ -44,6 +44,9 @@ namespace nexo::editor {
 			const std::string &getSelectedUuid() const;
 			void setSelectedEntity(std::string_view uuid, int entity);
 
+			void setSelectedScene(int scene);
+			int getSelectedScene() const;
+
 			void unselectEntity();
 
 			SelectionType getSelectionType() const;
@@ -73,6 +76,7 @@ namespace nexo::editor {
 		private:
 			std::string m_selectedUuid;
 			int m_selectedEntity = -1;
+			int m_selectedScene = -1;
 			SelectionType m_selectionType = SelectionType::NONE;
 
 			struct TransparentHasher {
