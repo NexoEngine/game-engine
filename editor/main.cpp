@@ -12,10 +12,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "DocumentWindows/SceneViewManager.hpp"
 #include "src/Editor.hpp"
 #include "src/DocumentWindows/ConsoleWindow.hpp"
-#include "src/DocumentWindows/MainScene.hpp"
+#include "src/DocumentWindows/EditorScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 #include "src/DocumentWindows/InspectorWindow.hpp"
 #include "src/DocumentWindows/MaterialInspector.hpp"
@@ -31,14 +30,17 @@ int main(int argc, char **argv)
         loguru::g_stderr_verbosity = loguru::Verbosity_3;
         nexo::editor::Editor editor;
 
-        editor.registerWindow<nexo::editor::SceneViewManager>();
-        editor.registerWindow<nexo::editor::SceneTreeWindow>();
-        editor.registerWindow<nexo::editor::InspectorWindow>();
-        editor.registerWindow<nexo::editor::ConsoleWindow>();
-        editor.registerWindow<nexo::editor::MaterialInspector>();
+        //editor.registerWindow<nexo::editor::SceneViewManager>("Scene view manager");
+        editor.registerWindow<nexo::editor::EditorScene>("Default scene");
+        editor.registerWindow<nexo::editor::SceneTreeWindow>("Scene tree");
+        editor.registerWindow<nexo::editor::InspectorWindow>("Inspector");
+        editor.registerWindow<nexo::editor::ConsoleWindow>("Console");
+        editor.registerWindow<nexo::editor::MaterialInspector>("Material inspector");
+
+        if (auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default scene").lock())
+            defaultScene->setDefault();
 
         editor.init();
-        editor.getWindow<nexo::editor::SceneViewManager>()->addNewScene("Default scene", true);
 
         while (editor.isOpen())
         {
