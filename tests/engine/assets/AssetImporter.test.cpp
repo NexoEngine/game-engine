@@ -21,6 +21,10 @@
 
 namespace nexo::assets {
 
+    using testing::Expectation;
+    using testing::Invoke;
+    using testing::Return;
+
     // Mock AssetImporterBase class
     class MockImporter final : public AssetImporterBase {
     public:
@@ -82,7 +86,7 @@ namespace nexo::assets {
         // Simulate successful import
         EXPECT_CALL(*mockImporter, canRead(testing::_)).Times(0); // Never called
         EXPECT_CALL(*mockImporter, importImpl(testing::_))
-            .WillOnce(testing::Invoke([&](AssetImporterContext& ctx) {
+            .WillOnce(Invoke([&](AssetImporterContext& ctx) {
                 ctx.setMainAsset(expectedAsset);
             }));
 
@@ -103,10 +107,13 @@ namespace nexo::assets {
         ImporterFileInput input;
         const auto expectedAsset = new Texture();
 
-        // Setup expectations
-        EXPECT_CALL(*mockImporter, canRead(testing::_)).WillOnce(testing::Return(true));
+        // Setup expectations with ordering
+        Expectation canReadCall = EXPECT_CALL(*mockImporter, canRead(testing::_))
+            .WillOnce(Return(true));
+
         EXPECT_CALL(*mockImporter, importImpl(testing::_))
-            .WillOnce(testing::Invoke([&](AssetImporterContext& ctx) {
+            .After(canReadCall)
+            .WillOnce(Invoke([&](AssetImporterContext& ctx) {
                 ctx.setMainAsset(expectedAsset);
             }));
 
@@ -123,8 +130,6 @@ namespace nexo::assets {
 
         // Clean up
         importer.unregisterAllImportersForType<Texture>();
-        // Delete the mock importer
-        delete mockImporter;
     }
 
     TEST_F(AssetImporterTest, ImportAssetAutoFailureNoImporters)
@@ -148,10 +153,13 @@ namespace nexo::assets {
         ImporterFileInput input;
         const auto expectedAsset = new Texture();
 
-        // Setup expectations
-        EXPECT_CALL(*bestImporter, canRead(testing::_)).WillOnce(testing::Return(true));
+        // Setup expectations with ordering
+        Expectation canReadCall = EXPECT_CALL(*bestImporter, canRead(testing::_))
+            .WillOnce(Return(true));
+
         EXPECT_CALL(*bestImporter, importImpl(testing::_))
-            .WillOnce(testing::Invoke([&](AssetImporterContext& ctx) {
+            .After(canReadCall)
+            .WillOnce(Invoke([&](AssetImporterContext& ctx) {
                 ctx.setMainAsset(expectedAsset);
             }));
 
@@ -226,16 +234,28 @@ namespace nexo::assets {
         EXPECT_CALL(*textureImporter2, canRead(testing::_)).Times(0);
         EXPECT_CALL(*textureImporter2, importImpl(testing::_)).Times(0);
 
-        // Only the validModelImporter should be called
-        EXPECT_CALL(*validModelImporter, canRead(testing::_)).WillOnce(testing::Return(true));
+        // Setup call expectations with proper ordering
+        // First the templated MockImporter will be checked
+        Expectation canReadCall2 = EXPECT_CALL(*cannotReadModelImporter2, canRead(testing::_))
+            .WillOnce(Return(false));
+
+        // Then the cannotReadModelImporter will be checked
+        Expectation canReadCall = EXPECT_CALL(*cannotReadModelImporter, canRead(testing::_))
+            .After(canReadCall2)
+            .WillOnce(Return(false));
+
+        // Finally the validModelImporter will be checked and used
+        Expectation validCanReadCall = EXPECT_CALL(*validModelImporter, canRead(testing::_))
+            .After(canReadCall)
+            .WillOnce(Return(true));
+
         EXPECT_CALL(*validModelImporter, importImpl(testing::_))
-            .WillOnce(testing::Invoke([](AssetImporterContext& ctx) {
+            .After(validCanReadCall)
+            .WillOnce(Invoke([](AssetImporterContext& ctx) {
                 ctx.setMainAsset(new Model());
             }));
-        // The other model importers should return false
-        EXPECT_CALL(*cannotReadModelImporter, canRead(testing::_)).WillOnce(testing::Return(false));
+
         EXPECT_CALL(*cannotReadModelImporter, importImpl(testing::_)).Times(0);
-        EXPECT_CALL(*cannotReadModelImporter2, canRead(testing::_)).WillOnce(testing::Return(false));
         EXPECT_CALL(*cannotReadModelImporter2, importImpl(testing::_)).Times(0);
 
         const AssetLocation location("test::myAsset@path");
@@ -248,7 +268,6 @@ namespace nexo::assets {
         const AssetLocation location2("test::myAsset@path2");
         const auto invalidShaderAssetRef = importer.importAsset<MockShaderAsset>(location2, input);
         EXPECT_FALSE(invalidShaderAssetRef);
-
     }
 
     /**
@@ -264,15 +283,23 @@ namespace nexo::assets {
         ImporterFileInput input;
         const auto expectedAsset = new Texture();
 
-        // bestImporter is checked for canRead, then ultimately it is still used for importImpl
-        EXPECT_CALL(*bestImporter, canRead(testing::_))
-            .WillOnce(testing::Return(false));
+        // Setup expectations with ordering
+        // First the bestImporter canRead is checked
+        Expectation bestCanReadCall = EXPECT_CALL(*bestImporter, canRead(testing::_))
+            .WillOnce(Return(false));
+
+        // Then wrongImporter canRead is checked
+        Expectation wrongCanReadCall = EXPECT_CALL(*wrongImporter, canRead(testing::_))
+            .After(bestCanReadCall)
+            .WillOnce(Return(false));
+
+        // Finally bestImporter importImpl is called as last resort
         EXPECT_CALL(*bestImporter, importImpl(testing::_))
-            .WillOnce(testing::Invoke([&](AssetImporterContext& ctx) {
+            .After(wrongCanReadCall)
+            .WillOnce(Invoke([&](AssetImporterContext& ctx) {
                 ctx.setMainAsset(expectedAsset);
             }));
 
-        EXPECT_CALL(*wrongImporter, canRead(testing::_)).WillOnce(testing::Return(false));
         EXPECT_CALL(*wrongImporter, importImpl(testing::_)).Times(0);
 
         // Register the mock importers with different priorities
@@ -294,15 +321,25 @@ namespace nexo::assets {
         const AssetLocation location("test::myAsset@path");
         ImporterFileInput input;
 
-        // wrongImporter1 is checked for canRead, then ultimately it is still used for importImpl
-        // and don't set a mainAsset
-        EXPECT_CALL(*wrongImporter1, canRead(testing::_))
-            .WillOnce(testing::Return(false));
-        EXPECT_CALL(*wrongImporter1, importImpl(testing::_))
-            .WillOnce(testing::Return());
+        // Setup expectations with ordering
+        // First wrongImporter1 canRead is checked
+        Expectation wrong1CanReadCall = EXPECT_CALL(*wrongImporter1, canRead(testing::_))
+            .WillOnce(Return(false));
 
-        EXPECT_CALL(*wrongImporter2, canRead(testing::_)).WillOnce(testing::Return(false));
-        EXPECT_CALL(*wrongImporter2, importImpl(testing::_)).WillOnce(testing::Return());
+        // Then wrongImporter2 canRead is checked
+        Expectation wrong2CanReadCall = EXPECT_CALL(*wrongImporter2, canRead(testing::_))
+            .After(wrong1CanReadCall)
+            .WillOnce(Return(false));
+
+        // Then wrongImporter1 importImpl is attempted (highest priority first)
+        Expectation wrong1ImportCall = EXPECT_CALL(*wrongImporter1, importImpl(testing::_))
+            .After(wrong2CanReadCall)
+            .WillOnce(Return());
+
+        // Finally wrongImporter2 importImpl is attempted
+        EXPECT_CALL(*wrongImporter2, importImpl(testing::_))
+            .After(wrong1ImportCall)
+            .WillOnce(Return());
 
         // Register the mock importers with different priorities
         importer.registerImporter<Texture>(wrongImporter2, 50);
