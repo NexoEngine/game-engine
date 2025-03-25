@@ -124,7 +124,7 @@ namespace nexo::editor {
              *
              * If the gizmo is actively manipulated, the entity's transform component is updated with the new values.
              */
-            void renderGizmo();
+            void renderGizmo() const;
             void renderView();
     };
 }

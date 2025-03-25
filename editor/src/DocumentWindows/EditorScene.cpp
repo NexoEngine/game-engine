@@ -117,7 +117,7 @@ namespace nexo::editor {
     	// Empty for now, will add it later
     }
 
-    void EditorScene::renderGizmo()
+    void EditorScene::renderGizmo() const
     {
         const auto &coord = nexo::Application::m_coordinator;
         auto const &selector = Selector::get();
