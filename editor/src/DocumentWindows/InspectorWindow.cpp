@@ -64,8 +64,7 @@ namespace nexo::editor
     void InspectorWindow::show()
     {
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
-       	if (m_firstOpened)
-        	firstDockSetup("Inspector");
+        firstDockSetup("Inspector");
         auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();
 

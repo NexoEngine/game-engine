@@ -114,7 +114,7 @@ namespace nexo::editor {
     }
 
 
-    ConsoleWindow::ConsoleWindow(WindowRegistry &registry) : ADocumentWindow(registry)
+    ConsoleWindow::ConsoleWindow(const std::string &windowName, WindowRegistry &registry) : ADocumentWindow(windowName, registry)
     {
 		loguru::add_callback(LOGURU_CALLBACK_NAME, &ConsoleWindow::loguruCallback,
 		                         this, loguru::Verbosity_MAX);
@@ -245,8 +245,7 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin("Console", &m_opened, ImGuiWindowFlags_NoCollapse);
-       	if (m_firstOpened)
-        	firstDockSetup("Console");
+        firstDockSetup("Console");
 
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);

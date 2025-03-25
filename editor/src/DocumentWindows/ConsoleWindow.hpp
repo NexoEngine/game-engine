@@ -39,7 +39,7 @@ namespace nexo::editor {
 			*
 			* @param registry The window registry used to register this console window.
 			*/
-            explicit ConsoleWindow(WindowRegistry &registry);
+            explicit ConsoleWindow(const std::string &windowName, WindowRegistry &registry);
 
             /**
              * @brief Destructor that cleans up the ConsoleWindow.
