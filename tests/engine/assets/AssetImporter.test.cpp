@@ -16,9 +16,6 @@
 #include <gmock/gmock.h>
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetImporterBase.hpp"
-#include "assets/AssetImporterContext.hpp"
-#include "assets/Asset.hpp"
-#include "assets/AssetCatalog.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "assets/Assets/Model/Model.hpp"
 
@@ -58,6 +55,9 @@ namespace nexo::assets {
         FRIEND_TEST(AssetImporterTest, ImporterAssetUsingImporterSucess);
         FRIEND_TEST(AssetImporterTest, ImporterAssetAutoSucess);
         FRIEND_TEST(AssetImporterTest, ImporterPriorityOrder);
+        FRIEND_TEST(AssetImporterTest, MultipleImportersType);
+        FRIEND_TEST(AssetImporterTest, TryIncompatibleImporters);
+        FRIEND_TEST(AssetImporterTest, ImportersTriedNoValidFound);
         public:
         MockAssetImporter() : AssetImporter(nullptr)
         {
@@ -181,6 +181,138 @@ namespace nexo::assets {
         // Clear custom context
         importer.clearCustomContext();
         ASSERT_EQ(importer.getCustomContext(), nullptr);
+    }
+
+    class MockShaderAsset final : public Asset<void *, AssetType::SHADER> {
+
+    };
+
+    TEST_F(AssetImporterTest, MultipleImportersType)
+    {
+        MockAssetImporter importer;
+        const auto textureImporter = new MockImporter();
+        const auto textureImporter2 = new MockImporter();
+        const auto validModelImporter = new MockImporter();
+        const auto cannotReadModelImporter = new MockImporter();
+
+        importer.registerImporter<Texture>(textureImporter, 100);
+        importer.registerImporter<Model>(validModelImporter, 90);
+        importer.registerImporter<Texture>(textureImporter2, 50);
+        importer.registerImporter<Model>(cannotReadModelImporter, 110);
+        importer.registerImporter<Model, MockImporter>(120);
+
+        const auto textureImporters = importer.getImportersForType<Texture>();
+        const auto modelImporters = importer.getImportersForType<Model>();
+
+        // Verify that importers are registered correctly
+        EXPECT_EQ(textureImporters.size(), 2);
+        EXPECT_EQ(modelImporters.size(), 3);
+
+        EXPECT_TRUE(importer.hasImportersForType<Texture>());
+        EXPECT_TRUE(importer.hasImportersForType<Model>());
+
+        EXPECT_EQ(textureImporters[0], textureImporter);
+        EXPECT_EQ(textureImporters[1], textureImporter2);
+
+        const auto cannotReadModelImporter2 = dynamic_cast<MockImporter*>(modelImporters[0]);
+        EXPECT_NE(cannotReadModelImporter2, nullptr);
+        EXPECT_EQ(modelImporters[1], cannotReadModelImporter);
+        EXPECT_EQ(modelImporters[2], validModelImporter);
+
+        // Setup expectations for each importer
+        // Texture importers should NEVER be called
+        EXPECT_CALL(*textureImporter, canRead(testing::_)).Times(0);
+        EXPECT_CALL(*textureImporter, importImpl(testing::_)).Times(0);
+        EXPECT_CALL(*textureImporter2, canRead(testing::_)).Times(0);
+        EXPECT_CALL(*textureImporter2, importImpl(testing::_)).Times(0);
+
+        // Only the validModelImporter should be called
+        EXPECT_CALL(*validModelImporter, canRead(testing::_)).WillOnce(testing::Return(true));
+        EXPECT_CALL(*validModelImporter, importImpl(testing::_))
+            .WillOnce(testing::Invoke([](AssetImporterContext& ctx) {
+                ctx.setMainAsset(new Model());
+            }));
+        // The other model importers should return false
+        EXPECT_CALL(*cannotReadModelImporter, canRead(testing::_)).WillOnce(testing::Return(false));
+        EXPECT_CALL(*cannotReadModelImporter, importImpl(testing::_)).Times(0);
+        EXPECT_CALL(*cannotReadModelImporter2, canRead(testing::_)).WillOnce(testing::Return(false));
+        EXPECT_CALL(*cannotReadModelImporter2, importImpl(testing::_)).Times(0);
+
+        const AssetLocation location("test::myAsset@path");
+        const ImporterFileInput input;
+        // Should import the model using the validModelImporter,
+        // even though cannotReadModelImporter is registered as higher priority
+        const auto assetRef = importer.importAsset<Model>(location, input);
+        EXPECT_TRUE(assetRef);
+
+        const AssetLocation location2("test::myAsset@path2");
+        const auto invalidShaderAssetRef = importer.importAsset<MockShaderAsset>(location2, input);
+        EXPECT_FALSE(invalidShaderAssetRef);
+
+    }
+
+    /**
+     * @brief Test the import and the feature that tries incompatible importers.
+     * In the code, as a last resort, importers that previously return canRead -> false
+     * are called again to try to import the asset.
+     */
+    TEST_F(AssetImporterTest, TryIncompatibleImporters) {
+        MockAssetImporter importer;
+        const auto bestImporter = new MockImporter();
+        const auto wrongImporter = new MockImporter();
+        const AssetLocation location("test::myAsset@path");
+        ImporterFileInput input;
+        const auto expectedAsset = new Texture();
+
+        // bestImporter is checked for canRead, then ultimately it is still used for importImpl
+        EXPECT_CALL(*bestImporter, canRead(testing::_))
+            .WillOnce(testing::Return(false));
+        EXPECT_CALL(*bestImporter, importImpl(testing::_))
+            .WillOnce(testing::Invoke([&](AssetImporterContext& ctx) {
+                ctx.setMainAsset(expectedAsset);
+            }));
+
+        EXPECT_CALL(*wrongImporter, canRead(testing::_)).WillOnce(testing::Return(false));
+        EXPECT_CALL(*wrongImporter, importImpl(testing::_)).Times(0);
+
+        // Register the mock importers with different priorities
+        importer.registerImporter<Texture>(wrongImporter, 50);
+        importer.registerImporter<Texture>(bestImporter, 100);
+
+        // Call the method
+        const auto assetRef = importer.importAssetAuto(location, input);
+
+        // Assertions
+        ASSERT_TRUE(assetRef.isValid());
+        ASSERT_EQ(assetRef.lock().get(), expectedAsset);
+    }
+
+    TEST_F(AssetImporterTest, ImportersTriedNoValidFound) {
+        MockAssetImporter importer;
+        const auto wrongImporter1 = new MockImporter();
+        const auto wrongImporter2 = new MockImporter();
+        const AssetLocation location("test::myAsset@path");
+        ImporterFileInput input;
+
+        // wrongImporter1 is checked for canRead, then ultimately it is still used for importImpl
+        // and don't set a mainAsset
+        EXPECT_CALL(*wrongImporter1, canRead(testing::_))
+            .WillOnce(testing::Return(false));
+        EXPECT_CALL(*wrongImporter1, importImpl(testing::_))
+            .WillOnce(testing::Return());
+
+        EXPECT_CALL(*wrongImporter2, canRead(testing::_)).WillOnce(testing::Return(false));
+        EXPECT_CALL(*wrongImporter2, importImpl(testing::_)).WillOnce(testing::Return());
+
+        // Register the mock importers with different priorities
+        importer.registerImporter<Texture>(wrongImporter2, 50);
+        importer.registerImporter<Texture>(wrongImporter1, 100);
+
+        // Call the method
+        const auto assetRef = importer.importAssetAuto(location, input);
+
+        // Assertions
+        ASSERT_FALSE(assetRef.isValid());
     }
 
 } // namespace nexo::assets
