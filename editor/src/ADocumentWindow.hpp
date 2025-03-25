@@ -29,7 +29,7 @@ namespace nexo::editor {
              * Initializes the document window by storing a reference to the provided WindowRegistry and assigning a unique window
              * identifier. This setup is essential for integrating the window with the docking management system.
              */
-            explicit ADocumentWindow(WindowRegistry &windowRegistry) : m_windowRegistry(windowRegistry)
+            explicit ADocumentWindow(const std::string &windowName, WindowRegistry &windowRegistry) : m_windowName(windowName), m_windowRegistry(windowRegistry)
             {
                 windowId = nextWindowId++;
             };
@@ -49,6 +49,8 @@ namespace nexo::editor {
 			 */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
+            [[nodiscard]] const std::string &getWindowName() const override { return m_windowName; }
+
             /**
              * @brief Configures the initial docking for the document window.
              *
@@ -58,14 +60,16 @@ namespace nexo::editor {
              */
             void firstDockSetup(const std::string &windowName)
             {
-	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); m_firstOpened && currentWindow)
+	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
 		        {
 					const bool isDocked = currentWindow->DockIsActive;
 					const ImGuiID currentDockID = currentWindow->DockId;
 					auto dockId = m_windowRegistry.getDockId(windowName);
 
-					if (!isDocked || (dockId && currentDockID != *dockId))
+					if (m_firstOpened && (!isDocked || (dockId && currentDockID != *dockId)))
 						currentWindow->DockId = *dockId;
+					else if (dockId && currentDockID != *dockId)
+						m_windowRegistry.setDockId(windowName, currentDockID);
 					m_firstOpened = false;
 		        }
             }
@@ -76,6 +80,8 @@ namespace nexo::editor {
             bool m_focused = false;
 
             bool m_firstOpened = true;
+
+            std::string m_windowName;
 
             WindowRegistry &m_windowRegistry;
     };
