@@ -225,7 +225,6 @@ namespace nexo::assets {
     void AssetImporter::unregisterAllImportersForType()
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
-        m_importers.erase(typeIdx);
-        m_importersDetails.erase(typeIdx);
+        unregisterAllImportersForType(typeIdx);
     }
 } // namespace nexo::assets

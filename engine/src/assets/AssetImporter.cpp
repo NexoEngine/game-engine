@@ -59,7 +59,7 @@ namespace nexo::assets {
 
 
         importer->import(*ctx);
-        auto asset = ctx->getMainAsset();
+        const auto asset = ctx->getMainAsset();
         if (!asset)
             return GenericAssetRef::null();
         if (asset->getID().is_nil())
