@@ -80,26 +80,26 @@ namespace nexo::editor {
              */
             template<typename T>
             requires std::derived_from<T, IDocumentWindow>
-            void registerWindow()
+            void registerWindow(const std::string &name)
             {
-            	auto window = std::make_shared<T>(m_windowRegistry);
+            	auto window = std::make_shared<T>(name, m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
             }
 
             /**
              * @brief Retrieves a registered window of type T.
              *
-             * This template method returns a shared pointer to a window instance of type T from the editor's window registry.
+             * This template method returns a weak pointer to a window instance of type T from the editor's window registry.
              * The window type T must be derived from IDocumentWindow. If no window of the specified type is registered, an empty
-             * shared pointer is returned.
+             * weak pointer is returned.
              *
              * @tparam T The type of the window to retrieve. Must derive from IDocumentWindow.
-             * @return std::shared_ptr<T> A shared pointer to the registered window of type T, or an empty pointer if none exists.
+             * @return std::weak_ptr<T> A weak pointer to the registered window of type T, or an empty pointer if none exists.
              */
             template<typename T>
-            std::shared_ptr<T> getWindow()
+            std::weak_ptr<T> getWindow(const std::string &windowName)
             {
-            	return m_windowRegistry.getWindow<T>();
+            	return m_windowRegistry.getWindow<T>(windowName);
             }
         private:
 
