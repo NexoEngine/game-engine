@@ -20,7 +20,7 @@
 
 namespace nexo::editor {
 
-    bool TransformProperty::show(ecs::Entity entity)
+    void TransformProperty::show(ecs::Entity entity)
     {
         auto& [pos, size, quat] = Application::getEntityComponent<components::TransformComponent>(entity);
 
@@ -64,6 +64,5 @@ namespace nexo::editor {
             ImGui::PopStyleVar();
             ImGui::TreePop();
         }
-        return true;
     }
 }

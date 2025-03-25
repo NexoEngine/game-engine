@@ -21,7 +21,7 @@
 
 namespace nexo::editor {
 
-	bool CameraProperty::show(const ecs::Entity entity)
+	void CameraProperty::show(const ecs::Entity entity)
 	{
         auto& cameraComponent = Application::getEntityComponent<components::CameraComponent>(entity);
 
@@ -101,6 +101,5 @@ namespace nexo::editor {
 
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

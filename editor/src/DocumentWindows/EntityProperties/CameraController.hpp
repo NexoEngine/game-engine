@@ -27,8 +27,7 @@ namespace nexo::editor {
 			 * including a control for adjusting mouse sensitivity, using an ImGui layout.
 			 *
 			 * @param entity The entity that holds the camera controller component.
-			 * @return true after processing the UI elements.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

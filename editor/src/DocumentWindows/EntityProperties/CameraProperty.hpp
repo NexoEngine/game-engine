@@ -28,8 +28,7 @@ namespace nexo::editor {
 			 * near plane, far plane, and the clear color using ImGui.
 			 *
 			 * @param entity The entity containing the camera component.
-			 * @return true Always returns true to indicate the UI was rendered.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

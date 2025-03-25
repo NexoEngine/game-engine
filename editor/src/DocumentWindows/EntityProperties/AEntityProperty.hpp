@@ -25,7 +25,7 @@ namespace nexo::editor {
         public:
             virtual ~IEntityProperty() = default;
 
-            virtual bool show(ecs::Entity entity) = 0;
+            virtual void show(ecs::Entity entity) = 0;
     };
 
     class AEntityProperty : public IEntityProperty {

@@ -20,8 +20,7 @@
 
 namespace nexo::editor {
 
-
-	bool PointLightProperty::show(const ecs::Entity entity)
+	void PointLightProperty::show(const ecs::Entity entity)
 	{
         auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
 
@@ -64,6 +63,5 @@ namespace nexo::editor {
             ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

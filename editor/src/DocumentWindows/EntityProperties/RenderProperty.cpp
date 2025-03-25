@@ -120,7 +120,7 @@ namespace nexo::editor {
         }
     }
 
-    bool RenderProperty::show(ecs::Entity entity)
+    void RenderProperty::show(ecs::Entity entity)
     {
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
@@ -205,7 +205,5 @@ namespace nexo::editor {
         	createMaterialPopup(entity);
          	m_popupManager.closePopup();
         }
-
-        return true;
     }
 }

@@ -28,8 +28,7 @@ namespace nexo::editor {
 			 * allows the user to modify the ambient light color, which is then applied to the component.
 			 *
 			 * @param entity The ECS entity whose ambient light properties are to be displayed.
-			 * @return Always returns true.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

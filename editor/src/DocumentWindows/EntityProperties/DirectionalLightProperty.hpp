@@ -28,8 +28,7 @@ namespace nexo::editor {
 			 * editor uses a customizable picker while the direction is adjusted via draggable float inputs arranged in a table.
 			 *
 			 * @param entity The entity whose directional light properties are to be displayed.
-			 * @return true if the directional light properties section is (or has been) rendered.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

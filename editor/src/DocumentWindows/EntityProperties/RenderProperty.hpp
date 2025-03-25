@@ -32,9 +32,8 @@ namespace nexo::editor {
 			* visibility, select a material type from a dropdown, and open popups to create or modify materials.
 			*
 			* @param entity The entity whose render properties are to be displayed.
-			* @return true Always returns true after processing the UI elements.
 			*/
-            bool show(ecs::Entity entity) override;
+            void show(ecs::Entity entity) override;
 
             /**
              * @brief Displays a popup modal for creating a new material.

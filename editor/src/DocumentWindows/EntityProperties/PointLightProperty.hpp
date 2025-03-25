@@ -28,8 +28,7 @@ namespace nexo::editor {
 			 * using a slider, which in turn updates the light's attenuation coefficients.
 			 *
 			 * @param entity The entity owning the PointLightComponent to be modified.
-			 * @return true after successfully displaying the properties.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

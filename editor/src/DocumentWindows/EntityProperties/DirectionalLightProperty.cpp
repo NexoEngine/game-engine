@@ -19,7 +19,7 @@
 
 namespace nexo::editor {
 
-	bool DirectionalLightProperty::show(const ecs::Entity entity)
+	void DirectionalLightProperty::show(const ecs::Entity entity)
 	{
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
 
@@ -51,6 +51,5 @@ namespace nexo::editor {
             ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

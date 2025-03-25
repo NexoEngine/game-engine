@@ -31,6 +31,6 @@ namespace nexo::editor {
 			 * @param entity The entity whose spotlight component will be edited.
 			 * @return true Always returns true, indicating that the properties editor was displayed successfully.
 			 */
-			bool show(ecs::Entity entity) override;
+			void show(ecs::Entity entity) override;
 	};
 }

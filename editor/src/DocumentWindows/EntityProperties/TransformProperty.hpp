@@ -31,8 +31,7 @@ namespace nexo::editor {
 			* indicating successful display.
 			*
 			* @param entity The entity whose transform properties are rendered.
-			* @return true Always returns true after displaying the properties.
 			*/
-            bool show(ecs::Entity entity) override;
+            void show(ecs::Entity entity) override;
     };
 }
