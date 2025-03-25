@@ -156,5 +156,22 @@ namespace nexo::editor {
 			* @param entity The entity whose component properties are being displayed.
 			*/
 	        void showEntityProperties(ecs::Entity entity);
+
+			/**
+			* @brief Registers a property for a given component type.
+			*
+			* This function creates a new property instance of type @p Property (which must be derived from AEntityProperty)
+			* associated with the given @p Component type. The property is stored in the internal entity properties map,
+			* using the type index of @p Component as the key.
+			*
+			* @tparam Component The type of the component that the property is associated with.
+			* @tparam Property The type of the property to register. Must be derived from AEntityProperty.
+			*/
+			template<typename Component, typename Property>
+			requires std::derived_from<Property, AEntityProperty>
+			void registerProperty()
+			{
+				m_entityProperties[std::type_index(typeid(Component))] = std::make_shared<Property>(*this);
+			}
     };
 };

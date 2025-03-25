@@ -46,14 +46,14 @@ namespace nexo::editor
 
     void InspectorWindow::setup()
     {
-		m_entityProperties[typeid(components::TransformComponent)] = std::make_shared<TransformProperty>(*this);
-		m_entityProperties[typeid(components::RenderComponent)] = std::make_shared<RenderProperty>(*this);
-		m_entityProperties[typeid(components::AmbientLightComponent)] = std::make_shared<AmbientLightProperty>(*this);
-		m_entityProperties[typeid(components::DirectionalLightComponent)] = std::make_shared<DirectionalLightProperty>(*this);
-		m_entityProperties[typeid(components::PointLightComponent)] = std::make_shared<PointLightProperty>(*this);
-		m_entityProperties[typeid(components::SpotLightComponent)] = std::make_shared<SpotLightProperty>(*this);
-		m_entityProperties[typeid(components::CameraComponent)] = std::make_shared<CameraProperty>(*this);
-		m_entityProperties[typeid(components::PerspectiveCameraController)] = std::make_shared<CameraController>(*this);
+    	registerProperty<components::TransformComponent, TransformProperty>();
+		registerProperty<components::RenderComponent, RenderProperty>();
+		registerProperty<components::AmbientLightComponent, AmbientLightProperty>();
+		registerProperty<components::DirectionalLightComponent, DirectionalLightProperty>();
+		registerProperty<components::PointLightComponent, PointLightProperty>();
+		registerProperty<components::SpotLightComponent, SpotLightProperty>();
+		registerProperty<components::CameraComponent, CameraProperty>();
+		registerProperty<components::PerspectiveCameraController, CameraController>();
     }
 
     void InspectorWindow::shutdown()
