@@ -151,7 +151,7 @@ namespace nexo::editor {
               * @param uiId The identifier for the scene's UI element.
               * @return SceneObject The newly created scene node with initialized properties.
               */
-            SceneObject newSceneNode(scene::SceneId sceneId, WindowId uiId) const;
+            SceneObject newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const;
 
             /**
              * @brief Creates a new light node and adds properties to it.
