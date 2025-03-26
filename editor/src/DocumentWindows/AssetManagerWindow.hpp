@@ -25,7 +25,7 @@ namespace nexo::editor {
 
     class AssetManagerWindow final : public ADocumentWindow {
     public:
-        AssetManagerWindow() = default;
+    	using ADocumentWindow::ADocumentWindow;
 
         void setup() override;
         void shutdown() override;

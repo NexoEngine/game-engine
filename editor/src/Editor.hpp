@@ -30,7 +30,7 @@ namespace nexo::editor {
     class Editor {
         private:
             // Singleton: private constructor and destructor
-        	Editor();
+        	Editor() = default;
          	~Editor() = default;
 
         public:
