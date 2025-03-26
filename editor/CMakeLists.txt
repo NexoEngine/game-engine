@@ -38,6 +38,7 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/SpotLightProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraController.cpp
+        editor/src/DocumentWindows/AssetManagerWindow.cpp
 )
 
 # Windows App Icon
@@ -96,6 +97,9 @@ target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoEditor PRIVATE Boost::dll)
+
+# Boost UUID
+find_package(boost_uuid CONFIG REQUIRED)
 
 include_directories(include)
 
