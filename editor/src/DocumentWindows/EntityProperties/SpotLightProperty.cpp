@@ -19,7 +19,8 @@
 #include "math/Light.hpp"
 
 namespace nexo::editor {
-	int SpotLightProperty::show(ecs::Entity entity)
+
+	void SpotLightProperty::show(ecs::Entity entity)
 	{
         auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
 
@@ -74,6 +75,5 @@ namespace nexo::editor {
             ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

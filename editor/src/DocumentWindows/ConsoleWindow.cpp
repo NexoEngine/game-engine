@@ -17,7 +17,17 @@
 #include "ConsoleWindow.hpp"
 
 namespace nexo::editor {
-    static constexpr std::string verbosityToString(const loguru::Verbosity level)
+    /**
+     * @brief Converts a loguru verbosity level to its corresponding string label.
+     *
+     * This function maps a given loguru verbosity level to a predefined string representation,
+     * such as "[FATAL]", "[ERROR]", "[WARNING]", "[INFO]", "[INVALID]", "[DEBUG]", or "[DEV]".
+     * If the provided level does not match any known values, it returns "[UNKNOWN]".
+     *
+     * @param level The loguru verbosity level to convert.
+     * @return std::string The string label corresponding to the provided verbosity level.
+     */
+    static inline std::string verbosityToString(const loguru::Verbosity level)
     {
         switch (level)
         {
@@ -32,6 +42,43 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Converts a custom LogLevel to its corresponding loguru::Verbosity level.
+     *
+     * Maps each supported LogLevel to a specific loguru verbosity constant. If the provided
+     * level does not match any known value, the function returns loguru::Verbosity_INVALID.
+     *
+     * @param level The custom logging level to convert.
+     * @return The equivalent loguru verbosity level.
+     */
+    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
+    {
+        switch (level)
+        {
+            case LogLevel::FATAL: return loguru::Verbosity_FATAL;
+            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case LogLevel::WARN: return loguru::Verbosity_WARNING;
+            case LogLevel::INFO: return loguru::Verbosity_INFO;
+            case LogLevel::DEBUG: return loguru::Verbosity_1;
+            case LogLevel::DEV: return loguru::Verbosity_2;
+            default: return loguru::Verbosity_INVALID;
+        }
+        return loguru::Verbosity_INVALID;
+    }
+
+    /**
+     * @brief Returns the color corresponding to a log verbosity level.
+     *
+     * Maps the given loguru::Verbosity level to a specific ImVec4 color used for rendering log messages in the console.
+     * - Fatal and error messages are shown in red.
+     * - Warnings use yellow.
+     * - Informational messages appear in blue.
+     * - Debug levels display distinct pink and purple hues.
+     * The default color is white for any unrecognized verbosity levels.
+     *
+     * @param level The verbosity level for which the corresponding color is computed.
+     * @return ImVec4 The color associated with the specified verbosity level.
+     */
     static constexpr ImVec4 getVerbosityColor(loguru::Verbosity level)
     {
         ImVec4 color;
@@ -54,19 +101,49 @@ namespace nexo::editor {
         return color;
     }
 
-    ConsoleWindow::~ConsoleWindow()
+
+    void ConsoleWindow::loguruCallback([[maybe_unused]] void *userData,
+                                const loguru::Message &message)
     {
-        clearLog();
+        const auto console = static_cast<ConsoleWindow *>(userData);
+        console->addLog({
+            .verbosity = message.verbosity,
+            .message = message.message,
+            .prefix = message.prefix
+        });
     }
 
+
+    ConsoleWindow::ConsoleWindow(const std::string &windowName, WindowRegistry &registry) : ADocumentWindow(windowName, registry)
+    {
+		loguru::add_callback(LOGURU_CALLBACK_NAME, &ConsoleWindow::loguruCallback,
+		                         this, loguru::Verbosity_MAX);
+
+		auto engineLogCallback = [](const LogLevel level, const std::string &message) {
+		    const auto loguruLevel = nexoLevelToLoguruLevel(level);
+		    VLOG_F(loguruLevel, "%s", message.c_str());
+		};
+		Logger::setCallback(engineLogCallback);
+    };
+
     void ConsoleWindow::setup()
-    {}
+    {
+    	//All the setup is made in the constructor because the rest of the editor needs the log setup before setting up the windows
+    }
 
     void ConsoleWindow::shutdown()
-    {}
+    {
+    	clearLog();
+    }
+
+    void ConsoleWindow::addLog(const LogMessage &message)
+    {
+        m_logs.push_back(message);
+    }
 
     void ConsoleWindow::clearLog()
     {
+    	m_logs.clear();
         items.clear();
     }
 
@@ -94,7 +171,7 @@ namespace nexo::editor {
     void ConsoleWindow::calcLogPadding()
     {
         m_logPadding = 0.0f;
-        for (const auto &[verbosity, message, prefix]: _editor.getLogs())
+        for (const auto &[verbosity, message, prefix]: m_logs)
         {
             if (!selectedVerbosityLevels.contains(verbosity))
                 continue;
@@ -168,6 +245,7 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin("Console", &m_opened, ImGuiWindowFlags_NoCollapse);
+        firstDockSetup("Console");
 
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);
@@ -176,7 +254,7 @@ namespace nexo::editor {
             calcLogPadding();
 
         auto id = 0;
-        for (const auto &[verbosity, message, prefix]: _editor.getLogs())
+        for (const auto &[verbosity, message, prefix]: m_logs)
         {
             if (!selectedVerbosityLevels.contains(verbosity))
                 continue;
@@ -209,7 +287,8 @@ namespace nexo::editor {
         ImGui::End();
     }
 
-
     void ConsoleWindow::update()
-    {}
+    {
+    	//No need to update anything
+    }
 }

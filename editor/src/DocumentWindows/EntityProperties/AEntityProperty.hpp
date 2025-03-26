@@ -17,33 +17,27 @@
 
 namespace nexo::editor {
 
-	class InterfaceEntityProperty {
-		public:
-			virtual ~InterfaceEntityProperty() = default;
-			virtual int show(ecs::Entity selectedEntity) = 0;
-	};
+	class InspectorWindow;
 
     class IEntityProperty {
         public:
             virtual ~IEntityProperty() = default;
 
-            virtual void update() = 0;
-            virtual void showEnd() = 0;
+            virtual void show(ecs::Entity entity) = 0;
     };
 
     class AEntityProperty : public IEntityProperty {
-        public:
-            ~AEntityProperty() override;
-
-            void update() override;
-            void showEnd() override;
-            static int show(ecs::Entity entity);
-
-        protected:
-            explicit AEntityProperty(std::string  name);
-
-            std::string _name;
-
+    	public:
+   			/**
+			 * @brief Constructs an AEntityProperty instance.
+			 *
+			 * Initializes the entity property by storing a reference to the provided InspectorWindow,
+			 * which is used for displaying and managing entity properties in the editor.
+			 *
+			 * @param inspector Reference to the InspectorWindow associated with this property.
+			 */
+			explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
+      	protected:
+       		InspectorWindow &m_inspector;
     };
-
 };

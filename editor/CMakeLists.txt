@@ -20,14 +20,16 @@ set(SRCS
         editor/src/Components/Widgets.cpp
         editor/src/utils/ScenePreview.cpp
         editor/src/utils/Config.cpp
+        editor/src/utils/String.cpp
         editor/src/Editor.cpp
+        editor/src/WindowRegistry.cpp
+        editor/src/DockingRegistry.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
-        editor/src/DocumentWindows/MainScene.cpp
+        editor/src/DocumentWindows/EditorScene.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
-        editor/src/DocumentWindows/SceneViewManager.cpp
         editor/src/DocumentWindows/InspectorWindow.cpp
-        editor/src/DocumentWindows/EntityProperties/AEntityProperty.cpp
+        editor/src/DocumentWindows/MaterialInspector.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
         editor/src/DocumentWindows/EntityProperties/AmbientLightProperty.cpp

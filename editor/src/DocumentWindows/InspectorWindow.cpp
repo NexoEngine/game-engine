@@ -16,6 +16,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <variant>
 
 #include "Application.hpp"
 #include "EntityProperties/RenderProperty.hpp"
@@ -26,6 +27,7 @@
 #include "EntityProperties/SpotLightProperty.hpp"
 #include "EntityProperties/CameraProperty.hpp"
 #include "EntityProperties/CameraController.hpp"
+#include "components/Transform.hpp"
 #include "utils/ScenePreview.hpp"
 #include "Components/EntityPropertiesComponents.hpp"
 #include "components/Camera.hpp"
@@ -39,77 +41,30 @@ extern ImGuiID g_materialInspectorDockID;
 
 namespace nexo::editor
 {
-	void MaterialInspector::setup()
-	{
-		renderer::FramebufferSpecs framebufferSpecs;
-		framebufferSpecs.attachments = {renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::Depth};
-		framebufferSpecs.width = static_cast<unsigned int>(64);
-		framebufferSpecs.height = static_cast<unsigned int>(64);
-		m_framebuffer = renderer::Framebuffer::create(framebufferSpecs);
-		m_framebuffer->setClearColor({0.05f, 0.05f, 0.05f, 0.0f});
-	}
 
-	void MaterialInspector::show(const int selectedEntity)
-	{
-		static bool materialModified = true;
-		static utils::ScenePreviewOut previewParams;
-
-		if (selectedEntity != -1)
-		{
-			if (m_ecsEntity != selectedEntity)
-				m_ecsEntity = selectedEntity;
-   		}
-
-		if (m_ecsEntity == -1)
-			return;
-
-		if (materialModified)
-		{
-			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
-			auto &app = nexo::getApp();
-			auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-			cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
-			app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
-			m_framebuffer = cameraComponent.m_renderTarget;
-			materialModified = false;
-			app.getSceneManager().deleteScene(previewParams.sceneId);
-		}
-
-		// --- Material preview ---
-		if (m_framebuffer->getColorAttachmentId(0) != 0)
-			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
-		ImGui::SameLine();
-
-		materialModified = Widgets::drawMaterialInspector(RenderProperty::selectedMaterial);
-	}
-
-    InspectorWindow::InspectorWindow()
-    {
-    	m_materialInspector = std::make_shared<MaterialInspector>();
-        m_componentShowFunctions[typeid(components::TransformComponent)] = &TransformProperty::show;
-        m_componentShowFunctions[typeid(components::RenderComponent)] = &RenderProperty::show;
-        m_componentShowFunctions[typeid(components::AmbientLightComponent)] = &AmbientLightProperty::show;
-        m_componentShowFunctions[typeid(components::DirectionalLightComponent)] = &DirectionalLightProperty::show;
-        m_componentShowFunctions[typeid(components::PointLightComponent)] = &PointLightProperty::show;
-        m_componentShowFunctions[typeid(components::SpotLightComponent)] = &SpotLightProperty::show;
-        m_componentShowFunctions[typeid(components::CameraComponent)] = &CameraProperty::show;
-        m_componentShowFunctions[typeid(components::PerspectiveCameraController)] = &CameraController::show;
-    }
-
-    InspectorWindow::~InspectorWindow() = default;
+	InspectorWindow::~InspectorWindow() = default;
 
     void InspectorWindow::setup()
     {
-    	m_materialInspector->setup();
+    	registerProperty<components::TransformComponent, TransformProperty>();
+		registerProperty<components::RenderComponent, RenderProperty>();
+		registerProperty<components::AmbientLightComponent, AmbientLightProperty>();
+		registerProperty<components::DirectionalLightComponent, DirectionalLightProperty>();
+		registerProperty<components::PointLightComponent, PointLightProperty>();
+		registerProperty<components::SpotLightComponent, SpotLightProperty>();
+		registerProperty<components::CameraComponent, CameraProperty>();
+		registerProperty<components::PerspectiveCameraController, CameraController>();
     }
 
     void InspectorWindow::shutdown()
     {
+    	// Nothing to clear for now
     }
 
     void InspectorWindow::show()
     {
         ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
+        firstDockSetup("Inspector");
         auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();
 
@@ -126,34 +81,9 @@ namespace nexo::editor
         }
 
         ImGui::End();
-
-        if (RenderProperty::showMaterialInspector)
-        {
-        	static bool first = true;
-
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
-            if (first)
-            	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-            if (ImGui::Begin("Material Inspector", &RenderProperty::showMaterialInspector, window_flags))
-            {
-	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow && first)
-	            {
-		            const bool isDocked = currentWindow->DockIsActive;
-	                const ImGuiID currentDockID = currentWindow->DockId;
-
-					//TODO: Implement a docking registry
-	                if (!isDocked || currentDockID != g_materialInspectorDockID)
-						currentWindow->DockId = g_materialInspectorDockID;
-	            }
-                m_materialInspector->show(selectedEntity);
-                first = false;
-            }
-            ImGui::End();
-        }
     }
 
-    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId)
+    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId) const
     {
 		auto &app = getApp();
 		auto &selector = Selector::get();
@@ -196,14 +126,15 @@ namespace nexo::editor
         const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
         {
-            if (m_componentShowFunctions.contains(type))
+            if (m_entityProperties.contains(type))
             {
-                m_componentShowFunctions[type](entity);
+                m_entityProperties[type]->show(entity);
             }
         }
     }
 
     void InspectorWindow::update()
     {
+    	// Nothing to update here
     }
 }

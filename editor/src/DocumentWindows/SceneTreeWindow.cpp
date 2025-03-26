@@ -13,25 +13,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "DocumentWindows/InspectorWindow.hpp"
 #include "Primitive.hpp"
 
 #include <imgui_internal.h>
 #include <random>
 
-#include "SceneViewManager.hpp"
+#include "EditorScene.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "components/Render.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
+#include "context/Selector.hpp"
 
 namespace nexo::editor {
-    SceneTreeWindow::SceneTreeWindow()
-    = default;
 
-    SceneTreeWindow::~SceneTreeWindow()
-    = default;
+    SceneTreeWindow::~SceneTreeWindow() = default;
 
     void SceneTreeWindow::setup()
     {}
@@ -60,6 +59,11 @@ namespace nexo::editor {
             obj.uiName = ObjectTypeToIcon.at(obj.type) + std::string(buffer);
             auto &selector = Selector::get();
             selector.setUiHandle(obj.uuid, obj.uiName);
+            if (obj.type == SelectionType::SCENE)
+            {
+                auto &app = getApp();
+                app.getSceneManager().getScene(obj.data.sceneProperties.sceneId).setName(obj.uiName);
+            }
             m_renameTarget.reset();
         }
         if (ImGui::IsKeyPressed(ImGuiKey_Escape))
@@ -76,21 +80,17 @@ namespace nexo::editor {
             return nodeOpen;
         if (ImGui::IsItemClicked())
         {
-	        auto &viewManager = SceneViewManager::get();
 	        auto &selector = Selector::get();
         	selector.setSelectedEntity(obj.uuid, obj.data.entity);
          	selector.setSelectionType(obj.type);
-          	viewManager.setSelectedScene(obj.data.sceneProperties.sceneId);
+          	selector.setSelectedScene(obj.data.sceneProperties.sceneId);
         }
         return nodeOpen;
     }
 
-    void SceneTreeWindow::sceneSelected(const SceneObject &obj) const
+    void SceneTreeWindow::sceneSelected([[maybe_unused]] const SceneObject &obj) const
     {
-        auto &viewManager = SceneViewManager::get();
-
-        if (ImGui::MenuItem("Delete Scene"))
-            viewManager.removeScene(obj.data.sceneProperties.windowId);
+    	//TODO: Delete scene
     }
 
     void SceneTreeWindow::lightSelected(const SceneObject &obj) const
@@ -110,8 +110,9 @@ namespace nexo::editor {
     	auto &selector = Selector::get();
         if (ImGui::MenuItem("Delete Camera"))
         {
-        	auto &viewManager = SceneViewManager::get();
-         	viewManager.getScene(obj.data.sceneProperties.windowId)->deleteCamera(obj.data.entity);
+         	const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
+          	for (const auto &scene : scenes)
+           		scene->deleteCamera(obj.data.entity);
         	selector.unselectEntity();
         	app.deleteEntity(obj.data.entity);
         }
@@ -204,8 +205,11 @@ namespace nexo::editor {
             {
                 if (const std::string newSceneName(sceneNameBuffer); !newSceneName.empty())
                 {
-                    auto &viewManager = SceneViewManager::get();
-                    viewManager.addNewScene(sceneNameBuffer);
+                	//TOOD: create scene
+                    auto newScene = std::make_shared<EditorScene>(sceneNameBuffer, m_windowRegistry);
+                    newScene->setDefault();
+                    newScene->setup();
+                    m_windowRegistry.registerWindow<EditorScene>(newScene);
                     memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
 
                     m_popupManager.closePopupInContext();
@@ -228,6 +232,7 @@ namespace nexo::editor {
 
         if (ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse))
         {
+	        firstDockSetup("Scene Tree");
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
                     ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
@@ -241,11 +246,10 @@ namespace nexo::editor {
         }
     }
 
-    SceneObject SceneTreeWindow::newSceneNode(const scene::SceneId sceneId, const WindowId uiId) const
+    SceneObject SceneTreeWindow::newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const
     {
         SceneObject sceneNode;
-        auto const &viewManager = SceneViewManager::get();
-        const std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + viewManager.getSceneName(uiId);
+        const std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + sceneName;
         sceneNode.data.sceneProperties = SceneProperties{sceneId, uiId};
         sceneNode.data.entity = sceneId;
         sceneNode.type = SelectionType::SCENE;
@@ -358,11 +362,11 @@ namespace nexo::editor {
         m_nbSpotLights = 0;
 
         // Retrieves the scenes that are displayed on the GUI
-        auto scenes = SceneViewManager::get().getOpenScenes();
+        const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
         std::map<scene::SceneId, SceneObject> sceneNodes;
-        for (const auto &[sceneId, windowId] : scenes)
+        for (const auto &scene : scenes)
         {
-        	sceneNodes[sceneId] = newSceneNode(sceneId, windowId);
+        	sceneNodes[scene->getSceneId()] = newSceneNode(scene->getWindowName(), scene->getSceneId(), windowId);
         }
 
         generateNodes<components::AmbientLightComponent, components::SceneTag>(

@@ -17,7 +17,8 @@
 #include "Components/EntityPropertiesComponents.hpp"
 
 namespace nexo::editor {
-	int CameraController::show(const ecs::Entity entity)
+
+	void CameraController::show(const ecs::Entity entity)
 	{
         auto& controllerComponent = Application::getEntityComponent<components::PerspectiveCameraController>(entity);
 
@@ -39,6 +40,5 @@ namespace nexo::editor {
             ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

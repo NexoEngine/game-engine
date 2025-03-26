@@ -23,26 +23,12 @@
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
-#include "EntityFactory3D.hpp"
+#include "DocumentWindows/InspectorWindow.hpp"
+#include "DocumentWindows/MaterialInspector.hpp"
 
 namespace nexo::editor {
-	bool RenderProperty::showMaterialInspector = false;
-	components::Material *RenderProperty::selectedMaterial = nullptr;
-	nexo::editor::PopupManager nexo::editor::RenderProperty::popupManager;
 
-    RenderProperty::RenderProperty(const std::string& name)
-        : AEntityProperty(name)
-    {
-    }
-
-    RenderProperty::~RenderProperty() = default;
-
-    void RenderProperty::update()
-    {
-    }
-
-
-    void RenderProperty::createMaterialPopup(ecs::Entity entity)
+    void RenderProperty::createMaterialPopup(ecs::Entity entity) const
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
@@ -134,7 +120,7 @@ namespace nexo::editor {
         }
     }
 
-    int RenderProperty::show(ecs::Entity entity)
+    void RenderProperty::show(ecs::Entity entity)
     {
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
@@ -143,7 +129,7 @@ namespace nexo::editor {
             auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
             if (renderable3D)
             {
-            	selectedMaterial = &renderable3D->material;
+            	m_inspector.setSubInspectorData<MaterialInspector>(&renderable3D->material);
             }
         }
         else if (renderComponent.type == components::RenderType::RENDER_2D)
@@ -197,12 +183,12 @@ namespace nexo::editor {
                     // --- Material Action Buttons ---
                     if (ImGui::Button("Create new material"))
                     {
-                    	popupManager.openPopup("Create new material");
+                    	m_popupManager.openPopup("Create new material");
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Modify Material"))
                     {
-                     	RenderProperty::showMaterialInspector = true;
+                    	m_inspector.setSubInspectorVisibility<MaterialInspector>(true);
                     }
                 }
                 ImGui::EndGroup();
@@ -214,17 +200,10 @@ namespace nexo::editor {
         }
 
         ImGui::SetNextWindowSize(ImVec2(1440,900));
-        if (popupManager.showPopupModal("Create new material"))
+        if (m_popupManager.showPopupModal("Create new material"))
         {
         	createMaterialPopup(entity);
-         	popupManager.closePopup();
+         	m_popupManager.closePopup();
         }
-
-        return true;
-    }
-
-    void RenderProperty::showEnd()
-    {
-        AEntityProperty::showEnd();
     }
 }

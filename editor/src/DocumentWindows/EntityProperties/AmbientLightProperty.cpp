@@ -18,7 +18,8 @@
 #include "Components/Widgets.hpp"
 
 namespace nexo::editor {
-	int AmbientLightProperty::show(const ecs::Entity entity)
+
+	void AmbientLightProperty::show(const ecs::Entity entity)
 	{
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
 
@@ -34,6 +35,5 @@ namespace nexo::editor {
 			ambientComponent.color = color;
         	ImGui::TreePop();
         }
-        return true;
 	}
 }

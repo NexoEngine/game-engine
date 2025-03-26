@@ -12,7 +12,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "DocumentWindows/SceneViewManager.hpp"
 #include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
@@ -28,70 +27,14 @@
 
 ImGuiID g_materialInspectorDockID = 0;
 
-namespace nexo::utils {
-    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
-    {
-        switch (level)
-        {
-            case LogLevel::FATAL: return loguru::Verbosity_FATAL;
-            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
-            case LogLevel::WARN: return loguru::Verbosity_WARNING;
-            case LogLevel::INFO: return loguru::Verbosity_INFO;
-            case LogLevel::DEBUG: return loguru::Verbosity_1;
-            case LogLevel::DEV: return loguru::Verbosity_2;
-        }
-        return loguru::Verbosity_INVALID;
-    }
-}
-
 namespace nexo::editor {
-
-    void Editor::loguruCallback([[maybe_unused]] void *userData,
-                                const loguru::Message &message)
-    {
-        const auto editor = static_cast<Editor *>(userData);
-        editor->addLog({
-            .verbosity = message.verbosity,
-            .message = message.message,
-            .prefix = message.prefix
-        });
-    }
 
     void Editor::shutdown() const
     {
         LOG(NEXO_INFO, "Closing editor");
-        for (const auto &[_, window]: m_windows)
-        {
-            window->shutdown();
-        }
         LOG(NEXO_INFO, "All windows destroyed");
+        m_windowRegistry.shutdown();
         ImGuiBackend::shutdown();
-        LOG(NEXO_INFO, "Editor closed");
-        loguru::remove_callback(LOGURU_CALLBACK_NAME);
-    }
-
-    Editor::Editor()
-    {
-        setupLogs();
-        LOG(NEXO_INFO, "Logs initialized");
-        setupEngine();
-        setupStyle();
-        LOG(NEXO_INFO, "Style initialized");
-        LOG(NEXO_INFO, "Editor initialized");
-        LOG(NEXO_ERROR, "Error log test");
-        LOG(NEXO_WARN, "Warning log test");
-    }
-
-    void Editor::setupLogs()
-    {
-        loguru::add_callback(LOGURU_CALLBACK_NAME, &Editor::loguruCallback,
-                             this, loguru::Verbosity_MAX);
-
-        auto engineLogCallback = [](const LogLevel level, const std::string &message) {
-            const auto loguruLevel = utils::nexoLevelToLoguruLevel(level);
-            VLOG_F(loguruLevel, "%s", message.c_str());
-        };
-        Logger::setCallback(engineLogCallback);
     }
 
     void Editor::setupEngine() const
@@ -120,7 +63,6 @@ namespace nexo::editor {
         static const std::string iniFilePath = Path::resolvePathRelativeToExe(
             "../config/default-layout.ini").string();
         io.IniFilename = iniFilePath.c_str();
-        LOG(NEXO_INFO, "ImGui .ini file path: {}", iniFilePath);
 
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -228,30 +170,11 @@ namespace nexo::editor {
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
 
-    void Editor::registerWindow(const std::string &name,
-                            std::shared_ptr<IDocumentWindow> window)
-    {
-        m_windows[name] = std::move(window);
-        LOG(NEXO_INFO, "Registered window: {}", name.c_str());
-    }
-
     void Editor::init() const
     {
-    	SceneViewManager::get().setup();
-        for (const auto &[_, window]: m_windows)
-        {
-            window->setup();
-        }
-    }
-
-    void Editor::addLog(const LogMessage &message)
-    {
-        m_logs.push_back(message);
-    }
-
-    const std::vector<LogMessage> &Editor::getLogs() const
-    {
-        return m_logs;
+		setupEngine();
+		setupStyle();
+		m_windowRegistry.setup();
     }
 
     bool Editor::isOpen() const
@@ -265,31 +188,20 @@ namespace nexo::editor {
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Import"))
-                    m_windows["ModelViewer"]->getOpened() = true;
-
                 if (ImGui::MenuItem("Exit"))
                     m_quit = true;
 
-                ImGui::EndMenu();
-            }
-
-            if (ImGui::BeginMenu("Window"))
-            {
-                for (const auto &[name, window]: m_windows)
-                {
-                    ImGui::MenuItem(name.c_str(), nullptr, &window->getOpened(), &window->getOpened());
-                }
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
         }
     }
 
-    void Editor::buildDockspace() const
+    void Editor::buildDockspace()
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImGuiID dockspaceID = viewport->ID;
+        static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
         if (!ImGui::DockBuilderGetNode(dockspaceID))
@@ -337,24 +249,31 @@ namespace nexo::editor {
             ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
             ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
 
+            m_windowRegistry.setDockId("Default scene", mainSceneTop);
+            m_windowRegistry.setDockId("Console", consoleNode);
+            m_windowRegistry.setDockId("Scene Tree", sceneTreeNode);
+            m_windowRegistry.setDockId("Inspector", inspectorNode);
+            m_windowRegistry.setDockId("Material Inspector", materialInspectorNode);
+            dockingRegistryFilled = true;
+
             g_materialInspectorDockID = materialInspectorNode;
 
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-
-        if (g_materialInspectorDockID == 0)
+        else if (!dockingRegistryFilled)
         {
-	        auto materialId = static_cast<int>(findWindowDockIDFromConfig("Material Inspector"));
-	        if (materialId != 0)
-	        	g_materialInspectorDockID = materialId;
+        	m_windowRegistry.setDockId("Default scene", findWindowDockIDFromConfig("Default scene"));
+        	m_windowRegistry.setDockId("Console", findWindowDockIDFromConfig("Console"));
+        	m_windowRegistry.setDockId("Scene Tree", findWindowDockIDFromConfig("Scene Tree"));
+        	m_windowRegistry.setDockId("Inspector", findWindowDockIDFromConfig("Inspector"));
+        	m_windowRegistry.setDockId("Material Inspector", findWindowDockIDFromConfig("Material Inspector"));
+         	dockingRegistryFilled = true;
         }
-
 
         // Render the dockspace
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
-
 
     void Editor::render()
     {
@@ -370,13 +289,7 @@ namespace nexo::editor {
         drawMenuBar();
         //ImGui::ShowDemoWindow();
 
-        SceneViewManager::get().show();
-
-        for (const auto &[_, window]: m_windows)
-        {
-            if (window->isOpened())
-                window->show();
-        }
+        m_windowRegistry.render();
 
         // Gradient background handling
         {
@@ -417,12 +330,7 @@ namespace nexo::editor {
 
     void Editor::update() const
     {
-    	SceneViewManager::get().update();
-        for (const auto &[_, window]: m_windows)
-        {
-            window->update();
-        }
+    	m_windowRegistry.update();
         getApp().endFrame();
-
     }
 }
