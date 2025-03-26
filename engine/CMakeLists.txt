@@ -52,8 +52,6 @@ set(COMMON_SOURCES
         engine/src/systems/lights/SpotLightsSystem.cpp
         engine/src/assets/Asset.cpp
         engine/src/assets/AssetRef.cpp
-        engine/src/assets/AssetName.cpp
-        engine/src/assets/AssetName.hpp
         engine/src/assets/AssetLocation.cpp
         engine/src/assets/AssetCatalog.cpp
         engine/src/assets/AssetImporter.cpp
