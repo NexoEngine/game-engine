@@ -116,10 +116,10 @@ namespace nexo::assets {
         AssetName name("InitialName");
         EXPECT_EQ(name, "InitialName");
         EXPECT_NO_THROW(name.rename("NewName"));
-        EXPECT_EQ(name.getName(), "NewName");
+        EXPECT_EQ(name, "NewName");
 
         EXPECT_EQ(name.rename("Invalid@Name"), "Allowed characters are 0-9, a-z, A-Z, '.', '_', and '-'.");
-        EXPECT_EQ(name.getName(), "NewName");  // Should remain unchanged
+        EXPECT_EQ(name, "NewName");  // Should remain unchanged
     }
 
     TEST(AssetNameTest, InvalidNameExceptionMessage)

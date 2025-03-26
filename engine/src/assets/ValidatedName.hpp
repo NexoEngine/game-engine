@@ -53,11 +53,6 @@ namespace nexo::assets {
 
 
             /**
-             * @brief Returns the underlying name as a string.
-             */
-            [[nodiscard]] const std::string& getName() const { return _value; }
-
-            /**
              * @brief Returns the size of the name.
              */
             [[nodiscard]] std::size_t size() const { return _value.size(); }
@@ -70,6 +65,9 @@ namespace nexo::assets {
             explicit operator std::string_view() const { return _value; }
             explicit operator const char*() const { return _value.c_str(); }
 
+            /**
+             * @brief Returns the underlying name as a string.
+             */
             [[nodiscard]] const std::string& data() const { return _value; }
             [[nodiscard]] const char* c_str() const { return _value.c_str(); }
 

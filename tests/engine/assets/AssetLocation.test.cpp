@@ -25,8 +25,8 @@ namespace nexo::assets {
         AssetLocation location(fullLocation);
 
         ASSERT_TRUE(location.getPackName().has_value());
-        EXPECT_EQ(location.getPackName()->get().getName(), "myPack");
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getPackName()->get(), "myPack");
+        EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "path/to/asset");
         EXPECT_EQ(location.getFullLocation(), fullLocation);
     }
@@ -37,7 +37,7 @@ namespace nexo::assets {
         AssetLocation location(fullLocation);
 
         EXPECT_FALSE(location.getPackName().has_value());
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getName().data(), "myAsset");
         EXPECT_EQ(location.getPath(), "path/to/asset");
         EXPECT_EQ(location.getFullLocation(), fullLocation);
     }
@@ -48,8 +48,8 @@ namespace nexo::assets {
         AssetLocation location(fullLocation);
 
         ASSERT_TRUE(location.getPackName().has_value());
-        EXPECT_EQ(location.getPackName()->get().getName(), "myPack");
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getPackName()->get(), "myPack");
+        EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "");
         EXPECT_EQ(location.getFullLocation(), fullLocation);
     }
@@ -115,8 +115,8 @@ namespace nexo::assets {
         location.setLocation(name, path, packName);
 
         ASSERT_TRUE(location.getPackName().has_value());
-        EXPECT_EQ(location.getPackName()->get().getName(), "myPack");
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getPackName()->get(), "myPack");
+        EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "path/to/asset");
         EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@path/to/asset");
     }
@@ -131,7 +131,7 @@ namespace nexo::assets {
         location.setLocation(name, path);
 
         EXPECT_FALSE(location.getPackName().has_value());
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "path/to/asset");
         EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
     }
@@ -146,8 +146,8 @@ namespace nexo::assets {
         location.setLocation(name, "", packName);
 
         ASSERT_TRUE(location.getPackName().has_value());
-        EXPECT_EQ(location.getPackName()->get().getName(), "myPack");
-        EXPECT_EQ(location.getAssetName().getName(), "myAsset");
+        EXPECT_EQ(location.getPackName()->get(), "myPack");
+        EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "");
         EXPECT_EQ(location.getFullLocation(), "myPack::myAsset");
     }

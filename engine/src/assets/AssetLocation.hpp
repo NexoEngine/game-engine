@@ -63,19 +63,34 @@ namespace nexo::assets {
                 return *this;
             }
 
+            /**
+             * @brief Get the asset's name
+             * @return The asset's AssetName
+             */
             [[nodiscard]] const AssetName& getName() const { return _name; }
-            [[nodiscard]] std::optional<std::reference_wrapper<const AssetPackName>> getPackName() { return _packName; }
 
+            /**
+             * @brief Get the asset's pack name
+             * @return The asset's AssetPackName
+             */
             [[nodiscard]] std::optional<std::reference_wrapper<const AssetPackName>> getPackName() const { return _packName; }
-            [[nodiscard]] const AssetName& getAssetName() const { return _name; }
+
+            /**
+             * @brief Get the asset's path
+             * @return The asset's path
+             */
             [[nodiscard]] const std::string& getPath() const { return _path; }
 
+            /**
+             * @brief Get the asset's full location
+             * @return The asset's full location as string (e.g.: packName::name@path/to/asset)
+             */
             [[nodiscard]] std::string getFullLocation() const
             {
                 std::string fullLocation;
                 if (_packName)
-                    fullLocation += _packName->getName() + "::";
-                fullLocation += _name.getName();
+                    fullLocation += _packName->data() + "::";
+                fullLocation += _name.data();
                 if (!_path.empty())
                     fullLocation += "@" + _path;
                 return fullLocation;

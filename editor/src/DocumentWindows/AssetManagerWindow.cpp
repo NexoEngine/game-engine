@@ -162,7 +162,7 @@ namespace nexo::editor {
         drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.overlaySize, overlayPos.y + m_layout.size.overlaySize), overlayColor);
 
         // Draw title
-        const char *assetName = assetData->getMetadata().location.getAssetName().c_str();
+        const char *assetName = assetData->getMetadata().location.getName().c_str();
         ImVec2 textPos = ImVec2(itemPos.x + (itemSize.x - ImGui::CalcTextSize(assetName).x) * 0.5f,
             thumbnailEnd.y + m_layout.size.titlePadding);
         // Background rectangle for text
