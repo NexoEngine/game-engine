@@ -1,3 +1,6 @@
+# Prevent pushing window layouts
+config/default-layout.ini
+
 src/server/server
 src/server/Makefile
 src/client/client
