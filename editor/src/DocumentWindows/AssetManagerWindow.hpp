@@ -33,11 +33,6 @@ namespace nexo::editor {
         void update() override;
 
     private:
-        struct Asset {
-            std::string name;
-            int type; // 0: default, 1: red overlay, 2: green overlay
-        };
-
         struct LayoutSettings {
 			struct LayoutSizes {
 				float iconSize = 64.0f;
@@ -70,7 +65,6 @@ namespace nexo::editor {
             } color;
         };
 
-        std::vector<Asset> m_assets;
         std::set<int> m_selectedAssets;
         LayoutSettings m_layout;
 

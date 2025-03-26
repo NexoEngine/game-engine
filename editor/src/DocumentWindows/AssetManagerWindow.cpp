@@ -24,11 +24,6 @@
 namespace nexo::editor {
 
     void AssetManagerWindow::setup() {
-        // Initialize assets
-        for (int i = 0; i < 100; ++i) {
-            m_assets.push_back({ "Asset " + std::to_string(i), i % 3 }); // Alternate types
-        }
-
         auto& catalog = assets::AssetCatalog::getInstance();
 
         const auto asset = new assets::Model();
@@ -49,12 +44,9 @@ namespace nexo::editor {
             assets::ImporterFileInput fileInput{path};
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@foo/bar/"), fileInput);
         }
-
-
     }
 
     void AssetManagerWindow::shutdown() {
-        m_assets.clear();
     }
 
     void AssetManagerWindow::show() {
@@ -226,10 +218,6 @@ namespace nexo::editor {
             case assets::AssetType::MODEL: return IM_COL32(70, 170, 70, 255);
             default: return IM_COL32(0, 0, 0, 0);
         }
-        /*case 1: return IM_COL32(200, 70, 70, 255);
-        case 2: return IM_COL32(70, 170, 70, 255);
-        default: return IM_COL32(0, 0, 0, 0);
-        }*/
     }
 
 } // namespace nexo::editor
