@@ -14,7 +14,7 @@
 #include "VertexArray.hpp"
 #include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "GraphicsBackends/opengl/OpenGlVertexArray.hpp"
+    #include "opengl/OpenGlVertexArray.hpp"
 #endif
 
 namespace nexo::renderer {

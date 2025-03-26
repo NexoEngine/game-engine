@@ -16,7 +16,7 @@
 #include "Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "GraphicsBackends/opengl/OpenGlTexture2D.hpp"
+    #include "opengl/OpenGlTexture2D.hpp"
 #endif
 
 namespace nexo::renderer {

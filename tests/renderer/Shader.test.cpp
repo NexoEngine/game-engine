@@ -21,7 +21,7 @@
 
 #include "../utils/comparison.hpp"
 #include "contexts/opengl.hpp"
-#include "GraphicsBackends/opengl/OpenGlShader.hpp"
+#include "opengl/OpenGlShader.hpp"
 #include "renderer/RendererExceptions.hpp"
 
 namespace nexo::renderer {
