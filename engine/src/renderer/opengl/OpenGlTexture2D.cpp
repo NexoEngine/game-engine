@@ -84,7 +84,7 @@ namespace nexo::renderer {
             THROW_EXCEPTION(TextureSizeMismatch, "OPENGL", size, expectedSize);
         glBindTexture(GL_TEXTURE_2D, m_id);
         // Update the entire texture with new data
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(m_width), static_cast<int>(m_height), GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(m_width), static_cast<int>(m_height), m_dataFormat, GL_UNSIGNED_BYTE, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
