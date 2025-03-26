@@ -36,7 +36,7 @@ namespace nexo::assets {
              * @brief Checks if the importer can read the file at the given path.
              *
              * Implementations should open the file and check if related importer is compatible.
-             * @param inputVariant The input variant to check. Can be a file path or memory buffer.
+             * @param[in] inputVariant The input variant to check. Can be a file path or memory buffer.
              * @return True if the importer can read the file, false otherwise.
              */
             virtual bool canRead(const ImporterInputVariant& inputVariant) = 0;
@@ -47,7 +47,7 @@ namespace nexo::assets {
              * This method should be overridden by the derived class to do the actual import.
              * @warning Implementation MUST set the main asset data using AssetImporterContext::setMainAssetData() before return
              *
-             * @param ctx The context for the import.
+             * @param[in,out] ctx The context for the import.
              */
             virtual void importImpl(AssetImporterContext& ctx) = 0;
 
@@ -57,7 +57,7 @@ namespace nexo::assets {
              * This method is not intended to be overridden. Implement importImpl() to do the import.
              * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
              *
-             * @param ctx The context for the import.
+             * @param[in,out] ctx The context for the import.
              */
             void import(AssetImporterContext& ctx) noexcept
             {

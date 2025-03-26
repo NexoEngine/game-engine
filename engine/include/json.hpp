@@ -20,6 +20,17 @@ namespace nexo {
 
     using json = nlohmann::json;
 
+    /**
+     * @brief Concept that checks if a type can be serialized to and deserialized from JSON
+     *
+     * To make a type JSONSerializable, implement the following non-member functions:
+     * @code{.cpp}
+     * void to_json(nexo::json& j, const YourType& obj);
+     * void from_json(const nexo::json& j, YourType& obj);
+     * @endcode
+     *
+     * @note See nlohmann::json documentation for detailed implementation guidelines.
+     */
     template <typename T>
     concept JSONSerializable = requires(T obj, json& j) {
         { to_json(j, obj) } -> std::same_as<void>;
