@@ -77,7 +77,6 @@ namespace nexo::renderer {
              *
              * @param buffer The memory buffer containing the texture image data.
              * @param len The length of the memory buffer in bytes.
-             * @return A shared pointer to the created `Texture2D` instance.
              *
              * Example:
              * ```cpp
