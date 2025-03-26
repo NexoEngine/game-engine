@@ -17,4 +17,4 @@
 
 namespace nexo::assets {
 
-} // namespace nexo::editor
+} // namespace nexo::assets
