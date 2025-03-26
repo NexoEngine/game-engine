@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     try {
         loguru::init(argc, argv);
         loguru::g_stderr_verbosity = loguru::Verbosity_3;
-        nexo::editor::Editor editor;
+        nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
 
         editor.registerWindow<nexo::editor::EditorScene>("Default scene");
         editor.registerWindow<nexo::editor::SceneTreeWindow>("Scene tree");
