@@ -79,13 +79,13 @@ namespace nexo::assets {
             [[nodiscard]] std::vector<GenericAssetRef> getAssets() const;
 
             /**
-             * @breif Get all assets in the catalog as a view.
+             * @brief Get all assets in the catalog as a view.
              * @return A view of all assets in the catalog.
              */
             [[nodiscard]] std::ranges::view auto getAssetsView() const;
 
             /**
-             * @breif Get all assets of a specific type in the catalog.
+             * @brief Get all assets of a specific type in the catalog.
              * @tparam AssetType The type of asset to get. (e.g. Model, Texture)
              * @return A vector of all assets of the specified type in the catalog.
              */
