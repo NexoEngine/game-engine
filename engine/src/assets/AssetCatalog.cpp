@@ -18,14 +18,6 @@
 
 namespace nexo::assets {
 
-    /**
-     * @brief Removes the asset associated with the given ID from the catalog.
-     *
-     * Checks if an asset with the specified ID exists in the catalog and, if so,
-     * deletes it.
-     *
-     * @param id The unique identifier of the asset to be removed.
-     */
     void AssetCatalog::deleteAsset(AssetID id)
     {
         if (!m_assets.contains(id))
@@ -57,13 +49,6 @@ namespace nexo::assets {
         return GenericAssetRef::null();
     }
 
-    /**
-     * @brief Retrieves all asset references registered in the catalog.
-     *
-     * Iterates through the stored assets and collects them into a vector of GenericAssetRef objects.
-     *
-     * @return A vector containing a GenericAssetRef for each managed asset.
-     */
     std::vector<GenericAssetRef> AssetCatalog::getAssets() const
     {
         std::vector<GenericAssetRef> assets;
@@ -73,18 +58,6 @@ namespace nexo::assets {
         return assets;
     }
 
-    /**
-     * @brief Registers an asset in the catalog.
-     *
-     * This method verifies that the provided asset pointer is valid, then creates a shared pointer
-     * to the asset. It updates the asset's metadata by setting its location and assigning a new unique
-     * identifier if one is not already set. The asset is stored in the catalog and a reference to the
-     * asset is returned.
-     *
-     * @param location The asset's location metadata.
-     * @param asset Pointer to the asset to be registered.
-     * @return GenericAssetRef A reference to the registered asset, or a null reference if the asset pointer was null.
-     */
     GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, IAsset* asset)
     {
         if (!asset)

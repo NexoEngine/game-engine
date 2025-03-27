@@ -35,17 +35,6 @@ namespace nexo::assets {
         }
     }
 
-    /**
-     * @brief Automatically imports an asset using available importers.
-     *
-     * Iterates through all registered importer groups, invoking each group's importer(s)
-     * to attempt importing an asset from the specified location and input data variant.
-     * Returns the first successfully imported asset, or a null reference if none succeed.
-     *
-     * @param location The location of the asset to be imported.
-     * @param inputVariant The input data variant providing information for asset import.
-     * @return GenericAssetRef A reference to the imported asset, or GenericAssetRef::null() if import fails.
-     */
     GenericAssetRef AssetImporter::importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant)
     {
         for (const auto& importers: m_importers | std::views::values) {
@@ -57,19 +46,6 @@ namespace nexo::assets {
         return GenericAssetRef::null();
     }
 
-    /**
-     * @brief Imports an asset using a specified importer and registers it.
-     *
-     * This function attempts to import an asset by invoking the given importer. It utilizes a custom import context if one
-     * is configured; otherwise, it creates a temporary context initialized with the provided input data and location.
-     * After importing, if the asset is valid, the function ensures that the asset has a unique identifier and updates its location
-     * metadata if it is set to "default". The asset is then registered in the AssetCatalog. If the import fails, a null asset reference is returned.
-     *
-     * @param location The asset location used for input configuration and asset registration.
-     * @param inputVariant Input data required by the importer for the asset import operation.
-     * @param importer The importer instance responsible for performing the asset import.
-     * @return GenericAssetRef A reference to the imported and registered asset, or a null reference if the import fails.
-     */
     GenericAssetRef AssetImporter::importAssetUsingImporter(const AssetLocation& location,
         const ImporterInputVariant& inputVariant, AssetImporterBase* importer) const
     {
@@ -94,19 +70,6 @@ namespace nexo::assets {
         return AssetCatalog::getInstance().registerAsset(location, asset);
     }
 
-    /**
-     * @brief Attempts to import an asset using a prioritized list of importers.
-     *
-     * This function iterates over the provided importers in two phases. In the first phase, it attempts to import the asset
-     * using importers that are capable of reading the given input variant. If none of these succeed, it then tries the remaining
-     * importers regardless of compatibility. The function returns immediately upon the first successful import, or a null asset
-     * reference if all attempts fail.
-     *
-     * @param location The asset's location information.
-     * @param inputVariant A variant that encapsulates the data and configuration for asset import.
-     * @param importers A list of asset importers to attempt the import operation with.
-     * @return GenericAssetRef A reference to the successfully imported asset, or a null reference if the import fails.
-     */
     GenericAssetRef AssetImporter::importAssetTryImporters(const AssetLocation& location,
         const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase*>& importers) const
     {

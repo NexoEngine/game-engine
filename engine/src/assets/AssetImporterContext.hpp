@@ -82,6 +82,19 @@ namespace nexo::assets {
 
             [[nodiscard]] json getParameters() const;
 
+
+            /**
+             * @brief Generates a unique dependency asset location.
+             *
+             * This method creates a candidate asset location by using the current location as a base, then sets a unique name
+             * by incrementing an internal dependency counter and formatting the name with a dedicated formatting function.
+             * If the generated location already exists in the asset catalog, the method continues to update the candidate location
+             * until a unique one is found or the maximum allowed dependency count is exceeded. In the latter case, an error is logged,
+             * and the last candidate is returned.
+             *
+             * @tparam AssetType The type of the asset for which the location is being generated.
+             * @return AssetLocation A unique location for the dependency asset.
+             */
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
             AssetLocation genUniqueDependencyLocation();
@@ -103,10 +116,7 @@ namespace nexo::assets {
                 return AssetName(std::format("{}_{}{}", name, getAssetTypeName(type), id));
             }
 
-
         private:
-
-
             IAsset *m_mainAsset = nullptr;         //< Main asset being imported, resulting asset (MUST be set by importer)
             std::vector<GenericAssetRef> m_dependencies; //< Dependencies to import
             json m_jsonParameters;             //< JSON parameters for the importer
@@ -116,17 +126,6 @@ namespace nexo::assets {
 
     template <typename AssetType>
         requires std::derived_from<AssetType, IAsset>
-    /**
-     * @brief Generates a unique dependency asset location.
-     *
-     * This method creates a candidate asset location by using the current location as a base, then sets a unique name
-     * by incrementing an internal dependency counter and formatting the name with a dedicated formatting function.
-     * If the generated location already exists in the asset catalog, the method continues to update the candidate location
-     * until a unique one is found or the maximum allowed dependency count is exceeded. In the latter case, an error is logged,
-     * and the last candidate is returned.
-     *
-     * @return AssetLocation A unique location for the dependency asset.
-     */
     AssetLocation AssetImporterContext::genUniqueDependencyLocation()
     {
         auto depLoc = AssetLocation(location.getFullLocation());
