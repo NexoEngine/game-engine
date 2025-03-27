@@ -55,16 +55,18 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetRefTest, IsValidReturnsCorrectValue) {
-        GenericAssetRef ref(genericAsset);
+        const GenericAssetRef ref(genericAsset);
         EXPECT_TRUE(ref.isValid());
 
         // Simulate expired pointer
+        GenericAssetRef tempRef;
         {
-            auto tempAsset = std::make_shared<Texture>();
-            GenericAssetRef tempRef(tempAsset);
+            const auto tempAsset = std::make_shared<Texture>();
+            tempRef = GenericAssetRef(tempAsset);
             EXPECT_TRUE(tempRef.isValid());
         }
         // tempAsset goes out of scope here, should expire
+        EXPECT_FALSE(tempRef.isValid());
     }
 
     TEST_F(AssetRefTest, LockReturnsCorrectPointer) {
