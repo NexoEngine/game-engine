@@ -30,9 +30,21 @@ namespace nexo::assets {
     */
     class AssetCatalog {
         protected:
-            // Singleton: private constructor and destructor
+            /**
+ * @brief Default constructor for AssetCatalog.
+ *
+ * Constructs an AssetCatalog instance using the default initializer.
+ * The constructor is protected to allow instantiation by derived classes,
+ * while still supporting the singleton pattern.
+ */
             AssetCatalog() = default;
-            ~AssetCatalog() = default;
+            /**
+ * @brief Default destructor for AssetCatalog.
+ *
+ * The default destructor relies on compiler-generated behavior to clean up the instance,
+ * ensuring that all managed assets are properly released.
+ */
+~AssetCatalog() = default;
 
         public:
             // Singleton: Meyers' Singleton Pattern
@@ -79,8 +91,13 @@ namespace nexo::assets {
             [[nodiscard]] std::vector<GenericAssetRef> getAssets() const;
 
             /**
-             * @brief Get all assets in the catalog as a view.
-             * @return A view of all assets in the catalog.
+             * @brief Retrieves a view of all assets in the catalog.
+             *
+             * This function returns a view of the asset collection, where each asset is transformed into a
+             * GenericAssetRef using C++20 ranges. This lightweight view facilitates efficient iteration over
+             * the registered assets.
+             *
+             * @return A view of the assets with each element represented as a GenericAssetRef.
              */
             [[nodiscard]] auto getAssetsView() const
             {
