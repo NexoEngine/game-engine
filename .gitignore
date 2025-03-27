@@ -1,5 +1,5 @@
 # Prevent pushing window layouts
-config/default-layout.ini
+./config/default-layout.ini
 
 # Prerequisites
 *.d

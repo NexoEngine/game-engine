@@ -29,8 +29,8 @@ install(TARGETS nexoEditor
         PUBLIC_HEADER DESTINATION include COMPONENT headers
 )
 
-# Install assets, config, and logs directories
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/" DESTINATION assets)
+# Install resources, config, and logs directories
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/config/" DESTINATION config)
 install(DIRECTORY DESTINATION logs)
 

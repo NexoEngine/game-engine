@@ -58,7 +58,7 @@ namespace nexo::renderer {
             samplers[i] = i;
 
         m_storage->textureShader = Shader::create(Path::resolvePathRelativeToExe(
-            "../assets/shaders/texture.glsl").string());
+            "../resources/shaders/texture.glsl").string());
         m_storage->textureShader->bind();
         m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer3DStorage::maxTextureSlots);
 

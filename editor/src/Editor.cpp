@@ -79,7 +79,7 @@ namespace nexo::editor {
         float scaleFactorY = 0.0f;
         nexo::getApp().getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
         nexo::getApp().getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
-            "../assets/nexo.png"));
+            "../resources/nexo.png"));
         if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
         {
             LOG(NEXO_WARN,
@@ -149,7 +149,7 @@ namespace nexo::editor {
         }
 
         static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
-            "../assets/fonts/SourceSans3-Regular.ttf").string();
+            "../resources/fonts/SourceSans3-Regular.ttf").string();
         ImFont *font = io.Fonts->AddFontFromFileTTF(sourceSansPath.c_str(), fontSize,
                                                     &fontConfig);
         LOG(NEXO_DEBUG, "Font path: {}", sourceSansPath);
@@ -164,7 +164,7 @@ namespace nexo::editor {
         fontawesome_config.OversampleV = 3; // Vertical oversampling
         static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         static const std::string fontawesomePath = Path::resolvePathRelativeToExe(
-            "../assets/fonts/fontawesome4.ttf").string();
+            "../resources/fonts/fontawesome4.ttf").string();
         io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), fontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");

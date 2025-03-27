@@ -64,7 +64,7 @@ namespace nexo::renderer {
 
         try {
             m_storage->textureShader = Shader::create(
-                Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
+                Path::resolvePathRelativeToExe("../resources/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
             m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer2DStorage::maxTextureSlots);
         } catch (const Exception &e) {
