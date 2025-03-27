@@ -26,9 +26,9 @@ TEST_F(PathTestFixture, ResolvePathRelativeToExeTwice) {
 
 TEST_F(PathTestFixture, ResolvePathRelativeToExeWithParent) {
     const std::filesystem::path exePath = nexo::Path::getExecutablePath();
-    const std::filesystem::path resolvedPath = nexo::Path::resolvePathRelativeToExe("assets/test.txt");
+    const std::filesystem::path resolvedPath = nexo::Path::resolvePathRelativeToExe("resources/test.txt");
 
-    EXPECT_EQ(resolvedPath, exePath.parent_path() / "assets/test.txt");
+    EXPECT_EQ(resolvedPath, exePath.parent_path() / "resources/test.txt");
 }
 
 /**

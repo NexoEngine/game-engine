@@ -34,13 +34,13 @@ namespace nexo::editor {
 
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../assets/models/9mn/scene.gltf");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
             assets::ImporterFileInput fileInput{path};
             auto assetRef9mn = importer.importAssetAuto(assets::AssetLocation("my_package::9mn@foo/bar/"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../assets/textures/logo_nexo.png");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
             assets::ImporterFileInput fileInput{path};
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@foo/bar/"), fileInput);
         }

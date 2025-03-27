@@ -74,7 +74,7 @@ if(NOT CAN_CREATE_SYMLINK)
 endif()
 
 # Component deb-icon
-install(FILES "${CMAKE_SOURCE_DIR}/assets/nexo.png"
+install(FILES "${CMAKE_SOURCE_DIR}/resources/nexo.png"
         DESTINATION /usr/share/icons/hicolor/256x256/apps
         COMPONENT deb-icon EXCLUDE_FROM_ALL
         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ

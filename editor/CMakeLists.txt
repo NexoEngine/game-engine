@@ -43,7 +43,7 @@ set(SRCS
 
 # Windows App Icon
 if (WIN32)
-    list(APPEND SRCS ${CMAKE_SOURCE_DIR}/assets/nexo.rc)
+    list(APPEND SRCS ${CMAKE_SOURCE_DIR}/resources/nexo.rc)
 endif()
 
 add_executable(nexoEditor ${SRCS})
