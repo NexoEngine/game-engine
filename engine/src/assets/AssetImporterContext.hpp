@@ -82,19 +82,41 @@ namespace nexo::assets {
 
             [[nodiscard]] json getParameters() const;
 
+
+            /**
+             * @brief Generates a unique dependency asset location.
+             *
+             * This method creates a candidate asset location by using the current location as a base, then sets a unique name
+             * by incrementing an internal dependency counter and formatting the name with a dedicated formatting function.
+             * If the generated location already exists in the asset catalog, the method continues to update the candidate location
+             * until a unique one is found or the maximum allowed dependency count is exceeded. In the latter case, an error is logged,
+             * and the last candidate is returned.
+             *
+             * @tparam AssetType The type of the asset for which the location is being generated.
+             * @return AssetLocation A unique location for the dependency asset.
+             */
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
             AssetLocation genUniqueDependencyLocation();
 
+            /**
+             * @brief Formats a unique asset name.
+             *
+             * Constructs a unique asset name by combining a base name, the asset type name, and a unique identifier.
+             * The resulting format is: `<base_name>_<asset_type_name><unique_id>`, where the asset type name is
+             * derived from the provided asset type.
+             *
+             * @param name The base name of the asset.
+             * @param type The type of the asset.
+             * @param id A unique identifier appended to ensure the name is distinct.
+             * @return AssetName The uniquely formatted asset name.
+             */
             static AssetName formatUniqueName(const std::string& name, const AssetType type, unsigned int id)
             {
                 return AssetName(std::format("{}_{}{}", name, getAssetTypeName(type), id));
             }
 
-
         private:
-
-
             IAsset *m_mainAsset = nullptr;         //< Main asset being imported, resulting asset (MUST be set by importer)
             std::vector<GenericAssetRef> m_dependencies; //< Dependencies to import
             json m_jsonParameters;             //< JSON parameters for the importer

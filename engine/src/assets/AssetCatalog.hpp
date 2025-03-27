@@ -30,8 +30,22 @@ namespace nexo::assets {
     */
     class AssetCatalog {
         protected:
-            // Singleton: private constructor and destructor
+            // Singleton: protected constructor and destructor
+            /**
+             * @brief Default constructor for AssetCatalog.
+             *
+             * Constructs an AssetCatalog instance using the default initializer.
+             * The constructor is protected to allow instantiation by derived classes,
+             * while still supporting the singleton pattern.
+             */
             AssetCatalog() = default;
+
+            /**
+             * @brief Default destructor for AssetCatalog.
+             *
+             * The default destructor relies on compiler-generated behavior to clean up the instance,
+             * ensuring that all managed assets are properly released.
+             */
             ~AssetCatalog() = default;
 
         public:
@@ -47,8 +61,12 @@ namespace nexo::assets {
             void operator=(AssetCatalog const&) = delete;
 
             /**
-             * @brief Delete an asset from the catalog.
-             * @param id The ID of the asset to delete.
+             * @brief Removes the asset associated with the given ID from the catalog.
+             *
+             * Checks if an asset with the specified ID exists in the catalog and, if so,
+             * deletes it.
+             *
+             * @param id The unique identifier of the asset to be removed.
              */
             void deleteAsset(AssetID id);
 
@@ -73,14 +91,22 @@ namespace nexo::assets {
             [[nodiscard]] GenericAssetRef getAsset(const AssetLocation& location) const;
 
             /**
-             * @brief Get all assets in the catalog.
-             * @return A vector of all assets in the catalog.
+             * @brief Retrieves all asset references registered in the catalog.
+             *
+             * Iterates through the stored assets and collects them into a vector of GenericAssetRef objects.
+             *
+             * @return A vector containing a GenericAssetRef for each managed asset.
              */
             [[nodiscard]] std::vector<GenericAssetRef> getAssets() const;
 
             /**
-             * @brief Get all assets in the catalog as a view.
-             * @return A view of all assets in the catalog.
+             * @brief Retrieves a view of all assets in the catalog.
+             *
+             * This function returns a view of the asset collection, where each asset is transformed into a
+             * GenericAssetRef using C++20 ranges. This lightweight view facilitates efficient iteration over
+             * the registered assets.
+             *
+             * @return A view of the assets with each element represented as a GenericAssetRef.
              */
             [[nodiscard]] auto getAssetsView() const
             {
@@ -109,6 +135,20 @@ namespace nexo::assets {
                 requires std::derived_from<AssetType, IAsset>
             [[nodiscard]] std::ranges::view auto getAssetsOfTypeView() const;
 
+            /**
+             * @brief Registers an asset in the catalog.
+             *
+             * This method verifies that the provided asset pointer is valid, then creates a shared pointer
+             * to the asset. It updates the asset's metadata by setting its location and assigning a new unique
+             * identifier if one is not already set. The asset is stored in the catalog and a reference to the
+             * asset is returned.
+             *
+             * @warning Once registered, the memory for the asset is managed by the catalog. Do not delete the asset.
+             *
+             * @param location The asset's location metadata.
+             * @param asset Pointer to the asset to be registered.
+             * @return GenericAssetRef A reference to the registered asset, or a null reference if the asset pointer was null.
+             */
             GenericAssetRef registerAsset(const AssetLocation& location, IAsset *asset);
         private:
             std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
