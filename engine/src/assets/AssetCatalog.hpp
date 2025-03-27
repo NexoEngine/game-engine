@@ -29,9 +29,9 @@ namespace nexo::assets {
     * @brief Singleton class that holds all the assets in the engine.
     */
     class AssetCatalog {
-        private:
+        protected:
             // Singleton: private constructor and destructor
-            AssetCatalog();
+            AssetCatalog() = default;
             ~AssetCatalog() = default;
 
         public:
@@ -82,7 +82,14 @@ namespace nexo::assets {
              * @brief Get all assets in the catalog as a view.
              * @return A view of all assets in the catalog.
              */
-            [[nodiscard]] std::ranges::view auto getAssetsView() const;
+            [[nodiscard]] auto getAssetsView() const
+            {
+                return m_assets
+                    | std::views::values
+                    | std::views::transform([](const auto& asset) {
+                        return GenericAssetRef(asset);
+                    });
+            }
 
             /**
              * @brief Get all assets of a specific type in the catalog.

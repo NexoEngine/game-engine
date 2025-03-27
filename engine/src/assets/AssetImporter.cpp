@@ -47,7 +47,7 @@ namespace nexo::assets {
     }
 
     GenericAssetRef AssetImporter::importAssetUsingImporter(const AssetLocation& location,
-        const ImporterInputVariant& inputVariant, AssetImporterBase* importer)
+        const ImporterInputVariant& inputVariant, AssetImporterBase* importer) const
     {
         AssetImporterContext* ctx = m_customCtx;
         AssetImporterContext ctxOnStack;
@@ -59,7 +59,7 @@ namespace nexo::assets {
 
 
         importer->import(*ctx);
-        auto asset = ctx->getMainAsset();
+        const auto asset = ctx->getMainAsset();
         if (!asset)
             return GenericAssetRef::null();
         if (asset->getID().is_nil())
@@ -71,7 +71,7 @@ namespace nexo::assets {
     }
 
     GenericAssetRef AssetImporter::importAssetTryImporters(const AssetLocation& location,
-        const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase*>& importers)
+        const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase*>& importers) const
     {
         std::vector<AssetImporterBase *> untriedImporters;
         for (const auto& importer : importers) {

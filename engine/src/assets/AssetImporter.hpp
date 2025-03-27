@@ -46,9 +46,9 @@ namespace nexo::assets {
                 requires std::derived_from<AssetType, IAsset>
             AssetRef<AssetType> importAsset(const AssetLocation& location, const ImporterInputVariant& inputVariant);
             GenericAssetRef importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant);
-            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, AssetImporterBase *importer);
+            GenericAssetRef importAssetUsingImporter(const AssetLocation& location, const ImporterInputVariant& inputVariant, AssetImporterBase *importer) const;
             GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase *>&
-                importers);
+                importers) const;
 
             /**
              * @brief Get all registered importers for an asset type
@@ -97,12 +97,20 @@ namespace nexo::assets {
 
             void clearCustomContext() { m_customCtx = nullptr; }
 
-            AssetImporterContext *getCustomContext() const { return m_customCtx; }
+            [[nodiscard]] AssetImporterContext *getCustomContext() const { return m_customCtx; }
 
             void setParameters(const json& params);
 
 
-        private:
+        protected:
+
+            /**
+             * @brief Protected constructor for custom importers
+             * @note Used currently by unit tests
+             */
+            explicit AssetImporter(AssetImporterContext *ctx) : m_customCtx(ctx)
+            {
+            }
 
             /**
              * @brief Register an importer for a specific asset type
@@ -122,7 +130,7 @@ namespace nexo::assets {
              *
              * @tparam AssetType The type of asset the importer can handle
              * @param importer The importer instance to register
-             * @param priority Optional priority value (higher values = higher priority)
+             * @param priority Optional priority value (higher values = higher priority, if equal then insertion order)
              */
             template<typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
@@ -166,7 +174,7 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
-    void AssetImporter::registerImporter(AssetImporterBase *importer, int priority)
+    void AssetImporter::registerImporter(AssetImporterBase *importer, const int priority)
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
 
@@ -181,7 +189,7 @@ namespace nexo::assets {
         auto& importersDetailsVec = m_importersDetails[typeIdx];
 
         size_t i = 0;
-        for (; i < importersVec.size() && importersDetailsVec[i].priority < priority; ++i);
+        for (; i < importersVec.size() && priority <= importersDetailsVec[i].priority ; ++i);
         importersVec.insert(importersVec.begin() + static_cast<long>(i), importer);
         importersDetailsVec.insert(importersDetailsVec.begin() + static_cast<long>(i), {priority});
     }
@@ -217,7 +225,6 @@ namespace nexo::assets {
     void AssetImporter::unregisterAllImportersForType()
     {
         const auto typeIdx = std::type_index(typeid(AssetType));
-        m_importers.erase(typeIdx);
-        m_importersDetails.erase(typeIdx);
+        unregisterAllImportersForType(typeIdx);
     }
 } // namespace nexo::assets
