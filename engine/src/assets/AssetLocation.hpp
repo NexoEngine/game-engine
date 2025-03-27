@@ -26,6 +26,17 @@ namespace nexo::assets {
 
     class InvalidAssetLocation final : public Exception {
         public:
+        /**
+         * @brief Constructs an exception indicating an invalid asset location.
+         *
+         * This constructor builds an InvalidAssetLocation exception by formatting an error
+         * message that includes the provided asset location and an explanatory message.
+         * It optionally takes a source location to mark where the exception is generated.
+         *
+         * @param assetLocation The invalid asset location string.
+         * @param message Additional context describing why the asset location is invalid.
+         * @param loc The source location at which the exception is thrown (defaults to the current call site).
+         */
         explicit InvalidAssetLocation(
             std::string_view assetLocation,
             std::string_view message,
@@ -40,11 +51,30 @@ namespace nexo::assets {
      */
     class AssetLocation {
         public:
+            /**
+             * @brief Constructs an AssetLocation by parsing the provided full location string.
+             *
+             * This explicit constructor initializes an AssetLocation object using the given fullLocation string,
+             * which should include the asset name, path, and optionally the asset pack name. The parsing is
+             * performed by calling setLocation(fullLocation), and an InvalidAssetLocation exception is thrown
+             * if the asset name is invalid.
+             *
+             * @param fullLocation The complete asset location string to be parsed.
+             */
             explicit AssetLocation(const std::string& fullLocation)
             {
                 setLocation(fullLocation);
             }
 
+            /**
+             * @brief Sets the asset's name.
+             *
+             * Updates the asset's name with the provided value and returns a reference
+             * to the current object to facilitate method chaining.
+             *
+             * @param name The new name for the asset.
+             * @return Reference to the modified AssetLocation instance.
+             */
             AssetLocation& setName(const AssetName& name)
             {
                 _name = name;
@@ -101,9 +131,13 @@ namespace nexo::assets {
             [[nodiscard]] const AssetName& getName() const { return _name; }
 
             /**
-             * @brief Get the asset's pack name
-             * @return The asset's AssetPackName
-             */
+ * @brief Retrieves the asset's pack name.
+ *
+ * Returns an optional reference wrapper to a constant AssetPackName. If the asset is not associated
+ * with any pack, this function returns an empty optional.
+ *
+ * @return An optional reference to the asset's pack name.
+ */
             [[nodiscard]] std::optional<std::reference_wrapper<const AssetPackName>> getPackName() const { return _packName; }
 
             /**
@@ -113,8 +147,11 @@ namespace nexo::assets {
             [[nodiscard]] const std::string& getPath() const { return _path; }
 
             /**
-             * @brief Get the asset's full location
-             * @return The asset's full location as string (e.g.: packName::name@path/to/asset)
+             * @brief Constructs and returns the full asset location.
+             *
+             * The full location is formatted as "packName::name@path", where the "packName::" prefix is included only if a pack name is set and the "@path" suffix is appended only when the path is non-empty.
+             *
+             * @return A string representing the asset's complete location.
              */
             [[nodiscard]] std::string getFullLocation() const
             {
@@ -198,14 +235,17 @@ namespace nexo::assets {
             }
 
             /**
-            * @brief Parse a full asset location string into its components
-            * @param fullLocation The full location string to parse
-            * @param extractedAssetName The extracted asset name
-            * @param extractedPath The extracted path
-            * @param extractedPackName The extracted package name
-            * @note This function is static and can be used to parse a full location string into its components
-            * @warning Does not validate the extracted names
-            */
+             * @brief Parses a full asset location string into its constituent components.
+             *
+             * This static function divides the provided location string into an asset name, an asset path, and an optional package name based on the "::" and "@" delimiters. If "::" is present, the substring before it is assigned as the package name and removed from the string. If "@" is found in the remaining string, the substring after it is used as the asset path, and the preceding part is considered the asset name. If a delimiter is absent, the corresponding output string is cleared.
+             *
+             * @param fullLocation The full asset location string to parse.
+             * @param extractedAssetName Output parameter for the parsed asset name.
+             * @param extractedPath Output parameter for the parsed asset path.
+             * @param extractedPackName Output parameter for the parsed package name.
+             *
+             * @warning No validation is performed on the extracted components.
+             */
             static void parseFullLocation(
                 std::string_view fullLocation,
                 std::string& extractedAssetName,

@@ -29,8 +29,18 @@ namespace nexo::assets {
      */
     class AssetImporterBase {
         public:
-            AssetImporterBase() = default;
-            virtual ~AssetImporterBase() = default;
+            /**
+ * @brief Default constructor for AssetImporterBase.
+ *
+ * Constructs a new AssetImporterBase object.
+ */
+AssetImporterBase() = default;
+            /**
+ * @brief Virtual destructor for AssetImporterBase.
+ *
+ * Defined as default to ensure that derived asset importer classes are properly cleaned up.
+ */
+virtual ~AssetImporterBase() = default;
 
             /**
              * @brief Checks if the importer can read the file at the given path.
@@ -52,12 +62,13 @@ namespace nexo::assets {
             virtual void importImpl(AssetImporterContext& ctx) = 0;
 
             /**
-             * @brief Imports an asset from a file.
+             * @brief Wraps the asset import operation with error handling.
              *
-             * This method is not intended to be overridden. Implement importImpl() to do the import.
-             * This method is a wrapper of importImpl() that for example catches exceptions thrown by importImpl().
+             * This method calls the asset-specific import implementation (importImpl()) to perform the asset import and verifies
+             * that the main asset data is set in the provided context. It is not intended to be overridden. If importImpl() throws
+             * an exception or the main asset data remains unset after the import, an error is logged.
              *
-             * @param[in,out] ctx The context for the import.
+             * @param[in,out] ctx The asset importer context providing the asset location and storing the imported asset data.
              */
             void import(AssetImporterContext& ctx) noexcept
             {

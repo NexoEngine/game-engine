@@ -197,6 +197,18 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Configures and renders the docking layout for the editor's UI.
+     *
+     * Constructs a dockspace layout using ImGui's DockBuilder API by partitioning the main viewport into designated regions
+     * for core editor windows such as "Default scene", "Console", "Scene Tree", "Inspector", "Material Inspector", and "Asset Manager".
+     * If the dockspace has not been built yet, the layout is created by splitting the viewport into subnodes with preset ratios,
+     * and docking each window into its corresponding node. On subsequent calls, if the registry has not been filled, the function
+     * updates the docking IDs from configuration.
+     *
+     * @note The layout is built only once per session and cached via an internal flag. It also sets a global docking ID for the
+     * Material Inspector used elsewhere in the application.
+     */
     void Editor::buildDockspace()
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();

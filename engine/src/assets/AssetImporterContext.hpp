@@ -38,10 +38,20 @@ namespace nexo::assets {
     struct AssetImporterContext {
         public:
             ImporterInputVariant input;                          //< Input data for the importer
-            AssetLocation location = AssetLocation("default"); //< Future location of the asset in the catalog
+            AssetLocation location = AssetLocation("default"); /**
+ * @brief Default constructor for AssetImporterContext.
+ *
+ * Constructs an AssetImporterContext with all members initialized to their default states,
+ * including setting the asset location to its default future catalog placement.
+ */
 
             AssetImporterContext() = default;
-            ~AssetImporterContext() = default;
+            /**
+ * @brief Default destructor for AssetImporterContext.
+ *
+ * Releases resources automatically. This defaulted destructor relies on the compiler-generated implementation.
+ */
+~AssetImporterContext() = default;
 
             /**
              * @brief Set the main asset for this context
@@ -126,6 +136,17 @@ namespace nexo::assets {
 
     template <typename AssetType>
         requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Generates a unique asset location for a dependency.
+     *
+     * This method constructs a candidate asset location based on the current context's location
+     * by appending a unique identifier. It then checks the asset catalog to ensure the candidate
+     * does not already exist. If a conflict is found, the method continues incrementing the identifier
+     * until a unique location is obtained or the maximum allowed attempts is reached. In the latter case,
+     * an error is logged and the most recent candidate is returned.
+     *
+     * @return AssetLocation A unique location for the dependency.
+     */
     AssetLocation AssetImporterContext::genUniqueDependencyLocation()
     {
         auto depLoc = AssetLocation(location.getFullLocation());
@@ -147,12 +168,30 @@ namespace nexo::assets {
     }
 
     template<typename ParamType> requires JSONSerializable<ParamType>
+    /**
+     * @brief Serializes and stores importer parameters.
+     *
+     * Converts the given parameters to JSON format and stores the result for later retrieval.
+     * The parameter type must be JSON serializable.
+     *
+     * @tparam ParamType JSON serializable type representing the asset parameters.
+     * @param params The parameters to serialize and store.
+     */
     void AssetImporterContext::setParameters(const ParamType& params)
     {
         to_json(m_jsonParameters, params);
     }
 
     template<typename ParamType> requires JSONSerializable<ParamType>
+    /**
+     * @brief Retrieves the asset importer parameters.
+     *
+     * Deserializes the internally stored JSON parameters into an object of type ParamType.
+     * If no parameters were set, the function returns a default-constructed instance of ParamType.
+     *
+     * @tparam ParamType The type representing the parameters, which must be JSON serializable.
+     * @return The asset importer parameters deserialized from JSON.
+     */
     ParamType AssetImporterContext::getParameters() const
     {
         ParamType params;

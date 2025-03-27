@@ -29,21 +29,49 @@ namespace nexo::editor {
 
     class Editor {
         private:
-            // Singleton: private constructor and destructor
+            /**
+ * @brief Private default constructor for the Editor singleton.
+ *
+ * This constructor is private and defaulted to enforce the Singleton design pattern,
+ * ensuring that only one instance of the Editor exists.
+ */
         	Editor() = default;
-         	~Editor() = default;
+         	/**
+ * @brief Default destructor for the Editor class.
+ *
+ * Relies on the compiler-generated destructor to clean up the Editor instance.
+ */
+~Editor() = default;
 
         public:
-            // Singleton: Meyers' Singleton Pattern
+            /**
+             * @brief Retrieves the singleton instance of the Editor.
+             *
+             * Implements Meyers' Singleton pattern to ensure that only one instance of the 
+             * Editor class is created and accessed throughout the application lifecycle. The 
+             * instance is lazily initialized on first use.
+             *
+             * @return Editor& Reference to the singleton instance.
+             */
             static Editor& getInstance()
             {
                 static Editor s_instance;
                 return s_instance;
             }
 
-            // Singleton: delete copy constructor and assignment operator
+            /**
+ * @brief Deleted copy constructor.
+ *
+ * Prevents copying of the Editor instance to enforce the singleton pattern.
+ */
             Editor(Editor const&)         = delete;
-            void operator=(Editor const&) = delete;
+            /**
+ * @brief Deleted copy assignment operator for the Editor singleton.
+ *
+ * The assignment operator is explicitly deleted to prevent copying or reassigning the Editor instance,
+ * thereby enforcing the singleton design pattern.
+ */
+void operator=(Editor const&) = delete;
 
 			/**
 			* @brief Initializes the editor.

@@ -23,6 +23,13 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Initializes the asset manager by registering and importing default assets.
+     *
+     * Retrieves the global asset catalog, registers a default model asset, and imports additional
+     * assets from filesystem paths. Specifically, it imports a scene model from a GLTF file and a texture
+     * from a PNG file using an AssetImporter, associating them with predefined asset locations.
+     */
     void AssetManagerWindow::setup() {
         auto& catalog = assets::AssetCatalog::getInstance();
 
@@ -46,9 +53,20 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Performs cleanup operations for the Asset Manager.
+     *
+     * This function is intended for releasing resources and performing any necessary cleanup
+     * when the Asset Manager is no longer needed. Currently, it does not contain any implementation.
+     */
     void AssetManagerWindow::shutdown() {
     }
 
+    /**
+     * @brief Displays the Asset Manager window interface.
+     *
+     * Sets the initial window size on first use and opens the asset manager window. If the window is successfully opened, this function draws the menu bar, calculates layout parameters based on the current content region width, and renders the grid of assets. If the window fails to open, the function exits early.
+     */
     void AssetManagerWindow::show() {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin("Asset Manager", nullptr, ImGuiWindowFlags_MenuBar)) {
@@ -66,10 +84,24 @@ namespace nexo::editor {
         ImGui::End();
     }
 
+    /**
+     * @brief Performs per-frame update operations for the asset manager.
+     *
+     * Currently a placeholder, this function can be extended to implement any
+     * update logic required by the asset manager during runtime.
+     */
     void AssetManagerWindow::update() {
         // Update logic if necessary
     }
 
+    /**
+     * @brief Computes layout parameters for displaying asset items.
+     *
+     * Calculates the number of columns, item dimensions, and spacing for the asset grid based on the available width.
+     * Also updates the UI color settings for thumbnails and titles using current ImGui theme colors.
+     *
+     * @param availWidth The available width for laying out the asset grid.
+     */
     void AssetManagerWindow::calculateLayout(float availWidth) {
         // Sizes
         m_layout.size.columnCount = std::max(static_cast<int>(availWidth / (m_layout.size.iconSize + m_layout.size.iconSpacing)), 1);
@@ -92,6 +124,12 @@ namespace nexo::editor {
 		m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
     }
 
+    /**
+     * @brief Renders the menu bar to adjust asset icon layout options.
+     *
+     * This method creates an ImGui menu bar with an "Options" menu that includes sliders for modifying
+     * the asset icon size (ranging from 32 to 128 pixels) and the spacing between icons (0 to 32 units).
+     */
     void AssetManagerWindow::drawMenuBar() {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Options")) {
@@ -103,6 +141,12 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Renders a grid of asset thumbnails.
+     *
+     * Retrieves all assets from the asset catalog and calculates each asset's on-screen position based on the current layout settings.
+     * Utilizes ImGui's list clipper to efficiently process only the visible range of assets, and calls drawAsset() to draw each asset.
+     */
     void AssetManagerWindow::drawAssetsGrid() {
         ImVec2 startPos = ImGui::GetCursorScreenPos();
 
@@ -124,6 +168,17 @@ namespace nexo::editor {
         clipper.End();
     }
 
+    /**
+     * @brief Renders an individual asset in the asset grid.
+     *
+     * This function displays an asset by drawing its background, selection border (if selected), thumbnail, type overlay, and title.
+     * It also sets up an invisible button to handle selection input and shows a tooltip with the asset's full location on hover. The asset is rendered only if it is valid.
+     *
+     * @param asset A reference to the asset to render. The asset is locked to verify its validity.
+     * @param index The asset's index in the grid, used to manage its unique identification and selection state.
+     * @param itemPos The screen coordinates corresponding to the top-left corner of the asset's drawing area.
+     * @param itemSize The dimensions of the asset's drawing area.
+     */
     void AssetManagerWindow::drawAsset(const assets::GenericAssetRef& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize) {
         auto assetData = asset.lock();
         if (!assetData)
@@ -187,6 +242,17 @@ namespace nexo::editor {
 
     }
 
+    /**
+     * @brief Updates the asset selection state based on user input modifiers.
+     *
+     * This function modifies the selection state for an asset by evaluating current keyboard modifiers:
+     * - **Ctrl**: Toggles the selection state of the asset at the specified index.
+     * - **Shift**: Selects a range of assets from the most recently selected asset to the specified index.
+     * - **No modifier**: Clears existing selections and selects only the asset at the specified index.
+     *
+     * @param index The index of the asset being modified.
+     * @param isSelected Indicates whether the asset is currently selected (true) or not (false).
+     */
     void AssetManagerWindow::handleSelection(int index, bool isSelected)
     {
         LOG(NEXO_INFO, "Asset {} {}", index, isSelected ? "deselected" : "selected");
@@ -212,6 +278,15 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Returns the overlay color associated with a given asset type.
+     *
+     * This function maps asset types to specific overlay colors for UI visualization.
+     * It returns a red-tinted color for textures, a green-tinted color for models, and a fully transparent color for any other type.
+     *
+     * @param type The asset type for which the overlay color is determined.
+     * @return ImU32 The corresponding overlay color in ImGui's 32-bit unsigned integer format.
+     */
     ImU32 AssetManagerWindow::getAssetTypeOverlayColor(assets::AssetType type) const {
         switch (type) {
             case assets::AssetType::TEXTURE: return IM_COL32(200, 70, 70, 255);
