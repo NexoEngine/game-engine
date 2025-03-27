@@ -30,6 +30,7 @@ namespace nexo::assets {
     */
     class AssetCatalog {
         protected:
+            // Singleton: protected constructor and destructor
             /**
              * @brief Default constructor for AssetCatalog.
              *
