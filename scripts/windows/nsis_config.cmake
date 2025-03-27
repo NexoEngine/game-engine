@@ -26,7 +26,7 @@ set(CPACK_NSIS_INSTALLED_ICON_NAME "bin/nexoEditor.exe")
 # On linux to convert image to the right bmp format:
 #  convert logo.png -background white -flatten BMP3:logo_nexo.bmp
 set (CPACK_PACKAGE_ICON
-     "${CMAKE_SOURCE_DIR}/assets\\\\nexo_header.bmp")
+     "${CMAKE_SOURCE_DIR}/resources\\\\nexo_header.bmp")
 
 # Adds shortcuts to the Start Menu
 # It will find exe in any subdirectory of the install directory
