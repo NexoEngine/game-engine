@@ -6,7 +6,7 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
+//  Author:      Guillaume HEIN
 //  Date:        09/11/2024
 //  Description: Header file for the main editor class
 //
@@ -28,9 +28,22 @@
 namespace nexo::editor {
 
     class Editor {
-        public:
+        private:
+            // Singleton: private constructor and destructor
         	Editor() = default;
          	~Editor() = default;
+
+        public:
+            // Singleton: Meyers' Singleton Pattern
+            static Editor& getInstance()
+            {
+                static Editor s_instance;
+                return s_instance;
+            }
+
+            // Singleton: delete copy constructor and assignment operator
+            Editor(Editor const&)         = delete;
+            void operator=(Editor const&) = delete;
 
 			/**
 			* @brief Initializes the editor.

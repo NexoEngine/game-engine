@@ -193,10 +193,10 @@ namespace nexo::renderer {
             */
             [[nodiscard]] unsigned int getCount() const override;
 
-            unsigned int getId() const override { return _id; };
+            [[nodiscard]] unsigned int getId() const override { return _id; };
         private:
             unsigned int _id{};
-            unsigned int _count;
+            unsigned int _count = 0;
     };
 
 }

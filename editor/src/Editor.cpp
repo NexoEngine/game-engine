@@ -6,7 +6,7 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
+//  Author:      Guillaume HEIN
 //  Date:        09/11/2024
 //  Description: Source file for the main editor class
 //
@@ -248,12 +248,14 @@ namespace nexo::editor {
             ImGui::DockBuilderDockWindow("Scene Tree", sceneTreeNode);
             ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
             ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
+            ImGui::DockBuilderDockWindow("Asset Manager", consoleNode);
 
             m_windowRegistry.setDockId("Default scene", mainSceneTop);
             m_windowRegistry.setDockId("Console", consoleNode);
             m_windowRegistry.setDockId("Scene Tree", sceneTreeNode);
             m_windowRegistry.setDockId("Inspector", inspectorNode);
             m_windowRegistry.setDockId("Material Inspector", materialInspectorNode);
+            m_windowRegistry.setDockId("Asset Manager", consoleNode);
             dockingRegistryFilled = true;
 
             g_materialInspectorDockID = materialInspectorNode;
@@ -268,6 +270,7 @@ namespace nexo::editor {
         	m_windowRegistry.setDockId("Scene Tree", findWindowDockIDFromConfig("Scene Tree"));
         	m_windowRegistry.setDockId("Inspector", findWindowDockIDFromConfig("Inspector"));
         	m_windowRegistry.setDockId("Material Inspector", findWindowDockIDFromConfig("Material Inspector"));
+            m_windowRegistry.setDockId("Asset Manager", findWindowDockIDFromConfig("Asset Manager"));
          	dockingRegistryFilled = true;
         }
 

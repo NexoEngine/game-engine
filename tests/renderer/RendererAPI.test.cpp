@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <glad/glad.h>
-#include <opengl/OpenGlVertexArray.hpp>
+#include "opengl/OpenGlVertexArray.hpp"
 
 #include "contexts/opengl.hpp"
 #include "opengl/OpenGlRendererAPI.hpp"

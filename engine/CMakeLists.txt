@@ -17,7 +17,6 @@ set(COMMON_SOURCES
         engine/src/LightFactory.cpp
         engine/src/CameraFactory.cpp
         engine/src/Application.cpp
-        engine/src/Application.cpp
         engine/src/renderer/Window.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
@@ -51,6 +50,12 @@ set(COMMON_SOURCES
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
         engine/src/systems/lights/SpotLightsSystem.cpp
+        engine/src/assets/Asset.cpp
+        engine/src/assets/AssetRef.cpp
+        engine/src/assets/AssetLocation.cpp
+        engine/src/assets/AssetCatalog.cpp
+        engine/src/assets/AssetImporter.cpp
+        engine/src/assets/AssetImporterContext.cpp
 )
 
 # Add API-specific sources

@@ -27,7 +27,14 @@ namespace nexo::renderer {
             return std::make_shared<OpenGlTexture2D>(width, height);
         #endif
         THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+    }
 
+    std::shared_ptr<Texture2D> Texture2D::create(uint8_t* buffer, unsigned int len)
+    {
+        #ifdef GRAPHICS_API_OPENGL
+            return std::make_shared<OpenGlTexture2D>(buffer, len);
+        #endif
+        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<Texture2D> Texture2D::create(const std::string &path)

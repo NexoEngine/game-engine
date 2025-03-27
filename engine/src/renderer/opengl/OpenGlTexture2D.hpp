@@ -32,6 +32,8 @@ namespace nexo::renderer {
     */
     class OpenGlTexture2D final : public Texture2D {
         public:
+            ~OpenGlTexture2D() override;
+
             /**
             * @brief Loads an OpenGL 2D texture from an image file.
             *
@@ -65,7 +67,24 @@ namespace nexo::renderer {
             * ```
             */
             OpenGlTexture2D(unsigned int width, unsigned int height);
-            ~OpenGlTexture2D() override;
+
+            /**
+             * @brief Creates a OpenGL 2D texture from file in memory.
+             *
+             * Loads the texture data from the specified memory buffer. The buffer must contain
+             * image data in a supported format (e.g., PNG, JPG). The texture will be ready
+             * for rendering after creation.
+             *
+             * @param buffer The memory buffer containing the texture image data.
+             * @param len The length of the memory buffer in bytes.
+             *
+             * Example:
+             * ```cpp
+             * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
+             * auto texture = std::make_shared<OpenGlTexture2D>(imageData.data(), imageData.size());
+             * ```
+             */
+            OpenGlTexture2D(const uint8_t *buffer, unsigned int len);
 
             [[nodiscard]] unsigned int getWidth() const override {return m_width;};
             [[nodiscard]] unsigned int getHeight() const override {return m_height;};
@@ -129,6 +148,26 @@ namespace nexo::renderer {
             */
             void setData(void *data, unsigned int size) override;
         private:
+            /**
+             * @brief Ingest and load texture data from stb_image buffer.
+             *
+             * @param data Pointer to the stb_image buffer.
+             * @param width Width of the texture.
+             * @param height Height of the texture.
+             * @param channels Number of channels in the image data.
+             * @param debugPath Path (of potential file) for error reporting. (Default: "(buffer)")
+             *
+             * @warning data MUST be a valid pointer to a buffer allocated by stb_image.
+             *
+             * Example:
+             * ```cpp
+             * int width, height, channels;
+             * stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+             * ingestDataFromStb(data, width, height, channels, path);
+             * ```
+             */
+            void ingestDataFromStb(uint8_t *data, int width, int height, int channels, const std::string& debugPath = "(buffer)");
+
             std::string m_path;
             unsigned int m_width;
             unsigned int m_height;

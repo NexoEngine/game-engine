@@ -62,14 +62,12 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        try
-        {
+        try {
             m_storage->textureShader = Shader::create(
                 Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
             m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer2DStorage::maxTextureSlots);
-        } catch (const Exception &e)
-        {
+        } catch (const Exception &e) {
             LOG_EXCEPTION(e);
         }
 
@@ -111,8 +109,7 @@ namespace nexo::renderer {
     void Renderer2D::flush() const
     {
         m_storage->textureShader->bind();
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
-        {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
             m_storage->textureSlots[i]->bind(i);
         }
         RenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
@@ -157,8 +154,7 @@ namespace nexo::renderer {
 
         // Ensure we don't overflow the buffers
         if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + quadVertexCount > m_storage->maxVertices ||
-            m_storage->indexCount + quadIndexCount > m_storage->maxIndices)
-        {
+            m_storage->indexCount + quadIndexCount > m_storage->maxIndices) {
             flushAndReset();
         }
 
@@ -166,8 +162,7 @@ namespace nexo::renderer {
         auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
 
         // Generate quad vertices
-        for (unsigned int i = 0; i < quadVertexCount; ++i)
-        {
+        for (unsigned int i = 0; i < quadVertexCount; ++i) {
             m_storage->vertexBufferPtr->position = transform * m_storage->quadVertexPositions[i];
             m_storage->vertexBufferPtr->color = color;
             m_storage->vertexBufferPtr->texCoord = textureCoords[i];
@@ -194,17 +189,14 @@ namespace nexo::renderer {
     {
         float textureIndex = 0.0f;
 
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
-        {
-            if (*m_storage->textureSlots[i].get() == *texture)
-            {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
+            if (*m_storage->textureSlots[i].get() == *texture) {
                 textureIndex = static_cast<float>(i);
                 break;
             }
         }
 
-        if (textureIndex == 0)
-        {
+        if (textureIndex == 0) {
             textureIndex = static_cast<float>(m_storage->textureSlotIndex);
             m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
             m_storage->textureSlotIndex++;
