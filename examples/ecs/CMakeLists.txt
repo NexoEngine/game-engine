@@ -8,7 +8,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
-        examples/ecs/exampleBasic.cpp
+        exampleBasic.cpp
+        ../../common/Exception.cpp
+        ../../engine/src/ecs/Components.cpp
+        ../../engine/src/ecs/Entity.cpp
+        ../../engine/src/ecs/Coordinator.cpp
+        ../../engine/src/ecs/System.cpp
 )
 
 add_executable(ecsExample ${SRCS})
@@ -20,8 +25,8 @@ set_target_properties(ecsExample
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
 )
 
-include_directories("./engine/src")
-include_directories("./common")
+include_directories("../../engine/src")
+include_directories("../../common")
 
 #if(WIN32)
 #    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/include")
@@ -39,7 +44,6 @@ if(APPLE)
 endif()
 
 include_directories(include)
-target_link_libraries(ecsExample PRIVATE nexoRenderer)
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
 set_target_properties(ecsExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
