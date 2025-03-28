@@ -58,6 +58,16 @@ namespace nexo::ecs {
                 sparse.erase(entity);
             }
 
+            bool empty() const
+            {
+                return dense.empty();
+            }
+
+            bool contains(Entity entity) const
+            {
+                return sparse.find(entity) != sparse.end();
+            }
+
             const std::vector<Entity>& getDense() const { return dense; }
             auto begin() const { return dense.begin(); }
             auto end() const { return dense.end(); }
@@ -65,11 +75,6 @@ namespace nexo::ecs {
         private:
             std::vector<Entity> dense;
             std::unordered_map<Entity, size_t> sparse;
-
-            bool contains(Entity entity) const
-            {
-                return sparse.find(entity) != sparse.end();
-            }
     };
     /**
     * @class System
