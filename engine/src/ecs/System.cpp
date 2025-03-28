@@ -16,24 +16,32 @@
 
 namespace nexo::ecs {
 
-    void SystemManager::entityDestroyed(const Entity entity) const
+    void SystemManager::entityDestroyed(const Entity entity, const Signature signature) const
     {
         for (const auto &[fst, snd] : m_systems) {
+        	auto const &type = fst;
             auto const &system = snd;
-            system->entities.erase(entity);
+            if (auto const &systemSignature = m_signatures.at(type); (signature & systemSignature) == systemSignature)
+            	system->entities.erase(entity);
         }
     }
 
-    void SystemManager::entitySignatureChanged(const Entity entity, const Signature entitySignature)
+    void SystemManager::entitySignatureChanged(const Entity entity,
+                                                 const Signature oldSignature,
+                                                 const Signature newSignature)
     {
-        for (const auto &[fst, snd] : m_systems) {
-            auto const &type = fst;
-            auto const &system = snd;
-
-            if (auto const &systemSignature = m_signatures[type]; (entitySignature & systemSignature) == systemSignature)
+        for (auto& [type, system] : m_systems) {
+            const auto systemSignature = m_signatures.at(type);
+            // Check if entity qualifies now but did not qualify before.
+            if (((oldSignature & systemSignature) != systemSignature) &&
+                ((newSignature & systemSignature) == systemSignature)) {
                 system->entities.insert(entity);
-            else
+            }
+            // Otherwise, if the entity no longer qualifies but did before, remove it.
+            else if (((oldSignature & systemSignature) == systemSignature) &&
+                     ((newSignature & systemSignature) != systemSignature)) {
                 system->entities.erase(entity);
+            }
         }
     }
 }
