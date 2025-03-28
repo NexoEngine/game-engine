@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
-        exampleBasic.cpp
-        ../../common/Exception.cpp
-        ../../engine/src/ecs/Components.cpp
-        ../../engine/src/ecs/Entity.cpp
-        ../../engine/src/ecs/Coordinator.cpp
-        ../../engine/src/ecs/System.cpp
+        examples/ecs/exampleBasic.cpp
+        common/Exception.cpp
+        engine/src/ecs/Components.cpp
+        engine/src/ecs/Entity.cpp
+        engine/src/ecs/Coordinator.cpp
+        engine/src/ecs/System.cpp
 )
 
 add_executable(ecsExample ${SRCS})
