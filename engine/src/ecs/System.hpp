@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <set>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -26,6 +25,52 @@ namespace nexo::ecs {
 }
 
 namespace nexo::ecs {
+
+	class SparseSetUnordered {
+        public:
+            void insert(Entity entity)
+            {
+            	if (contains(entity))
+				{
+					LOG(NEXO_WARN, "Entity {} already added to the sparse set", entity);
+					return;
+				}
+
+                sparse[entity] = dense.size();
+                dense.push_back(entity);
+            }
+
+            void erase(Entity entity)
+            {
+            	if (!contains(entity))
+             	{
+              		LOG(NEXO_WARN, "Entity {} does not exist in the sparse set", entity);
+                	return;
+              	}
+
+                size_t index = sparse[entity];
+                size_t lastIndex = dense.size() - 1;
+                Entity lastEntity = dense[lastIndex];
+
+                dense[index] = lastEntity;
+                sparse[lastEntity] = index;
+                dense.pop_back();
+                sparse.erase(entity);
+            }
+
+            const std::vector<Entity>& getDense() const { return dense; }
+            auto begin() const { return dense.begin(); }
+            auto end() const { return dense.end(); }
+
+        private:
+            std::vector<Entity> dense;
+            std::unordered_map<Entity, size_t> sparse;
+
+            bool contains(Entity entity) const
+            {
+                return sparse.find(entity) != sparse.end();
+            }
+    };
     /**
     * @class System
     *
@@ -36,7 +81,7 @@ namespace nexo::ecs {
     */
     class System {
         public:
-            std::set<Entity> entities;
+            SparseSetUnordered entities;
             static std::shared_ptr<Coordinator> coord;
     };
 
@@ -57,7 +102,8 @@ namespace nexo::ecs {
             * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
             */
             template<typename T>
-            std::shared_ptr<T> registerSystem() {
+            std::shared_ptr<T> registerSystem()
+            {
                 std::type_index typeName(typeid(T));
 
                 if (m_systems.contains(typeName))
@@ -79,7 +125,8 @@ namespace nexo::ecs {
             * @param signature - The signature to associate with the system.
             */
             template<typename T>
-            void setSignature(Signature signature) {
+            void setSignature(Signature signature)
+            {
                 std::type_index typeName(typeid(T));
 
                 if (!m_systems.contains(typeName))
@@ -92,17 +139,19 @@ namespace nexo::ecs {
             * @brief Handles the destruction of an entity by removing it from all systems.
             *
             * @param entity - The ID of the destroyed entity.
+            * @param signature - The signature of the entity.
             */
-            void entityDestroyed(Entity entity) const;
+            void entityDestroyed(Entity entity, Signature signature) const;
 
             /**
             * @brief Updates the systems with an entity when its signature changes.
             *
             * This ensures that systems process only relevant entities based on their current components.
             * @param entity - The ID of the entity whose signature has changed.
-            * @param entitySignature - The new signature of the entity.
+            * @param oldSignature - The old signature of the entity.
+            * @param newSignature - The new signature of the entity.
             */
-            void entitySignatureChanged(Entity entity, Signature entitySignature);
+            void entitySignatureChanged(Entity entity, Signature oldSignature, Signature newSignature);
         private:
             std::unordered_map<std::type_index, Signature> m_signatures{};
             std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems{};
