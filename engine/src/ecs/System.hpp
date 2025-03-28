@@ -26,7 +26,7 @@ namespace nexo::ecs {
 
 namespace nexo::ecs {
 
-	class SparseSetUnordered {
+	class SparseSet {
         public:
             void insert(Entity entity)
             {
@@ -86,7 +86,7 @@ namespace nexo::ecs {
     */
     class System {
         public:
-            SparseSetUnordered entities;
+            SparseSet entities;
             static std::shared_ptr<Coordinator> coord;
     };
 
