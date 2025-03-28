@@ -16,12 +16,12 @@
 
 namespace nexo::ecs {
 
-    void ComponentManager::entityDestroyed(const Entity entity) const
+    void ComponentManager::entityDestroyed(const Entity entity)
     {
-        for (const auto &[fst, snd]: m_componentArrays)
-        {
-            auto const &component = snd;
-            component->entityDestroyed(entity);
+        for (auto& componentArray : m_componentArrays) {
+            if (componentArray) {
+                componentArray->entityDestroyed(entity);
+            }
         }
     }
 
