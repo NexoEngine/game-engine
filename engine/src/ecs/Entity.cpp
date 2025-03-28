@@ -19,7 +19,7 @@ namespace nexo::ecs {
     EntityManager::EntityManager()
     {
         for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
-            m_availableEntities.push(entity);
+            m_availableEntities.push_back(entity);
     }
 
     Entity EntityManager::createEntity()
@@ -28,7 +28,7 @@ namespace nexo::ecs {
             THROW_EXCEPTION(TooManyEntities);
 
         const Entity id = m_availableEntities.front();
-        m_availableEntities.pop();
+        m_availableEntities.pop_front();
         ++m_livingEntityCount;
 
         return id;
@@ -41,7 +41,7 @@ namespace nexo::ecs {
 
         m_signatures[entity].reset();
 
-        m_availableEntities.push(entity);
+        m_availableEntities.push_front(entity);
         if (m_livingEntityCount > 0)
             --m_livingEntityCount;
     }
