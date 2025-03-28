@@ -58,7 +58,7 @@ namespace nexo::ecs {
         array.insertData(entity, {42});
         EXPECT_NO_THROW(array.removeData(entity));
 
-        EXPECT_THROW(array.getData(entity), ComponentNotFound);
+        EXPECT_THROW(static_cast<void>(array.getData(entity)), ComponentNotFound);
     }
 
     TEST(ComponentArrayTest, HandleEntityDestruction)
@@ -70,7 +70,7 @@ namespace nexo::ecs {
         array.insertData(entity, {42});
         array.entityDestroyed(entity);
 
-        EXPECT_THROW(array.getData(entity), ComponentNotFound);
+        EXPECT_THROW(static_cast<void>(array.getData(entity)), ComponentNotFound);
     }
 
     TEST(ComponentArrayTest, InsertDuplicateEntity)
@@ -111,7 +111,7 @@ namespace nexo::ecs {
 
         componentManager->addComponent(entity, TestComponent{42});
         EXPECT_NO_THROW(componentManager->removeComponent<TestComponent>(entity));
-        EXPECT_THROW(componentManager->getComponent<TestComponent>(entity), ComponentNotFound);
+        EXPECT_THROW(static_cast<void>(componentManager->getComponent<TestComponent>(entity)), ComponentNotFound);
     }
 
     TEST_F(ComponentManagerTest, TryRemoveComponent)
@@ -137,13 +137,13 @@ namespace nexo::ecs {
 
         componentManager->entityDestroyed(entity1);
 
-        EXPECT_THROW(componentManager->getComponent<TestComponent>(entity1), ComponentNotFound);
+        EXPECT_THROW(static_cast<void>(componentManager->getComponent<TestComponent>(entity1)), ComponentNotFound);
         EXPECT_EQ(componentManager->getComponent<TestComponent>(entity2).value, 84);
     }
 
     TEST_F(ComponentManagerTest, RetrieveUnregisteredComponentType)
     {
-        EXPECT_THROW(componentManager->getComponentType<TestComponent>(), ComponentNotRegistered);
+        EXPECT_THROW(static_cast<void>(componentManager->getComponentType<TestComponent>()), ComponentNotRegistered);
     }
 
     TEST_F(ComponentManagerTest, AddComponentWithoutRegistering)
