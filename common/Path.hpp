@@ -44,7 +44,7 @@ namespace nexo {
         * @return The resolved path
         *
         * @note Example: if assets is a folder in the same directory as the executable, you can use: resolvePathRelativeToExe("assets")
-        * @example editor/src/Editor.cpp
+        * @example ../editor/src/Editor.cpp
         */
         static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path)
         {

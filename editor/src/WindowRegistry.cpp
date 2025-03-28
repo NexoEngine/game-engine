@@ -14,6 +14,8 @@
 
 #include "WindowRegistry.hpp"
 
+#include <imgui_internal.h>
+
 namespace nexo::editor {
 
 	void WindowRegistry::setup() const
@@ -65,8 +67,21 @@ namespace nexo::editor {
         {
             for (const auto &window : windows)
             {
-                if (window->isOpened())
-                    window->show();
+            	if (!window->isOpened())
+            		continue;
+            	ImGuiWindow* imguiWindow = ImGui::FindWindowByName(window->getWindowName().c_str());
+            	ImGuiDockNode* node = imguiWindow ? imguiWindow->DockNode : nullptr;
+            	//LOG(NEXO_DEBUG, "Node ID: {}", node ? std::to_string(node->ID) : "no id");
+            	const bool isWindowDocked = imguiWindow != nullptr && imguiWindow->DockIsActive;
+            	auto bgColor = IM_COL32(0, 0, 0, 70);
+            	//bgColor.w = 0.10f;
+            	//if (isWindowDocked) ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
+            	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0, 0, 0, 70));
+
+	            ImGui::SetNextWindowBgAlpha(0.0f);
+            	window->show();
+            	ImGui::PopStyleColor();
+            	//if (isWindowDocked) ImGui::PopStyleColor();
             }
         }
 	}

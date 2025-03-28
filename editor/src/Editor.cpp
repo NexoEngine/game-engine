@@ -12,6 +12,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
@@ -24,6 +26,7 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
+#include <Components/Components.hpp>
 
 ImGuiID g_materialInspectorDockID = 0;
 
@@ -87,6 +90,8 @@ namespace nexo::editor {
             LOG(NEXO_INFO, "DPI scale: x: {}, y: {}", scaleFactorX, scaleFactorY);
         }
 
+        LOG(NEXO_INFO, "ImGui version: {}", IMGUI_VERSION);
+
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(nexo::getApp().getWindow()->getWidth()),
                                 static_cast<float>(nexo::getApp().getWindow()->getHeight()));
@@ -113,19 +118,29 @@ namespace nexo::editor {
         auto creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
         auto creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
         auto brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
+        ImVec4 darkBlueColor = ImColor(16, 19, 31, 255);
+        ImVec4 darkBlueHovered = ImColor(21, 23, 39, 255);
+        ImVec4 darkBlueActive = ImColor(22, 25, 38, 255);
+        ImVec4 darkBlueBrighterActive = ImColor(25, 28, 41, 255);
+        ImVec4 whiteText = style->Colors[ImGuiCol_Text];
 
         // Apply the light cream colors to the tabs:
-        style->Colors[ImGuiCol_Tab]                = creamColor;
-        style->Colors[ImGuiCol_TabHovered]         = creamHovered;
-        style->Colors[ImGuiCol_TabActive]          = brighterActive;
-        style->Colors[ImGuiCol_TabUnfocused]       = creamColor;
-        style->Colors[ImGuiCol_TabUnfocusedActive] = creamActive;
+        style->Colors[ImGuiCol_Tab]                = darkBlueColor;
+        style->Colors[ImGuiCol_TabHovered]         = darkBlueHovered;
+        style->Colors[ImGuiCol_TabActive]          = darkBlueActive;
+        style->Colors[ImGuiCol_TabUnfocused]       = darkBlueBrighterActive;
+        style->Colors[ImGuiCol_TabUnfocusedActive] = darkBlueActive;
+        style->Colors[ImGuiCol_TextTab] = whiteText;
+        style->Colors[ImGuiCol_TextTabDimmed] = whiteText;
+        style->Colors[ImGuiCol_TextTabHovered] = whiteText;
+        style->Colors[ImGuiCol_TextTabSelected] = whiteText;
+        style->Colors[ImGuiCol_TextTabDimmedSelected] = whiteText;
         style->Colors[ImGuiCol_TabSelectedOverline] = ImVec4(1, 1, 1, 1);
         style->Colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(1, 1, 1, 0);
 
-        style->Colors[ImGuiCol_Header]                = creamColor;
-        style->Colors[ImGuiCol_HeaderHovered]         = creamHovered;
-        style->Colors[ImGuiCol_HeaderActive]          = creamActive;
+        style->Colors[ImGuiCol_Header]                = darkBlueColor;
+        style->Colors[ImGuiCol_HeaderHovered]         = darkBlueHovered;
+        style->Colors[ImGuiCol_HeaderActive]          = darkBlueActive;
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
@@ -282,7 +297,7 @@ namespace nexo::editor {
     {
     	getApp().beginFrame();
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg].w = 0.0f; // 0.0f for full transparency
+		//colors[ImGuiCol_WindowBg].w = 0.80f; // 0.0f for full transparency
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -290,41 +305,38 @@ namespace nexo::editor {
         buildDockspace();
 
         drawMenuBar();
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
+
+
 
         m_windowRegistry.render();
 
-        // Gradient background handling
-        {
-	        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	        ImGui::SetNextWindowPos(viewport->Pos);
-	        ImGui::SetNextWindowSize(viewport->Size);
-	        ImGui::SetNextWindowViewport(viewport->ID);
-	        ImGui::Begin("Background", nullptr,
-	                        ImGuiWindowFlags_NoDecoration |
-	                        ImGuiWindowFlags_NoInputs |
-	                        ImGuiWindowFlags_NoFocusOnAppearing |
-	                        ImGuiWindowFlags_NoBringToFrontOnFocus);
+        auto viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::Begin("Background", nullptr,
+                        ImGuiWindowFlags_NoDecoration |
+                        ImGuiWindowFlags_NoInputs |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-	        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	        ImU32 darkBase = IM_COL32(20, 20, 20, 255);
+        // Define gradient stops:
+        // Red at the beginning, green in the middle, and blue at the end.
+        const std::vector<Components::GradientStop> stops = {
+            { 0.06f, IM_COL32(58, 124, 161, 255) },    // 0% - Red
+            {0.26f, IM_COL32(88, 87, 154, 255) },  // 25% - Yellow
+            { 0.50f, IM_COL32(88, 87, 154, 255) },    // 50% - Green
+            {0.73f, IM_COL32(58, 124, 161, 255) }, // 75% - Cyan
+        };
 
-	        ImU32 col_top_left     = darkBase;
-	        ImU32 col_bottom_right = darkBase;
+        // Set the gradient angle in radians (45 degrees in this example)
+        float angle = 148;
 
-	        // Subtle blue tint
-	        ImU32 col_bottom_left  = IM_COL32(20, 20, 40, 255);
+        Components::drawRectFilledLinearGradient(viewport->Pos,
+                ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
 
-	        // Subtle fuchsia tint.
-	        ImU32 col_top_right    = IM_COL32(30, 20, 30, 255);
-
-	        draw_list->AddRectFilledMultiColor(
-	            viewport->Pos,
-	            ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
-	            col_top_left, col_top_right, col_bottom_right, col_bottom_left);
-
-	        ImGui::End();
-        }
+        ImGui::End();
 
         ImGui::Render();
 
