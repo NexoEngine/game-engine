@@ -82,7 +82,8 @@ namespace nexo::ecs {
 	 *
 	 * @tparam T - The type of component to store.
 	 */
-	template<typename T, unsigned int capacity = 1024>
+	template<typename T, unsigned int capacity = 1024,
+         typename = std::enable_if_t<(capacity >= 1)>>
 	class alignas(64) ComponentArray final : public IComponentArray {
 		public:
 		    ComponentArray()
