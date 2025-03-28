@@ -114,10 +114,6 @@ namespace nexo::editor {
         style->Colors[ImGuiCol_TitleBgActive]   = darker;
         style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
 
-        auto creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
-        auto creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
-        auto creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
-        auto brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
         ImVec4 darkBlueColor = ImColor(16, 19, 31, 255);
         ImVec4 darkBlueHovered = ImColor(21, 23, 39, 255);
         ImVec4 darkBlueActive = ImColor(22, 25, 38, 255);
@@ -141,6 +137,19 @@ namespace nexo::editor {
         style->Colors[ImGuiCol_Header]                = darkBlueColor;
         style->Colors[ImGuiCol_HeaderHovered]         = darkBlueHovered;
         style->Colors[ImGuiCol_HeaderActive]          = darkBlueActive;
+
+        // Setup NEXO Color Scheme
+        ImVec4* colors = ImGui::GetStyle().Colors;
+        colors[ImGuiCol_WindowBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.70f);
+        colors[ImGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
+        colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
+        colors[ImGuiCol_TitleBgActive]          = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
+        colors[ImGuiCol_MenuBarBg]              = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);
+        colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.20f, 0.20f, 0.34f);
+        colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.30f, 0.30f, 0.30f, 0.69f);
+        colors[ImGuiCol_TabHovered]             = ImVec4(0.00f, 0.00f, 0.00f, 0.84f);
+        colors[ImGuiCol_Tab]                    = ImVec4(0.15f, 0.16f, 0.20f, 0.62f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
