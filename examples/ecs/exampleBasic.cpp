@@ -12,7 +12,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
+#include <chrono>
 #include "ecs/Coordinator.hpp"
+
+#include <cstdlib>
+#include <iostream>
+#include <random>
+#include <mutex>
 
 struct Position {
     float x;
@@ -26,12 +32,21 @@ struct Velocity {
     float z;
 };
 
+
 class MovementSystem : public nexo::ecs::System {
-    public:
-        void update(float deltaTime) {
+	public:
+
+		MovementSystem()
+		{
+			positionArray = coord->getComponentArray<Position>();
+			velocityArray = coord->getComponentArray<Velocity>();
+		}
+
+		void update(float deltaTime)
+		{
             for (auto entity : entities) {
-                auto& position = coord->getComponent<Position>(entity);
-                auto& velocity = coord->getComponent<Velocity>(entity);
+                auto& position = positionArray->getData(entity);
+                auto& velocity = velocityArray->getData(entity);
 
                 // Update position using velocity
                 position.x += velocity.x * deltaTime;
@@ -39,49 +54,107 @@ class MovementSystem : public nexo::ecs::System {
                 position.z += velocity.z * deltaTime;
             }
         }
+
+    private:
+    	std::shared_ptr<nexo::ecs::ComponentArray<Position>> positionArray;
+    	std::shared_ptr<nexo::ecs::ComponentArray<Velocity>> velocityArray;
 };
 
-int main() {
-    // Initialize the ECS Coordinator
+int main(int argc, char** argv) {
+    // Check if the correct number of arguments is provided.
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0]
+                  << " <number_of_entities> <number_of_frames> <repeat_iterations>\n";
+        return 1;
+    }
+
+    // Parse command-line arguments.
+    int numEntities = std::stoi(argv[1]);
+    int numFrames   = std::stoi(argv[2]);
+    int repeatCount = std::stoi(argv[3]);
+
+    std::cout << "Running with " << numEntities << " entities, "
+              << numFrames << " frames per run, repeated " << repeatCount << " times.\n";
+
+    // Initialize the ECS Coordinator.
     nexo::ecs::Coordinator coordinator;
     coordinator.init();
 
-    // Register components
+    // Register components.
     coordinator.registerComponent<Position>();
     coordinator.registerComponent<Velocity>();
 
-    // Register and set up the MovementSystem
+    // Register and set up the MovementSystem.
     auto movementSystem = coordinator.registerSystem<MovementSystem>();
     nexo::ecs::Signature movementSignature;
     movementSignature.set(coordinator.getComponentType<Position>(), true);
     movementSignature.set(coordinator.getComponentType<Velocity>(), true);
     coordinator.setSystemSignature<MovementSystem>(movementSignature);
 
-    // Create entities and assign components
-    auto entity1 = coordinator.createEntity();
-    coordinator.addComponent(entity1, Position{0.0f, 0.0f, 0.0f});
-    coordinator.addComponent(entity1, Velocity{1.0f, 0.0f, 0.0f});
-
-    auto entity2 = coordinator.createEntity();
-    coordinator.addComponent(entity2, Position{5.0f, 5.0f, 5.0f});
-    coordinator.addComponent(entity2, Velocity{0.0f, -1.0f, 0.0f});
-
-    // Simulate a game loop
-    for (int frame = 0; frame < 10; ++frame) {
-        std::cout << "Frame " << frame << ":\n";
-
-        // Update the MovementSystem
-        movementSystem->update(0.016f); // Assuming 60 FPS, so ~16ms per frame
-
-        // Output entity positions
-        for (auto entity : movementSystem->entities) {
-            auto& position = coordinator.getComponent<Position>(entity);
-            std::cout << "Entity " << entity << " Position: ("
-                      << position.x << ", " << position.y << ", " << position.z << ")\n";
-        }
-
-        std::cout << "---------------------\n";
+    auto setupStart = std::chrono::steady_clock::now();
+    // Create entities and assign components.
+    std::vector<nexo::ecs::Entity> createdEntities;
+    createdEntities.reserve(numEntities);
+    for (int i = 0; i < numEntities; i++) {
+        nexo::ecs::Entity newEntity = coordinator.createEntity();
+        coordinator.addComponent(newEntity, Position{0.0f, 0.0f, 0.0f});
+        coordinator.addComponent(newEntity, Velocity{1.0f, 0.0f, 0.0f});
+        createdEntities.push_back(newEntity);
     }
+    auto setupEnd = std::chrono::steady_clock::now();
+    auto setupDurationMicro = std::chrono::duration_cast<std::chrono::microseconds>(setupEnd - setupStart).count();
+
+    std::cout << "Setup duration: " << setupDurationMicro << " microseconds" << std::endl;
+
+    // Remove 25% of the entities randomly.
+    int numToRemove = numEntities / 4;
+    {
+        // Create a random device and engine.
+        std::random_device rd;
+        std::mt19937 engine(rd());
+        std::shuffle(createdEntities.begin(), createdEntities.end(), engine);
+    }
+    for (int i = 0; i < numToRemove; ++i) {
+        nexo::ecs::Entity entityToRemove = createdEntities[i];
+        coordinator.destroyEntity(entityToRemove);
+    }
+    std::cout << "Removed " << numToRemove << " entities randomly after setup.\n";
+
+    // Run the update loop as specified by the command-line arguments.
+    // We'll measure frame times in microseconds.
+    long long overallDurationMicro = 0;
+    for (int repeat = 0; repeat < repeatCount; ++repeat) {
+        long long totalDurationMicro = 0;
+        for (int frame = 0; frame < numFrames; ++frame) {
+            auto frameStart = std::chrono::steady_clock::now();
+
+            // Update the MovementSystem (assume a delta time of ~16ms per frame).
+            movementSystem->update(0.016f);
+
+            auto frameEnd = std::chrono::steady_clock::now();
+            auto frameDurationMicro = std::chrono::duration_cast<std::chrono::microseconds>(frameEnd - frameStart).count();
+            // Convert microseconds to milliseconds for display.
+            double frameDurationMilli = frameDurationMicro / 1000.0;
+            totalDurationMicro += frameDurationMicro;
+        }
+        double totalDurationMilli = totalDurationMicro / 1000.0;
+        double averageDurationMilli = (totalDurationMicro / static_cast<double>(numFrames)) / 1000.0;
+        std::cout << "Iteration " << repeat << ": total time to render " << numFrames
+                  << " frames: " << totalDurationMilli << " milliseconds.\n";
+        std::cout << "Iteration " << repeat << ": average frame duration: "
+                  << averageDurationMilli << " milliseconds.\n\n";
+        overallDurationMicro += totalDurationMicro;
+    }
+
+    // Overall per-frame average (in milliseconds).
+    double overallAverageFrameMilli = (overallDurationMicro / static_cast<double>(repeatCount * numFrames)) / 1000.0;
+    std::cout << "Overall average frame duration over all repeats: "
+              << overallAverageFrameMilli << " milliseconds.\n";
+
+    // Average total time to render numFrames frames across all repeats.
+    double averageTotalTimeMilli = (overallDurationMicro / static_cast<double>(repeatCount)) / 1000.0;
+    std::cout << "Average time to render " << numFrames << " frames: "
+              << averageTotalTimeMilli << " milliseconds.\n";
 
     return 0;
 }
