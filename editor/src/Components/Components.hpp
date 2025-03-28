@@ -15,6 +15,7 @@
 
 #include <imgui.h>
 #include <string>
+#include <vector>
 
 namespace nexo::editor {
 
@@ -118,5 +119,20 @@ namespace nexo::editor {
              * @param textColor The color of the text.
              */
 			static void drawCustomSeparatorText(const std::string &text, float textPadding, float leftSpacing, float thickness, ImU32 lineColor, ImU32 textColor);
+
+			struct GradientStop
+			{
+				float pos;   // percentage position along the gradient [0.0f, 1.0f]
+				ImU32 color; // color at this stop
+			};
+
+		    /**
+		     * @brief Draw filled rectangle with a linear gradient defined by an arbitrary angle and gradient stops.
+		     * @param p_min
+		     * @param p_max
+		     * @param angle
+		     * @param stops
+		     */
+		    static void drawRectFilledLinearGradient(const ImVec2& p_min, const ImVec2& p_max, float angle, std::vector<GradientStop> stops);
 	};
 }
