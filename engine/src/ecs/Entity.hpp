@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <queue>
+#include <deque>
 #include <array>
 
 #include "Signature.hpp"
@@ -74,7 +74,7 @@ namespace nexo::ecs {
             std::uint32_t getLivingEntityCount() const;
 
         private:
-            std::queue<Entity> m_availableEntities{};
+            std::deque<Entity> m_availableEntities{};
 
             std::array<Signature, MAX_ENTITIES> m_signatures{};
 
