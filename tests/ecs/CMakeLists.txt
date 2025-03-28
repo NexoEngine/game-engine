@@ -43,6 +43,7 @@ add_executable(ecs_tests
         ${BASEDIR}/System.test.cpp
         ${BASEDIR}/Coordinator.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
+        ${BASEDIR}/SparseSet.test.cpp
 )
 
 # Find glm and add its include directories
