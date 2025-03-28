@@ -79,7 +79,7 @@ namespace nexo::ecs {
         Entity entity = 1;
         mockSystem->entities.insert(entity);
 
-        systemManager->entityDestroyed(entity);
+        systemManager->entityDestroyed(entity, signature);
 
         EXPECT_TRUE(mockSystem->entities.empty());
     }
@@ -93,9 +93,10 @@ namespace nexo::ecs {
 
         Entity entity = 1;
         Signature entitySignature;
+        Signature oldSignature;
         entitySignature.set(1); // Matches the system's signature
 
-        systemManager->entitySignatureChanged(entity, entitySignature);
+        systemManager->entitySignatureChanged(entity, oldSignature, entitySignature);
 
         EXPECT_TRUE(mockSystem->entities.contains(entity));
     }
@@ -109,15 +110,17 @@ namespace nexo::ecs {
 
         Entity entity = 1;
         Signature entitySignature;
+        Signature oldSignature;
         entitySignature.set(1); // Matches the system's signature
 
         // Add the entity
-        systemManager->entitySignatureChanged(entity, entitySignature);
+        systemManager->entitySignatureChanged(entity, oldSignature, entitySignature);
         EXPECT_TRUE(mockSystem->entities.contains(entity));
 
         // Change signature to no longer match
+        oldSignature = entitySignature;
         entitySignature.reset(1); // Clear the 1st bit
-        systemManager->entitySignatureChanged(entity, entitySignature);
+        systemManager->entitySignatureChanged(entity, oldSignature, entitySignature);
 
         EXPECT_FALSE(mockSystem->entities.contains(entity));
     }
@@ -131,9 +134,10 @@ namespace nexo::ecs {
 
         Entity entity = 1;
         Signature entitySignature;
+        Signature oldSignature;
         entitySignature.set(2); // Does not match the system's signature
 
-        systemManager->entitySignatureChanged(entity, entitySignature);
+        systemManager->entitySignatureChanged(entity, oldSignature, entitySignature);
 
         EXPECT_FALSE(mockSystem->entities.contains(entity));
     }
@@ -146,13 +150,15 @@ namespace nexo::ecs {
         systemManager->setSignature<MockSystem>(signature);
 
         Entity entity = 1;
+        Signature entitySignature;
+        entitySignature.set(1);
         mockSystem->entities.insert(entity);
 
-        systemManager->entityDestroyed(entity);
+        systemManager->entityDestroyed(entity, entitySignature);
         EXPECT_TRUE(mockSystem->entities.empty());
 
         // Destroying the same entity again should not throw an error
-        EXPECT_NO_THROW(systemManager->entityDestroyed(entity));
+        EXPECT_NO_THROW(systemManager->entityDestroyed(entity, entitySignature));
     }
 
     TEST_F(SystemManagerTest, AddAndRemoveEntitiesFromMultipleSystems) {
@@ -172,13 +178,15 @@ namespace nexo::ecs {
         Entity entity2 = 2;
 
         Signature entitySignature1;
+        Signature oldSignature1;
         entitySignature1.set(1); // Matches system1
 
         Signature entitySignature2;
+        Signature oldSignature2;
         entitySignature2.set(2); // Matches system2
 
-        systemManager->entitySignatureChanged(entity1, entitySignature1);
-        systemManager->entitySignatureChanged(entity2, entitySignature2);
+        systemManager->entitySignatureChanged(entity1, oldSignature1, entitySignature1);
+        systemManager->entitySignatureChanged(entity2, oldSignature2, entitySignature2);
 
         EXPECT_TRUE(system1->entities.contains(entity1));
         EXPECT_FALSE(system1->entities.contains(entity2));
@@ -186,7 +194,7 @@ namespace nexo::ecs {
         EXPECT_TRUE(system2->entities.contains(entity2));
 
         // Change signature of entity1 to match system2
-        systemManager->entitySignatureChanged(entity1, entitySignature2);
+        systemManager->entitySignatureChanged(entity1, entitySignature1, entitySignature2);
         EXPECT_FALSE(system1->entities.contains(entity1));
         EXPECT_TRUE(system2->entities.contains(entity1));
     }
