@@ -98,7 +98,7 @@ namespace nexo::editor
 		if (EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle))
 		{
 			ImGui::Spacing();
-	  		ImGui::SetWindowFontScale(1.15f);
+	  		//ImGui::SetWindowFontScale(1.15f);
 			ImGui::Columns(2, "sceneProps");
 			ImGui::SetColumnWidth(0, 80);
 

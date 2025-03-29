@@ -29,7 +29,7 @@ namespace nexo::editor {
 	                                  ImGuiTreeNodeFlags_AllowItemOverlap);
 	    ImGui::PopStyleVar();
 
-	    ImGui::SetWindowFontScale(1.2f);
+	    //ImGui::SetWindowFontScale(1.2f);
 
 	    // Horizontal centering:
 	    const float arrowPosX = ImGui::GetCursorPosX();
@@ -40,11 +40,11 @@ namespace nexo::editor {
 	    ImGui::SetCursorPosX(textPosX);
     	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.5f); // This stuff seems strange, should check in the long run if there is a better way
 
-	    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
+	    //ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
 	    ImGui::TextUnformatted(headerText.data());
-	    ImGui::PopStyleColor();
+	    //ImGui::PopStyleColor();
 
-	    ImGui::SetWindowFontScale(1.0f);
+	    //ImGui::SetWindowFontScale(1.0f);
 
 	    return open;
 	}
@@ -62,10 +62,10 @@ namespace nexo::editor {
 		    //float offsetY = (rowHeight - textSize.y) * 0.5f;
 		    //ImVec2 cellPos = ImGui::GetCursorPos();
 		}
-		ImGui::SetWindowFontScale(1.11f);
+		//ImGui::SetWindowFontScale(1.11f);
 
 		ImGui::TextUnformatted(rowLabel.label.c_str());
-		ImGui::SetWindowFontScale(1.0f);
+		//ImGui::SetWindowFontScale(1.0f);
 	}
 
 	bool EntityPropertiesComponents::drawRowDragFloat(const Channels &channels)
@@ -115,9 +115,7 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(1);
-		sliders.emplace_back(badgeLabelX, value, speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
-		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
-		                     "%.2f");
+		sliders.emplace_back(badgeLabelX, value, speed, minValue, maxValue, 0, 0, 0, 0, "%.2f");
 
 		Channels channels;
 		channels.count = 1;
@@ -224,14 +222,14 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(3);
-		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
-		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, 0,
+		                     0, 0, ImGui::GetColorU32(ImGuiCol_Text),
 		                     "%.2f");
-		sliders.emplace_back(labelY, &values[1], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
-		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		sliders.emplace_back(labelY, &values[1], speed, minValue, maxValue, 0,
+		                     0, 0, ImGui::GetColorU32(ImGuiCol_Text),
 		                     "%.2f");
-		sliders.emplace_back(labelZ, &values[2], speed, minValue, maxValue, IM_COL32(60, 60, 60, 255),
-		                     IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text),
+		sliders.emplace_back(labelZ, &values[2], speed, minValue, maxValue, 0,
+		                     0, 0, ImGui::GetColorU32(ImGuiCol_Text),
 		                     "%.2f");
 
 		Channels channels;
@@ -261,7 +259,7 @@ namespace nexo::editor {
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		constexpr float arrowSize = 5.0f;
-		const ImU32 arrowColor = ImGui::GetColorU32(ImGuiCol_Text);
+		const ImU32 arrowColor = ImGui::GetColorU32(ImGuiCol_TextTab);
         if (*toggled)
         {
             // Draw a downward pointing arrow

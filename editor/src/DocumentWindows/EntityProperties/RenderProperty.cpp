@@ -140,7 +140,7 @@ namespace nexo::editor {
 
         if (EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component"))
         {
-            ImGui::SetWindowFontScale(1.15f);
+            //ImGui::SetWindowFontScale(1.15f);
         	ImGui::Text("Hide");
          	ImGui::SameLine(0, 12);
          	bool hidden = !renderComponent.isRendered;

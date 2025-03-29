@@ -73,14 +73,29 @@ namespace nexo::editor {
             	ImGuiDockNode* node = imguiWindow ? imguiWindow->DockNode : nullptr;
             	//LOG(NEXO_DEBUG, "Node ID: {}", node ? std::to_string(node->ID) : "no id");
             	const bool isWindowDocked = imguiWindow != nullptr && imguiWindow->DockIsActive;
-            	auto bgColor = IM_COL32(0, 0, 0, 70);
-            	//bgColor.w = 0.10f;
-            	//if (isWindowDocked) ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
-            	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0, 0, 0, 70));
 
-	            ImGui::SetNextWindowBgAlpha(0.0f);
+            	ImVec4* colors = ImGui::GetStyle().Colors;
+            	ImVec4 bgColor = ImVec4(0, 0, 0, 0.30);
+            	ImVec4 backupBgColor = colors[ImGuiCol_WindowBg];
+            	//bgColor.w = 0.10f;
+
+            	if (!isWindowDocked && false) {
+            		//ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
+            		colors[ImGuiCol_WindowBg] = bgColor;
+            	}
+
+	            //ImGui::SetNextWindowBgAlpha(0.0f);
+
+
             	window->show();
-            	ImGui::PopStyleColor();
+            	if (!isWindowDocked && false) {
+            		//ImGui::PopStyleColor();
+            		colors[ImGuiCol_WindowBg] = backupBgColor;
+            	}
+            	/*ImGui::Begin(window->getWindowName().c_str(), &window->getOpened());
+            	ImGui::Button("test", ImVec2(100, 100));
+            	ImGui::End();*/
+
             	//if (isWindowDocked) ImGui::PopStyleColor();
             }
         }

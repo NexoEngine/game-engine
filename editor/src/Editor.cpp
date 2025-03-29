@@ -141,8 +141,10 @@ namespace nexo::editor {
         // Setup NEXO Color Scheme
         ImVec4* colors = ImGui::GetStyle().Colors;
         colors[ImGuiCol_WindowBg]               = ImColor(4,6,11,151);
-        colors[ImGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
+        colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.08f, 0.25f, 0.19f);
         colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_TableRowBg]             = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.59f, 0.73f, 0.81f, 0.15f);
         colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
         colors[ImGuiCol_TitleBgActive]          = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
         colors[ImGuiCol_MenuBarBg]              = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);

@@ -28,14 +28,14 @@ namespace nexo::editor {
 			const ImU32 bgHovered,
 			const ImU32 bgActive, const ImU32 txtColor
 	) {
-		ImGui::PushStyleColor(ImGuiCol_Button, bg);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, bgHovered);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, bgActive);
-        ImGui::PushStyleColor(ImGuiCol_Text, txtColor);
+		if (bg != 0) ImGui::PushStyleColor(ImGuiCol_Button, bg);
+		if (bgHovered != 0) ImGui::PushStyleColor(ImGuiCol_ButtonHovered, bgHovered);
+        if (bgActive != 0) ImGui::PushStyleColor(ImGuiCol_ButtonActive, bgActive);
+        if (txtColor != 0) ImGui::PushStyleColor(ImGuiCol_Text, txtColor);
 
 		const bool clicked = ImGui::Button(label.c_str(), size);
 
-        ImGui::PopStyleColor(4);
+        ImGui::PopStyleColor(!!bg + !!bgHovered + !!bgActive + !!txtColor);
 		return clicked;
 	}
 
@@ -49,11 +49,11 @@ namespace nexo::editor {
 	) {
 		ImVec2 p_min = ImGui::GetItemRectMin();
         ImVec2 p_max = ImGui::GetItemRectMax();
-        ImU32 color = borderColor;
+        ImU32 color = borderColor ? borderColor : ImGui::GetColorU32(ImGuiCol_Border);
         if (ImGui::IsItemHovered())
-            color = borderColorHovered;
+            color = borderColorHovered ? borderColorHovered : ImGui::GetColorU32(ImGuiCol_Border);
         if (ImGui::IsItemActive())
-            color = borderColorActive;
+            color = borderColorActive ? borderColorActive : ImGui::GetColorU32(ImGuiCol_Border);
 
         ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
 	}
@@ -65,12 +65,12 @@ namespace nexo::editor {
 			const std::string &format,
 			const ImU32 bg, const ImU32 bgHovered, const ImU32 bgActive, const ImU32 textColor
 	) {
-		ImGui::PushStyleColor(ImGuiCol_Text, 		   textColor);
-		ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
-		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
-		ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
+		if (textColor) ImGui::PushStyleColor(ImGuiCol_Text, 		   textColor);
+		if (bg) ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
+		if (bgHovered) ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
+		if (bgActive) ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
 		const bool clicked = ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
-		ImGui::PopStyleColor(4);
+		ImGui::PopStyleColor(!!textColor + !!bg + !!bgHovered + !!bgActive);
 		return clicked;
 	}
 
@@ -90,7 +90,7 @@ namespace nexo::editor {
 
 	void Components::drawCustomSeparatorText(const std::string &text, const float textPadding, const float leftSpacing, const float thickness, ImU32 lineColor, ImU32 textColor)
 	{
-		ImGui::SetWindowFontScale(1.2f);
+		//ImGui::SetWindowFontScale(1.2f);
         const ImVec2 pos = ImGui::GetCursorScreenPos();
         const float availWidth = ImGui::GetContentRegionAvail().x;
         const float textWidth  = ImGui::CalcTextSize(text.c_str()).x;
@@ -111,7 +111,7 @@ namespace nexo::editor {
 
         const ImVec2 textPos(pos.x + lineWidth + textPadding, pos.y);
         draw_list->AddText(textPos, textColor, text.c_str());
-        ImGui::SetWindowFontScale(1.0f);
+        //ImGui::SetWindowFontScale(1.0f);
 
         const ImVec2 rightLineStart(pos.x + lineWidth + textPadding + textWidth + textPadding, lineY);
         const ImVec2 rightLineEnd(pos.x + availWidth, lineY);
