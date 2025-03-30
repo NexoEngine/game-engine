@@ -74,7 +74,7 @@ namespace nexo::editor {
 			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 
-		auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>("Inspector").lock();
+		auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
 		if (!inspectorWindow)
 			return;
 		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector>();
@@ -88,7 +88,7 @@ namespace nexo::editor {
 	{
   		auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();
-        auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>("Inspector").lock();
+        auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
         if (!inspectorWindow)
             return;
 		if (inspectorWindow->getSubInspectorVisibility<MaterialInspector>())
@@ -97,7 +97,7 @@ namespace nexo::editor {
             if (m_firstOpened)
             	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            if (ImGui::Begin("Material Inspector", &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
+            if (ImGui::Begin("Material Inspector" "##" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
             {
             	firstDockSetup("Material Inspector");
                 renderMaterialInspector(selectedEntity);

@@ -281,19 +281,19 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            ImGui::DockBuilderDockWindow("Default scene", mainSceneTop);
-            ImGui::DockBuilderDockWindow("Console", consoleNode);
-            ImGui::DockBuilderDockWindow("Scene Tree", sceneTreeNode);
-            ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
-            ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
-            ImGui::DockBuilderDockWindow("Asset Manager", consoleNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
 
-            m_windowRegistry.setDockId("Default scene", mainSceneTop);
-            m_windowRegistry.setDockId("Console", consoleNode);
-            m_windowRegistry.setDockId("Scene Tree", sceneTreeNode);
-            m_windowRegistry.setDockId("Inspector", inspectorNode);
-            m_windowRegistry.setDockId("Material Inspector", materialInspectorNode);
-            m_windowRegistry.setDockId("Asset Manager", consoleNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, consoleNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
             dockingRegistryFilled = true;
 
             g_materialInspectorDockID = materialInspectorNode;
@@ -303,12 +303,12 @@ namespace nexo::editor {
         }
         else if (!dockingRegistryFilled)
         {
-        	m_windowRegistry.setDockId("Default scene", findWindowDockIDFromConfig("Default scene"));
-        	m_windowRegistry.setDockId("Console", findWindowDockIDFromConfig("Console"));
-        	m_windowRegistry.setDockId("Scene Tree", findWindowDockIDFromConfig("Scene Tree"));
-        	m_windowRegistry.setDockId("Inspector", findWindowDockIDFromConfig("Inspector"));
-        	m_windowRegistry.setDockId("Material Inspector", findWindowDockIDFromConfig("Material Inspector"));
-            m_windowRegistry.setDockId("Asset Manager", findWindowDockIDFromConfig("Asset Manager"));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
+            //m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
          	dockingRegistryFilled = true;
         }
 

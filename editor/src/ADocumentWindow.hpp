@@ -21,6 +21,14 @@
 #include <imgui_internal.h>
 
 namespace nexo::editor {
+
+	#define NEXO_WND_USTRID_INSPECTOR "Inspector"
+	#define NEXO_WND_USTRID_SCENE_TREE "Scene Tree"
+	#define NEXO_WND_USTRID_ASSET_MANAGER "Asset Manager"
+	#define NEXO_WND_USTRID_CONSOLE "Console"
+	#define NEXO_WND_USTRID_MATERIAL_INSPECTOR "Material Inspector"
+	#define NEXO_WND_USTRID_DEFAULT_SCENE "Default Scene"
+
     class ADocumentWindow : public IDocumentWindow {
         public:
             /**
