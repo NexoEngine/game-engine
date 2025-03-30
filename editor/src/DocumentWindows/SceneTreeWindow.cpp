@@ -237,8 +237,10 @@ namespace nexo::editor {
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
                     ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
                 m_popupManager.openPopup("Scene Tree Context Menu");
-            if (!root_.children.empty())
-                showNode(root_);
+            if (!root_.children.empty()) {
+                for (auto &node : root_.children)
+                    showNode(node);
+            }
             sceneContextMenu();
             sceneCreationMenu();
 
