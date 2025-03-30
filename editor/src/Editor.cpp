@@ -105,6 +105,7 @@ namespace nexo::editor {
         style->WindowRounding = 10.0f;
         style->ChildRounding = 6.0f;
         style->PopupRounding = 4.0f;
+        style->WindowMenuButtonPosition = ImGuiDir_Right;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
         auto darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
