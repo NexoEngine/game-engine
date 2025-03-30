@@ -308,12 +308,12 @@ namespace nexo::editor {
         }
         else if (!dockingRegistryFilled)
         {
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
-            //m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
          	dockingRegistryFilled = true;
         }
 

@@ -230,9 +230,9 @@ namespace nexo::editor {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
-        if (ImGui::Begin(ICON_FA_SITEMAP "Scene Tree" "##" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(ICON_FA_SITEMAP "Scene Tree" "###" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
         {
-	        firstDockSetup("Scene Tree");
+	        firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
                     ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
