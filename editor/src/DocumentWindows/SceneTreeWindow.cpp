@@ -230,7 +230,7 @@ namespace nexo::editor {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
-        if (ImGui::Begin("Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(ICON_FA_BARS "Scene Tree" "###" "Scene Tree", &m_opened, ImGuiWindowFlags_NoCollapse))
         {
 	        firstDockSetup("Scene Tree");
             // Opens the right click popup when no items are hovered
@@ -242,8 +242,9 @@ namespace nexo::editor {
             sceneContextMenu();
             sceneCreationMenu();
 
-            ImGui::End();
+
         }
+        ImGui::End();
     }
 
     SceneObject SceneTreeWindow::newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const

@@ -14,6 +14,7 @@
 
 #include "InspectorWindow.hpp"
 
+#include <IconsFontAwesome.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <variant>
@@ -63,7 +64,7 @@ namespace nexo::editor
 
     void InspectorWindow::show()
     {
-        ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin(ICON_FA_SLIDERS "Inspector" "###" "Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
         firstDockSetup("Inspector");
         auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();

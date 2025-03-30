@@ -42,13 +42,13 @@ namespace nexo::editor {
      * @brief Mapping from selection types to corresponding icon strings.
      */
     const std::unordered_map<SelectionType, std::string> ObjectTypeToIcon = {
-        {SelectionType::SCENE, ICON_FA_MAP_O " "},
-        {SelectionType::CAMERA, ICON_FA_CAMERA " "},
-        {SelectionType::ENTITY, ICON_FA_CUBES " "},
-        {SelectionType::AMBIENT_LIGHT, ICON_FA_ADJUST " "},
-        {SelectionType::DIR_LIGHT, ICON_FA_SUN_O " "},
-        {SelectionType::POINT_LIGHT, ICON_FA_LIGHTBULB_O " "},
-        {SelectionType::SPOT_LIGHT, ICON_FA_ARROW_CIRCLE_DOWN " "}
+        {SelectionType::SCENE, ICON_FA_MAP_O},
+        {SelectionType::CAMERA, ICON_FA_CAMERA},
+        {SelectionType::ENTITY, ICON_FA_CUBES},
+        {SelectionType::AMBIENT_LIGHT, ICON_FA_ADJUST},
+        {SelectionType::DIR_LIGHT, ICON_FA_SUN_O},
+        {SelectionType::POINT_LIGHT, ICON_FA_LIGHTBULB_O},
+        {SelectionType::SPOT_LIGHT, ICON_FA_ARROW_CIRCLE_DOWN}
     };
 
     /**

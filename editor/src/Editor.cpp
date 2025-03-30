@@ -173,6 +173,7 @@ namespace nexo::editor {
             fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
+        float iconFontSize = fontSize * 2.0f / 3.0f;
 
         static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
             "../resources/fonts/SourceSans3-Regular.ttf").string();
@@ -185,13 +186,23 @@ namespace nexo::editor {
         ImGuiBackend::initFontAtlas();
 
         ImFontConfig fontawesome_config;
-        fontawesome_config.MergeMode = true;
+        fontawesome_config.MergeMode = true; // Merge fontawesome with the default font
         fontawesome_config.OversampleH = 3; // Horizontal oversampling
         fontawesome_config.OversampleV = 3; // Vertical oversampling
+        //fontawesome_config.GlyphMinAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        //fontawesome_config.GlyphMaxAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        fontawesome_config.PixelSnapH = true; // Snap to pixel grid, useful for pixel-perfect rendering
+        fontawesome_config.GlyphExtraSpacing = ImVec2(10.0f, 0.0f); // Adds space between icon and text
+
+        fontawesome_config.GlyphMinAdvanceX = iconFontSize; // Make the icons monospaced and aligned
+        fontawesome_config.GlyphMaxAdvanceX = iconFontSize; // Make the icons monospaced and aligned
+
+
+
         static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         static const std::string fontawesomePath = Path::resolvePathRelativeToExe(
             "../resources/fonts/fontawesome4.ttf").string();
-        io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), fontSize, &fontawesome_config, icon_ranges);
+        io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), iconFontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
