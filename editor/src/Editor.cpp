@@ -108,51 +108,56 @@ namespace nexo::editor {
         style->WindowMenuButtonPosition = ImGuiDir_Right;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
-        auto darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
-
-            // Apply the darker color to the title bar variants:
-        style->Colors[ImGuiCol_TitleBg]         = darker;
-        style->Colors[ImGuiCol_TitleBgActive]   = darker;
-        style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
-
-        ImVec4 darkBlueColor = ImColor(16, 19, 31, 255);
-        ImVec4 darkBlueHovered = ImColor(21, 23, 39, 255);
-        ImVec4 darkBlueActive = ImColor(22, 25, 38, 255);
-        ImVec4 darkBlueBrighterActive = ImColor(25, 28, 41, 255);
-        ImVec4 whiteText = style->Colors[ImGuiCol_Text];
-
-        // Apply the light cream colors to the tabs:
-        style->Colors[ImGuiCol_Tab]                = darkBlueColor;
-        style->Colors[ImGuiCol_TabHovered]         = darkBlueHovered;
-        style->Colors[ImGuiCol_TabActive]          = darkBlueActive;
-        style->Colors[ImGuiCol_TabUnfocused]       = darkBlueBrighterActive;
-        style->Colors[ImGuiCol_TabUnfocusedActive] = darkBlueActive;
-        style->Colors[ImGuiCol_TextTab] = whiteText;
-        style->Colors[ImGuiCol_TextTabDimmed] = whiteText;
-        style->Colors[ImGuiCol_TextTabHovered] = whiteText;
-        style->Colors[ImGuiCol_TextTabSelected] = whiteText;
-        style->Colors[ImGuiCol_TextTabDimmedSelected] = whiteText;
-        style->Colors[ImGuiCol_TabSelectedOverline] = ImVec4(1, 1, 1, 1);
-        style->Colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(1, 1, 1, 0);
-
-        style->Colors[ImGuiCol_Header]                = darkBlueColor;
-        style->Colors[ImGuiCol_HeaderHovered]         = darkBlueHovered;
-        style->Colors[ImGuiCol_HeaderActive]          = darkBlueActive;
-
         // Setup NEXO Color Scheme
-        ImVec4* colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_WindowBg]               = ImColor(4,6,11,151);
+        ImVec4* colors = style->Colors;
+        const ImVec4 colWindowBg                  = ImVec4(0.02f, 0.02f, 0.04f, 0.59f); // Every color above it will depend on it because of the alpha
+        const ImVec4 colTitleBg                   = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
+        const ImVec4 colTitleBgActive             = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
+        const ImVec4 colTabSelectedOverline       = ImVec4(0.30f, 0.12f, 0.45f, 0.85f);
+        const ImVec4 colTabDimmedSelectedOverline = ImVec4(0.29f, 0.12f, 0.43f, 0.15f);
+
+        // Dependent colors
+        // We want the tabs to have the same color as colWindowBg, but titleBg is under tabs, so we subtract titleBg
+        const ImVec4 colTab               = ImVec4(0, 0, 0, (colWindowBg.w - colTitleBgActive.w) * 0.60f);
+        const ImVec4 colTabDimmed         = ImVec4(0, 0, 0, colTab.w * 0.90f);
+        const ImVec4 colTabSelected       = ImVec4(0, 0, 0, colWindowBg.w - colTitleBg.w);
+        const ImVec4 colTabDimmedSelected = ImVec4(0, 0, 0, colTabSelected.w);
+        const ImVec4 colTabHovered        = ImVec4(0.33f, 0.25f, 0.40f, colWindowBg.w - colTitleBg.w);
+
+        // Depending definitions
+        colors[ImGuiCol_WindowBg]               = colWindowBg;
+        colors[ImGuiCol_TitleBg]                = colTitleBg;
+        colors[ImGuiCol_TitleBgActive]          = colTitleBgActive;
+        colors[ImGuiCol_TitleBgCollapsed]       = colTitleBg;
+        colors[ImGuiCol_Tab]                    = colTab;
+        colors[ImGuiCol_TabSelected]            = colTabSelected;
+        colors[ImGuiCol_TabDimmed]              = colTabDimmed;
+        colors[ImGuiCol_TabDimmedSelected]      = colTabDimmedSelected;
+        colors[ImGuiCol_TabSelectedOverline]    = colTabSelectedOverline;
+        colors[ImGuiCol_TabDimmedSelectedOverline]  = colTabDimmedSelectedOverline;
+        colors[ImGuiCol_TabHovered]             = colTabHovered;
+
+        // Static definitions
+        ImVec4 whiteText = colors[ImGuiCol_Text];
+
         colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.08f, 0.25f, 0.19f);
-        colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
         colors[ImGuiCol_TableRowBg]             = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
         colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.59f, 0.73f, 0.81f, 0.15f);
-        colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
-        colors[ImGuiCol_TitleBgActive]          = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
         colors[ImGuiCol_MenuBarBg]              = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);
         colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.20f, 0.20f, 0.34f);
         colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.30f, 0.30f, 0.30f, 0.69f);
-        colors[ImGuiCol_TabHovered]             = ImVec4(0.00f, 0.00f, 0.00f, 0.84f);
-        colors[ImGuiCol_Tab]                    = ImVec4(0.15f, 0.16f, 0.20f, 0.62f);
+        colors[ImGuiCol_TextTab]                = whiteText;
+        colors[ImGuiCol_TextTabDimmed]          = whiteText;
+        colors[ImGuiCol_TextTabHovered]         = whiteText;
+        colors[ImGuiCol_TextTabSelected]        = whiteText;
+        colors[ImGuiCol_TextTabDimmedSelected]  = whiteText;
+        colors[ImGuiCol_Header]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_HeaderHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_HeaderActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
@@ -319,8 +324,7 @@ namespace nexo::editor {
     void Editor::render()
     {
     	getApp().beginFrame();
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		//colors[ImGuiCol_WindowBg].w = 0.80f; // 0.0f for full transparency
+
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
