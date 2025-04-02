@@ -49,11 +49,11 @@ namespace nexo::editor {
 	) {
 		ImVec2 p_min = ImGui::GetItemRectMin();
         ImVec2 p_max = ImGui::GetItemRectMax();
-        ImU32 color = borderColor ? borderColor : ImGui::GetColorU32(ImGuiCol_Border);
+        ImU32 color = borderColor ? borderColor : ImGui::GetColorU32(ImGuiCol_Button);
         if (ImGui::IsItemHovered())
-            color = borderColorHovered ? borderColorHovered : ImGui::GetColorU32(ImGuiCol_Border);
+            color = borderColorHovered ? borderColorHovered : ImGui::GetColorU32(ImGuiCol_ButtonHovered);
         if (ImGui::IsItemActive())
-            color = borderColorActive ? borderColorActive : ImGui::GetColorU32(ImGuiCol_Border);
+            color = borderColorActive ? borderColorActive : ImGui::GetColorU32(ImGuiCol_ButtonActive);
 
         ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
 	}

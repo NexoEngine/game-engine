@@ -41,7 +41,7 @@ namespace nexo::editor {
              * @param txtColor The text color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
+			static bool drawButton(const std::string &label, const ImVec2& size = ImVec2(0, 0), ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
    			/**
              * @brief Draws a border around the last item.
@@ -105,7 +105,7 @@ namespace nexo::editor {
              * @param txtColor The text (icon) color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
+			static bool drawIconButton(const std::string &label, ImVec2 size = ImVec2(0, 0), ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
 			/**
              * @brief Draws a color button with a border.
