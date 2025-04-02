@@ -143,11 +143,11 @@ namespace nexo::editor {
 
 		    /**
 		     * @brief Draw filled rectangle with a linear gradient defined by an arbitrary angle and gradient stops.
-		     * @param p_min
-		     * @param p_max
-		     * @param angle
-		     * @param stops
+		     * @param pMin Upper left corner position of the rectangle
+		     * @param pMax Lower right corner position of the rectangle
+		     * @param angle Angle of the gradient in degrees (0.0f = down, 90.0f = right, 180.0f = up, 270.0f = left)
+		     * @param stops Vector of gradient stops, each defined by a position (0.0f to 1.0f) and a color
 		     */
-		    static void drawRectFilledLinearGradient(const ImVec2& p_min, const ImVec2& p_max, float angle, std::vector<GradientStop> stops);
+		    static void drawRectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle, std::vector<GradientStop> stops, ImDrawList* drawList = nullptr);
 	};
 }

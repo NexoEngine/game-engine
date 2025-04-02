@@ -188,35 +188,34 @@ namespace nexo::editor {
 	}
 
 	// Triangulate a convex polygon using a triangle fan and add triangles to the draw list.
-	static void FillConvexPolygon(ImDrawList* draw_list, const std::vector<ImVec2>& poly, const std::vector<ImU32>& poly_colors)
+	static void FillConvexPolygon(ImDrawList* drawList, const std::vector<ImVec2>& poly, const std::vector<ImU32>& polyColors)
 	{
 	    if (poly.size() < 3)
 	        return;
 	    int count = (int)poly.size();
-	    draw_list->PrimReserve((count - 2) * 3, count);
+	    drawList->PrimReserve((count - 2) * 3, count);
 	    // Use the first vertex as pivot.
 	    for (int i = 1; i < count - 1; i++)
 	    {
-	        draw_list->PrimWriteIdx((ImDrawIdx)draw_list->_VtxCurrentIdx);
-	        draw_list->PrimWriteIdx((ImDrawIdx)(draw_list->_VtxCurrentIdx + i));
-	        draw_list->PrimWriteIdx((ImDrawIdx)(draw_list->_VtxCurrentIdx + i + 1));
+	        drawList->PrimWriteIdx((ImDrawIdx)drawList->_VtxCurrentIdx);
+	        drawList->PrimWriteIdx((ImDrawIdx)(drawList->_VtxCurrentIdx + i));
+	        drawList->PrimWriteIdx((ImDrawIdx)(drawList->_VtxCurrentIdx + i + 1));
 	    }
 	    // Write vertices with their computed colors.
 	    for (int i = 0; i < count; i++)
 	    {
 	        // For a vertex, we determine its position t between the segment boundaries later.
 	        // Here we assume the provided poly_colors already correspond vertex-by-vertex.
-	        draw_list->PrimWriteVtx(poly[i], draw_list->_Data->TexUvWhitePixel, poly_colors[i]);
+	        drawList->PrimWriteVtx(poly[i], drawList->_Data->TexUvWhitePixel, polyColors[i]);
 	    }
 	}
 
 
-	void Components::drawRectFilledLinearGradient(const ImVec2& p_min, const ImVec2& p_max, float angle,
-		std::vector<GradientStop> stops)
+	void Components::drawRectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle,
+		std::vector<GradientStop> stops, ImDrawList* drawList)
 	{
-		auto draw_list = ImGui::GetWindowDrawList();
-	    if (draw_list == NULL)
-	        return;
+		if (!drawList)
+			drawList = ImGui::GetWindowDrawList();
 
 	    // Check if we have at least two stops.
 	    // If not, we can't create a gradient.
@@ -235,7 +234,7 @@ namespace nexo::editor {
 	    ImVec2 gradDir = ImVec2(cosf(angle), sinf(angle));
 
 	    // Define rectangle polygon (clockwise order).
-	    std::vector<ImVec2> rectPoly = { p_min, ImVec2(p_max.x, p_min.y), p_max, ImVec2(p_min.x, p_max.y) };
+	    std::vector<ImVec2> rectPoly = { pMin, ImVec2(pMax.x, pMin.y), pMax, ImVec2(pMin.x, pMax.y) };
 
 	    // Compute projection range (d_min, d_max) for the rectangle.
 	    float d_min = std::numeric_limits<float>::max(), d_max = -std::numeric_limits<float>::max();
@@ -305,7 +304,7 @@ namespace nexo::editor {
 	        }
 
 	        // Draw the filled and colored polygon.
-	        FillConvexPolygon(draw_list, segPoly, polyColors);
+	        FillConvexPolygon(drawList, segPoly, polyColors);
 	    }
 	}
 }
