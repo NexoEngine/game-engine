@@ -246,7 +246,7 @@ namespace nexo::editor {
     void ConsoleWindow::show()
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
-        ImGui::Begin(ICON_FA_FILE_TEXT "Console" "###" NEXO_WND_USTRID_CONSOLE, &m_opened, ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin(ICON_FA_FILE_TEXT " Console" "###" NEXO_WND_USTRID_CONSOLE, &m_opened, ImGuiWindowFlags_NoCollapse);
         firstDockSetup(NEXO_WND_USTRID_CONSOLE);
 
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();

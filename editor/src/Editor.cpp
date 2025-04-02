@@ -198,7 +198,7 @@ namespace nexo::editor {
         //fontawesome_config.GlyphMinAdvanceX = 7.0f; // Use if you want to make the icon monospaced
         //fontawesome_config.GlyphMaxAdvanceX = 7.0f; // Use if you want to make the icon monospaced
         fontawesome_config.PixelSnapH = true; // Snap to pixel grid, useful for pixel-perfect rendering
-        fontawesome_config.GlyphExtraSpacing = ImVec2(10.0f, 0.0f); // Adds space between icon and text
+        //fontawesome_config.GlyphExtraSpacing = ImVec2(0.0f, 0.0f); // Adds space between icon and text
 
         fontawesome_config.GlyphMinAdvanceX = iconFontSize; // Make the icons monospaced and aligned
         fontawesome_config.GlyphMaxAdvanceX = iconFontSize; // Make the icons monospaced and aligned
