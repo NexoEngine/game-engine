@@ -54,12 +54,7 @@ namespace nexo::editor {
         const std::string colorPickerPopup = std::string("##ColorPickerPopup") + label;
 
         // Cog button
-        if (Components::drawButton(
-           	std::string(ICON_FA_COG) + pickerSettings,
-           	ImVec2(cogButtonWidth, cogButtonHeight),
-           	IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255),
-           	IM_COL32(100, 100, 100, 255), IM_COL32(255, 255, 255, 255)))
-        {
+        if (Components::drawButton(std::string(ICON_FA_COG) + pickerSettings, ImVec2(cogButtonWidth, cogButtonHeight))) {
            	ImGui::OpenPopup(colorPickerPopup.c_str());
         }
         ImGui::PopStyleVar();

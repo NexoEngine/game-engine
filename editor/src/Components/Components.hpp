@@ -41,7 +41,7 @@ namespace nexo::editor {
              * @param txtColor The text color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
    			/**
              * @brief Draws a border around the last item.
@@ -75,7 +75,7 @@ namespace nexo::editor {
              * @param textColor The text color.
              * @return true if the value was changed; false otherwise.
              */
-			static bool drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 textColor = ImGui::GetColorU32(ImGuiCol_Text));
+			static bool drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 textColor = 0);
 
 			/**
              * @brief Draws an icon button with custom style colors.
@@ -90,7 +90,7 @@ namespace nexo::editor {
              * @param txtColor The text (icon) color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
 			/**
              * @brief Draws a color button with a border.

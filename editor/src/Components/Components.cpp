@@ -74,18 +74,25 @@ namespace nexo::editor {
 		return clicked;
 	}
 
+	bool Components::drawIconButton(const std::string& label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive,
+		ImU32 txtColor)
+	{
+	}
+
 	void Components::drawColorButton(const std::string &label, const ImVec2 size, const ImVec4 color, bool *clicked, ImGuiColorEditFlags flags)
 	{
 		flags |= ImGuiColorEditFlags_NoTooltip;
+		const float borderThickness = 3.0f;
+		const float defaultSize = ImGui::GetFrameHeight() + borderThickness;
+		const ImVec2 calculatedSize = ImVec2(size.x == 0 ? defaultSize : size.x - borderThickness * 2, size.y == 0 ? defaultSize : size.y - borderThickness * 2);
 		if (ImGui::ColorButton(label.c_str(),
 		                       color,
 		                       flags,
-		                       size) && clicked)
+		                       calculatedSize) && clicked)
         {
 	        *clicked = !*clicked;
         }
-
-        Components::drawButtonBorder(IM_COL32(150, 150, 150, 255), IM_COL32(200, 200, 200, 255), IM_COL32(250, 250, 250, 255));
+        Components::drawButtonBorder(ImGui::GetColorU32(ImGuiCol_Button), ImGui::GetColorU32(ImGuiCol_ButtonHovered), ImGui::GetColorU32(ImGuiCol_ButtonActive), borderThickness);
 	}
 
 	void Components::drawCustomSeparatorText(const std::string &text, const float textPadding, const float leftSpacing, const float thickness, ImU32 lineColor, ImU32 textColor)
