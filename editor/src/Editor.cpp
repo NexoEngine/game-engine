@@ -348,16 +348,13 @@ namespace nexo::editor {
                         ImGuiWindowFlags_NoFocusOnAppearing |
                         ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-        // Define gradient stops:
-        // Red at the beginning, green in the middle, and blue at the end.
         const std::vector<Components::GradientStop> stops = {
-            { 0.06f, IM_COL32(58, 124, 161, 255) },    // 0% - Red
-            {0.26f, IM_COL32(88, 87, 154, 255) },  // 25% - Yellow
-            { 0.50f, IM_COL32(88, 87, 154, 255) },    // 50% - Green
-            {0.73f, IM_COL32(58, 124, 161, 255) }, // 75% - Cyan
+            { 0.06f, IM_COL32(58, 124, 161, 255) },
+            {0.26f, IM_COL32(88, 87, 154, 255) },
+            { 0.50f, IM_COL32(88, 87, 154, 255) },
+            {0.73f, IM_COL32(58, 124, 161, 255) },
         };
 
-        // Set the gradient angle in radians (45 degrees in this example)
         float angle = 148;
 
         Components::drawRectFilledLinearGradient(viewport->Pos,
