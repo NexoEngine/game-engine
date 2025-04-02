@@ -58,6 +58,28 @@ namespace nexo::editor {
         ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
 	}
 
+	void Components::drawButtonInnerBorder(
+		const ImU32 borderColor,
+		const ImU32 borderColorHovered,
+		const ImU32 borderColorActive,
+		const float rounding,
+		const ImDrawFlags flags,
+		const float thickness
+	) {
+		ImVec2 p_min = ImGui::GetItemRectMin();
+		ImVec2 p_max = ImGui::GetItemRectMax();
+		ImU32 color = borderColor ? borderColor : ImGui::GetColorU32(ImGuiCol_Button);
+		if (ImGui::IsItemHovered())
+			color = borderColorHovered ? borderColorHovered : ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+		if (ImGui::IsItemActive())
+			color = borderColorActive ? borderColorActive : ImGui::GetColorU32(ImGuiCol_ButtonActive);
+
+		ImGui::GetWindowDrawList()->AddRect(
+			ImVec2(p_min.x + thickness, p_min.y + thickness),
+			ImVec2(p_max.x - thickness, p_max.y - thickness),
+			color, rounding, flags, thickness);
+	}
+
 	bool Components::drawDragFloat(
 			const std::string &label,
 			float *values, const float speed,

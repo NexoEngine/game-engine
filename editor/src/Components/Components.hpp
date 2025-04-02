@@ -58,6 +58,21 @@ namespace nexo::editor {
              */
 			static void drawButtonBorder(ImU32 borderColor, ImU32 borderColorHovered, ImU32 borderColorActive, float rounding = 2.0f, ImDrawFlags flags = 0, float thickness = 3.0f);
 
+            /**
+             * @brief Draws a border inside the last item.
+             *
+             * Similar to drawButtonBorder, but draws a border inside the item rectangle instead of outside.
+             *
+             * @param borderColor The border color for normal state.
+             * @param borderColorHovered The border color when hovered.
+             * @param borderColorActive The border color when active.
+             * @param rounding The rounding of the border corners.
+             * @param flags Additional draw flags.
+             * @param thickness The thickness of the border.
+             */
+		    static void drawButtonInnerBorder(ImU32 borderColor, ImU32 borderColorHovered, ImU32 borderColorActive, float rounding = 2.0f, ImDrawFlags flags = 0, float thickness = 3.0f);
+
+
    			/**
              * @brief Draws a draggable float widget with custom styling.
              *
