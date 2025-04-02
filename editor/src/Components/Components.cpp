@@ -96,11 +96,6 @@ namespace nexo::editor {
 		return clicked;
 	}
 
-	bool Components::drawIconButton(const std::string& label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive,
-		ImU32 txtColor)
-	{
-	}
-
 	void Components::drawColorButton(const std::string &label, const ImVec2 size, const ImVec4 color, bool *clicked, ImGuiColorEditFlags flags)
 	{
 		flags |= ImGuiColorEditFlags_NoTooltip;
