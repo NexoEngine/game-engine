@@ -164,9 +164,9 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(2);
-		std::vector<ImU32> sliderColors = {IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255), IM_COL32(100, 100, 100, 255), ImGui::GetColorU32(ImGuiCol_Text)};
+		std::vector<ImU32> sliderColors = {ImGui::GetColorU32(ImGuiCol_FrameBg), ImGui::GetColorU32(ImGuiCol_FrameBgHovered), ImGui::GetColorU32(ImGuiCol_FrameBgActive), ImGui::GetColorU32(ImGuiCol_Text)};
 		if (inactive)
-			sliderColors = {IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(30, 30, 30, 255), IM_COL32(50, 50, 50, 255)};
+			sliderColors = {ImGui::GetColorU32(ImGuiCol_FrameBg), ImGui::GetColorU32(ImGuiCol_FrameBgHovered), ImGui::GetColorU32(ImGuiCol_FrameBgActive), ImGui::GetColorU32(ImGuiCol_TextDisabled)};
 		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1],
 		                     sliderColors[2], sliderColors[3], "%.2f");
 		sliders.emplace_back(labelY, &values[1], speed, minValue, maxValue, sliderColors[0], sliderColors[1],
