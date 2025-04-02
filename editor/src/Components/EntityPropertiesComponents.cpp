@@ -211,7 +211,7 @@ namespace nexo::editor {
 
 		float badgeSize = ImGui::GetFrameHeight();
 		if (badgeColors.empty())
-			badgeColors = {IM_COL32(80, 0, 0, 255), IM_COL32(0, 80, 0, 255), IM_COL32(0, 0, 80, 255)};
+			badgeColors = {IM_COL32(102, 28, 28, 255), IM_COL32(0, 80, 0, 255), IM_COL32(38, 49, 121, 255)};
 		if (textBadgeColor.empty())
 			textBadgeColor = {IM_COL32(255, 180, 180, 255), IM_COL32(180, 255, 180, 255), IM_COL32(180, 180, 255, 255)};
 		std::vector<Badge> badges;
