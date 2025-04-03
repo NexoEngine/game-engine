@@ -25,6 +25,7 @@
 #include "Logger.hpp"
 
 namespace nexo::ecs {
+
     /**
      * @class Coordinator
      *
@@ -94,11 +95,11 @@ namespace nexo::ecs {
             template <typename T>
             void addComponent(const Entity entity, T component)
             {
-                m_componentManager->addComponent<T>(entity, component);
+				auto signature = m_entityManager->getSignature(entity);
+				auto oldSignature = signature;
+				signature.set(m_componentManager->getComponentType<T>(), true);
+                m_componentManager->addComponent<T>(entity, component, signature);
 
-                auto signature = m_entityManager->getSignature(entity);
-                auto oldSignature = signature;
-                signature.set(m_componentManager->getComponentType<T>(), true);
                 m_entityManager->setSignature(entity, signature);
 
                 m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
@@ -112,11 +113,12 @@ namespace nexo::ecs {
             template<typename T>
             void removeComponent(const Entity entity) const
             {
-                m_componentManager->removeComponent<T>(entity);
+				auto signature = m_entityManager->getSignature(entity);
+				auto oldSignature = signature;
+				signature.set(m_componentManager->getComponentType<T>(), false);
+                m_componentManager->removeComponent<T>(entity, oldSignature);
 
-                auto signature = m_entityManager->getSignature(entity);
-                auto oldSignature = signature;
-                signature.set(m_componentManager->getComponentType<T>(), false);
+
                 m_entityManager->setSignature(entity, signature);
 
                 m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
@@ -133,10 +135,10 @@ namespace nexo::ecs {
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
-                if (m_componentManager->tryRemoveComponent<T>(entity))
+				auto signature = m_entityManager->getSignature(entity);
+                if (m_componentManager->tryRemoveComponent<T>(entity, signature))
                 {
-                    auto signature = m_entityManager->getSignature(entity);
-                    auto oldSignature = signature;
+                	auto oldSignature = signature;
                     signature.set(m_componentManager->getComponentType<T>(), false);
                     m_entityManager->setSignature(entity, signature);
 
@@ -263,6 +265,18 @@ namespace nexo::ecs {
             std::shared_ptr<T> registerSystem() {
                 return m_systemManager->registerSystem<T>();
             }
+
+            template<typename... Owned>
+		    auto registerGroup(const auto & nonOwned)
+			{
+				return m_componentManager->registerGroup<Owned...>(nonOwned);
+			}
+
+			template<typename... Owned>
+			auto getGroup(const auto& nonOwned)
+			{
+				return m_componentManager->getGroup<Owned...>(nonOwned);
+			}
 
             /**
             * @brief Sets the signature for a system, defining which entities it will process.
