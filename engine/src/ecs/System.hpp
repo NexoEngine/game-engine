@@ -18,7 +18,9 @@
 #include <typeindex>
 #include <memory>
 
-#include "Signature.hpp"
+#include "Definitions.hpp"
+#include "Logger.hpp"
+#include "ECSExceptions.hpp"
 
 namespace nexo::ecs {
     class Coordinator;
