@@ -17,7 +17,7 @@
 #include "ecs/Coordinator.hpp"
 #include "Components.hpp"
 #include "ecs/SingletonComponent.hpp"
-#include "ecs/Signature.hpp"
+#include "ecs/Definitions.hpp"
 #include "ecs/System.hpp"
 #include "ecs/Entity.hpp"
 
@@ -112,7 +112,7 @@ namespace nexo::ecs {
     TEST_F(CoordinatorTest, RemoveComponentFromNonexistentEntity) {
         coordinator->registerComponent<TestComponent>();
 
-        Entity nonexistentEntity = 99999;
+        Entity nonexistentEntity = 100;
 
         EXPECT_THROW(coordinator->removeComponent<TestComponent>(nonexistentEntity), ComponentNotFound);
     }
