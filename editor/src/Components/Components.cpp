@@ -35,7 +35,8 @@ namespace nexo::editor {
 
 		const bool clicked = ImGui::Button(label.c_str(), size);
 
-        ImGui::PopStyleColor(!!bg + !!bgHovered + !!bgActive + !!txtColor);
+		const int popCount = (bg != 0) + (bgHovered != 0) + (bgActive != 0) + (txtColor != 0);
+		ImGui::PopStyleColor(popCount);
 		return clicked;
 	}
 
