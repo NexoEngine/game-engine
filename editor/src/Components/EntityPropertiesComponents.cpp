@@ -29,8 +29,6 @@ namespace nexo::editor {
 	                                  ImGuiTreeNodeFlags_AllowItemOverlap);
 	    ImGui::PopStyleVar();
 
-	    //ImGui::SetWindowFontScale(1.2f);
-
 	    // Horizontal centering:
 	    const float arrowPosX = ImGui::GetCursorPosX();
 	    ImGui::SameLine(0.0f, 0.0f);
@@ -40,11 +38,7 @@ namespace nexo::editor {
 	    ImGui::SetCursorPosX(textPosX);
     	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.5f); // This stuff seems strange, should check in the long run if there is a better way
 
-	    //ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 1));
 	    ImGui::TextUnformatted(headerText.data());
-	    //ImGui::PopStyleColor();
-
-	    //ImGui::SetWindowFontScale(1.0f);
 
 	    return open;
 	}
