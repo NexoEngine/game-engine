@@ -88,12 +88,14 @@ namespace nexo::editor {
             const std::string &format,
             const ImU32 bg, const ImU32 bgHovered, const ImU32 bgActive, const ImU32 textColor
     ) {
-        if (textColor) ImGui::PushStyleColor(ImGuiCol_Text, 		   textColor);
-        if (bg) ImGui::PushStyleColor(ImGuiCol_FrameBg,        bg);
+        if (bg) ImGui::PushStyleColor(ImGuiCol_FrameBg, bg);
         if (bgHovered) ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, bgHovered);
-        if (bgActive) ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  bgActive);
+        if (bgActive) ImGui::PushStyleColor(ImGuiCol_FrameBgActive, bgActive);
+        if (textColor) ImGui::PushStyleColor(ImGuiCol_Text, textColor);
         const bool clicked = ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
-        ImGui::PopStyleColor(!!textColor + !!bg + !!bgHovered + !!bgActive);
+
+        const int popCount = (bg != 0) + (bgHovered != 0) + (bgActive != 0) + (textColor != 0);
+        ImGui::PopStyleColor(popCount);
         return clicked;
     }
 
@@ -115,7 +117,6 @@ namespace nexo::editor {
 
     void Components::drawCustomSeparatorText(const std::string &text, const float textPadding, const float leftSpacing, const float thickness, ImU32 lineColor, ImU32 textColor)
     {
-        //ImGui::SetWindowFontScale(1.2f);
         const ImVec2 pos = ImGui::GetCursorScreenPos();
         const float availWidth = ImGui::GetContentRegionAvail().x;
         const float textWidth  = ImGui::CalcTextSize(text.c_str()).x;
@@ -136,7 +137,6 @@ namespace nexo::editor {
 
         const ImVec2 textPos(pos.x + lineWidth + textPadding, pos.y);
         draw_list->AddText(textPos, textColor, text.c_str());
-        //ImGui::SetWindowFontScale(1.0f);
 
         const ImVec2 rightLineStart(pos.x + lineWidth + textPadding + textWidth + textPadding, lineY);
         const ImVec2 rightLineEnd(pos.x + availWidth, lineY);
@@ -229,8 +229,9 @@ namespace nexo::editor {
         std::vector<ImVec2> rectPoly = { pMin, ImVec2(pMax.x, pMin.y), pMax, ImVec2(pMin.x, pMax.y) };
 
         // Compute projection range (d_min, d_max) for the rectangle.
-        float d_min = std::numeric_limits<float>::max(), d_max = -std::numeric_limits<float>::max();
-        for (auto& v : rectPoly) {
+        float d_min = std::numeric_limits<float>::max();
+        float d_max = -std::numeric_limits<float>::max();
+        for (auto const& v : rectPoly) {
             const float d = ImDot(v, gradDir);
             if (d < d_min) d_min = d;
             if (d > d_max) d_max = d;
@@ -276,7 +277,7 @@ namespace nexo::editor {
             segPoly = tempPoly; // copy result
             // Clip against upper boundary: d <= seg_end
             // To clip with an upper-bound, invert the normal.
-            ClipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -(seg_end), tempPoly);
+            ClipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -seg_end, tempPoly);
             segPoly = tempPoly;
 
             if (segPoly.empty())

@@ -14,8 +14,6 @@
 
 #include "WindowRegistry.hpp"
 
-#include <imgui_internal.h>
-
 namespace nexo::editor {
 
 	void WindowRegistry::setup() const
