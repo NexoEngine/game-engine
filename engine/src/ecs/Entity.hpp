@@ -17,7 +17,7 @@
 #include <deque>
 #include <array>
 
-#include "Signature.hpp"
+#include "Definitions.hpp"
 
 namespace nexo::ecs {
 
