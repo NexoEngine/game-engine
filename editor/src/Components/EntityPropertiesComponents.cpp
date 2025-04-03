@@ -102,10 +102,9 @@ namespace nexo::editor {
 		chanLabel.label = std::string(uniqueLabel);
 		chanLabel.fixedWidth = -1.0f;
 
-		float badgeSize = ImGui::GetFrameHeight();
 		std::vector<Badge> badges;
 		badges.reserve(1);
-		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)});
+		badges.emplace_back(Badge{badgeLabelX, {0, 0}, IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(80, 0, 0, 255), IM_COL32(255, 180, 180, 255)});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(1);
@@ -130,7 +129,7 @@ namespace nexo::editor {
 		float speed,
 		std::vector<ImU32> badgeColor,
 		std::vector<ImU32> textBadgeColor,
-		const bool inactive
+		const bool disabled
 	)
 	{
 		const std::string labelStr = uniqueLabel;
@@ -146,20 +145,19 @@ namespace nexo::editor {
 		chanLabel.label = std::string(uniqueLabel);
 		chanLabel.fixedWidth = -1.0f;
 
-		float badgeSize = ImGui::GetFrameHeight();
 		if (badgeColor.empty())
-			badgeColor = {IM_COL32(80, 0, 0, 255), IM_COL32(0, 80, 0, 255)};
+			badgeColor = {IM_COL32(102, 28, 28, 255), IM_COL32(0, 80, 0, 255)};
 		if (textBadgeColor.empty())
 			textBadgeColor = {IM_COL32(255, 180, 180, 255), IM_COL32(180, 255, 180, 255)};
 		std::vector<Badge> badges;
 		badges.reserve(2);
-		badges.emplace_back(Badge{badgeLabelX, {badgeSize, badgeSize}, badgeColor[0], badgeColor[0], badgeColor[0], textBadgeColor[0]});
-		badges.emplace_back(Badge{badgeLabelY, {badgeSize, badgeSize}, badgeColor[1], badgeColor[1], badgeColor[1], textBadgeColor[1]});
+		badges.emplace_back(Badge{badgeLabelX, {0, 0}, badgeColor[0], badgeColor[0], badgeColor[0], textBadgeColor[0]});
+		badges.emplace_back(Badge{badgeLabelY, {0, 0}, badgeColor[1], badgeColor[1], badgeColor[1], textBadgeColor[1]});
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(2);
 		std::vector<ImU32> sliderColors = {ImGui::GetColorU32(ImGuiCol_FrameBg), ImGui::GetColorU32(ImGuiCol_FrameBgHovered), ImGui::GetColorU32(ImGuiCol_FrameBgActive), ImGui::GetColorU32(ImGuiCol_Text)};
-		if (inactive)
+		if (disabled)
 			sliderColors = {ImGui::GetColorU32(ImGuiCol_FrameBg), ImGui::GetColorU32(ImGuiCol_FrameBgHovered), ImGui::GetColorU32(ImGuiCol_FrameBgActive), ImGui::GetColorU32(ImGuiCol_TextDisabled)};
 		sliders.emplace_back(labelX, &values[0], speed, minValue, maxValue, sliderColors[0], sliderColors[1],
 		                     sliderColors[2], sliderColors[3], "%.2f");

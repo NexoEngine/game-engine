@@ -34,17 +34,21 @@ namespace nexo::editor {
 				ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 				ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 				ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-				ImGui::TableSetupColumn("##Lock", ImGuiTableColumnFlags_WidthFixed, 25.0f);
+				ImGui::TableSetupColumn("##Lock", ImGuiTableColumnFlags_WidthStretch);
    				glm::vec2 viewPort = {cameraComponent.width, cameraComponent.height};
        			std::vector<ImU32> badgeColors;
             	std::vector<ImU32> textBadgeColors;
 
-
-				if (const bool inactive = !cameraComponent.viewportLocked; EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, inactive))
+				const bool disabled = cameraComponent.viewportLocked;
+				if (disabled)
+					ImGui::BeginDisabled();
+				if (EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled))
 				{
-					if (cameraComponent.viewportLocked)
+					if (!cameraComponent.viewportLocked)
 						cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
 				}
+				if (disabled)
+					ImGui::EndDisabled();
 
 				ImGui::TableSetColumnIndex(3);
 
