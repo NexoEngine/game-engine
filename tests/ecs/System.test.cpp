@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "ecs/System.hpp"
-#include "ecs/Signature.hpp"
+#include "ecs/Definitions.hpp"
 
 namespace nexo::ecs {
     // Mock system for testing
