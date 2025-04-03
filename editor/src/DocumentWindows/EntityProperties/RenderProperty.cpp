@@ -45,6 +45,8 @@ namespace nexo::editor {
         if (!scenePreviewInfo.sceneGenerated)
         {
             utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
+            auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
+            cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
         }
         auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
