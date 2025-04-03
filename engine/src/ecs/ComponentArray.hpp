@@ -19,6 +19,7 @@
 #include "Logger.hpp"
 
 #include <vector>
+#include <span>
 
 namespace nexo::ecs {
 	/**
