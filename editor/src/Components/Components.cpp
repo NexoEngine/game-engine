@@ -145,8 +145,14 @@ namespace nexo::editor {
         ImGui::Dummy(ImVec2(0, ImGui::GetTextLineHeight()));
     }
 
-    // Helper function: Linear interpolation for colors (assumes ARGB packed in ImU32)
-    static ImU32 ImLerpColor(const ImU32 colA, const ImU32 colB, const float t)
+    /**
+     * @brief Linearly interpolates between two colors (ImU32, ImGui 32-bits ARGB format).
+     * @param colA[in] The first color (ARGB format).
+     * @param colB[in] The second color (ARGB format).
+     * @param t[in] The interpolation factor (0.0 to 1.0).
+     * @return The interpolated color (ARGB format).
+     */
+    static ImU32 imLerpColor(const ImU32 colA, const ImU32 colB, const float t)
     {
         const unsigned char a0 = (colA >> 24) & 0xFF, r0 = (colA >> 16) & 0xFF, g0 = (colA >> 8) & 0xFF, b0 = colA & 0xFF;
         const unsigned char a1 = (colB >> 24) & 0xFF, r1 = (colB >> 16) & 0xFF, g1 = (colB >> 8) & 0xFF, b1 = colB & 0xFF;
@@ -157,12 +163,20 @@ namespace nexo::editor {
         return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
     }
 
-    // Clip a convex polygon against a half-plane defined by: (dot(normal, v) >= offset)
-    // Sutherland–Hodgman polygon clipping.
-    static void ClipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, float offset, std::vector<ImVec2>& outPoly)
+    /**
+     * @brief Clip a convex polygon against a half-plane defined by: (dot(normal, v) >= offset)
+     *
+     * This function uses the Sutherland-Hodgman algorithm to clip a polygon against a line defined by a normal vector and an offset.
+     * @param poly[in] Vector of vertices representing the polygon to be clipped.
+     * @param normal[in] The normal vector of the line used for clipping.
+     * @param offset[in] The offset from the origin of the line.
+     * @param outPoly[out] Output vector to store the clipped polygon vertices.
+     */
+    static void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, float offset, std::vector<ImVec2>& outPoly)
     {
         outPoly.clear();
         const auto count = poly.size();
+        outPoly.reserve(count * 2); // Preallocate space for the output polygon (prepare worst case)
         for (size_t i = 0; i < count; i++) {
             const ImVec2& a = poly[i];
             const ImVec2& b = poly[(i + 1) % count];
@@ -181,8 +195,13 @@ namespace nexo::editor {
         }
     }
 
-    // Triangulate a convex polygon using a triangle fan and add triangles to the draw list.
-    static void FillConvexPolygon(ImDrawList* drawList, const std::vector<ImVec2>& poly, const std::vector<ImU32>& polyColors)
+    /**
+     * @brief Fill a convex polygon with triangles using a triangle fan.
+     * @param drawList[in] The ImDrawList to which the triangles will be added.
+     * @param poly[in] Vector of vertices representing the polygon to be filled.
+     * @param polyColors[in] Vector of colors for each vertex in the polygon.
+     */
+    static void fillConvexPolygon(ImDrawList* drawList, const std::vector<ImVec2>& poly, const std::vector<ImU32>& polyColors)
     {
         if (poly.size() < 3)
             return;
@@ -273,11 +292,11 @@ namespace nexo::editor {
             std::vector<ImVec2> segPoly = rectPoly;
             std::vector<ImVec2> tempPoly;
             // Clip against lower boundary: d >= seg_start
-            ClipPolygonWithLine(segPoly, gradDir, seg_start, tempPoly);
+            clipPolygonWithLine(segPoly, gradDir, seg_start, tempPoly);
             segPoly = tempPoly; // copy result
             // Clip against upper boundary: d <= seg_end
             // To clip with an upper-bound, invert the normal.
-            ClipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -seg_end, tempPoly);
+            clipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -seg_end, tempPoly);
             segPoly = tempPoly;
 
             if (segPoly.empty())
@@ -292,11 +311,11 @@ namespace nexo::editor {
                 // Map projection to [0,1] relative to current segment boundaries.
                 const float t = (d - seg_start) / (seg_end - seg_start);
                 // Interpolate the color between the two stops.
-                polyColors.push_back(ImLerpColor(stops[i].color, stops[i+1].color, t));
+                polyColors.push_back(imLerpColor(stops[i].color, stops[i+1].color, t));
             }
 
             // Draw the filled and colored polygon.
-            FillConvexPolygon(drawList, segPoly, polyColors);
+            fillConvexPolygon(drawList, segPoly, polyColors);
         }
     }
 }
