@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "ecs/Components.hpp"
+#include "Definitions.hpp"
 
 namespace nexo::ecs {
     struct TestComponent {
@@ -476,8 +477,11 @@ namespace nexo::ecs {
     {
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
+        Signature signature;
 
-        componentManager->addComponent(entity, TestComponent{42});
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+
+        componentManager->addComponent(entity, TestComponent{42}, signature);
         TestComponent &retrieved = componentManager->getComponent<TestComponent>(entity);
 
         EXPECT_EQ(retrieved.value, 42);
@@ -487,9 +491,12 @@ namespace nexo::ecs {
     {
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
+        Signature signature;
 
-        componentManager->addComponent(entity, TestComponent{42});
-        EXPECT_NO_THROW(componentManager->removeComponent<TestComponent>(entity));
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+
+        componentManager->addComponent(entity, TestComponent{42}, signature);
+        EXPECT_NO_THROW(componentManager->removeComponent<TestComponent>(entity, signature));
         EXPECT_THROW(static_cast<void>(componentManager->getComponent<TestComponent>(entity)), ComponentNotFound);
     }
 
@@ -497,12 +504,15 @@ namespace nexo::ecs {
     {
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
+        Signature signature;
 
-        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity)); // No component yet
+        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity, signature)); // No component yet
 
-        componentManager->addComponent(entity, TestComponent{42});
-        EXPECT_TRUE(componentManager->tryRemoveComponent<TestComponent>(entity));
-        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity));
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
+        EXPECT_TRUE(componentManager->tryRemoveComponent<TestComponent>(entity, signature));
+        signature.set(componentManager->getComponentType<TestComponent>(), false);
+        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity, signature));
     }
 
     TEST_F(ComponentManagerTest, EntityDestroyedCleansUpComponents)
@@ -510,9 +520,14 @@ namespace nexo::ecs {
         componentManager->registerComponent<TestComponent>();
         Entity entity1 = 1;
         Entity entity2 = 2;
+        Signature signature1;
+        Signature signature2;
 
-        componentManager->addComponent(entity1, TestComponent{42});
-        componentManager->addComponent(entity2, TestComponent{84});
+        signature1.set(componentManager->getComponentType<TestComponent>(), true);
+        signature2.set(componentManager->getComponentType<TestComponent>(), true);
+
+        componentManager->addComponent(entity1, TestComponent{42}, signature1);
+        componentManager->addComponent(entity2, TestComponent{84}, signature2);
 
         componentManager->entityDestroyed(entity1);
 
@@ -528,7 +543,7 @@ namespace nexo::ecs {
     TEST_F(ComponentManagerTest, AddComponentWithoutRegistering)
     {
         Entity entity = 1;
-        EXPECT_THROW(componentManager->addComponent(entity, TestComponent{42}), ComponentNotRegistered);
+        EXPECT_THROW(componentManager->addComponent(entity, TestComponent{42}, Signature{}), ComponentNotRegistered);
     }
 
     TEST_F(ComponentManagerTest, TryGetComponent)
@@ -539,7 +554,9 @@ namespace nexo::ecs {
         auto result = componentManager->tryGetComponent<TestComponent>(entity);
         EXPECT_FALSE(result.has_value());
 
-        componentManager->addComponent(entity, TestComponent{42});
+        Signature signature;
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
         result = componentManager->tryGetComponent<TestComponent>(entity);
         ASSERT_TRUE(result.has_value());
         EXPECT_EQ(result->get().value, 42);
@@ -574,7 +591,9 @@ namespace nexo::ecs {
         // Setup original manager
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
-        componentManager->addComponent(entity, TestComponent{42});
+        Signature signature;
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
 
         // Move construct new manager
         ComponentManager movedManager(std::move(*componentManager));
@@ -588,7 +607,9 @@ namespace nexo::ecs {
         // Setup original manager
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
-        componentManager->addComponent(entity, TestComponent{42});
+        Signature signature;
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
 
         // Create second manager and move-assign
         ComponentManager secondManager;
@@ -635,7 +656,9 @@ namespace nexo::ecs {
         Entity entity = 1;
 
         ComplexComponent complex{"test", {1, 2, 3}};
-        componentManager->addComponent(entity, complex);
+        Signature signature;
+        signature.set(componentManager->getComponentType<ComplexComponent>(), true);
+        componentManager->addComponent(entity, complex, signature);
 
         ComplexComponent& retrieved = componentManager->getComponent<ComplexComponent>(entity);
         EXPECT_EQ(retrieved.name, "test");
@@ -647,7 +670,9 @@ namespace nexo::ecs {
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
 
-        componentManager->addComponent(entity, TestComponent{42});
+        Signature signature;
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
 
         // Get component array directly and use it
         auto array = componentManager->getComponentArray<TestComponent>();
@@ -659,8 +684,9 @@ namespace nexo::ecs {
     {
         componentManager->registerComponent<TestComponent>();
         Entity entity = 1;
-
-        componentManager->addComponent(entity, TestComponent{42});
+        Signature signature;
+        signature.set(componentManager->getComponentType<TestComponent>(), true);
+        componentManager->addComponent(entity, TestComponent{42}, signature);
 
         // Modify component directly
         componentManager->getComponent<TestComponent>(entity).value = 100;
