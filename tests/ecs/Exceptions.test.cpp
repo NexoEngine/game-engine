@@ -72,7 +72,7 @@ namespace nexo::ecs {
         TooManyEntities ex;
         std::string formattedMessage = ex.what();
 
-        EXPECT_NE(formattedMessage.find("Too many living entities, max is 8191"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::format("Too many living entities, max is {}", MAX_ENTITIES)), std::string::npos);
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
         EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
     }
