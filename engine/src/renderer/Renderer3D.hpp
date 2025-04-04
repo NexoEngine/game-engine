@@ -21,9 +21,10 @@
 #include <array>
 #include <glm/glm.hpp>
 
-namespace nexo::renderer {
-
-    struct Vertex {
+namespace nexo::renderer
+{
+    struct Vertex
+    {
         glm::vec3 position;
         glm::vec2 texCoord;
         glm::vec3 normal;
@@ -33,7 +34,8 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct Material {
+    struct Material
+    {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         int albedoTexIndex = 0; // Default: 0 (white texture)
         glm::vec4 specularColor = glm::vec4(1.0f);
@@ -49,7 +51,8 @@ namespace nexo::renderer {
     };
 
     //TODO: Add stats for the meshes
-    struct Renderer3DStats {
+    struct Renderer3DStats
+    {
         unsigned int drawCalls = 0;
         unsigned int cubeCount = 0;
 
@@ -71,7 +74,8 @@ namespace nexo::renderer {
      * - `vertexBufferPtr`, `indexBufferPtr`: Current pointers for batching vertices and indices.
      * - `stats`: Rendering statistics.
      */
-    struct Renderer3DStorage {
+    struct Renderer3DStorage
+    {
         const unsigned int maxCubes = 10000;
         const unsigned int maxVertices = maxCubes * 8;
         const unsigned int maxIndices = maxCubes * 36;
@@ -88,7 +92,7 @@ namespace nexo::renderer {
         std::array<Vertex, 80000> vertexBufferBase;
         std::array<unsigned int, 360000> indexBufferBase;
         Vertex* vertexBufferPtr = nullptr;
-        unsigned int *indexBufferPtr = nullptr;
+        unsigned int* indexBufferPtr = nullptr;
 
         std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
@@ -122,7 +126,8 @@ namespace nexo::renderer {
      * 4. Call `endScene()` to finalize the rendering and issue draw calls.
      * 5. Call `shutdown()` to release resources when the renderer is no longer needed.
      */
-    class Renderer3D {
+    class Renderer3D
+    {
     public:
         /**
          * @brief Initializes the Renderer3D and allocates required resources.
@@ -167,7 +172,7 @@ namespace nexo::renderer {
          * - RendererNotInitialized if the renderer is not initialized.
          * - RendererSceneLifeCycleFailure if called without proper initialization.
          */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos);
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3& cameraPos);
 
         /**
          * @brief Ends the current 3D rendering scene.
@@ -194,7 +199,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                      int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -210,7 +216,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                      const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -239,7 +246,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+                      int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and material.
@@ -255,7 +263,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                      const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and material.
@@ -271,7 +280,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
+                      const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -285,7 +295,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
 
         /**
@@ -301,13 +311,8 @@ namespace nexo::renderer {
          * Overloads:
          * - Draws a tetrahedron with a solid color or a texture.
          */
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
-        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
-
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
-        void drawTetrahedron(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                             int entityID = -1) const;
 
         /**
          * @brief Draws a custom 3D mesh.
@@ -321,11 +326,32 @@ namespace nexo::renderer {
          * Throws:
          * - RendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
          */
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,
+                      const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,
+                      const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+                      int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,
+                      const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size,
+                      const components::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,
+                      const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
+        /**
+         * @brief Draws a pyramid at the specified position and size.
+         *
+         * The pyramid can be drawn with a solid color.
+         *
+         * @param position The position of the pyramid in the 3D space.
+         * @param size The dimensions of the pyramid.
+         * @param color The color of the pyramid (RGBA format).
+         * @param entityID The ID of the entity.
+         *
+         * Overloads:
+         * - Draws a pyramid with a solid color.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                   int entityID = -1) const;
 
         /**
          * @brief Resets rendering statistics.
@@ -347,9 +373,10 @@ namespace nexo::renderer {
          */
         [[nodiscard]] Renderer3DStats getStats() const;
 
-        std::shared_ptr<Shader> &getShader() const {return m_storage->textureShader;};
+        std::shared_ptr<Shader>& getShader() const { return m_storage->textureShader; };
 
         std::shared_ptr<Renderer3DStorage> getInternalStorage() const { return m_storage; };
+
     private:
         std::shared_ptr<Renderer3DStorage> m_storage;
         bool m_renderingScene = false;
@@ -387,5 +414,4 @@ namespace nexo::renderer {
          */
         void setMaterialUniforms(const renderer::Material& material) const;
     };
-
 }
