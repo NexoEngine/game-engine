@@ -464,6 +464,101 @@ namespace nexo::renderer {
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const NxMaterial& material, int entityID) const;
 
         /**
+         * @brief Draws a pyramid using a specified transformation and color.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param position The position of the pyramid.
+         * @param size The dimensions of the pyramid.
+         * @param rotation The rotation of the pyramid.
+         * @param color The color (RGBA) of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                             const glm::vec4& color, int entityID) const;
+
+        /**
+         * @brief Draws a pyramid using a specified transformation and color.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param transform The transformation matrix for the pyramid.
+         * @param color The color (RGBA) of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::mat4& transform, const glm::vec4& color, int entityID) const;
+
+        /**
+         * @brief Draws a pyramid using a specified transformation and material.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param position The position of the pyramid.
+         * @param size The dimensions of the pyramid.
+         * @param material The material properties of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+                             int entityID = -1) const;
+
+        /**
+         * @brief Draws a pyramid using a specified transformation and material.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param position The position of the pyramid.
+         * @param size The dimensions of the pyramid.
+         * @param rotation The rotation of the pyramid (in Euler angles, in degrees).
+         * @param material The material properties of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                             const components::Material& material, int entityID) const;
+
+        /**
+         * @brief Draws a pyramid using a specified transformation and material.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param position The position of the pyramid.
+         * @param size The dimensions of the pyramid.
+         * @param rotation The rotation of the pyramid (in quaternion format).
+         * @param material The material properties of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
+                             const components::Material& material, int entityID) const;
+        /**
+         * @brief Draws a pyramid using a specified transformation and color.
+         *
+         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+         * and increments the pyramid count in the statistics.
+         *
+         * @param transform The transformation matrix for the pyramid.
+         * @param material The material properties of the pyramid.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawPyramid(const glm::mat4& transform, const components::Material& material, int entityID) const;
+
+
+        /**
          * @brief Resets rendering statistics.
          *
          * Clears the draw call and cube counters in `NxRenderer3DStats`.
