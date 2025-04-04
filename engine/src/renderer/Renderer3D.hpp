@@ -313,20 +313,115 @@ namespace nexo::renderer {
 
 
         /**
-         * @brief Draws a 3D tetrahedron at the specified position and size.
+         * @brief Draws a tetrahedron using a specified transformation and color.
          *
-         * The tetrahedron can be drawn with a solid color or a texture.
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
          *
-         * @param position The position of the tetrahedron in the 3D space.
+         * @param position The position of the tetrahedron.
          * @param size The dimensions of the tetrahedron.
-         * @param color The color of the tetrahedron (RGBA format).
-         * @param texture Optional texture to apply to the tetrahedron.
+         * @param color The color (RGBA) of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
          *
-         * Overloads:
-         * - Draws a tetrahedron with a solid color or a texture.
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
                              int entityID = -1) const;
+
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and color.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param position The position of the tetrahedron.
+         * @param size The dimensions of the tetrahedron.
+         * @param rotation The rotation of the tetrahedron.
+         * @param color The color (RGBA) of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                             const glm::vec4& color, int entityID) const;
+
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and color.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param transform The transformation matrix for the tetrahedron.
+         * @param color The color (RGBA) of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID) const;
+
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and material.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param position The position of the tetrahedron.
+         * @param size The dimensions of the tetrahedron.
+         * @param material The material properties of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+                             int entityID = -1) const;
+
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and material.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param position The position of the tetrahedron.
+         * @param size The dimensions of the tetrahedron.
+         * @param rotation The rotation of the tetrahedron (in Euler angles, in degrees).
+         * @param material The material properties of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                             const components::Material& material, int entityID) const;
+
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and material.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param position The position of the tetrahedron.
+         * @param size The dimensions of the tetrahedron.
+         * @param rotation The rotation of the tetrahedron (in quaternion format).
+         * @param material The material properties of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
+                             const components::Material& material, int entityID) const;
+        /**
+         * @brief Draws a tetrahedron using a specified transformation and color.
+         *
+         * Generates the tetrahedron's vertex and index data, updates the vertex buffer with the tetrahedron's geometry,
+         * and increments the tetrahedron count in the statistics.
+         *
+         * @param transform The transformation matrix for the tetrahedron.
+         * @param material The material properties of the tetrahedron.
+         * @param entityID An optional entity identifier (default is -1).
+         *
+         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+         */
+        void drawTetrahedron(const glm::mat4& transform, const components::Material& material, int entityID) const;
+
 
         /**
          * @brief Draws a custom 3D mesh.
@@ -359,8 +454,8 @@ namespace nexo::renderer {
          * Overloads:
          * - Draws a pyramid with a solid color.
          */
-        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                   int entityID = -1) const;
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
