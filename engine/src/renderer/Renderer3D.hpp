@@ -274,5 +274,4 @@ namespace nexo::renderer {
          */
         void setMaterialUniforms(const NxIndexedMaterial& material) const;
     };
-
 }
