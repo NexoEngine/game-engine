@@ -20,28 +20,27 @@
 
 namespace nexo
 {
-
-	/**
+    /**
      * @brief Factory class for creating 3D entities.
      *
      * Provides static methods to create simple 3D entities such as cubes or models,
      * by setting up the required components (TransformComponent, RenderComponent, UuidComponent, etc.).
      */
-    class EntityFactory3D {
-	    public:
-			/**
-			* @brief Creates a cube entity with a specified color.
-			*
-			* Constructs a cube at the given position, with the specified size, rotation, and color.
-			*
-			* @param pos The position of the cube.
-			* @param size The dimensions (width, height, depth) of the cube.
-			* @param rotation The rotation of the cube (in Euler angles).
-			* @param color The color of the cube's material (default is red).
-			* @return ecs::Entity The newly created cube entity.
-			*/
-	        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-	                                      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+    class EntityFactory3D
+    {
+    public:
+        /**
+        * @brief Creates a cube entity with a specified color.
+        *
+        * Constructs a cube at the given position, with the specified size, rotation, and color.
+        *
+        * @param pos The position of the cube.
+        * @param size The dimensions (width, height, depth) of the cube.
+        * @param rotation The rotation of the cube (in Euler angles).
+        * @param color The color of the cube's material (default is red).
+        * @return ecs::Entity The newly created cube entity.
+        */
+        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
 
 			/**
 			* @brief Creates a cube entity with a specified material.
@@ -61,8 +60,58 @@ namespace nexo
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color);
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
 
-            static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
-            static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
-			static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+
+        /**
+         * @brief Creates a tetrahedron entity with a specified material.
+         *
+         * Constructs a tetrahedron at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the tetrahedron.
+         * @param size The dimensions (width, height, depth) of the tetrahedron.
+         * @param rotation The rotation of the tetrahedron (in Euler angles).
+         * @param color The color of the tetrahedron's material (default is red).
+         * @return ecs::Entity The newly created tetrahedron entity.
+         */
+        static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                             glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+        /**
+         * @brief Creates a tetrahedron entity with a specified material.
+         *
+         * Constructs a tetrahedron at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the tetrahedron.
+         * @param size The dimensions (width, height, depth) of the tetrahedron.
+         * @param rotation The rotation of the tetrahedron (in Euler angles).
+         * @param material The material to apply to the tetrahedron.
+         * @return ecs::Entity The newly created tetrahedron entity.
+         */
+        static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                             const components::Material& material);
+        /**
+         * @brief Creates a pyramid entity with a specified material.
+         *
+         * Constructs a pyramid at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the pyramid.
+         * @param size The dimensions (width, height, depth) of the pyramid.
+         * @param rotation The rotation of the pyramid (in Euler angles).
+         * @param color The color of the pyramid's material (default is red).
+         * @return ecs::Entity The newly created pyramid entity.
+         */
+        static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+        /**
+        * @brief Creates a pyramid entity with a specified material.
+        *
+        * Constructs a pyramid at the given position, with the specified size, rotation, and material.
+        *
+        * @param pos The position of the pyramid.
+        * @param size The dimensions (width, height, depth) of the pyramid.
+        * @param rotation The rotation of the pyramid (in Euler angles).
+        * @param material The material to apply to the pyramid.
+        * @return ecs::Entity The newly created pyramid entity.
+        */
+        static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                         const components::Material& material);
     };
 }

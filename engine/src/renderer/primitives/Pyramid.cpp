@@ -157,56 +157,7 @@ namespace nexo::renderer
         flushAndReset();
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                                     const int entityID) const
-    {
-        if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
-
-        renderer::Material mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 18> verts{};
-        std::array<glm::vec2, 18> texCoords{};
-        std::array<glm::vec3, 18> normals{};
-        std::array<unsigned int, 18> indices{};
-
-        genPyramidMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 18; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < 18; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+    void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
                                      const glm::vec4& color, const int entityID) const
     {
         if (!m_renderingScene)
@@ -259,7 +210,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
+    void Renderer3D::drawPyramid(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -303,7 +254,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size,
+    void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size,
                                      const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
@@ -357,7 +308,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+    void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
                                      const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
@@ -413,7 +364,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
+    void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
                                      const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
@@ -468,7 +419,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const components::Material& material,
+    void Renderer3D::drawPyramid(const glm::mat4& transform, const components::Material& material,
                                      const int entityID) const
     {
         if (!m_renderingScene)
