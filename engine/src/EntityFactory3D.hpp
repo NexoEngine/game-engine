@@ -63,5 +63,6 @@ namespace nexo
 
             static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
             static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+			static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
     };
 }

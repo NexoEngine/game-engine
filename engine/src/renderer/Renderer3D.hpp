@@ -216,7 +216,8 @@ namespace nexo::renderer {
          *
          * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                      int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -232,7 +233,8 @@ namespace nexo::renderer {
          *
          * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
+                      const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -323,13 +325,8 @@ namespace nexo::renderer {
          * Overloads:
          * - Draws a tetrahedron with a solid color or a texture.
          */
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
-        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
-
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
-        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
-        void drawTetrahedron(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
+        void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                             int entityID = -1) const;
 
         /**
          * @brief Draws a custom 3D mesh.
@@ -345,6 +342,25 @@ namespace nexo::renderer {
          */
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<NxTexture2D>& texture, int entityID = -1) const;
 
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const NxMaterial&& material, int entityID = -1) const;
+        
+        /**
+         * @brief Draws a pyramid at the specified position and size.
+         *
+         * The pyramid can be drawn with a solid color.
+         *
+         * @param position The position of the pyramid in the 3D space.
+         * @param size The dimensions of the pyramid.
+         * @param color The color of the pyramid (RGBA format).
+         * @param entityID The ID of the entity.
+         *
+         * Overloads:
+         * - Draws a pyramid with a solid color.
+         */
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
+                   int entityID = -1) const;
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
@@ -412,5 +428,4 @@ namespace nexo::renderer {
          */
         void setMaterialUniforms(const NxIndexedMaterial& material) const;
     };
-
 }

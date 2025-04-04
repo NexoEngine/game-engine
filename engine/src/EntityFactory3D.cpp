@@ -85,6 +85,25 @@ namespace nexo {
         return newTetrahedron;
     }
 
+    ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    {
+        components::TransformComponent transform{};
+
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(rotation);
+        components::Material material{};
+        material.albedoColor = color;
+        auto pyramid = std::make_shared<components::Pyramid>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, pyramid);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newPyramid = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newPyramid, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newPyramid, renderComponent);
+        return newPyramid;
+    }
+
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color)
     {
         components::TransformComponent transform{};
