@@ -66,12 +66,13 @@ namespace nexo {
         return newCube;
     }
 
-    ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec4 color)
+    ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
 
         transform.pos = pos;
         transform.size = size;
+        transform.quat = glm::quat(rotation);
         components::Material material{};
         material.albedoColor = color;
         auto tetrahedron = std::make_shared<components::Tetrahedron>();
