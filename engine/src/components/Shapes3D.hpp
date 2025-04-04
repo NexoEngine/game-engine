@@ -51,6 +51,10 @@ namespace nexo::components {
             //TODO: Find a way to handle materials for tetrahedron
             renderer3D.drawTetrahedron(transf.pos, transf.size, material.albedoColor, entityID);
         }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Tetrahedron>(*this);
+        }
     };
 
     struct Mesh {
