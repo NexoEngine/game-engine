@@ -144,6 +144,45 @@ namespace nexo {
         return newPyramid;
     }
 
+        ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    {
+        components::TransformComponent transform{};
+
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(rotation);
+        components::Material material{};
+        material.albedoColor = color;
+        auto cylinder = std::make_shared<components::Cylinder>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, cylinder);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newCylinder = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newCylinder, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newCylinder, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newCylinder, uuid);
+        return newCylinder;
+    }
+
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(rotation);
+        auto cylinder = std::make_shared<components::Cylinder>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, cylinder);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newCylinder = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newCylinder, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newCylinder, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newCylinder, uuid);
+        return newCylinder;
+    }
+
     ecs::Entity EntityFactory3D::createModel(const std::string &path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)
     {
         components::TransformComponent transform{};
