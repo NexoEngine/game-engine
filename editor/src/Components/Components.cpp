@@ -282,21 +282,23 @@ namespace nexo::editor {
         }
 
         // For each segment defined by consecutive stops:
-        for (long i = static_cast<long>(stops.size()) - 1; i >= 0; i--)
+        for (long i = static_cast<long>(stops.size()) - 1; i > 0; i--)
         {
+            const long posStart = i - 1;
+            const long posEnd = i;
             // Compute threshold projections for the current segment.
-            const float seg_start = d_min + stops[i].pos * (d_max - d_min);
-            const float seg_end   = d_min + stops[i+1].pos * (d_max - d_min);
+            const float segStart = d_min + stops[posStart].pos * (d_max - d_min);
+            const float segEnd   = d_min + stops[posEnd].pos * (d_max - d_min);
 
             // Start with the whole rectangle.
             std::vector<ImVec2> segPoly = rectPoly;
             std::vector<ImVec2> tempPoly;
             // Clip against lower boundary: d >= seg_start
-            clipPolygonWithLine(segPoly, gradDir, seg_start, tempPoly);
+            clipPolygonWithLine(segPoly, gradDir, segStart, tempPoly);
             segPoly = tempPoly; // copy result
             // Clip against upper boundary: d <= seg_end
             // To clip with an upper-bound, invert the normal.
-            clipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -seg_end, tempPoly);
+            clipPolygonWithLine(segPoly, ImVec2(-gradDir.x, -gradDir.y), -segEnd, tempPoly);
             segPoly = tempPoly;
 
             if (segPoly.empty())
@@ -309,9 +311,9 @@ namespace nexo::editor {
                 // Compute projection for the vertex.
                 const float d = ImDot(v, gradDir);
                 // Map projection to [0,1] relative to current segment boundaries.
-                const float t = (d - seg_start) / (seg_end - seg_start);
+                const float t = (d - segStart) / (segEnd - segStart);
                 // Interpolate the color between the two stops.
-                polyColors.push_back(imLerpColor(stops[i].color, stops[i+1].color, t));
+                polyColors.push_back(imLerpColor(stops[posStart].color, stops[posEnd].color, t));
             }
 
             // Draw the filled and colored polygon.
