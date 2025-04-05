@@ -89,6 +89,8 @@ namespace nexo
          */
         static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                              const components::Material& material);
+
+
         /**
          * @brief Creates a pyramid entity with a specified material.
          *
@@ -115,5 +117,33 @@ namespace nexo
         */
         static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                          const components::Material& material);
+
+
+        /**
+         * @brief Creates a cylinder entity with a specified material.
+         *
+         * Constructs a cylinder at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the cylinder.
+         * @param size The dimensions (width, height, depth) of the cylinder.
+         * @param rotation The rotation of the cylinder (in Euler angles).
+         * @param color The color of the cylinder's material (default is red).
+         * @return ecs::Entity The newly created cylinder entity.
+         */
+        static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+        /**
+        * @brief Creates a cylinder entity with a specified material.
+        *
+        * Constructs a cylinder at the given position, with the specified size, rotation, and material.
+        *
+        * @param pos The position of the cylinder.
+        * @param size The dimensions (width, height, depth) of the cylinder.
+        * @param rotation The rotation of the cylinder (in Euler angles).
+        * @param material The material to apply to the cylinder.
+        * @return ecs::Entity The newly created cylinder entity.
+        */
+        static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                          const components::Material& material);
     };
 }
