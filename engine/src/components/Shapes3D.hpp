@@ -94,6 +94,19 @@ namespace nexo::components {
         }
     };
 
+    struct Cylinder final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        {
+            const auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for pyramid
+            renderer3D.drawCylinder(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Cylinder>(*this);
+        }
+    };
+
     struct Mesh {
         std::string name;
         std::vector<renderer::NxVertex> vertices;
