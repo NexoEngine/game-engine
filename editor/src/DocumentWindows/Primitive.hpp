@@ -49,7 +49,7 @@ namespace nexo::editor
         &EntityFactory3D::createCube,
         &EntityFactory3D::createTetrahedron,
         &EntityFactory3D::createPyramid,
-        &EntityFactory3D::createCube,
+        &EntityFactory3D::createCylinder,
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube
