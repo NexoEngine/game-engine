@@ -1,9 +1,23 @@
+//// QuerySystem.hpp //////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        06/04/2025
+//  Description: Header file for the query system class
+//
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include "System.hpp"
 #include "Access.hpp"
 #include "ComponentArray.hpp"
 #include "Coordinator.hpp"
+#include "SingletonComponentMixin.hpp"
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -13,107 +27,109 @@ namespace nexo::ecs {
      * @class QuerySystem
      * @brief System that directly queries component arrays
      *
-     * @tparam Components Component access specifiers (Read<T> or Write<T>)
+     * @tparam Components Component access specifiers (Read<T>, Write<T>, ReadSingleton<T>, WriteSingleton<T>)
      */
     template<typename... Components>
-    class QuerySystem : public AQuerySystem {
-    private:
-        // Helper template to check if a component type exists in the parameter pack with Read access
-        template<typename T, typename First, typename... Rest>
-        struct HasReadAccess {
-            static constexpr bool value =
-                (std::is_same_v<First, Read<T>> ||
-                 HasReadAccess<T, Rest...>::value);
-        };
+    class QuerySystem : public AQuerySystem, public SingletonComponentMixin<
+	    												QuerySystem<Components...>,
+	                									Components...> {
+	    private:
+	        // Helper template to check if a component type exists in the parameter pack with Read access
+	        template<typename T, typename First, typename... Rest>
+	        struct HasReadAccess {
+	            static constexpr bool value =
+	                (std::is_same_v<First, Read<T>> ||
+	                 HasReadAccess<T, Rest...>::value);
+	        };
 
-        // Base case for the template recursion
-        template<typename T, typename First>
-        struct HasReadAccess<T, First> {
-            static constexpr bool value = std::is_same_v<First, Read<T>>;
-        };
+	        // Base case for the template recursion
+	        template<typename T, typename First>
+	        struct HasReadAccess<T, First> {
+	            static constexpr bool value = std::is_same_v<First, Read<T>>;
+	        };
 
-        // Convenience function to check read access
-        template<typename T>
-        static constexpr bool hasReadAccess() {
-            return HasReadAccess<T, Components...>::value;
-        }
+	        // Convenience function to check read access
+	        template<typename T>
+	        static constexpr bool hasReadAccess()
+			{
+	            return HasReadAccess<T, Components...>::value;
+	        }
 
-    public:
-        QuerySystem() {
-            if (!coord) return;
+	    public:
+	        // Make the base class a friend to access protected members
+	        friend class SingletonComponentMixin<QuerySystem<Components...>, Components...>;
 
-            // Set system signature based on required components
-            (setComponentSignature<typename Components::ComponentType>(m_signature), ...);
+	        QuerySystem()
+			{
+	            if (!coord)
+					return;
 
-            // Store component arrays for faster access
-            (cacheComponentArray<Components>(), ...);
-        }
+	            // Set system signature based on required components (ignore singleton components)
+	            (setComponentSignatureIfRegular<Components>(m_signature), ...);
 
-        /**
-         * @brief Get a component for an entity with access type determined at compile time
-         *
-         * @tparam T The component type
-         * @param entity The entity to get the component from
-         * @return Reference to the component with appropriate const-ness
-         */
-        template<typename T>
-        typename std::conditional<hasReadAccess<T>(), const T&, T&>::type
-        getComponent(Entity entity) {
-            auto typeIndex = getTypeIndex<T>();
-            auto componentArray = std::static_pointer_cast<ComponentArray<T>>(m_componentArrays[typeIndex]);
+	            // Cache component arrays for faster access (ignore singleton components)
+	            (cacheComponentArrayIfRegular<Components>(), ...);
 
-            if constexpr (hasReadAccess<T>()) {
-                return componentArray->getData(entity);
-            } else {
-                return componentArray->getData(entity);
-            }
-        }
+	            // Initialize singleton components
+	            this->initializeSingletonComponents();
+	        }
 
-        const Signature &getSignature() const {
-            return m_signature;
-        }
+	        /**
+	         * @brief Get a component for an entity with access type determined at compile time
+	         *
+	         * @tparam T The component type
+	         * @param entity The entity to get the component from
+	         * @return Reference to the component with appropriate const-ness
+	         */
+	        template<typename T>
+	        typename std::conditional<hasReadAccess<T>(), const T&, T&>::type
+	        getComponent(Entity entity)
+			{
+	            auto typeIndex = getTypeIndex<T>();
+	            auto componentArray = std::static_pointer_cast<ComponentArray<T>>(m_componentArrays[typeIndex]);
 
-        Signature &getSignature() {
-            return m_signature;
-        }
+	            if constexpr (hasReadAccess<T>())
+	                return componentArray->getData(entity);
+	            else
+	                return componentArray->getData(entity);
+	        }
 
-    protected:
-        /**
-         * @brief Caches component arrays for faster access
-         *
-         * @tparam ComponentAccessType The component access type to cache
-         */
-        template<typename ComponentAccessType>
-        void cacheComponentArray() {
-            using T = typename ComponentAccessType::ComponentType;
-            m_componentArrays[getTypeIndex<T>()] = coord->getComponentArray<T>();
-        }
+	        const Signature& getSignature() const { return m_signature; }
+	        Signature& getSignature() { return m_signature; }
 
-        /**
-         * @brief Sets the component bit in the system signature
-         *
-         * @tparam T The component type
-         * @param signature The signature to modify
-         */
-        template<typename T>
-        void setComponentSignature(Signature& signature) {
-            signature.set(coord->getComponentType<T>(), true);
-        }
+	    protected:
+	        /**
+	         * @brief Caches component arrays for faster access (only for regular components)
+	         *
+	         * @tparam ComponentAccessType The component access type to cache
+	         */
+	        template<typename ComponentAccessType>
+	        void cacheComponentArrayIfRegular()
+			{
+	            if constexpr (!IsSingleton<ComponentAccessType>::value) {
+	                using T = typename ComponentAccessType::ComponentType;
+	                m_componentArrays[getTypeIndex<T>()] = coord->template getComponentArray<T>();
+	            }
+	        }
 
-        /**
-         * @brief Gets the type index for a component
-         *
-         * @tparam T The component type
-         * @return std::type_index The type index
-         */
-        template<typename T>
-        std::type_index getTypeIndex() const {
-            return std::type_index(typeid(T));
-        }
+	        /**
+	         * @brief Sets the component bit in the system signature (only for regular components)
+	         *
+	         * @tparam ComponentAccessType The component access type
+	         * @param signature The signature to modify
+	         */
+	        template<typename ComponentAccessType>
+	        void setComponentSignatureIfRegular(Signature& signature)
+			{
+	            if constexpr (!IsSingleton<ComponentAccessType>::value) {
+	                using T = typename ComponentAccessType::ComponentType;
+	                signature.set(coord->template getComponentType<T>(), true);
+	            }
+	        }
 
-    private:
-        // Cache of component arrays for faster access
-        std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
-        Signature m_signature;
+	    private:
+	        // Cache of component arrays for faster access
+	        std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
+	        Signature m_signature;
     };
 }
