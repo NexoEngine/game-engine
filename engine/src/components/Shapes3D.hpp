@@ -35,11 +35,51 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            renderer3D.drawCube(transf.pos, transf.size, transf.quat, material, entityID);
+            //TODO: Find a way to handle materials for cube
+            renderer3D.drawCube(transf.pos, transf.size, material.albedoColor, entityID);
         }
 
         [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
             return std::make_shared<Cube>(*this);
+        }
+    };
+
+    struct Tetrahedron final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        {
+            const auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for tetrahedron
+            renderer3D.drawTetrahedron(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Tetrahedron>(*this);
+        }
+    };
+
+    struct Pyramid final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        {
+            const auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for pyramid
+            renderer3D.drawPyramid(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Pyramid>(*this);
+        }
+    };
+
+    struct Cylinder final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        {
+            const auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for pyramid
+            renderer3D.drawCylinder(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Cylinder>(*this);
         }
     };
 

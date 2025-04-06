@@ -33,12 +33,14 @@ namespace nexo::editor {
     SceneTreeWindow::~SceneTreeWindow() = default;
 
     void SceneTreeWindow::setup()
-    {}
+    {
+    }
 
     void SceneTreeWindow::shutdown()
-    {}
+    {
+    }
 
-    void SceneTreeWindow::handleRename(SceneObject &obj)
+    void SceneTreeWindow::handleRename(SceneObject& obj)
     {
         ImGui::BeginGroup();
         ImGui::TextUnformatted(ObjectTypeToIcon.at(obj.type).c_str());
@@ -72,7 +74,7 @@ namespace nexo::editor {
         ImGui::EndGroup();
     }
 
-    bool SceneTreeWindow::handleSelection(const SceneObject &obj, const std::string &uniqueLabel,
+    bool SceneTreeWindow::handleSelection(const SceneObject& obj, const std::string& uniqueLabel,
                                           const ImGuiTreeNodeFlags baseFlags) const
     {
         const bool nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), baseFlags);
@@ -104,7 +106,7 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::cameraSelected(const SceneObject &obj) const
+    void SceneTreeWindow::cameraSelected(const SceneObject& obj) const
     {
     	auto &app = Application::getInstance();
     	auto &selector = Selector::get();
@@ -118,7 +120,7 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::entitySelected(const SceneObject &obj) const
+    void SceneTreeWindow::entitySelected(const SceneObject& obj) const
     {
         if (ImGui::MenuItem("Delete Entity"))
         {
@@ -129,10 +131,10 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::showNode(SceneObject &object)
+    void SceneTreeWindow::showNode(SceneObject& object)
     {
         ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-                                       ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags_SpanAvailWidth;
         // Checks if the object is at the end of a tree
         const bool leaf = object.children.empty();
         if (leaf)
@@ -174,7 +176,7 @@ namespace nexo::editor {
         // Go further into the tree
         if (nodeOpen && !leaf)
         {
-            for (auto &child: object.children)
+            for (auto& child : object.children)
             {
                 showNode(child);
             }
@@ -213,7 +215,8 @@ namespace nexo::editor {
                     memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
 
                     m_popupManager.closePopupInContext();
-                } else
+                }
+                else
                     LOG(NEXO_WARN, "Scene name is empty !");
             }
 
