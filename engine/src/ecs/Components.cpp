@@ -8,7 +8,7 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        10/11/2024
-//  Description: Source file for the components array and component manager classes
+//  Description: Source file for the component manager class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
