@@ -19,6 +19,43 @@ struct Velocity {
     float y = 0.0f;
 };
 
+// Define singleton components
+// EVERY singleton components should have their copy constructor deleted to enforce singleton semantics
+// This is statically checked when registering it
+struct GameConfig {
+	int maxEntities = 1000;
+    float worldSize = 100.0f;
+
+    // Default constructor and other constructors as needed
+    GameConfig() = default;
+    GameConfig(int entities, float size) : maxEntities(entities), worldSize(size) {}
+
+    // Delete copy constructor to enforce singleton semantics
+    GameConfig(const GameConfig&) = delete;
+    GameConfig& operator=(const GameConfig&) = delete;
+
+    // Move operations can be allowed if needed
+    GameConfig(GameConfig&&) = default;
+    GameConfig& operator=(GameConfig&&) = default;
+};
+
+struct GameState {
+    bool isPaused;
+    float gameTime;
+
+    // Default constructor and other constructors
+    GameState() = default;
+    GameState(bool paused, float time) : isPaused(paused), gameTime(time) {}
+
+    // Delete copy constructor to enforce singleton semantics
+    GameState(const GameState&) = delete;
+    GameState& operator=(const GameState&) = delete;
+
+    // Move operations can be allowed if needed
+    GameState(GameState&&) = default;
+    GameState& operator=(GameState&&) = default;
+};
+
 void log(const std::string& message)
 {
     std::cout << message << std::endl;
@@ -26,13 +63,16 @@ void log(const std::string& message)
 
 // This query system will increment the position component by the velocity component for each entity having both
 // Position is marked as a write component and Velocity as a read component
+// We also retrieve GameConfig singleton component as read only and GameState as write
 // This enforces constness at compile time to prevent accidental modification of Velocity
 // The query system induces a small performance overhead because of the indirection required to access the components
 // (because the entities we are iterating on does not necessarily have contiguous components in memory)
 // This should be used when you want to create a group system that does not own any components
 class QueryBenchmarkSystem : public nexo::ecs::QuerySystem<
     nexo::ecs::Write<Position>,
-    nexo::ecs::Read<Velocity>
+    nexo::ecs::Read<Velocity>,
+    nexo::ecs::ReadSingleton<GameConfig>,
+    nexo::ecs::WriteSingleton<GameState>
 > {
 	public:
 	    void runBenchmark()
@@ -48,10 +88,23 @@ class QueryBenchmarkSystem : public nexo::ecs::QuerySystem<
 	    {
 	        auto start = std::chrono::high_resolution_clock::now();
 
+			auto &gameConfig = getSingleton<GameConfig>();
+			log ("Max entities " + std::to_string(gameConfig.maxEntities));
+			log("World size " + std::to_string(gameConfig.worldSize));
+			// This does not compile because GameConfig is read-only
+			//gameConfig.worldSize += 1;
+
+			auto &gameState = getSingleton<GameState>();
+			log("Game state: " + std::to_string(gameState.isPaused));
+			log("Game time: " + std::to_string(gameState.gameTime));
+
 	        for (int i = 0; i < numIterations; i++) {
+				// We can safely update the game state here
+				gameState.gameTime += 10;
 	            for (nexo::ecs::Entity entity : entities) {
 	                auto &position = getComponent<Position>(entity);
 	                auto &velocity = getComponent<Velocity>(entity);
+
 
 	                // This triggers a compiler error since Velocity is marked as read-only
 	                //velocity.x += 1;
@@ -72,6 +125,7 @@ class QueryBenchmarkSystem : public nexo::ecs::QuerySystem<
 // Then we can safely iterate over the group and update the position of each entity
 // Those system induces a huge overhead when you are adding/removing components or destroying entities often
 // So make sure to use them wisely and avoid unnecessary operations.
+// Also here we get the singleton components game config as write and game state as read
 // But in most case, those are blazingly fast
 // If unsure, you can try both a query system and a group system to test out what is best for your use case !
 class GroupBenchmarkSystem : public nexo::ecs::GroupSystem<
@@ -79,7 +133,9 @@ class GroupBenchmarkSystem : public nexo::ecs::GroupSystem<
         nexo::ecs::Write<Position>,
         nexo::ecs::Read<Velocity>
     >,
-    nexo::ecs::NonOwned<>
+    nexo::ecs::NonOwned<>,
+    nexo::ecs::WriteSingleton<GameConfig>,
+    nexo::ecs::ReadSingleton<GameState>
 > {
 	public:
 	    void runBenchmark()
@@ -160,11 +216,25 @@ class GroupBenchmarkSystem : public nexo::ecs::GroupSystem<
 	      	// This solution should be your preferred one
 	        auto start = std::chrono::high_resolution_clock::now();
 
+			auto &gameConfig = getSingleton<GameConfig>();
+			log ("Max entities " + std::to_string(gameConfig.maxEntities));
+			log("World size " + std::to_string(gameConfig.worldSize));
+
+			auto &gameState = getSingleton<GameState>();
+			log("Game state: " + std::to_string(gameState.isPaused));
+			log("Game time: " + std::to_string(gameState.gameTime));
+			// This does not compile because GameState is read-only
+			// gameState.isPaused = false;
+
+
+
 	        for (int i = 0; i < numIterations; i++) {
 	            auto positionSpan = get<Position>();
 	            // Constness is not enforced on the span itself since it is basically a non-owning view of the underlying data.
 	            // But we consider it to be good practice to make more explicit that we are using read-only components
 	            const auto velocitySpan = get<Velocity>();
+				// We can safely update the game config
+				gameConfig.maxEntities += 1000;
 
 	            size_t size = positionSpan.size();
 	            for (size_t j = 0; j < size; ++j) {
@@ -201,6 +271,8 @@ int main() {
     coordinator.registerComponent<Position>();
     coordinator.registerComponent<Velocity>();
 
+    coordinator.registerSingletonComponent<GameConfig>(5000, 10);
+    coordinator.registerSingletonComponent<GameState>(true, 10.0f);
     log("Components registered");
 
     // Register benchmark systems
@@ -241,6 +313,14 @@ int main() {
     log("\n=== Starting GroupSystem Benchmark ===");
     groupBenchmarkSystem->runBenchmark();
     log("=== GroupSystem Benchmark Complete ===");
+
+    // We make sure to check if the singleton component has been updated
+    auto &gameState = coordinator.getSingletonComponent<GameState>();
+    log("Game time: " + std::to_string(gameState.gameTime));
+
+    auto &gameConfig = coordinator.getSingletonComponent<GameConfig>();
+    log("Max entities: " + std::to_string(gameConfig.maxEntities));
+
 
     return 0;
 }
