@@ -15,7 +15,6 @@
 #include "OpenGlWindow.hpp"
 
 #include <stb_image.h>
-#include <core/exceptions/Exceptions.hpp>
 
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -33,6 +32,8 @@ namespace nexo::renderer {
         // Resize event
         glfwSetWindowSizeCallback(_openGlWindow, [](GLFWwindow *window, const int width, const int height)
         {
+            if (width <= 0 || height <= 0)
+                return;
             auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
             props->width = width;
             props->height = height;

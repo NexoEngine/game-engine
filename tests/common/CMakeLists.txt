@@ -24,13 +24,18 @@ include_directories("./common")
 set(COMMON_SOURCES
     common/Exception.cpp
     common/math/Matrix.cpp
+    common/math/Vector.cpp
+    common/math/Light.cpp
 )
 
 add_executable(common_tests
+    ${TEST_MAIN_FILES}
     ${COMMON_SOURCES}
     ${BASEDIR}/Matrix.test.cpp
     ${BASEDIR}/Path.test.cpp
     ${BASEDIR}/Exceptions.test.cpp
+    ${BASEDIR}/Vector.test.cpp
+    ${BASEDIR}/Light.test.cpp
 )
 
 # Find glm and add its include directories
@@ -41,4 +46,4 @@ find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(common_tests PRIVATE Boost::dll)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(common_tests PRIVATE GTest::gtest GTest::gtest_main)
+target_link_libraries(common_tests PRIVATE GTest::gtest)

@@ -112,4 +112,172 @@ namespace nexo::renderer {
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
         EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
     }
+
+    TEST(RendererExceptionsTest, OutOfRangeException) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        OutOfRangeException ex(10, 5);
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("Index 10 is out of range [0, 5)"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, GraphicsApiNotInitialized) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        GraphicsApiNotInitialized ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] API is not initialized, call the init function first"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, GraphicsApiViewportResizingFailure) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        GraphicsApiViewportResizingFailure ex("OpenGL", true, 4096, 4096);
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Viewport resizing failed: 4096x4096 is too big"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, GraphicsApiWindowInitFailure) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        GraphicsApiWindowInitFailure ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("Failed to initialize graphics API: OpenGL"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, InvalidValue) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        InvalidValue ex("OpenGL", "Negative width value");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Invalid value: Negative width value"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, ShaderInvalidUniform) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        ShaderInvalidUniform ex("OpenGL", "main.glsl", "u_ViewProjection");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Failed to retrieve uniform \"u_ViewProjection\" in shader: main.glsl"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, FramebufferCreationFailed) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        FramebufferCreationFailed ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Failed to create the framebuffer"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, FramebufferUnsupportedColorFormat) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        FramebufferUnsupportedColorFormat ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Unsupported framebuffer color attachment format"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, FramebufferUnsupportedDepthFormat) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        FramebufferUnsupportedDepthFormat ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Unsupported framebuffer depth attachment format"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, FramebufferReadFailure) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        FramebufferReadFailure ex("OpenGL", 0, 100, 200);
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Unable to read framebuffer with index 0 at coordinate (100, 200)"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, FramebufferInvalidIndex) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        FramebufferInvalidIndex ex("OpenGL", 5);
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Invalid attachment index : 5"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, BufferLayoutEmpty) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        BufferLayoutEmpty ex("OpenGL");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Vertex buffer layout cannot be empty"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, TextureUnsupportedFormat) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        TextureUnsupportedFormat ex("OpenGL", 5, "texture.exr");
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Unsupported image format with 5 channels in texture.exr"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
+
+    TEST(RendererExceptionsTest, TextureSizeMismatch) {
+        constexpr const char* expectedFile = __FILE__;
+        constexpr unsigned int expectedLine = __LINE__ + 2;
+
+        TextureSizeMismatch ex("OpenGL", 1024, 2048);
+        std::string formattedMessage = ex.what();
+
+        EXPECT_NE(formattedMessage.find("[OpenGL] Data size does not match the texture size: 1024 != 2048"), std::string::npos);
+        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
+        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
+    }
 }

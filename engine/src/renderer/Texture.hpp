@@ -72,6 +72,25 @@ namespace nexo::renderer {
             static std::shared_ptr<Texture2D> create(unsigned int width, unsigned int height);
 
             /**
+             * @brief Creates a 2D texture from file in memory.
+             *
+             * Loads the texture data from the specified memory buffer. The buffer must contain
+             * image data in a supported format (e.g., PNG, JPG). The texture will be ready
+             * for rendering after creation.
+             *
+             * @param buffer The memory buffer containing the texture image data.
+             * @param len The length of the memory buffer in bytes.
+             * @return A shared pointer to the created `Texture2D` instance.
+             *
+             * Example:
+             * ```cpp
+             * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
+             * auto texture = Texture2D::create(imageData.data(), imageData.size());
+             * ```
+             */
+            static std::shared_ptr<Texture2D> create(uint8_t *buffer, unsigned int len);
+
+            /**
             * @brief Creates a 2D texture from an image file.
             *
             * Loads the texture data from the specified file path. The file must contain

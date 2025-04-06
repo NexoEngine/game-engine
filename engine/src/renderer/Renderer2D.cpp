@@ -36,7 +36,8 @@ namespace nexo::renderer {
             {ShaderDataType::FLOAT3, "aPos"}, // Position
             {ShaderDataType::FLOAT4, "aColor"}, // Color
             {ShaderDataType::FLOAT2, "aTexCoord"}, // Texture Coordinates
-            {ShaderDataType::FLOAT, "aTexIndex"} // Texture Index
+            {ShaderDataType::FLOAT, "aTexIndex"}, // Texture Index
+            {ShaderDataType::INT, "aEntityID"}
         };
         m_storage->vertexBuffer->setLayout(quadVertexBufferLayout);
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
@@ -61,14 +62,12 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        try
-        {
+        try {
             m_storage->textureShader = Shader::create(
-                Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
+                Path::resolvePathRelativeToExe("../resources/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
             m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer2DStorage::maxTextureSlots);
-        } catch (const Exception &e)
-        {
+        } catch (const Exception &e) {
             LOG_EXCEPTION(e);
         }
 
@@ -110,8 +109,7 @@ namespace nexo::renderer {
     void Renderer2D::flush() const
     {
         m_storage->textureShader->bind();
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
-        {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
             m_storage->textureSlots[i]->bind(i);
         }
         RenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
@@ -149,15 +147,14 @@ namespace nexo::renderer {
 
 
     void Renderer2D::generateQuadVertices(const glm::mat4 &transform, const glm::vec4 color, const float textureIndex,
-                                          const glm::vec2 *textureCoords) const
+                                          const glm::vec2 *textureCoords, int entityID) const
     {
         constexpr unsigned int quadVertexCount = 4;
         constexpr unsigned int quadIndexCount = 6;
 
         // Ensure we don't overflow the buffers
         if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + quadVertexCount > m_storage->maxVertices ||
-            m_storage->indexCount + quadIndexCount > m_storage->maxIndices)
-        {
+            m_storage->indexCount + quadIndexCount > m_storage->maxIndices) {
             flushAndReset();
         }
 
@@ -165,12 +162,12 @@ namespace nexo::renderer {
         auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
 
         // Generate quad vertices
-        for (unsigned int i = 0; i < quadVertexCount; ++i)
-        {
+        for (unsigned int i = 0; i < quadVertexCount; ++i) {
             m_storage->vertexBufferPtr->position = transform * m_storage->quadVertexPositions[i];
             m_storage->vertexBufferPtr->color = color;
             m_storage->vertexBufferPtr->texCoord = textureCoords[i];
             m_storage->vertexBufferPtr->texIndex = textureIndex;
+            m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
         }
 
@@ -192,17 +189,14 @@ namespace nexo::renderer {
     {
         float textureIndex = 0.0f;
 
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
-        {
-            if (*m_storage->textureSlots[i].get() == *texture)
-            {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
+            if (*m_storage->textureSlots[i].get() == *texture) {
                 textureIndex = static_cast<float>(i);
                 break;
             }
         }
 
-        if (textureIndex == 0)
-        {
+        if (textureIndex == 0) {
             textureIndex = static_cast<float>(m_storage->textureSlotIndex);
             m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
             m_storage->textureSlotIndex++;
@@ -211,15 +205,15 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color) const
+    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, color);
+        drawQuad({pos.x, pos.y, 0.0f}, size, color, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color) const
+    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -237,22 +231,22 @@ namespace nexo::renderer {
                                     glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
         constexpr float textureIndex = 0.0f;
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, texture);
+        drawQuad({pos.x, pos.y, 0.0f}, size, texture, entityID);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -272,22 +266,22 @@ namespace nexo::renderer {
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
                                     glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<SubTexture2D> &subTexture) const
+                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, subTexture);
+        drawQuad({pos.x, pos.y, 0.0f}, size, subTexture, entityID);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<SubTexture2D> &subTexture) const
+                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -302,21 +296,21 @@ namespace nexo::renderer {
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) *
                                     glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
-                              const glm::vec4 &color) const
+                              const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, color);
+        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, color, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const
+    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -334,22 +328,22 @@ namespace nexo::renderer {
             glm::vec2(0.0f, 1.0f),
         };
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, texture);
+        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, texture, entityID);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<Texture2D> &texture) const
+                              const std::shared_ptr<Texture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -370,22 +364,22 @@ namespace nexo::renderer {
                                     glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)) *
                                     glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }
 
     void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<SubTexture2D> &subTexture) const
+                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
-        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, subTexture);
+        drawQuad({pos.x, pos.y, 0.0f}, size, rotation, subTexture, entityID);
     }
 
     void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<SubTexture2D> &subTexture) const
+                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
@@ -401,7 +395,7 @@ namespace nexo::renderer {
                                     glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)) *
                                     glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-        generateQuadVertices(transform, color, textureIndex, textureCoords);
+        generateQuadVertices(transform, color, textureIndex, textureCoords, entityID);
 
         m_storage->stats.quadCount++;
     }

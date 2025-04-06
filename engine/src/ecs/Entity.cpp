@@ -61,4 +61,9 @@ namespace nexo::ecs {
 
         return m_signatures[entity];
     }
+
+    std::uint32_t EntityManager::getLivingEntityCount() const
+    {
+        return m_livingEntityCount;
+    }
 }

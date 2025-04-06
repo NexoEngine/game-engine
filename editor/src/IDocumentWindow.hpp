@@ -6,7 +6,7 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
+//  Author:      Guillaume HEIN
 //  Date:        09/11/2024
 //  Description: Header file for the document window interface
 //
@@ -14,9 +14,13 @@
 
 #pragma once
 
-#include "SceneManagerBridge.hpp"
+#include <string>
 
 namespace nexo::editor {
+
+    using WindowId = unsigned int;
+
+    inline WindowId nextWindowId = 0;
     class IDocumentWindow {
         public:
         virtual ~IDocumentWindow() = default;
@@ -25,10 +29,10 @@ namespace nexo::editor {
         virtual void show() = 0;
         virtual void update() = 0;
 
-        virtual void setSceneManager(std::shared_ptr<SceneManagerBridge> bridge) = 0;
-
         [[nodiscard]] virtual bool isFocused() const = 0;
         [[nodiscard]] virtual bool isOpened() const = 0;
+        [[nodiscard]] virtual bool isHovered() const = 0;
         [[nodiscard]] virtual bool &getOpened() = 0;
+        [[nodiscard]] virtual const std::string &getWindowName() const = 0;
     };
 }

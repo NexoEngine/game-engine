@@ -1,4 +1,4 @@
-//// Scene.hpp ////////////////////////////////////////////////////////////////
+//// Scene.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,139 +7,99 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        08/11/2024
+//  Date:        07/03/2025
 //  Description: Header file for the scene class
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <utility>
-#include <array>
-
-#include "core/layer/LayerStack.hpp"
-#include "core/camera/Camera.hpp"
 #include "ecs/Coordinator.hpp"
-#include "core/event/Event.hpp"
-#include "Logger.hpp"
-#include "renderer/RendererContext.hpp"
-#include "components/Light.hpp"
+#include <set>
 
 namespace nexo::scene {
-    using SceneId = unsigned int;
-    using LayerId = unsigned int;
+	inline unsigned int nextSceneId = 0;
 
-    struct LightContext {
-        LightContext() = default;
+	/**
+	* @class Scene
+	* @brief Represents a scene in the engine.
+	*
+	* A Scene encapsulates a collection of entities, a unique identifier, a name,
+	* and active/rendered states. It manages its entities via an ECS Coordinator.
+	*
+	* Responsibilities:
+	* - Adding and removing entities.
+	* - Managing active and rendered states for the scene and its entities.
+	* - Providing access to scene metadata (name, ID, UUID).
+	*/
+	class Scene {
+		public:
+			/**
+			* @brief Constructs a new Scene.
+			*
+			* Initializes the scene with the specified name and ECS coordinator.
+			* Optionally marks the scene as editor-only.
+			*
+			* @param sceneName The name of the scene.
+			* @param coordinator Shared pointer to the ECS Coordinator managing entities/components.
+			* @param editorOnly If true, the scene is marked as editor-only.
+			*/
+			Scene(std::string sceneName, const std::shared_ptr<ecs::Coordinator>& coordinator, bool editorOnly = false);
+			~Scene();
 
-        float ambientLight{};
-        std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS> m_lights;
-        unsigned int nbLights = 0;
-        unsigned int nbPointLights = 0;
-        unsigned int nbDirectionalLights = 0;
-    };
+			/**
+			* @brief Adds an entity to the scene.
+			*
+			* Attaches a SceneTag component (with the scene ID and default active/rendered state)
+			* to the entity and stores it in the scene's entity set.
+			*
+			* @param entity The entity identifier to add.
+			*/
+			void addEntity(ecs::Entity entity);
 
-    struct SceneContext {
-        LightContext lightContext;
-    };
+			/**
+             * @brief Removes an entity from the scene.
+             *
+             * Detaches the SceneTag component from the entity and removes it from the scene's entity set.
+             *
+             * @param entity The entity identifier to remove.
+             */
+			void removeEntity(ecs::Entity entity);
 
-    class Scene {
-        public:
-            Scene() : id(0), name("default") {};
+			/**
+             * @brief Sets the active status for the scene.
+             *
+             * Updates the scene's active state and propagates the change to all entities by updating
+             * their SceneTag components.
+             *
+             * @param active True to mark the scene as active, false to deactivate.
+             */
+			void setActiveStatus(bool active);
+			[[nodiscard]] bool isActive() const { return m_active; }
 
-            explicit Scene(const SceneId id, std::string sceneName = "Defaut scene") : id(id),
-                                                                                       name(std::move(sceneName))
-            {
-                LOG(NEXO_INFO, "Scene {} created with id: {}", name, id);
-                m_rendererContext = std::make_shared<renderer::RendererContext>();
-                m_rendererContext->renderer2D.init();
-                m_rendererContext->renderer3D.init();
-            };
+			/**
+             * @brief Sets the rendered status for the scene.
+             *
+             * Updates the scene's rendered state and propagates the change to all entities by updating
+             * their SceneTag components.
+             *
+             * @param rendered True to mark the scene as rendered, false to not render.
+             */
+			void setRenderStatus(bool rendered);
+			[[nodiscard]] bool isRendered() const { return m_rendered; }
 
-            virtual ~Scene()
-            {
-                LOG(NEXO_DEBUG, "Scene {} deleted", name);
-            };
+			[[nodiscard]] const std::string& getName() const {return m_sceneName;};
+			void setName(std::string_view newName) { m_sceneName = newName; }
+			[[nodiscard]] unsigned int getId() const {return m_id;};
+			[[nodiscard]] const std::string &getUuid() const {return m_uuid;}
+		private:
+			unsigned int m_id = nextSceneId++;
+			std::string m_sceneName;
+			std::string m_uuid;
+			std::set<ecs::Entity> m_entities;
+			std::shared_ptr<ecs::Coordinator> m_coordinator;
 
-            [[nodiscard]] const std::string &getName() const { return name; }
-
-            void addLayer(LayerId layerId, const std::string &layerName);
-
-            void addOverlay(LayerId layerId, const std::string &overlayName);
-
-            void removeLayer(LayerId layerId);
-
-            void removeOverlay(LayerId layerId);
-
-            [[nodiscard]] std::shared_ptr<layer::Layer> getLayer(LayerId layerId) const;
-
-            [[nodiscard]] const layer::LayerStack &getLayerStack() const { return m_layerStack; };
-
-            void addEntityToLayer(ecs::Entity entity, LayerId layerId);
-
-            void addGlobalEntity(ecs::Entity entity);
-
-            void removeEntityFromLayer(ecs::Entity entity, LayerId layerId);
-
-            void removeGlobalEntity(ecs::Entity entity);
-
-            void entityDestroyed(ecs::Entity entity);
-
-            [[nodiscard]] std::set<ecs::Entity> getEntities() const;
-
-            [[nodiscard]] std::set<ecs::Entity> getRenderedEntities() const;
-
-            [[nodiscard]] std::set<ecs::Entity> getGlobalEntities() const { return m_globalEntities; };
-
-            void attachCameraToLayer(const std::shared_ptr<camera::Camera> &camera, LayerId id);
-
-            void detachCameraFromLayer(LayerId layerId);
-
-            std::shared_ptr<camera::Camera> getCameraLayer(LayerId layerId);
-
-            void setLayerRenderStatus(bool status, LayerId layerId);
-
-            void setLayerActiveStatus(bool status, LayerId layerId);
-
-            [[nodiscard]] bool getLayerRenderStatus(LayerId layerId) const;
-
-            [[nodiscard]] bool getLayerActiveStatus(LayerId layerId) const;
-
-            void setWindowOffset(const glm::vec2 offset) { m_windowOffset = offset; };
-            [[nodiscard]] glm::vec2 &getWindowOffset() { return m_windowOffset; };
-
-            unsigned int addLight(const std::shared_ptr<components::Light> &light);
-
-            void removeLight(unsigned int index);
-
-            void setAmbientLight(const float ambient) { ambientLight = ambient; };
-            [[nodiscard]] float getAmbientLight() const { return ambientLight; };
-
-            void onUpdate(Timestep timestep) const;
-
-            void onRender();
-
-            virtual void dispatchEventToLayers(event::IEvent &event);
-
-            [[nodiscard]] const layer::LayerStack &getLayers() const { return m_layerStack; };
-
-            SceneId id;
-
-            std::string name;
-
-            bool isActive = true;
-            bool isRendered = true;
-
-        private:
-            layer::LayerStack m_layerStack;
-            std::set<ecs::Entity> m_globalEntities;
-            glm::vec2 m_windowOffset = glm::vec2(0.0f);
-            std::shared_ptr<renderer::RendererContext> m_rendererContext;
-
-            std::array<std::shared_ptr<components::Light>, MAX_POINT_LIGHTS + MAX_DIRECTIONAL_LIGHTS> m_lights;
-            unsigned int nbLights = 0;
-            unsigned int nbPointLights = 0;
-            unsigned int nbDirectionalLights = 0;
-            float ambientLight = 0.5f;
-
-    };
+			bool m_active = true;
+			bool m_rendered = true;
+			bool isEditor = false;
+	};
 }

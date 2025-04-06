@@ -172,7 +172,7 @@ namespace nexo::renderer {
                        FrameBufferTextureFormats::DEPTH24STENCIL8)
             {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture),
-                          static_cast<unsigned int>(framebuffer.getSpecs().attachments.attachments[i].textureFormat));
+                          framebuffer.getDepthAttachmentId());
             } else
             {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture), 0);
@@ -279,4 +279,182 @@ namespace nexo::renderer {
             OpenGlFramebuffer framebuffer(specs);
             , FramebufferUnsupportedColorFormat);
     }
+
+    TEST_F(OpenGLTest, GetPixelWrapperValid)
+    {
+#ifdef _WIN32
+        // TODO: fix test (see #99)
+        GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
+#endif
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        framebuffer.bind();
+
+        int pixelValue = 0;
+        EXPECT_NO_THROW(framebuffer.getPixelWrapper(0, 50, 50, &pixelValue, typeid(int)));
+
+        framebuffer.unbind();
+    }
+
+    TEST_F(OpenGLTest, GetPixelWrapperUnsupportedType)
+    {
+        // Verify that getPixelWrapper throws when provided with a type other than int.
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        int dummy = 0;
+        EXPECT_THROW(
+            framebuffer.getPixelWrapper(0, 50, 50, &dummy, typeid(float)),
+            FramebufferUnsupportedColorFormat
+        );
+    }
+
+    TEST_F(OpenGLTest, GetPixelWrapperInvalidAttachmentIndex)
+    {
+        // Verify that getPixelWrapper throws if the attachment index is out of bounds.
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        // Only one color attachment.
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        int dummy = 0;
+        // Attachment index 1 is invalid because only index 0 exists.
+        EXPECT_THROW(
+            framebuffer.getPixelWrapper(1, 50, 50, &dummy, typeid(int)),
+            FramebufferInvalidIndex
+        );
+    }
+
+    TEST_F(OpenGLTest, ClearAttachmentWrapperValid)
+    {
+        // Test that clearAttachmentWrapper does not throw when clearing a valid attachment with a supported type.
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        int clearValue = 0;
+        EXPECT_NO_THROW(framebuffer.clearAttachmentWrapper(0, &clearValue, typeid(int)));
+    }
+
+    TEST_F(OpenGLTest, ClearAttachmentWrapperUnsupportedType)
+    {
+        // Test that clearAttachmentWrapper throws if called with an unsupported type.
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        int clearValue = 0;
+        EXPECT_THROW(
+            framebuffer.clearAttachmentWrapper(0, &clearValue, typeid(float)),
+            FramebufferUnsupportedColorFormat
+        );
+    }
+
+    TEST_F(OpenGLTest, ClearAttachmentWrapperInvalidAttachmentIndex)
+    {
+        // Test that clearAttachmentWrapper throws when the attachment index is out of range.
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        // Only one color attachment exists.
+        specs.attachments.attachments = {
+            {FrameBufferTextureFormats::RGBA8}
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        int clearValue = 0;
+        // Attachment index 1 is invalid.
+        EXPECT_THROW(
+            framebuffer.clearAttachmentWrapper(1, &clearValue, typeid(int)),
+            FramebufferInvalidIndex
+        );
+    }
+
+    TEST_F(OpenGLTest, ClearAndGetPixelRedIntegerAttachment) {
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = { FrameBufferTextureFormats::RED_INTEGER };
+
+        OpenGlFramebuffer framebuffer(specs);
+        framebuffer.bind();
+        int clearValue = 123;
+        EXPECT_NO_THROW(framebuffer.clearAttachmentWrapper(0, &clearValue, typeid(int)));
+
+        int pixelValue = 0;
+        EXPECT_NO_THROW(framebuffer.getPixelWrapper(0, 50, 50, &pixelValue, typeid(int)));
+        EXPECT_EQ(pixelValue, clearValue);
+        framebuffer.unbind();
+    }
+
+    TEST_F(OpenGLTest, ClearAndGetPixelMultipleAttachments) {
+        FramebufferSpecs specs;
+        specs.width = 100;
+        specs.height = 100;
+        specs.samples = 1;
+        specs.attachments.attachments = {
+            { FrameBufferTextureFormats::RGBA8 },
+            { FrameBufferTextureFormats::RED_INTEGER }
+        };
+
+        OpenGlFramebuffer framebuffer(specs);
+        framebuffer.bind();
+
+        // Clear the second (red integer) attachment to a known value.
+        int clearValue = 77;
+        EXPECT_NO_THROW(framebuffer.clearAttachmentWrapper(1, &clearValue, typeid(int)));
+
+        int pixelValue = 0;
+        EXPECT_NO_THROW(framebuffer.getPixelWrapper(1, 50, 50, &pixelValue, typeid(int)));
+        EXPECT_EQ(pixelValue, clearValue);
+        framebuffer.unbind();
+    }
+
+    // While OpenGL's glReadPixels does not throw exceptions for out–of–bounds reads, we ensure
+    // that our wrapper does not crash. (The returned value may be undefined.)
+    TEST_F(OpenGLTest, GetPixelOutOfBoundsRedIntegerAttachment) {
+        FramebufferSpecs specs;
+        specs.width = 50;
+        specs.height = 50;
+        specs.samples = 1;
+        specs.attachments.attachments = { { static_cast<FrameBufferTextureFormats>(3) } };
+
+        OpenGlFramebuffer framebuffer(specs);
+        framebuffer.bind();
+        int pixelValue = 0;
+        // Attempt to read a pixel well outside the 50x50 region.
+        EXPECT_NO_THROW(framebuffer.getPixelWrapper(0, 100, 100, &pixelValue, typeid(int)));
+        framebuffer.unbind();
+    }
+
 }

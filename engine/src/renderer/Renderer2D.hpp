@@ -28,6 +28,8 @@ namespace nexo::renderer {
         glm::vec2 texCoord;
 
         float texIndex;
+
+        int entityID;
     };
 
     struct RendererStats {
@@ -166,8 +168,8 @@ namespace nexo::renderer {
              * Overloaded for:
              * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
              */
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID = -1) const;
 
             /**
              * @brief Draws a textured quad at the specified position and size.
@@ -179,11 +181,11 @@ namespace nexo::renderer {
              * Overloaded for:
              * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
              */
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
 
 
             /**
@@ -198,14 +200,14 @@ namespace nexo::renderer {
              * Overloaded for:
              * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
              */
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
 
             /**
             * @brief Resets rendering statistics.
@@ -236,7 +238,7 @@ namespace nexo::renderer {
             void flushAndReset() const;
 
             // Helper functions
-            void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords) const;
+            void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords, int entityID) const;
             [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D> &texture) const;
     };
 

@@ -17,6 +17,7 @@
 #include <memory>
 #include <any>
 
+#include "Components.hpp"
 #include "System.hpp"
 #include "SingletonComponent.hpp"
 #include "Entity.hpp"
@@ -76,10 +77,10 @@ namespace nexo::ecs {
              * @tparam T Class that should inherit from SingletonComponent class
              * @param component
              */
-            template <typename T>
-            void registerSingletonComponent(T component) {
-                m_singletonComponentManager->registerSingletonComponent<T>(component);
-            }
+             template <typename T, typename... Args>
+             void registerSingletonComponent(Args&&... args) {
+                 m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
+             }
 
             /**
             * @brief Adds a component to an entity, updates its signature, and notifies systems.
@@ -115,6 +116,14 @@ namespace nexo::ecs {
                 m_systemManager->entitySignatureChanged(entity, signature);
             }
 
+            /**
+             * @brief Attempts to remove a component from an entity.
+             *
+             * If the component exists, it is removed and the entity's signature is updated.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity identifier.
+             */
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
@@ -150,6 +159,13 @@ namespace nexo::ecs {
                 return m_componentManager->getComponent<T>(entity);
             }
 
+            /**
+             * @brief Attempts to retrieve a component from an entity.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity identifier.
+             * @return std::optional<std::reference_wrapper<T>> A reference to the component if it exists.
+             */
             template<typename T>
             std::optional<std::reference_wrapper<T>> tryGetComponent(const Entity entity)
             {
@@ -167,7 +183,50 @@ namespace nexo::ecs {
                 return m_singletonComponentManager->getSingletonComponent<T>();
             }
 
+            /**
+             * @brief Retrieves all component types associated with an entity.
+             *
+             * @param entity The target entity identifier.
+             * @return std::vector<std::type_index> A list of type indices for each component the entity has.
+             */
+            std::vector<std::type_index> getAllComponentTypes(Entity entity) const;
+
+            /**
+             * @brief Retrieves all components associated with an entity.
+             *
+             * @param entity The target entity identifier.
+             * @return std::vector<std::pair<std::type_index, std::any>> A vector of pairs, each containing a component type and its instance.
+             */
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
+
+            /**
+             * @brief Retrieves all entities that have the specified components.
+             *
+             * @tparam Components The component types to filter by.
+             * @return std::set<Entity> A set of entities that contain all the specified components.
+             */
+            template<typename... Components>
+            std::set<Entity> getAllEntitiesWith() const
+            {
+	            Signature requiredSignature;
+	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+
+				std::uint32_t checkedEntities = 0;
+				std::uint32_t livingEntities = m_entityManager->getLivingEntityCount();
+    			std::set<Entity> result;
+				for (Entity i = 0; i < MAX_ENTITIES; ++i)
+				{
+					Signature entitySignature = m_entityManager->getSignature(i);
+					if (entitySignature.none())
+						continue;
+					if ((entitySignature & requiredSignature) == requiredSignature)
+						result.insert(i);
+					checkedEntities++;
+					if (checkedEntities > livingEntities)
+						break;
+				}
+				return result;
+            }
 
             /**
             * @brief Gets the component type ID for a specific component type.
@@ -201,6 +260,14 @@ namespace nexo::ecs {
                 m_systemManager->setSignature<T>(signature);
             }
 
+            /**
+             * @brief Checks whether an entity has a specific component.
+             *
+             * @tparam T The component type.
+             * @param entity The target entity.
+             * @return true If the entity has the component.
+             * @return false Otherwise.
+             */
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {
@@ -221,7 +288,3 @@ namespace nexo::ecs {
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
     };
 }
-
-
-
-

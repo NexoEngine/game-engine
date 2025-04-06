@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlShader.hpp"
+#include "Exception.hpp"
 #include "Logger.hpp"
 #include "renderer/RendererExceptions.hpp"
 
@@ -176,7 +177,6 @@ namespace nexo::renderer {
             glDetachShader(program, id);
     }
 
-
     void OpenGlShader::bind() const
     {
         glUseProgram(m_id);
@@ -187,51 +187,84 @@ namespace nexo::renderer {
         glUseProgram(0);
     }
 
-    void OpenGlShader::setUniformFloat(const std::string &name, const float value) const
+    bool OpenGlShader::setUniformFloat(const std::string &name, const float value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniform1f(loc, value);
+        return true;
     }
 
-    void OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
+    bool OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniform3f(loc, values.x, values.y, values.z);
+        return true;
     }
 
-    void OpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
+    bool OpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniform4f(loc, values.x, values.y, values.z, values.w);
+        return true;
     }
 
-    void OpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
+    bool OpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+        return true;
     }
 
-    void OpenGlShader::setUniformInt(const std::string &name, const int value) const
+    bool OpenGlShader::setUniformInt(const std::string &name, const int value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniform1i(loc, value);
+        return true;
     }
 
-    void OpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
+    bool OpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
-            THROW_EXCEPTION(ShaderInvalidUniform, "OPENGL", m_name, name);
+            return false;
+
         glUniform1iv(loc, static_cast<int>(count), values);
+        return true;
+    }
+
+    void OpenGlShader::bindStorageBuffer(unsigned int index) const
+    {
+    	if (index > m_storageBuffers.size())
+     		THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+    	m_storageBuffers[index]->bind();
+    }
+
+    void OpenGlShader::unbindStorageBuffer(unsigned int index) const
+    {
+    	if (index > m_storageBuffers.size())
+     		THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+    	m_storageBuffers[index]->unbind();
+    }
+
+    void OpenGlShader::bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const
+    {
+   		if (index > m_storageBuffers.size())
+    		THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+      	m_storageBuffers[index]->bindBase(bindingLocation);
     }
 }

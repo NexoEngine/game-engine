@@ -14,24 +14,32 @@
 #pragma once
 
 #include "Render3D.hpp"
+#include "Transform.hpp"
 #include "renderer/RendererContext.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <optional>
 
 namespace nexo::components {
 
     struct Shape3D {
         virtual ~Shape3D() = default;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) = 0;
+        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
+        [[nodiscard]] virtual std::shared_ptr<Shape3D> clone() const = 0;
     };
 
     struct Cube final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
-            auto renderer3D = context->renderer3D;
-            //TODO: Find a way to handle materials for cube and other basic primitives
-            renderer3D.drawCube(transf.pos, transf.size, {1.0f, 0.0f, 0.0f, 1.0f});
+            const auto renderer3D = context->renderer3D;
+            renderer3D.drawCube(transf.pos, transf.size, transf.quat, material, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Cube>(*this);
         }
     };
 
@@ -39,29 +47,37 @@ namespace nexo::components {
         std::string name;
         std::vector<renderer::Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::shared_ptr<renderer::Texture2D> texture;
-        std::optional<Material> material; // Not used yet
+        std::optional<Material> material;
     };
 
     struct MeshNode {
-        glm::mat4 transform;
+        glm::mat4 transform{};
         std::vector<Mesh> meshes;
         std::vector<std::shared_ptr<MeshNode>> children;
 
-        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform) const
+        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
         {
-            glm::mat4 localTransform = parentTransform * transform;
+            const glm::mat4 localTransform = parentTransform * transform;
             for (const auto &mesh: meshes)
             {
                 //TODO: Implement a way to pass the transform directly to the shader
                 std::vector<renderer::Vertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
-                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.texture);
+                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.material->albedoTexture, entityID);
             }
 
             for (const auto &child: children)
-                child->draw(renderer3D, localTransform);
+                child->draw(renderer3D, localTransform, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<MeshNode> clone() const {
+            auto newNode = std::make_shared<MeshNode>();
+            newNode->transform = transform;
+            newNode->meshes = meshes;
+            for (const auto &child: children)
+                newNode->children.push_back(child->clone());
+            return newNode;
         }
     };
 
@@ -71,7 +87,8 @@ namespace nexo::components {
 
         explicit Model(const std::shared_ptr<MeshNode> &rootNode) : root(rootNode) {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) override
+        // NOT WORKING ANYMORE
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Pass the material to the draw mesh function
@@ -80,20 +97,18 @@ namespace nexo::components {
                 //TODO: find a better way than recalculating each time, maybe cache the matrix in the component ?
                 const glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transf.pos);
 
-                const glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.x),
-                                                        glm::vec3(1.0f, 0.0f, 0.0f));
-                const glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.y),
-                                                        glm::vec3(0.0f, 1.0f, 0.0f));
-                const glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(transf.rotation.z),
-                                                        glm::vec3(0.0f, 0.0f, 1.0f));
-                const glm::mat4 rotationMatrix = rotationZ * rotationY * rotationX;
+                const glm::mat4 rotationMatrix = glm::toMat4(transf.quat);
 
                 const glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transf.size);
 
                 const glm::mat4 transformMatrix = translationMatrix * rotationMatrix * scalingMatrix;
 
-                root->draw(renderer3D, transformMatrix);
+                root->draw(renderer3D, transformMatrix, entityID);
             }
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Model>(root ? root->clone() : nullptr);
         }
     };
 

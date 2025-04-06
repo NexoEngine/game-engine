@@ -14,8 +14,37 @@
 #pragma once
 
 #include "renderer/Framebuffer.hpp"
+#include "renderer/RendererExceptions.hpp"
+
+#include <glad/glad.h>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <iostream>
 
 namespace nexo::renderer {
+
+    template<typename T>
+    constexpr GLenum getGLTypeFromTemplate()
+    {
+        if constexpr (std::is_same_v<T, float>)
+            return GL_FLOAT;
+        else if constexpr (std::is_same_v<T, int>)
+            return GL_INT;
+        else if constexpr (std::is_same_v<T, unsigned int>)
+            return GL_UNSIGNED_INT;
+        else if constexpr (std::is_same_v<T, glm::vec4>)
+        	return GL_RGBA;
+        return 0;
+    }
+
+    static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
+    {
+        constexpr GLenum formats[] = {GL_NONE, GL_RGBA, GL_RGBA, GL_RED_INTEGER};
+        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::DEPTH24STENCIL8) // Maybe change that later
+            return -1;
+        return static_cast<int>(formats[static_cast<unsigned int>(format)]);
+    }
+
     class OpenGlFramebuffer final : public Framebuffer {
         public:
             /**
@@ -91,6 +120,8 @@ namespace nexo::renderer {
              */
             void unbind() override;
 
+            void setClearColor(const glm::vec4 &color) override {m_clearColor = color;}
+
             [[nodiscard]] unsigned int getFramebufferId() const override;
 
             /**
@@ -107,14 +138,70 @@ namespace nexo::renderer {
              */
             void resize(unsigned int width, unsigned int height) override;
 
+
+            /**
+             * @brief Reads a pixel value from a specified attachment.
+             *
+             * Template helper that retrieves the pixel value from the given attachment at (x,y).
+             *
+             * @tparam T The expected pixel data type.
+             * @param attachmentIndex The index of the attachment.
+             * @param x X-coordinate.
+             * @param y Y-coordinate.
+             * @return T The pixel data.
+             */
+            template<typename T>
+            T getPixelImpl(unsigned int attachmentIndex, int x, int y) const
+            {
+                if (attachmentIndex >= m_colorAttachments.size())
+                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+
+                auto &textureFormat = m_colorAttachmentsSpecs[attachmentIndex].textureFormat;
+                GLenum format = framebufferTextureFormatToOpenGlFormat(textureFormat);
+                GLenum type = getGLTypeFromTemplate<T>();
+
+                T pixelData;
+                glReadPixels(x, y, 1, 1, format, type, &pixelData);
+
+                return pixelData;
+            }
+            void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const override;
+
+
+            /**
+             * @brief Clears the specified attachment with a given value.
+             *
+             * Template helper that clears the texture attached at the given index.
+             *
+             * @tparam T The type of the clear value.
+             * @param attachmentIndex The index of the attachment.
+             * @param value The value to clear the attachment to.
+             */
+            template<typename T>
+            void clearAttachmentImpl(unsigned int attachmentIndex, const void *value) const
+            {
+                if (attachmentIndex >= m_colorAttachments.size())
+                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+                auto &spec = m_colorAttachmentsSpecs[attachmentIndex];
+                constexpr GLenum type = getGLTypeFromTemplate<T>();
+
+                glClearTexImage(m_colorAttachments[attachmentIndex], 0, framebufferTextureFormatToOpenGlFormat(spec.textureFormat), type, value);
+            }
+            void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const override;
+
             FramebufferSpecs &getSpecs() override {return m_specs;};
             [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
 
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
+            [[nodiscard]] unsigned int getDepthAttachmentId() const override { return m_depthAttachment; }
         private:
             unsigned int m_id = 0;
             bool toResize = false;
             FramebufferSpecs m_specs;
+
+            glm::vec4 m_clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
             std::vector<FrameBufferTextureSpecifications> m_colorAttachmentsSpecs;
             FrameBufferTextureSpecifications m_depthAttachmentSpec;

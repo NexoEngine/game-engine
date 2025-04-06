@@ -14,26 +14,32 @@
 
 #include "Event.hpp"
 #include "Listener.hpp"
-#include "core/scene/Scene.hpp"
 
 namespace nexo::event {
 
-    void EventManager::dispatchEvents(scene::Scene &scene, bool isActive) {
-        while (!m_eventQueue.empty()) {
-            auto event = m_eventQueue.front();
-            m_eventQueue.pop();
+	void EventManager::dispatchEvents()
+	{
+	    size_t size = m_eventQueue.size();
+	    while (size--) {
+	        auto event = m_eventQueue.front();
+	        m_eventQueue.pop_front();
 
-            std::type_index typeIndex(typeid(*event));
-            if (m_listeners.contains(typeIndex)) {
-                for (auto *listener : m_listeners[typeIndex]) {
-                    event->trigger(*listener);
-                    if (event->consumed)
-                        break;
-                }
-            }
+	        // Store a reference to the event to avoid evaluating *event with side effects.
+	        const IEvent &ev = *event;
+	        if (const std::type_index typeIndex(typeid(ev)); m_listeners.contains(typeIndex)) {
+	            for (auto *listener : m_listeners[typeIndex]) {
+	                event->trigger(*listener);
+	                if (event->consumed)
+	                    break;
+	            }
+	        }
+	        m_eventQueue.push_back(event);
+	    }
+	}
 
-            if (!event->consumed && isActive)
-                scene.dispatchEventToLayers(*event);
-        }
+
+    void EventManager::clearEvents()
+    {
+    	m_eventQueue.clear();
     }
 }

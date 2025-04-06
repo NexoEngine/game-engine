@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace nexo::renderer {
 
@@ -38,6 +39,8 @@ namespace nexo::renderer {
 
         RGBA8,
         RGBA16,
+
+        RED_INTEGER,
 
         DEPTH24STENCIL8,
 
@@ -169,6 +172,8 @@ namespace nexo::renderer {
              */
             virtual void unbind() = 0;
 
+            virtual void setClearColor(const glm::vec4 &color) = 0;
+
             /**
              * @brief Retrieves the unique OpenGL ID of the framebuffer.
              *
@@ -188,6 +193,46 @@ namespace nexo::renderer {
              * @param height The new height of the framebuffer in pixels.
              */
             virtual void resize(unsigned int width, unsigned int height) = 0;
+
+            virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const = 0;
+
+
+            /**
+             * @brief Retrieves the pixel data from a specified attachment.
+             *
+             * Template version of getPixelWrapper.
+             *
+             * @tparam T The expected type of the pixel data.
+             * @param attachmentIndex The index of the attachment.
+             * @param x X-coordinate of the pixel.
+             * @param y Y-coordinate of the pixel.
+             * @return T The pixel data.
+             */
+            template<typename T>
+            T getPixel(unsigned int attachmentIndex, int x, int y) const
+            {
+                 T result;
+                 getPixelWrapper(attachmentIndex, x, y, &result, typeid(T));
+                 return result;
+            }
+
+            virtual void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const = 0;
+
+
+            /**
+             * @brief Clears a specified attachment to a given value.
+             *
+             * Template version of clearAttachmentWrapper.
+             *
+             * @tparam T The type of the clear value.
+             * @param attachmentIndex The index of the attachment.
+             * @param value The value to clear the attachment to.
+             */
+            template<typename T>
+            void clearAttachment(unsigned int attachmentIndex, T value) const
+            {
+                 clearAttachmentWrapper(attachmentIndex, &value, typeid(T));
+            }
 
             /**
              * @brief Retrieves the specifications of the framebuffer.
@@ -221,6 +266,8 @@ namespace nexo::renderer {
              * - An invalid index may result in undefined behavior.
              */
             [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
+
+            virtual unsigned int getDepthAttachmentId() const = 0;
 
             /**
              * @brief Creates a framebuffer based on the provided specifications.

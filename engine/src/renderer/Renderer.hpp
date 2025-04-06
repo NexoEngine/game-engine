@@ -14,7 +14,6 @@
 #pragma once
 
 #include "RenderCommand.hpp"
-#include "core/camera/OrthographicCamera.hpp"
 #include "Shader.hpp"
 
 #include <glm/glm.hpp>
@@ -25,14 +24,6 @@ namespace nexo::renderer {
         public:
             static void init();
             static void onWindowResize(unsigned int width, unsigned int height);
-
-            // DEPRECATED
-            static void beginScene(const camera::OrthographicCamera &camera);
-            // DEPRECATED
-            static void endScene();
-
-            // DEPRECATED
-            static void submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
 
             struct SceneData {
                 glm::mat4 projectionMatrix;

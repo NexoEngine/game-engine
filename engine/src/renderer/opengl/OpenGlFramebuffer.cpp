@@ -13,12 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlFramebuffer.hpp"
-#include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 
-#include <glad/glad.h>
 #include <iostream>
 #include <utility>
+#include <glm/gtc/type_ptr.hpp>
+
 
 namespace nexo::renderer {
 
@@ -34,9 +34,9 @@ namespace nexo::renderer {
      * @return The OpenGL format (GLenum) corresponding to the specified texture format,
      *         or -1 if the format is invalid or unsupported.
      */
-    static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
+    static int framebufferTextureFormatToOpenGlInternalFormat(FrameBufferTextureFormats format)
     {
-        constexpr GLenum internalFormats[] = {GL_NONE, GL_RGBA8, GL_RGBA16, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
+        constexpr GLenum internalFormats[] = {GL_NONE, GL_RGBA8, GL_RGBA16, GL_R32I, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
         if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::NB_TEXTURE_FORMATS)
             return -1;
         return static_cast<int>(internalFormats[static_cast<unsigned int>(format)]);
@@ -97,7 +97,8 @@ namespace nexo::renderer {
      *
      * @param id The OpenGL ID of the texture to attach.
      * @param samples The number of samples for multisampling (1 for no multisampling).
-     * @param format The OpenGL internal format of the texture (e.g., GL_RGBA8).
+     * @param internalFormat The OpenGL internal format of the texture
+     * @param format The OpenGL format of the texture (e.g., GL_RGBA8).
      * @param width The width of the texture in pixels.
      * @param height The height of the texture in pixels.
      * @param index The attachment index (e.g., GL_COLOR_ATTACHMENT0 + index).
@@ -107,17 +108,17 @@ namespace nexo::renderer {
      * - Sets texture parameters for filtering and wrapping.
      * - Attaches the texture to the framebuffer using `glFramebufferTexture2D`.
      */
-    static void attachColorTexture(const unsigned int id, const unsigned int samples, const GLenum format,
+    static void attachColorTexture(const unsigned int id, const unsigned int samples, const GLenum internalFormat, const GLenum format,
                                    const unsigned int width, const unsigned int height, const unsigned int index)
     {
         const bool multisample = samples > 1;
         if (multisample)
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, static_cast<int>(samples), format,
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, static_cast<int>(samples), static_cast<int>(internalFormat),
                                     static_cast<int>(width), static_cast<int>(height), GL_TRUE);
         else
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(format), static_cast<int>(width), static_cast<int>(height),
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), static_cast<int>(width), static_cast<int>(height),
+                         0, static_cast<int>(format), GL_UNSIGNED_BYTE, nullptr);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -235,11 +236,14 @@ namespace nexo::renderer {
             for (unsigned int i = 0; i < m_colorAttachments.size(); ++i)
             {
                 bindTexture(multisample, m_colorAttachments[i]);
-                const int glTextureFormat = framebufferTextureFormatToOpenGlFormat(
+                const int glTextureInternalFormat = framebufferTextureFormatToOpenGlInternalFormat(
                     m_colorAttachmentsSpecs[i].textureFormat);
+                if (glTextureInternalFormat == -1)
+                    THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+                const int glTextureFormat = framebufferTextureFormatToOpenGlFormat(m_colorAttachmentsSpecs[i].textureFormat);
                 if (glTextureFormat == -1)
                     THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
-                attachColorTexture(m_colorAttachments[i], m_specs.samples, glTextureFormat, m_specs.width,
+                attachColorTexture(m_colorAttachments[i], m_specs.samples, glTextureInternalFormat, glTextureFormat, m_specs.width,
                                    m_specs.height, i);
             }
         }
@@ -248,7 +252,7 @@ namespace nexo::renderer {
         {
             createTextures(multisample, &m_depthAttachment, 1);
             bindTexture(multisample, m_depthAttachment);
-            int glDepthFormat = framebufferTextureFormatToOpenGlFormat(m_depthAttachmentSpec.textureFormat);
+            int glDepthFormat = framebufferTextureFormatToOpenGlInternalFormat(m_depthAttachmentSpec.textureFormat);
             if (glDepthFormat == -1)
                 THROW_EXCEPTION(FramebufferUnsupportedDepthFormat, "OPENGL");
             attachDepthTexture(m_depthAttachment, m_specs.samples, glDepthFormat, GL_DEPTH_STENCIL_ATTACHMENT,
@@ -275,12 +279,16 @@ namespace nexo::renderer {
     void OpenGlFramebuffer::bind()
     {
         if (toResize)
-            invalidate();
+        {
+         	invalidate();
+          	toResize = false;
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void OpenGlFramebuffer::unbind()
@@ -303,6 +311,26 @@ namespace nexo::renderer {
         m_specs.width = width;
         m_specs.height = height;
         toResize = true;
+    }
+
+    void OpenGlFramebuffer::getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const
+    {
+        // Add more types here when necessary
+        if (ti == typeid(int))
+            *static_cast<int*>(result) = getPixelImpl<int>(attachementIndex, x, y);
+        else
+            THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+    }
+
+    void OpenGlFramebuffer::clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const
+    {
+        // Add more types here when necessary
+        if (ti == typeid(int))
+            clearAttachmentImpl<int>(attachmentIndex, value);
+        else if (ti == typeid(glm::vec4))
+            clearAttachmentImpl<glm::vec4>(attachmentIndex, value);
+        else
+            THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
     }
 
 }

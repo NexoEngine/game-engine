@@ -26,27 +26,30 @@ include(GoogleTest)
 # Find gtest package
 find_package(GTest CONFIG REQUIRED)
 
+set(TEST_MAIN_FILES
+    ${CMAKE_CURRENT_LIST_DIR}/test_main.cpp
+)
+
 include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/common/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/renderer/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/ecs/CMakeLists.txt)
 
 # Add tests
-gtest_add_tests(TARGET engine_tests
-                TEST_LIST engineTestsList
-                
+gtest_discover_tests(engine_tests
+                     TEST_LIST engineTestsList
 )
-gtest_add_tests(TARGET common_tests
-                TEST_LIST commonTestsList
+gtest_discover_tests(common_tests
+                     TEST_LIST commonTestsList
 )
-gtest_add_tests(TARGET renderer_tests
-        TEST_LIST rendererTestsList
+gtest_discover_tests(renderer_tests
+                     TEST_LIST rendererTestsList
 )
-gtest_add_tests(TARGET ecs_tests
-        TEST_LIST ecsTestsList
+gtest_discover_tests(ecs_tests
+                     TEST_LIST ecsTestsList
 )
 
-# Core engine tests
+                     # Core engine tests
 set_tests_properties(${engineTestsList} PROPERTIES LABELS "engine")
 # Common tests
 set_tests_properties(${commonTestsList} PROPERTIES LABELS "common")
@@ -56,6 +59,7 @@ set_tests_properties(${rendererTestsList} PROPERTIES LABELS "renderer")
 set_tests_properties(${ecsTestsList} PROPERTIES LABELS "ecs")
 
 # Exclude tests from the "ALL" target
+message(STATUS "NEXO_BUILD_TESTS: ${NEXO_BUILD_TESTS}")
 if(NOT NEXO_BUILD_TESTS)
     message(STATUS "Excluding tests from the 'ALL' target")
     set_target_properties(engine_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)

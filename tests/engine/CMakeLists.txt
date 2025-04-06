@@ -24,17 +24,21 @@ include_directories("./common")
 
 # Add engine test source files
 add_executable(engine_tests
-    ${BASEDIR}/camera/OrthographicCamera.test.cpp
-    ${BASEDIR}/camera/PerspectiveCamera.test.cpp
+	${TEST_MAIN_FILES}
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/event/WindowEvent.test.cpp
     ${BASEDIR}/exceptions/Exceptions.test.cpp
-    ${BASEDIR}/layer/LayerStack.test.cpp
-    ${BASEDIR}/layer/Layer.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp
     ${BASEDIR}/scene/SceneManager.test.cpp
+    ${BASEDIR}/components/Camera.test.cpp
+    ${BASEDIR}/assets/AssetLocation.test.cpp
+    ${BASEDIR}/assets/AssetCatalog.test.cpp
+    ${BASEDIR}/assets/AssetName.test.cpp
+    ${BASEDIR}/assets/AssetRef.test.cpp
+    ${BASEDIR}/assets/AssetImporterContext.test.cpp
+    ${BASEDIR}/assets/AssetImporter.test.cpp
         # Add other engine test files here
 )
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(engine_tests GTest::gtest GTest::gtest_main GTest::gmock nexoRenderer)
+target_link_libraries(engine_tests PRIVATE GTest::gtest GTest::gmock nexoRenderer)

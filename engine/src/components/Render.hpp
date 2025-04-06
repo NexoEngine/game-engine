@@ -22,36 +22,46 @@
 #include <memory>
 #include <utility>
 
-namespace nexo::components {
+namespace nexo::components
+{
+    enum class RenderType
+    {
+        RENDER_2D,
+        RENDER_3D
+    };
 
-    struct Renderable {
+    struct Renderable
+    {
         virtual ~Renderable() = default;
 
         bool isRendered = true;
 
         virtual void draw(std::shared_ptr<renderer::RendererContext> &context,
-                          const TransformComponent &transf) const = 0;
-
-        virtual bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) = 0;
+                          const TransformComponent &transf, int entityID) const = 0;
+        [[nodiscard]] virtual std::shared_ptr<Renderable> clone() const = 0;
     };
 
-    struct Renderable2D final : Renderable {
+    struct Renderable2D final : Renderable
+    {
         SpriteComponent sprite;
         std::shared_ptr<Shape2D> shape;
 
         explicit Renderable2D(SpriteComponent sprite,
-                              const std::shared_ptr<Shape2D> &shape) : sprite(std::move(sprite)), shape(shape)
-        {};
+                              const std::shared_ptr<Shape2D>& shape) : sprite(std::move(sprite)), shape(shape)
+        {
+        };
 
         void draw(std::shared_ptr<renderer::RendererContext> &context,
-                  const TransformComponent &transform) const override
+                  const TransformComponent &transform, int entityID) const override
         {
-            shape->draw(context, transform, sprite);
+            shape->draw(context, transform, sprite, entityID);
         }
 
-        bool isClicked(const TransformComponent &transf, const glm::vec2 &mouseWorldPos) override
+        [[nodiscard]] std::shared_ptr<Renderable> clone() const override
         {
-            return shape->isClicked(transf, mouseWorldPos);
+            //std::shared_ptr<Shape2D> clonedShape = shape ? shape->clone() : nullptr;
+            //return std::make_shared<Renderable2D>(sprite, clonedShape);
+            return nullptr;
         }
     };
 
@@ -59,34 +69,49 @@ namespace nexo::components {
         Material material;
         std::shared_ptr<Shape3D> shape;
 
-        explicit Renderable3D(const Material material,
-                              const std::shared_ptr<Shape3D> &shape) : material(material), shape(shape) {};
+        explicit Renderable3D(Material  material,
+                              const std::shared_ptr<Shape3D> &shape) : material(std::move(material)), shape(shape) {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf) const override
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) const override
         {
-            shape->draw(context, transf);
+            shape->draw(context, transf, material, entityID);
         }
 
-        bool isClicked([[maybe_unused]] const TransformComponent &transf, [[maybe_unused]] const glm::vec2 &mouseWorldPos) override
+        [[nodiscard]] std::shared_ptr<Renderable> clone() const override
         {
-            return false;
+            std::shared_ptr<Shape3D> clonedShape = shape ? shape->clone() : nullptr;
+            return std::make_shared<Renderable3D>(material, clonedShape);
         }
     };
 
     struct RenderComponent {
         bool isRendered = true;
+        RenderType type = RenderType::RENDER_2D;
 
         std::shared_ptr<Renderable> renderable;
 
         RenderComponent() = default;
 
-        explicit RenderComponent(const std::shared_ptr<Renderable> &renderable)
-            : renderable(renderable) {}
+        explicit RenderComponent(const std::shared_ptr<Renderable>& renderable, const RenderType type)
+            : type(type), renderable(renderable)
+        {
+        }
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform) const
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform, const int entityID = -1) const
         {
             if (isRendered && renderable)
-                renderable->draw(context, transform);
+                renderable->draw(context, transform, entityID);
+        }
+
+        [[nodiscard]] RenderComponent clone() const {
+            RenderComponent copy;
+            copy.isRendered = isRendered;
+            copy.type = type;
+            if (renderable)
+                copy.renderable = renderable->clone();
+            else
+                copy.renderable = nullptr;
+            return copy;
         }
     };
 }

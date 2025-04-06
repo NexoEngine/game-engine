@@ -15,7 +15,7 @@
 #include "Window.hpp"
 #include "renderer/RendererExceptions.hpp"
 #ifdef GRAPHICS_API_OPENGL
-    #include "renderer/opengl/OpenGlWindow.hpp"
+    #include "opengl/OpenGlWindow.hpp"
 #endif
 
 namespace nexo::renderer {

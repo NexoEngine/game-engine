@@ -22,4 +22,10 @@ namespace nexo::components {
         std::set<unsigned int> sceneIds;
     };
 
+    struct SceneTag {
+    	unsigned int id;
+    	bool isActive = true;
+     	bool isRendered = true;
+    };
+
 }

@@ -14,6 +14,7 @@
 #pragma once
 
 #include "renderer/SubTexture2D.hpp"
+#include <glm/glm.hpp>
 
 namespace nexo::components {
 

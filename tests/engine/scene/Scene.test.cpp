@@ -1,4 +1,4 @@
-//// Scene.test.cpp ///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -6,164 +6,298 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
-//  Date:        26/11/2024
-//  Description: Test file for the scenes
+//  Author:      iMeaNz
+//  Date:        17/03/2025
+//  Description: Test file for the Scene class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "core/event/Event.hpp"
-#include "core/event/Listener.hpp"
 #include "core/scene/Scene.hpp"
-#include "core/layer/Layer.hpp"
-#include "core/camera/Camera.hpp"
-#include "components/Light.hpp"
-
-namespace nexo::event {
-    class TestEvent : public Event<TestEvent> {
-        public:
-        TestEvent() = default;
-        explicit TestEvent(int data) : data(data) {}
-        int data;
-    };
-}
-
-namespace nexo::layer {
-    class MockLayer : LAYER_LISTENS_TO(MockLayer, event::TestEvent) {
-        public:
-        explicit MockLayer(const LayerId id, const std::string &name)
-            : Layer(id, name) {}
-
-        MOCK_METHOD(void, onUpdate, (Timestep timestep), (override));
-        MOCK_METHOD(void, onRender, (std::shared_ptr<renderer::RendererContext> &, const scene::SceneContext &), (override));
-        MOCK_METHOD(void, entityDestroyed, (ecs::Entity), (override));
-        MOCK_METHOD(void, handleEvent, (event::TestEvent &), (override));
-    };
-}
-
-namespace nexo::camera {
-    class MockCamera : public Camera {
-        public:
-        MOCK_METHOD(void, onUpdate, (Timestep), (override));
-        MOCK_METHOD(const glm::mat4&, getViewProjectionMatrix, (), (const, override));
-        MOCK_METHOD(const glm::vec3&, getPosition, (), (const, override));
-        MOCK_METHOD(camera::CameraMode, getMode, (), (const, override));
-    };
-}
-
-namespace nexo::components {
-    class MockLight : public Light {
-        public:
-        MockLight() : Light(LightType::DIRECTIONAL, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f) {}
-    };
-}
-
+#include "components/SceneComponents.hpp"
+#include "components/Uuid.hpp"
+#include "ecs/Coordinator.hpp"
 
 namespace nexo::scene {
-    class SceneTest : public ::testing::Test {
-    protected:
-        void SetUp() override {
-            auto &app = nexo::Application::getInstance();
-            nexo::init();
-            scene = std::make_shared<Scene>(1, "TestScene");
-        }
 
-        std::shared_ptr<Scene> scene;
-    };
-
-    TEST_F(SceneTest, AddAndRemoveLayers) {
-        scene->addLayer(1, "Layer1");
-        scene->addLayer(2, "Layer2");
-
-        EXPECT_EQ(scene->getLayer(1)->name, "Layer1");
-        EXPECT_EQ(scene->getLayer(2)->name, "Layer2");
-
-        scene->removeLayer(1);
-        EXPECT_EQ(scene->getLayer(1), nullptr);
-        EXPECT_EQ(scene->getLayer(2)->name, "Layer2");
+class SceneTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Reset scene ID counter for consistent test behavior
+        nextSceneId = 0;
+        coordinator = std::make_shared<nexo::ecs::Coordinator>();
+        coordinator->init();
+        coordinator->registerComponent<components::SceneTag>();
     }
 
-    TEST_F(SceneTest, AddAndRemoveOverlays) {
-        scene->addOverlay(1, "Overlay1");
-        scene->addOverlay(2, "Overlay2");
+    std::shared_ptr<nexo::ecs::Coordinator> coordinator;
+};
 
-        EXPECT_EQ(scene->getLayer(1)->name, "Overlay1");
-        EXPECT_EQ(scene->getLayer(2)->name, "Overlay2");
+TEST_F(SceneTest, Constructor) {
+    // Test that scene is properly initialized with given name and coordinator
+    std::string sceneName = "TestScene";
+    Scene scene(sceneName, coordinator);
 
-        scene->removeOverlay(2);
-        EXPECT_EQ(scene->getLayer(2), nullptr);
-        EXPECT_EQ(scene->getLayer(1)->name, "Overlay1");
+    EXPECT_EQ(scene.getName(), sceneName);
+    EXPECT_TRUE(scene.isActive());
+    EXPECT_TRUE(scene.isRendered());
+    EXPECT_FALSE(scene.getUuid().empty());
+}
+
+TEST_F(SceneTest, AddEntity) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity = coordinator->createEntity();
+
+    // Create a scene tag that the Scene can update
+    components::SceneTag expectedTag{scene.getId(), true, true};
+
+    scene.addEntity(entity);
+    auto tag = coordinator->tryGetComponent<components::SceneTag>(entity);
+
+    EXPECT_TRUE(tag);
+    EXPECT_EQ(tag->get().id, expectedTag.id);
+    EXPECT_EQ(tag->get().isActive, expectedTag.isActive);
+    EXPECT_EQ(tag->get().isRendered, expectedTag.isRendered);
+}
+
+TEST_F(SceneTest, RemoveEntity) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity = coordinator->createEntity();
+
+    // First add the entity
+    scene.addEntity(entity);
+
+    // Verify entity has the tag
+    auto tagBefore = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tagBefore);
+
+    // Remove the entity
+    scene.removeEntity(entity);
+
+    // Verify tag has been removed
+    auto tagAfter = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_FALSE(tagAfter);
+}
+
+TEST_F(SceneTest, SetActiveStatus) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity1 = coordinator->createEntity();
+    nexo::ecs::Entity entity2 = coordinator->createEntity();
+
+    // Add entities to the scene
+    scene.addEntity(entity1);
+    scene.addEntity(entity2);
+
+    // Now set the active status to false
+    scene.setActiveStatus(false);
+
+    // Check that the scene is now inactive
+    EXPECT_FALSE(scene.isActive());
+
+    // Check that the tags were updated
+    auto tag1 = coordinator->tryGetComponent<components::SceneTag>(entity1);
+    auto tag2 = coordinator->tryGetComponent<components::SceneTag>(entity2);
+
+    EXPECT_TRUE(tag1);
+    EXPECT_TRUE(tag2);
+    EXPECT_FALSE(tag1->get().isActive);
+    EXPECT_FALSE(tag2->get().isActive);
+}
+
+TEST_F(SceneTest, SetRenderStatus) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity1 = coordinator->createEntity();
+    nexo::ecs::Entity entity2 = coordinator->createEntity();
+
+    // Add entities to the scene
+    scene.addEntity(entity1);
+    scene.addEntity(entity2);
+
+    // Now set the render status to false
+    scene.setRenderStatus(false);
+
+    // Check that the scene is now not rendered
+    EXPECT_FALSE(scene.isRendered());
+
+    // Check that the tags were updated
+    auto tag1 = coordinator->tryGetComponent<components::SceneTag>(entity1);
+    auto tag2 = coordinator->tryGetComponent<components::SceneTag>(entity2);
+
+    EXPECT_TRUE(tag1);
+    EXPECT_TRUE(tag2);
+    EXPECT_FALSE(tag1->get().isRendered);
+    EXPECT_FALSE(tag2->get().isRendered);
+}
+
+TEST_F(SceneTest, SceneDestructor) {
+    nexo::ecs::Entity entity1;
+    nexo::ecs::Entity entity2;
+
+    {
+        Scene scene("TestScene", coordinator);
+
+        // Add entities to the scene
+        entity1 = coordinator->createEntity();
+        entity2 = coordinator->createEntity();
+
+        scene.addEntity(entity1);
+        scene.addEntity(entity2);
+
+        // Scene will be destructed when this scope ends
     }
 
-    TEST_F(SceneTest, AddAndRemoveEntities) {
-        auto &app = getApp();
-        ecs::Entity entity1 = 1;
-        ecs::Entity entity2 = 2;
+    // After scene destruction, entities should be destroyed
+    // Testing this depends on how coordinator handles destroyed entities
+    // This could be checking for an exception or a specific error state
+    EXPECT_THROW(coordinator->getComponent<components::SceneTag>(entity1), ecs::ComponentNotFound);
+    EXPECT_THROW(coordinator->getComponent<components::SceneTag>(entity2), ecs::ComponentNotFound);
+}
 
-        scene->addGlobalEntity(entity1);
-        EXPECT_TRUE(scene->getGlobalEntities().contains(entity1));
+TEST_F(SceneTest, NameGetterSetter) {
+    Scene scene("InitialName", coordinator);
 
-        scene->removeGlobalEntity(entity1);
-        EXPECT_FALSE(scene->getGlobalEntities().contains(entity1));
+    EXPECT_EQ(scene.getName(), "InitialName");
 
-        app.m_coordinator->addComponent<components::TransformComponent>(entity2, components::TransformComponent{});
-        app.m_coordinator->addComponent<components::RenderComponent>(entity2, components::RenderComponent{});
+    scene.setName("NewName");
 
-        scene->addLayer(1, "Layer1");
-        scene->addEntityToLayer(entity2, 1);
-        EXPECT_TRUE(scene->getLayer(1)->getEntities().contains(entity2));
+    EXPECT_EQ(scene.getName(), "NewName");
+}
 
-        scene->removeEntityFromLayer(entity2, 1);
-        EXPECT_FALSE(scene->getLayer(1)->getEntities().contains(entity2));
+TEST_F(SceneTest, SceneIdGeneration) {
+    // Reset the nextSceneId to ensure consistent test behavior
+    nextSceneId = 0;
+
+    Scene scene1("Scene1", coordinator);
+    Scene scene2("Scene2", coordinator);
+
+    EXPECT_EQ(scene1.getId(), 0);
+    EXPECT_EQ(scene2.getId(), 1);
+}
+
+TEST_F(SceneTest, UuidGeneration) {
+    Scene scene1("Scene1", coordinator);
+    Scene scene2("Scene2", coordinator);
+
+    // Each scene should have a unique UUID
+    EXPECT_NE(scene1.getUuid(), scene2.getUuid());
+    EXPECT_FALSE(scene1.getUuid().empty());
+    EXPECT_FALSE(scene2.getUuid().empty());
+}
+
+TEST_F(SceneTest, AddMultipleEntities) {
+    Scene scene("TestScene", coordinator);
+
+    std::vector<nexo::ecs::Entity> entities;
+    for (int i = 0; i < 5; i++) {
+        entities.push_back(coordinator->createEntity());
     }
 
-    TEST_F(SceneTest, EntityDestroyedPropagation) {
-        ecs::Entity entity = 1;
+    for (auto entity : entities) {
+        scene.addEntity(entity);
 
-        scene->addLayer(1, "Mock layer");
-
-        scene->addGlobalEntity(entity);
-        EXPECT_TRUE(scene->getGlobalEntities().contains(entity));
-
-        scene->entityDestroyed(entity);
-
-        EXPECT_FALSE(scene->getGlobalEntities().contains(entity));
-    }
-
-    TEST_F(SceneTest, LayerRenderAndActiveStatus) {
-        scene->addLayer(1, "Layer1");
-
-        scene->setLayerRenderStatus(false, 1);
-        EXPECT_FALSE(scene->getLayerRenderStatus(1));
-
-        scene->setLayerActiveStatus(false, 1);
-        EXPECT_FALSE(scene->getLayerActiveStatus(1));
-    }
-
-    TEST_F(SceneTest, AttachAndDetachCameraToLayer) {
-        auto mockCamera = std::make_shared<camera::MockCamera>();
-        scene->addLayer(1, "Layer1");
-
-        scene->attachCameraToLayer(mockCamera, 1);
-        EXPECT_EQ(scene->getCameraLayer(1), mockCamera);
-
-        scene->detachCameraFromLayer(1);
-        EXPECT_EQ(scene->getCameraLayer(1), nullptr);
-    }
-
-    TEST_F(SceneTest, AddAndRemoveLights) {
-        auto light1 = std::make_shared<components::MockLight>();
-        auto light2 = std::make_shared<components::MockLight>();
-
-        unsigned int index1 = scene->addLight(light1);
-        unsigned int index2 = scene->addLight(light2);
-
-        EXPECT_EQ(index1, 0);
-        EXPECT_EQ(index2, 1);
-
-        scene->removeLight(index1);
-        EXPECT_EQ(scene->getAmbientLight(), 0.5f); // Ensure the state is consistent
+        // Verify each entity has a SceneTag component
+        auto tag = coordinator->tryGetComponent<components::SceneTag>(entity);
+        EXPECT_TRUE(tag);
+        EXPECT_EQ(tag->get().id, scene.getId());
     }
 }
+
+TEST_F(SceneTest, ToggleActiveStatus) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity = coordinator->createEntity();
+
+    // Add entity to scene
+    scene.addEntity(entity);
+
+    // Toggle active status multiple times
+    scene.setActiveStatus(false);
+    EXPECT_FALSE(scene.isActive());
+
+    auto tag1 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag1);
+    EXPECT_FALSE(tag1->get().isActive);
+
+    scene.setActiveStatus(true);
+    EXPECT_TRUE(scene.isActive());
+
+    auto tag2 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag2);
+    EXPECT_TRUE(tag2->get().isActive);
+}
+
+TEST_F(SceneTest, ToggleRenderStatus) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity = coordinator->createEntity();
+
+    // Add entity to scene
+    scene.addEntity(entity);
+
+    // Toggle render status multiple times
+    scene.setRenderStatus(false);
+    EXPECT_FALSE(scene.isRendered());
+
+    auto tag1 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag1);
+    EXPECT_FALSE(tag1->get().isRendered);
+
+    scene.setRenderStatus(true);
+    EXPECT_TRUE(scene.isRendered());
+
+    auto tag2 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag2);
+    EXPECT_TRUE(tag2->get().isRendered);
+}
+
+TEST_F(SceneTest, AddRemoveMultipleTimes) {
+    Scene scene("TestScene", coordinator);
+    nexo::ecs::Entity entity = coordinator->createEntity();
+
+    // Add entity
+    scene.addEntity(entity);
+    auto tag1 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag1);
+
+    // Remove entity
+    scene.removeEntity(entity);
+    auto tag2 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_FALSE(tag2);
+
+    // Add entity again
+    scene.addEntity(entity);
+    auto tag3 = coordinator->tryGetComponent<components::SceneTag>(entity);
+    EXPECT_TRUE(tag3);
+}
+
+TEST_F(SceneTest, EmptySceneDestruction) {
+    // Create a scene without adding entities to it
+    {
+        Scene scene("EmptyScene", coordinator);
+        // Scene will be destructed when this scope ends
+    }
+    // No assertions needed - just making sure it doesn't crash
+}
+
+TEST_F(SceneTest, SetActiveStatusNoEntities) {
+    Scene scene("TestScene", coordinator);
+
+    // Should not crash when there are no entities
+    scene.setActiveStatus(false);
+    EXPECT_FALSE(scene.isActive());
+
+    scene.setActiveStatus(true);
+    EXPECT_TRUE(scene.isActive());
+}
+
+TEST_F(SceneTest, SetRenderStatusNoEntities) {
+    Scene scene("TestScene", coordinator);
+
+    // Should not crash when there are no entities
+    scene.setRenderStatus(false);
+    EXPECT_FALSE(scene.isRendered());
+
+    scene.setRenderStatus(true);
+    EXPECT_TRUE(scene.isRendered());
+}
+
+} // namespace nexo::scene

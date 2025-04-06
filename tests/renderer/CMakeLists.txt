@@ -47,9 +47,12 @@ set(RENDERER_SOURCES
         engine/src/renderer/opengl/OpenGlShader.cpp
         engine/src/renderer/opengl/OpenGlRendererApi.cpp
         engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+        engine/src/renderer/primitives/Cube.cpp
+        engine/src/renderer/primitives/Mesh.cpp
 )
 
 add_executable(renderer_tests
+        ${TEST_MAIN_FILES}
         ${COMMON_SOURCES}
         ${RENDERER_SOURCES}
         ${BASEDIR}/Buffer.test.cpp
@@ -83,4 +86,4 @@ target_link_libraries(renderer_tests PRIVATE Boost::dll)
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gtest_main GTest::gmock OpenGL::GL glfw glad::glad)
+target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad)

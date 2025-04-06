@@ -71,6 +71,8 @@ namespace nexo::ecs {
             */
             [[nodiscard]] Signature getSignature(Entity entity) const;
 
+            std::uint32_t getLivingEntityCount() const;
+
         private:
             std::queue<Entity> m_availableEntities{};
 

@@ -14,9 +14,6 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-# Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 # Installation rules
 install(TARGETS nexoEditor
         RUNTIME DESTINATION bin
@@ -32,8 +29,8 @@ install(TARGETS nexoEditor
         PUBLIC_HEADER DESTINATION include COMPONENT headers
 )
 
-# Install assets, config, and logs directories
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/" DESTINATION assets)
+# Install resources, config, and logs directories
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/config/" DESTINATION config)
 install(DIRECTORY DESTINATION logs)
 

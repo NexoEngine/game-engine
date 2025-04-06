@@ -3,9 +3,9 @@ vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 if ("docking-experimental" IN_LIST FEATURES)
     vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
-        REPO adobe/imgui
-        REF dff188effaa59c5c4d502868b96bd717207adb9c
-        SHA512 1243ca81e8278e3919c189d9944596c5fed369bba9cb2b242c8bb1810f36bfca1d3f31f4b4566ab623ac9a998cab500f6f902b354ee27f5a3a890b74058f06d8
+        REPO NexoEngine/imgui
+        REF a903bc1152bc5d0c0f34ff90ee1ec16997bd1e3d
+        SHA512 462bf17307052002a8331c24f78a8a5d15c501edfa64795c6eaa39d8001e93bddec55dda48cb56c7fdc18922b1d0c3c36a6e10ee59a99ff0c5c3d05b9ac9ad4d
         HEAD_REF "docking_v${VERSION}"
     )
 else()
