@@ -283,8 +283,7 @@ namespace nexo::editor {
         }
 
         // For each segment defined by consecutive stops:
-        for (long i = static_cast<long>(stops.size()) - 1; i > 0; i--)
-        {
+        for (long i = static_cast<long>(stops.size()) - 1; i > 0; i--) {
             const long posStart = i - 1;
             const long posEnd = i;
             // Compute threshold projections for the current segment.
