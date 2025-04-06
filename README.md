@@ -36,19 +36,18 @@ Interface screenshot
 
 ![Editor interface](docs/game_engine/editor_interface.png)
 
-Quick video of the game engine in action with Jolt Physics
+Quick video of the game engine in action
 
 https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
 
 > [!WARNING]
-> This video is from a prototype version of the engine. The final version does not currently integrate physics.
+> This project is still in development and is not yet ready for production use. Some features may change.
 
 ## External Dependencies
 
 To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source.
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **X11**: Required for Linux and macOS.
 
 ## Build the project
 
@@ -59,10 +58,25 @@ git clone --recurse-submodules
 ```
 
 2. Run cmake to generate the build files.
-```bash
-cmake -B build
-cmake --build build
-```
+
+<details>
+  <summary>Using cmake presets (automatic)</summary>
+  ```bash
+  cmake --workflow --present=build-debug
+  ```
+
+  > [!NOTE]
+  > There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
+</details>
+
+<details>
+  <summary>Using cmake --build (manual)</summary>
+  ```bash
+  cmake -B build
+  cmake --build build
+  ```
+</details>
+
 3. Launch the engine!
 
 For Linux and MacOS:
@@ -129,7 +143,7 @@ In this project tests use the [gtest](http://google.github.io/googletest/) libra
 
 First build the tests:
 ```bash
-cmake -B build
+cmake -B build -DNEXO_BUILD_TESTS=ON
 cmake --build build
 ```
 
