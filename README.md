@@ -38,7 +38,10 @@ Interface screenshot
 
 Quick video of the game engine in action
 
-https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
+https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4
+
+<!-- Command used for video compression: ffmpeg -ss 00:00:02 -to 00:00:57 -i .\docs\game_engine\editor_interface_video.mkv -codec copy -an -vcodec libx264 -crf
+ 4 .\docs\game_engine\editor_interface_video.mp4 -->
 
 > [!WARNING]
 > This project is still in development and is not yet ready for production use. Some features may change.
@@ -60,21 +63,25 @@ git clone --recurse-submodules
 2. Run cmake to generate the build files.
 
 <details>
-  <summary>Using cmake presets (automatic)</summary>
-  ```bash
-  cmake --workflow --present=build-debug
-  ```
 
-  > [!NOTE]
-  > There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
+<summary>Using cmake presets (automatic)</summary>
+
+```bash
+cmake --workflow --present=build-debug
+```
+
+> [!NOTE]
+> There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
 </details>
 
 <details>
-  <summary>Using cmake --build (manual)</summary>
-  ```bash
-  cmake -B build
-  cmake --build build
-  ```
+
+<summary>Using cmake --build (manual)</summary>
+
+```bash
+cmake -B build
+cmake --build build
+```
 </details>
 
 3. Launch the engine!
