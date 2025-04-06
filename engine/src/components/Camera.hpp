@@ -45,7 +45,7 @@ namespace nexo::components {
         float farPlane = 1000.0f;           ///< Far clipping plane distance.
         CameraType type = CameraType::PERSPECTIVE;  ///< The type of the camera (perspective or orthographic).
 
-        glm::vec4 clearColor = {0.0f, 0.0f, 0.0f, 1.0f};  ///< Background clear color.
+        glm::vec4 clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f};  ///< Background clear color.
 
         bool active = true;                 ///< Indicates if the camera is active.
         bool main = true;                   ///< Indicates if the camera is the main camera.

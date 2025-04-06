@@ -12,6 +12,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "utils/Config.hpp"
 #include "Nexo.hpp"
 #include "Editor.hpp"
@@ -24,6 +26,7 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
+#include <Components/Components.hpp>
 
 ImGuiID g_materialInspectorDockID = 0;
 
@@ -87,6 +90,8 @@ namespace nexo::editor {
             LOG(NEXO_INFO, "DPI scale: x: {}, y: {}", scaleFactorX, scaleFactorY);
         }
 
+        LOG(NEXO_INFO, "ImGui version: {}", IMGUI_VERSION);
+
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(nexo::getApp().getWindow()->getWidth()),
                                 static_cast<float>(nexo::getApp().getWindow()->getHeight()));
@@ -100,32 +105,59 @@ namespace nexo::editor {
         style->WindowRounding = 10.0f;
         style->ChildRounding = 6.0f;
         style->PopupRounding = 4.0f;
+        style->WindowMenuButtonPosition = ImGuiDir_Right;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
-        auto darker     = ImVec4(20.f/255.f, 20.f/255.f, 20.f/255.f, 1.0f);
+        // Setup NEXO Color Scheme
+        ImVec4* colors = style->Colors;
+        const ImVec4 colWindowBg                  = ImVec4(0.02f, 0.02f, 0.04f, 0.59f); // Every color above it will depend on it because of the alpha
+        const ImVec4 colTitleBg                   = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
+        const ImVec4 colTitleBgActive             = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
+        const ImVec4 colTabSelectedOverline       = ImVec4(0.30f, 0.12f, 0.45f, 0.85f);
+        const ImVec4 colTabDimmedSelectedOverline = ImVec4(0.29f, 0.12f, 0.43f, 0.15f);
 
-            // Apply the darker color to the title bar variants:
-        style->Colors[ImGuiCol_TitleBg]         = darker;
-        style->Colors[ImGuiCol_TitleBgActive]   = darker;
-        style->Colors[ImGuiCol_TitleBgCollapsed] = darker;
+        // Dependent colors
+        // We want the tabs to have the same color as colWindowBg, but titleBg is under tabs, so we subtract titleBg
+        const ImVec4 colTab               = ImVec4(0, 0, 0, (colWindowBg.w - colTitleBgActive.w) * 0.60f);
+        const ImVec4 colTabDimmed         = ImVec4(0, 0, 0, colTab.w * 0.90f);
+        const ImVec4 colTabSelected       = ImVec4(0, 0, 0, colWindowBg.w - colTitleBg.w);
+        const ImVec4 colTabDimmedSelected = ImVec4(0, 0, 0, colTabSelected.w);
+        const ImVec4 colTabHovered        = ImVec4(0.33f, 0.25f, 0.40f, colWindowBg.w - colTitleBg.w);
 
-        auto creamColor   = ImVec4(1.0f, 0.992f, 0.815f, 1.0f);  // Light cream
-        auto creamHovered = ImVec4(1.0f, 1.0f, 0.9f, 1.0f);        // Slightly lighter when hovered
-        auto creamActive  = ImVec4(1.0f, 0.95f, 0.8f, 1.0f);       // Slightly darker when active
-        auto brighterActive = ImVec4(1.0f, 1.0f, 0.95f, 1.0f);
+        // Depending definitions
+        colors[ImGuiCol_WindowBg]               = colWindowBg;
+        colors[ImGuiCol_TitleBg]                = colTitleBg;
+        colors[ImGuiCol_TitleBgActive]          = colTitleBgActive;
+        colors[ImGuiCol_TitleBgCollapsed]       = colTitleBg;
+        colors[ImGuiCol_Tab]                    = colTab;
+        colors[ImGuiCol_TabSelected]            = colTabSelected;
+        colors[ImGuiCol_TabDimmed]              = colTabDimmed;
+        colors[ImGuiCol_TabDimmedSelected]      = colTabDimmedSelected;
+        colors[ImGuiCol_TabSelectedOverline]    = colTabSelectedOverline;
+        colors[ImGuiCol_TabDimmedSelectedOverline]  = colTabDimmedSelectedOverline;
+        colors[ImGuiCol_TabHovered]             = colTabHovered;
 
-        // Apply the light cream colors to the tabs:
-        style->Colors[ImGuiCol_Tab]                = creamColor;
-        style->Colors[ImGuiCol_TabHovered]         = creamHovered;
-        style->Colors[ImGuiCol_TabActive]          = brighterActive;
-        style->Colors[ImGuiCol_TabUnfocused]       = creamColor;
-        style->Colors[ImGuiCol_TabUnfocusedActive] = creamActive;
-        style->Colors[ImGuiCol_TabSelectedOverline] = ImVec4(1, 1, 1, 1);
-        style->Colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(1, 1, 1, 0);
+        // Static definitions
+        ImVec4 whiteText = colors[ImGuiCol_Text];
 
-        style->Colors[ImGuiCol_Header]                = creamColor;
-        style->Colors[ImGuiCol_HeaderHovered]         = creamHovered;
-        style->Colors[ImGuiCol_HeaderActive]          = creamActive;
+        colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.08f, 0.25f, 0.19f);
+        colors[ImGuiCol_TableRowBg]             = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.59f, 0.73f, 0.81f, 0.15f);
+        colors[ImGuiCol_MenuBarBg]              = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);
+        colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.20f, 0.20f, 0.34f);
+        colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.30f, 0.30f, 0.30f, 0.69f);
+        colors[ImGuiCol_TextTab]                = whiteText;
+        colors[ImGuiCol_TextTabDimmed]          = whiteText;
+        colors[ImGuiCol_TextTabHovered]         = whiteText;
+        colors[ImGuiCol_TextTabSelected]        = whiteText;
+        colors[ImGuiCol_TextTabDimmedSelected]  = whiteText;
+        colors[ImGuiCol_Header]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_HeaderHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_HeaderActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
@@ -147,6 +179,7 @@ namespace nexo::editor {
             fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
+        float iconFontSize = fontSize * 2.0f / 3.0f;
 
         static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
             "../resources/fonts/SourceSans3-Regular.ttf").string();
@@ -159,13 +192,23 @@ namespace nexo::editor {
         ImGuiBackend::initFontAtlas();
 
         ImFontConfig fontawesome_config;
-        fontawesome_config.MergeMode = true;
+        fontawesome_config.MergeMode = true; // Merge fontawesome with the default font
         fontawesome_config.OversampleH = 3; // Horizontal oversampling
         fontawesome_config.OversampleV = 3; // Vertical oversampling
+        //fontawesome_config.GlyphMinAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        //fontawesome_config.GlyphMaxAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        fontawesome_config.PixelSnapH = true; // Snap to pixel grid, useful for pixel-perfect rendering
+        //fontawesome_config.GlyphExtraSpacing = ImVec2(0.0f, 0.0f); // Adds space between icon and text
+
+        fontawesome_config.GlyphMinAdvanceX = iconFontSize; // Make the icons monospaced and aligned
+        fontawesome_config.GlyphMaxAdvanceX = iconFontSize; // Make the icons monospaced and aligned
+
+
+
         static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         static const std::string fontawesomePath = Path::resolvePathRelativeToExe(
             "../resources/fonts/fontawesome4.ttf").string();
-        io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), fontSize, &fontawesome_config, icon_ranges);
+        io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), iconFontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");
     }
@@ -243,19 +286,19 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            ImGui::DockBuilderDockWindow("Default scene", mainSceneTop);
-            ImGui::DockBuilderDockWindow("Console", consoleNode);
-            ImGui::DockBuilderDockWindow("Scene Tree", sceneTreeNode);
-            ImGui::DockBuilderDockWindow("Inspector", inspectorNode);
-            ImGui::DockBuilderDockWindow("Material Inspector", materialInspectorNode);
-            ImGui::DockBuilderDockWindow("Asset Manager", consoleNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
+            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
 
-            m_windowRegistry.setDockId("Default scene", mainSceneTop);
-            m_windowRegistry.setDockId("Console", consoleNode);
-            m_windowRegistry.setDockId("Scene Tree", sceneTreeNode);
-            m_windowRegistry.setDockId("Inspector", inspectorNode);
-            m_windowRegistry.setDockId("Material Inspector", materialInspectorNode);
-            m_windowRegistry.setDockId("Asset Manager", consoleNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, consoleNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
             dockingRegistryFilled = true;
 
             g_materialInspectorDockID = materialInspectorNode;
@@ -265,12 +308,12 @@ namespace nexo::editor {
         }
         else if (!dockingRegistryFilled)
         {
-        	m_windowRegistry.setDockId("Default scene", findWindowDockIDFromConfig("Default scene"));
-        	m_windowRegistry.setDockId("Console", findWindowDockIDFromConfig("Console"));
-        	m_windowRegistry.setDockId("Scene Tree", findWindowDockIDFromConfig("Scene Tree"));
-        	m_windowRegistry.setDockId("Inspector", findWindowDockIDFromConfig("Inspector"));
-        	m_windowRegistry.setDockId("Material Inspector", findWindowDockIDFromConfig("Material Inspector"));
-            m_windowRegistry.setDockId("Asset Manager", findWindowDockIDFromConfig("Asset Manager"));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
+            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
          	dockingRegistryFilled = true;
         }
 
@@ -281,8 +324,7 @@ namespace nexo::editor {
     void Editor::render()
     {
     	getApp().beginFrame();
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg].w = 0.0f; // 0.0f for full transparency
+
         ImGuiBackend::begin();
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -290,41 +332,40 @@ namespace nexo::editor {
         buildDockspace();
 
         drawMenuBar();
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
+
+
 
         m_windowRegistry.render();
 
-        // Gradient background handling
-        {
-	        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	        ImGui::SetNextWindowPos(viewport->Pos);
-	        ImGui::SetNextWindowSize(viewport->Size);
-	        ImGui::SetNextWindowViewport(viewport->ID);
-	        ImGui::Begin("Background", nullptr,
-	                        ImGuiWindowFlags_NoDecoration |
-	                        ImGuiWindowFlags_NoInputs |
-	                        ImGuiWindowFlags_NoFocusOnAppearing |
-	                        ImGuiWindowFlags_NoBringToFrontOnFocus);
+        auto viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::Begin("Background", nullptr,
+                        ImGuiWindowFlags_NoDecoration |
+                        ImGuiWindowFlags_NoInputs |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoBringToFrontOnFocus |
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoScrollbar |
+                        ImGuiWindowFlags_NoBackground);
 
-	        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	        ImU32 darkBase = IM_COL32(20, 20, 20, 255);
+        const std::vector<Components::GradientStop> stops = {
+            { 0.06f, IM_COL32(58, 124, 161, 255) },
+            {0.26f, IM_COL32(88, 87, 154, 255) },
+            { 0.50f, IM_COL32(88, 87, 154, 255) },
+            {0.73f, IM_COL32(58, 124, 161, 255) },
+        };
 
-	        ImU32 col_top_left     = darkBase;
-	        ImU32 col_bottom_right = darkBase;
+        float angle = 148;
 
-	        // Subtle blue tint
-	        ImU32 col_bottom_left  = IM_COL32(20, 20, 40, 255);
+        Components::drawRectFilledLinearGradient(viewport->Pos,
+                ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
 
-	        // Subtle fuchsia tint.
-	        ImU32 col_top_right    = IM_COL32(30, 20, 30, 255);
-
-	        draw_list->AddRectFilledMultiColor(
-	            viewport->Pos,
-	            ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
-	            col_top_left, col_top_right, col_bottom_right, col_bottom_left);
-
-	        ImGui::End();
-        }
+        ImGui::End();
 
         ImGui::Render();
 

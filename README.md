@@ -18,6 +18,8 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
     - [Game Engine](#game-engine)
   - [External Dependencies](#external-dependencies)
   - [Build the project](#build-the-project)
+    - [Automatically with CMake Presets](#using-cmake-presets-automatic)
+    - [Manually with CMake](#using-cmake---build-manual)
   - [Install the project](#install-the-project)
     - [Install via CMake](#install-via-cmake)
     - [Create an installer for Windows (NSIS)](#create-an-installer-for-windows-nsis)
@@ -36,41 +38,57 @@ Interface screenshot
 
 ![Editor interface](docs/game_engine/editor_interface.png)
 
-Quick video of the game engine in action with Jolt Physics
+Quick video of the game engine in action
 
-https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
+https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4
+
+<!-- Command used for video compression: ffmpeg -ss 00:00:02 -to 00:00:57 -i .\docs\game_engine\editor_interface_video.mkv -codec copy -an -vcodec libx264 -crf
+ 4 .\docs\game_engine\editor_interface_video.mp4 -->
 
 > [!WARNING]
-> This video is from a prototype version of the engine. The final version does not currently integrate physics.
+> This project is still in development and is not yet ready for production use. Some features may change.
 
 ## External Dependencies
 
 To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source.
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **X11**: Required for Linux and macOS.
 
 ## Build the project
 
 Cloning and building is a breeze:
-1. Clone the repository with the submodules.
+
+### 1. Clone the repository with the submodules.
 ```bash
 git clone --recurse-submodules
 ```
 
-2. Run cmake to generate the build files.
+### 2. Run cmake to generate the build files.
+
+#### Using cmake presets (automatic)
+
+```bash
+cmake --workflow --present=build-debug
+```
+
+> [!NOTE]
+> There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
+
+#### Using cmake --build (manual)
+
 ```bash
 cmake -B build
 cmake --build build
 ```
-3. Launch the engine!
 
-For Linux and MacOS:
+### 3. Launch the engine!
+
+#### For Linux and MacOS:
 ```bash
 ./build/nexoEditor
 ```
 
-For Windows:
+#### For Windows:
 ```bash
 ./build/nexoEditor.exe
 ```
@@ -129,7 +147,7 @@ In this project tests use the [gtest](http://google.github.io/googletest/) libra
 
 First build the tests:
 ```bash
-cmake -B build
+cmake -B build -DNEXO_BUILD_TESTS=ON
 cmake --build build
 ```
 

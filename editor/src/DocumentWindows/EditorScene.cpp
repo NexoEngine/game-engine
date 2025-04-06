@@ -199,11 +199,12 @@ namespace nexo::editor {
 
         if (ImGui::Begin(m_windowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
+            firstDockSetup(m_windowName);
         	auto &app = getApp();
             m_viewPosition = ImGui::GetCursorScreenPos();
-            firstDockSetup(m_windowName);
 
             m_focused = ImGui::IsWindowFocused();
+            m_hovered = ImGui::IsWindowHovered();
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
             if (m_focused && selector.getSelectedScene() != m_sceneId)
             {
@@ -233,10 +234,11 @@ namespace nexo::editor {
     void EditorScene::update()
     {
     	auto &selector = Selector::get();
-    	m_windowName = utils::removeIconPrefix(selector.getUiHandle(m_sceneUuid, m_windowName));
+    	//m_windowName = selector.getUiHandle(m_sceneUuid, m_windowName);
         if (!m_opened || m_activeCamera == -1)
             return;
-        handleKeyEvents();
+        if (m_focused && m_hovered)
+            handleKeyEvents();
 
         auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER);

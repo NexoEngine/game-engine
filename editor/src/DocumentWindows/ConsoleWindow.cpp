@@ -16,6 +16,8 @@
 #include <format>
 #include "ConsoleWindow.hpp"
 
+#include <IconsFontAwesome.h>
+
 namespace nexo::editor {
     /**
      * @brief Converts a loguru verbosity level to its corresponding string label.
@@ -244,8 +246,8 @@ namespace nexo::editor {
     void ConsoleWindow::show()
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
-        ImGui::Begin("Console", &m_opened, ImGuiWindowFlags_NoCollapse);
-        firstDockSetup("Console");
+        ImGui::Begin(ICON_FA_FILE_TEXT " Console" "###" NEXO_WND_USTRID_CONSOLE, &m_opened, ImGuiWindowFlags_NoCollapse);
+        firstDockSetup(NEXO_WND_USTRID_CONSOLE);
 
         const float footerHeight = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footerHeight), false, ImGuiWindowFlags_HorizontalScrollbar);

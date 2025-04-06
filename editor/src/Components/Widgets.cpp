@@ -13,6 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Widgets.hpp"
+
+#include <imgui_internal.h>
+#include <Logger.hpp>
+
 #include "Components.hpp"
 #include "IconsFontAwesome.h"
 #include "tinyfiledialogs.h"
@@ -25,44 +29,34 @@ namespace nexo::editor {
 			bool *showPicker,
 			const ImGuiColorEditFlags colorButtonFlags
 	) {
-        const float availableWidth = ImGui::GetContentRegionAvail().x;
+		const ImGuiStyle &style = ImGui::GetStyle();
+        const ImVec2 contentAvailable = ImGui::GetContentRegionAvail();
         bool colorModified = false;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
         const std::string colorButton = std::string("##ColorButton") + label;
+
+		const ImVec2 cogIconSize = ImGui::CalcTextSize(ICON_FA_COG);
+		const ImVec2 cogIconPadding = style.FramePadding;
+		const ImVec2 itemSpacing = style.ItemSpacing;
 
         // Color button
         Components::drawColorButton(
            	colorButton,
-           	ImVec2(availableWidth - 35, 25), // Make room for the cog button
+           	ImVec2(contentAvailable.x - cogIconSize.x - cogIconPadding.x * 2 - itemSpacing.x, 0), // Make room for the cog button
            	ImVec4(selectedEntityColor->x, selectedEntityColor->y, selectedEntityColor->z, selectedEntityColor->w),
             showPicker,
             colorButtonFlags
         );
 
-        ImGui::PopStyleVar();
-
         ImGui::SameLine();
 
-        constexpr float cogButtonWidth = 25;
-        constexpr float cogButtonHeight = 25;
-
-        const float fontSize = ImGui::GetFontSize();
-        const float verticalPadding = (cogButtonHeight - fontSize) * 0.5f;
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, verticalPadding + 2)); // Slightly add more textPaddingding to center the cog icon
-        const std::string pickerSettings = std::string("##PickerSettings") + label;
+		const std::string pickerSettings = std::string("##PickerSettings") + label;
         const std::string colorPickerPopup = std::string("##ColorPickerPopup") + label;
 
-        // Cog button
-        if (Components::drawButton(
-           	std::string(ICON_FA_COG) + pickerSettings,
-           	ImVec2(cogButtonWidth, cogButtonHeight),
-           	IM_COL32(60, 60, 60, 255), IM_COL32(80, 80, 80, 255),
-           	IM_COL32(100, 100, 100, 255), IM_COL32(255, 255, 255, 255)))
-        {
+		// Cog button
+        if (Components::drawButton(std::string(ICON_FA_COG) + pickerSettings)) {
            	ImGui::OpenPopup(colorPickerPopup.c_str());
         }
-        ImGui::PopStyleVar();
 
         if (ImGui::BeginPopup(colorPickerPopup.c_str()))
         {

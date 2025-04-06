@@ -15,6 +15,7 @@
 
 #include <imgui.h>
 #include <string>
+#include <vector>
 
 namespace nexo::editor {
 
@@ -40,7 +41,7 @@ namespace nexo::editor {
              * @param txtColor The text color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawButton(const std::string &label, const ImVec2& size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static bool drawButton(const std::string &label, const ImVec2& size = ImVec2(0, 0), ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
    			/**
              * @brief Draws a border around the last item.
@@ -56,6 +57,21 @@ namespace nexo::editor {
              * @param thickness The thickness of the border.
              */
 			static void drawButtonBorder(ImU32 borderColor, ImU32 borderColorHovered, ImU32 borderColorActive, float rounding = 2.0f, ImDrawFlags flags = 0, float thickness = 3.0f);
+
+            /**
+             * @brief Draws a border inside the last item.
+             *
+             * Similar to drawButtonBorder, but draws a border inside the item rectangle instead of outside.
+             *
+             * @param borderColor The border color for normal state.
+             * @param borderColorHovered The border color when hovered.
+             * @param borderColorActive The border color when active.
+             * @param rounding The rounding of the border corners.
+             * @param flags Additional draw flags.
+             * @param thickness The thickness of the border.
+             */
+		    static void drawButtonInnerBorder(ImU32 borderColor, ImU32 borderColorHovered, ImU32 borderColorActive, float rounding = 2.0f, ImDrawFlags flags = 0, float thickness = 3.0f);
+
 
    			/**
              * @brief Draws a draggable float widget with custom styling.
@@ -74,7 +90,7 @@ namespace nexo::editor {
              * @param textColor The text color.
              * @return true if the value was changed; false otherwise.
              */
-			static bool drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 textColor = ImGui::GetColorU32(ImGuiCol_Text));
+			static bool drawDragFloat(const std::string &label, float *values, float speed, float min, float max, const std::string &format, ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 textColor = 0);
 
 			/**
              * @brief Draws an icon button with custom style colors.
@@ -89,7 +105,7 @@ namespace nexo::editor {
              * @param txtColor The text (icon) color.
              * @return true if the button was clicked; false otherwise.
              */
-			static bool drawIconButton(const std::string &label, ImVec2 size, ImU32 bg, ImU32 bgHovered, ImU32 bgActive, ImU32 txtColor);
+			static bool drawIconButton(const std::string &label, ImVec2 size = ImVec2(0, 0), ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
 
 			/**
              * @brief Draws a color button with a border.
@@ -118,5 +134,20 @@ namespace nexo::editor {
              * @param textColor The color of the text.
              */
 			static void drawCustomSeparatorText(const std::string &text, float textPadding, float leftSpacing, float thickness, ImU32 lineColor, ImU32 textColor);
+
+			struct GradientStop
+			{
+				float pos;   // percentage position along the gradient [0.0f, 1.0f]
+				ImU32 color; // color at this stop
+			};
+
+		    /**
+		     * @brief Draw filled rectangle with a linear gradient defined by an arbitrary angle and gradient stops.
+		     * @param pMin Upper left corner position of the rectangle
+		     * @param pMax Lower right corner position of the rectangle
+		     * @param angle Angle of the gradient in degrees (0.0f = down, 90.0f = right, 180.0f = up, 270.0f = left)
+		     * @param stops Vector of gradient stops, each defined by a position (0.0f to 1.0f) and a color
+		     */
+		    static void drawRectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle, std::vector<GradientStop> stops, ImDrawList* drawList = nullptr);
 	};
 }

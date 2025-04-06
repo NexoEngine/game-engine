@@ -14,6 +14,7 @@
 
 #include "InspectorWindow.hpp"
 
+#include <IconsFontAwesome.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <variant>
@@ -63,8 +64,8 @@ namespace nexo::editor
 
     void InspectorWindow::show()
     {
-        ImGui::Begin("Inspector", &m_opened, ImGuiWindowFlags_NoCollapse);
-        firstDockSetup("Inspector");
+        ImGui::Begin(ICON_FA_SLIDERS " Inspector" "###" NEXO_WND_USTRID_INSPECTOR, &m_opened, ImGuiWindowFlags_NoCollapse);
+        firstDockSetup(NEXO_WND_USTRID_INSPECTOR);
         auto const &selector = Selector::get();
         const int selectedEntity = selector.getSelectedEntity();
 
@@ -98,7 +99,7 @@ namespace nexo::editor
 		if (EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle))
 		{
 			ImGui::Spacing();
-	  		ImGui::SetWindowFontScale(1.15f);
+	  		//ImGui::SetWindowFontScale(1.15f);
 			ImGui::Columns(2, "sceneProps");
 			ImGui::SetColumnWidth(0, 80);
 

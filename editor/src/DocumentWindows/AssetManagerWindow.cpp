@@ -14,6 +14,7 @@
 
 #include "AssetManagerWindow.hpp"
 #include <algorithm>
+#include <IconsFontAwesome.h>
 #include <Path.hpp>
 #include <assets/Asset.hpp>
 #include <assets/AssetCatalog.hpp>
@@ -51,10 +52,8 @@ namespace nexo::editor {
 
     void AssetManagerWindow::show() {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin("Asset Manager", nullptr, ImGuiWindowFlags_MenuBar)) {
-            ImGui::End();
-            return;
-        }
+        ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" "###" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened, ImGuiWindowFlags_MenuBar);
+        firstDockSetup(NEXO_WND_USTRID_ASSET_MANAGER);
 
         drawMenuBar();
 

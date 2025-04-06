@@ -21,6 +21,14 @@
 #include <imgui_internal.h>
 
 namespace nexo::editor {
+
+    #define NEXO_WND_USTRID_INSPECTOR "Inspector"
+    #define NEXO_WND_USTRID_SCENE_TREE "Scene Tree"
+    #define NEXO_WND_USTRID_ASSET_MANAGER "Asset Manager"
+    #define NEXO_WND_USTRID_CONSOLE "Console"
+    #define NEXO_WND_USTRID_MATERIAL_INSPECTOR "Material Inspector"
+    #define NEXO_WND_USTRID_DEFAULT_SCENE "Default Scene"
+
     class ADocumentWindow : public IDocumentWindow {
         public:
             /**
@@ -37,16 +45,17 @@ namespace nexo::editor {
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
             [[nodiscard]] bool isOpened() const override { return m_opened; }
+            [[nodiscard]] bool isHovered() const override { return m_hovered; }
 
             /**
-			 * @brief Retrieves the open state of the document window.
-			 *
-			 * Returns a reference to the internal boolean that tracks whether the window is open.
-			 * This reference is primarily intended for ImGui integration, allowing direct manipulation
-			 * of the window's visibility state.
-			 *
-			 * @return A reference to the window's open state.
-			 */
+             * @brief Retrieves the open state of the document window.
+             *
+             * Returns a reference to the internal boolean that tracks whether the window is open.
+             * This reference is primarily intended for ImGui integration, allowing direct manipulation
+             * of the window's visibility state.
+             *
+             * @return A reference to the window's open state.
+             */
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
             [[nodiscard]] const std::string &getWindowName() const override { return m_windowName; }
@@ -64,24 +73,25 @@ namespace nexo::editor {
              */
             void firstDockSetup(const std::string &windowName)
             {
-	            if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
-		        {
-					const bool isDocked = currentWindow->DockIsActive;
-					const ImGuiID currentDockID = currentWindow->DockId;
-					auto dockId = m_windowRegistry.getDockId(windowName);
+                if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
+                {
+                    const bool isDocked = currentWindow->DockIsActive;
+                    const ImGuiID currentDockID = currentWindow->DockId;
+                    auto dockId = m_windowRegistry.getDockId(windowName);
 
-					if (m_firstOpened && (!isDocked || (dockId && currentDockID != *dockId)))
-						currentWindow->DockId = *dockId;
-					else if (dockId && currentDockID != *dockId)
-						m_windowRegistry.setDockId(windowName, currentDockID);
-					m_firstOpened = false;
-		        }
+                    if (m_firstOpened && (!isDocked || (dockId && currentDockID != *dockId)))
+                        currentWindow->DockId = *dockId;
+                    else if (dockId && currentDockID != *dockId)
+                        m_windowRegistry.setDockId(windowName, currentDockID);
+                    m_firstOpened = false;
+                }
             }
 
             WindowId windowId;
         protected:
             bool m_opened = true;
             bool m_focused = false;
+            bool m_hovered = false; // TODO: make these update without user intervention
 
             bool m_firstOpened = true;
 

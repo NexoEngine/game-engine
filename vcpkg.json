@@ -7,7 +7,7 @@
 	"dependencies": [
 		{
 			"name": "imgui",
-			"version>=": "1.95.0",
+			"version>=": "1.91.7",
 			"features": [
               "docking-experimental",
               "glfw-binding",

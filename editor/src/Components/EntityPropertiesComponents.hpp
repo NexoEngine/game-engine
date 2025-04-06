@@ -133,7 +133,7 @@ namespace nexo::editor {
              * @param[in] speed Speed of value change during dragging (default: 0.3f)
              * @param[in] badgeColor Optional custom colors for badges
              * @param[in] textBadgeColor Optional custom text colors for badges
-             * @param[in] inactive If true, renders in an inactive/disabled state (default: false)
+             * @param[in] disabled If true, renders in an inactive/disabled state (default: false)
              * @return true if any value was changed, false otherwise
              */
 			static bool drawRowDragFloat2(
@@ -146,7 +146,7 @@ namespace nexo::editor {
 				float speed = 0.3f,
 				std::vector<ImU32> badgeColor = {},
 				std::vector<ImU32> textBadgeColor = {},
-				bool inactive = false
+				bool disabled = false
 			);
 
 			/**

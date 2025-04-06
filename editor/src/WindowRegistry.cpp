@@ -65,8 +65,9 @@ namespace nexo::editor {
         {
             for (const auto &window : windows)
             {
-                if (window->isOpened())
-                    window->show();
+            	if (!window->isOpened())
+            		continue;
+            	window->show();
             }
         }
 	}
