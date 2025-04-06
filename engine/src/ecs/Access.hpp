@@ -1,6 +1,21 @@
+//// Access.hpp ///////////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        06/04/2025
+//  Description: Header file for access enforcement helpers
+//
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <tuple>
+#include <typeindex>
+#include <type_traits>
 
 namespace nexo::ecs {
     /**
@@ -34,6 +49,24 @@ namespace nexo::ecs {
      */
     template<typename T>
     using Write = ComponentAccess<T, AccessType::Write>;
+
+    /**
+     * @brief Type alias for read-only singleton component access
+     */
+    template<typename T>
+    struct ReadSingleton {
+        using ComponentType = T;
+        static constexpr AccessType accessType = AccessType::Read;
+    };
+
+    /**
+     * @brief Type alias for read-write singleton component access
+     */
+    template<typename T>
+    struct WriteSingleton {
+        using ComponentType = T;
+        static constexpr AccessType accessType = AccessType::Write;
+    };
 
     /**
      * @brief Type wrapper for owned components in a group system
@@ -75,7 +108,8 @@ namespace nexo::ecs {
      * @brief Helper to convert a tuple of component access types to a parameter pack
      */
     template<typename Tuple, typename Func, std::size_t... I>
-    void tuple_for_each_impl(Tuple&& tuple, Func&& func, std::index_sequence<I...>) {
+    void tuple_for_each_impl(Tuple&& tuple, Func&& func, std::index_sequence<I...>)
+    {
         (func(std::get<I>(std::forward<Tuple>(tuple))), ...);
     }
 
@@ -83,11 +117,48 @@ namespace nexo::ecs {
      * @brief Apply a function to each element of a tuple
      */
     template<typename Tuple, typename Func>
-    void tuple_for_each(Tuple&& tuple, Func&& func) {
+    void tuple_for_each(Tuple&& tuple, Func&& func)
+    {
         tuple_for_each_impl(
             std::forward<Tuple>(tuple),
             std::forward<Func>(func),
             std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{}
         );
+    }
+
+    /**
+     * @brief Helper to check if a type is a ReadSingleton
+     */
+    template<typename T>
+    struct IsReadSingleton : std::false_type {};
+
+    template<typename T>
+    struct IsReadSingleton<ReadSingleton<T>> : std::true_type {};
+
+    /**
+     * @brief Helper to check if a type is a WriteSingleton
+     */
+    template<typename T>
+    struct IsWriteSingleton : std::false_type {};
+
+    template<typename T>
+    struct IsWriteSingleton<WriteSingleton<T>> : std::true_type {};
+
+    /**
+     * @brief Helper to check if a type is any kind of singleton component
+     */
+    template<typename T>
+    struct IsSingleton : std::bool_constant<IsReadSingleton<T>::value || IsWriteSingleton<T>::value> {};
+
+    /**
+     * @brief Gets the type index for a component
+     *
+     * @tparam T The component type
+     * @return std::type_index The type index
+     */
+    template<typename T>
+    std::type_index getTypeIndex()
+    {
+        return std::type_index(typeid(T));
     }
 }
