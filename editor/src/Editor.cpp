@@ -346,7 +346,12 @@ namespace nexo::editor {
                         ImGuiWindowFlags_NoDecoration |
                         ImGuiWindowFlags_NoInputs |
                         ImGuiWindowFlags_NoFocusOnAppearing |
-                        ImGuiWindowFlags_NoBringToFrontOnFocus);
+                        ImGuiWindowFlags_NoBringToFrontOnFocus |
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoScrollbar |
+                        ImGuiWindowFlags_NoBackground);
 
         const std::vector<Components::GradientStop> stops = {
             { 0.06f, IM_COL32(58, 124, 161, 255) },
