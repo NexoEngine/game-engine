@@ -201,6 +201,18 @@ namespace nexo::ecs {
             }
 
             /**
+             * @brief Get the Raw Singleton Component object
+             *
+             * @tparam T Class that should inherit from the SingletonComponent class
+             * @return std::shared_ptr<ISingletonComponent> The pointer to the desired singleton component
+             */
+            template <typename T>
+            std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
+            {
+                return m_singletonComponentManager->getRawSingletonComponent<T>();
+            }
+
+            /**
              * @brief Retrieves all component types associated with an entity.
              *
              * @param entity The target entity identifier.
