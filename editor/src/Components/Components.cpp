@@ -147,9 +147,9 @@ namespace nexo::editor {
 
     /**
      * @brief Linearly interpolates between two colors (ImU32, ImGui 32-bits ARGB format).
-     * @param colA[in] The first color (ARGB format).
-     * @param colB[in] The second color (ARGB format).
-     * @param t[in] The interpolation factor (0.0 to 1.0).
+     * @param[in] colA The first color (ARGB format).
+     * @param[in] colB The second color (ARGB format).
+     * @param[in] t The interpolation factor (0.0 to 1.0).
      * @return The interpolated color (ARGB format).
      */
     static ImU32 imLerpColor(const ImU32 colA, const ImU32 colB, const float t)
@@ -167,10 +167,10 @@ namespace nexo::editor {
      * @brief Clip a convex polygon against a half-plane defined by: (dot(normal, v) >= offset)
      *
      * This function uses the Sutherland-Hodgman algorithm to clip a polygon against a line defined by a normal vector and an offset.
-     * @param poly[in] Vector of vertices representing the polygon to be clipped.
-     * @param normal[in] The normal vector of the line used for clipping.
-     * @param offset[in] The offset from the origin of the line.
-     * @param outPoly[out] Output vector to store the clipped polygon vertices.
+     * @param[in] poly Vector of vertices representing the polygon to be clipped.
+     * @param[in] normal The normal vector of the line used for clipping.
+     * @param[in] offset The offset from the origin of the line.
+     * @param[out] outPoly Output vector to store the clipped polygon vertices.
      */
     static void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, float offset, std::vector<ImVec2>& outPoly)
     {
@@ -197,9 +197,9 @@ namespace nexo::editor {
 
     /**
      * @brief Fill a convex polygon with triangles using a triangle fan.
-     * @param drawList[in] The ImDrawList to which the triangles will be added.
-     * @param poly[in] Vector of vertices representing the polygon to be filled.
-     * @param polyColors[in] Vector of colors for each vertex in the polygon.
+     * @param[in] drawList The ImDrawList to which the triangles will be added.
+     * @param[in] poly Vector of vertices representing the polygon to be filled.
+     * @param[in] polyColors Vector of colors for each vertex in the polygon.
      */
     static void fillConvexPolygon(ImDrawList* drawList, const std::vector<ImVec2>& poly, const std::vector<ImU32>& polyColors)
     {
@@ -209,9 +209,10 @@ namespace nexo::editor {
         drawList->PrimReserve((count - 2) * 3, count);
         // Use the first vertex as pivot.
         for (int i = 1; i < count - 1; i++) {
-            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(drawList->_VtxCurrentIdx));
-            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(drawList->_VtxCurrentIdx + i));
-            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(drawList->_VtxCurrentIdx + i + 1));
+            const auto currentIdx = drawList->_VtxCurrentIdx;
+            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(currentIdx));
+            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(currentIdx + i));
+            drawList->PrimWriteIdx(static_cast<ImDrawIdx>(currentIdx + i + 1));
         }
         // Write vertices with their computed colors.
         for (int i = 0; i < count; i++) {
@@ -245,7 +246,7 @@ namespace nexo::editor {
         const auto gradDir = ImVec2(cosf(angle), sinf(angle));
 
         // Define rectangle polygon (clockwise order).
-        std::vector<ImVec2> rectPoly = { pMin, ImVec2(pMax.x, pMin.y), pMax, ImVec2(pMin.x, pMax.y) };
+        const std::vector<ImVec2> rectPoly = { pMin, ImVec2(pMax.x, pMin.y), pMax, ImVec2(pMin.x, pMax.y) };
 
         // Compute projection range (d_min, d_max) for the rectangle.
         float d_min = std::numeric_limits<float>::max();
