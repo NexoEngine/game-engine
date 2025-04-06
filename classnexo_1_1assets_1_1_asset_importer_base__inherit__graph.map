@@ -1,0 +1,6 @@
+<map id="nexo::assets::AssetImporterBase" name="nexo::assets::AssetImporterBase">
+<area shape="rect" id="node1" title="Interface for importing assets into the engine." alt="" coords="195,5,407,141"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_mock_importer.html" title=" " alt="" coords="5,219,185,311"/>
+<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_model_importer.html" title=" " alt="" coords="209,197,392,333"/>
+<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_texture_importer.html" title=" " alt="" coords="416,189,607,340"/>
+</map>

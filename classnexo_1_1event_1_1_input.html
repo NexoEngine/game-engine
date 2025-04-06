@@ -93,12 +93,17 @@ $(document).ready(function(){initNavTree('classnexo_1_1event_1_1_input.html','')
   <div class="headertitle"><div class="title">nexo::event::Input Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Abstract class for input handling.  
+ <a href="classnexo_1_1event_1_1_input.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_input_8hpp_source.html">Input.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::event::Input:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1event_1_1_input__inherit__graph.png" border="0" usemap="#anexo_1_1event_1_1_input_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1event_1_1_input_inherit__map" id="anexo_1_1event_1_1_input_inherit__map">
-<area shape="rect" title=" " alt="" coords="16,5,161,215"/>
+<area shape="rect" title="Abstract class for input handling." alt="" coords="16,5,161,215"/>
 <area shape="rect" href="classnexo_1_1event_1_1_input_open_gl.html" title=" " alt="" coords="5,263,172,428"/>
 </map>
 </div>
@@ -107,32 +112,32 @@ Collaboration diagram for nexo::event::Input:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1event_1_1_input__coll__graph.png" border="0" usemap="#anexo_1_1event_1_1_input_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1event_1_1_input_coll__map" id="anexo_1_1event_1_1_input_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,151,215"/>
+<area shape="rect" title="Abstract class for input handling." alt="" coords="5,5,151,215"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2339358587c8272224fd090ae951d0f6"><td class="memItemLeft" align="right" valign="top"><a id="a2339358587c8272224fd090ae951d0f6" name="a2339358587c8272224fd090ae951d0f6"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Input</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;window)</td></tr>
+<tr class="memitem:a2339358587c8272224fd090ae951d0f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#a2339358587c8272224fd090ae951d0f6">Input</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;window)</td></tr>
+<tr class="memdesc:a2339358587c8272224fd090ae951d0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an <a class="el" href="classnexo_1_1event_1_1_input.html" title="Abstract class for input handling.">Input</a> instance bound to a specific window.  <a href="classnexo_1_1event_1_1_input.html#a2339358587c8272224fd090ae951d0f6">More...</a><br /></td></tr>
 <tr class="separator:a2339358587c8272224fd090ae951d0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac304d2e2f5dcb1fc8482ff88a6350ca6"><td class="memItemLeft" align="right" valign="top"><a id="ac304d2e2f5dcb1fc8482ff88a6350ca6" name="ac304d2e2f5dcb1fc8482ff88a6350ca6"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isKeyPressed</b> (int keycode) const =0</td></tr>
+<tr class="memitem:ac304d2e2f5dcb1fc8482ff88a6350ca6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#ac304d2e2f5dcb1fc8482ff88a6350ca6">isKeyPressed</a> (int keycode) const =0</td></tr>
+<tr class="memdesc:ac304d2e2f5dcb1fc8482ff88a6350ca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the specified key is currently pressed.  <a href="classnexo_1_1event_1_1_input.html#ac304d2e2f5dcb1fc8482ff88a6350ca6">More...</a><br /></td></tr>
 <tr class="separator:ac304d2e2f5dcb1fc8482ff88a6350ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f933de797fa0da6cf6ae04c25bd2bf4"><td class="memItemLeft" align="right" valign="top"><a id="a6f933de797fa0da6cf6ae04c25bd2bf4" name="a6f933de797fa0da6cf6ae04c25bd2bf4"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isKeyReleased</b> (int keycode) const =0</td></tr>
+<tr class="memitem:a6f933de797fa0da6cf6ae04c25bd2bf4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#a6f933de797fa0da6cf6ae04c25bd2bf4">isKeyReleased</a> (int keycode) const =0</td></tr>
+<tr class="memdesc:a6f933de797fa0da6cf6ae04c25bd2bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the specified key is currently released.  <a href="classnexo_1_1event_1_1_input.html#a6f933de797fa0da6cf6ae04c25bd2bf4">More...</a><br /></td></tr>
 <tr class="separator:a6f933de797fa0da6cf6ae04c25bd2bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4bec048a3af124e2e49b981db7c9843"><td class="memItemLeft" align="right" valign="top"><a id="aa4bec048a3af124e2e49b981db7c9843" name="aa4bec048a3af124e2e49b981db7c9843"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isKeyRepeat</b> (int keycode) const =0</td></tr>
+<tr class="memitem:aa4bec048a3af124e2e49b981db7c9843"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#aa4bec048a3af124e2e49b981db7c9843">isKeyRepeat</a> (int keycode) const =0</td></tr>
+<tr class="memdesc:aa4bec048a3af124e2e49b981db7c9843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the specified key is in a repeat state.  <a href="classnexo_1_1event_1_1_input.html#aa4bec048a3af124e2e49b981db7c9843">More...</a><br /></td></tr>
 <tr class="separator:aa4bec048a3af124e2e49b981db7c9843"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf66dd60e46b6554803693e8cf3b736d"><td class="memItemLeft" align="right" valign="top"><a id="acf66dd60e46b6554803693e8cf3b736d" name="acf66dd60e46b6554803693e8cf3b736d"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isMouseDown</b> (int button) const =0</td></tr>
+<tr class="memitem:acf66dd60e46b6554803693e8cf3b736d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#acf66dd60e46b6554803693e8cf3b736d">isMouseDown</a> (int button) const =0</td></tr>
+<tr class="memdesc:acf66dd60e46b6554803693e8cf3b736d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the specified mouse button is currently pressed.  <a href="classnexo_1_1event_1_1_input.html#acf66dd60e46b6554803693e8cf3b736d">More...</a><br /></td></tr>
 <tr class="separator:acf66dd60e46b6554803693e8cf3b736d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32084658f3b4ff2c699fc4d402e58879"><td class="memItemLeft" align="right" valign="top"><a id="a32084658f3b4ff2c699fc4d402e58879" name="a32084658f3b4ff2c699fc4d402e58879"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isMouseReleased</b> (int button) const =0</td></tr>
+<tr class="memitem:a32084658f3b4ff2c699fc4d402e58879"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#a32084658f3b4ff2c699fc4d402e58879">isMouseReleased</a> (int button) const =0</td></tr>
+<tr class="memdesc:a32084658f3b4ff2c699fc4d402e58879"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the specified mouse button is currently released.  <a href="classnexo_1_1event_1_1_input.html#a32084658f3b4ff2c699fc4d402e58879">More...</a><br /></td></tr>
 <tr class="separator:a32084658f3b4ff2c699fc4d402e58879"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa5f4e62eecd0b24f03b0eca1ec630ce"><td class="memItemLeft" align="right" valign="top"><a id="afa5f4e62eecd0b24f03b0eca1ec630ce" name="afa5f4e62eecd0b24f03b0eca1ec630ce"></a>
-virtual glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><b>getMousePosition</b> () const =0</td></tr>
+<tr class="memitem:afa5f4e62eecd0b24f03b0eca1ec630ce"><td class="memItemLeft" align="right" valign="top">virtual glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#afa5f4e62eecd0b24f03b0eca1ec630ce">getMousePosition</a> () const =0</td></tr>
+<tr class="memdesc:afa5f4e62eecd0b24f03b0eca1ec630ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the current mouse position.  <a href="classnexo_1_1event_1_1_input.html#afa5f4e62eecd0b24f03b0eca1ec630ce">More...</a><br /></td></tr>
 <tr class="separator:afa5f4e62eecd0b24f03b0eca1ec630ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -140,8 +145,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a3293735e8cdb0e5a7e3342f44d10aa27"><td class="memItemLeft" align="right" valign="top"><a id="a3293735e8cdb0e5a7e3342f44d10aa27" name="a3293735e8cdb0e5a7e3342f44d10aa27"></a>
 static std::shared_ptr&lt; <a class="el" href="classnexo_1_1event_1_1_input.html">Input</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getInstance</b> ()</td></tr>
 <tr class="separator:a3293735e8cdb0e5a7e3342f44d10aa27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e0d6756b8a700485e699527470bb27f"><td class="memItemLeft" align="right" valign="top"><a id="a3e0d6756b8a700485e699527470bb27f" name="a3e0d6756b8a700485e699527470bb27f"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;window)</td></tr>
+<tr class="memitem:a3e0d6756b8a700485e699527470bb27f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_input.html#a3e0d6756b8a700485e699527470bb27f">init</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;window)</td></tr>
+<tr class="memdesc:a3e0d6756b8a700485e699527470bb27f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the input system with the given window.  <a href="classnexo_1_1event_1_1_input.html#a3e0d6756b8a700485e699527470bb27f">More...</a><br /></td></tr>
 <tr class="separator:a3e0d6756b8a700485e699527470bb27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -150,8 +155,301 @@ Protected Attributes</h2></td></tr>
 std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_window</b></td></tr>
 <tr class="separator:a3156aaaf16f6b611cf27a46c34a64df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Abstract class for input handling. </p>
+<p >Provides an interface for querying keyboard and mouse input states. Implementations (e.g., for OpenGL using GLFW) must provide concrete behavior for checking key and mouse states as well as retrieving the mouse position.</p>
+<p >Usage:</p><ul>
+<li>Call Input::init(window) to initialize the input instance.</li>
+<li>Use the static inline functions (e.g., isKeyPressed) for convenience. </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2339358587c8272224fd090ae951d0f6" name="a2339358587c8272224fd090ae951d0f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2339358587c8272224fd090ae951d0f6">&#9670;&nbsp;</a></span>Input()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">nexo::event::Input::Input </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>window</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an <a class="el" href="classnexo_1_1event_1_1_input.html" title="Abstract class for input handling.">Input</a> instance bound to a specific window. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">window</td><td>Shared pointer to the window for input polling. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac304d2e2f5dcb1fc8482ff88a6350ca6" name="ac304d2e2f5dcb1fc8482ff88a6350ca6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac304d2e2f5dcb1fc8482ff88a6350ca6">&#9670;&nbsp;</a></span>isKeyPressed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::event::Input::isKeyPressed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>keycode</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the specified key is currently pressed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keycode</td><td>The keycode to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the key is pressed, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#a5506232b74073e123969e32e514e9141">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="a6f933de797fa0da6cf6ae04c25bd2bf4" name="a6f933de797fa0da6cf6ae04c25bd2bf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f933de797fa0da6cf6ae04c25bd2bf4">&#9670;&nbsp;</a></span>isKeyReleased()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::event::Input::isKeyReleased </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>keycode</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the specified key is currently released. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keycode</td><td>The keycode to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the key is released, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#a0cfa64ee1760ffa03945fec8ece87fe5">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="aa4bec048a3af124e2e49b981db7c9843" name="aa4bec048a3af124e2e49b981db7c9843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4bec048a3af124e2e49b981db7c9843">&#9670;&nbsp;</a></span>isKeyRepeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::event::Input::isKeyRepeat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>keycode</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the specified key is in a repeat state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keycode</td><td>The keycode to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the key is repeating, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#ae74b0d162254bf9e4e8af1dc5e8b47d4">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="acf66dd60e46b6554803693e8cf3b736d" name="acf66dd60e46b6554803693e8cf3b736d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf66dd60e46b6554803693e8cf3b736d">&#9670;&nbsp;</a></span>isMouseDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::event::Input::isMouseDown </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>button</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the specified mouse button is currently pressed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">button</td><td>The mouse button to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the mouse button is pressed, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#a7df0804bc8cbb2ddc80d38c75da1dedc">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="a32084658f3b4ff2c699fc4d402e58879" name="a32084658f3b4ff2c699fc4d402e58879"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32084658f3b4ff2c699fc4d402e58879">&#9670;&nbsp;</a></span>isMouseReleased()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::event::Input::isMouseReleased </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>button</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the specified mouse button is currently released. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">button</td><td>The mouse button to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the mouse button is released, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#a47224f6c5f9ce3be5ffa8a7dafe36c27">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="afa5f4e62eecd0b24f03b0eca1ec630ce" name="afa5f4e62eecd0b24f03b0eca1ec630ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa5f4e62eecd0b24f03b0eca1ec630ce">&#9670;&nbsp;</a></span>getMousePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual glm::vec2 nexo::event::Input::getMousePosition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the current mouse position. </p>
+<dl class="section return"><dt>Returns</dt><dd>glm::vec2 The (x, y) coordinates of the mouse cursor. </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1event_1_1_input_open_gl.html#a34de6dd3fd82d2d39c7f45b9d2d15179">nexo::event::InputOpenGl</a>.</p>
+
+</div>
+</div>
+<a id="a3e0d6756b8a700485e699527470bb27f" name="a3e0d6756b8a700485e699527470bb27f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e0d6756b8a700485e699527470bb27f">&#9670;&nbsp;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::Input::init </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_window.html">renderer::Window</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>window</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the input system with the given window. </p>
+<p >Must be called before any input queries.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">window</td><td>Shared pointer to the window used for input. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>engine/src/core/event/<a class="el" href="engine_2src_2core_2event_2_input_8hpp_source.html">Input.hpp</a></li>
+<li>engine/src/core/event/<a class="el" href="_input_8hpp_source.html">Input.hpp</a></li>
 <li>engine/src/core/event/Input.cpp</li>
 </ul>
 </div><!-- contents -->

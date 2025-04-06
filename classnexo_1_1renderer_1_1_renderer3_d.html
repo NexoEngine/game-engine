@@ -119,15 +119,39 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a33f1022f9f9cec924ed187b4d7244b26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a33f1022f9f9cec924ed187b4d7244b26">endScene</a> () const</td></tr>
 <tr class="memdesc:a33f1022f9f9cec924ed187b4d7244b26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends the current 3D rendering scene.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a33f1022f9f9cec924ed187b4d7244b26">More...</a><br /></td></tr>
 <tr class="separator:a33f1022f9f9cec924ed187b4d7244b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a233c4e06bb8adeb8895872240ba316ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a233c4e06bb8adeb8895872240ba316ef">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const glm::vec4 &amp;color) const</td></tr>
-<tr class="memdesc:a233c4e06bb8adeb8895872240ba316ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a 3D cube at the specified position and size.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a233c4e06bb8adeb8895872240ba316ef">More...</a><br /></td></tr>
-<tr class="separator:a233c4e06bb8adeb8895872240ba316ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12010dc9f4d6a3ebd72d57192dbb8ff4"><td class="memItemLeft" align="right" valign="top"><a id="a12010dc9f4d6a3ebd72d57192dbb8ff4" name="a12010dc9f4d6a3ebd72d57192dbb8ff4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>drawCube</b> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">Texture2D</a> &gt; &amp;texture) const</td></tr>
-<tr class="separator:a12010dc9f4d6a3ebd72d57192dbb8ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cfbd015d41b42290bbdb42044acb305"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a4cfbd015d41b42290bbdb42044acb305">drawMesh</a> (const std::vector&lt; <a class="el" href="structnexo_1_1renderer_1_1_vertex.html">Vertex</a> &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">Texture2D</a> &gt; &amp;texture) const</td></tr>
-<tr class="memdesc:a4cfbd015d41b42290bbdb42044acb305"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a custom 3D mesh.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a4cfbd015d41b42290bbdb42044acb305">More...</a><br /></td></tr>
-<tr class="separator:a4cfbd015d41b42290bbdb42044acb305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab4e8ab5f487df0b4f4189b9583a2db6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#aab4e8ab5f487df0b4f4189b9583a2db6">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const glm::vec4 &amp;color, int entityID=-1) const</td></tr>
+<tr class="memdesc:aab4e8ab5f487df0b4f4189b9583a2db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and color.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#aab4e8ab5f487df0b4f4189b9583a2db6">More...</a><br /></td></tr>
+<tr class="separator:aab4e8ab5f487df0b4f4189b9583a2db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3a583aac316f20bf5b4bcb846917196"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#ae3a583aac316f20bf5b4bcb846917196">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const glm::vec3 &amp;rotation, const glm::vec4 &amp;color, int entityID=-1) const</td></tr>
+<tr class="memdesc:ae3a583aac316f20bf5b4bcb846917196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and color.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#ae3a583aac316f20bf5b4bcb846917196">More...</a><br /></td></tr>
+<tr class="separator:ae3a583aac316f20bf5b4bcb846917196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b7b377e98c4b3cfce2290ec911a560"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#ae1b7b377e98c4b3cfce2290ec911a560">drawCube</a> (const glm::mat4 &amp;transform, const glm::vec4 &amp;color, int entityID=-1) const</td></tr>
+<tr class="memdesc:ae1b7b377e98c4b3cfce2290ec911a560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and color.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#ae1b7b377e98c4b3cfce2290ec911a560">More...</a><br /></td></tr>
+<tr class="separator:ae1b7b377e98c4b3cfce2290ec911a560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3909b1814a23f1d93b28c48e4aa4697e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a3909b1814a23f1d93b28c48e4aa4697e">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="memdesc:a3909b1814a23f1d93b28c48e4aa4697e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and material.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a3909b1814a23f1d93b28c48e4aa4697e">More...</a><br /></td></tr>
+<tr class="separator:a3909b1814a23f1d93b28c48e4aa4697e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96604d0cc906d05432c9eea97f94b1de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a96604d0cc906d05432c9eea97f94b1de">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const glm::vec3 &amp;rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="memdesc:a96604d0cc906d05432c9eea97f94b1de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and material.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a96604d0cc906d05432c9eea97f94b1de">More...</a><br /></td></tr>
+<tr class="separator:a96604d0cc906d05432c9eea97f94b1de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c6ca0f8ed0c751510290c0c99932680"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a5c6ca0f8ed0c751510290c0c99932680">drawCube</a> (const glm::vec3 &amp;position, const glm::vec3 &amp;size, const glm::quat &amp;rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="memdesc:a5c6ca0f8ed0c751510290c0c99932680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and material.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a5c6ca0f8ed0c751510290c0c99932680">More...</a><br /></td></tr>
+<tr class="separator:a5c6ca0f8ed0c751510290c0c99932680"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4582609fe44c62e9c1d3a94b8dce0c7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a4582609fe44c62e9c1d3a94b8dce0c7b">drawCube</a> (const glm::mat4 &amp;transform, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="memdesc:a4582609fe44c62e9c1d3a94b8dce0c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a cube using a specified transformation and color.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a4582609fe44c62e9c1d3a94b8dce0c7b">More...</a><br /></td></tr>
+<tr class="separator:a4582609fe44c62e9c1d3a94b8dce0c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675dc62ab22f573195f9af532157f457"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a675dc62ab22f573195f9af532157f457">drawMesh</a> (const std::vector&lt; <a class="el" href="structnexo_1_1renderer_1_1_vertex.html">Vertex</a> &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">Texture2D</a> &gt; &amp;texture, int entityID=-1) const</td></tr>
+<tr class="memdesc:a675dc62ab22f573195f9af532157f457"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a custom 3D mesh.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a675dc62ab22f573195f9af532157f457">More...</a><br /></td></tr>
+<tr class="separator:a675dc62ab22f573195f9af532157f457"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238c5b9f62752f696d8cc83ac4386d41"><td class="memItemLeft" align="right" valign="top"><a id="a238c5b9f62752f696d8cc83ac4386d41" name="a238c5b9f62752f696d8cc83ac4386d41"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>drawMesh</b> (const std::vector&lt; <a class="el" href="structnexo_1_1renderer_1_1_vertex.html">Vertex</a> &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const glm::vec3 &amp;position, const glm::vec3 &amp;size, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="separator:a238c5b9f62752f696d8cc83ac4386d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e2c0d28ea7542798b59ca5515a29295"><td class="memItemLeft" align="right" valign="top"><a id="a1e2c0d28ea7542798b59ca5515a29295" name="a1e2c0d28ea7542798b59ca5515a29295"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>drawMesh</b> (const std::vector&lt; <a class="el" href="structnexo_1_1renderer_1_1_vertex.html">Vertex</a> &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const glm::vec3 &amp;position, const glm::vec3 &amp;rotation, const glm::vec3 &amp;size, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="separator:a1e2c0d28ea7542798b59ca5515a29295"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a092b7f91f3af1ba68687d43be64a34f5"><td class="memItemLeft" align="right" valign="top"><a id="a092b7f91f3af1ba68687d43be64a34f5" name="a092b7f91f3af1ba68687d43be64a34f5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>drawMesh</b> (const std::vector&lt; <a class="el" href="structnexo_1_1renderer_1_1_vertex.html">Vertex</a> &gt; &amp;vertices, const std::vector&lt; unsigned int &gt; &amp;indices, const glm::mat4 &amp;transform, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, int entityID=-1) const</td></tr>
+<tr class="separator:a092b7f91f3af1ba68687d43be64a34f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a708f8df6450d07950b6757d3bbc7bb9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a708f8df6450d07950b6757d3bbc7bb9d">resetStats</a> () const</td></tr>
 <tr class="memdesc:a708f8df6450d07950b6757d3bbc7bb9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets rendering statistics.  <a href="classnexo_1_1renderer_1_1_renderer3_d.html#a708f8df6450d07950b6757d3bbc7bb9d">More...</a><br /></td></tr>
 <tr class="separator:a708f8df6450d07950b6757d3bbc7bb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,7 +182,7 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
 <p >Usage:</p><ol type="1">
 <li>Call <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a6e7282eeef967cb2e539b68f2d55dee6" title="Initializes the Renderer3D and allocates required resources.">init()</a></code> to initialize the renderer.</li>
 <li>Begin a scene using <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a6c0eca177eecc62a9280cb0afabb35fb" title="Begins a new 3D rendering scene.">beginScene()</a></code> with a view-projection matrix and camera position.</li>
-<li>Use <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a233c4e06bb8adeb8895872240ba316ef" title="Draws a 3D cube at the specified position and size.">drawCube()</a></code> or <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a4cfbd015d41b42290bbdb42044acb305" title="Draws a custom 3D mesh.">drawMesh()</a></code> methods to draw 3D objects.</li>
+<li>Use <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#aab4e8ab5f487df0b4f4189b9583a2db6" title="Draws a cube using a specified transformation and color.">drawCube()</a></code> or <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a675dc62ab22f573195f9af532157f457" title="Draws a custom 3D mesh.">drawMesh()</a></code> methods to draw 3D objects.</li>
 <li>Call <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a33f1022f9f9cec924ed187b4d7244b26" title="Ends the current 3D rendering scene.">endScene()</a></code> to finalize the rendering and issue draw calls.</li>
 <li>Call <code><a class="el" href="classnexo_1_1renderer_1_1_renderer3_d.html#a03cab4cb64761a50c9917a33811cb14a" title="Releases all resources and cleans up the Renderer3D.">shutdown()</a></code> to release resources when the renderer is no longer needed. </li>
 </ol>
@@ -284,8 +308,8 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
 
 </div>
 </div>
-<a id="a233c4e06bb8adeb8895872240ba316ef" name="a233c4e06bb8adeb8895872240ba316ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a233c4e06bb8adeb8895872240ba316ef">&#9670;&nbsp;</a></span>drawCube()</h2>
+<a id="aab4e8ab5f487df0b4f4189b9583a2db6" name="aab4e8ab5f487df0b4f4189b9583a2db6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab4e8ab5f487df0b4f4189b9583a2db6">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -306,7 +330,13 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const glm::vec4 &amp;&#160;</td>
-          <td class="paramname"><em>color</em>&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -316,25 +346,383 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
       </table>
 </div><div class="memdoc">
 
-<p>Draws a 3D cube at the specified position and size. </p>
-<p >The cube can be drawn with a solid color or a texture.</p>
+<p>Draws a cube using a specified transformation and color. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">position</td><td>The position of the cube in the 3D space. </td></tr>
+    <tr><td class="paramname">position</td><td>The position of the cube. </td></tr>
     <tr><td class="paramname">size</td><td>The dimensions of the cube. </td></tr>
-    <tr><td class="paramname">color</td><td>The color of the cube (RGBA format). </td></tr>
-    <tr><td class="paramname">texture</td><td>Optional texture to apply to the cube.</td></tr>
+    <tr><td class="paramname">color</td><td>The color (RGBA) of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
   </table>
   </dd>
 </dl>
-<p>Overloads:</p><ul>
-<li>Draws a cube with a solid color or a texture. </li>
-</ul>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a4cfbd015d41b42290bbdb42044acb305" name="a4cfbd015d41b42290bbdb42044acb305"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4cfbd015d41b42290bbdb42044acb305">&#9670;&nbsp;</a></span>drawMesh()</h2>
+<a id="ae3a583aac316f20bf5b4bcb846917196" name="ae3a583aac316f20bf5b4bcb846917196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3a583aac316f20bf5b4bcb846917196">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[2/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and color. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The position of the cube. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions of the cube. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the cube. </td></tr>
+    <tr><td class="paramname">color</td><td>The color (RGBA) of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae1b7b377e98c4b3cfce2290ec911a560" name="ae1b7b377e98c4b3cfce2290ec911a560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b7b377e98c4b3cfce2290ec911a560">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[3/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and color. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>The transformation matrix for the cube. </td></tr>
+    <tr><td class="paramname">color</td><td>The color (RGBA) of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3909b1814a23f1d93b28c48e4aa4697e" name="a3909b1814a23f1d93b28c48e4aa4697e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3909b1814a23f1d93b28c48e4aa4697e">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[4/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and material. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The position of the cube. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions of the cube. </td></tr>
+    <tr><td class="paramname">material</td><td>The material properties of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a96604d0cc906d05432c9eea97f94b1de" name="a96604d0cc906d05432c9eea97f94b1de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96604d0cc906d05432c9eea97f94b1de">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[5/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and material. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The position of the cube. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions of the cube. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the cube (in Euler angles, in degrees). </td></tr>
+    <tr><td class="paramname">material</td><td>The material properties of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5c6ca0f8ed0c751510290c0c99932680" name="a5c6ca0f8ed0c751510290c0c99932680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c6ca0f8ed0c751510290c0c99932680">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::quat &amp;&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and material. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>The position of the cube. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions of the cube. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the cube (in quaternion format). </td></tr>
+    <tr><td class="paramname">material</td><td>The material properties of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4582609fe44c62e9c1d3a94b8dce0c7b" name="a4582609fe44c62e9c1d3a94b8dce0c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4582609fe44c62e9c1d3a94b8dce0c7b">&#9670;&nbsp;</a></span>drawCube() <span class="overload">[7/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::Renderer3D::drawCube </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws a cube using a specified transformation and color. </p>
+<p >Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry, and increments the cube count in the statistics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transform</td><td>The transformation matrix for the cube. </td></tr>
+    <tr><td class="paramname">material</td><td>The material properties of the cube. </td></tr>
+    <tr><td class="paramname">entityID</td><td>An optional entity identifier (default is -1).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1renderer_1_1_renderer_scene_life_cycle_failure.html">RendererSceneLifeCycleFailure</a></td><td>if the renderer is not in a valid scene. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a675dc62ab22f573195f9af532157f457" name="a675dc62ab22f573195f9af532157f457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a675dc62ab22f573195f9af532157f457">&#9670;&nbsp;</a></span>drawMesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -355,7 +743,13 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">Texture2D</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>texture</em>&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -429,6 +823,8 @@ std::shared_ptr&lt; <a class="el" href="structnexo_1_1renderer_1_1_renderer3_d_s
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>engine/src/renderer/<a class="el" href="_renderer3_d_8hpp_source.html">Renderer3D.hpp</a></li>
+<li>engine/src/renderer/primitives/Cube.cpp</li>
+<li>engine/src/renderer/primitives/Mesh.cpp</li>
 <li>engine/src/renderer/Renderer3D.cpp</li>
 </ul>
 </div><!-- contents -->

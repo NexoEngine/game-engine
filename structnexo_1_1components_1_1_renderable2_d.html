@@ -117,10 +117,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a316fe4f631abf16b9c21e3aef79f08b7"><td class="memItemLeft" align="right" valign="top"><a id="a316fe4f631abf16b9c21e3aef79f08b7" name="a316fe4f631abf16b9c21e3aef79f08b7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Renderable2D</b> (<a class="el" href="structnexo_1_1components_1_1_sprite_component.html">SpriteComponent</a> sprite, const std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_shape2_d.html">Shape2D</a> &gt; &amp;shape)</td></tr>
 <tr class="separator:a316fe4f631abf16b9c21e3aef79f08b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6477d60f8a774b135922efb97ac82ac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_renderable2_d.html#a6477d60f8a774b135922efb97ac82ac1">draw</a> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_renderer_context.html">renderer::RendererContext</a> &gt; &amp;context, const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;transform) const override</td></tr>
-<tr class="separator:a6477d60f8a774b135922efb97ac82ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a243e422a2e90eabfc1b61881846955c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_renderable2_d.html#a243e422a2e90eabfc1b61881846955c2">isClicked</a> (const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;transf, const glm::vec2 &amp;mouseWorldPos) override</td></tr>
-<tr class="separator:a243e422a2e90eabfc1b61881846955c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec4ee7eae2c3b33f68542c45fe6b747a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_renderable2_d.html#aec4ee7eae2c3b33f68542c45fe6b747a">draw</a> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_renderer_context.html">renderer::RendererContext</a> &gt; &amp;context, const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;transform, int entityID) const override</td></tr>
+<tr class="separator:aec4ee7eae2c3b33f68542c45fe6b747a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4d1ee832223636f238b24b126e225a9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_renderable.html">Renderable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_renderable2_d.html#ab4d1ee832223636f238b24b126e225a9">clone</a> () const override</td></tr>
+<tr class="separator:ab4d1ee832223636f238b24b126e225a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -136,8 +136,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true
 <tr class="separator:a9ee1c0dc5dd21eeb2aeb88f063175a5e inherit pub_attribs_structnexo_1_1components_1_1_renderable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6477d60f8a774b135922efb97ac82ac1" name="a6477d60f8a774b135922efb97ac82ac1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6477d60f8a774b135922efb97ac82ac1">&#9670;&nbsp;</a></span>draw()</h2>
+<a id="aec4ee7eae2c3b33f68542c45fe6b747a" name="aec4ee7eae2c3b33f68542c45fe6b747a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec4ee7eae2c3b33f68542c45fe6b747a">&#9670;&nbsp;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,7 +155,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;&#160;</td>
-          <td class="paramname"><em>transform</em>&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityID</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -174,8 +180,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true
 
 </div>
 </div>
-<a id="a243e422a2e90eabfc1b61881846955c2" name="a243e422a2e90eabfc1b61881846955c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a243e422a2e90eabfc1b61881846955c2">&#9670;&nbsp;</a></span>isClicked()</h2>
+<a id="ab4d1ee832223636f238b24b126e225a9" name="ab4d1ee832223636f238b24b126e225a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4d1ee832223636f238b24b126e225a9">&#9670;&nbsp;</a></span>clone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -184,21 +190,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool nexo::components::Renderable2D::isClicked </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_renderable.html">Renderable</a> &gt; nexo::components::Renderable2D::clone </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;&#160;</td>
-          <td class="paramname"><em>transf</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const glm::vec2 &amp;&#160;</td>
-          <td class="paramname"><em>mouseWorldPos</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -213,7 +208,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>engine/src/components/<a class="el" href="engine_2src_2components_2_render_8hpp_source.html">Render.hpp</a></li>
+<li>engine/src/components/<a class="el" href="_render_8hpp_source.html">Render.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

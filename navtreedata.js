@@ -29,6 +29,18 @@ var NAVTREE =
     [ "Game Engine Documentation", "game_engine_parent_page.html", "game_engine_parent_page" ],
     [ "Installation", "install_parent_page.html", "install_parent_page" ],
     [ "Network Documentation", "network_parent_page.html", "network_parent_page" ],
+    [ "Troubleshooting", "troubleshooting.html", null ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ]
+      ] ]
+    ] ],
+    [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -36,8 +48,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
-        [ "Related Functions", "functions_rela.html", null ]
+        [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -49,10 +60,13 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_a_entity_property_8hpp_source.html",
-"classengine_1_1core_1_1_engine_camera.html#a961f8fc4aa65a1051e5ef002fcf0003a",
-"classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html#af80d89d5ec0984488d0d1e2476f1a047",
-"include_2common_old_2_icons_font_awesome_8h_source.html"
+"_2editor_2src_2_editor_8cpp-example.html",
+"classnexo_1_1assets_1_1_asset_location.html#a3248be561feca7970cfb6c09b72bd4b9",
+"classnexo_1_1editor_1_1_backend_renderer_api_font_init_failed.html",
+"classnexo_1_1event_1_1_input.html#acf66dd60e46b6554803693e8cf3b736d",
+"classnexo_1_1renderer_1_1_renderer2_d.html#ad7719821bc279ca56f7533f7562b45d6",
+"functions_i.html",
+"structnexo_1_1editor_1_1_drag_float.html#a3049a99ce5fbd5d409365e03221c2700"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

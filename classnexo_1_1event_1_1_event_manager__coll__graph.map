@@ -1,3 +1,3 @@
 <map id="nexo::event::EventManager" name="nexo::event::EventManager">
-<area shape="rect" id="node1" title="Manages event handling and dispatching in the ECS system." alt="" coords="5,5,181,141"/>
+<area shape="rect" id="node1" title="Manages event handling and dispatching in the ECS system." alt="" coords="5,5,181,156"/>
 </map>

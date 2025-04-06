@@ -1,4 +1,0 @@
-<map id="ecs::components::Cone" name="ecs::components::Cone">
-<area shape="rect" id="node1" title="Represents a cone shape with customizable radius, height, slices, and colors." alt="" coords="11,219,167,311"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="5,5,172,171"/>
-</map>

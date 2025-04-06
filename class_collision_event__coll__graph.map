@@ -1,4 +1,0 @@
-<map id="CollisionEvent" name="CollisionEvent">
-<area shape="rect" id="node1" title=" " alt="" coords="9,131,131,281"/>
-<area shape="rect" id="node2" href="$classecs_1_1event_1_1_a_event.html" title="Interface class representing a generic event in the ECS system." alt="" coords="5,5,135,83"/>
-</map>

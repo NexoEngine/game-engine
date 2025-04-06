@@ -95,7 +95,16 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_coordinator.html'
 <p>Central orchestrator for the Entity-Component-System (ECS) architecture.  
  <a href="classnexo_1_1ecs_1_1_coordinator.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="engine_2src_2ecs_2_coordinator_8hpp_source.html">Coordinator.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_coordinator_8hpp_source.html">Coordinator.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for nexo::ecs::Coordinator:</div>
+<div class="dyncontent">
+<div class="center"><img src="classnexo_1_1ecs_1_1_coordinator__inherit__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_coordinator_inherit__map" alt="Inheritance graph"/></div>
+<map name="anexo_1_1ecs_1_1_coordinator_inherit__map" id="anexo_1_1ecs_1_1_coordinator_inherit__map">
+<area shape="rect" title="Central orchestrator for the Entity&#45;Component&#45;System (ECS) architecture." alt="" coords="5,5,209,229"/>
+<area shape="rect" href="classnexo_1_1scene_1_1_mock_coordinator.html" title=" " alt="" coords="10,277,205,369"/>
+</map>
+</div>
 <div class="dynheader">
 Collaboration diagram for nexo::ecs::Coordinator:</div>
 <div class="dyncontent">
@@ -109,7 +118,7 @@ Collaboration diagram for nexo::ecs::Coordinator:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aac40b9fbd29a835d50e5b18505cfb50f"><td class="memItemLeft" align="right" valign="top"><a id="aac40b9fbd29a835d50e5b18505cfb50f" name="aac40b9fbd29a835d50e5b18505cfb50f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
-<tr class="memdesc:aac40b9fbd29a835d50e5b18505cfb50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="classnexo_1_1ecs_1_1_coordinator.html" title="Central orchestrator for the Entity-Component-System (ECS) architecture.">Coordinator</a>, creating instances of <a class="el" href="classnexo_1_1ecs_1_1_entity_manager.html" title="Manages entities in an ECS (Entity-Component-System) architecture.">EntityManager</a>, <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Manages the registration and handling of components in an ECS architecture.">ComponentManager</a>, <a class="el" href="classnexo_1_1ecs_1_1_system_manager.html" title="Manages systems in the ECS architecture.">SystemManager</a>, EventManager, <a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html">SingletonComponentManager</a> and SceneManager. <br /></td></tr>
+<tr class="memdesc:aac40b9fbd29a835d50e5b18505cfb50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="classnexo_1_1ecs_1_1_coordinator.html" title="Central orchestrator for the Entity-Component-System (ECS) architecture.">Coordinator</a>, creating instances of <a class="el" href="classnexo_1_1ecs_1_1_entity_manager.html" title="Manages entities in an ECS (Entity-Component-System) architecture.">EntityManager</a>, <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Manages the registration and handling of components in an ECS architecture.">ComponentManager</a>, <a class="el" href="classnexo_1_1ecs_1_1_system_manager.html" title="Manages systems in the ECS architecture.">SystemManager</a>, EventManager, <a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html" title="Manager for singleton components in the ECS.">SingletonComponentManager</a> and SceneManager. <br /></td></tr>
 <tr class="separator:aac40b9fbd29a835d50e5b18505cfb50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98a209394a61a29b412de979aed04fbb"><td class="memItemLeft" align="right" valign="top">Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a98a209394a61a29b412de979aed04fbb">createEntity</a> () const</td></tr>
 <tr class="memdesc:a98a209394a61a29b412de979aed04fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a98a209394a61a29b412de979aed04fbb">More...</a><br /></td></tr>
@@ -122,10 +131,10 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a68e9b2b5a10038ab61aa727133d372ad"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registerComponent</b> ()</td></tr>
 <tr class="memdesc:a68e9b2b5a10038ab61aa727133d372ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new component type within the <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Manages the registration and handling of components in an ECS architecture.">ComponentManager</a>. <br /></td></tr>
 <tr class="separator:a68e9b2b5a10038ab61aa727133d372ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8f01db99658a31f478e0760f0b07524"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab8f01db99658a31f478e0760f0b07524"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#ab8f01db99658a31f478e0760f0b07524">registerSingletonComponent</a> (T component)</td></tr>
-<tr class="memdesc:ab8f01db99658a31f478e0760f0b07524"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new singleton component.  <a href="classnexo_1_1ecs_1_1_coordinator.html#ab8f01db99658a31f478e0760f0b07524">More...</a><br /></td></tr>
-<tr class="separator:ab8f01db99658a31f478e0760f0b07524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37c3ad343bdc7ce12c475edf304331ae"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a37c3ad343bdc7ce12c475edf304331ae"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a37c3ad343bdc7ce12c475edf304331ae">registerSingletonComponent</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a37c3ad343bdc7ce12c475edf304331ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new singleton component.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a37c3ad343bdc7ce12c475edf304331ae">More...</a><br /></td></tr>
+<tr class="separator:a37c3ad343bdc7ce12c475edf304331ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f54ef93ded6f49fc883126aa076e31b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1f54ef93ded6f49fc883126aa076e31b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a1f54ef93ded6f49fc883126aa076e31b">addComponent</a> (const Entity entity, T component)</td></tr>
 <tr class="memdesc:a1f54ef93ded6f49fc883126aa076e31b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a component to an entity, updates its signature, and notifies systems.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a1f54ef93ded6f49fc883126aa076e31b">More...</a><br /></td></tr>
@@ -134,9 +143,9 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ae726e0e9f04b1ae184e4918afbcb0385"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#ae726e0e9f04b1ae184e4918afbcb0385">removeComponent</a> (const Entity entity) const</td></tr>
 <tr class="memdesc:ae726e0e9f04b1ae184e4918afbcb0385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a component from an entity, updates its signature, and notifies systems.  <a href="classnexo_1_1ecs_1_1_coordinator.html#ae726e0e9f04b1ae184e4918afbcb0385">More...</a><br /></td></tr>
 <tr class="separator:ae726e0e9f04b1ae184e4918afbcb0385"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88a13cb024081574d480dc1aa1da5f54"><td class="memTemplParams" colspan="2"><a id="a88a13cb024081574d480dc1aa1da5f54" name="a88a13cb024081574d480dc1aa1da5f54"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a88a13cb024081574d480dc1aa1da5f54"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tryRemoveComponent</b> (const Entity entity) const</td></tr>
+<tr class="memitem:a88a13cb024081574d480dc1aa1da5f54"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a88a13cb024081574d480dc1aa1da5f54"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a88a13cb024081574d480dc1aa1da5f54">tryRemoveComponent</a> (const Entity entity) const</td></tr>
+<tr class="memdesc:a88a13cb024081574d480dc1aa1da5f54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to remove a component from an entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a88a13cb024081574d480dc1aa1da5f54">More...</a><br /></td></tr>
 <tr class="separator:a88a13cb024081574d480dc1aa1da5f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa2a69646e47a0370d7f10ab79827574"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aaa2a69646e47a0370d7f10ab79827574"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#aaa2a69646e47a0370d7f10ab79827574">removeSingletonComponent</a> () const</td></tr>
@@ -146,17 +155,24 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a4ef54184c739b51b2a3e5f6f6930be5e"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a4ef54184c739b51b2a3e5f6f6930be5e">getComponent</a> (const Entity entity)</td></tr>
 <tr class="memdesc:a4ef54184c739b51b2a3e5f6f6930be5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a reference to a component of an entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a4ef54184c739b51b2a3e5f6f6930be5e">More...</a><br /></td></tr>
 <tr class="separator:a4ef54184c739b51b2a3e5f6f6930be5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7582555bd5448616034174cc4ca2316b"><td class="memTemplParams" colspan="2"><a id="a7582555bd5448616034174cc4ca2316b" name="a7582555bd5448616034174cc4ca2316b"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a7582555bd5448616034174cc4ca2316b"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tryGetComponent</b> (const Entity entity)</td></tr>
+<tr class="memitem:a7582555bd5448616034174cc4ca2316b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7582555bd5448616034174cc4ca2316b"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a7582555bd5448616034174cc4ca2316b">tryGetComponent</a> (const Entity entity)</td></tr>
+<tr class="memdesc:a7582555bd5448616034174cc4ca2316b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to retrieve a component from an entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a7582555bd5448616034174cc4ca2316b">More...</a><br /></td></tr>
 <tr class="separator:a7582555bd5448616034174cc4ca2316b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a312fb43ee9bbaec2764648c8d10d46df"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a312fb43ee9bbaec2764648c8d10d46df"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a312fb43ee9bbaec2764648c8d10d46df">getSingletonComponent</a> ()</td></tr>
 <tr class="memdesc:a312fb43ee9bbaec2764648c8d10d46df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Singleton Component object.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a312fb43ee9bbaec2764648c8d10d46df">More...</a><br /></td></tr>
 <tr class="separator:a312fb43ee9bbaec2764648c8d10d46df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa909821d151a43d27e347a85e95b3b74"><td class="memItemLeft" align="right" valign="top"><a id="aa909821d151a43d27e347a85e95b3b74" name="aa909821d151a43d27e347a85e95b3b74"></a>
-std::vector&lt; std::pair&lt; std::type_index, std::any &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getAllComponents</b> (Entity entity)</td></tr>
+<tr class="memitem:abe81de1ef9aff12e38994a64a72b69b9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::type_index &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#abe81de1ef9aff12e38994a64a72b69b9">getAllComponentTypes</a> (Entity entity) const</td></tr>
+<tr class="memdesc:abe81de1ef9aff12e38994a64a72b69b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves all component types associated with an entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#abe81de1ef9aff12e38994a64a72b69b9">More...</a><br /></td></tr>
+<tr class="separator:abe81de1ef9aff12e38994a64a72b69b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa909821d151a43d27e347a85e95b3b74"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::type_index, std::any &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#aa909821d151a43d27e347a85e95b3b74">getAllComponents</a> (Entity entity)</td></tr>
+<tr class="memdesc:aa909821d151a43d27e347a85e95b3b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves all components associated with an entity.  <a href="classnexo_1_1ecs_1_1_coordinator.html#aa909821d151a43d27e347a85e95b3b74">More...</a><br /></td></tr>
 <tr class="separator:aa909821d151a43d27e347a85e95b3b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5347d75b4afc48eb8bdc9554d7ca9493"><td class="memTemplParams" colspan="2">template&lt;typename... Components&gt; </td></tr>
+<tr class="memitem:a5347d75b4afc48eb8bdc9554d7ca9493"><td class="memTemplItemLeft" align="right" valign="top">std::set&lt; Entity &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a5347d75b4afc48eb8bdc9554d7ca9493">getAllEntitiesWith</a> () const</td></tr>
+<tr class="memdesc:a5347d75b4afc48eb8bdc9554d7ca9493"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves all entities that have the specified components.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a5347d75b4afc48eb8bdc9554d7ca9493">More...</a><br /></td></tr>
+<tr class="separator:a5347d75b4afc48eb8bdc9554d7ca9493"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac085e440d7486906e6e0882389178de8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ac085e440d7486906e6e0882389178de8"><td class="memTemplItemLeft" align="right" valign="top">ComponentType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#ac085e440d7486906e6e0882389178de8">getComponentType</a> () const</td></tr>
 <tr class="memdesc:ac085e440d7486906e6e0882389178de8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the component type ID for a specific component type.  <a href="classnexo_1_1ecs_1_1_coordinator.html#ac085e440d7486906e6e0882389178de8">More...</a><br /></td></tr>
@@ -169,9 +185,9 @@ std::vector&lt; std::pair&lt; std::type_index, std::any &gt; &gt;&#160;</td><td 
 <tr class="memitem:a0aee35657a919c624ae9c11e9bffabc8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a0aee35657a919c624ae9c11e9bffabc8">setSystemSignature</a> (const Signature signature) const</td></tr>
 <tr class="memdesc:a0aee35657a919c624ae9c11e9bffabc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signature for a system, defining which entities it will process.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a0aee35657a919c624ae9c11e9bffabc8">More...</a><br /></td></tr>
 <tr class="separator:a0aee35657a919c624ae9c11e9bffabc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a146957465134439d7aecb6da8016e05a"><td class="memTemplParams" colspan="2"><a id="a146957465134439d7aecb6da8016e05a" name="a146957465134439d7aecb6da8016e05a"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a146957465134439d7aecb6da8016e05a"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>entityHasComponent</b> (const Entity entity) const</td></tr>
+<tr class="memitem:a146957465134439d7aecb6da8016e05a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a146957465134439d7aecb6da8016e05a"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_coordinator.html#a146957465134439d7aecb6da8016e05a">entityHasComponent</a> (const Entity entity) const</td></tr>
+<tr class="memdesc:a146957465134439d7aecb6da8016e05a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether an entity has a specific component.  <a href="classnexo_1_1ecs_1_1_coordinator.html#a146957465134439d7aecb6da8016e05a">More...</a><br /></td></tr>
 <tr class="separator:a146957465134439d7aecb6da8016e05a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab41a09e0fb685dbaf199411c0d6bdcba"><td class="memItemLeft" align="right" valign="top"><a id="ab41a09e0fb685dbaf199411c0d6bdcba" name="ab41a09e0fb685dbaf199411c0d6bdcba"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateSystemEntities</b> () const</td></tr>
@@ -227,13 +243,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateSystemEntities<
 
 </div>
 </div>
-<a id="ab8f01db99658a31f478e0760f0b07524" name="ab8f01db99658a31f478e0760f0b07524"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8f01db99658a31f478e0760f0b07524">&#9670;&nbsp;</a></span>registerSingletonComponent()</h2>
+<a id="a37c3ad343bdc7ce12c475edf304331ae" name="a37c3ad343bdc7ce12c475edf304331ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37c3ad343bdc7ce12c475edf304331ae">&#9670;&nbsp;</a></span>registerSingletonComponent()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;typename T , typename... Args&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -241,8 +257,8 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">void nexo::ecs::Coordinator::registerSingletonComponent </td>
           <td>(</td>
-          <td class="paramtype">T&#160;</td>
-          <td class="paramname"><em>component</em></td><td>)</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -256,7 +272,7 @@ template&lt;typename T &gt; </div>
 <p>Registers a new singleton component. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Class that should inherit from <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> class </td></tr>
+    <tr><td class="paramname">T</td><td>Class that should inherit from <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html" title="Template class representing a singleton component.">SingletonComponent</a> class </td></tr>
   </table>
   </dd>
 </dl>
@@ -352,6 +368,49 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a88a13cb024081574d480dc1aa1da5f54" name="a88a13cb024081574d480dc1aa1da5f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88a13cb024081574d480dc1aa1da5f54">&#9670;&nbsp;</a></span>tryRemoveComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::ecs::Coordinator::tryRemoveComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attempts to remove a component from an entity. </p>
+<p >If the component exists, it is removed and the entity's signature is updated.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The target entity identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aaa2a69646e47a0370d7f10ab79827574" name="aaa2a69646e47a0370d7f10ab79827574"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaa2a69646e47a0370d7f10ab79827574">&#9670;&nbsp;</a></span>removeSingletonComponent()</h2>
 
@@ -380,7 +439,7 @@ template&lt;typename T &gt; </div>
 <p>Remove a singleton component. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Class that should inherit from the <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> class </td></tr>
+    <tr><td class="paramname">T</td><td>Class that should inherit from the <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html" title="Template class representing a singleton component.">SingletonComponent</a> class </td></tr>
   </table>
   </dd>
 </dl>
@@ -424,6 +483,49 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a7582555bd5448616034174cc4ca2316b" name="a7582555bd5448616034174cc4ca2316b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7582555bd5448616034174cc4ca2316b">&#9670;&nbsp;</a></span>tryGetComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; nexo::ecs::Coordinator::tryGetComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attempts to retrieve a component from an entity. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The target entity identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::optional&lt;std::reference_wrapper&lt;T&gt;&gt; A reference to the component if it exists. </dd></dl>
+
+</div>
+</div>
 <a id="a312fb43ee9bbaec2764648c8d10d46df" name="a312fb43ee9bbaec2764648c8d10d46df"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a312fb43ee9bbaec2764648c8d10d46df">&#9670;&nbsp;</a></span>getSingletonComponent()</h2>
 
@@ -452,11 +554,101 @@ template&lt;typename T &gt; </div>
 <p>Get the Singleton Component object. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Class that should inherit from the <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> class </td></tr>
+    <tr><td class="paramname">T</td><td>Class that should inherit from the <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html" title="Template class representing a singleton component.">SingletonComponent</a> class </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>T&amp; The instance of the desired singleton component </dd></dl>
+
+</div>
+</div>
+<a id="abe81de1ef9aff12e38994a64a72b69b9" name="abe81de1ef9aff12e38994a64a72b69b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe81de1ef9aff12e38994a64a72b69b9">&#9670;&nbsp;</a></span>getAllComponentTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::type_index &gt; nexo::ecs::Coordinator::getAllComponentTypes </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves all component types associated with an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The target entity identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::type_index&gt; A list of type indices for each component the entity has. </dd></dl>
+
+</div>
+</div>
+<a id="aa909821d151a43d27e347a85e95b3b74" name="aa909821d151a43d27e347a85e95b3b74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa909821d151a43d27e347a85e95b3b74">&#9670;&nbsp;</a></span>getAllComponents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; std::type_index, std::any &gt; &gt; nexo::ecs::Coordinator::getAllComponents </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves all components associated with an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The target entity identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::pair&lt;std::type_index, std::any&gt;&gt; A vector of pairs, each containing a component type and its instance. </dd></dl>
+
+</div>
+</div>
+<a id="a5347d75b4afc48eb8bdc9554d7ca9493" name="a5347d75b4afc48eb8bdc9554d7ca9493"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5347d75b4afc48eb8bdc9554d7ca9493">&#9670;&nbsp;</a></span>getAllEntitiesWith()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Components&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt; Entity &gt; nexo::ecs::Coordinator::getAllEntitiesWith </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves all entities that have the specified components. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Components</td><td>The component types to filter by. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::set&lt;Entity&gt; A set of entities that contain all the specified components. </dd></dl>
 
 </div>
 </div>
@@ -556,8 +748,53 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a146957465134439d7aecb6da8016e05a" name="a146957465134439d7aecb6da8016e05a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a146957465134439d7aecb6da8016e05a">&#9670;&nbsp;</a></span>entityHasComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::ecs::Coordinator::entityHasComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether an entity has a specific component. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The target entity. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the entity has the component. </dd>
+<dd>
+false Otherwise. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>engine/src/ecs/<a class="el" href="engine_2src_2ecs_2_coordinator_8hpp_source.html">Coordinator.hpp</a></li>
+<li>engine/src/ecs/<a class="el" href="_coordinator_8hpp_source.html">Coordinator.hpp</a></li>
 <li>engine/src/ecs/Coordinator.cpp</li>
 </ul>
 </div><!-- contents -->

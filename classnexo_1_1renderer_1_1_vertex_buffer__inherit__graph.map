@@ -1,5 +1,5 @@
 <map id="nexo::renderer::VertexBuffer" name="nexo::renderer::VertexBuffer">
-<area shape="rect" id="node1" title="Abstract class representing a vertex buffer in the graphics pipeline." alt="" coords="109,5,287,171"/>
-<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_mock_vertex_buffer.html" title=" " alt="" coords="5,241,183,406"/>
-<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html" title=" " alt="" coords="207,219,397,428"/>
+<area shape="rect" id="node1" title="Abstract class representing a vertex buffer in the graphics pipeline." alt="" coords="5,5,184,171"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_mock_vertex_buffer.html" title=" " alt="" coords="6,219,183,472"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_open_gl_vertex_buffer.html" title=" " alt="" coords="208,241,397,450"/>
 </map>

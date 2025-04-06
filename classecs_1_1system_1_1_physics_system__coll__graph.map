@@ -1,4 +1,0 @@
-<map id="ecs::system::PhysicsSystem" name="ecs::system::PhysicsSystem">
-<area shape="rect" id="node1" title="System responsible for updating the positions of entities based on their physical properties." alt="" coords="5,145,192,223"/>
-<area shape="rect" id="node2" href="$classecs_1_1system_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="28,5,169,97"/>
-</map>

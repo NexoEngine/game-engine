@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['scale_0',['scale',['../structecs_1_1components_1_1physics_1_1transform__s.html#a6c6ec8ed506786b24b60252f6b744501',1,'ecs::components::physics::transform_s']]],
-  ['shapetype_1',['shapeType',['../structecs_1_1components_1_1physics_1_1collider__s.html#a1103d3098a24026c4b09780cb9e48349',1,'ecs::components::physics::collider_s']]]
+  ['pitch_0',['pitch',['../structnexo_1_1components_1_1_perspective_camera_controller.html#aa076e8183128bf4505952c0e20f986a8',1,'nexo::components::PerspectiveCameraController']]]
 ];

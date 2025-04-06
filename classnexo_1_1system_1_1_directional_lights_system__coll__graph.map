@@ -1,0 +1,4 @@
+<map id="nexo::system::DirectionalLightsSystem" name="nexo::system::DirectionalLightsSystem">
+<area shape="rect" id="node1" title="System responsible for updating directional lights in the scene." alt="" coords="5,145,169,237"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="24,5,151,97"/>
+</map>

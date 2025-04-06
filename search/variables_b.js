@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['thrcontext_0',['thrContext',['../classrtype_1_1net_1_1_client_interface.html#aa9f94e156cda750d803f6ab085f8398e',1,'rtype::net::ClientInterface']]],
-  ['type_1',['type',['../structecs_1_1components_1_1render_1_1render__s.html#a29ad9ce989541d85b5c22d9af81056f9',1,'ecs::components::render::render_s']]]
+  ['rendertarget_0',['renderTarget',['../structnexo_1_1components_1_1_camera_context.html#a642b5f6ae39547741830e5f121986943',1,'nexo::components::CameraContext']]],
+  ['resizing_1',['resizing',['../structnexo_1_1components_1_1_camera_component.html#a0feb8cea1db172666b0585be9d22abc1',1,'nexo::components::CameraComponent']]]
 ];

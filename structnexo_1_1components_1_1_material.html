@@ -96,15 +96,48 @@ Collaboration diagram for nexo::components::Material:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1components_1_1_material__coll__graph.png" border="0" usemap="#anexo_1_1components_1_1_material_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1components_1_1_material_coll__map" id="anexo_1_1components_1_1_material_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,184,83"/>
+<area shape="rect" title=" " alt="" coords="5,5,184,244"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a2f4158363c23473d5166debb424b57ee"><td class="memItemLeft" align="right" valign="top"><a id="a2f4158363c23473d5166debb424b57ee" name="a2f4158363c23473d5166debb424b57ee"></a>
-glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>color</b></td></tr>
-<tr class="separator:a2f4158363c23473d5166debb424b57ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e77d58f464a217c950a41addc155e5"><td class="memItemLeft" align="right" valign="top"><a id="a46e77d58f464a217c950a41addc155e5" name="a46e77d58f464a217c950a41addc155e5"></a>
+glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>albedoColor</b> = glm::vec4(1.0f)</td></tr>
+<tr class="separator:a46e77d58f464a217c950a41addc155e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74bc947567e054cd17ced5a4fd903e1"><td class="memItemLeft" align="right" valign="top"><a id="af74bc947567e054cd17ced5a4fd903e1" name="af74bc947567e054cd17ced5a4fd903e1"></a>
+glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>specularColor</b> = glm::vec4(1.0f)</td></tr>
+<tr class="separator:af74bc947567e054cd17ced5a4fd903e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac363bfb02c36bc9d005bc052f4c75104"><td class="memItemLeft" align="right" valign="top"><a id="ac363bfb02c36bc9d005bc052f4c75104" name="ac363bfb02c36bc9d005bc052f4c75104"></a>
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>emissiveColor</b> = glm::vec3(0.0f)</td></tr>
+<tr class="separator:ac363bfb02c36bc9d005bc052f4c75104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ef2ed8b7d887371ebbc1cef04fe505"><td class="memItemLeft" align="right" valign="top"><a id="af1ef2ed8b7d887371ebbc1cef04fe505" name="af1ef2ed8b7d887371ebbc1cef04fe505"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>roughness</b> = 0.0f</td></tr>
+<tr class="separator:af1ef2ed8b7d887371ebbc1cef04fe505"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3baa9e5ef49e718470489e958416b65"><td class="memItemLeft" align="right" valign="top"><a id="aa3baa9e5ef49e718470489e958416b65" name="aa3baa9e5ef49e718470489e958416b65"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>metallic</b> = 0.0f</td></tr>
+<tr class="separator:aa3baa9e5ef49e718470489e958416b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd735cab7b105f4cbde698792febf1f"><td class="memItemLeft" align="right" valign="top"><a id="aecd735cab7b105f4cbde698792febf1f" name="aecd735cab7b105f4cbde698792febf1f"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>opacity</b> = 1.0f</td></tr>
+<tr class="separator:aecd735cab7b105f4cbde698792febf1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31323e04202c271c0b38b4aaa5f7a8d"><td class="memItemLeft" align="right" valign="top"><a id="ad31323e04202c271c0b38b4aaa5f7a8d" name="ad31323e04202c271c0b38b4aaa5f7a8d"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">renderer::Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>albedoTexture</b> = nullptr</td></tr>
+<tr class="separator:ad31323e04202c271c0b38b4aaa5f7a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e007c6a133556d402043e530ab3f9fb"><td class="memItemLeft" align="right" valign="top"><a id="a2e007c6a133556d402043e530ab3f9fb" name="a2e007c6a133556d402043e530ab3f9fb"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">renderer::Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>normalMap</b> = nullptr</td></tr>
+<tr class="separator:a2e007c6a133556d402043e530ab3f9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014ab62375332702bda0f860ce4f24d9"><td class="memItemLeft" align="right" valign="top"><a id="a014ab62375332702bda0f860ce4f24d9" name="a014ab62375332702bda0f860ce4f24d9"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">renderer::Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>metallicMap</b> = nullptr</td></tr>
+<tr class="separator:a014ab62375332702bda0f860ce4f24d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b028c9bc16e34ddf077f5785c401514"><td class="memItemLeft" align="right" valign="top"><a id="a2b028c9bc16e34ddf077f5785c401514" name="a2b028c9bc16e34ddf077f5785c401514"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">renderer::Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>roughnessMap</b> = nullptr</td></tr>
+<tr class="separator:a2b028c9bc16e34ddf077f5785c401514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fc88832d6a0dc02dbe6b00d40a70fe4"><td class="memItemLeft" align="right" valign="top"><a id="a4fc88832d6a0dc02dbe6b00d40a70fe4" name="a4fc88832d6a0dc02dbe6b00d40a70fe4"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_texture2_d.html">renderer::Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>emissiveMap</b> = nullptr</td></tr>
+<tr class="separator:a4fc88832d6a0dc02dbe6b00d40a70fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdbeb44d5dc0c4dcfd7f13aa96d85bb8"><td class="memItemLeft" align="right" valign="top"><a id="afdbeb44d5dc0c4dcfd7f13aa96d85bb8" name="afdbeb44d5dc0c4dcfd7f13aa96d85bb8"></a>
+std::optional&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_shader.html">renderer::Shader</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>shader</b> = std::nullopt</td></tr>
+<tr class="separator:afdbeb44d5dc0c4dcfd7f13aa96d85bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>engine/src/components/<a class="el" href="_render3_d_8hpp_source.html">Render3D.hpp</a></li>

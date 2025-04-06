@@ -1,0 +1,6 @@
+<map id="nexo::assets::Asset&lt; TAssetData, TAssetType &gt;" name="nexo::assets::Asset&lt; TAssetData, TAssetType &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,779,196,973"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_i_asset.html" title=" " alt="" coords="31,520,170,729"/>
+<area shape="rect" id="node3" href="$structnexo_1_1assets_1_1_asset_metadata.html" title=" " alt="" coords="7,336,195,457"/>
+<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="9,5,193,273"/>
+</map>

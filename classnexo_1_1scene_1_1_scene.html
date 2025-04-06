@@ -87,148 +87,225 @@ $(document).ready(function(){initNavTree('classnexo_1_1scene_1_1_scene.html','')
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classnexo_1_1scene_1_1_scene-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::scene::Scene Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="dynheader">
-Inheritance diagram for nexo::scene::Scene:</div>
-<div class="dyncontent">
-<div class="center"><img src="classnexo_1_1scene_1_1_scene__inherit__graph.png" border="0" usemap="#anexo_1_1scene_1_1_scene_inherit__map" alt="Inheritance graph"/></div>
-<map name="anexo_1_1scene_1_1_scene_inherit__map" id="anexo_1_1scene_1_1_scene_inherit__map">
-<area shape="rect" title=" " alt="" coords="20,5,153,273"/>
-<area shape="rect" href="classnexo_1_1event_1_1_mock_scene.html" title=" " alt="" coords="5,321,168,399"/>
-</map>
-</div>
+
+<p>Represents a scene in the engine.  
+ <a href="classnexo_1_1scene_1_1_scene.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_scene_8hpp_source.html">Scene.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for nexo::scene::Scene:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1scene_1_1_scene__coll__graph.png" border="0" usemap="#anexo_1_1scene_1_1_scene_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1scene_1_1_scene_coll__map" id="anexo_1_1scene_1_1_scene_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,139,273"/>
+<area shape="rect" title="Represents a scene in the engine." alt="" coords="5,5,144,244"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aac18fb3e2487c1bc091028b09762cb27"><td class="memItemLeft" align="right" valign="top"><a id="aac18fb3e2487c1bc091028b09762cb27" name="aac18fb3e2487c1bc091028b09762cb27"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Scene</b> (const SceneId id, std::string sceneName=&quot;Defaut scene&quot;)</td></tr>
-<tr class="separator:aac18fb3e2487c1bc091028b09762cb27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fcf91c13ff5cb2a535438a1fe513e59"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a4fcf91c13ff5cb2a535438a1fe513e59">Scene</a> (std::string sceneName, const std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_coordinator.html">ecs::Coordinator</a> &gt; &amp;coordinator, bool editorOnly=false)</td></tr>
+<tr class="memdesc:a4fcf91c13ff5cb2a535438a1fe513e59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="classnexo_1_1scene_1_1_scene.html" title="Represents a scene in the engine.">Scene</a>.  <a href="classnexo_1_1scene_1_1_scene.html#a4fcf91c13ff5cb2a535438a1fe513e59">More...</a><br /></td></tr>
+<tr class="separator:a4fcf91c13ff5cb2a535438a1fe513e59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a18ef4a36a9de5ff5d9c2b9968a92feda">addEntity</a> (ecs::Entity entity)</td></tr>
+<tr class="memdesc:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entity to the scene.  <a href="classnexo_1_1scene_1_1_scene.html#a18ef4a36a9de5ff5d9c2b9968a92feda">More...</a><br /></td></tr>
+<tr class="separator:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a525a552fdb52853dbc3a87b57c428da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a525a552fdb52853dbc3a87b57c428da3">removeEntity</a> (ecs::Entity entity)</td></tr>
+<tr class="memdesc:a525a552fdb52853dbc3a87b57c428da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entity from the scene.  <a href="classnexo_1_1scene_1_1_scene.html#a525a552fdb52853dbc3a87b57c428da3">More...</a><br /></td></tr>
+<tr class="separator:a525a552fdb52853dbc3a87b57c428da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af17ee5cf10da6a80ebc42017f0035640"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#af17ee5cf10da6a80ebc42017f0035640">setActiveStatus</a> (bool active)</td></tr>
+<tr class="memdesc:af17ee5cf10da6a80ebc42017f0035640"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the active status for the scene.  <a href="classnexo_1_1scene_1_1_scene.html#af17ee5cf10da6a80ebc42017f0035640">More...</a><br /></td></tr>
+<tr class="separator:af17ee5cf10da6a80ebc42017f0035640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42c4033edacfd974eb609a082319c512"><td class="memItemLeft" align="right" valign="top"><a id="a42c4033edacfd974eb609a082319c512" name="a42c4033edacfd974eb609a082319c512"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isActive</b> () const</td></tr>
+<tr class="separator:a42c4033edacfd974eb609a082319c512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3981e542a9ed7f2eac38fdec564d7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a3a3981e542a9ed7f2eac38fdec564d7d">setRenderStatus</a> (bool rendered)</td></tr>
+<tr class="memdesc:a3a3981e542a9ed7f2eac38fdec564d7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the rendered status for the scene.  <a href="classnexo_1_1scene_1_1_scene.html#a3a3981e542a9ed7f2eac38fdec564d7d">More...</a><br /></td></tr>
+<tr class="separator:a3a3981e542a9ed7f2eac38fdec564d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62571c6a589d2593b477a4adfe969ff2"><td class="memItemLeft" align="right" valign="top"><a id="a62571c6a589d2593b477a4adfe969ff2" name="a62571c6a589d2593b477a4adfe969ff2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> () const</td></tr>
+<tr class="separator:a62571c6a589d2593b477a4adfe969ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f56d88d54e899bb17763e7e5898932c"><td class="memItemLeft" align="right" valign="top"><a id="a8f56d88d54e899bb17763e7e5898932c" name="a8f56d88d54e899bb17763e7e5898932c"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> () const</td></tr>
 <tr class="separator:a8f56d88d54e899bb17763e7e5898932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d7b855a906e04e34045990b2531c482"><td class="memItemLeft" align="right" valign="top"><a id="a7d7b855a906e04e34045990b2531c482" name="a7d7b855a906e04e34045990b2531c482"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addLayer</b> (LayerId layerId, const std::string &amp;layerName)</td></tr>
-<tr class="separator:a7d7b855a906e04e34045990b2531c482"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a694b9ae9c89f549aa7152712e82107e8"><td class="memItemLeft" align="right" valign="top"><a id="a694b9ae9c89f549aa7152712e82107e8" name="a694b9ae9c89f549aa7152712e82107e8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addOverlay</b> (LayerId layerId, const std::string &amp;overlayName)</td></tr>
-<tr class="separator:a694b9ae9c89f549aa7152712e82107e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f99c17f1052104d4629cb747e20a87a"><td class="memItemLeft" align="right" valign="top"><a id="a7f99c17f1052104d4629cb747e20a87a" name="a7f99c17f1052104d4629cb747e20a87a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeLayer</b> (LayerId layerId)</td></tr>
-<tr class="separator:a7f99c17f1052104d4629cb747e20a87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba9dfc4ab60d3237211034b4786d3835"><td class="memItemLeft" align="right" valign="top"><a id="aba9dfc4ab60d3237211034b4786d3835" name="aba9dfc4ab60d3237211034b4786d3835"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOverlay</b> (LayerId layerId)</td></tr>
-<tr class="separator:aba9dfc4ab60d3237211034b4786d3835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a404b4dbe1b57031230778a918b7973b6"><td class="memItemLeft" align="right" valign="top"><a id="a404b4dbe1b57031230778a918b7973b6" name="a404b4dbe1b57031230778a918b7973b6"></a>
-std::shared_ptr&lt; <a class="el" href="classnexo_1_1layer_1_1_layer.html">layer::Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getLayer</b> (LayerId layerId) const</td></tr>
-<tr class="separator:a404b4dbe1b57031230778a918b7973b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a947482b86f7f4457027ca519ca819fd4"><td class="memItemLeft" align="right" valign="top"><a id="a947482b86f7f4457027ca519ca819fd4" name="a947482b86f7f4457027ca519ca819fd4"></a>
-const <a class="el" href="classnexo_1_1layer_1_1_layer_stack.html">layer::LayerStack</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getLayerStack</b> () const</td></tr>
-<tr class="separator:a947482b86f7f4457027ca519ca819fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff9357290bca1bb6b5e17a19e3473826"><td class="memItemLeft" align="right" valign="top"><a id="aff9357290bca1bb6b5e17a19e3473826" name="aff9357290bca1bb6b5e17a19e3473826"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addEntityToLayer</b> (ecs::Entity entity, LayerId layerId)</td></tr>
-<tr class="separator:aff9357290bca1bb6b5e17a19e3473826"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa50668c736f35d53cdf41d3fda0d1b77"><td class="memItemLeft" align="right" valign="top"><a id="aa50668c736f35d53cdf41d3fda0d1b77" name="aa50668c736f35d53cdf41d3fda0d1b77"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addGlobalEntity</b> (ecs::Entity entity)</td></tr>
-<tr class="separator:aa50668c736f35d53cdf41d3fda0d1b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30067c16aaa2d1818e15ae87ef30d5b9"><td class="memItemLeft" align="right" valign="top"><a id="a30067c16aaa2d1818e15ae87ef30d5b9" name="a30067c16aaa2d1818e15ae87ef30d5b9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeEntityFromLayer</b> (ecs::Entity entity, LayerId layerId)</td></tr>
-<tr class="separator:a30067c16aaa2d1818e15ae87ef30d5b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b5db845e5b0a0f9572a7404f69261fd"><td class="memItemLeft" align="right" valign="top"><a id="a3b5db845e5b0a0f9572a7404f69261fd" name="a3b5db845e5b0a0f9572a7404f69261fd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeGlobalEntity</b> (ecs::Entity entity)</td></tr>
-<tr class="separator:a3b5db845e5b0a0f9572a7404f69261fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54ddfe28d5b7405ff2bcb7cea8faf42f"><td class="memItemLeft" align="right" valign="top"><a id="a54ddfe28d5b7405ff2bcb7cea8faf42f" name="a54ddfe28d5b7405ff2bcb7cea8faf42f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>entityDestroyed</b> (ecs::Entity entity)</td></tr>
-<tr class="separator:a54ddfe28d5b7405ff2bcb7cea8faf42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65a4af44d0c9a534d3389ebf9cdabe86"><td class="memItemLeft" align="right" valign="top"><a id="a65a4af44d0c9a534d3389ebf9cdabe86" name="a65a4af44d0c9a534d3389ebf9cdabe86"></a>
-std::set&lt; ecs::Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getEntities</b> () const</td></tr>
-<tr class="separator:a65a4af44d0c9a534d3389ebf9cdabe86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a290f8bbec11c38dceeb924fb9e6bbfc1"><td class="memItemLeft" align="right" valign="top"><a id="a290f8bbec11c38dceeb924fb9e6bbfc1" name="a290f8bbec11c38dceeb924fb9e6bbfc1"></a>
-std::set&lt; ecs::Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getRenderedEntities</b> () const</td></tr>
-<tr class="separator:a290f8bbec11c38dceeb924fb9e6bbfc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace3654be900ed089a150447c03bfad8f"><td class="memItemLeft" align="right" valign="top"><a id="ace3654be900ed089a150447c03bfad8f" name="ace3654be900ed089a150447c03bfad8f"></a>
-std::set&lt; ecs::Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getGlobalEntities</b> () const</td></tr>
-<tr class="separator:ace3654be900ed089a150447c03bfad8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbc95974a3dd89a84b1ae909a66469c3"><td class="memItemLeft" align="right" valign="top"><a id="adbc95974a3dd89a84b1ae909a66469c3" name="adbc95974a3dd89a84b1ae909a66469c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>attachCameraToLayer</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1camera_1_1_camera.html">camera::Camera</a> &gt; &amp;camera, LayerId id)</td></tr>
-<tr class="separator:adbc95974a3dd89a84b1ae909a66469c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fb6148a5de0184ffe84a1592eeda2f5"><td class="memItemLeft" align="right" valign="top"><a id="a1fb6148a5de0184ffe84a1592eeda2f5" name="a1fb6148a5de0184ffe84a1592eeda2f5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>detachCameraFromLayer</b> (LayerId layerId)</td></tr>
-<tr class="separator:a1fb6148a5de0184ffe84a1592eeda2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac347c83e379adb0948bff02481e2d43b"><td class="memItemLeft" align="right" valign="top"><a id="ac347c83e379adb0948bff02481e2d43b" name="ac347c83e379adb0948bff02481e2d43b"></a>
-std::shared_ptr&lt; <a class="el" href="classnexo_1_1camera_1_1_camera.html">camera::Camera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getCameraLayer</b> (LayerId layerId)</td></tr>
-<tr class="separator:ac347c83e379adb0948bff02481e2d43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a153284e4b071c87174bc8ab99fd78613"><td class="memItemLeft" align="right" valign="top"><a id="a153284e4b071c87174bc8ab99fd78613" name="a153284e4b071c87174bc8ab99fd78613"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setLayerRenderStatus</b> (bool status, LayerId layerId)</td></tr>
-<tr class="separator:a153284e4b071c87174bc8ab99fd78613"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd01e9f52019aef56cdc10ff626d8365"><td class="memItemLeft" align="right" valign="top"><a id="abd01e9f52019aef56cdc10ff626d8365" name="abd01e9f52019aef56cdc10ff626d8365"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setLayerActiveStatus</b> (bool status, LayerId layerId)</td></tr>
-<tr class="separator:abd01e9f52019aef56cdc10ff626d8365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d36e24b55322a5c6bef1bb497c40e4d"><td class="memItemLeft" align="right" valign="top"><a id="a2d36e24b55322a5c6bef1bb497c40e4d" name="a2d36e24b55322a5c6bef1bb497c40e4d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLayerRenderStatus</b> (LayerId layerId) const</td></tr>
-<tr class="separator:a2d36e24b55322a5c6bef1bb497c40e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afba6f3527df99e41617682c45931ae6d"><td class="memItemLeft" align="right" valign="top"><a id="afba6f3527df99e41617682c45931ae6d" name="afba6f3527df99e41617682c45931ae6d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLayerActiveStatus</b> (LayerId layerId) const</td></tr>
-<tr class="separator:afba6f3527df99e41617682c45931ae6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b9b18c7bcc9ff5d22ba77f130587983"><td class="memItemLeft" align="right" valign="top"><a id="a3b9b18c7bcc9ff5d22ba77f130587983" name="a3b9b18c7bcc9ff5d22ba77f130587983"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindowOffset</b> (const glm::vec2 offset)</td></tr>
-<tr class="separator:a3b9b18c7bcc9ff5d22ba77f130587983"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf7dbdb06531cd207c4378c49f7a9ea5"><td class="memItemLeft" align="right" valign="top"><a id="aaf7dbdb06531cd207c4378c49f7a9ea5" name="aaf7dbdb06531cd207c4378c49f7a9ea5"></a>
-glm::vec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getWindowOffset</b> ()</td></tr>
-<tr class="separator:aaf7dbdb06531cd207c4378c49f7a9ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1dd2169f592b883e768b8d7df8be5af"><td class="memItemLeft" align="right" valign="top"><a id="aa1dd2169f592b883e768b8d7df8be5af" name="aa1dd2169f592b883e768b8d7df8be5af"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>addLight</b> (const std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_light.html">components::Light</a> &gt; &amp;light)</td></tr>
-<tr class="separator:aa1dd2169f592b883e768b8d7df8be5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c69385051edb91d3775e2d77b79ae61"><td class="memItemLeft" align="right" valign="top"><a id="a8c69385051edb91d3775e2d77b79ae61" name="a8c69385051edb91d3775e2d77b79ae61"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeLight</b> (unsigned int index)</td></tr>
-<tr class="separator:a8c69385051edb91d3775e2d77b79ae61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cf606a3d9a539e19a4f4f54a3034201"><td class="memItemLeft" align="right" valign="top"><a id="a7cf606a3d9a539e19a4f4f54a3034201" name="a7cf606a3d9a539e19a4f4f54a3034201"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setAmbientLight</b> (const float ambient)</td></tr>
-<tr class="separator:a7cf606a3d9a539e19a4f4f54a3034201"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06635718fa7e2517487810abe13688e6"><td class="memItemLeft" align="right" valign="top"><a id="a06635718fa7e2517487810abe13688e6" name="a06635718fa7e2517487810abe13688e6"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>getAmbientLight</b> () const</td></tr>
-<tr class="separator:a06635718fa7e2517487810abe13688e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6124ecd67d21094dd5f955ac37f4044d"><td class="memItemLeft" align="right" valign="top"><a id="a6124ecd67d21094dd5f955ac37f4044d" name="a6124ecd67d21094dd5f955ac37f4044d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>onUpdate</b> (<a class="el" href="classnexo_1_1_timestep.html">Timestep</a> timestep) const</td></tr>
-<tr class="separator:a6124ecd67d21094dd5f955ac37f4044d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1e50328409b2b1373a01ea4af5ad07b"><td class="memItemLeft" align="right" valign="top"><a id="ae1e50328409b2b1373a01ea4af5ad07b" name="ae1e50328409b2b1373a01ea4af5ad07b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>onRender</b> ()</td></tr>
-<tr class="separator:ae1e50328409b2b1373a01ea4af5ad07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a836ddef49f404ed4c1fb976db35e04ae"><td class="memItemLeft" align="right" valign="top"><a id="a836ddef49f404ed4c1fb976db35e04ae" name="a836ddef49f404ed4c1fb976db35e04ae"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dispatchEventToLayers</b> (<a class="el" href="classnexo_1_1event_1_1_i_event.html">event::IEvent</a> &amp;event)</td></tr>
-<tr class="separator:a836ddef49f404ed4c1fb976db35e04ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78b5f0c96add587e5002912e698ff2ff"><td class="memItemLeft" align="right" valign="top"><a id="a78b5f0c96add587e5002912e698ff2ff" name="a78b5f0c96add587e5002912e698ff2ff"></a>
-const <a class="el" href="classnexo_1_1layer_1_1_layer_stack.html">layer::LayerStack</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getLayers</b> () const</td></tr>
-<tr class="separator:a78b5f0c96add587e5002912e698ff2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a3a26dc9884e96ecece6d5f3159e1ccca"><td class="memItemLeft" align="right" valign="top"><a id="a3a26dc9884e96ecece6d5f3159e1ccca" name="a3a26dc9884e96ecece6d5f3159e1ccca"></a>
-SceneId&#160;</td><td class="memItemRight" valign="bottom"><b>id</b></td></tr>
-<tr class="separator:a3a26dc9884e96ecece6d5f3159e1ccca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa874523e85cf5a07a6b04a02fb672d7"><td class="memItemLeft" align="right" valign="top"><a id="aaa874523e85cf5a07a6b04a02fb672d7" name="aaa874523e85cf5a07a6b04a02fb672d7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
-<tr class="separator:aaa874523e85cf5a07a6b04a02fb672d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab13bfa2cad26728c4f883156d56d84fd"><td class="memItemLeft" align="right" valign="top"><a id="ab13bfa2cad26728c4f883156d56d84fd" name="ab13bfa2cad26728c4f883156d56d84fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isActive</b> = true</td></tr>
-<tr class="separator:ab13bfa2cad26728c4f883156d56d84fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0021702ccc05808a9c4b1f332f057d78"><td class="memItemLeft" align="right" valign="top"><a id="a0021702ccc05808a9c4b1f332f057d78" name="a0021702ccc05808a9c4b1f332f057d78"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRendered</b> = true</td></tr>
-<tr class="separator:a0021702ccc05808a9c4b1f332f057d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9608e116b4c79d55de39214c9721322"><td class="memItemLeft" align="right" valign="top"><a id="ad9608e116b4c79d55de39214c9721322" name="ad9608e116b4c79d55de39214c9721322"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setName</b> (std::string_view newName)</td></tr>
+<tr class="separator:ad9608e116b4c79d55de39214c9721322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad02352740a0d427834ec999f3ef52320"><td class="memItemLeft" align="right" valign="top"><a id="ad02352740a0d427834ec999f3ef52320" name="ad02352740a0d427834ec999f3ef52320"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>getId</b> () const</td></tr>
+<tr class="separator:ad02352740a0d427834ec999f3ef52320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c5abbeb0356084ae8236cc243f810ef"><td class="memItemLeft" align="right" valign="top"><a id="a7c5abbeb0356084ae8236cc243f810ef" name="a7c5abbeb0356084ae8236cc243f810ef"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getUuid</b> () const</td></tr>
+<tr class="separator:a7c5abbeb0356084ae8236cc243f810ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Represents a scene in the engine. </p>
+<p >A <a class="el" href="classnexo_1_1scene_1_1_scene.html" title="Represents a scene in the engine.">Scene</a> encapsulates a collection of entities, a unique identifier, a name, and active/rendered states. It manages its entities via an ECS Coordinator.</p>
+<p >Responsibilities:</p><ul>
+<li>Adding and removing entities.</li>
+<li>Managing active and rendered states for the scene and its entities.</li>
+<li>Providing access to scene metadata (name, ID, UUID). </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4fcf91c13ff5cb2a535438a1fe513e59" name="a4fcf91c13ff5cb2a535438a1fe513e59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fcf91c13ff5cb2a535438a1fe513e59">&#9670;&nbsp;</a></span>Scene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">nexo::scene::Scene::Scene </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sceneName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_coordinator.html">ecs::Coordinator</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>coordinator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>editorOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs a new <a class="el" href="classnexo_1_1scene_1_1_scene.html" title="Represents a scene in the engine.">Scene</a>. </p>
+<p >Initializes the scene with the specified name and ECS coordinator. Optionally marks the scene as editor-only.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sceneName</td><td>The name of the scene. </td></tr>
+    <tr><td class="paramname">coordinator</td><td>Shared pointer to the ECS Coordinator managing entities/components. </td></tr>
+    <tr><td class="paramname">editorOnly</td><td>If true, the scene is marked as editor-only. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a18ef4a36a9de5ff5d9c2b9968a92feda" name="a18ef4a36a9de5ff5d9c2b9968a92feda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18ef4a36a9de5ff5d9c2b9968a92feda">&#9670;&nbsp;</a></span>addEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::scene::Scene::addEntity </td>
+          <td>(</td>
+          <td class="paramtype">ecs::Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds an entity to the scene. </p>
+<p >Attaches a SceneTag component (with the scene ID and default active/rendered state) to the entity and stores it in the scene's entity set.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity identifier to add. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a525a552fdb52853dbc3a87b57c428da3" name="a525a552fdb52853dbc3a87b57c428da3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a525a552fdb52853dbc3a87b57c428da3">&#9670;&nbsp;</a></span>removeEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::scene::Scene::removeEntity </td>
+          <td>(</td>
+          <td class="paramtype">ecs::Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an entity from the scene. </p>
+<p >Detaches the SceneTag component from the entity and removes it from the scene's entity set.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity identifier to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af17ee5cf10da6a80ebc42017f0035640" name="af17ee5cf10da6a80ebc42017f0035640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af17ee5cf10da6a80ebc42017f0035640">&#9670;&nbsp;</a></span>setActiveStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::scene::Scene::setActiveStatus </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the active status for the scene. </p>
+<p >Updates the scene's active state and propagates the change to all entities by updating their SceneTag components.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">active</td><td>True to mark the scene as active, false to deactivate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3a3981e542a9ed7f2eac38fdec564d7d" name="a3a3981e542a9ed7f2eac38fdec564d7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3981e542a9ed7f2eac38fdec564d7d">&#9670;&nbsp;</a></span>setRenderStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::scene::Scene::setRenderStatus </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>rendered</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the rendered status for the scene. </p>
+<p >Updates the scene's rendered state and propagates the change to all entities by updating their SceneTag components.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rendered</td><td>True to mark the scene as rendered, false to not render. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>engine/src/core/scene/<a class="el" href="engine_2src_2core_2scene_2_scene_8hpp_source.html">Scene.hpp</a></li>
+<li>engine/src/core/scene/<a class="el" href="_scene_8hpp_source.html">Scene.hpp</a></li>
 <li>engine/src/core/scene/Scene.cpp</li>
 </ul>
 </div><!-- contents -->

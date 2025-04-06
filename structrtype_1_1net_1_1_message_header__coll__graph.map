@@ -1,3 +1,0 @@
-<map id="rtype::net::MessageHeader&lt; T &gt;" name="rtype::net::MessageHeader&lt; T &gt;">
-<area shape="rect" id="node1" title="Message Header is sent at start of all messages. The template allows us to use &quot;enum class&quot; to ensure..." alt="" coords="5,5,211,97"/>
-</map>

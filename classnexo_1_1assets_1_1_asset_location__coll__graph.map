@@ -1,0 +1,3 @@
+<map id="nexo::assets::AssetLocation" name="nexo::assets::AssetLocation">
+<area shape="rect" id="node1" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="5,5,189,273"/>
+</map>

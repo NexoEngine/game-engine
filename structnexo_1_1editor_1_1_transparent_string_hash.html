@@ -97,7 +97,7 @@ Collaboration diagram for nexo::editor::TransparentStringHash:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1editor_1_1_transparent_string_hash__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_transparent_string_hash_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_transparent_string_hash_coll__map" id="anexo_1_1editor_1_1_transparent_string_hash_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,168,97"/>
+<area shape="rect" title=" " alt="" coords="5,5,168,127"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -109,12 +109,127 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>is_transparent</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab4bfcec70310f523f036407c3da7e759"><td class="memItemLeft" align="right" valign="top"><a id="ab4bfcec70310f523f036407c3da7e759" name="ab4bfcec70310f523f036407c3da7e759"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const std::string_view key) const noexcept</td></tr>
-<tr class="separator:ab4bfcec70310f523f036407c3da7e759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5e19998f3b52b00258a83dee16e286c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1editor_1_1_transparent_string_hash.html#aa5e19998f3b52b00258a83dee16e286c">operator()</a> (const std::string &amp;s) const noexcept</td></tr>
+<tr class="memdesc:aa5e19998f3b52b00258a83dee16e286c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the hash value for a given std::string.  <a href="structnexo_1_1editor_1_1_transparent_string_hash.html#aa5e19998f3b52b00258a83dee16e286c">More...</a><br /></td></tr>
+<tr class="separator:aa5e19998f3b52b00258a83dee16e286c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee69576cfe9107c141ef5480c7c0382a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1editor_1_1_transparent_string_hash.html#aee69576cfe9107c141ef5480c7c0382a">operator()</a> (std::string_view s) const noexcept</td></tr>
+<tr class="memdesc:aee69576cfe9107c141ef5480c7c0382a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the hash value for a std::string_view.  <a href="structnexo_1_1editor_1_1_transparent_string_hash.html#aee69576cfe9107c141ef5480c7c0382a">More...</a><br /></td></tr>
+<tr class="separator:aee69576cfe9107c141ef5480c7c0382a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aa45924922074e1c8ff093fc5c06b1f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1editor_1_1_transparent_string_hash.html#a0aa45924922074e1c8ff093fc5c06b1f">operator()</a> (const char *s) const noexcept</td></tr>
+<tr class="memdesc:a0aa45924922074e1c8ff093fc5c06b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the hash value for a C-style null-terminated string.  <a href="structnexo_1_1editor_1_1_transparent_string_hash.html#a0aa45924922074e1c8ff093fc5c06b1f">More...</a><br /></td></tr>
+<tr class="separator:a0aa45924922074e1c8ff093fc5c06b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa5e19998f3b52b00258a83dee16e286c" name="aa5e19998f3b52b00258a83dee16e286c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e19998f3b52b00258a83dee16e286c">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t nexo::editor::TransparentStringHash::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the hash value for a given std::string. </p>
+<p >This function leverages the standard library's std::hash to generate a hash value from the provided std::string, facilitating its use as a key in hash-based containers.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>The input string to hash. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t The computed hash value. </dd></dl>
+
+</div>
+</div>
+<a id="aee69576cfe9107c141ef5480c7c0382a" name="aee69576cfe9107c141ef5480c7c0382a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee69576cfe9107c141ef5480c7c0382a">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t nexo::editor::TransparentStringHash::operator() </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the hash value for a std::string_view. </p>
+<p >Uses the standard library's std::hash implementation for std::string_view to compute the hash of the provided string view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>The string view whose hash is to be computed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The computed hash value. </dd></dl>
+
+</div>
+</div>
+<a id="a0aa45924922074e1c8ff093fc5c06b1f" name="a0aa45924922074e1c8ff093fc5c06b1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aa45924922074e1c8ff093fc5c06b1f">&#9670;&nbsp;</a></span>operator()() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t nexo::editor::TransparentStringHash::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the hash value for a C-style null-terminated string. </p>
+<p >This function converts the provided C-string into a std::string_view and then computes its hash using the standard library's hash for string views, supporting heterogeneous lookup.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>A null-terminated C-string to be hashed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t The computed hash value for the input string. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>editor/src/<a class="el" href="_editor_8hpp_source.html">Editor.hpp</a></li>
+<li>editor/src/utils/<a class="el" href="_transparent_string_hash_8hpp_source.html">TransparentStringHash.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

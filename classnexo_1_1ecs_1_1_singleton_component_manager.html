@@ -91,32 +91,169 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_singleton_compone
   <div class="headertitle"><div class="title">nexo::ecs::SingletonComponentManager Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manager for singleton components in the ECS.  
+ <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_singleton_component_8hpp_source.html">SingletonComponent.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for nexo::ecs::SingletonComponentManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_manager_coll__map" id="anexo_1_1ecs_1_1_singleton_component_manager_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,224,127"/>
+<area shape="rect" title="Manager for singleton components in the ECS." alt="" coords="5,5,224,127"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeef87cb2159d2c85c080f74bdaeee773"><td class="memTemplParams" colspan="2"><a id="aeef87cb2159d2c85c080f74bdaeee773" name="aeef87cb2159d2c85c080f74bdaeee773"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aeef87cb2159d2c85c080f74bdaeee773"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registerSingletonComponent</b> (T component)</td></tr>
-<tr class="separator:aeef87cb2159d2c85c080f74bdaeee773"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cc1427c2ba204f9afd7db34605213a1"><td class="memTemplParams" colspan="2"><a id="a5cc1427c2ba204f9afd7db34605213a1" name="a5cc1427c2ba204f9afd7db34605213a1"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a5cc1427c2ba204f9afd7db34605213a1"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getSingletonComponent</b> ()</td></tr>
+<tr class="memitem:a20c4a71a7a83f4e8c1cb855a8709acbf"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a20c4a71a7a83f4e8c1cb855a8709acbf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a20c4a71a7a83f4e8c1cb855a8709acbf">registerSingletonComponent</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a20c4a71a7a83f4e8c1cb855a8709acbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a singleton component in place by forwarding constructor arguments.  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a20c4a71a7a83f4e8c1cb855a8709acbf">More...</a><br /></td></tr>
+<tr class="separator:a20c4a71a7a83f4e8c1cb855a8709acbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc1427c2ba204f9afd7db34605213a1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5cc1427c2ba204f9afd7db34605213a1"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a5cc1427c2ba204f9afd7db34605213a1">getSingletonComponent</a> ()</td></tr>
+<tr class="memdesc:a5cc1427c2ba204f9afd7db34605213a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a singleton component instance.  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a5cc1427c2ba204f9afd7db34605213a1">More...</a><br /></td></tr>
 <tr class="separator:a5cc1427c2ba204f9afd7db34605213a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplParams" colspan="2"><a id="a15d468a9c41db755f9232c5284364c9a" name="a15d468a9c41db755f9232c5284364c9a"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>unregisterSingletonComponent</b> ()</td></tr>
+<tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a15d468a9c41db755f9232c5284364c9a">unregisterSingletonComponent</a> ()</td></tr>
+<tr class="memdesc:a15d468a9c41db755f9232c5284364c9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters a singleton component.  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a15d468a9c41db755f9232c5284364c9a">More...</a><br /></td></tr>
 <tr class="separator:a15d468a9c41db755f9232c5284364c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Manager for singleton components in the ECS. </p>
+<p >The <a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html" title="Manager for singleton components in the ECS.">SingletonComponentManager</a> is responsible for registering, retrieving, and unregistering singleton components. Singleton components are globally unique and accessed via their type. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a20c4a71a7a83f4e8c1cb855a8709acbf" name="a20c4a71a7a83f4e8c1cb855a8709acbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20c4a71a7a83f4e8c1cb855a8709acbf">&#9670;&nbsp;</a></span>registerSingletonComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::ecs::SingletonComponentManager::registerSingletonComponent </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers a singleton component in place by forwarding constructor arguments. </p>
+<p >This method constructs the singleton directly in the manager using the provided arguments.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the singleton component. </td></tr>
+    <tr><td class="paramname">Args</td><td>The types of the constructor arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Arguments to construct an instance of T. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5cc1427c2ba204f9afd7db34605213a1" name="a5cc1427c2ba204f9afd7db34605213a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc1427c2ba204f9afd7db34605213a1">&#9670;&nbsp;</a></span>getSingletonComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; nexo::ecs::SingletonComponentManager::getSingletonComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves a singleton component instance. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the singleton component. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>T&amp; A reference to the registered singleton component. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_not_registered.html">SingletonComponentNotRegistered</a></td><td>if the component is not registered. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a15d468a9c41db755f9232c5284364c9a" name="a15d468a9c41db755f9232c5284364c9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15d468a9c41db755f9232c5284364c9a">&#9670;&nbsp;</a></span>unregisterSingletonComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::ecs::SingletonComponentManager::unregisterSingletonComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unregisters a singleton component. </p>
+<p >Removes the singleton component of type T from the manager.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the singleton component. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_not_registered.html">SingletonComponentNotRegistered</a></td><td>if the component is not registered. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>engine/src/ecs/<a class="el" href="engine_2src_2ecs_2_singleton_component_8hpp_source.html">SingletonComponent.hpp</a></li>
+<li>engine/src/ecs/<a class="el" href="_singleton_component_8hpp_source.html">SingletonComponent.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

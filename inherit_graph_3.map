@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structcollider__t.html" title="Represents the collision boundaries and properties of an entity." alt="" coords="5,5,80,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_asset_catalog.html" title="Singleton class that holds all the assets in the engine." alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_mock_asset_catalog.html" title=" " alt="" coords="232,5,443,32"/>
 </map>

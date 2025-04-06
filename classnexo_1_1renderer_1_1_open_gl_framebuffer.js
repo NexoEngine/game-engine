@@ -7,6 +7,8 @@ var classnexo_1_1renderer_1_1_open_gl_framebuffer =
     [ "unbind", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a31951def9c24020f473ab3204aafaa24", null ],
     [ "getFramebufferId", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#afc9569316d502a85d3769ab0250ec749", null ],
     [ "resize", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a69659f2952bb91e501b124d499571f75", null ],
+    [ "getPixelImpl", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a5aa9df29864c9b8343852191fd5a3655", null ],
+    [ "clearAttachmentImpl", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a453f9b779f4bf42ea7ffdb706d8a1ec1", null ],
     [ "getSpecs", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#ae452ec63d8c2ede188522bbf3ddccc26", null ],
     [ "getSpecs", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a24003f4f5eb072d8422d48807c2d74e7", null ],
     [ "getColorAttachmentId", "classnexo_1_1renderer_1_1_open_gl_framebuffer.html#a286315e4d2830520401c9e8d7e180216", null ]

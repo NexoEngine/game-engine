@@ -1,4 +1,0 @@
-<map id="ecs::components::Skybox" name="ecs::components::Skybox">
-<area shape="rect" id="node1" title="Represents a skybox using a 3D model." alt="" coords="5,219,173,311"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="6,5,173,171"/>
-</map>

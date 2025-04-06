@@ -91,13 +91,18 @@ $(document).ready(function(){initNavTree('classnexo_1_1event_1_1_listens.html','
   <div class="headertitle"><div class="title">nexo::event::Listens&lt; EventTypes &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Variadic class for listeners that can handle multiple event types.  
+ <a href="classnexo_1_1event_1_1_listens.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_listener_8hpp_source.html">Listener.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::event::Listens&lt; EventTypes &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1event_1_1_listens__inherit__graph.png" border="0" usemap="#anexo_1_1event_1_1_listens_3_01_event_types_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1event_1_1_listens_3_01_event_types_01_4_inherit__map" id="anexo_1_1event_1_1_listens_3_01_event_types_01_4_inherit__map">
-<area shape="rect" title=" " alt="" coords="112,175,248,267"/>
-<area shape="rect" href="classnexo_1_1event_1_1_base_listener.html" title=" " alt="" coords="5,5,176,127"/>
+<area shape="rect" title="Variadic class for listeners that can handle multiple event types." alt="" coords="112,175,248,267"/>
+<area shape="rect" href="classnexo_1_1event_1_1_base_listener.html" title="Base class for all event listeners." alt="" coords="5,5,176,127"/>
 <area shape="rect" href="classnexo_1_1event_1_1_listener.html" title=" " alt="" coords="201,13,341,119"/>
 </map>
 </div>
@@ -106,8 +111,8 @@ Collaboration diagram for nexo::event::Listens&lt; EventTypes &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1event_1_1_listens__coll__graph.png" border="0" usemap="#anexo_1_1event_1_1_listens_3_01_event_types_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1event_1_1_listens_3_01_event_types_01_4_coll__map" id="anexo_1_1event_1_1_listens_3_01_event_types_01_4_coll__map">
-<area shape="rect" title=" " alt="" coords="112,175,248,267"/>
-<area shape="rect" href="classnexo_1_1event_1_1_base_listener.html" title=" " alt="" coords="5,5,176,127"/>
+<area shape="rect" title="Variadic class for listeners that can handle multiple event types." alt="" coords="112,175,248,267"/>
+<area shape="rect" href="classnexo_1_1event_1_1_base_listener.html" title="Base class for all event listeners." alt="" coords="5,5,176,127"/>
 <area shape="rect" href="classnexo_1_1event_1_1_listener.html" title=" " alt="" coords="201,13,341,119"/>
 </map>
 </div>
@@ -125,11 +130,21 @@ Public Member Functions</h2></td></tr>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getListenerName</b> () const</td></tr>
 <tr class="separator:a84e95d72a4a2a9862982e9c26371b5c8 inherit pub_methods_classnexo_1_1event_1_1_base_listener"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classnexo_1_1event_1_1_listener"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classnexo_1_1event_1_1_listener')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classnexo_1_1event_1_1_listener.html">nexo::event::Listener&lt; EventTypes &gt;</a></td></tr>
-<tr class="memitem:a998ca09ce1246f730b0cb78daeb1dc23 inherit pub_methods_classnexo_1_1event_1_1_listener"><td class="memItemLeft" align="right" valign="top"><a id="a998ca09ce1246f730b0cb78daeb1dc23" name="a998ca09ce1246f730b0cb78daeb1dc23"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>handleEvent</b> (EventTypes &amp;)=0</td></tr>
+<tr class="memitem:a998ca09ce1246f730b0cb78daeb1dc23 inherit pub_methods_classnexo_1_1event_1_1_listener"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_listener.html#a998ca09ce1246f730b0cb78daeb1dc23">handleEvent</a> (EventTypes &amp;)=0</td></tr>
+<tr class="memdesc:a998ca09ce1246f730b0cb78daeb1dc23 inherit pub_methods_classnexo_1_1event_1_1_listener"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles an event of type T.  <a href="classnexo_1_1event_1_1_listener.html#a998ca09ce1246f730b0cb78daeb1dc23">More...</a><br /></td></tr>
 <tr class="separator:a998ca09ce1246f730b0cb78daeb1dc23 inherit pub_methods_classnexo_1_1event_1_1_listener"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename... EventTypes&gt;<br />
+class nexo::event::Listens&lt; EventTypes &gt;</div><p >Variadic class for listeners that can handle multiple event types. </p>
+<p >The <a class="el" href="classnexo_1_1event_1_1_listens.html" title="Variadic class for listeners that can handle multiple event types.">Listens</a> class inherits from <a class="el" href="classnexo_1_1event_1_1_base_listener.html" title="Base class for all event listeners.">BaseListener</a> and from <a class="el" href="classnexo_1_1event_1_1_listener.html" title="Interface for handling events of a specific type.">Listener</a> for each EventType provided. This allows a single object to listen to and handle multiple types of events.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">EventTypes</td><td>The event types to listen for. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>engine/src/core/event/<a class="el" href="_listener_8hpp_source.html">Listener.hpp</a></li>
 </ul>
 </div><!-- contents -->

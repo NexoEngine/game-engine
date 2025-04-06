@@ -1,4 +1,0 @@
-<map id="ecs::components::Model3D" name="ecs::components::Model3D">
-<area shape="rect" id="node1" title="Represents a 3D model loaded from a file." alt="" coords="5,219,183,311"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="11,5,177,171"/>
-</map>

@@ -96,8 +96,8 @@ Inheritance diagram for nexo::components::Cube:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1components_1_1_cube__inherit__graph.png" border="0" usemap="#anexo_1_1components_1_1_cube_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1components_1_1_cube_inherit__map" id="anexo_1_1components_1_1_cube_inherit__map">
-<area shape="rect" title=" " alt="" coords="17,145,179,223"/>
-<area shape="rect" href="structnexo_1_1components_1_1_shape3_d.html" title=" " alt="" coords="5,5,191,97"/>
+<area shape="rect" title=" " alt="" coords="17,160,179,252"/>
+<area shape="rect" href="structnexo_1_1components_1_1_shape3_d.html" title=" " alt="" coords="5,5,191,112"/>
 </map>
 </div>
 <div class="dynheader">
@@ -105,19 +105,21 @@ Collaboration diagram for nexo::components::Cube:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1components_1_1_cube__coll__graph.png" border="0" usemap="#anexo_1_1components_1_1_cube_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1components_1_1_cube_coll__map" id="anexo_1_1components_1_1_cube_coll__map">
-<area shape="rect" title=" " alt="" coords="17,145,179,223"/>
-<area shape="rect" href="structnexo_1_1components_1_1_shape3_d.html" title=" " alt="" coords="5,5,191,97"/>
+<area shape="rect" title=" " alt="" coords="17,160,179,252"/>
+<area shape="rect" href="structnexo_1_1components_1_1_shape3_d.html" title=" " alt="" coords="5,5,191,112"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2014e8fba43508478abed4422aaa4076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_cube.html#a2014e8fba43508478abed4422aaa4076">draw</a> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_renderer_context.html">renderer::RendererContext</a> &gt; &amp;context, const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;transf) override</td></tr>
-<tr class="separator:a2014e8fba43508478abed4422aaa4076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78375f55da4a3807b20cc64f37f0a5cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_cube.html#a78375f55da4a3807b20cc64f37f0a5cb">draw</a> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_renderer_context.html">renderer::RendererContext</a> &gt; &amp;context, const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;transf, const <a class="el" href="structnexo_1_1components_1_1_material.html">Material</a> &amp;material, const int entityID) override</td></tr>
+<tr class="separator:a78375f55da4a3807b20cc64f37f0a5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63814bbe6e94b97053c062e2bd78207"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_shape3_d.html">Shape3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_cube.html#ab63814bbe6e94b97053c062e2bd78207">clone</a> () const override</td></tr>
+<tr class="separator:ab63814bbe6e94b97053c062e2bd78207"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2014e8fba43508478abed4422aaa4076" name="a2014e8fba43508478abed4422aaa4076"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2014e8fba43508478abed4422aaa4076">&#9670;&nbsp;</a></span>draw()</h2>
+<a id="a78375f55da4a3807b20cc64f37f0a5cb" name="a78375f55da4a3807b20cc64f37f0a5cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78375f55da4a3807b20cc64f37f0a5cb">&#9670;&nbsp;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -135,12 +137,51 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> &amp;&#160;</td>
-          <td class="paramname"><em>transf</em>&#160;</td>
+          <td class="paramname"><em>transf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>entityID</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="structnexo_1_1components_1_1_shape3_d.html">nexo::components::Shape3D</a>.</p>
+
+</div>
+</div>
+<a id="ab63814bbe6e94b97053c062e2bd78207" name="ab63814bbe6e94b97053c062e2bd78207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab63814bbe6e94b97053c062e2bd78207">&#9670;&nbsp;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="structnexo_1_1components_1_1_shape3_d.html">Shape3D</a> &gt; nexo::components::Cube::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>

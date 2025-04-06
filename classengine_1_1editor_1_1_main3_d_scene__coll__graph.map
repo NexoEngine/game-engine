@@ -1,6 +1,0 @@
-<map id="engine::editor::Main3DScene" name="engine::editor::Main3DScene">
-<area shape="rect" id="node1" title=" " alt="" coords="97,521,283,672"/>
-<area shape="rect" id="node2" href="$classengine_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="104,307,276,472"/>
-<area shape="rect" id="node3" href="$classengine_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,27,172,222"/>
-<area shape="rect" id="node4" href="$classengine_1_1editor_1_1_scene_manager_bridge.html" title=" " alt="" coords="196,5,387,244"/>
-</map>

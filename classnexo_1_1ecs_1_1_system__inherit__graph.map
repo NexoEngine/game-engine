@@ -1,7 +1,14 @@
 <map id="nexo::ecs::System" name="nexo::ecs::System">
-<area shape="rect" id="node1" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="172,5,299,97"/>
-<area shape="rect" id="node2" href="$class_movement_system.html" title=" " alt="" coords="5,153,132,230"/>
-<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_mock_system.html" title=" " alt="" coords="156,145,315,237"/>
-<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_mock_system2.html" title=" " alt="" coords="339,153,505,230"/>
-<area shape="rect" id="node5" href="$classnexo_1_1system_1_1_on_scene_deleted.html" title=" " alt="" coords="529,153,731,230"/>
+<area shape="rect" id="node1" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="868,5,995,97"/>
+<area shape="rect" id="node2" href="$class_movement_system.html" title=" " alt="" coords="5,182,132,259"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_mock_system.html" title=" " alt="" coords="156,175,315,267"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_mock_system2.html" title=" " alt="" coords="339,182,505,259"/>
+<area shape="rect" id="node5" href="$classnexo_1_1system_1_1_ambient_light_system.html" title="System responsible for updating ambient light data in the scene." alt="" coords="529,175,709,267"/>
+<area shape="rect" id="node6" href="$classnexo_1_1system_1_1_camera_context_system.html" title="System responsible for updating the camera context." alt="" coords="734,175,926,267"/>
+<area shape="rect" id="node7" href="$classnexo_1_1system_1_1_directional_lights_system.html" title="System responsible for updating directional lights in the scene." alt="" coords="951,175,1115,267"/>
+<area shape="rect" id="node8" href="$classnexo_1_1system_1_1_perspective_camera_controller_system.html" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="1139,145,1342,296"/>
+<area shape="rect" id="node9" href="$classnexo_1_1system_1_1_perspective_camera_target_system.html" title="System for controlling perspective cameras that orbit around a target." alt="" coords="1367,160,1603,281"/>
+<area shape="rect" id="node10" href="$classnexo_1_1system_1_1_point_lights_system.html" title="System responsible for updating point lights in the scene." alt="" coords="1627,175,1796,267"/>
+<area shape="rect" id="node11" href="$classnexo_1_1system_1_1_render_system.html" title="System responsible for rendering the scene." alt="" coords="1820,182,2008,259"/>
+<area shape="rect" id="node12" href="$classnexo_1_1system_1_1_spot_lights_system.html" title="System responsible for updating spot lights in the scene." alt="" coords="2032,175,2199,267"/>
 </map>

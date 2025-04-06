@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structnexo_1_1editor_1_1_entity_properties.html" title=" " alt="" coords="5,5,189,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_framebuffer.html" title="Abstract class representing a framebuffer in the rendering pipeline." alt="" coords="5,31,183,57"/>
+<area shape="rect" id="node2" href="$class_dummy_framebuffer.html" title=" " alt="" coords="274,5,409,32"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_open_gl_framebuffer.html" title=" " alt="" coords="231,56,452,83"/>
 </map>

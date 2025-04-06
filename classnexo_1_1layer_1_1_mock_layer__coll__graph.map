@@ -1,9 +1,0 @@
-<map id="nexo::layer::MockLayer" name="nexo::layer::MockLayer">
-<area shape="rect" id="node1" title=" " alt="" coords="229,719,381,869"/>
-<area shape="rect" id="node2" href="$classnexo_1_1layer_1_1_layer.html" title=" " alt="" coords="9,315,172,671"/>
-<area shape="rect" id="node3" href="$classnexo_1_1event_1_1_base_listener.html" title=" " alt="" coords="5,145,176,267"/>
-<area shape="rect" id="node4" title=" " alt="" coords="197,454,414,531"/>
-<area shape="rect" id="node5" href="$classnexo_1_1event_1_1_test_event.html" title=" " alt="" coords="439,439,591,546"/>
-<area shape="rect" id="node6" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="451,153,578,259"/>
-<area shape="rect" id="node7" href="$classnexo_1_1event_1_1_i_event.html" title=" " alt="" coords="449,5,580,97"/>
-</map>

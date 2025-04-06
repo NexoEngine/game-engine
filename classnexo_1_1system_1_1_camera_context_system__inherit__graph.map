@@ -1,0 +1,4 @@
+<map id="nexo::system::CameraContextSystem" name="nexo::system::CameraContextSystem">
+<area shape="rect" id="node1" title="System responsible for updating the camera context." alt="" coords="5,145,197,237"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="38,5,165,97"/>
+</map>

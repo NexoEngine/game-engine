@@ -1,4 +1,0 @@
-<map id="ecs::system::RenderSystem" name="ecs::system::RenderSystem">
-<area shape="rect" id="node1" title="System responsible for rendering entities in the ECS framework." alt="" coords="5,145,188,223"/>
-<area shape="rect" id="node2" href="$classecs_1_1system_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="26,5,167,97"/>
-</map>

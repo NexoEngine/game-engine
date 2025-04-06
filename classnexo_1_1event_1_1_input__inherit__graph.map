@@ -1,4 +1,4 @@
 <map id="nexo::event::Input" name="nexo::event::Input">
-<area shape="rect" id="node1" title=" " alt="" coords="16,5,161,215"/>
+<area shape="rect" id="node1" title="Abstract class for input handling." alt="" coords="16,5,161,215"/>
 <area shape="rect" id="node2" href="$classnexo_1_1event_1_1_input_open_gl.html" title=" " alt="" coords="5,263,172,428"/>
 </map>

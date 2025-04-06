@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_collision_detection_system.html" title="System responsible for detecting collisions between entities in the game world." alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_asset_importer.html" title="Registry for asset importers, allowing to import assets from various sources." alt="" coords="5,5,188,32"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_mock_asset_importer.html" title=" " alt="" coords="236,5,451,32"/>
 </map>

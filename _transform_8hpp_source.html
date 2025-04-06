@@ -103,17 +103,19 @@ $(document).ready(function(){initNavTree('_transform_8hpp_source.html',''); init
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>nexo::components {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;glm/gtc/quaternion.hpp&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component.html">   20</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> final {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        glm::vec3 pos;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        glm::vec3 size;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        glm::vec3 rotation;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    };</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
-<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:20</div></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>nexo::components {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component.html">   22</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> final {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        glm::vec3 pos;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        glm::vec3 size;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

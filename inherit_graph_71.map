@@ -1,3 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$union_im_g_l3_w_procs.html" title=" " alt="" coords="5,5,113,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,147,208,174"/>
+<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="256,147,463,174"/>
+<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="523,5,701,47"/>
+<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_console_window.html" title=" " alt="" coords="519,71,705,98"/>
+<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="531,122,693,149"/>
+<area shape="rect" id="node6" href="$classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="515,173,709,199"/>
+<area shape="rect" id="node7" href="$classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="515,223,709,250"/>
+<area shape="rect" id="node8" href="$classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="511,274,713,301"/>
 </map>

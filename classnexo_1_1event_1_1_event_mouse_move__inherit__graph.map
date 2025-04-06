@@ -1,7 +1,8 @@
 <map id="nexo::event::EventMouseMove" name="nexo::event::EventMouseMove">
-<area shape="rect" id="node1" title=" " alt="" coords="89,300,287,392"/>
-<area shape="rect" id="node4" href="$classnexo_1_1_application.html" title=" " alt="" coords="5,440,163,737"/>
-<area shape="rect" id="node5" href="$classnexo_1_1camera_1_1_perspective_camera_controller.html" title=" " alt="" coords="187,440,397,737"/>
-<area shape="rect" id="node2" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="114,145,262,252"/>
-<area shape="rect" id="node3" href="$classnexo_1_1event_1_1_i_event.html" title=" " alt="" coords="123,5,253,97"/>
+<area shape="rect" id="node1" title=" " alt="" coords="239,300,437,392"/>
+<area shape="rect" id="node4" href="$classnexo_1_1_application.html" title=" " alt="" coords="5,440,212,767"/>
+<area shape="rect" id="node5" href="$classnexo_1_1system_1_1_perspective_camera_controller_system.html" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="237,528,439,679"/>
+<area shape="rect" id="node6" href="$classnexo_1_1system_1_1_perspective_camera_target_system.html" title="System for controlling perspective cameras that orbit around a target." alt="" coords="464,543,700,664"/>
+<area shape="rect" id="node2" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="264,145,412,252"/>
+<area shape="rect" id="node3" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="273,5,403,97"/>
 </map>

@@ -1,4 +1,0 @@
-<map id="ecs::components::Cube" name="ecs::components::Cube">
-<area shape="rect" id="node1" title="Represents a cube shape with customizable dimensions and colors." alt="" coords="11,219,167,311"/>
-<area shape="rect" id="node2" href="$classecs_1_1components_1_1_i_shape.html" title="Interface for shape components used in rendering entities." alt="" coords="5,5,172,171"/>
-</map>

@@ -101,7 +101,11 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </ul>
 </li>
 <li><a href="#external-dependencies">External Dependencies</a></li>
-<li><a href="#build-the-project">Build the project</a></li>
+<li><a href="#build-the-project">Build the project</a><ul>
+<li><a href="#using-cmake-presets-automatic">Automatically with CMake Presets</a></li>
+<li><a href="#using-cmake---build-manual">Manually with CMake</a></li>
+</ul>
+</li>
 <li><a href="#install-the-project">Install the project</a><ul>
 <li><a href="#install-via-cmake">Install via CMake</a></li>
 <li><a href="#create-an-installer-for-windows-nsis">Create an installer for Windows (NSIS)</a></li>
@@ -118,31 +122,37 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
  Find the whole documentation on our <a href="https://nexoengine.github.io/game-engine/">website</a>. </p>
 </blockquote>
 <h2>Project Overview</h2>
-<h3><a class="el" href="class_game.html">Game</a> Engine</h3>
+<h3>Game Engine</h3>
 <p >Interface screenshot</p>
 <p ><img src="editor_interface.png" alt="" class="inline" title="Editor interface"/></p>
-<p >Quick video of the game engine in action with Jolt Physics</p>
-<p ><a href="https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d">https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d</a></p>
+<p >Quick video of the game engine in action</p>
+<p ><a href="https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4">https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4</a></p>
 <blockquote class="doxtable">
-<p >[!WARNING] This video is from a prototype version of the engine. The final version does not currently integrate physics. </p>
+<p >[!WARNING] This project is still in development and is not yet ready for production use. Some features may change. </p>
 </blockquote>
 <h2>External Dependencies</h2>
 <p >To run this project, ensure you have the following:</p><ul>
 <li><b>CMake</b>: Necessary for building the project from source.</li>
 <li><b>C++ Compiler</b>: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.</li>
-<li><b>X11</b>: Required for Linux and macOS.</li>
 </ul>
 <h2>Build the project</h2>
-<p >Cloning and building is a breeze:</p><ol type="1">
-<li>Clone the repository with the submodules. <div class="fragment"><div class="line">git clone --recurse-submodules</div>
-</div><!-- fragment --></li>
-<li>Run cmake to generate the build files. <div class="fragment"><div class="line">cmake -B build</div>
+<p >Cloning and building is a breeze:</p>
+<h3>1. Clone the repository with the submodules.</h3>
+<div class="fragment"><div class="line">git clone --recurse-submodules</div>
+</div><!-- fragment --><h3>2. Run cmake to generate the build files.</h3>
+<h4>Using cmake presets (automatic)</h4>
+<div class="fragment"><div class="line">cmake --workflow --present=build-debug</div>
+</div><!-- fragment --><blockquote class="doxtable">
+<p >[!NOTE] There are several presets available: <code>build-debug</code>, <code>build-release</code>, <code>build-coverage</code>, <code>minimal-build</code>, <code>test-debug</code>, and <code>test-coverage</code>. </p>
+</blockquote>
+<h4>Using cmake &ndash;build (manual)</h4>
+<div class="fragment"><div class="line">cmake -B build</div>
 <div class="line">cmake --build build</div>
-</div><!-- fragment --></li>
-<li>Launch the engine!</li>
-</ol>
-<p >For Linux and MacOS: </p><div class="fragment"><div class="line">./build/nexoEditor</div>
-</div><!-- fragment --><p >For Windows: </p><div class="fragment"><div class="line">./build/nexoEditor.exe</div>
+</div><!-- fragment --><h3>3. Launch the engine!</h3>
+<h4>For Linux and MacOS:</h4>
+<div class="fragment"><div class="line">./build/nexoEditor</div>
+</div><!-- fragment --><h4>For Windows:</h4>
+<div class="fragment"><div class="line">./build/nexoEditor.exe</div>
 </div><!-- fragment --><blockquote class="doxtable">
 <p >[!NOTE] For detailed instructions, visit our Installation Guide. </p>
 </blockquote>
@@ -170,11 +180,13 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="fragment"><div class="line">sudo dpkg -i NEXO-Engine-*-Linux.deb</div>
 </div><!-- fragment --><h2>Run the tests</h2>
 <p >In this project tests use the <a href="http://google.github.io/googletest/">gtest</a> library.</p>
-<p >First build the tests: </p><div class="fragment"><div class="line">cmake -B build</div>
+<p >First build the tests: </p><div class="fragment"><div class="line">cmake -B build -DNEXO_BUILD_TESTS=ON</div>
 <div class="line">cmake --build build</div>
 </div><!-- fragment --><p >Then run the tests: </p><div class="fragment"><div class="line">cd build</div>
 <div class="line">ctest -C Debug</div>
-</div><!-- fragment --><h2>The Team</h2>
+</div><!-- fragment --><h2>Troubleshooting</h2>
+<p >If you encounter any issues, please refer to our Troubleshooting Guide.</p>
+<h2>The Team</h2>
 <p >NEXO Engine is brought to life by a dedicated team of fourth-year students from EPITECH Strasbourg:</p><ul>
 <li>Guillaume HEIN (@Thyodas)</li>
 <li>Jean CARDONNE (@jcardonne)</li>

@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1event_1_1_signal_handler.html" title=" " alt="" coords="5,5,180,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_shader.html" title="Abstract class representing a shader program in the rendering pipeline." alt="" coords="5,5,155,32"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_open_gl_shader.html" title="Implementation of the Shader interface using OpenGL." alt="" coords="203,5,396,32"/>
 </map>

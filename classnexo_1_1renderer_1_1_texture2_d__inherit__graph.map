@@ -1,5 +1,5 @@
 <map id="nexo::renderer::Texture2D" name="nexo::renderer::Texture2D">
-<area shape="rect" id="node1" title=" " alt="" coords="27,248,194,340"/>
-<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_open_gl_texture2_d.html" title="OpenGL&#45;specific implementation of the Texture2D class." alt="" coords="5,388,216,597"/>
+<area shape="rect" id="node1" title=" " alt="" coords="27,248,194,355"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_open_gl_texture2_d.html" title="OpenGL&#45;specific implementation of the Texture2D class." alt="" coords="5,403,216,627"/>
 <area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_texture.html" title="Abstract base class for representing textures in a rendering system." alt="" coords="35,5,186,200"/>
 </map>

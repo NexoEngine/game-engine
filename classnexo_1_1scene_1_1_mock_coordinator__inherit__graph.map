@@ -1,0 +1,4 @@
+<map id="nexo::scene::MockCoordinator" name="nexo::scene::MockCoordinator">
+<area shape="rect" id="node1" title=" " alt="" coords="10,277,205,369"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_coordinator.html" title="Central orchestrator for the Entity&#45;Component&#45;System (ECS) architecture." alt="" coords="5,5,209,229"/>
+</map>

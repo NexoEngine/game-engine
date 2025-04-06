@@ -1,0 +1,6 @@
+<map id="nexo::assets::MockAssetImporter" name="nexo::assets::MockAssetImporter">
+<area shape="rect" id="node1" title=" " alt="" coords="10,1087,225,1179"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset_importer.html" title="Registry for asset importers, allowing to import assets from various sources." alt="" coords="21,652,214,1037"/>
+<area shape="rect" id="node3" href="$structnexo_1_1assets_1_1_asset_importer_context.html" title="Context class for asset importers." alt="" coords="5,336,229,589"/>
+<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="25,5,209,273"/>
+</map>

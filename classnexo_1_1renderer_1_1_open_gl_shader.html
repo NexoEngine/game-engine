@@ -101,7 +101,7 @@ Inheritance diagram for nexo::renderer::OpenGlShader:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1renderer_1_1_open_gl_shader__inherit__graph.png" border="0" usemap="#anexo_1_1renderer_1_1_open_gl_shader_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1renderer_1_1_open_gl_shader_inherit__map" id="anexo_1_1renderer_1_1_open_gl_shader_inherit__map">
-<area shape="rect" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,575"/>
+<area shape="rect" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,545"/>
 <area shape="rect" href="classnexo_1_1renderer_1_1_shader.html" title="Abstract class representing a shader program in the rendering pipeline." alt="" coords="27,5,177,273"/>
 </map>
 </div>
@@ -110,7 +110,7 @@ Collaboration diagram for nexo::renderer::OpenGlShader:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1renderer_1_1_open_gl_shader__coll__graph.png" border="0" usemap="#anexo_1_1renderer_1_1_open_gl_shader_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1renderer_1_1_open_gl_shader_coll__map" id="anexo_1_1renderer_1_1_open_gl_shader_coll__map">
-<area shape="rect" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,575"/>
+<area shape="rect" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,545"/>
 <area shape="rect" href="classnexo_1_1renderer_1_1_shader.html" title="Abstract class representing a shader program in the rendering pipeline." alt="" coords="27,5,177,273"/>
 </map>
 </div>
@@ -129,22 +129,35 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8df5d8307c8edda724bbad2dc555642b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a8df5d8307c8edda724bbad2dc555642b">unbind</a> () const override</td></tr>
 <tr class="memdesc:a8df5d8307c8edda724bbad2dc555642b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unbinds the shader program.  <a href="classnexo_1_1renderer_1_1_open_gl_shader.html#a8df5d8307c8edda724bbad2dc555642b">More...</a><br /></td></tr>
 <tr class="separator:a8df5d8307c8edda724bbad2dc555642b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81bc5c08ec3c9955244688532a612b4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a81bc5c08ec3c9955244688532a612b4c">setUniformFloat</a> (const std::string &amp;name, const float value) const override</td></tr>
-<tr class="separator:a81bc5c08ec3c9955244688532a612b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49db6c983cd88ef0d74f3b2718f7459a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a49db6c983cd88ef0d74f3b2718f7459a">setUniformFloat3</a> (const std::string &amp;name, const glm::vec3 &amp;values) const override</td></tr>
-<tr class="separator:a49db6c983cd88ef0d74f3b2718f7459a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a552c94fb347f6546fe823093f7d6dada"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a552c94fb347f6546fe823093f7d6dada">setUniformFloat4</a> (const std::string &amp;name, const glm::vec4 &amp;values) const override</td></tr>
-<tr class="separator:a552c94fb347f6546fe823093f7d6dada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a365b79d2bd0505e52eae2f8d5f7b4693"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a365b79d2bd0505e52eae2f8d5f7b4693">setUniformMatrix</a> (const std::string &amp;name, const glm::mat4 &amp;matrix) const override</td></tr>
-<tr class="separator:a365b79d2bd0505e52eae2f8d5f7b4693"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d604184e61cb571ab416733b7d84eb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a7d604184e61cb571ab416733b7d84eb4">setUniformInt</a> (const std::string &amp;name, int value) const override</td></tr>
-<tr class="separator:a7d604184e61cb571ab416733b7d84eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b2dc8c7e9f48c8bc707595bc82db07c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a7b2dc8c7e9f48c8bc707595bc82db07c">setUniformIntArray</a> (const std::string &amp;name, const int *values, unsigned int count) const override</td></tr>
-<tr class="separator:a7b2dc8c7e9f48c8bc707595bc82db07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3598914334e92678bb17ebf47f584a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#ab3598914334e92678bb17ebf47f584a0">setUniformFloat</a> (const std::string &amp;name, const float value) const override</td></tr>
+<tr class="separator:ab3598914334e92678bb17ebf47f584a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f9f8c127e3acb67268ead0411630b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a37f9f8c127e3acb67268ead0411630b6">setUniformFloat3</a> (const std::string &amp;name, const glm::vec3 &amp;values) const override</td></tr>
+<tr class="separator:a37f9f8c127e3acb67268ead0411630b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b09d81c26a71503dae10e7dcd7d41c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a1b09d81c26a71503dae10e7dcd7d41c2">setUniformFloat4</a> (const std::string &amp;name, const glm::vec4 &amp;values) const override</td></tr>
+<tr class="separator:a1b09d81c26a71503dae10e7dcd7d41c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52772ec683bfeb2ace4d147e3653520"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#aa52772ec683bfeb2ace4d147e3653520">setUniformMatrix</a> (const std::string &amp;name, const glm::mat4 &amp;matrix) const override</td></tr>
+<tr class="separator:aa52772ec683bfeb2ace4d147e3653520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cdf19b637322d619cb451c049908208"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a4cdf19b637322d619cb451c049908208">setUniformInt</a> (const std::string &amp;name, int value) const override</td></tr>
+<tr class="separator:a4cdf19b637322d619cb451c049908208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af69e58184b63f9d0d5944edd26f15a28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#af69e58184b63f9d0d5944edd26f15a28">setUniformIntArray</a> (const std::string &amp;name, const int *values, unsigned int count) const override</td></tr>
+<tr class="separator:af69e58184b63f9d0d5944edd26f15a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8faa359558115026b5d0a5415f121e69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a8faa359558115026b5d0a5415f121e69">bindStorageBuffer</a> (unsigned int index) const override</td></tr>
+<tr class="separator:a8faa359558115026b5d0a5415f121e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a088d6753ed73ee000a8fcbab5d093add"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a088d6753ed73ee000a8fcbab5d093add">bindStorageBufferBase</a> (unsigned int index, unsigned int bindingLocation) const override</td></tr>
+<tr class="separator:a088d6753ed73ee000a8fcbab5d093add"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1623ee5a02d2e8f9a64cd0952684f7b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a1623ee5a02d2e8f9a64cd0952684f7b8">unbindStorageBuffer</a> (unsigned int index) const override</td></tr>
+<tr class="separator:a1623ee5a02d2e8f9a64cd0952684f7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58aef56284edb32ce553b5d1e9979558"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#a58aef56284edb32ce553b5d1e9979558">getName</a> () const override</td></tr>
 <tr class="separator:a58aef56284edb32ce553b5d1e9979558"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae272abbd82a78ae2474607509dff4a42"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_open_gl_shader.html#ae272abbd82a78ae2474607509dff4a42">getProgramId</a> () const override</td></tr>
 <tr class="separator:ae272abbd82a78ae2474607509dff4a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classnexo_1_1renderer_1_1_shader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classnexo_1_1renderer_1_1_shader')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classnexo_1_1renderer_1_1_shader.html">nexo::renderer::Shader</a></td></tr>
+<tr class="memitem:adf4697d2560d421ab13f40190bde65f8 inherit pub_methods_classnexo_1_1renderer_1_1_shader"><td class="memItemLeft" align="right" valign="top"><a id="adf4697d2560d421ab13f40190bde65f8" name="adf4697d2560d421ab13f40190bde65f8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addStorageBuffer</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_shader_storage_buffer.html">ShaderStorageBuffer</a> &gt; &amp;buffer)</td></tr>
+<tr class="separator:adf4697d2560d421ab13f40190bde65f8 inherit pub_methods_classnexo_1_1renderer_1_1_shader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd5957c5f6b1279b7f0075a8ff4f1a8 inherit pub_methods_classnexo_1_1renderer_1_1_shader"><td class="memItemLeft" align="right" valign="top"><a id="a5fd5957c5f6b1279b7f0075a8ff4f1a8" name="a5fd5957c5f6b1279b7f0075a8ff4f1a8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setStorageBufferData</b> (unsigned int index, void *data, unsigned int size)</td></tr>
+<tr class="separator:a5fd5957c5f6b1279b7f0075a8ff4f1a8 inherit pub_methods_classnexo_1_1renderer_1_1_shader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -159,6 +172,10 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a8df572f679e3f143101a244d919b8ed3 inherit pro_static_methods_classnexo_1_1renderer_1_1_shader"><td class="memItemLeft" align="right" valign="top"><a id="a8df572f679e3f143101a244d919b8ed3" name="a8df572f679e3f143101a244d919b8ed3"></a>
 static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFile</b> (const std::string &amp;filepath)</td></tr>
 <tr class="separator:a8df572f679e3f143101a244d919b8ed3 inherit pro_static_methods_classnexo_1_1renderer_1_1_shader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classnexo_1_1renderer_1_1_shader"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classnexo_1_1renderer_1_1_shader')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classnexo_1_1renderer_1_1_shader.html">nexo::renderer::Shader</a></td></tr>
+<tr class="memitem:a7a8ccdcc12e5140ba12357bed87bd63f inherit pro_attribs_classnexo_1_1renderer_1_1_shader"><td class="memItemLeft" align="right" valign="top"><a id="a7a8ccdcc12e5140ba12357bed87bd63f" name="a7a8ccdcc12e5140ba12357bed87bd63f"></a>
+std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_shader_storage_buffer.html">ShaderStorageBuffer</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_storageBuffers</b></td></tr>
+<tr class="separator:a7a8ccdcc12e5140ba12357bed87bd63f inherit pro_attribs_classnexo_1_1renderer_1_1_shader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Implementation of the <a class="el" href="classnexo_1_1renderer_1_1_shader.html" title="Abstract class representing a shader program in the rendering pipeline.">Shader</a> interface using OpenGL. </p>
@@ -262,8 +279,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a81bc5c08ec3c9955244688532a612b4c" name="a81bc5c08ec3c9955244688532a612b4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81bc5c08ec3c9955244688532a612b4c">&#9670;&nbsp;</a></span>setUniformFloat()</h2>
+<a id="ab3598914334e92678bb17ebf47f584a0" name="ab3598914334e92678bb17ebf47f584a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3598914334e92678bb17ebf47f584a0">&#9670;&nbsp;</a></span>setUniformFloat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -272,7 +289,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformFloat </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformFloat </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -300,8 +317,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a49db6c983cd88ef0d74f3b2718f7459a" name="a49db6c983cd88ef0d74f3b2718f7459a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49db6c983cd88ef0d74f3b2718f7459a">&#9670;&nbsp;</a></span>setUniformFloat3()</h2>
+<a id="a37f9f8c127e3acb67268ead0411630b6" name="a37f9f8c127e3acb67268ead0411630b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37f9f8c127e3acb67268ead0411630b6">&#9670;&nbsp;</a></span>setUniformFloat3()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -310,7 +327,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformFloat3 </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformFloat3 </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -338,8 +355,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a552c94fb347f6546fe823093f7d6dada" name="a552c94fb347f6546fe823093f7d6dada"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a552c94fb347f6546fe823093f7d6dada">&#9670;&nbsp;</a></span>setUniformFloat4()</h2>
+<a id="a1b09d81c26a71503dae10e7dcd7d41c2" name="a1b09d81c26a71503dae10e7dcd7d41c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b09d81c26a71503dae10e7dcd7d41c2">&#9670;&nbsp;</a></span>setUniformFloat4()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -348,7 +365,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformFloat4 </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformFloat4 </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -376,8 +393,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a365b79d2bd0505e52eae2f8d5f7b4693" name="a365b79d2bd0505e52eae2f8d5f7b4693"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a365b79d2bd0505e52eae2f8d5f7b4693">&#9670;&nbsp;</a></span>setUniformMatrix()</h2>
+<a id="aa52772ec683bfeb2ace4d147e3653520" name="aa52772ec683bfeb2ace4d147e3653520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52772ec683bfeb2ace4d147e3653520">&#9670;&nbsp;</a></span>setUniformMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -386,7 +403,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformMatrix </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformMatrix </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -414,8 +431,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a7d604184e61cb571ab416733b7d84eb4" name="a7d604184e61cb571ab416733b7d84eb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d604184e61cb571ab416733b7d84eb4">&#9670;&nbsp;</a></span>setUniformInt()</h2>
+<a id="a4cdf19b637322d619cb451c049908208" name="a4cdf19b637322d619cb451c049908208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cdf19b637322d619cb451c049908208">&#9670;&nbsp;</a></span>setUniformInt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -424,7 +441,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformInt </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformInt </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -452,8 +469,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 
 </div>
 </div>
-<a id="a7b2dc8c7e9f48c8bc707595bc82db07c" name="a7b2dc8c7e9f48c8bc707595bc82db07c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b2dc8c7e9f48c8bc707595bc82db07c">&#9670;&nbsp;</a></span>setUniformIntArray()</h2>
+<a id="af69e58184b63f9d0d5944edd26f15a28" name="af69e58184b63f9d0d5944edd26f15a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af69e58184b63f9d0d5944edd26f15a28">&#9670;&nbsp;</a></span>setUniformIntArray()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -462,7 +479,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::renderer::OpenGlShader::setUniformIntArray </td>
+          <td class="memname">bool nexo::renderer::OpenGlShader::setUniformIntArray </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -483,6 +500,100 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
           <td></td>
           <td>)</td>
           <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_shader.html">nexo::renderer::Shader</a>.</p>
+
+</div>
+</div>
+<a id="a8faa359558115026b5d0a5415f121e69" name="a8faa359558115026b5d0a5415f121e69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8faa359558115026b5d0a5415f121e69">&#9670;&nbsp;</a></span>bindStorageBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::OpenGlShader::bindStorageBuffer </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_shader.html">nexo::renderer::Shader</a>.</p>
+
+</div>
+</div>
+<a id="a088d6753ed73ee000a8fcbab5d093add" name="a088d6753ed73ee000a8fcbab5d093add"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a088d6753ed73ee000a8fcbab5d093add">&#9670;&nbsp;</a></span>bindStorageBufferBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::OpenGlShader::bindStorageBufferBase </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>bindingLocation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_shader.html">nexo::renderer::Shader</a>.</p>
+
+</div>
+</div>
+<a id="a1623ee5a02d2e8f9a64cd0952684f7b8" name="a1623ee5a02d2e8f9a64cd0952684f7b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1623ee5a02d2e8f9a64cd0952684f7b8">&#9670;&nbsp;</a></span>unbindStorageBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::OpenGlShader::unbindStorageBuffer </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>

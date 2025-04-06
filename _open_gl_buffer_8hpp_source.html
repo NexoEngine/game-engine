@@ -144,10 +144,10 @@ $(document).ready(function(){initNavTree('_open_gl_buffer_8hpp_source.html','');
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_open_gl_index_buffer.html#a51e52baf33de98a3f0b4c2af4576c43d">getCount</a>() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> _id; };</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> _id; };</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> _id{};</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> _count;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> _count = 0;</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    };</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>

@@ -1,4 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_window.html" title="Abstract class for managing window operations in the rendering system." alt="" coords="5,5,160,32"/>
-<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_open_gl_window.html" title="OpenGL&#45;specific implementation of the Window class." alt="" coords="208,5,407,32"/>
-</map>

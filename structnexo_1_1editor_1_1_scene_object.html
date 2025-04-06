@@ -92,41 +92,56 @@ $(document).ready(function(){initNavTree('structnexo_1_1editor_1_1_scene_object.
   <div class="headertitle"><div class="title">nexo::editor::SceneObject Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents an object in the scene tree.  
+ <a href="structnexo_1_1editor_1_1_scene_object.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_scene_tree_window_8hpp_source.html">SceneTreeWindow.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for nexo::editor::SceneObject:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1editor_1_1_scene_object__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_scene_object_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_scene_object_coll__map" id="anexo_1_1editor_1_1_scene_object_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,173,141"/>
+<area shape="rect" title="Represents an object in the scene tree." alt="" coords="16,300,184,421"/>
+<area shape="rect" href="structnexo_1_1editor_1_1_entity_properties.html" title=" " alt="" coords="8,160,192,237"/>
+<area shape="rect" href="structnexo_1_1editor_1_1_scene_properties.html" title=" " alt="" coords="5,5,195,97"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9abaf050bba4a07cc004091e3453ddf9"><td class="memItemLeft" align="right" valign="top"><a id="a9abaf050bba4a07cc004091e3453ddf9" name="a9abaf050bba4a07cc004091e3453ddf9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SceneObject</b> (std::string name=&quot;&quot;, std::vector&lt; <a class="el" href="structnexo_1_1editor_1_1_scene_object.html">SceneObject</a> &gt; children={}, NodeId id=0, SelectionType type=SelectionType::NONE, VariantData data={})</td></tr>
-<tr class="separator:a9abaf050bba4a07cc004091e3453ddf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b3c36d36de3a05cb55ca916b2fa29a"><td class="memItemLeft" align="right" valign="top"><a id="a56b3c36d36de3a05cb55ca916b2fa29a" name="a56b3c36d36de3a05cb55ca916b2fa29a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SceneObject</b> (std::string name=&quot;&quot;, std::vector&lt; <a class="el" href="structnexo_1_1editor_1_1_scene_object.html">SceneObject</a> &gt; <a class="el" href="structnexo_1_1editor_1_1_scene_object.html#aa5b6ef01963d3640591695949a902c66">children</a>={}, SelectionType <a class="el" href="structnexo_1_1editor_1_1_scene_object.html#ad07864952b0ce3ae12e46bd7e59f9a26">type</a>=SelectionType::NONE, <a class="el" href="structnexo_1_1editor_1_1_entity_properties.html">EntityProperties</a> <a class="el" href="structnexo_1_1editor_1_1_scene_object.html#a1498b850f1825823b30469e1f2e1b9ef">data</a>={})</td></tr>
+<tr class="separator:a56b3c36d36de3a05cb55ca916b2fa29a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7db70849cd6e53b1ce29639df097a897"><td class="memItemLeft" align="right" valign="top"><a id="a7db70849cd6e53b1ce29639df097a897" name="a7db70849cd6e53b1ce29639df097a897"></a>
-NodeId&#160;</td><td class="memItemRight" valign="bottom"><b>nodeId</b></td></tr>
-<tr class="separator:a7db70849cd6e53b1ce29639df097a897"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27312ab62fbcc54e2e5f75f1b0400cb5"><td class="memItemLeft" align="right" valign="top"><a id="a27312ab62fbcc54e2e5f75f1b0400cb5" name="a27312ab62fbcc54e2e5f75f1b0400cb5"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>uiName</b></td></tr>
+<tr class="memdesc:a27312ab62fbcc54e2e5f75f1b0400cb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">The UI display name for the object. <br /></td></tr>
 <tr class="separator:a27312ab62fbcc54e2e5f75f1b0400cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2efc1bd5ba4dc9f206dd7aeaf0d74de"><td class="memItemLeft" align="right" valign="top"><a id="af2efc1bd5ba4dc9f206dd7aeaf0d74de" name="af2efc1bd5ba4dc9f206dd7aeaf0d74de"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>uuid</b></td></tr>
+<tr class="memdesc:af2efc1bd5ba4dc9f206dd7aeaf0d74de"><td class="mdescLeft">&#160;</td><td class="mdescRight">The unique identifier (UUID) of the object. <br /></td></tr>
+<tr class="separator:af2efc1bd5ba4dc9f206dd7aeaf0d74de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad07864952b0ce3ae12e46bd7e59f9a26"><td class="memItemLeft" align="right" valign="top"><a id="ad07864952b0ce3ae12e46bd7e59f9a26" name="ad07864952b0ce3ae12e46bd7e59f9a26"></a>
 SelectionType&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
+<tr class="memdesc:ad07864952b0ce3ae12e46bd7e59f9a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of the object. <br /></td></tr>
 <tr class="separator:ad07864952b0ce3ae12e46bd7e59f9a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74798fb1abebe4adbad8675af94a0b8a"><td class="memItemLeft" align="right" valign="top"><a id="a74798fb1abebe4adbad8675af94a0b8a" name="a74798fb1abebe4adbad8675af94a0b8a"></a>
-VariantData&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
-<tr class="separator:a74798fb1abebe4adbad8675af94a0b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1498b850f1825823b30469e1f2e1b9ef"><td class="memItemLeft" align="right" valign="top"><a id="a1498b850f1825823b30469e1f2e1b9ef" name="a1498b850f1825823b30469e1f2e1b9ef"></a>
+<a class="el" href="structnexo_1_1editor_1_1_entity_properties.html">EntityProperties</a>&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="memdesc:a1498b850f1825823b30469e1f2e1b9ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associated data (scene properties and entity). <br /></td></tr>
+<tr class="separator:a1498b850f1825823b30469e1f2e1b9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5b6ef01963d3640591695949a902c66"><td class="memItemLeft" align="right" valign="top"><a id="aa5b6ef01963d3640591695949a902c66" name="aa5b6ef01963d3640591695949a902c66"></a>
 std::vector&lt; <a class="el" href="structnexo_1_1editor_1_1_scene_object.html">SceneObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>children</b></td></tr>
+<tr class="memdesc:aa5b6ef01963d3640591695949a902c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Child objects (if any). <br /></td></tr>
 <tr class="separator:aa5b6ef01963d3640591695949a902c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>editor/src/DocumentWindows/<a class="el" href="editor_2src_2_document_windows_2_scene_tree_window_8hpp_source.html">SceneTreeWindow.hpp</a></li>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Represents an object in the scene tree. </p>
+<p >Contains a UI name, UUID, selection type, associated data, and potential child nodes. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>editor/src/DocumentWindows/<a class="el" href="_scene_tree_window_8hpp_source.html">SceneTreeWindow.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

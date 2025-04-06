@@ -1,4 +1,4 @@
 <map id="nexo::ecs::SingletonComponent&lt; T &gt;" name="nexo::ecs::SingletonComponent&lt; T &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,131,237,223"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_i_singleton_component.html" title=" " alt="" coords="18,5,225,83"/>
+<area shape="rect" id="node1" title="Template class representing a singleton component." alt="" coords="5,131,237,223"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="18,5,225,83"/>
 </map>

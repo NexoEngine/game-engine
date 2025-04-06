@@ -95,43 +95,241 @@ $(document).ready(function(){initNavTree('classnexo_1_1event_1_1_event_manager.h
 <p>Manages event handling and dispatching in the ECS system.  
  <a href="classnexo_1_1event_1_1_event_manager.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="engine_2src_2core_2event_2_event_8hpp_source.html">Event.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_event_8hpp_source.html">Event.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for nexo::event::EventManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1event_1_1_event_manager__coll__graph.png" border="0" usemap="#anexo_1_1event_1_1_event_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1event_1_1_event_manager_coll__map" id="anexo_1_1event_1_1_event_manager_coll__map">
-<area shape="rect" title="Manages event handling and dispatching in the ECS system." alt="" coords="5,5,181,141"/>
+<area shape="rect" title="Manages event handling and dispatching in the ECS system." alt="" coords="5,5,181,156"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab0c845e8d50396e9f430a0721a65b42d"><td class="memTemplParams" colspan="2"><a id="ab0c845e8d50396e9f430a0721a65b42d" name="ab0c845e8d50396e9f430a0721a65b42d"></a>
-template&lt;typename EventType &gt; </td></tr>
-<tr class="memitem:ab0c845e8d50396e9f430a0721a65b42d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registerListener</b> (<a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *listener)</td></tr>
+<tr class="memitem:ab0c845e8d50396e9f430a0721a65b42d"><td class="memTemplParams" colspan="2">template&lt;typename EventType &gt; </td></tr>
+<tr class="memitem:ab0c845e8d50396e9f430a0721a65b42d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_event_manager.html#ab0c845e8d50396e9f430a0721a65b42d">registerListener</a> (<a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *listener)</td></tr>
+<tr class="memdesc:ab0c845e8d50396e9f430a0721a65b42d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a listener for a specific event type.  <a href="classnexo_1_1event_1_1_event_manager.html#ab0c845e8d50396e9f430a0721a65b42d">More...</a><br /></td></tr>
 <tr class="separator:ab0c845e8d50396e9f430a0721a65b42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a808e048789593a5d0fa8f57a06e096c3"><td class="memTemplParams" colspan="2"><a id="a808e048789593a5d0fa8f57a06e096c3" name="a808e048789593a5d0fa8f57a06e096c3"></a>
-template&lt;typename EventType &gt; </td></tr>
-<tr class="memitem:a808e048789593a5d0fa8f57a06e096c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>unregisterListener</b> (<a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *listener)</td></tr>
+<tr class="memitem:a808e048789593a5d0fa8f57a06e096c3"><td class="memTemplParams" colspan="2">template&lt;typename EventType &gt; </td></tr>
+<tr class="memitem:a808e048789593a5d0fa8f57a06e096c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_event_manager.html#a808e048789593a5d0fa8f57a06e096c3">unregisterListener</a> (<a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *listener)</td></tr>
+<tr class="memdesc:a808e048789593a5d0fa8f57a06e096c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters a listener for a specific event type.  <a href="classnexo_1_1event_1_1_event_manager.html#a808e048789593a5d0fa8f57a06e096c3">More...</a><br /></td></tr>
 <tr class="separator:a808e048789593a5d0fa8f57a06e096c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3f78296a2f8a257d68f29674d4db69a"><td class="memTemplParams" colspan="2"><a id="ab3f78296a2f8a257d68f29674d4db69a" name="ab3f78296a2f8a257d68f29674d4db69a"></a>
-template&lt;typename EventType &gt; </td></tr>
-<tr class="memitem:ab3f78296a2f8a257d68f29674d4db69a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>emitEvent</b> (std::shared_ptr&lt; EventType &gt; event)</td></tr>
+<tr class="memitem:ab3f78296a2f8a257d68f29674d4db69a"><td class="memTemplParams" colspan="2">template&lt;typename EventType &gt; </td></tr>
+<tr class="memitem:ab3f78296a2f8a257d68f29674d4db69a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_event_manager.html#ab3f78296a2f8a257d68f29674d4db69a">emitEvent</a> (std::shared_ptr&lt; EventType &gt; event)</td></tr>
+<tr class="memdesc:ab3f78296a2f8a257d68f29674d4db69a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queues an event for dispatch.  <a href="classnexo_1_1event_1_1_event_manager.html#ab3f78296a2f8a257d68f29674d4db69a">More...</a><br /></td></tr>
 <tr class="separator:ab3f78296a2f8a257d68f29674d4db69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46d9192b6ad4870ea5163753a86e37ee"><td class="memTemplParams" colspan="2"><a id="a46d9192b6ad4870ea5163753a86e37ee" name="a46d9192b6ad4870ea5163753a86e37ee"></a>
-template&lt;typename EventType , typename... Args&gt; </td></tr>
-<tr class="memitem:a46d9192b6ad4870ea5163753a86e37ee"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>emitEvent</b> (Args &amp;&amp;... args)</td></tr>
+<tr class="memitem:a46d9192b6ad4870ea5163753a86e37ee"><td class="memTemplParams" colspan="2">template&lt;typename EventType , typename... Args&gt; </td></tr>
+<tr class="memitem:a46d9192b6ad4870ea5163753a86e37ee"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_event_manager.html#a46d9192b6ad4870ea5163753a86e37ee">emitEvent</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a46d9192b6ad4870ea5163753a86e37ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and emits an event with the given arguments.  <a href="classnexo_1_1event_1_1_event_manager.html#a46d9192b6ad4870ea5163753a86e37ee">More...</a><br /></td></tr>
 <tr class="separator:a46d9192b6ad4870ea5163753a86e37ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91f2d70a4471dd0b88bac55a504a2e07"><td class="memItemLeft" align="right" valign="top"><a id="a91f2d70a4471dd0b88bac55a504a2e07" name="a91f2d70a4471dd0b88bac55a504a2e07"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>dispatchEvents</b> (<a class="el" href="classnexo_1_1scene_1_1_scene.html">scene::Scene</a> &amp;scene, bool isActive)</td></tr>
-<tr class="separator:a91f2d70a4471dd0b88bac55a504a2e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42df551ad1e15116201c64642b5a5ca7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1event_1_1_event_manager.html#a42df551ad1e15116201c64642b5a5ca7">dispatchEvents</a> ()</td></tr>
+<tr class="memdesc:a42df551ad1e15116201c64642b5a5ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatches all queued events.  <a href="classnexo_1_1event_1_1_event_manager.html#a42df551ad1e15116201c64642b5a5ca7">More...</a><br /></td></tr>
+<tr class="separator:a42df551ad1e15116201c64642b5a5ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf1df5eda3ba94698b5f6f2636cdd068"><td class="memItemLeft" align="right" valign="top"><a id="adf1df5eda3ba94698b5f6f2636cdd068" name="adf1df5eda3ba94698b5f6f2636cdd068"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearEvents</b> ()</td></tr>
+<tr class="memdesc:adf1df5eda3ba94698b5f6f2636cdd068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all events from the queue. <br /></td></tr>
+<tr class="separator:adf1df5eda3ba94698b5f6f2636cdd068"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manages event handling and dispatching in the ECS system. </p>
 <p >This class is responsible for registering event listeners, emitting events, and managing the event dispatch process. It allows for loose coupling between different components of the ECS system by using an event-driven approach. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>engine/src/core/event/<a class="el" href="engine_2src_2core_2event_2_event_8hpp_source.html">Event.hpp</a></li>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab0c845e8d50396e9f430a0721a65b42d" name="ab0c845e8d50396e9f430a0721a65b42d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c845e8d50396e9f430a0721a65b42d">&#9670;&nbsp;</a></span>registerListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename EventType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::EventManager::registerListener </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *&#160;</td>
+          <td class="paramname"><em>listener</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers a listener for a specific event type. </p>
+<p >Adds the provided listener to the internal list for the given EventType.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">EventType</td><td>The event type to listen for. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">listener</td><td>Pointer to the listener. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a808e048789593a5d0fa8f57a06e096c3" name="a808e048789593a5d0fa8f57a06e096c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a808e048789593a5d0fa8f57a06e096c3">&#9670;&nbsp;</a></span>unregisterListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename EventType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::EventManager::unregisterListener </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> *&#160;</td>
+          <td class="paramname"><em>listener</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unregisters a listener for a specific event type. </p>
+<p >Removes the provided listener from the internal list for the given EventType.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">EventType</td><td>The event type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">listener</td><td>Pointer to the listener. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab3f78296a2f8a257d68f29674d4db69a" name="ab3f78296a2f8a257d68f29674d4db69a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3f78296a2f8a257d68f29674d4db69a">&#9670;&nbsp;</a></span>emitEvent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename EventType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::EventManager::emitEvent </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; EventType &gt;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queues an event for dispatch. </p>
+<p >Adds the provided event to the internal event queue.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">EventType</td><td>The event type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>Shared pointer to the event. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a46d9192b6ad4870ea5163753a86e37ee" name="a46d9192b6ad4870ea5163753a86e37ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46d9192b6ad4870ea5163753a86e37ee">&#9670;&nbsp;</a></span>emitEvent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename EventType , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::EventManager::emitEvent </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs and emits an event with the given arguments. </p>
+<p >Forwards arguments to the event's constructor and queues the event.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">EventType</td><td>The event type. </td></tr>
+    <tr><td class="paramname">Args</td><td>The types of arguments to forward. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Arguments to construct the event. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a42df551ad1e15116201c64642b5a5ca7" name="a42df551ad1e15116201c64642b5a5ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42df551ad1e15116201c64642b5a5ca7">&#9670;&nbsp;</a></span>dispatchEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::event::EventManager::dispatchEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dispatches all queued events. </p>
+<p >Iterates through the event queue, triggers each event for its registered listeners, and re-queues the event if it was not consumed. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>engine/src/core/event/<a class="el" href="_event_8hpp_source.html">Event.hpp</a></li>
 <li>engine/src/core/event/Event.cpp</li>
 </ul>
 </div><!-- contents -->

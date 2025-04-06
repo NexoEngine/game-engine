@@ -101,7 +101,7 @@ Collaboration diagram for nexo::ecs::ComponentManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_component_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_component_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_component_manager_coll__map" id="anexo_1_1ecs_1_1_component_manager_coll__map">
-<area shape="rect" title="Manages the registration and handling of components in an ECS architecture." alt="" coords="5,5,204,185"/>
+<area shape="rect" title="Manages the registration and handling of components in an ECS architecture." alt="" coords="5,5,204,215"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -135,6 +135,12 @@ template&lt;typename T &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tryGetComponent</b> (Entity entity)</td></tr>
 <tr class="separator:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d3672819f8350d2ebef7785a35f21c0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a4d3672819f8350d2ebef7785a35f21c0">getAllComponents</a> (Entity entity)</td></tr>
+<tr class="memdesc:a4d3672819f8350d2ebef7785a35f21c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a reference to all components of a specific type from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a4d3672819f8350d2ebef7785a35f21c0">More...</a><br /></td></tr>
+<tr class="separator:a4d3672819f8350d2ebef7785a35f21c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7039d05ccfd3d6d36b92746bae40502"><td class="memItemLeft" align="right" valign="top"><a id="ac7039d05ccfd3d6d36b92746bae40502" name="ac7039d05ccfd3d6d36b92746bae40502"></a>
+std::optional&lt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tryGetAllComponents</b> (const Entity entity)</td></tr>
+<tr class="separator:ac7039d05ccfd3d6d36b92746bae40502"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32281b3ca36e25471aacecd0317775bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a32281b3ca36e25471aacecd0317775bd">entityDestroyed</a> (Entity entity) const</td></tr>
 <tr class="memdesc:a32281b3ca36e25471aacecd0317775bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the destruction of an entity by ensuring all associated components are removed.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a32281b3ca36e25471aacecd0317775bd">More...</a><br /></td></tr>
 <tr class="separator:a32281b3ca36e25471aacecd0317775bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,6 +326,40 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>T&amp; - A reference to the requested component. </dd></dl>
+
+</div>
+</div>
+<a id="a4d3672819f8350d2ebef7785a35f21c0" name="a4d3672819f8350d2ebef7785a35f21c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d3672819f8350d2ebef7785a35f21c0">&#9670;&nbsp;</a></span>getAllComponents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt; nexo::ecs::ComponentManager::getAllComponents </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves a reference to all components of a specific type from an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>- The entity whose component is to be retrieved. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

@@ -89,6 +89,7 @@ $(document).ready(function(){initNavTree('classnexo_1_1renderer_1_1_shader.html'
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classnexo_1_1renderer_1_1_shader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::renderer::Shader Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
@@ -97,14 +98,14 @@ $(document).ready(function(){initNavTree('classnexo_1_1renderer_1_1_shader.html'
 <p>Abstract class representing a shader program in the rendering pipeline.  
  <a href="classnexo_1_1renderer_1_1_shader.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="engine_2src_2renderer_2_shader_8hpp_source.html">Shader.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_shader_8hpp_source.html">Shader.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::renderer::Shader:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1renderer_1_1_shader__inherit__graph.png" border="0" usemap="#anexo_1_1renderer_1_1_shader_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1renderer_1_1_shader_inherit__map" id="anexo_1_1renderer_1_1_shader_inherit__map">
 <area shape="rect" title="Abstract class representing a shader program in the rendering pipeline." alt="" coords="27,5,177,273"/>
-<area shape="rect" href="classnexo_1_1renderer_1_1_open_gl_shader.html" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,575"/>
+<area shape="rect" href="classnexo_1_1renderer_1_1_open_gl_shader.html" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,321,199,545"/>
 </map>
 </div>
 <div class="dynheader">
@@ -124,24 +125,39 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8692398be568260464bc0a9730a439b0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_shader.html#a8692398be568260464bc0a9730a439b0">unbind</a> () const =0</td></tr>
 <tr class="memdesc:a8692398be568260464bc0a9730a439b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unbinds the shader program.  <a href="classnexo_1_1renderer_1_1_shader.html#a8692398be568260464bc0a9730a439b0">More...</a><br /></td></tr>
 <tr class="separator:a8692398be568260464bc0a9730a439b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16f6a8edf5666e2737488cd8a84ba51a"><td class="memItemLeft" align="right" valign="top"><a id="a16f6a8edf5666e2737488cd8a84ba51a" name="a16f6a8edf5666e2737488cd8a84ba51a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat</b> (const std::string &amp;name, float value) const =0</td></tr>
-<tr class="separator:a16f6a8edf5666e2737488cd8a84ba51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a472a582c0ef129773181ab439bd25b48"><td class="memItemLeft" align="right" valign="top"><a id="a472a582c0ef129773181ab439bd25b48" name="a472a582c0ef129773181ab439bd25b48"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat3</b> (const std::string &amp;name, const glm::vec3 &amp;values) const =0</td></tr>
-<tr class="separator:a472a582c0ef129773181ab439bd25b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af556fb2a9806f4ff8bd92b4de8bc0fe3"><td class="memItemLeft" align="right" valign="top"><a id="af556fb2a9806f4ff8bd92b4de8bc0fe3" name="af556fb2a9806f4ff8bd92b4de8bc0fe3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat4</b> (const std::string &amp;name, const glm::vec4 &amp;values) const =0</td></tr>
-<tr class="separator:af556fb2a9806f4ff8bd92b4de8bc0fe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae54a38038574ef74936f9eccf266744c"><td class="memItemLeft" align="right" valign="top"><a id="ae54a38038574ef74936f9eccf266744c" name="ae54a38038574ef74936f9eccf266744c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformMatrix</b> (const std::string &amp;name, const glm::mat4 &amp;matrix) const =0</td></tr>
-<tr class="separator:ae54a38038574ef74936f9eccf266744c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b68316bbf4b15ebcedd3ce171f05c56"><td class="memItemLeft" align="right" valign="top"><a id="a5b68316bbf4b15ebcedd3ce171f05c56" name="a5b68316bbf4b15ebcedd3ce171f05c56"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformInt</b> (const std::string &amp;name, int value) const =0</td></tr>
-<tr class="separator:a5b68316bbf4b15ebcedd3ce171f05c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90938fc790c9c8ef19067cd4ef11d79e"><td class="memItemLeft" align="right" valign="top"><a id="a90938fc790c9c8ef19067cd4ef11d79e" name="a90938fc790c9c8ef19067cd4ef11d79e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformIntArray</b> (const std::string &amp;name, const int *values, unsigned int count) const =0</td></tr>
-<tr class="separator:a90938fc790c9c8ef19067cd4ef11d79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe66d5aadf03a91031e03db648ba833"><td class="memItemLeft" align="right" valign="top"><a id="aebe66d5aadf03a91031e03db648ba833" name="aebe66d5aadf03a91031e03db648ba833"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat</b> (const std::string &amp;name, float value) const =0</td></tr>
+<tr class="separator:aebe66d5aadf03a91031e03db648ba833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d0fb560f3053635f480a9a4c029835"><td class="memItemLeft" align="right" valign="top"><a id="a75d0fb560f3053635f480a9a4c029835" name="a75d0fb560f3053635f480a9a4c029835"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat3</b> (const std::string &amp;name, const glm::vec3 &amp;values) const =0</td></tr>
+<tr class="separator:a75d0fb560f3053635f480a9a4c029835"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6191097d4ebbf4d15f4b339c94eff4ea"><td class="memItemLeft" align="right" valign="top"><a id="a6191097d4ebbf4d15f4b339c94eff4ea" name="a6191097d4ebbf4d15f4b339c94eff4ea"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformFloat4</b> (const std::string &amp;name, const glm::vec4 &amp;values) const =0</td></tr>
+<tr class="separator:a6191097d4ebbf4d15f4b339c94eff4ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205afa6ce7be443f1dbe019352815fe2"><td class="memItemLeft" align="right" valign="top"><a id="a205afa6ce7be443f1dbe019352815fe2" name="a205afa6ce7be443f1dbe019352815fe2"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformMatrix</b> (const std::string &amp;name, const glm::mat4 &amp;matrix) const =0</td></tr>
+<tr class="separator:a205afa6ce7be443f1dbe019352815fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab444bd423782696ab04addc183ca143a"><td class="memItemLeft" align="right" valign="top"><a id="ab444bd423782696ab04addc183ca143a" name="ab444bd423782696ab04addc183ca143a"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformInt</b> (const std::string &amp;name, int value) const =0</td></tr>
+<tr class="separator:ab444bd423782696ab04addc183ca143a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1f491a3e1cb237498e5282283ddfca6"><td class="memItemLeft" align="right" valign="top"><a id="ae1f491a3e1cb237498e5282283ddfca6" name="ae1f491a3e1cb237498e5282283ddfca6"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformIntArray</b> (const std::string &amp;name, const int *values, unsigned int count) const =0</td></tr>
+<tr class="separator:ae1f491a3e1cb237498e5282283ddfca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf4697d2560d421ab13f40190bde65f8"><td class="memItemLeft" align="right" valign="top"><a id="adf4697d2560d421ab13f40190bde65f8" name="adf4697d2560d421ab13f40190bde65f8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addStorageBuffer</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_shader_storage_buffer.html">ShaderStorageBuffer</a> &gt; &amp;buffer)</td></tr>
+<tr class="separator:adf4697d2560d421ab13f40190bde65f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd5957c5f6b1279b7f0075a8ff4f1a8"><td class="memItemLeft" align="right" valign="top"><a id="a5fd5957c5f6b1279b7f0075a8ff4f1a8" name="a5fd5957c5f6b1279b7f0075a8ff4f1a8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setStorageBufferData</b> (unsigned int index, void *data, unsigned int size)</td></tr>
+<tr class="separator:a5fd5957c5f6b1279b7f0075a8ff4f1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64e9a88060f6eaadf235d6738b9e92be"><td class="memItemLeft" align="right" valign="top"><a id="a64e9a88060f6eaadf235d6738b9e92be" name="a64e9a88060f6eaadf235d6738b9e92be"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bindStorageBufferBase</b> (unsigned int index, unsigned int bindingPoint) const =0</td></tr>
+<tr class="separator:a64e9a88060f6eaadf235d6738b9e92be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9929216b0f2c6d39f3cbfb21acb2c557"><td class="memItemLeft" align="right" valign="top"><a id="a9929216b0f2c6d39f3cbfb21acb2c557" name="a9929216b0f2c6d39f3cbfb21acb2c557"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bindStorageBuffer</b> (unsigned int index) const =0</td></tr>
+<tr class="separator:a9929216b0f2c6d39f3cbfb21acb2c557"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dcf5ebada31f9425f2d6d5004604098"><td class="memItemLeft" align="right" valign="top"><a id="a0dcf5ebada31f9425f2d6d5004604098" name="a0dcf5ebada31f9425f2d6d5004604098"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>unbindStorageBuffer</b> (unsigned int index) const =0</td></tr>
+<tr class="separator:a0dcf5ebada31f9425f2d6d5004604098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a957ba0b89a909fe8b4e0f5d801d7fe56"><td class="memItemLeft" align="right" valign="top"><a id="a957ba0b89a909fe8b4e0f5d801d7fe56" name="a957ba0b89a909fe8b4e0f5d801d7fe56"></a>
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> () const =0</td></tr>
 <tr class="separator:a957ba0b89a909fe8b4e0f5d801d7fe56"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,6 +179,12 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:a8df572f679e3f143101a244d919b8ed3"><td class="memItemLeft" align="right" valign="top"><a id="a8df572f679e3f143101a244d919b8ed3" name="a8df572f679e3f143101a244d919b8ed3"></a>
 static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFile</b> (const std::string &amp;filepath)</td></tr>
 <tr class="separator:a8df572f679e3f143101a244d919b8ed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a7a8ccdcc12e5140ba12357bed87bd63f"><td class="memItemLeft" align="right" valign="top"><a id="a7a8ccdcc12e5140ba12357bed87bd63f" name="a7a8ccdcc12e5140ba12357bed87bd63f"></a>
+std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_shader_storage_buffer.html">ShaderStorageBuffer</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_storageBuffers</b></td></tr>
+<tr class="separator:a7a8ccdcc12e5140ba12357bed87bd63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Abstract class representing a shader program in the rendering pipeline. </p>
@@ -341,7 +363,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>readFil
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>engine/src/renderer/<a class="el" href="engine_2src_2renderer_2_shader_8hpp_source.html">Shader.hpp</a></li>
+<li>engine/src/renderer/<a class="el" href="_shader_8hpp_source.html">Shader.hpp</a></li>
 <li>engine/src/renderer/Shader.cpp</li>
 </ul>
 </div><!-- contents -->

@@ -1,0 +1,4 @@
+<map id="nexo::system::SpotLightsSystem" name="nexo::system::SpotLightsSystem">
+<area shape="rect" id="node1" title="System responsible for updating spot lights in the scene." alt="" coords="5,145,172,237"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="25,5,152,97"/>
+</map>

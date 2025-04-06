@@ -1,5 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structnexo_1_1components_1_1_renderable.html" title=" " alt="" coords="5,31,203,57"/>
-<area shape="rect" id="node2" href="$structnexo_1_1components_1_1_renderable2_d.html" title=" " alt="" coords="251,5,464,32"/>
-<area shape="rect" id="node3" href="$structnexo_1_1components_1_1_renderable3_d.html" title=" " alt="" coords="251,56,464,83"/>
+<area shape="rect" id="node1" href="$structnexo_1_1editor_1_1utils_1_1_scene_preview_out.html" title="Structure to store output data for a generated scene preview." alt="" coords="5,5,139,47"/>
 </map>

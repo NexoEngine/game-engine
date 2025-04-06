@@ -91,13 +91,18 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_singleton_compone
   <div class="headertitle"><div class="title">nexo::ecs::SingletonComponent&lt; T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Template class representing a singleton component.  
+ <a href="classnexo_1_1ecs_1_1_singleton_component.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_singleton_component_8hpp_source.html">SingletonComponent.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::ecs::SingletonComponent&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component__inherit__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map" id="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,131,237,223"/>
-<area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title=" " alt="" coords="18,5,225,83"/>
+<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,223"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="18,5,225,83"/>
 </map>
 </div>
 <div class="dynheader">
@@ -105,22 +110,81 @@ Collaboration diagram for nexo::ecs::SingletonComponent&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map" id="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map">
-<area shape="rect" title=" " alt="" coords="5,131,237,223"/>
-<area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title=" " alt="" coords="18,5,225,83"/>
+<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,223"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="18,5,225,83"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1483b3c505c3880025a64cadf53475fa"><td class="memItemLeft" align="right" valign="top"><a id="a1483b3c505c3880025a64cadf53475fa" name="a1483b3c505c3880025a64cadf53475fa"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SingletonComponent</b> (T instance)</td></tr>
-<tr class="separator:a1483b3c505c3880025a64cadf53475fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3797410bf9b419b7817ae47b765f935e"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; <br />
+requires (std::is_constructible_v&lt;T, Args...&gt; &amp;&amp; (!std::is_same_v&lt;std::decay_t&lt;Args&gt;, T&gt; &amp;&amp; ...))</td></tr>
+<tr class="memitem:a3797410bf9b419b7817ae47b765f935e"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html#a3797410bf9b419b7817ae47b765f935e">SingletonComponent</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a3797410bf9b419b7817ae47b765f935e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated constructor that perfectly forwards arguments to construct the instance.  <a href="classnexo_1_1ecs_1_1_singleton_component.html#a3797410bf9b419b7817ae47b765f935e">More...</a><br /></td></tr>
+<tr class="separator:a3797410bf9b419b7817ae47b765f935e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2736299eb20ad0f39657b51ca8e38c91"><td class="memItemLeft" align="right" valign="top"><a id="a2736299eb20ad0f39657b51ca8e38c91" name="a2736299eb20ad0f39657b51ca8e38c91"></a>
 T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getInstance</b> ()</td></tr>
 <tr class="separator:a2736299eb20ad0f39657b51ca8e38c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+class nexo::ecs::SingletonComponent&lt; T &gt;</div><p >Template class representing a singleton component. </p>
+<p >This class wraps an instance of type T as a singleton component.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the singleton component. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3797410bf9b419b7817ae47b765f935e" name="a3797410bf9b419b7817ae47b765f935e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3797410bf9b419b7817ae47b765f935e">&#9670;&nbsp;</a></span>SingletonComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<div class="memtemplate">
+template&lt;typename... Args&gt; <br />
+requires (std::is_constructible_v&lt;T, Args...&gt; &amp;&amp; (!std::is_same_v&lt;std::decay_t&lt;Args&gt;, T&gt; &amp;&amp; ...))</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">nexo::ecs::SingletonComponent</a>&lt; T &gt;::<a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Templated constructor that perfectly forwards arguments to construct the instance. </p>
+<p >This constructor is only enabled when T is constructible from the provided arguments and none of the arguments (after decaying) is of type T (to avoid accidental copying or moving of an object of the same type).</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Args</td><td>The types of constructor arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Arguments forwarded to T's constructor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>engine/src/ecs/<a class="el" href="engine_2src_2ecs_2_singleton_component_8hpp_source.html">SingletonComponent.hpp</a></li>
+<li>engine/src/ecs/<a class="el" href="_singleton_component_8hpp_source.html">SingletonComponent.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

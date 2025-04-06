@@ -123,19 +123,19 @@ $(document).ready(function(){initNavTree('network_readme.html',''); initResizabl
 <h2>Components</h2>
 <h3>Network Messages</h3>
 <ul>
-<li><b><a class="el" href="_network_message_8hpp_source.html">NetworkMessage.hpp</a></b>: This file defines an enumeration (<b>NetworkMessage</b>) that lists all types of messages that can be sent and received in the network. This includes server responses like <b>ServerAccept</b> and <b>ServerDeny</b>, client actions like <b>ClientConnect</b> and <b>ClientUpdatePlayerDirection</b>, and game-specific messages like <b>ServerCreatePlayerShip</b> and <b>ServerUpdateEnemyVelocity</b>.</li>
-<li><b><a class="el" href="_network_body_8hpp_source.html">NetworkBody.hpp</a></b>: This file includes various structures corresponding to each message type defined in <b><a class="el" href="_network_message_8hpp_source.html">NetworkMessage.hpp</a></b>. Each structure represents the body of a network message and is tailored to carry the data relevant to its message type. For instance, <b>ServerCreatePlayerShip</b> includes fields like <b>entityNetId</b>, <b>shipName</b>, and <b>pos</b>. These structures are equipped with serialization functions to convert the data into a format suitable for network transmission, using Boost serialization.</li>
+<li><b>NetworkMessage.hpp</b>: This file defines an enumeration (<b>NetworkMessage</b>) that lists all types of messages that can be sent and received in the network. This includes server responses like <b>ServerAccept</b> and <b>ServerDeny</b>, client actions like <b>ClientConnect</b> and <b>ClientUpdatePlayerDirection</b>, and game-specific messages like <b>ServerCreatePlayerShip</b> and <b>ServerUpdateEnemyVelocity</b>.</li>
+<li><b>NetworkBody.hpp</b>: This file includes various structures corresponding to each message type defined in <b>NetworkMessage.hpp</b>. Each structure represents the body of a network message and is tailored to carry the data relevant to its message type. For instance, <b>ServerCreatePlayerShip</b> includes fields like <b>entityNetId</b>, <b>shipName</b>, and <b>pos</b>. These structures are equipped with serialization functions to convert the data into a format suitable for network transmission, using Boost serialization.</li>
 </ul>
 <p >Together, these components define the schema and data handling for all network communication within your R-TYPE server.</p>
 <h3>Client-Server Interaction</h3>
-<h4><a class="el" href="_client_8hpp_source.html">Client.hpp</a> (ClientInterface)</h4>
+<h4>Client.hpp (ClientInterface)</h4>
 <ul>
 <li><b>connect()</b>: Establishes a connection to the server. It initiates the process of joining the server, essential for multiplayer interactions.</li>
 <li><b>disconnect()</b>: Handles the disconnection process from the server. This method is crucial for gracefully exiting the game or handling lost connections.</li>
 <li><b>sendMessage()</b>: Responsible for sending messages to the server. This method plays a key role in communicating actions or requests from the client to the server.</li>
 <li><b>handleMessage()</b>: Processes incoming messages from the server. It's crucial for receiving and acting upon updates or commands from the server.</li>
 </ul>
-<h4><a class="el" href="_server_8hpp_source.html">Server.hpp</a> (ServerInterface)</h4>
+<h4>Server.hpp (ServerInterface)</h4>
 <ul>
 <li><b>start()</b>: Initiates the server, making it ready to accept client connections. This is the entry point for the server's operation.</li>
 <li><b>stop()</b>: Gracefully shuts down the server. This method is important for proper resource management and termination of server processes.</li>
@@ -143,7 +143,7 @@ $(document).ready(function(){initNavTree('network_readme.html',''); initResizabl
 <li><b>broadcastMessage()</b>: Sends messages to all connected clients. Essential for synchronizing game state across all players.</li>
 <li><b>handleClientMessage()</b>: Processes messages received from clients. It's critical for implementing game logic based on client inputs.</li>
 </ul>
-<h3>Connection Management (<a class="el" href="_connection_8hpp_source.html">Connection.hpp</a>)</h3>
+<h3>Connection Management (Connection.hpp)</h3>
 <ul>
 <li><b>Connection Class Template</b>: Manages individual network connections, encapsulating the details of message transmission and reception.</li>
 <li><b>send()</b>: Responsible for sending messages over the network. This method is critical for both client and server to communicate data effectively.</li>
@@ -153,7 +153,7 @@ $(document).ready(function(){initNavTree('network_readme.html',''); initResizabl
 <li><b>close()</b>: Safely closes the connection. It's important for resource management and preventing leaks or errors when a connection is no longer needed.</li>
 </ul>
 <p >These components work together to efficiently manage the complexities of network communication within the R-TYPE server environment.</p>
-<h3>Message Handling (<a class="el" href="_message_8hpp_source.html">Message.hpp</a>)</h3>
+<h3>Message Handling (Message.hpp)</h3>
 <ul>
 <li><b>Message Class Template</b>: Defines the structure and functionalities for network messages, both for sending and receiving.</li>
 <li><b>serialize()</b>: Converts the message data to a serialized format suitable for transmission. Essential for preparing data to be sent over the network.</li>
@@ -164,7 +164,7 @@ $(document).ready(function(){initNavTree('network_readme.html',''); initResizabl
 <li><b>setBody()</b>: Sets the body of the message with the necessary data to be transmitted.</li>
 </ul>
 <p >These methods ensure that messages are correctly formatted, sent, and interpreted within the R-TYPE server network communication system.</p>
-<h3>Thread-Safe Queues (<a class="el" href="_ts_queue_8hpp_source.html">TsQueue.hpp</a>)</h3>
+<h3>Thread-Safe Queues (TsQueue.hpp)</h3>
 <ul>
 <li><b>TsQueue Class Template</b>: Implements a thread-safe queue to manage messages in a concurrent environment, ensuring safe access across multiple threads.</li>
 <li><b>enqueue()</b>: Adds a new item to the queue. This is crucial for inserting messages into the queue in a thread-safe manner.</li>

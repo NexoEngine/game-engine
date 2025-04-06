@@ -1,4 +1,0 @@
-<map id="ecs::system::AnimationSystem" name="ecs::system::AnimationSystem">
-<area shape="rect" id="node1" title="System class responsible for handling and updating animations within the ECS framework." alt="" coords="5,145,204,223"/>
-<area shape="rect" id="node2" href="$classecs_1_1system_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="34,5,175,97"/>
-</map>

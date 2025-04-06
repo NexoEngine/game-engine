@@ -111,34 +111,35 @@ $(document).ready(function(){initNavTree('_listener_8hpp_source.html',''); initR
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>nexo::event {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_base_listener.html">   25</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">explicit</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>(std::string name) : m_name(std::move(name)) {};</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">~BaseListener</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            [[nodiscard]] std::string getListenerName()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_name; };</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            std::string m_name;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_base_listener.html">   30</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">explicit</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>(std::string name) : m_name(std::move(name)) {};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">~BaseListener</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_listener.html">   37</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">Listener</a> {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">~Listener</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            [[nodiscard]] std::string getListenerName()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_name; };</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            std::string m_name;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    };</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> handleEvent(T &amp;) = 0;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    };</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... EventTypes&gt;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_listens.html">   45</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_listens.html">Listens</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>, <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">Listener</a>&lt;EventTypes&gt;... {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keyword">explicit</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listens.html">Listens</a>(<span class="keyword">const</span> std::string &amp;name = <span class="stringliteral">&quot;&quot;</span>) : <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>(name) {};</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    };</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
-<div class="ttc" id="aclassnexo_1_1event_1_1_base_listener_html"><div class="ttname"><a href="classnexo_1_1event_1_1_base_listener.html">nexo::event::BaseListener</a></div><div class="ttdef"><b>Definition:</b> Listener.hpp:25</div></div>
-<div class="ttc" id="aclassnexo_1_1event_1_1_listener_html"><div class="ttname"><a href="classnexo_1_1event_1_1_listener.html">nexo::event::Listener</a></div><div class="ttdef"><b>Definition:</b> Listener.hpp:37</div></div>
-<div class="ttc" id="aclassnexo_1_1event_1_1_listens_html"><div class="ttname"><a href="classnexo_1_1event_1_1_listens.html">nexo::event::Listens</a></div><div class="ttdef"><b>Definition:</b> Listener.hpp:45</div></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_listener.html">   50</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">Listener</a> {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">~Listener</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_listener.html#a998ca09ce1246f730b0cb78daeb1dc23">   61</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1event_1_1_listener.html#a998ca09ce1246f730b0cb78daeb1dc23">handleEvent</a>(T &amp;) = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    };</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... EventTypes&gt;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classnexo_1_1event_1_1_listens.html">   73</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1event_1_1_listens.html">Listens</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>, <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listener.html">Listener</a>&lt;EventTypes&gt;... {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keyword">explicit</span> <a class="code hl_class" href="classnexo_1_1event_1_1_listens.html">Listens</a>(<span class="keyword">const</span> std::string &amp;name = <span class="stringliteral">&quot;&quot;</span>) : <a class="code hl_class" href="classnexo_1_1event_1_1_base_listener.html">BaseListener</a>(name) {};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    };</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+<div class="ttc" id="aclassnexo_1_1event_1_1_base_listener_html"><div class="ttname"><a href="classnexo_1_1event_1_1_base_listener.html">nexo::event::BaseListener</a></div><div class="ttdoc">Base class for all event listeners.</div><div class="ttdef"><b>Definition:</b> Listener.hpp:30</div></div>
+<div class="ttc" id="aclassnexo_1_1event_1_1_listener_html"><div class="ttname"><a href="classnexo_1_1event_1_1_listener.html">nexo::event::Listener</a></div><div class="ttdoc">Interface for handling events of a specific type.</div><div class="ttdef"><b>Definition:</b> Listener.hpp:50</div></div>
+<div class="ttc" id="aclassnexo_1_1event_1_1_listener_html_a998ca09ce1246f730b0cb78daeb1dc23"><div class="ttname"><a href="classnexo_1_1event_1_1_listener.html#a998ca09ce1246f730b0cb78daeb1dc23">nexo::event::Listener::handleEvent</a></div><div class="ttdeci">virtual void handleEvent(T &amp;)=0</div><div class="ttdoc">Handles an event of type T.</div></div>
+<div class="ttc" id="aclassnexo_1_1event_1_1_listens_html"><div class="ttname"><a href="classnexo_1_1event_1_1_listens.html">nexo::event::Listens</a></div><div class="ttdoc">Variadic class for listeners that can handle multiple event types.</div><div class="ttdef"><b>Definition:</b> Listener.hpp:73</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
