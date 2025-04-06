@@ -16,12 +16,42 @@
 
 namespace nexo::ecs {
 
+	void SparseSet::insert(Entity entity)
+	{
+		if (contains(entity))
+		{
+		LOG(NEXO_WARN, "Entity {} already added to the sparse set", entity);
+		return;
+		}
+
+        sparse[entity] = dense.size();
+        dense.push_back(entity);
+	}
+
+	void SparseSet::erase(Entity entity)
+	{
+		if (!contains(entity))
+       	{
+      		LOG(NEXO_WARN, "Entity {} does not exist in the sparse set", entity);
+           	return;
+       	}
+
+        size_t index = sparse[entity];
+        size_t lastIndex = dense.size() - 1;
+        Entity lastEntity = dense[lastIndex];
+
+        dense[index] = lastEntity;
+        sparse[lastEntity] = index;
+        dense.pop_back();
+        sparse.erase(entity);
+	}
+
     void SystemManager::entityDestroyed(const Entity entity, const Signature signature) const
     {
-        for (const auto &[fst, snd] : m_systems) {
+        for (const auto &[fst, snd] : m_querySystems) {
         	auto const &type = fst;
             auto const &system = snd;
-            if (auto const &systemSignature = m_signatures.at(type); (signature & systemSignature) == systemSignature)
+            if (auto const &systemSignature = system->getSignature(); (signature & systemSignature) == systemSignature)
             	system->entities.erase(entity);
         }
     }
@@ -30,8 +60,8 @@ namespace nexo::ecs {
                                                  const Signature oldSignature,
                                                  const Signature newSignature)
     {
-        for (auto& [type, system] : m_systems) {
-            const auto systemSignature = m_signatures.at(type);
+        for (auto& [type, system] : m_querySystems) {
+            const auto systemSignature = system->getSignature();
             // Check if entity qualifies now but did not qualify before.
             if (((oldSignature & systemSignature) != systemSignature) &&
                 ((newSignature & systemSignature) == systemSignature)) {
