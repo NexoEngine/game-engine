@@ -18,6 +18,8 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
     - [Game Engine](#game-engine)
   - [External Dependencies](#external-dependencies)
   - [Build the project](#build-the-project)
+    - [Automatically with CMake Presets](#using-cmake-presets-automatic)
+    - [Manually with CMake](#using-cmake---build-manual)
   - [Install the project](#install-the-project)
     - [Install via CMake](#install-via-cmake)
     - [Create an installer for Windows (NSIS)](#create-an-installer-for-windows-nsis)
@@ -55,16 +57,15 @@ To run this project, ensure you have the following:
 ## Build the project
 
 Cloning and building is a breeze:
-1. Clone the repository with the submodules.
+
+### 1. Clone the repository with the submodules.
 ```bash
 git clone --recurse-submodules
 ```
 
-2. Run cmake to generate the build files.
+### 2. Run cmake to generate the build files.
 
-<details>
-
-<summary>Using cmake presets (automatic)</summary>
+#### Using cmake presets (automatic)
 
 ```bash
 cmake --workflow --present=build-debug
@@ -72,26 +73,22 @@ cmake --workflow --present=build-debug
 
 > [!NOTE]
 > There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
-</details>
 
-<details>
-
-<summary>Using cmake --build (manual)</summary>
+#### Using cmake --build (manual)
 
 ```bash
 cmake -B build
 cmake --build build
 ```
-</details>
 
-3. Launch the engine!
+### 3. Launch the engine!
 
-For Linux and MacOS:
+#### For Linux and MacOS:
 ```bash
 ./build/nexoEditor
 ```
 
-For Windows:
+#### For Windows:
 ```bash
 ./build/nexoEditor.exe
 ```
