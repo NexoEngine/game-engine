@@ -266,6 +266,30 @@ namespace nexo::ecs {
                 return m_systemManager->registerSystem<T>();
             }
 
+            /**
+            * @brief Registers a new query system
+            *
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
+            */
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerQuerySystem(Args&&... args) {
+                return m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
+            }
+
+            /**
+            * @brief Registers a new group system
+            *
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
+            */
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerGroupSystem(Args&&... args) {
+                return m_systemManager->registerGroupSystem<T>(std::forward<Args>(args)...);
+            }
+
             template<typename... Owned>
 		    auto registerGroup(const auto & nonOwned)
 			{
