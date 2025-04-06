@@ -32,6 +32,17 @@ namespace nexo::assets {
             "LPT8", "LPT9"
         };
 
+        /**
+         * @brief Validates a filename against predefined criteria.
+         *
+         * The function checks that the filename is not empty, does not exceed 255 characters,
+         * contains only allowed characters (alphanumeric, '.', '_', and '-'), and is not a reserved keyword.
+         * It returns an error message describing the first encountered issue if the filename is invalid;
+         * otherwise, it returns std::nullopt.
+         *
+         * @param name The filename to be validated.
+         * @return std::optional<std::string> An error message if the filename is invalid, or std::nullopt if valid.
+         */
         [[nodiscard]] static std::optional<std::string> validate(std::string_view name)
         {
             if (name.empty())

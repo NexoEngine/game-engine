@@ -49,16 +49,34 @@ namespace nexo::assets {
             ~AssetCatalog() = default;
 
         public:
-            // Singleton: Meyers' Singleton Pattern
+            /**
+             * @brief Retrieves the singleton instance of AssetCatalog.
+             *
+             * Implements Meyers' Singleton pattern to ensure only one instance of AssetCatalog exists,
+             * providing a global access point for asset management.
+             *
+             * @return AssetCatalog& A reference to the singleton AssetCatalog instance.
+             */
             static AssetCatalog& getInstance()
             {
                 static AssetCatalog s_instance;
                 return s_instance;
             }
 
-            // Singleton: delete copy constructor and assignment operator
+            /**
+ * @brief Deleted copy constructor to enforce the singleton pattern.
+ *
+ * This constructor is explicitly deleted to prevent copying of the AssetCatalog instance,
+ * ensuring that only a single instance exists.
+ */
             AssetCatalog(AssetCatalog const&)   = delete;
-            void operator=(AssetCatalog const&) = delete;
+            /**
+ * @brief Deleted copy assignment operator.
+ *
+ * This operator is explicitly deleted to prevent assignment of the singleton instance,
+ * thereby ensuring that only one instance of AssetCatalog exists.
+ */
+void operator=(AssetCatalog const&) = delete;
 
             /**
              * @brief Removes the asset associated with the given ID from the catalog.
@@ -156,6 +174,17 @@ namespace nexo::assets {
 
     template<typename AssetType>
         requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Retrieves all assets of a specified type.
+     *
+     * @tparam AssetType The asset type to filter by (must derive from IAsset).
+     *
+     * This function iterates over all assets registered in the catalog and collects those
+     * whose runtime type identifier matches <code>AssetType::TYPE</code>. Note that the type
+     * filtering logic is currently a placeholder and is not fully implemented.
+     *
+     * @return A vector of asset references cast to <code>AssetType</code>.
+     */
     std::vector<AssetRef<AssetType>> AssetCatalog::getAssetsOfType() const
     {
         // TODO: AssetType::TYPE is not a thing, need to find a way to get the type of the asset
@@ -169,6 +198,17 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    /**
+     * @brief Retrieves a view of assets filtered and cast to the specified asset type.
+     *
+     * This function returns a view over the catalog's assets, filtering them based on a type comparison
+     * with AssetType::TYPE and then transforming the asset pointers to std::shared_ptr<AssetType>.
+     * Note that the filtering mechanism is not fully implemented and is marked by a static assertion.
+     *
+     * @tparam AssetType The asset subtype to filter and cast to. Must be derived from IAsset.
+     *
+     * @return A view over assets as shared pointers of the specified type.
+     */
     std::ranges::view auto AssetCatalog::getAssetsOfTypeView() const
     {
         // TODO: AssetType::TYPE is not a thing, need to find a way to get the type of the asset

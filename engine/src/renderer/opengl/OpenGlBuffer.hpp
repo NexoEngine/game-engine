@@ -193,7 +193,14 @@ namespace nexo::renderer {
             */
             [[nodiscard]] unsigned int getCount() const override;
 
-            [[nodiscard]] unsigned int getId() const override { return _id; };
+            /**
+ * @brief Retrieves the unique OpenGL buffer identifier.
+ *
+ * This method returns the identifier assigned to this buffer by OpenGL, which is used for subsequent buffer operations.
+ *
+ * @return The OpenGL buffer identifier.
+ */
+[[nodiscard]] unsigned int getId() const override { return _id; };
         private:
             unsigned int _id{};
             unsigned int _count = 0;

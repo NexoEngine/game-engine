@@ -141,16 +141,62 @@ namespace nexo::assets {
         friend class AssetCatalog;
         friend class AssetImporter;
         public:
-            //IAsset() = delete;
+            /**
+ * @brief Default virtual destructor for the IAsset interface.
+ *
+ * Ensures proper cleanup of derived asset objects.
+ */
             virtual ~IAsset() = default;
 
-            [[nodiscard]] virtual const AssetMetadata& getMetadata() const { return m_metadata; }
-            [[nodiscard]] virtual AssetType getType() const { return getMetadata().type; }
-            [[nodiscard]] virtual AssetID getID() const { return getMetadata().id; }
-            [[nodiscard]] virtual AssetStatus getStatus() const { return getMetadata().status; }
+            /**
+ * @brief Retrieves the metadata associated with the asset.
+ *
+ * Returns a constant reference to the asset's metadata, which includes information such as its type, status, reference count, unique identifier, and location.
+ *
+ * @return const AssetMetadata& A constant reference to the asset metadata.
+ */
+[[nodiscard]] virtual const AssetMetadata& getMetadata() const { return m_metadata; }
+            /**
+ * @brief Retrieves the asset's type.
+ *
+ * This method returns the type of the asset as specified in its metadata.
+ *
+ * @return AssetType The type of the asset.
+ */
+[[nodiscard]] virtual AssetType getType() const { return getMetadata().type; }
+            /**
+ * @brief Retrieves the unique identifier of the asset.
+ *
+ * This function returns the asset's identifier from its metadata.
+ *
+ * @return AssetID The unique identifier associated with the asset.
+ */
+[[nodiscard]] virtual AssetID getID() const { return getMetadata().id; }
+            /**
+ * @brief Retrieves the current status of the asset.
+ *
+ * This function returns the asset's current status by extracting it from the asset's metadata.
+ *
+ * @return AssetStatus The current state of the asset.
+ */
+[[nodiscard]] virtual AssetStatus getStatus() const { return getMetadata().status; }
 
-            [[nodiscard]] virtual bool isLoaded() const { return getStatus() == AssetStatus::LOADED; }
-            [[nodiscard]] virtual bool isErrored() const { return getStatus() == AssetStatus::ERROR; }
+            /**
+ * @brief Checks if the asset is loaded.
+ *
+ * This method returns true if the asset's current status equals AssetStatus::LOADED, indicating that its data has been successfully loaded.
+ *
+ * @return true if the asset is loaded; false otherwise.
+ */
+[[nodiscard]] virtual bool isLoaded() const { return getStatus() == AssetStatus::LOADED; }
+            /**
+ * @brief Checks if the asset is in an error state.
+ *
+ * Compares the asset's current status to <code>AssetStatus::ERROR</code> to determine if an error has occurred.
+ *
+ * @return true if the asset's status is <code>AssetStatus::ERROR</code>, otherwise false.
+ */
+[[nodiscard]] virtual bool isErrored() const { return getStatus() == AssetStatus::ERROR; }
 
             /**
              * @brief Get the asset data pointer
@@ -165,6 +211,16 @@ namespace nexo::assets {
              */
             virtual IAsset& setRawData(void* rawData) = 0;
         protected:
+            /**
+             * @brief Constructs an IAsset with default metadata settings.
+             *
+             * Initializes the asset's metadata with predefined default values:
+             * - **type**: set to AssetType::UNKNOWN.
+             * - **status**: set to AssetStatus::UNLOADED.
+             * - **referenceCount**: initialized to 0.
+             * - **id**: set to a nil UUID.
+             * - **location**: set to "default".
+             */
             explicit IAsset()
                 : m_metadata({
                     .type = AssetType::UNKNOWN,
@@ -209,11 +265,25 @@ namespace nexo::assets {
 
             TAssetData *data;
 
-            // Implementation of IAsset virtual methods
+            /**
+             * @brief Retrieves the raw asset data.
+             *
+             * Returns a pointer to the underlying memory storing the asset's data.
+             *
+             * @return void* A pointer to the raw asset data.
+             */
             [[nodiscard]] void* getRawData() const override {
                 return data;
             }
 
+            /**
+             * @brief Updates the asset's raw data pointer.
+             *
+             * This method deletes the current asset data before assigning a new raw data pointer. It casts the provided pointer to the asset's specific data type and updates the asset's status accordingly: if the pointer is null, the asset is marked as UNLOADED; otherwise, it is marked as LOADED.
+             *
+             * @param rawData Pointer to the new asset data.
+             * @return IAsset& Reference to the current asset instance.
+             */
             IAsset& setRawData(void* rawData) override {
                 delete data;  // Clean up existing data
                 if (rawData == nullptr) {
@@ -226,10 +296,27 @@ namespace nexo::assets {
                 return *this;
             }
 
+            /**
+             * @brief Retrieves the asset's raw data.
+             *
+             * Returns the pointer to the underlying asset data. This pointer can be used
+             * to access or update the asset's stored data.
+             *
+             * @return Pointer to the asset's data.
+             */
             [[nodiscard]] TAssetData* getData() const {
                 return data;
             }
 
+            /**
+             * @brief Replaces the asset's current data with new data.
+             *
+             * Deletes the existing data and assigns the provided pointer, transferring ownership.
+             * The asset's status is updated to UNLOADED if the new data pointer is null, or to LOADED otherwise.
+             *
+             * @param newData Pointer to the new asset data.
+             * @return Asset& Reference to the updated asset instance.
+             */
             Asset& setData(TAssetData* newData) {
                 delete data;
                 if (newData == nullptr) {
@@ -242,11 +329,24 @@ namespace nexo::assets {
             }
 
         protected:
+            /**
+             * @brief Constructs an asset with no initial data.
+             *
+             * Initializes the asset's data pointer to nullptr and sets the asset's metadata type to the
+             * value specified by the TAssetType template parameter.
+             */
             explicit Asset() : data(nullptr)
             {
                 m_metadata.type = TAssetType;
             }
 
+            /**
+             * @brief Constructs an asset with the specified raw data.
+             *
+             * Initializes the asset using the provided data pointer, sets its type based on the template parameter, and marks the asset as loaded.
+             *
+             * @param data Pointer to the raw asset data.
+             */
             explicit Asset(TAssetData* data) : data(data)
             {
                 m_metadata.type = TAssetType;

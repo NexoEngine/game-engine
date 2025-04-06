@@ -23,6 +23,13 @@
 #include <Path.hpp>
 
 namespace nexo::renderer {
+    /**
+     * @brief Initializes the Renderer2D system.
+     *
+     * This function allocates internal storage and prepares all graphics resources required for 2D quad rendering. It sets up the vertex array, vertex and index buffers with their respective layouts, initializes a default white texture, configures texture sampler slots, and loads the texture shader with the appropriate uniform settings. Predefined quad vertex positions are also established for subsequent rendering calls.
+     *
+     * Any exceptions during shader creation or binding are logged.
+     */
     void Renderer2D::init()
     {
         m_storage = std::make_shared<Renderer2DStorage>();
@@ -106,6 +113,12 @@ namespace nexo::renderer {
         m_renderingScene = true;
     }
 
+    /**
+     * @brief Flushes the current rendering batch.
+     *
+     * Binds the active texture shader and all texture slots, issues an indexed draw call for the buffered vertices,
+     * increments the draw call count in the renderer statistics, and finally unbinds the vertex array and vertex buffer.
+     */
     void Renderer2D::flush() const
     {
         m_storage->textureShader->bind();
@@ -146,6 +159,20 @@ namespace nexo::renderer {
     }
 
 
+    /**
+     * @brief Generates vertex and index data for a quad.
+     *
+     * This function computes the vertex attributes for a quad by applying the specified transformation matrix 
+     * to predefined quad vertex positions. It assigns the provided color, texture coordinates, texture index, 
+     * and entity ID to each vertex and generates corresponding indices. If adding the quad's data would exceed 
+     * the current buffer capacities, the function automatically flushes and resets the buffers.
+     *
+     * @param transform Transformation matrix applied to the quad's vertex positions.
+     * @param color Color assigned to each vertex of the quad.
+     * @param textureIndex Index of the texture to be used for the quad.
+     * @param textureCoords Pointer to an array of texture coordinate vectors for each vertex.
+     * @param entityID Identifier for the quad, used for object picking or debugging.
+     */
     void Renderer2D::generateQuadVertices(const glm::mat4 &transform, const glm::vec4 color, const float textureIndex,
                                           const glm::vec2 *textureCoords, int entityID) const
     {
@@ -185,6 +212,16 @@ namespace nexo::renderer {
     }
 
 
+    /**
+     * @brief Retrieves the index of a texture within the renderer's texture slots.
+     *
+     * This function checks if the provided texture already exists in the current texture slots.
+     * If found, it returns the corresponding index. Otherwise, it adds the texture to the next available
+     * slot and returns the new index.
+     *
+     * @param texture The texture to locate or add.
+     * @return float The index of the texture as a floating-point value.
+     */
     float Renderer2D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
     {
         float textureIndex = 0.0f;
