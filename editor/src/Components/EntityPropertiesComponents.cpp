@@ -108,7 +108,7 @@ namespace nexo::editor {
 
 		std::vector<DragFloat> sliders;
 		sliders.reserve(1);
-		sliders.emplace_back(badgeLabelX, value, speed, minValue, maxValue, 0, 0, 0, 0, "%.2f");
+		sliders.emplace_back(labelX, value, speed, minValue, maxValue, 0, 0, 0, 0, "%.2f");
 
 		Channels channels;
 		channels.count = 1;
