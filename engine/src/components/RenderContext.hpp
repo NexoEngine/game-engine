@@ -30,6 +30,10 @@ namespace nexo::components {
 			renderer3D.init();
 		}
 
+		// Delete copy constructor to enforce singleton semantics
+		RenderContext(const RenderContext&) = delete;
+		RenderContext& operator=(const RenderContext&) = delete;
+
 		RenderContext(RenderContext&& other) noexcept
 		    : sceneRendered(other.sceneRendered),
 		        renderer3D(std::move(other.renderer3D)),
@@ -37,6 +41,7 @@ namespace nexo::components {
 		        sceneLights(std::move(other.sceneLights))
 		{
 		}
+
 
         ~RenderContext()
         {
