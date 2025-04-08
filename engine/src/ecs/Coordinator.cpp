@@ -39,7 +39,7 @@ namespace nexo::ecs {
     {
     	auto signature = m_entityManager->getSignature(entity);
         m_entityManager->destroyEntity(entity);
-        m_componentManager->entityDestroyed(entity);
+        m_componentManager->entityDestroyed(entity, signature);
         m_systemManager->entityDestroyed(entity, signature);
     }
 
