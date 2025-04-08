@@ -83,15 +83,29 @@ namespace nexo::system {
         shader->unbind();
 	}
 
-	void RenderSystem::update() const
+	void RenderSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
 		setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
+
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+
+		const auto transformSpan = get<components::TransformComponent>();
+		const auto renderSpan = get<components::RenderComponent>();
+		const auto entitySpan = m_group->entities();
 
 		while (!renderContext.cameras.empty())
 		{
@@ -105,23 +119,22 @@ namespace nexo::system {
 				camera.renderTarget->clearAttachment<int>(1, -1);
 
             }
-			for (const auto entity : entities)
-			{
-				auto tag = coord->getComponent<components::SceneTag>(entity);
-				if (!tag.isRendered || sceneRendered != tag.id)
-					continue;
-	    		const auto transform = coord->getComponent<components::TransformComponent>(entity);
-	            const auto renderComponent = coord->getComponent<components::RenderComponent>(entity);
-	            if (renderComponent.isRendered)
-	            {
-					//TODO: Pass to a single renderer
-					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
+
+            for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+            {
+            	const auto &transform = transformSpan[i];
+             	const auto &render = renderSpan[i];
+              	const ecs::Entity entity = entitySpan[i];
+              	if (render.isRendered)
+               {
+               		renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
 					auto context = std::make_shared<renderer::RendererContext>();
 					context->renderer3D = renderContext.renderer3D;
-					renderComponent.draw(context, transform, entity);
+					render.draw(context, transform, entity);
 					renderContext.renderer3D.endScene();
-	            }
-			}
+               }
+            }
+
 			if (camera.renderTarget != nullptr)
 			{
 				camera.renderTarget->unbind();

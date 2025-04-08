@@ -13,7 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "GroupSystem.hpp"
 #include "ecs/System.hpp"
+#include "components/RenderContext.hpp"
+#include "components/SceneComponents.hpp"
 
 namespace nexo::system {
 
@@ -30,8 +33,13 @@ namespace nexo::system {
      * @note Required Singleton Component:
      *  - components::RenderContext
      */
-	class AmbientLightSystem : public ecs::System {
-		public:
-			void update() const ;
+	class AmbientLightSystem : public ecs::GroupSystem<
+		ecs::Owned<
+			ecs::Read<components::AmbientLightComponent>>,
+        ecs::NonOwned<
+        	ecs::Read<components::SceneTag>>,
+    	ecs::WriteSingleton<components::RenderContext>> {
+			public:
+				void update();
 	};
 }

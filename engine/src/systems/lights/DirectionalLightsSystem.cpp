@@ -19,21 +19,29 @@
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void DirectionalLightsSystem::update() const
+	void DirectionalLightsSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &directionalLights : entities)
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+
+		const auto directionalLightSpan = get<components::DirectionalLightComponent>();
+
+		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			auto tag = coord->getComponent<components::SceneTag>(directionalLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &directionalComponent = coord->getComponent<components::DirectionalLightComponent>(directionalLights);
-			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalComponent;
+			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalLightSpan[i];
 		}
 	}
 }

@@ -20,21 +20,29 @@
 
 
 namespace nexo::system {
-	void SpotLightsSystem::update() const
+	void SpotLightsSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &spotLights : entities)
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+
+		const auto spotLightSpan = get<components::SpotLightComponent>();
+
+		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			auto tag = coord->getComponent<components::SceneTag>(spotLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &spotComponent = coord->getComponent<components::SpotLightComponent>(spotLights);
-			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount++] = spotComponent;
+			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount++] = spotLightSpan[i];
 		}
 	}
 }

@@ -15,7 +15,7 @@
 #include "LightSystem.hpp"
 
 namespace nexo::system {
-	void LightSystem::update() const
+	void LightSystem::update()
 	{
 		m_ambientLightSystem->update();
 		m_directionalLightSystem->update();

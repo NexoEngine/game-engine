@@ -13,6 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "Access.hpp"
+#include "GroupSystem.hpp"
+#include "components/Render.hpp"
+#include "components/RenderContext.hpp"
+#include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 #include "ecs/System.hpp"
 
 namespace nexo::system {
@@ -34,8 +40,14 @@ namespace nexo::system {
      *  - components::TransformComponent
      *  - components::RenderComponent
      */
-	class RenderSystem : public ecs::System {
-		public:
-			void update() const;
+	class RenderSystem : public ecs::GroupSystem<
+		ecs::Owned<
+			ecs::Read<components::TransformComponent>,
+	        ecs::Read<components::RenderComponent>>,
+        ecs::NonOwned<
+        	ecs::Read<components::SceneTag>>,
+    	ecs::WriteSingleton<components::RenderContext>> {
+			public:
+				void update();
 	};
 }
