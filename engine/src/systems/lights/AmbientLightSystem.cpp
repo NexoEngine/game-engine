@@ -13,26 +13,34 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AmbientLightSystem.hpp"
-#include "components/RenderContext.hpp"
-#include "components/SceneComponents.hpp"
+
+#include "components/Light.hpp"
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void AmbientLightSystem::update() const
+	void AmbientLightSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &ambientLights : entities)
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+
+		const auto ambientSpan = get<components::AmbientLightComponent>();
+
+		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			auto tag = coord->getComponent<components::SceneTag>(ambientLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &ambientComponent = coord->getComponent<components::AmbientLightComponent>(ambientLights);
-			renderContext.sceneLights.ambientLight = ambientComponent.color;
+			renderContext.sceneLights.ambientLight = ambientSpan[i].color;
 			break;
 		}
 	}

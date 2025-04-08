@@ -43,7 +43,7 @@ namespace nexo::system {
 			m_pointLightSystem(pointSystem),
 			m_spotLightSystem(spotSystem) {}
 
-			void update() const;
+			void update();
 		private:
 			std::shared_ptr<AmbientLightSystem> m_ambientLightSystem = nullptr;
 			std::shared_ptr<DirectionalLightsSystem> m_directionalLightSystem = nullptr;

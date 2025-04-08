@@ -19,21 +19,29 @@
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void PointLightsSystem::update() const
+	void PointLightsSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &pointLights : entities)
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+
+		const auto pointLightSpan = get<components::PointLightComponent>();
+
+		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			auto tag = coord->getComponent<components::SceneTag>(pointLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &pointComponent = coord->getComponent<components::PointLightComponent>(pointLights);
-			renderContext.sceneLights.pointLights[renderContext.sceneLights.pointLightCount++] = pointComponent;
+			renderContext.sceneLights.pointLights[renderContext.sceneLights.pointLightCount++] = pointLightSpan[i];
 		}
 	}
 }
