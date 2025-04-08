@@ -16,8 +16,15 @@
 
 namespace nexo::ecs {
 
-    void ComponentManager::entityDestroyed(const Entity entity)
+    void ComponentManager::entityDestroyed(const Entity entity, const Signature &entitySignature)
     {
+	    for (auto &[_, group] : m_groupRegistry)
+	    {
+	    	if ((entitySignature & group->allSignature()) == group->allSignature())
+	     	{
+	      		group->removeFromGroup(entity);
+	      	}
+	    }
         for (auto& componentArray : m_componentArrays) {
             if (componentArray) {
                 componentArray->entityDestroyed(entity);
