@@ -194,16 +194,42 @@ namespace nexo::ecs {
 	        template<typename T>
 	        auto get()
 			{
-	            // Get the span from the group
-	            auto baseSpan = m_group->template get<T>();
+				constexpr bool isOwned = isOwnedComponent<T>();
+				if constexpr (isOwned) {
+					// Get the span from the group
+					auto baseSpan = m_group->template get<T>();
 
-	            // Wrap it in our access-controlled span
-	            return ComponentSpan<std::conditional_t<
-	                GetComponentAccess<T>::accessType == AccessType::Read,
-	                const T,
-	                T
-	            >>(baseSpan);
+					// Wrap it in our access-controlled span
+					return ComponentSpan<std::conditional_t<
+					    GetComponentAccess<T>::accessType == AccessType::Read,
+					    const T,
+					    T
+					>>(baseSpan);
+				} else {
+					// For non-owned components, return the component array itself
+					auto componentArray = m_group->template get<T>();
+
+					// Apply access control by wrapping in a special pointer wrapper if needed
+					if constexpr (GetComponentAccess<T>::accessType == AccessType::Read) {
+						return std::shared_ptr<const ComponentArray<T>>(m_group->template get<T>());
+					} else {
+					    return componentArray;
+					}
+				}
 	        }
+
+			/**
+			* @brief Check if a component type is owned by this system
+			*
+			* @tparam T The component type to check
+			* @return true if owned, false if non-owned
+			*/
+			template<typename T>
+			static constexpr bool isOwnedComponent()
+			{
+			    using OwnedTraitResult = ComponentAccessTrait<T, OwnedAccessTypes>;
+			    return OwnedTraitResult::found;
+			}
 
 	        /**
 	         * @brief Get a component for an entity with appropriate access control
@@ -212,17 +238,15 @@ namespace nexo::ecs {
 	         * @param entity The entity to get the component for
 	         * @return Component reference with appropriate const-ness
 	         */
-	        template<typename AccessType>
-	        auto getComponent(Entity entity)
-			{
-	            using T = typename AccessType::ComponentType;
-
-	            if constexpr (AccessType::accessType == AccessType::Read) {
-	                return std::cref(m_group->template get<T>(entity));
-	            } else {
-	                return std::ref(m_group->template get<T>(entity));
-	            }
-	        }
+			template<typename T>
+			auto getComponent(Entity entity) {
+			    // Use GetComponentAccess to determine if T should be read-only
+			    if constexpr (GetComponentAccess<T>::accessType == AccessType::Read) {
+			        return std::cref(m_group->template get<T>(entity));
+			    } else {
+			        return std::ref(m_group->template get<T>(entity));
+			    }
+			}
 
 	        /**
 	         * @brief Get all entities in this group
