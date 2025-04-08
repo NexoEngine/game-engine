@@ -235,24 +235,19 @@ namespace nexo::ecs {
              * @return std::set<Entity> A set of entities that contain all the specified components.
              */
             template<typename... Components>
-            std::set<Entity> getAllEntitiesWith() const
+            std::vector<Entity> getAllEntitiesWith() const
             {
 	            Signature requiredSignature;
 	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
 
-				std::uint32_t checkedEntities = 0;
-				std::uint32_t livingEntities = m_entityManager->getLivingEntityCount();
-    			std::set<Entity> result;
-				for (Entity i = 0; i < MAX_ENTITIES; ++i)
+				std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+    			std::vector<Entity> result;
+       			result.reserve(livingEntities.size());
+				for (auto entity : livingEntities)
 				{
-					Signature entitySignature = m_entityManager->getSignature(i);
-					if (entitySignature.none())
-						continue;
+					Signature entitySignature = m_entityManager->getSignature(entity);
 					if ((entitySignature & requiredSignature) == requiredSignature)
-						result.insert(i);
-					checkedEntities++;
-					if (checkedEntities > livingEntities)
-						break;
+						result.push_back(entity);
 				}
 				return result;
             }

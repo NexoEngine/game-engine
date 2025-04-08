@@ -14,6 +14,8 @@
 #include "Entity.hpp"
 #include "ECSExceptions.hpp"
 
+#include <algorithm>
+
 namespace nexo::ecs {
 
     EntityManager::EntityManager()
@@ -24,12 +26,12 @@ namespace nexo::ecs {
 
     Entity EntityManager::createEntity()
     {
-        if (m_livingEntityCount >= MAX_ENTITIES)
+        if (m_livingEntities.size() >= MAX_ENTITIES)
             THROW_EXCEPTION(TooManyEntities);
 
         const Entity id = m_availableEntities.front();
         m_availableEntities.pop_front();
-        ++m_livingEntityCount;
+        m_livingEntities.push_back(id);
 
         return id;
     }
@@ -42,8 +44,9 @@ namespace nexo::ecs {
         m_signatures[entity].reset();
 
         m_availableEntities.push_front(entity);
-        if (m_livingEntityCount > 0)
-            --m_livingEntityCount;
+        auto it = std::find(m_livingEntities.begin(), m_livingEntities.end(), entity);
+        if (it != m_livingEntities.end())
+            m_livingEntities.erase(it);
     }
 
     void EntityManager::setSignature(const Entity entity, const Signature signature)
@@ -64,6 +67,12 @@ namespace nexo::ecs {
 
     std::uint32_t EntityManager::getLivingEntityCount() const
     {
-        return m_livingEntityCount;
+        return m_livingEntities.size();
     }
+
+    std::span<const Entity> EntityManager::getLivingEntities() const
+    {
+        return std::span<const Entity>(m_livingEntities);
+    }
+
 }
