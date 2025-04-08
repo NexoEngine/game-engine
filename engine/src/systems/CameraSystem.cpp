@@ -21,27 +21,37 @@
 #include "core/event/KeyCodes.hpp"
 #include "Application.hpp"
 #include "core/event/WindowEvent.hpp"
+#include "core/scene/Scene.hpp"
 #include "math/Vector.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <numbers>
 
 namespace nexo::system {
-	void CameraContextSystem::update() const
+	void CameraContextSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto camera : entities)
-		{
-			auto tag = coord->getComponent<components::SceneTag>(camera);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
+		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
 
-			auto cameraComponent = coord->getComponent<components::CameraComponent>(camera);
-			auto transformComponent = coord->getComponent<components::TransformComponent>(camera);
+		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+
+		//TODO: Throw exception here ?
+		if (!partition)
+			return;
+		const auto cameraSpan = get<components::CameraComponent>();
+		const auto transformComponentArray = get<components::TransformComponent>();
+		const auto entitySpan = m_group->entities();
+
+		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+		{
+			const auto &cameraComponent = cameraSpan[i];
+			const auto &transformComponent = transformComponentArray->getData(entitySpan[i]);
 			glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
 			glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
 			glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
@@ -50,34 +60,33 @@ namespace nexo::system {
 		}
 	}
 
-	PerspectiveCameraControllerSystem::PerspectiveCameraControllerSystem()
+	PerspectiveCameraControllerSystem::PerspectiveCameraControllerSystem() : QuerySystem()
 	{
         Application::getInstance().getEventManager()->registerListener<event::EventMouseScroll>(this);
         Application::getInstance().getEventManager()->registerListener<event::EventMouseMove>(this);
 	}
 
-	void PerspectiveCameraControllerSystem::update(const Timestep ts) const
+	void PerspectiveCameraControllerSystem::update(const Timestep ts)
     {
-        const auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+    	const auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
-
         const auto deltaTime = static_cast<float>(ts);
+		constexpr float translationSpeed = 5.0f;
 
-        for (const auto &entity : entities)
-        {
-	        constexpr float translationSpeed = 5.0f;
-	        auto tag = coord->getComponent<components::SceneTag>(entity);
-            if (!tag.isActive || sceneRendered != tag.id)
-                continue;
+		for (auto entity : entities)
+		{
+			auto &sceneTag = getComponent<components::SceneTag>(entity);
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+				continue;
+			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			auto &transform = getComponent<components::TransformComponent>(entity);
 
-            auto &cameraComponent = coord->getComponent<components::CameraComponent>(entity);
-            cameraComponent.resizing = false;
-            auto &transform = coord->getComponent<components::TransformComponent>(entity);
+			cameraComponent.resizing = false;
 
-            glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
             glm::vec3 up    = transform.quat * glm::vec3(0.0f, 1.0f,  0.0f);
             glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f,  0.0f);
 
@@ -93,50 +102,50 @@ namespace nexo::system {
                 transform.pos += up * translationSpeed * deltaTime;    // Up
             if (event::isKeyPressed(NEXO_KEY_TAB))
                 transform.pos -= up * translationSpeed * deltaTime;    // Down
-        }
+		}
     }
 
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseScroll &event)
     {
-        auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+   		const auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+		constexpr float zoomSpeed = 0.5f;
 
-        for (const auto &camera : entities)
-        {
-            auto tag = coord->getComponent<components::SceneTag>(camera);
-            if (!tag.isActive || sceneRendered != tag.id)
-                continue;
-            constexpr float zoomSpeed = 0.5f;
-            auto &transform = coord->getComponent<components::TransformComponent>(camera);
-            glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+		for (auto entity : entities)
+		{
+			auto &sceneTag = getComponent<components::SceneTag>(entity);
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+				continue;
+			auto &transform = getComponent<components::TransformComponent>(entity);
+			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
             transform.pos += front * event.y * zoomSpeed;
             event.consumed = true;
-        }
+		}
     }
 
     void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseMove &event)
     {
-        auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+        auto const &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         glm::vec2 currentMousePosition(event.x, event.y);
-        for (const auto &camera : entities)
+        for (auto entity : entities)
         {
-            auto &controller = coord->getComponent<components::PerspectiveCameraController>(camera);
-            auto const &cameraComponent = coord->getComponent<components::CameraComponent>(camera);
-            auto tag = coord->getComponent<components::SceneTag>(camera);
-            const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
-            controller.lastMousePosition = currentMousePosition;
-
-
-            if (!tag.isActive || sceneRendered != tag.id || cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_LEFT))
-                continue;
+	        auto &controller = getComponent<components::PerspectiveCameraController>(entity);
+	        const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
+	        controller.lastMousePosition = currentMousePosition;
+        	const auto &sceneTag = getComponent<components::SceneTag>(entity);
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+				continue;
+            const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+            if (cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_LEFT))
+            	continue;
 
             controller.yaw   += -mouseDelta.x;
             controller.pitch += -mouseDelta.y;
@@ -151,7 +160,7 @@ namespace nexo::system {
             glm::quat qPitch = glm::angleAxis(glm::radians(controller.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
             glm::quat qYaw   = glm::angleAxis(glm::radians(controller.yaw),   glm::vec3(0.0f, 1.0f, 0.0f));
 
-            auto &transform = coord->getComponent<components::TransformComponent>(camera);
+            auto &transform = getComponent<components::TransformComponent>(entity);
             transform.quat = glm::normalize(qYaw * qPitch);
             event.consumed = true;
         }
@@ -165,25 +174,25 @@ namespace nexo::system {
 
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseScroll &event)
 	{
-		auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto const &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+		constexpr float zoomSpeed = 0.5f;
 
-        for (const auto &camera : entities)
+        for (auto entity : entities)
         {
-            auto tag = coord->getComponent<components::SceneTag>(camera);
+            auto &tag = getComponent<components::SceneTag>(entity);
             if (!tag.isActive || sceneRendered != tag.id)
                 continue;
-            constexpr float zoomSpeed = 0.5f;
-            auto &target = coord->getComponent<components::PerspectiveCameraTarget>(camera);
+            auto &target = getComponent<components::PerspectiveCameraTarget>(entity);
             target.distance -= event.y * zoomSpeed;
-            if(target.distance < 0.1f)
+            if (target.distance < 0.1f)
                 target.distance = 0.1f;
 
-            auto &transformCamera = coord->getComponent<components::TransformComponent>(camera);
-            auto const &transformTarget = coord->getComponent<components::TransformComponent>(target.targetEntity);
+            auto &transformCamera = getComponent<components::TransformComponent>(entity);
+            const auto &transformTarget = getComponent<components::TransformComponent>(target.targetEntity);
 
             glm::vec3 offset = transformCamera.pos - transformTarget.pos;
             // If offset is near zero, choose a default direction.
@@ -203,7 +212,7 @@ namespace nexo::system {
 
 	void PerspectiveCameraTargetSystem::handleEvent(event::EventMouseMove &event)
 	{
-	    auto const &renderContext = coord->getSingletonComponent<components::RenderContext>();
+	    const auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
@@ -211,41 +220,34 @@ namespace nexo::system {
 
 	    glm::vec2 currentMousePosition(event.x, event.y);
 
-	    for (const auto &entity : entities)
+	    for (auto entity : entities)
 	    {
-	        auto &targetComp = coord->getComponent<components::PerspectiveCameraTarget>(entity);
-	        auto tag = coord->getComponent<components::SceneTag>(entity);
-	        auto const &cameraComponent = coord->getComponent<components::CameraComponent>(entity);
+			const auto &sceneTag = getComponent<components::SceneTag>(entity);
+			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			auto &targetComponent = getComponent<components::PerspectiveCameraTarget>(entity);
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered || cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_RIGHT))
+			{
+				targetComponent.lastMousePosition = currentMousePosition;
+				continue;
+			}
 
-	        if (!tag.isActive || sceneRendered != tag.id || cameraComponent.resizing)
-	        {
-	            targetComp.lastMousePosition = currentMousePosition;
-	            continue;
-	        }
+	        auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(entity);
+	        const auto &transformTargetComponent = coord->getComponent<components::TransformComponent>(targetComponent.targetEntity);
 
-	        if (!event::isMouseDown(NEXO_MOUSE_RIGHT))
-	        {
-	            targetComp.lastMousePosition = currentMousePosition;
-	            continue;
-	        }
-
-	        auto &transformCamera = coord->getComponent<components::TransformComponent>(entity);
-	        auto const &transformTarget = coord->getComponent<components::TransformComponent>(targetComp.targetEntity);
-
-	        float deltaX = targetComp.lastMousePosition.x - currentMousePosition.x;
-	        float deltaY = targetComp.lastMousePosition.y - currentMousePosition.y;
+	        float deltaX = targetComponent.lastMousePosition.x - currentMousePosition.x;
+	        float deltaY = targetComponent.lastMousePosition.y - currentMousePosition.y;
 
 	        // Compute rotation angles based on screen dimensions.
 	        float xAngle = deltaX * (2.0f * std::numbers::pi_v<float> / static_cast<float>(cameraComponent.width));
 	        float yAngle = deltaY * (std::numbers::pi_v<float> / static_cast<float>(cameraComponent.height));
 
 	        // Prevent excessive pitch rotation when the camera is nearly vertical.
-	        glm::vec3 front = glm::normalize(transformTarget.pos - transformCamera.pos);
+	        glm::vec3 front = glm::normalize(transformTargetComponent.pos - transformCameraComponent.pos);
 	        auto sgn = [](float x) { return (x >= 0.0f ? 1.0f : -1.0f); };
 	        if (glm::dot(front, glm::vec3(0, 1, 0)) * sgn(yAngle) > 0.99f)
 	            yAngle = 0.0f;
 
-	        glm::vec3 offset = (transformCamera.pos - transformTarget.pos);
+	        glm::vec3 offset = (transformCameraComponent.pos - transformTargetComponent.pos);
 
 	        glm::quat qYaw = glm::angleAxis(xAngle, glm::vec3(0, 1, 0));
 
@@ -260,14 +262,14 @@ namespace nexo::system {
 
 	        glm::vec3 newOffset = incrementalRotation * offset;
 
-			newOffset = glm::normalize(newOffset) * targetComp.distance;
+			newOffset = glm::normalize(newOffset) * targetComponent.distance;
 
-			transformCamera.pos = transformTarget.pos + newOffset;
+			transformCameraComponent.pos = transformTargetComponent.pos + newOffset;
 
-	        glm::vec3 newFront = glm::normalize(transformTarget.pos - transformCamera.pos);
-	        transformCamera.quat = glm::normalize(glm::quatLookAt(newFront, glm::vec3(0, 1, 0)));
+	        glm::vec3 newFront = glm::normalize(transformTargetComponent.pos - transformCameraComponent.pos);
+	        transformCameraComponent.quat = glm::normalize(glm::quatLookAt(newFront, glm::vec3(0, 1, 0)));
 
-	        targetComp.lastMousePosition = currentMousePosition;
+	        targetComponent.lastMousePosition = currentMousePosition;
 			event.consumed = true;
 	    }
 	}
