@@ -397,7 +397,7 @@ namespace nexo::ecs {
 		     *
 		     * @param entity The destroyed entity
 		     */
-		    void entityDestroyed(Entity entity);
+		    void entityDestroyed(Entity entity, const Signature &entitySignature);
 
 			/**
 			 * @brief Creates or retrieves a group for specific component combinations
