@@ -126,8 +126,7 @@ namespace nexo::ecs {
          *
          * @pre The entity must be a valid entity ID
          */
-        template<typename U>
-        void insert(Entity entity, U&& component)
+        void insert(Entity entity, T component)
         {
             if (entity >= MAX_ENTITIES)
             	THROW_EXCEPTION(OutOfRange, entity);
@@ -143,7 +142,7 @@ namespace nexo::ecs {
             const size_t newIndex = m_size;
             m_sparse[entity] = newIndex;
             m_dense.push_back(entity);
-            m_componentArray.push_back(std::forward<U>(component));
+            m_componentArray.push_back(component);
             ++m_size;
         }
 
