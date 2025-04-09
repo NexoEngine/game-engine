@@ -147,7 +147,6 @@ namespace nexo::ecs {
             const auto& settings = getSingleton<GameSettings>();
 
             for (Entity entity : entities) {
-                const Position& pos = getComponent<Position>(entity);
                 Velocity& vel = getComponent<Velocity>(entity);
 
                 // Apply game speed scaling

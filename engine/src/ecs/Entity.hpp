@@ -18,7 +18,6 @@
 #include <array>
 #include <vector>
 #include <span>
-#include <unordered_set>
 
 #include "Definitions.hpp"
 
@@ -74,8 +73,8 @@ namespace nexo::ecs {
             */
             [[nodiscard]] Signature getSignature(Entity entity) const;
 
-            std::uint32_t getLivingEntityCount() const;
-            std::span<const Entity> getLivingEntities() const;
+            [[nodiscard]] std::uint32_t getLivingEntityCount() const;
+            [[nodiscard]] std::span<const Entity> getLivingEntities() const;
 
         private:
             std::deque<Entity> m_availableEntities{};

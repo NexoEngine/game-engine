@@ -26,14 +26,14 @@ class DummyFramebuffer : public nexo::renderer::Framebuffer {
 public:
     void bind() override {}
     void unbind() override {}
-    void setClearColor(const glm::vec4 &color) override {}
+    void setClearColor(const glm::vec4 &) override {}
     unsigned int getFramebufferId() const override { return 0; }
-    void resize(unsigned int width, unsigned int height) override {}
-    void getPixelWrapper(unsigned int attachmentIndex, int x, int y, void *result, const std::type_info &ti) const override {}
-    void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const override {}
+    void resize(unsigned int, unsigned int ) override {}
+    void getPixelWrapper(unsigned int, int, int, void *, const std::type_info &) const override {}
+    void clearAttachmentWrapper(unsigned int, const void *, const std::type_info &) const override {}
     [[nodiscard]] nexo::renderer::FramebufferSpecs &getSpecs() override { static nexo::renderer::FramebufferSpecs specs; return specs; }
     [[nodiscard]] const nexo::renderer::FramebufferSpecs &getSpecs() const override { static nexo::renderer::FramebufferSpecs specs; return specs; }
-    [[nodiscard]] unsigned int getColorAttachmentId(unsigned int index = 0) const override { return 0; }
+    [[nodiscard]] unsigned int getColorAttachmentId(unsigned int) const override { return 0; }
     unsigned int getDepthAttachmentId() const override { return 0; }
 };
 
