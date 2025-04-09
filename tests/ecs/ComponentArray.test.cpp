@@ -49,7 +49,7 @@ namespace nexo::ecs {
 
     TEST_F(ComponentArrayTest, InsertAddsComponentCorrectly) {
         const Entity testEntity = 10;
-        const TestComponent testComponent(100);
+        const TestComponent testComponent{100};
 
         componentArray->insert(testEntity, testComponent);
 
@@ -60,7 +60,7 @@ namespace nexo::ecs {
 
     TEST_F(ComponentArrayTest, InsertDuplicateEntityIsIgnored) {
         const Entity testEntity = 1; // Already exists from setup
-        const TestComponent newComponent(999);
+        const TestComponent newComponent{999};
 
         // Original component should be preserved
         TestComponent originalComponent = componentArray->get(testEntity);
@@ -264,7 +264,9 @@ namespace nexo::ecs {
     TEST_F(ComponentArrayTest, ArrayShrinksWhenManyElementsRemoved) {
         // First, add more elements to increase capacity
         for (Entity i = 5; i < 20; ++i) {
-            componentArray->insert(i, TestComponent(i * 10));
+        	TestComponent newComp;
+         	newComp.value = i * 10;
+            componentArray->insert(i, newComp);
         }
         size_t largeSize = componentArray->size();
 
@@ -282,9 +284,9 @@ namespace nexo::ecs {
 
     TEST_F(ComponentArrayTest, HandlesSparseEntityDistribution) {
         // Insert components with large gaps between entity IDs
-        componentArray->insert(100, TestComponent(100));
-        componentArray->insert(1000, TestComponent(1000));
-        componentArray->insert(10000, TestComponent(10000));
+        componentArray->insert(100, TestComponent{100});
+        componentArray->insert(1000, TestComponent{1000});
+        componentArray->insert(10000, TestComponent{10000});
 
         // Verify components were stored correctly
         EXPECT_TRUE(componentArray->hasComponent(100));
@@ -324,8 +326,8 @@ namespace nexo::ecs {
         EXPECT_EQ(componentArray->groupSize(), 1);
 
         // Add new entities
-        componentArray->insert(6, TestComponent(60));
-        componentArray->insert(7, TestComponent(70));
+        componentArray->insert(6, TestComponent{60});
+        componentArray->insert(7, TestComponent{70});
         EXPECT_EQ(componentArray->size(), 5);
 
         // Destroy an entity via entityDestroyed
