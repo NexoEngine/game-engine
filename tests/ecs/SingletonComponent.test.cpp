@@ -18,260 +18,205 @@
 
 namespace nexo::ecs {
 
-// Test components
-struct TestComponent {
-    int value;
-    std::string name;
+	// Test components
+	struct TestComponent {
+	    int value;
+	    std::string name;
 
-    TestComponent(int v) : value(v), name("default") {}
-    TestComponent(int v, std::string n) : value(v), name(n) {}
-};
+	    TestComponent(int v) : value(v), name("default") {}
+	    TestComponent(int v, std::string n) : value(v), name(n) {}
 
-struct ComplexComponent {
-    std::vector<int> data;
-    bool flag;
+		TestComponent(const TestComponent&) = delete;
+		TestComponent& operator=(const TestComponent&) = delete;
 
-    ComplexComponent() : flag(false) {}
-    ComplexComponent(const std::vector<int>& d, bool f) : data(d), flag(f) {}
-};
+	};
 
-class SingletonComponentTest : public ::testing::Test {};
+	struct ComplexComponent {
+	    std::vector<int> data;
+	    bool flag;
 
-class SingletonComponentManagerTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        manager = std::make_unique<SingletonComponentManager>();
-    }
+	    ComplexComponent() : flag(false) {}
+	    ComplexComponent(const std::vector<int>& d, bool f) : data(d), flag(f) {}
 
-    std::unique_ptr<SingletonComponentManager> manager;
-};
+	    ComplexComponent(const ComplexComponent&) = delete;
+		ComplexComponent& operator=(const ComplexComponent&) = delete;
+	};
 
-// SingletonComponent Tests
+	class SingletonComponentTest : public ::testing::Test {};
 
-TEST_F(SingletonComponentTest, ConstructWithSingleArgument) {
-    SingletonComponent<TestComponent> component(42);
-    EXPECT_EQ(component.getInstance().value, 42);
-    EXPECT_EQ(component.getInstance().name, "default");
-}
+	class SingletonComponentManagerTest : public ::testing::Test {
+	protected:
+	    void SetUp() override {
+	        manager = std::make_unique<SingletonComponentManager>();
+	    }
 
-TEST_F(SingletonComponentTest, ConstructWithMultipleArguments) {
-    SingletonComponent<TestComponent> component(42, "test");
-    EXPECT_EQ(component.getInstance().value, 42);
-    EXPECT_EQ(component.getInstance().name, "test");
-}
+	    std::unique_ptr<SingletonComponentManager> manager;
+	};
 
-TEST_F(SingletonComponentTest, GetInstanceReturnsReference) {
-    SingletonComponent<TestComponent> component(42);
-    TestComponent& instance = component.getInstance();
+	TEST_F(SingletonComponentTest, ConstructWithSingleArgument) {
+	    SingletonComponent<TestComponent> component(42);
+	    EXPECT_EQ(component.getInstance().value, 42);
+	    EXPECT_EQ(component.getInstance().name, "default");
+	}
 
-    // Modify through reference
-    instance.value = 100;
-    instance.name = "modified";
+	TEST_F(SingletonComponentTest, ConstructWithMultipleArguments) {
+	    SingletonComponent<TestComponent> component(42, "test");
+	    EXPECT_EQ(component.getInstance().value, 42);
+	    EXPECT_EQ(component.getInstance().name, "test");
+	}
 
-    // Verify changes
-    EXPECT_EQ(component.getInstance().value, 100);
-    EXPECT_EQ(component.getInstance().name, "modified");
-}
+	TEST_F(SingletonComponentTest, GetInstanceReturnsReference) {
+	    SingletonComponent<TestComponent> component(42);
+	    TestComponent& instance = component.getInstance();
 
-TEST_F(SingletonComponentTest, ComplexComponentConstruction) {
-    std::vector<int> testData = {1, 2, 3, 4, 5};
-    SingletonComponent<ComplexComponent> component(testData, true);
+	    // Modify through reference
+	    instance.value = 100;
+	    instance.name = "modified";
 
-    EXPECT_EQ(component.getInstance().data, testData);
-    EXPECT_TRUE(component.getInstance().flag);
-}
+	    // Verify changes
+	    EXPECT_EQ(component.getInstance().value, 100);
+	    EXPECT_EQ(component.getInstance().name, "modified");
+	}
 
-TEST_F(SingletonComponentTest, DefaultConstructible) {
-    SingletonComponent<ComplexComponent> component;
-    EXPECT_TRUE(component.getInstance().data.empty());
-    EXPECT_FALSE(component.getInstance().flag);
-}
+	TEST_F(SingletonComponentTest, ComplexComponentConstruction) {
+	    std::vector<int> testData = {1, 2, 3, 4, 5};
+	    SingletonComponent<ComplexComponent> component(testData, true);
 
-// SingletonComponentManager Tests
+	    EXPECT_EQ(component.getInstance().data, testData);
+	    EXPECT_TRUE(component.getInstance().flag);
+	}
 
-TEST_F(SingletonComponentManagerTest, RegisterAndGetSingletonComponent) {
-    manager->registerSingletonComponent<TestComponent>(42);
+	TEST_F(SingletonComponentTest, DefaultConstructible) {
+	    SingletonComponent<ComplexComponent> component;
+	    EXPECT_TRUE(component.getInstance().data.empty());
+	    EXPECT_FALSE(component.getInstance().flag);
+	}
 
-    TestComponent& component = manager->getSingletonComponent<TestComponent>();
-    EXPECT_EQ(component.value, 42);
-    EXPECT_EQ(component.name, "default");
-}
+	TEST_F(SingletonComponentManagerTest, RegisterAndGetSingletonComponent) {
+	    manager->registerSingletonComponent<TestComponent>(42);
 
-TEST_F(SingletonComponentManagerTest, RegisterWithMultipleArguments) {
-    manager->registerSingletonComponent<TestComponent>(42, "test");
+	    TestComponent& component = manager->getSingletonComponent<TestComponent>();
+	    EXPECT_EQ(component.value, 42);
+	    EXPECT_EQ(component.name, "default");
+	}
 
-    TestComponent& component = manager->getSingletonComponent<TestComponent>();
-    EXPECT_EQ(component.value, 42);
-    EXPECT_EQ(component.name, "test");
-}
+	TEST_F(SingletonComponentManagerTest, RegisterWithMultipleArguments) {
+	    manager->registerSingletonComponent<TestComponent>(42, "test");
 
-TEST_F(SingletonComponentManagerTest, GetNonexistentComponent) {
-    EXPECT_THROW(manager->getSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
-}
+	    TestComponent& component = manager->getSingletonComponent<TestComponent>();
+	    EXPECT_EQ(component.value, 42);
+	    EXPECT_EQ(component.name, "test");
+	}
 
-TEST_F(SingletonComponentManagerTest, UnregisterComponent) {
-    // Register
-    manager->registerSingletonComponent<TestComponent>(42);
-    EXPECT_NO_THROW(manager->getSingletonComponent<TestComponent>());
+	TEST_F(SingletonComponentManagerTest, GetNonexistentComponent) {
+	    EXPECT_THROW(manager->getSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
+	}
 
-    // Unregister
-    manager->unregisterSingletonComponent<TestComponent>();
+	TEST_F(SingletonComponentManagerTest, UnregisterComponent) {
+	    // Register
+	    manager->registerSingletonComponent<TestComponent>(42);
+	    EXPECT_NO_THROW(manager->getSingletonComponent<TestComponent>());
 
-    // Should now throw
-    EXPECT_THROW(manager->getSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
-}
+	    // Unregister
+	    manager->unregisterSingletonComponent<TestComponent>();
 
-TEST_F(SingletonComponentManagerTest, UnregisterNonexistentComponent) {
-    EXPECT_THROW(manager->unregisterSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
-}
+	    // Should now throw
+	    EXPECT_THROW(manager->getSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
+	}
 
-TEST_F(SingletonComponentManagerTest, RegisterSameComponentTwice) {
-    // First registration
-    manager->registerSingletonComponent<TestComponent>(42);
+	TEST_F(SingletonComponentManagerTest, UnregisterNonexistentComponent) {
+	    EXPECT_THROW(manager->unregisterSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
+	}
 
-    // Second registration should log warning but not throw
-    EXPECT_NO_THROW(manager->registerSingletonComponent<TestComponent>(100));
+	TEST_F(SingletonComponentManagerTest, RegisterSameComponentTwice) {
+	    // First registration
+	    manager->registerSingletonComponent<TestComponent>(42);
 
-    // Should still have the original value
-    TestComponent& component = manager->getSingletonComponent<TestComponent>();
-    EXPECT_EQ(component.value, 42);
-}
+	    // Second registration should log warning but not throw
+	    EXPECT_NO_THROW(manager->registerSingletonComponent<TestComponent>(100));
 
-TEST_F(SingletonComponentManagerTest, RegisterMultipleComponentTypes) {
-    manager->registerSingletonComponent<TestComponent>(42);
-    manager->registerSingletonComponent<ComplexComponent>(std::vector<int>{1, 2, 3}, true);
+	    // Should still have the original value
+	    TestComponent& component = manager->getSingletonComponent<TestComponent>();
+	    EXPECT_EQ(component.value, 42);
+	}
 
-    // Both should be retrievable
-    TestComponent& comp1 = manager->getSingletonComponent<TestComponent>();
-    ComplexComponent& comp2 = manager->getSingletonComponent<ComplexComponent>();
+	TEST_F(SingletonComponentManagerTest, RegisterMultipleComponentTypes) {
+	    manager->registerSingletonComponent<TestComponent>(42);
+	    manager->registerSingletonComponent<ComplexComponent>(std::vector<int>{1, 2, 3}, true);
 
-    EXPECT_EQ(comp1.value, 42);
-    EXPECT_EQ(comp2.data, std::vector<int>({1, 2, 3}));
-    EXPECT_TRUE(comp2.flag);
-}
+	    // Both should be retrievable
+	    TestComponent& comp1 = manager->getSingletonComponent<TestComponent>();
+	    ComplexComponent& comp2 = manager->getSingletonComponent<ComplexComponent>();
 
-TEST_F(SingletonComponentManagerTest, ModifyComponent) {
-    manager->registerSingletonComponent<TestComponent>(42);
+	    EXPECT_EQ(comp1.value, 42);
+	    EXPECT_EQ(comp2.data, std::vector<int>({1, 2, 3}));
+	    EXPECT_TRUE(comp2.flag);
+	}
 
-    // Get and modify
-    TestComponent& component = manager->getSingletonComponent<TestComponent>();
-    component.value = 100;
-    component.name = "modified";
+	TEST_F(SingletonComponentManagerTest, ModifyComponent) {
+	    manager->registerSingletonComponent<TestComponent>(42);
 
-    // Should reflect changes when retrieved again
-    TestComponent& retrieved = manager->getSingletonComponent<TestComponent>();
-    EXPECT_EQ(retrieved.value, 100);
-    EXPECT_EQ(retrieved.name, "modified");
-}
+	    // Get and modify
+	    TestComponent& component = manager->getSingletonComponent<TestComponent>();
+	    component.value = 100;
+	    component.name = "modified";
 
-TEST_F(SingletonComponentManagerTest, RegisterAfterUnregister) {
-    // Register
-    manager->registerSingletonComponent<TestComponent>(42);
+	    // Should reflect changes when retrieved again
+	    TestComponent& retrieved = manager->getSingletonComponent<TestComponent>();
+	    EXPECT_EQ(retrieved.value, 100);
+	    EXPECT_EQ(retrieved.name, "modified");
+	}
 
-    // Unregister
-    manager->unregisterSingletonComponent<TestComponent>();
+	TEST_F(SingletonComponentManagerTest, RegisterAfterUnregister) {
+	    // Register
+	    manager->registerSingletonComponent<TestComponent>(42);
 
-    // Register again with different value
-    manager->registerSingletonComponent<TestComponent>(100);
+	    // Unregister
+	    manager->unregisterSingletonComponent<TestComponent>();
 
-    // Should have new value
-    TestComponent& component = manager->getSingletonComponent<TestComponent>();
-    EXPECT_EQ(component.value, 100);
-}
+	    // Register again with different value
+	    manager->registerSingletonComponent<TestComponent>(100);
 
-TEST_F(SingletonComponentManagerTest, ComplexComponentCycle) {
-    // Register complex component
-    std::vector<int> originalData = {1, 2, 3};
-    manager->registerSingletonComponent<ComplexComponent>(originalData, true);
+	    // Should have new value
+	    TestComponent& component = manager->getSingletonComponent<TestComponent>();
+	    EXPECT_EQ(component.value, 100);
+	}
 
-    // Get and modify
-    ComplexComponent& comp = manager->getSingletonComponent<ComplexComponent>();
-    comp.data.push_back(4);
-    comp.flag = false;
+	TEST_F(SingletonComponentManagerTest, ComplexComponentCycle) {
+	    // Register complex component
+	    std::vector<int> originalData = {1, 2, 3};
+	    manager->registerSingletonComponent<ComplexComponent>(originalData, true);
 
-    // Verify modifications
-    ComplexComponent& modified = manager->getSingletonComponent<ComplexComponent>();
-    std::vector<int> expectedData = {1, 2, 3, 4};
-    EXPECT_EQ(modified.data, expectedData);
-    EXPECT_FALSE(modified.flag);
+	    // Get and modify
+	    ComplexComponent& comp = manager->getSingletonComponent<ComplexComponent>();
+	    comp.data.push_back(4);
+	    comp.flag = false;
 
-    // Unregister
-    manager->unregisterSingletonComponent<ComplexComponent>();
+	    // Verify modifications
+	    ComplexComponent& modified = manager->getSingletonComponent<ComplexComponent>();
+	    std::vector<int> expectedData = {1, 2, 3, 4};
+	    EXPECT_EQ(modified.data, expectedData);
+	    EXPECT_FALSE(modified.flag);
 
-    // Register new instance
-    std::vector<int> newData = {5, 6, 7};
-    manager->registerSingletonComponent<ComplexComponent>(newData, true);
+	    // Unregister
+	    manager->unregisterSingletonComponent<ComplexComponent>();
 
-    // Verify new instance
-    ComplexComponent& newComp = manager->getSingletonComponent<ComplexComponent>();
-    EXPECT_EQ(newComp.data, newData);
-    EXPECT_TRUE(newComp.flag);
-}
+	    // Register new instance
+	    std::vector<int> newData = {5, 6, 7};
+	    manager->registerSingletonComponent<ComplexComponent>(newData, true);
 
-// Test edge cases
+	    // Verify new instance
+	    ComplexComponent& newComp = manager->getSingletonComponent<ComplexComponent>();
+	    EXPECT_EQ(newComp.data, newData);
+	    EXPECT_TRUE(newComp.flag);
+	}
 
-TEST_F(SingletonComponentManagerTest, EmptyComponent) {
-    struct EmptyComponent {};
+	TEST_F(SingletonComponentManagerTest, MultipleUnregistrations) {
+	    manager->registerSingletonComponent<TestComponent>(42);
+	    manager->unregisterSingletonComponent<TestComponent>();
 
-    manager->registerSingletonComponent<EmptyComponent>();
-    EXPECT_NO_THROW(manager->getSingletonComponent<EmptyComponent>());
-}
-
-TEST_F(SingletonComponentManagerTest, NonDefaultConstructibleComponent) {
-    struct NonDefaultComponent {
-        int value;
-        explicit NonDefaultComponent(int v) : value(v) {}
-        NonDefaultComponent() = delete;
-    };
-
-    manager->registerSingletonComponent<NonDefaultComponent>(42);
-    EXPECT_EQ(manager->getSingletonComponent<NonDefaultComponent>().value, 42);
-}
-
-TEST_F(SingletonComponentManagerTest, MoveOnlyComponent) {
-    struct MoveOnlyComponent {
-        std::unique_ptr<int> ptr;
-
-        explicit MoveOnlyComponent(int v) : ptr(std::make_unique<int>(v)) {}
-        MoveOnlyComponent(const MoveOnlyComponent&) = delete;
-        MoveOnlyComponent& operator=(const MoveOnlyComponent&) = delete;
-        MoveOnlyComponent(MoveOnlyComponent&&) = default;
-        MoveOnlyComponent& operator=(MoveOnlyComponent&&) = default;
-    };
-
-    manager->registerSingletonComponent<MoveOnlyComponent>(42);
-    EXPECT_EQ(*manager->getSingletonComponent<MoveOnlyComponent>().ptr, 42);
-}
-
-TEST_F(SingletonComponentManagerTest, MultipleUnregistrations) {
-    manager->registerSingletonComponent<TestComponent>(42);
-    manager->unregisterSingletonComponent<TestComponent>();
-
-    // Second unregistration should throw
-    EXPECT_THROW(manager->unregisterSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
-}
-
-class InheritanceTestBase {
-public:
-    virtual ~InheritanceTestBase() = default;
-    int baseValue = 0;
-};
-
-class InheritanceTestDerived : public InheritanceTestBase {
-public:
-    InheritanceTestDerived(int base, int derived) {
-        baseValue = base;
-        derivedValue = derived;
-    }
-    int derivedValue = 0;
-};
-
-TEST_F(SingletonComponentManagerTest, InheritedComponent) {
-    manager->registerSingletonComponent<InheritanceTestDerived>(10, 20);
-
-    InheritanceTestDerived& component = manager->getSingletonComponent<InheritanceTestDerived>();
-    EXPECT_EQ(component.baseValue, 10);
-    EXPECT_EQ(component.derivedValue, 20);
-}
+	    // Second unregistration should throw
+	    EXPECT_THROW(manager->unregisterSingletonComponent<TestComponent>(), SingletonComponentNotRegistered);
+	}
 
 }

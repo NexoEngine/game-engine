@@ -1,4 +1,4 @@
-//// Components.test.cpp //////////////////////////////////////////////////////
+//// Components.test.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,697 +7,560 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        26/11/2024
-//  Description: Test file for the components ecs classes
+//  Date:        09/04/2025
+//  Description: Test file for the component manager
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "ecs/Components.hpp"
-#include "Definitions.hpp"
+#include "Components.hpp"
+#include "ECSExceptions.hpp"
+#include <string>
 
 namespace nexo::ecs {
-    struct TestComponent {
-        int value;
-    };
 
-    struct AnotherComponent {
-        float data;
-    };
+	struct TestComponentA {
+	    int value;
+
+	    TestComponentA(int v = 0) : value(v) {}
+
+	    bool operator==(const TestComponentA& other) const {
+	        return value == other.value;
+	    }
+	};
+
+	struct TestComponentB {
+	    float x, y;
+
+	    TestComponentB(float _x = 0.0f, float _y = 0.0f) : x(_x), y(_y) {}
+
+	    bool operator==(const TestComponentB& other) const {
+	        return x == other.x && y == other.y;
+	    }
+	};
+
+	struct TestComponentC {
+	    std::string name;
+
+	    TestComponentC(const std::string& n = "") : name(n) {}
+
+	    bool operator==(const TestComponentC& other) const {
+	        return name == other.name;
+	    }
+	};
+
+	struct TestComponentD {
+	    bool flag;
+
+	    TestComponentD(bool f = false) : flag(f) {}
+
+	    bool operator==(const TestComponentD& other) const {
+	        return flag == other.flag;
+	    }
+	};
+
+	class ComponentManagerTest : public ::testing::Test {
+	protected:
+	    ComponentManager componentManager;
+
+	    void SetUp() override {
+	        componentManager.registerComponent<TestComponentA>();
+	        componentManager.registerComponent<TestComponentB>();
+	        componentManager.registerComponent<TestComponentC>();
+	    }
+	};
+
+	class GroupKeyTest : public ::testing::Test {
+	protected:
+	    GroupKey createGroupKey() {
+	        GroupKey key;
+	        key.ownedSignature.set(0);
+	        key.ownedSignature.set(2);
+	        key.nonOwnedSignature.set(1);
+	        key.nonOwnedSignature.set(3);
+	        return key;
+	    }
+	};
+
+	// =========================================================
+	// ================== COMPONENT REGISTRATION ===============
+	// =========================================================
+
+	TEST_F(ComponentManagerTest, RegisterComponentCreatesComponentArray) {
+	    // Register a new component type
+	    componentManager.registerComponent<TestComponentD>();
+
+	    // Check that the component array was created
+	    auto componentArray = componentManager.getComponentArray<TestComponentD>();
+	    EXPECT_NE(componentArray, nullptr);
+	    EXPECT_EQ(componentArray->size(), 0);
+	}
+
+	TEST_F(ComponentManagerTest, GetComponentTypeReturnsConsistentTypeID) {
+	    // Get component types for registered components
+	    ComponentType typeA1 = componentManager.getComponentType<TestComponentA>();
+	    ComponentType typeA2 = componentManager.getComponentType<TestComponentA>();
+	    ComponentType typeB = componentManager.getComponentType<TestComponentB>();
+
+	    // Same component type should return the same ID
+	    EXPECT_EQ(typeA1, typeA2);
+
+	    // Different component types should return different IDs
+	    EXPECT_NE(typeA1, typeB);
+	}
+
+	TEST_F(ComponentManagerTest, GetComponentTypeThrowsForUnregisteredComponent) {
+	    // Try to get type ID for an unregistered component
+	    EXPECT_THROW({
+	        static_cast<void>(componentManager.getComponentType<TestComponentD>());
+	    }, ComponentNotRegistered);
+	}
+
+	TEST_F(ComponentManagerTest, GetComponentArrayThrowsForUnregisteredComponent) {
+	    // Try to get component array for an unregistered component
+	    EXPECT_THROW({
+	        static_cast<void>(componentManager.getComponentArray<TestComponentD>());
+	    }, ComponentNotRegistered);
+	}
 
-    class ComponentManagerTest : public ::testing::Test {
-        protected:
-            void SetUp() override
-            {
-                componentManager = std::make_unique<ComponentManager>();
-            }
+	// =========================================================
+	// ============= COMPONENT ADDITION/REMOVAL ================
+	// =========================================================
+
+	TEST_F(ComponentManagerTest, AddComponentAddsComponentToEntity) {
+	    const Entity entity = 1;
+	    const TestComponentA component(42);
+	    Signature signature;
+
+	    // Add component to entity
+	    componentManager.addComponent<TestComponentA>(entity, component, signature);
 
-            std::unique_ptr<ComponentManager> componentManager;
-    };
+	    // Check that the component was added
+	    auto& retrievedComponent = componentManager.getComponent<TestComponentA>(entity);
+	    EXPECT_EQ(retrievedComponent.value, component.value);
 
-    TEST(ComponentArrayTest, InsertAndRetrieveData)
-    {
-        ComponentArray<TestComponent> array;
+	    // Check the size of the component array
+	    auto componentArray = componentManager.getComponentArray<TestComponentA>();
+	    EXPECT_EQ(componentArray->size(), 1);
+	    EXPECT_TRUE(componentArray->hasComponent(entity));
+	}
+
+	TEST_F(ComponentManagerTest, RemoveComponentRemovesComponentFromEntity) {
+	    const Entity entity = 1;
+	    const TestComponentA component(42);
+	    Signature signature;
 
-        Entity entity1 = 1;
-        Entity entity2 = 2;
+	    // Add component to entity
+	    componentManager.addComponent<TestComponentA>(entity, component, signature);
 
-        array.insertData(entity1, {42});
-        array.insertData(entity2, {84});
+	    // Verify component exists
+	    EXPECT_TRUE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
 
-        EXPECT_EQ(array.getData(entity1).value, 42);
-        EXPECT_EQ(array.getData(entity2).value, 84);
-    }
+	    // Remove component
+	    componentManager.removeComponent<TestComponentA>(entity, signature);
 
-    TEST(ComponentArrayTest, RemoveData)
-    {
-        ComponentArray<TestComponent> array;
+	    // Check that the component was removed
+	    EXPECT_FALSE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
+	    EXPECT_EQ(componentManager.getComponentArray<TestComponentA>()->size(), 0);
+	}
+
+	TEST_F(ComponentManagerTest, TryRemoveComponentReturnsTrueIfRemoved) {
+	    const Entity entity = 1;
+	    const TestComponentA component(42);
+	    Signature signature;
 
-        Entity entity = 1;
+	    // Add component to entity
+	    componentManager.addComponent<TestComponentA>(entity, component, signature);
 
-        array.insertData(entity, {42});
-        EXPECT_NO_THROW(array.removeData(entity));
+	    // Try to remove component
+	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, signature);
 
-        EXPECT_THROW(static_cast<void>(array.getData(entity)), ComponentNotFound);
-    }
+	    // Check that the component was removed and function returned true
+	    EXPECT_TRUE(removed);
+	    EXPECT_FALSE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
+	}
+
+	TEST_F(ComponentManagerTest, TryRemoveComponentReturnsFalseIfNotExist) {
+	    const Entity entity = 1;
+	    Signature signature;
+
+	    // Try to remove a component that doesn't exist
+	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, signature);
 
-    TEST(ComponentArrayTest, HandleEntityDestruction)
-    {
-        ComponentArray<TestComponent> array;
+	    // Check that the function returned false
+	    EXPECT_FALSE(removed);
+	}
 
-        Entity entity = 1;
+	TEST_F(ComponentManagerTest, GetComponentReturnsCorrectComponent) {
+	    const Entity entity = 1;
+	    const TestComponentA component(42);
+	    Signature signature;
+
+	    // Add component to entity
+	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+
+	    // Get component
+	    auto& retrievedComponent = componentManager.getComponent<TestComponentA>(entity);
+
+	    // Check that the correct component was returned
+	    EXPECT_EQ(retrievedComponent.value, component.value);
+
+	    // Modify the component and verify it was changed in the array
+	    retrievedComponent.value = 100;
+	    auto& verifyComponent = componentManager.getComponent<TestComponentA>(entity);
+	    EXPECT_EQ(verifyComponent.value, 100);
+	}
 
-        array.insertData(entity, {42});
-        array.entityDestroyed(entity);
+	TEST_F(ComponentManagerTest, TryGetComponentReturnsComponentIfExists) {
+	    const Entity entity = 1;
+	    const TestComponentA component(42);
+	    Signature signature;
+
+	    // Add component to entity
+	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+
+	    // Try to get component
+	    auto optComponent = componentManager.tryGetComponent<TestComponentA>(entity);
+
+	    // Check that the component was returned
+	    EXPECT_TRUE(optComponent.has_value());
+	    EXPECT_EQ(optComponent.value().get().value, component.value);
+	}
 
-        EXPECT_THROW(static_cast<void>(array.getData(entity)), ComponentNotFound);
-    }
+	TEST_F(ComponentManagerTest, TryGetComponentReturnsNulloptIfNotExists) {
+	    const Entity entity = 1;
 
-    TEST(ComponentArrayTest, InsertDuplicateEntity)
-    {
-        ComponentArray<TestComponent> array;
-
-        Entity entity = 1;
-
-        array.insertData(entity, {42});
-        EXPECT_NO_THROW(array.insertData(entity, {100}));
-
-        EXPECT_EQ(array.getData(entity).value, 42); // Original value should remain
-    }
-
-    TEST(ComponentArrayTest, InitialStateEmpty)
-    {
-        ComponentArray<TestComponent> array;
-        EXPECT_EQ(array.size(), 0);
-        EXPECT_FALSE(array.hasComponent(0));
-    }
-
-    TEST(ComponentArrayTest, SizeTracking)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(1, {42});
-        EXPECT_EQ(array.size(), 1);
-
-        array.insertData(2, {84});
-        EXPECT_EQ(array.size(), 2);
-
-        array.removeData(1);
-        EXPECT_EQ(array.size(), 1);
-    }
-
-    TEST(ComponentArrayTest, GetEntityAtIndex)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(5, {42});
-        array.insertData(10, {84});
-
-        EXPECT_EQ(array.getEntityAtIndex(0), 5);
-        EXPECT_EQ(array.getEntityAtIndex(1), 10);
-        EXPECT_THROW(static_cast<void>(array.getEntityAtIndex(2)), OutOfRange);
-    }
-
-    TEST(ComponentArrayTest, RawDataAccess)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(1, {42});
-        array.insertData(2, {84});
-
-        auto data = array.rawData();
-        EXPECT_EQ(data.size(), 2);
-        EXPECT_EQ(data[0].value, 42);
-        EXPECT_EQ(data[1].value, 84);
-
-        // Test const version
-        const auto& constArray = array;
-        auto constData = constArray.rawData();
-        EXPECT_EQ(constData.size(), 2);
-        EXPECT_EQ(constData[0].value, 42);
-        EXPECT_EQ(constData[1].value, 84);
-    }
-
-    TEST(ComponentArrayTest, EntitiesAccess)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(5, {42});
-        array.insertData(10, {84});
-
-        auto entities = array.entities();
-        EXPECT_EQ(entities.size(), 2);
-        EXPECT_EQ(entities[0], 5);
-        EXPECT_EQ(entities[1], 10);
-    }
-
-    TEST(ComponentArrayTest, SwapAndPopRemovalMechanism)
-    {
-        ComponentArray<TestComponent> array;
-
-        // Insert three components
-        array.insertData(1, {1});
-        array.insertData(2, {2});
-        array.insertData(3, {3});
-
-        // Remove the middle one
-        array.removeData(2);
-
-        // Check if the entities are correctly mapped
-        EXPECT_EQ(array.size(), 2);
-        EXPECT_TRUE(array.hasComponent(1));
-        EXPECT_FALSE(array.hasComponent(2));
-        EXPECT_TRUE(array.hasComponent(3));
-
-        // The last entity (3) should now be at index 1
-        EXPECT_EQ(array.getEntityAtIndex(1), 3);
-
-        // Data should be preserved correctly
-        EXPECT_EQ(array.getData(1).value, 1);
-        EXPECT_EQ(array.getData(3).value, 3);
-    }
-
-    TEST(ComponentArrayTest, AutomaticGrowth)
-    {
-        // Create array with small initial capacity
-        ComponentArray<TestComponent, 2> array;
-
-        // Insert component for an entity beyond initial capacity
-        array.insertData(10, {42});
-
-        EXPECT_TRUE(array.hasComponent(10));
-        EXPECT_EQ(array.getData(10).value, 42);
-    }
-
-    TEST(ComponentArrayTest, ConstGetData)
-    {
-        ComponentArray<TestComponent> array;
-        array.insertData(1, {42});
-
-        const ComponentArray<TestComponent>& constArray = array;
-        EXPECT_EQ(constArray.getData(1).value, 42);
-        EXPECT_THROW(static_cast<void>(constArray.getData(2)), ComponentNotFound);
-    }
-
-    TEST(ComponentArrayTest, LargeEntityIDs)
-    {
-        ComponentArray<TestComponent> array;
-
-        Entity largeEntity = MAX_ENTITIES - 1;
-        array.insertData(largeEntity, {42});
-
-        EXPECT_TRUE(array.hasComponent(largeEntity));
-        EXPECT_EQ(array.getData(largeEntity).value, 42);
-    }
-
-    TEST(ComponentArrayTest, MultipleInsertionsAndRemovals)
-    {
-        ComponentArray<TestComponent> array;
-
-        // Insert several components
-        for (Entity e = 0; e < 100; ++e) {
-            array.insertData(e, {static_cast<int>(e)});
-        }
-
-        EXPECT_EQ(array.size(), 100);
-
-        // Remove some components
-        for (Entity e = 0; e < 100; e += 2) {
-            array.removeData(e);
-        }
-
-        EXPECT_EQ(array.size(), 50);
-
-        // Check remaining components
-        for (Entity e = 1; e < 100; e += 2) {
-            EXPECT_TRUE(array.hasComponent(e));
-            EXPECT_EQ(array.getData(e).value, e);
-        }
-    }
-
-    TEST(ComponentArrayTest, ShrinkingBehavior)
-    {
-        ComponentArray<TestComponent, 10> array;
-
-        // Insert many components to force capacity increase
-        for (Entity e = 0; e < 100; ++e) {
-            array.insertData(e, {static_cast<int>(e)});
-        }
-
-        // Remove most components to trigger shrinking
-        for (Entity e = 20; e < 100; ++e) {
-            array.removeData(e);
-        }
-
-        // Check remaining components are still accessible
-        for (Entity e = 0; e < 20; ++e) {
-            EXPECT_TRUE(array.hasComponent(e));
-            EXPECT_EQ(array.getData(e).value, e);
-        }
-    }
-
-    TEST(ComponentArrayTest, ComplexComponentType)
-    {
-        struct ComplexComponent {
-            std::string name;
-            std::vector<int> data;
-            bool flag;
-
-            bool operator==(const ComplexComponent& other) const {
-                return name == other.name && data == other.data && flag == other.flag;
-            }
-        };
-
-        ComponentArray<ComplexComponent> array;
-
-        ComplexComponent comp1{"test", {1, 2, 3}, true};
-        ComplexComponent comp2{"another", {4, 5}, false};
-
-        array.insertData(1, comp1);
-        array.insertData(2, comp2);
-
-        EXPECT_EQ(array.getData(1), comp1);
-        EXPECT_EQ(array.getData(2), comp2);
-    }
-
-    TEST(ComponentArrayTest, InsertBeyondMaxEntities)
-    {
-        ComponentArray<TestComponent> array;
-        EXPECT_THROW(array.insertData(MAX_ENTITIES, {42}), OutOfRange);
-    }
-
-    TEST(ComponentArrayTest, AccessNonExistentComponent)
-    {
-        ComponentArray<TestComponent> array;
-        EXPECT_THROW(static_cast<void>(array.getData(1)), ComponentNotFound);
-    }
-
-    TEST(ComponentArrayTest, RemoveNonExistentComponent)
-    {
-        ComponentArray<TestComponent> array;
-        EXPECT_THROW(array.removeData(1), ComponentNotFound);
-    }
-
-    TEST(ComponentArrayTest, EntityDestroyedWithComponent)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(1, {42});
-        EXPECT_TRUE(array.hasComponent(1));
-
-        array.entityDestroyed(1);
-        EXPECT_FALSE(array.hasComponent(1));
-        EXPECT_EQ(array.size(), 0);
-    }
-
-    TEST(ComponentArrayTest, EntityDestroyedWithoutComponent)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(2, {42});
-        EXPECT_FALSE(array.hasComponent(1));
-
-        // Should not throw or affect other components
-        EXPECT_NO_THROW(array.entityDestroyed(1));
-        EXPECT_TRUE(array.hasComponent(2));
-        EXPECT_EQ(array.size(), 1);
-    }
-
-    TEST(ComponentArrayTest, VerySmallCapacity)
-    {
-        ComponentArray<TestComponent, 1> array;
-
-        // Insert beyond initial capacity
-        array.insertData(0, {0});
-        array.insertData(1, {1});
-        array.insertData(2, {2});
-
-        EXPECT_EQ(array.size(), 3);
-        EXPECT_TRUE(array.hasComponent(0));
-        EXPECT_TRUE(array.hasComponent(1));
-        EXPECT_TRUE(array.hasComponent(2));
-    }
-
-    TEST(ComponentArrayTest, ConcurrentEntityRemovalAndAccess)
-    {
-        ComponentArray<TestComponent> array;
-
-        for (Entity e = 0; e < 10; ++e) {
-            array.insertData(e, {static_cast<int>(e)});
-        }
-
-        // Remove entities and check that others remain accessible
-        for (Entity e = 0; e < 10; e += 2) {
-            array.removeData(e);
-
-            // Check remaining entities are still correctly accessible
-            for (Entity remaining = 1; remaining < 10; remaining += 2) {
-                EXPECT_TRUE(array.hasComponent(remaining));
-                EXPECT_EQ(array.getData(remaining).value, remaining);
-            }
-        }
-    }
-
-    TEST(ComponentArrayTest, ReinsertAfterRemoval)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(1, {42});
-        array.removeData(1);
-        EXPECT_FALSE(array.hasComponent(1));
-
-        // Reinsert with new value
-        array.insertData(1, {100});
-        EXPECT_TRUE(array.hasComponent(1));
-        EXPECT_EQ(array.getData(1).value, 100);
-    }
-
-    TEST(ComponentArrayTest, MoveSemanticRespect)
-    {
-        // Instead of using a true move-only type, use a class that tracks moves
-        struct MoveTrackingComponent {
-            std::shared_ptr<int> ptr;
-            int moves = 0;
-
-            MoveTrackingComponent(int val) : ptr(std::make_shared<int>(val)) {}
-
-            MoveTrackingComponent(const MoveTrackingComponent& other) : ptr(other.ptr), moves(other.moves) {}
-
-            MoveTrackingComponent(MoveTrackingComponent&& other) noexcept
-                : ptr(std::move(other.ptr)), moves(other.moves + 1) {}
-
-            MoveTrackingComponent& operator=(const MoveTrackingComponent& other) {
-                ptr = other.ptr;
-                moves = other.moves;
-                return *this;
-            }
-
-            MoveTrackingComponent& operator=(MoveTrackingComponent&& other) noexcept {
-                ptr = std::move(other.ptr);
-                moves = other.moves + 1;
-                return *this;
-            }
-        };
-
-        ComponentArray<MoveTrackingComponent> array;
-
-        array.insertData(1, MoveTrackingComponent(42));
-        EXPECT_EQ(*array.getData(1).ptr, 42);
-
-        // Don't remove enough components to trigger shrinking
-        // Just verify the basic functionality works
-    }
-
-    TEST(ComponentArrayTest, SmallOperationsWithoutShrinking)
-    {
-        // Using a component with expensive move operations
-        struct ExpensiveComponent {
-            std::vector<int> data;
-
-            ExpensiveComponent(std::initializer_list<int> values) : data(values) {}
-        };
-
-        ComponentArray<ExpensiveComponent> array;
-
-        // Add just a few components
-        array.insertData(1, {1, 2, 3});
-        array.insertData(2, {4, 5, 6});
-        array.insertData(3, {7, 8, 9});
-
-        // Verify data access
-        EXPECT_EQ(array.getData(1).data, std::vector<int>({1, 2, 3}));
-        EXPECT_EQ(array.getData(2).data, std::vector<int>({4, 5, 6}));
-        EXPECT_EQ(array.getData(3).data, std::vector<int>({7, 8, 9}));
-
-        // Remove one (not enough to trigger shrinking)
-        array.removeData(2);
-
-        // Verify remaining data
-        EXPECT_EQ(array.getData(1).data, std::vector<int>({1, 2, 3}));
-        EXPECT_EQ(array.getData(3).data, std::vector<int>({7, 8, 9}));
-    }
-
-    TEST(ComponentArrayTest, EdgeCaseEmptyRemoval)
-    {
-        ComponentArray<TestComponent> array;
-
-        array.insertData(1, {42});
-        array.removeData(1);
-
-        // Array should be empty now
-        EXPECT_EQ(array.size(), 0);
-        EXPECT_FALSE(array.hasComponent(1));
-
-        // Removing again should throw
-        EXPECT_THROW(array.removeData(1), ComponentNotFound);
-    }
-
-    TEST(ComponentArrayTest, HandleOverflow)
-    {
-        ComponentArray<TestComponent> array;
-
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
-        {
-            EXPECT_NO_THROW(array.insertData(entity, {static_cast<int>(entity)}));
-        }
-
-        EXPECT_THROW(array.insertData(MAX_ENTITIES, {999}), OutOfRange);
-    }
-
-    TEST_F(ComponentManagerTest, RegisterAndRetrieveComponentType)
-    {
-        componentManager->registerComponent<TestComponent>();
-        ComponentType type = componentManager->getComponentType<TestComponent>();
-
-        EXPECT_EQ(type, 0); // First registered component type
-    }
-
-    TEST_F(ComponentManagerTest, AddAndRetrieveComponent)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-        TestComponent &retrieved = componentManager->getComponent<TestComponent>(entity);
-
-        EXPECT_EQ(retrieved.value, 42);
-    }
-
-    TEST_F(ComponentManagerTest, RemoveComponent)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-        EXPECT_NO_THROW(componentManager->removeComponent<TestComponent>(entity, signature));
-        EXPECT_THROW(static_cast<void>(componentManager->getComponent<TestComponent>(entity)), ComponentNotFound);
-    }
-
-    TEST_F(ComponentManagerTest, TryRemoveComponent)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-
-        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity, signature)); // No component yet
-
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-        EXPECT_TRUE(componentManager->tryRemoveComponent<TestComponent>(entity, signature));
-        signature.set(componentManager->getComponentType<TestComponent>(), false);
-        EXPECT_FALSE(componentManager->tryRemoveComponent<TestComponent>(entity, signature));
-    }
-
-    TEST_F(ComponentManagerTest, EntityDestroyedCleansUpComponents)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity1 = 1;
-        Entity entity2 = 2;
-        Signature signature1;
-        Signature signature2;
-
-        signature1.set(componentManager->getComponentType<TestComponent>(), true);
-        signature2.set(componentManager->getComponentType<TestComponent>(), true);
-
-        componentManager->addComponent(entity1, TestComponent{42}, signature1);
-        componentManager->addComponent(entity2, TestComponent{84}, signature2);
-
-        componentManager->entityDestroyed(entity1);
-
-        EXPECT_THROW(static_cast<void>(componentManager->getComponent<TestComponent>(entity1)), ComponentNotFound);
-        EXPECT_EQ(componentManager->getComponent<TestComponent>(entity2).value, 84);
-    }
-
-    TEST_F(ComponentManagerTest, RetrieveUnregisteredComponentType)
-    {
-        EXPECT_THROW(static_cast<void>(componentManager->getComponentType<TestComponent>()), ComponentNotRegistered);
-    }
-
-    TEST_F(ComponentManagerTest, AddComponentWithoutRegistering)
-    {
-        Entity entity = 1;
-        EXPECT_THROW(componentManager->addComponent(entity, TestComponent{42}, Signature{}), ComponentNotRegistered);
-    }
-
-    TEST_F(ComponentManagerTest, TryGetComponent)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-
-        auto result = componentManager->tryGetComponent<TestComponent>(entity);
-        EXPECT_FALSE(result.has_value());
-
-        Signature signature;
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-        result = componentManager->tryGetComponent<TestComponent>(entity);
-        ASSERT_TRUE(result.has_value());
-        EXPECT_EQ(result->get().value, 42);
-    }
-
-    TEST_F(ComponentManagerTest, GetComponentArray)
-    {
-        componentManager->registerComponent<TestComponent>();
-
-        // Get component array
-        auto array = componentManager->getComponentArray<TestComponent>();
-        EXPECT_NE(array, nullptr);
-
-        // Get const component array
-        const auto& constManager = *componentManager;
-        auto constArray = constManager.getComponentArray<TestComponent>();
-        EXPECT_NE(constArray, nullptr);
-    }
-
-    TEST_F(ComponentManagerTest, GetComponentArrayUnregistered)
-    {
-        // Get component array for unregistered component
-        EXPECT_THROW(static_cast<void>(componentManager->getComponentArray<TestComponent>()), ComponentNotRegistered);
-
-        // Get const component array for unregistered component
-        const auto& constManager = *componentManager;
-        EXPECT_THROW(static_cast<void>(constManager.getComponentArray<TestComponent>()), ComponentNotRegistered);
-    }
-
-    TEST_F(ComponentManagerTest, MoveConstructor)
-    {
-        // Setup original manager
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-
-        // Move construct new manager
-        ComponentManager movedManager(std::move(*componentManager));
-
-        // Should be able to access component through moved manager
-        EXPECT_EQ(movedManager.getComponent<TestComponent>(entity).value, 42);
-    }
-
-    TEST_F(ComponentManagerTest, MoveAssignment)
-    {
-        // Setup original manager
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-
-        // Create second manager and move-assign
-        ComponentManager secondManager;
-        secondManager = std::move(*componentManager);
-
-        // Should be able to access component through second manager
-        EXPECT_EQ(secondManager.getComponent<TestComponent>(entity).value, 42);
-    }
-
-    TEST_F(ComponentManagerTest, ComponentTypeIDs)
-    {
-        componentManager->registerComponent<TestComponent>();
-        componentManager->registerComponent<AnotherComponent>();
-
-        // Different component types should have different IDs
-        ComponentType testType = componentManager->getComponentType<TestComponent>();
-        ComponentType anotherType = componentManager->getComponentType<AnotherComponent>();
-
-        EXPECT_NE(testType, anotherType);
-    }
-
-    TEST_F(ComponentManagerTest, EntityDestroyedNoComponents)
-    {
-        // EntityDestroyed with no components registered should not crash
-        EXPECT_NO_THROW(componentManager->entityDestroyed(1));
-    }
-
-    TEST_F(ComponentManagerTest, EntityDestroyedEmptyComponentArray)
-    {
-        componentManager->registerComponent<TestComponent>();
-
-        // EntityDestroyed with registered but empty component array should not crash
-        EXPECT_NO_THROW(componentManager->entityDestroyed(1));
-    }
-
-    TEST_F(ComponentManagerTest, ComplexComponentStorage)
-    {
-        struct ComplexComponent {
-            std::string name;
-            std::vector<int> data;
-        };
-
-        componentManager->registerComponent<ComplexComponent>();
-        Entity entity = 1;
-
-        ComplexComponent complex{"test", {1, 2, 3}};
-        Signature signature;
-        signature.set(componentManager->getComponentType<ComplexComponent>(), true);
-        componentManager->addComponent(entity, complex, signature);
-
-        ComplexComponent& retrieved = componentManager->getComponent<ComplexComponent>(entity);
-        EXPECT_EQ(retrieved.name, "test");
-        EXPECT_EQ(retrieved.data, std::vector<int>({1, 2, 3}));
-    }
-
-    TEST_F(ComponentManagerTest, GetComponentArrayDirect)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-
-        Signature signature;
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-
-        // Get component array directly and use it
-        auto array = componentManager->getComponentArray<TestComponent>();
-        TestComponent& component = array->getData(entity);
-        EXPECT_EQ(component.value, 42);
-    }
-
-    TEST_F(ComponentManagerTest, ComponentModification)
-    {
-        componentManager->registerComponent<TestComponent>();
-        Entity entity = 1;
-        Signature signature;
-        signature.set(componentManager->getComponentType<TestComponent>(), true);
-        componentManager->addComponent(entity, TestComponent{42}, signature);
-
-        // Modify component directly
-        componentManager->getComponent<TestComponent>(entity).value = 100;
-
-        // Verify modification took effect
-        EXPECT_EQ(componentManager->getComponent<TestComponent>(entity).value, 100);
-    }
-
-    TEST_F(ComponentManagerTest, RegisterDuplicateComponent)
-    {
-        componentManager->registerComponent<TestComponent>();
-        EXPECT_NO_THROW(componentManager->registerComponent<TestComponent>());
-    }
+	    // Try to get a component that doesn't exist
+	    auto optComponent = componentManager.tryGetComponent<TestComponentA>(entity);
+
+	    // Check that nullopt was returned
+	    EXPECT_FALSE(optComponent.has_value());
+	}
+
+	TEST_F(ComponentManagerTest, EntityDestroyedRemovesAllComponents) {
+	    const Entity entity = 1;
+	    Signature signature;
+
+	    // Add multiple components to the entity
+		signature.set(getComponentTypeID<TestComponentA>());
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+
+	    signature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+
+	    // Verify the components exist
+	    EXPECT_TRUE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
+	    EXPECT_TRUE(componentManager.getComponentArray<TestComponentB>()->hasComponent(entity));
+
+	    // Destroy the entity
+	    componentManager.entityDestroyed(entity, signature);
+
+	    // Check that all components were removed
+	    EXPECT_FALSE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
+	    EXPECT_FALSE(componentManager.getComponentArray<TestComponentB>()->hasComponent(entity));
+	}
+
+	// =========================================================
+	// =================== GROUP KEYS ==========================
+	// =========================================================
+
+	TEST_F(GroupKeyTest, GroupKeyEquality) {
+	    GroupKey key1 = createGroupKey();
+	    GroupKey key2 = createGroupKey();
+
+	    // Same keys should be equal
+	    EXPECT_EQ(key1, key2);
+
+	    // Different owned signature should make keys not equal
+	    GroupKey key3 = createGroupKey();
+	    key3.ownedSignature.set(4);
+	    EXPECT_NE(key1, key3);
+
+	    // Different non-owned signature should make keys not equal
+	    GroupKey key4 = createGroupKey();
+	    key4.nonOwnedSignature.set(5);
+	    EXPECT_NE(key1, key4);
+	}
+
+	TEST_F(GroupKeyTest, GroupKeyHash) {
+	    GroupKey key1 = createGroupKey();
+	    GroupKey key2 = createGroupKey();
+
+	    // Same keys should have the same hash
+	    std::hash<GroupKey> hasher;
+	    EXPECT_EQ(hasher(key1), hasher(key2));
+
+	    // Different keys should have different hashes (not guaranteed, but likely)
+	    GroupKey key3 = createGroupKey();
+	    key3.ownedSignature.set(4);
+	    EXPECT_NE(hasher(key1), hasher(key3));
+	}
+
+	TEST_F(ComponentManagerTest, HasCommonOwnedComponents) {
+	    GroupKey key1, key2, key3;
+
+	    // Set up signatures with overlapping components
+	    key1.ownedSignature.set(0);
+	    key1.ownedSignature.set(1);
+
+	    key2.ownedSignature.set(1);
+	    key2.ownedSignature.set(2);
+
+	    key3.ownedSignature.set(3);
+	    key3.ownedSignature.set(4);
+
+	    // Check for overlapping components
+	    EXPECT_TRUE(componentManager.hasCommonOwnedComponents(key1, key2)); // Both have component 1
+	    EXPECT_FALSE(componentManager.hasCommonOwnedComponents(key1, key3)); // No common components
+	    EXPECT_FALSE(componentManager.hasCommonOwnedComponents(key2, key3)); // No common components
+	}
+
+	// =========================================================
+	// ================ GROUP REGISTRATION =====================
+	// =========================================================
+
+	TEST_F(ComponentManagerTest, RegisterGroupCreatesNewGroup) {
+	    // Register a new group
+	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB, TestComponentC>());
+
+	    // Check that the group was created
+	    EXPECT_NE(group, nullptr);
+
+	    // Verify group properties
+	    EXPECT_EQ(group->size(), 0);
+
+	    // Verify group signature
+	    auto allSignature = group->allSignature();
+	    EXPECT_TRUE(allSignature.test(getComponentTypeID<TestComponentA>()));
+	    EXPECT_TRUE(allSignature.test(getComponentTypeID<TestComponentB>()));
+	    EXPECT_TRUE(allSignature.test(getComponentTypeID<TestComponentC>()));
+	}
+
+	TEST_F(ComponentManagerTest, RegisterGroupReturnsSameGroupWhenCalledTwice) {
+	    // Register group twice
+	    auto group1 = componentManager.registerGroup<TestComponentA>(get<TestComponentB, TestComponentC>());
+	    auto group2 = componentManager.registerGroup<TestComponentA>(get<TestComponentB, TestComponentC>());
+
+	    // Should return the same group object
+	    EXPECT_EQ(group1, group2);
+	}
+
+	TEST_F(ComponentManagerTest, RegisterGroupThrowsOnOverlappingOwnedComponents) {
+	    // Register first group
+	    componentManager.registerGroup<TestComponentA, TestComponentB>(get<TestComponentC>());
+
+		// The EXPECT_THROW macro seems to dislike templating for some reason
+		bool exceptionThrown = false;
+		try {
+		    componentManager.registerGroup<TestComponentA, TestComponentC>(get<TestComponentB>());
+		} catch (const OverlappingGroupsException& e) {
+		    exceptionThrown = true;
+		}
+		EXPECT_TRUE(exceptionThrown);
+	}
+
+	TEST_F(ComponentManagerTest, RegisterGroupThrowsOnUnregisteredComponents) {
+		bool exceptionThrown = false;
+	    try {
+	        componentManager.registerGroup<TestComponentA, TestComponentD>(get<TestComponentB>());
+	    } catch (const ComponentNotRegistered& e) {
+			exceptionThrown = true;
+	    }
+		EXPECT_TRUE(exceptionThrown);
+	}
+
+	TEST_F(ComponentManagerTest, GetGroupReturnsRegisteredGroup) {
+	    // Register a group
+	    auto registeredGroup = componentManager.registerGroup<TestComponentA>(get<TestComponentB, TestComponentC>());
+
+	    // Get the group
+	    auto retrievedGroup = componentManager.getGroup<TestComponentA>(get<TestComponentB, TestComponentC>());
+
+	    // Should return the same group object
+	    EXPECT_EQ(registeredGroup, retrievedGroup);
+	}
+
+	TEST_F(ComponentManagerTest, GetGroupThrowsOnNonexistentGroup) {
+		bool exceptionThrown = false;
+	    try {
+	        componentManager.getGroup<TestComponentA, TestComponentB>(get<TestComponentC>());
+	    } catch (const GroupNotFound& e) {
+      		exceptionThrown = true;
+	    }
+		EXPECT_TRUE(exceptionThrown);
+	}
+
+	TEST_F(ComponentManagerTest, GroupAddsEntitiesOnComponentsAdded) {
+	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
+
+	    // Create required entity components
+	    const Entity entity = 1;
+	    Signature signature;
+
+	    signature.set(getComponentTypeID<TestComponentA>());
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+
+	    signature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+
+	    // Entity should be automatically added to the group
+	    EXPECT_EQ(group->size(), 1);
+
+	    // Verify the entity is in the group
+	    auto entitySpan = group->entities();
+	    EXPECT_EQ(entitySpan.size(), 1);
+	    EXPECT_EQ(entitySpan[0], entity);
+	}
+
+	TEST_F(ComponentManagerTest, GroupRemovesEntitiesOnComponentsRemoved) {
+	    // Create entity with required components first
+	    const Entity entity = 1;
+	    Signature signature;
+	    signature.set(getComponentTypeID<TestComponentA>());
+
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+
+	    signature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+
+	    // Register group
+	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
+
+	    // Verify entity is in the group
+	    EXPECT_EQ(group->size(), 1);
+
+	    // Remove a required component
+	    componentManager.removeComponent<TestComponentB>(entity, signature);
+
+	    // Entity should be automatically removed from the group
+	    EXPECT_EQ(group->size(), 0);
+	}
+
+	TEST_F(ComponentManagerTest, GroupHandlesMultipleEntities) {
+	    // Register group
+	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
+
+	    for (Entity e = 1; e <= 5; ++e) {
+			Signature signature;
+      		signature.set(getComponentTypeID<TestComponentA>());
+	        componentManager.addComponent<TestComponentA>(e, TestComponentA(e * 10), signature);
+
+	        signature.set(getComponentTypeID<TestComponentB>());
+	        componentManager.addComponent<TestComponentB>(e, TestComponentB(e * 1.0f, e * 2.0f), signature);
+	    }
+
+	    // All entities should be in the group
+	    EXPECT_EQ(group->size(), 5);
+		Signature signature;
+		signature.set(getComponentTypeID<TestComponentA>());
+		signature.set(getComponentTypeID<TestComponentB>());
+
+	    // Remove some entities
+	    for (Entity e = 1; e <= 5; e += 2) {
+	        componentManager.removeComponent<TestComponentA>(e, signature);
+	    }
+
+	    // Only remaining entities should be in the group
+	    EXPECT_EQ(group->size(), 2);
+
+	    // Verify the correct entities remain
+	    auto entitySpan = group->entities();
+	    std::set<Entity> expectedEntities = {2, 4};
+	    std::set<Entity> actualEntities(entitySpan.begin(), entitySpan.end());
+	    EXPECT_EQ(actualEntities, expectedEntities);
+	}
+
+	TEST_F(ComponentManagerTest, EntityDestroyedRemovesFromGroups) {
+	    // Create entity with required components
+	    const Entity entity = 1;
+	    Signature signature;
+
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+	    signature.set(getComponentTypeID<TestComponentA>());
+
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+	    signature.set(getComponentTypeID<TestComponentB>());
+
+	    // Register group
+	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
+
+	    // Verify entity is in the group
+	    EXPECT_EQ(group->size(), 1);
+
+	    // Destroy the entity
+	    componentManager.entityDestroyed(entity, signature);
+
+	    // Entity should be removed from the group
+	    EXPECT_EQ(group->size(), 0);
+	}
+
+	// =========================================================
+	// ================ INTEGRATION TEST ======================
+	// =========================================================
+
+	TEST_F(ComponentManagerTest, ComplexIntegrationTest) {
+	    // Register additional component
+	    componentManager.registerComponent<TestComponentD>();
+
+	    // Register multiple groups
+	    auto groupAB = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
+	    auto groupCD = componentManager.registerGroup<TestComponentC>(get<TestComponentD>());
+
+	    // Create entities with various component combinations
+	    Signature signature1, signature2, signature3;
+
+	    // Entity 1: A + B + C
+	    signature1.set(getComponentTypeID<TestComponentA>());
+	    componentManager.addComponent<TestComponentA>(1, TestComponentA(10), signature1);
+
+	    signature1.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(1, TestComponentB(1.0f, 2.0f), signature1);
+
+	    signature1.set(getComponentTypeID<TestComponentC>());
+	    componentManager.addComponent<TestComponentC>(1, TestComponentC("Entity1"), signature1);
+
+	    // Entity 2: A + B + D
+	    signature2.set(getComponentTypeID<TestComponentA>());
+	    componentManager.addComponent<TestComponentA>(2, TestComponentA(20), signature2);
+
+	    signature2.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(2, TestComponentB(3.0f, 4.0f), signature2);
+
+	    signature2.set(getComponentTypeID<TestComponentD>());
+	    componentManager.addComponent<TestComponentD>(2, TestComponentD(true), signature2);
+
+	    // Entity 3: C + D
+	    signature3.set(getComponentTypeID<TestComponentC>());
+	    componentManager.addComponent<TestComponentC>(3, TestComponentC("Entity3"), signature3);
+
+	    signature3.set(getComponentTypeID<TestComponentD>());
+	    componentManager.addComponent<TestComponentD>(3, TestComponentD(false), signature3);
+
+	    // Verify group membership
+	    EXPECT_EQ(groupAB->size(), 2); // Entities 1 and 2
+	    EXPECT_EQ(groupCD->size(), 1); // Entity 3
+
+	    // Remove components to change group membership
+	    componentManager.removeComponent<TestComponentB>(1, signature1);
+	    signature1.reset(getComponentTypeID<TestComponentB>());
+
+	    signature1.set(getComponentTypeID<TestComponentD>());
+	    componentManager.addComponent<TestComponentD>(1, TestComponentD(true), signature1);
+
+	    // Check updated group membership
+	    EXPECT_EQ(groupAB->size(), 1); // Only Entity 2 now
+	    EXPECT_EQ(groupCD->size(), 2); // Entities 1 and 3 now
+
+	    // Destroy an entity
+	    componentManager.entityDestroyed(2, signature2);
+
+	    // Verify final state
+	    EXPECT_EQ(groupAB->size(), 0);
+	    EXPECT_EQ(groupCD->size(), 2);
+
+	    // Check component arrays
+	    EXPECT_EQ(componentManager.getComponentArray<TestComponentA>()->size(), 1);
+	    EXPECT_EQ(componentManager.getComponentArray<TestComponentB>()->size(), 0);
+	    EXPECT_EQ(componentManager.getComponentArray<TestComponentC>()->size(), 2);
+	    EXPECT_EQ(componentManager.getComponentArray<TestComponentD>()->size(), 2);
+	}
 }
