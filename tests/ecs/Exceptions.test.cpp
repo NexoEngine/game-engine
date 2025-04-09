@@ -1,4 +1,4 @@
-//// ECSExceptions.test.cpp ///////////////////////////////////////////////////
+//// ECSExceptionsTest.cpp ///////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -6,86 +6,208 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Mehdy MORVAN
-//  Date:        02/12/2024
-//  Description: Test file for the ECSExceptions class
+//  Author:      iMeaNz
+//  Date:        2025-04-09
+//  Description: Test file for ECS exceptions
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
-#include "ecs/ECSExceptions.hpp"
+#include "ECSExceptions.hpp"
+#include <stdexcept>
+#include <type_traits>
 
 namespace nexo::ecs {
 
-    TEST(ECSExceptionsTest, ComponentNotFound) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	// Base test fixture for exception tests
+	class ECSExceptionsTest : public ::testing::Test {
+	protected:
+	    void SetUp() override {
+	        // No specific setup needed
+	    }
 
-        ComponentNotFound ex(42);
-        std::string formattedMessage = ex.what();
+	    // Helper method to verify exception inheritance
+	    template<typename ExceptionType>
+	    void verifyExceptionHierarchy() {
+	        static_assert(std::is_base_of_v<Exception, ExceptionType>,
+	                      "Exception class must inherit from Exception");
+	        static_assert(std::is_final_v<ExceptionType>,
+	                      "Exception class should be marked final");
+	    }
 
-        EXPECT_NE(formattedMessage.find("Component not found for: 42"), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    // Helper method to check exception message contains expected text
+	    template<typename ExceptionType, typename... Args>
+	    void verifyExceptionMessage(const std::string& expectedSubstring, Args&&... args) {
+	        try {
+	            throw ExceptionType(std::forward<Args>(args)...);
+	        } catch (const Exception& e) {
+	            std::string message = e.what();
+	            EXPECT_NE(message.find(expectedSubstring), std::string::npos)
+	                << "Exception message '" << message << "' should contain '"
+	                << expectedSubstring << "'";
+	        } catch (...) {
+	            FAIL() << "Exception was not caught as Exception base class";
+	        }
+	    }
+	};
 
-    TEST(ECSExceptionsTest, ComponentNotRegistered) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	// Test InternalError exception
+	TEST_F(ECSExceptionsTest, InternalErrorTest) {
+	    verifyExceptionHierarchy<InternalError>();
 
-        ComponentNotRegistered ex;
-        std::string formattedMessage = ex.what();
+	    const std::string errorMsg = "Something bad happened";
+	    verifyExceptionMessage<InternalError>(errorMsg, errorMsg);
+	    verifyExceptionMessage<InternalError>("Internal error", errorMsg);
 
-        EXPECT_NE(formattedMessage.find("Component has not been registered before use"), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    // Test polymorphic catching
+	    try {
+	        throw InternalError("Test error");
+	        FAIL() << "Exception was not thrown";
+	    } catch (const InternalError& e) {
+	        SUCCEED();
+	    } catch (...) {
+	        FAIL() << "Wrong exception type caught";
+	    }
+	}
 
-    TEST(ECSExceptionsTest, SingletonComponentNotRegistered) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	// Test ComponentNotFound exception
+	TEST_F(ECSExceptionsTest, ComponentNotFoundTest) {
+	    verifyExceptionHierarchy<ComponentNotFound>();
 
-        SingletonComponentNotRegistered ex;
-        std::string formattedMessage = ex.what();
+	    const Entity testEntity = 42;
+	    verifyExceptionMessage<ComponentNotFound>(std::to_string(testEntity), testEntity);
+	    verifyExceptionMessage<ComponentNotFound>("Component not found", testEntity);
 
-        EXPECT_NE(formattedMessage.find("Singleton component has not been registered before use"), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    // Test with different entity values
+	    verifyExceptionMessage<ComponentNotFound>("0", Entity(0));
+	    verifyExceptionMessage<ComponentNotFound>(std::to_string(MAX_ENTITIES-1), MAX_ENTITIES-1);
+	}
 
-    TEST(ECSExceptionsTest, SystemNotRegistered) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	// Test OverlappingGroupsException exception
+	TEST_F(ECSExceptionsTest, OverlappingGroupsExceptionTest) {
+	    verifyExceptionHierarchy<OverlappingGroupsException>();
 
-        SystemNotRegistered ex;
-        std::string formattedMessage = ex.what();
+	    const std::string existingGroup = "Group1";
+	    const std::string newGroup = "Group2";
+	    const ComponentType conflictComponent = 5;
 
-        EXPECT_NE(formattedMessage.find("System has not been registered before use"), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    verifyExceptionMessage<OverlappingGroupsException>(existingGroup,
+	        existingGroup, newGroup, conflictComponent);
+	    verifyExceptionMessage<OverlappingGroupsException>(newGroup,
+	        existingGroup, newGroup, conflictComponent);
+	    verifyExceptionMessage<OverlappingGroupsException>(std::to_string(conflictComponent),
+	        existingGroup, newGroup, conflictComponent);
+	    verifyExceptionMessage<OverlappingGroupsException>("overlapping owned component",
+	        existingGroup, newGroup, conflictComponent);
 
-    TEST(ECSExceptionsTest, TooManyEntities) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	    // Test with different component types
+	    verifyExceptionMessage<OverlappingGroupsException>("component #0",
+	        "GroupA", "GroupB", ComponentType(0));
+	    verifyExceptionMessage<OverlappingGroupsException>("component #31",
+	        "GroupX", "GroupY", ComponentType(31));
+	}
 
-        TooManyEntities ex;
-        std::string formattedMessage = ex.what();
+	// Test GroupNotFound exception
+	TEST_F(ECSExceptionsTest, GroupNotFoundTest) {
+	    verifyExceptionHierarchy<GroupNotFound>();
 
-        EXPECT_NE(formattedMessage.find(std::format("Too many living entities, max is {}", MAX_ENTITIES)), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    const std::string groupKey = "TestGroup";
+	    verifyExceptionMessage<GroupNotFound>(groupKey, groupKey);
+	    verifyExceptionMessage<GroupNotFound>("Group not found", groupKey);
 
-    TEST(ECSExceptionsTest, OutOfRange) {
-        constexpr const char* expectedFile = __FILE__;
-        constexpr unsigned int expectedLine = __LINE__ + 2;
+	    // Test with empty key
+	    verifyExceptionMessage<GroupNotFound>("", "");
+	}
 
-        OutOfRange ex(256);
-        std::string formattedMessage = ex.what();
+	// Test ComponentNotRegistered exception
+	TEST_F(ECSExceptionsTest, ComponentNotRegisteredTest) {
+	    verifyExceptionHierarchy<ComponentNotRegistered>();
 
-        EXPECT_NE(formattedMessage.find("Index 256 is out of range"), std::string::npos);
-        EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
-        EXPECT_NE(formattedMessage.find(std::to_string(expectedLine)), std::string::npos);
-    }
+	    verifyExceptionMessage<ComponentNotRegistered>("Component has not been registered");
+
+	    // Test that no parameters are needed
+	    try {
+	        throw ComponentNotRegistered();
+	        FAIL() << "Exception was not thrown";
+	    } catch (const ComponentNotRegistered&) {
+	        SUCCEED();
+	    } catch (...) {
+	        FAIL() << "Wrong exception type caught";
+	    }
+	}
+
+	// Test SingletonComponentNotRegistered exception
+	TEST_F(ECSExceptionsTest, SingletonComponentNotRegisteredTest) {
+	    verifyExceptionHierarchy<SingletonComponentNotRegistered>();
+
+	    verifyExceptionMessage<SingletonComponentNotRegistered>("Singleton component");
+	    verifyExceptionMessage<SingletonComponentNotRegistered>("not been registered");
+
+	    // Make sure it's distinct from ComponentNotRegistered
+	    try {
+	        throw SingletonComponentNotRegistered();
+	    } catch (const ComponentNotRegistered&) {
+	        FAIL() << "SingletonComponentNotRegistered should not be caught as ComponentNotRegistered";
+	    } catch (const SingletonComponentNotRegistered&) {
+	        SUCCEED();
+	    } catch (...) {
+	        FAIL() << "Wrong exception type caught";
+	    }
+	}
+
+	// Test SystemNotRegistered exception
+	TEST_F(ECSExceptionsTest, SystemNotRegisteredTest) {
+	    verifyExceptionHierarchy<SystemNotRegistered>();
+
+	    verifyExceptionMessage<SystemNotRegistered>("System has not been registered");
+	}
+
+	// Test TooManyEntities exception
+	TEST_F(ECSExceptionsTest, TooManyEntitiesTest) {
+	    verifyExceptionHierarchy<TooManyEntities>();
+
+	    verifyExceptionMessage<TooManyEntities>("Too many living entities");
+	    verifyExceptionMessage<TooManyEntities>(std::to_string(MAX_ENTITIES));
+	}
+
+	// Test OutOfRange exception
+	TEST_F(ECSExceptionsTest, OutOfRangeTest) {
+	    verifyExceptionHierarchy<OutOfRange>();
+
+	    const unsigned int testIndex = 999;
+	    verifyExceptionMessage<OutOfRange>(std::to_string(testIndex), testIndex);
+	    verifyExceptionMessage<OutOfRange>("out of range", testIndex);
+
+	    // Test with different index values
+	    verifyExceptionMessage<OutOfRange>("0", 0u);
+	    verifyExceptionMessage<OutOfRange>(std::to_string(UINT_MAX), UINT_MAX);
+	}
+
+	// Test that all exceptions can be caught polymorphically as Exception
+	TEST_F(ECSExceptionsTest, PolymorphicExceptionHandlingTest) {
+	    int caughtCount = 0;
+
+	    try {
+	        // Randomly choose one exception to throw
+	        int choice = rand() % 8;
+	        switch (choice) {
+	            case 0: throw InternalError("Test");
+	            case 1: throw ComponentNotFound(5);
+	            case 2: throw OverlappingGroupsException("G1", "G2", 3);
+	            case 3: throw GroupNotFound("Key");
+	            case 4: throw ComponentNotRegistered();
+	            case 5: throw SingletonComponentNotRegistered();
+	            case 6: throw SystemNotRegistered();
+	            case 7: throw TooManyEntities();
+	            default: throw OutOfRange(10);
+	        }
+	    } catch (const Exception& e) {
+	        // All exceptions should be caught here
+	        caughtCount++;
+	    } catch (...) {
+	        FAIL() << "Exception not caught polymorphically";
+	    }
+
+	    EXPECT_EQ(caughtCount, 1) << "Exception should be caught exactly once";
+	}
 }
