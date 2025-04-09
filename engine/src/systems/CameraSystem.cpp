@@ -51,7 +51,7 @@ namespace nexo::system {
 		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
 			const auto &cameraComponent = cameraSpan[i];
-			const auto &transformComponent = transformComponentArray->getData(entitySpan[i]);
+			const auto &transformComponent = transformComponentArray->get(entitySpan[i]);
 			glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
 			glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
 			glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;

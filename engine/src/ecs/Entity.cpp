@@ -15,6 +15,7 @@
 #include "ECSExceptions.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace nexo::ecs {
 
@@ -41,12 +42,15 @@ namespace nexo::ecs {
         if (entity >= MAX_ENTITIES)
             THROW_EXCEPTION(OutOfRange, entity);
 
-        m_signatures[entity].reset();
-
-        m_availableEntities.push_front(entity);
         auto it = std::find(m_livingEntities.begin(), m_livingEntities.end(), entity);
         if (it != m_livingEntities.end())
             m_livingEntities.erase(it);
+        else
+        	return;
+        m_signatures[entity].reset();
+
+        m_availableEntities.push_front(entity);
+
     }
 
     void EntityManager::setSignature(const Entity entity, const Signature signature)
