@@ -68,7 +68,7 @@ namespace nexo::ecs {
      */
     template<typename T, unsigned int capacity = 1024,
              typename = std::enable_if_t<(capacity >= 1)>>
-    class alignas(64) ComponentArray : public IComponentArray {
+    class ComponentArray : public IComponentArray {
     public:
         /**
          * @brief Type alias for the component type
