@@ -160,13 +160,13 @@ namespace nexo::ecs {
 			{
 				if (std::tuple_size_v<OwnedTuple> == 0)
 				    THROW_EXCEPTION(InternalError, "Group must have at least one owned component");
-				m_ownedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) -> Signature {
+				m_ownedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) {
 				    Signature signature;
 				    ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
 				    return signature;
 				}, m_ownedArrays);
 
-				const Signature nonOwnedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) -> Signature {
+				const Signature nonOwnedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) {
 				    Signature signature;
 				    ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
 				    return signature;
@@ -276,15 +276,6 @@ namespace nexo::ecs {
 					{
 			            return m_index == other.m_index && m_view == other.m_view;
 			        }
-
-			        /**
-			         * @brief Inequality operator.
-			         *
-			         * @param other Another iterator.
-			         * @return true If iterators are not equal.
-			         * @return false Otherwise.
-			         */
-			        bool operator!=(const GroupIterator& other) const { return !(*this == other); }
 
 			    private:
 			        const Group* m_view; ///< Pointer to the group.
@@ -523,7 +514,7 @@ namespace nexo::ecs {
 			        entities.push_back(drivingArray->getEntityAtIndex(i));
 
 			    // Sort entities based on the extracted field from the component
-			    std::sort(entities.begin(), entities.end(),
+			    std::ranges::sort(entities.begin(), entities.end(),
 			        [&](Entity a, Entity b) {
 			            const auto& compA = compArray->get(a);
 			            const auto& compB = compArray->get(b);
@@ -741,9 +732,9 @@ namespace nexo::ecs {
 					* @param keyExtractor Function to extract key from an entity.
 					*/
 					PartitionStorage(Group* group, EntityKeyExtractor<KeyType> keyExtractor)
-						: m_group(group), m_keyExtractor(std::move(keyExtractor)), m_isDirty(true) {}
+						: m_group(group), m_keyExtractor(std::move(keyExtractor)) {}
 
-					[[nodiscard]] bool isDirty() const override { return m_isDirty; }
+					bool isDirty() const override { return m_isDirty; }
 					void markDirty() override { m_isDirty = true; }
 
 					/**
@@ -817,7 +808,7 @@ namespace nexo::ecs {
 					Group* m_group; ///< Pointer to the group.
 					EntityKeyExtractor<KeyType> m_keyExtractor; ///< Function to extract a key from an entity.
 					std::vector<Partition<KeyType>> m_partitions; ///< Vector of partitions.
-					bool m_isDirty; ///< Flag indicating if partitions need rebuilding.
+					bool m_isDirty = true; ///< Flag indicating if partitions need rebuilding.
 			};
 
 			/**
@@ -841,7 +832,7 @@ namespace nexo::ecs {
 			* @param newOrder New order of entities.
 			*/
 			template<typename ArrayPtr>
-			void reorderArray(ArrayPtr array, const std::vector<Entity>& newOrder)
+			void reorderArray(ArrayPtr array, const std::vector<Entity>& newOrder) const
 			{
 				size_t groupSize = array->groupSize();
 				if (newOrder.size() != groupSize)
