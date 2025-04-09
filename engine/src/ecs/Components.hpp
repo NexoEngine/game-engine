@@ -549,13 +549,13 @@ namespace nexo::ecs {
 			        bool valid = true;
 
 			        // Check in owned arrays
-			        std::apply([&](auto&&... arrays) {
-			            ((valid = valid && arrays->hasComponent(e)), ...);
-			        }, ownedArrays);
+					std::apply([&](auto&&... arrays) {
+						valid = (valid && ... && arrays->hasComponent(e));
+					}, ownedArrays);
 
 			        // Check in non-owned arrays
 			        std::apply([&](auto&&... arrays) {
-			            ((valid = valid && arrays->hasComponent(e)), ...);
+            			valid = (valid && ... && arrays->hasComponent(e));
 			        }, nonOwnedArrays);
 
 			        // Add to group if valid
