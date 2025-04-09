@@ -168,6 +168,12 @@ namespace nexo::ecs {
                 return m_componentManager->getComponent<T>(entity);
             }
 
+            /**
+             * @brief Retrieves the component array for a specific component type
+             *
+             * @tparam T The component type
+             * @return std::shared_ptr<ComponentArray<T>> Shared pointer to the component array
+             */
             template <typename T>
             std::shared_ptr<ComponentArray<T>> getComponentArray()
             {
@@ -295,12 +301,26 @@ namespace nexo::ecs {
                 return m_systemManager->registerGroupSystem<T>(std::forward<Args>(args)...);
             }
 
+            /**
+             * @brief Creates or retrieves a group for specific component combinations
+             *
+             * @tparam Owned Component types that are owned by the group
+             * @param nonOwned A get_t<...> tag specifying non-owned component types
+             * @return A shared pointer to the group (either existing or newly created)
+             */
             template<typename... Owned>
 		    auto registerGroup(const auto & nonOwned)
 			{
 				return m_componentManager->registerGroup<Owned...>(nonOwned);
 			}
 
+			/**
+			* @brief Retrieves an existing group for specific component combinations
+			*
+			* @tparam Owned Component types that are owned by the group
+			* @param nonOwned A get_t<...> tag specifying non-owned component types
+			* @return A shared pointer to the existing group
+			*/
 			template<typename... Owned>
 			auto getGroup(const auto& nonOwned)
 			{
@@ -333,8 +353,6 @@ namespace nexo::ecs {
                 const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }
-
-            void updateSystemEntities() const;
         private:
 
             std::shared_ptr<ComponentManager> m_componentManager;

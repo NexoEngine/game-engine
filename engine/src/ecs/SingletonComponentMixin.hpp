@@ -30,7 +30,14 @@ namespace nexo::ecs {
     template<typename Derived, typename... SingletonAccessTypes>
     class SingletonComponentMixin {
         private:
-            // Helper to check if a singleton component has read access in the parameter pack
+
+			/**
+			* @brief Helper to check if a singleton component has read-only access in the parameter pack
+			*
+			* This checks all SingletonAccessTypes to see if any match the given type T with ReadSingleton access.
+			*
+			* @tparam T The singleton component type to check
+			*/
             template<typename T>
             struct HasReadSingletonAccessImpl {
                 static constexpr bool value = (... || (IsReadSingleton<SingletonAccessTypes>::value &&
@@ -38,7 +45,11 @@ namespace nexo::ecs {
             };
 
         protected:
-            // Cache of singleton components for faster access
+			/**
+			* @brief Cache of singleton components for faster access
+			*
+			* Maps component type IDs to their singleton component instances
+			*/
             std::unordered_map<std::type_index, std::shared_ptr<ISingletonComponent>> m_singletonComponents;
 
             /**
@@ -68,7 +79,13 @@ namespace nexo::ecs {
             }
 
         public:
-            // Convenience function to check singleton read access
+
+			/**
+			* @brief Checks if a singleton component has read-only access
+			*
+			* @tparam T The singleton component type to check
+			* @return true if the component has read-only access, false if it has read-write access
+			*/
             template<typename T>
             static constexpr bool hasReadSingletonAccess()
             {
