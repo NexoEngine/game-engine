@@ -28,7 +28,7 @@ namespace nexo::ecs {
 
 namespace nexo::ecs {
 
-	class SparseSet {
+    class SparseSet {
         public:
             void insert(Entity entity);
 
@@ -36,7 +36,7 @@ namespace nexo::ecs {
 
             bool empty() const { return dense.empty(); }
 
-            bool contains(Entity entity) const { return sparse.find(entity) != sparse.end(); }
+            bool contains(const Entity entity) const { return sparse.contains(entity); }
 
             size_t size() const { return dense.size(); }
 
@@ -59,9 +59,8 @@ namespace nexo::ecs {
     */
     class System {
         public:
-        	virtual ~System() = default;
+            virtual ~System() = default;
             static std::shared_ptr<Coordinator> coord;
-
     };
 
     /**
@@ -70,7 +69,7 @@ namespace nexo::ecs {
      */
     class AQuerySystem : public System {
     public:
-        virtual ~AQuerySystem() = default;
+        ~AQuerySystem() override = default;
         virtual const Signature &getSignature() const = 0;
 
         SparseSet entities;
@@ -83,7 +82,7 @@ namespace nexo::ecs {
      */
     class AGroupSystem : public System {
     public:
-        virtual ~AGroupSystem() = default;
+        ~AGroupSystem() override = default;
     };
 
     /**
@@ -105,7 +104,7 @@ namespace nexo::ecs {
             template<typename T, typename... Args>
             std::shared_ptr<T> registerQuerySystem(Args&&... args)
             {
-            	static_assert(std::is_base_of<AQuerySystem, T>::value, "T must derive from AQuerySystem");
+                static_assert(std::is_base_of_v<AQuerySystem, T>, "T must derive from AQuerySystem");
                 std::type_index typeName(typeid(T));
 
                 if (m_querySystems.contains(typeName))
@@ -122,7 +121,7 @@ namespace nexo::ecs {
             template<typename T, typename... Args>
             std::shared_ptr<T> registerGroupSystem(Args&&... args)
             {
-            	static_assert(std::is_base_of<AGroupSystem, T>::value, "T must derive from AGroupSystem");
+            	static_assert(std::is_base_of_v<AGroupSystem, T>, "T must derive from AGroupSystem");
                 std::type_index typeName(typeid(T));
 
                 if (m_groupSystems.contains(typeName))

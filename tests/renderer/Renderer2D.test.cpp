@@ -487,7 +487,7 @@ namespace nexo::renderer {
         renderer2D->shutdown();
 
         // Expect RendererNotInitialized exception
-        EXPECT_THROW(renderer2D->getStats(), RendererNotInitialized);
+        EXPECT_THROW(static_cast<void>(renderer2D->getStats()), RendererNotInitialized);
         // Re-init for TearDown function
         renderer2D->init();
     }

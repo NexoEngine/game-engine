@@ -37,7 +37,7 @@ namespace nexo::ecs {
 
     void Coordinator::destroyEntity(const Entity entity) const
     {
-    	auto signature = m_entityManager->getSignature(entity);
+        const Signature signature = m_entityManager->getSignature(entity);
         m_entityManager->destroyEntity(entity);
         m_componentManager->entityDestroyed(entity, signature);
         m_systemManager->entityDestroyed(entity, signature);

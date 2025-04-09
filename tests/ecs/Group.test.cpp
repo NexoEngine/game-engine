@@ -105,7 +105,6 @@ namespace nexo::ecs {
 	    template<typename... Owned>
 	    auto createGroup(auto nonOwned) {
 	        using OwnedTuple = std::tuple<std::shared_ptr<ComponentArray<Owned>>...>;
-	        using NonOwnedTuple = decltype(std::make_tuple(nonOwned));
 
 	        auto ownedArrays = std::make_tuple(std::static_pointer_cast<ComponentArray<Owned>>(getNthArray<Owned>())...);
 	        auto nonOwnedArrays = nonOwned;
@@ -249,11 +248,7 @@ namespace nexo::ecs {
 	TEST_F(GroupTest, IteratorEmptyGroup) {
 	    auto group = createGroup<PositionComponent>(std::make_tuple(velocityArray));
 
-	    // Iterate - should not execute the loop body
-	    size_t count = 0;
-	    for (auto [entity, position] : *group) {
-	        count++;
-	    }
+		size_t count = std::distance(group->begin(), group->end());
 
 	    EXPECT_EQ(count, 0);
 	}
@@ -288,7 +283,7 @@ namespace nexo::ecs {
 
 	    // Use eachInRange to process a subset of entities
 	    int callCount = 0;
-	    group->eachInRange(1, 2, [&callCount](Entity e, PositionComponent& pos, VelocityComponent& vel, TagComponent& tag) {
+	    group->eachInRange(1, 2, [&callCount](Entity e, PositionComponent&, VelocityComponent&, TagComponent&) {
 	        EXPECT_GE(e, 1);
 	        EXPECT_LE(e, 3);
 	        callCount++;
@@ -420,21 +415,21 @@ namespace nexo::ecs {
 
 	    // Check entities in each partition
 	    int countCategory0 = 0;
-	    partitionView.each(0, [&countCategory0](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(0, [&countCategory0](Entity, PositionComponent&, TagComponent& tag, HealthComponent&) {
 	        EXPECT_EQ(tag.category, 0);
 	        countCategory0++;
 	    });
 	    EXPECT_EQ(countCategory0, 2); // Entities 0 and 3 have category 0
 
 	    int countCategory1 = 0;
-	    partitionView.each(1, [&countCategory1](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(1, [&countCategory1](Entity, PositionComponent&, TagComponent& tag, HealthComponent&) {
 	        EXPECT_EQ(tag.category, 1);
 	        countCategory1++;
 	    });
 	    EXPECT_EQ(countCategory1, 2); // Entities 1 and 4 have category 1
 
 	    int countCategory2 = 0;
-	    partitionView.each(2, [&countCategory2](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(2, [&countCategory2](Entity, PositionComponent&, TagComponent& tag, HealthComponent&) {
 	        EXPECT_EQ(tag.category, 2);
 	        countCategory2++;
 	    });
@@ -494,7 +489,7 @@ namespace nexo::ecs {
 
 	    // Try to iterate through a non-existent partition
 	    int callCount = 0;
-	    partitionView.each(99, [&callCount](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(99, [&callCount](Entity, PositionComponent&, TagComponent&, HealthComponent&) {
 	        callCount++;
 	    });
 
@@ -521,14 +516,14 @@ namespace nexo::ecs {
 
 	    // Check each partition
 	    int evenCount = 0;
-	    partitionView.each(0, [&evenCount](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(0, [&evenCount](Entity e, PositionComponent&, TagComponent&, HealthComponent&) {
 	        EXPECT_EQ(e % 2, 0); // Should be even
 	        evenCount++;
 	    });
 	    EXPECT_EQ(evenCount, 3); // Entities 0, 2, 4
 
 	    int oddCount = 0;
-	    partitionView.each(1, [&oddCount](Entity e, PositionComponent& pos, TagComponent& tag, HealthComponent& health) {
+	    partitionView.each(1, [&oddCount](Entity e, PositionComponent&, TagComponent&, HealthComponent&) {
 	        EXPECT_EQ(e % 2, 1); // Should be odd
 	        oddCount++;
 	    });
@@ -547,7 +542,7 @@ namespace nexo::ecs {
 
 	    // Try using each method
 	    int callCount = 0;
-	    group->each([&callCount](Entity e, PositionComponent& pos, VelocityComponent& vel) {
+	    group->each([&callCount](Entity, PositionComponent&, VelocityComponent&) {
 	        callCount++;
 	    });
 	    EXPECT_EQ(callCount, 0);

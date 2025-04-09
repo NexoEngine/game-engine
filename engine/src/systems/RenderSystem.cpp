@@ -22,7 +22,6 @@
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
 
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -43,7 +42,7 @@ namespace nexo::system {
      *  - pointLights (and pointLightCount)
      *  - spotLights (and spotLightCount)
      */
-	static void setupLights(std::shared_ptr<renderer::Shader> shader, const components::LightContext& lightContext)
+	static void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext)
 	{
         shader->bind();
         shader->setUniformFloat3("ambientLight", lightContext.ambientLight);
@@ -93,11 +92,11 @@ namespace nexo::system {
 
 		setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
 
-		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
 			[](const components::SceneTag& tag) { return tag.id; }
 		);
 
-		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+		const auto *partition = scenePartition.getPartition(sceneRendered);
 
 		//TODO: Throw exception here ?
 		if (!partition)
@@ -105,11 +104,11 @@ namespace nexo::system {
 
 		const auto transformSpan = get<components::TransformComponent>();
 		const auto renderSpan = get<components::RenderComponent>();
-		const auto entitySpan = m_group->entities();
+		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
 		while (!renderContext.cameras.empty())
 		{
-			const auto &camera = renderContext.cameras.front();
+			const components::CameraContext &camera = renderContext.cameras.front();
 			if (camera.renderTarget != nullptr)
 			{
 				camera.renderTarget->bind();
@@ -117,20 +116,19 @@ namespace nexo::system {
 				renderer::RenderCommand::setClearColor(camera.clearColor);
 				renderer::RenderCommand::clear();
 				camera.renderTarget->clearAttachment<int>(1, -1);
-
             }
 
-            for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
             {
-            	const auto &transform = transformSpan[i];
-             	const auto &render = renderSpan[i];
-              	const ecs::Entity entity = entitySpan[i];
-              	if (render.isRendered)
-               {
-               		renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
+				const auto &transform = transformSpan[i];
+				const auto &render = renderSpan[i];
+				const ecs::Entity entity = entitySpan[i];
+				if (render.isRendered)
+				{
+					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
 					auto context = std::make_shared<renderer::RendererContext>();
 					context->renderer3D = renderContext.renderer3D;
-					render.draw(context, transform, entity);
+					render.draw(context, transform, static_cast<int>(entity));
 					renderContext.renderer3D.endScene();
                }
             }
@@ -142,6 +140,5 @@ namespace nexo::system {
 			}
 			renderContext.cameras.pop();
 		}
-
 	}
 }
