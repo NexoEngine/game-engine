@@ -90,10 +90,9 @@ namespace nexo::ecs {
         /**
          * @brief Inserts a new component for the given entity.
          *
-         * @tparam U Type of component parameter (allows for perfect forwarding)
          * @param entity The entity to add the component to
          * @param component The component instance to add
-         * @throws ArrayBoundsException if entity ID exceeds MAX_ENTITIES
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
          *
          * @pre The entity must be a valid entity ID
          */
@@ -235,7 +234,7 @@ namespace nexo::ecs {
          *
          * @param index The index to look up
          * @return The entity at that index
-         * @throws ArrayBoundsException if the index is invalid
+         * @throws OutOfRange if the index is invalid
          *
          * @pre The index must be less than the array size
          */
@@ -336,15 +335,15 @@ namespace nexo::ecs {
         }
 
         /**
-		 * @brief Forces a component to be set at a specific index (internal use only)
-		 *
-		 * Used primarily during group reordering operations.
-		 *
-		 * @param index The index to set the component at
-		 * @param entity The entity to associate with this component
-		 * @param component The component data to set
-		 * @throws OutOfRange if the index is invalid
-		 */
+         * @brief Forces a component to be set at a specific index (internal use only)
+         *
+         * Used primarily during group reordering operations.
+         *
+         * @param index The index to set the component at
+         * @param entity The entity to associate with this component
+         * @param component The component data to set
+         * @throws OutOfRange if the index is invalid
+         */
         void forceSetComponentAt(size_t index, const Entity entity, T component)
         {
             if (index >= m_size)

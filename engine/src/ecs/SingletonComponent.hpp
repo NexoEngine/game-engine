@@ -73,6 +73,11 @@ namespace nexo::ecs {
 			SingletonComponent(SingletonComponent&&) = default;
 			SingletonComponent& operator=(SingletonComponent&&) = default;
 
+			/**
+			* @brief Gets the singleton component instance
+			*
+			* @return T& Reference to the instance of the singleton component
+			*/
 			T &getInstance() { return _instance; }
 
 		private:

@@ -21,18 +21,19 @@
 namespace nexo::system {
 
 	/**
-     * @brief System responsible for updating spot lights in the scene.
-     *
-     * This system iterates over all spot light entities and updates the RenderContext with their
-     * spot light components.
-     *
-     * @note Required Components on spot light entities:
-     *  - components::SceneTag
-     *  - components::SpotLightComponent
-     *
-     * @note Required Singleton Component:
-     *  - components::RenderContext
-     */
+	* @brief System responsible for updating spot lights in the scene.
+	*
+	* This system iterates over all spot light entities in the active scene and updates
+	* the RenderContext's sceneLights collection with their spot light components.
+	*
+	* @note Component Access Rights:
+	*  - READ access to components::SpotLightComponent (owned)
+	*  - READ access to components::SceneTag (non-owned)
+	*  - WRITE access to components::RenderContext (singleton)
+	*
+	* @note The system uses scene partitioning to only process spot light entities
+	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
+	*/
 	class SpotLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::SpotLightComponent>>,
