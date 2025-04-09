@@ -25,6 +25,7 @@
 #include <functional>
 #include <set>
 #include <sstream>
+#include <ranges>
 
 #include "ECSExceptions.hpp"
 #include "Definitions.hpp"
@@ -57,7 +58,7 @@ namespace nexo::ecs {
 	template<typename... NonOwning>
 	get_t<NonOwning...> get()
 	{
-	    return {};
+		return {};
 	}
 
 	/**
@@ -115,7 +116,7 @@ namespace nexo::ecs {
 		 *
 		 * @return String describing the components
 		 */
-		std::string toString() const {
+		[[nodiscard]] std::string toString() const {
 			std::stringstream ss;
 			ss << "Owned: {";
 			bool first = true;
@@ -123,7 +124,8 @@ namespace nexo::ecs {
 			// Add owned component IDs
 			for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; ++i) {
 				if (ownedSignature.test(i)) {
-					if (!first) ss << ", ";
+					if (!first)
+						ss << ", ";
 					ss << "Component#" << i;
 					first = false;
 				}
@@ -135,7 +137,8 @@ namespace nexo::ecs {
 			// Add non-owned component IDs
 			for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; ++i) {
 				if (nonOwnedSignature.test(i)) {
-					if (!first) ss << ", ";
+					if (!first)
+						ss << ", ";
 					ss << "Component#" << i;
 					first = false;
 				}
@@ -156,10 +159,11 @@ namespace std {
 	 */
 	template<>
 	struct hash<nexo::ecs::GroupKey> {
-		size_t operator()(const nexo::ecs::GroupKey& key) const {
+		size_t operator()(const nexo::ecs::GroupKey& key) const noexcept
+		{
 			// Create a combined hash of both signatures
-			size_t h1 = std::hash<nexo::ecs::Signature>()(key.ownedSignature);
-			size_t h2 = std::hash<nexo::ecs::Signature>()(key.nonOwnedSignature);
+			const size_t h1 = std::hash<nexo::ecs::Signature>()(key.ownedSignature);
+			const size_t h2 = std::hash<nexo::ecs::Signature>()(key.nonOwnedSignature);
 			return h1 ^ (h2 << 1); // Combine hashes with a bit shift
 		}
 	};
@@ -262,14 +266,14 @@ namespace nexo::ecs {
 		     * @param signature The entity's current component signature
 		     */
 		    template<typename T>
-		    void addComponent(Entity entity, T component, Signature signature)
+		    void addComponent(Entity entity, T component, const Signature signature)
 			{
 		        getComponentArray<T>()->insert(entity, std::move(component));
 
-				for (auto& [key, group] : m_groupRegistry)
+				for (const auto& group : std::ranges::views::values(m_groupRegistry))
 				{
-					if ((signature & group->allSignature()) == group->allSignature())
-						group->addToGroup(entity);
+				    if ((signature & group->allSignature()) == group->allSignature())
+					    group->addToGroup(entity);
 				}
 		    }
 
@@ -284,9 +288,9 @@ namespace nexo::ecs {
 		     * @param previousSignature The entity's signature before removal
 		     */
 		    template<typename T>
-		    void removeComponent(Entity entity, Signature previousSignature)
+		    void removeComponent(Entity entity, const Signature previousSignature)
 			{
-				for (auto& [key, group] : m_groupRegistry)
+				for (const auto& group : std::ranges::views::values(m_groupRegistry))
 				{
 					if ((previousSignature & group->allSignature()) == group->allSignature())
 						group->removeFromGroup(entity);
@@ -306,13 +310,13 @@ namespace nexo::ecs {
 		     * @return true if the component was removed, false if it didn't exist
 		     */
 		    template<typename T>
-		    bool tryRemoveComponent(Entity entity, Signature previousSignature)
+		    bool tryRemoveComponent(Entity entity, const Signature previousSignature)
 			{
 		        auto componentArray = getComponentArray<T>();
 		        if (!componentArray->hasComponent(entity))
 		            return false;
 
-				for (auto& [key, group] : m_groupRegistry)
+				for (const auto& group : std::ranges::views::values(m_groupRegistry))
 				{
 					if ((previousSignature & group->allSignature()) == group->allSignature())
 						group->removeFromGroup(entity);
@@ -347,7 +351,7 @@ namespace nexo::ecs {
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
 
-		        auto& componentArray = m_componentArrays[typeID];
+		        const auto& componentArray = m_componentArrays[typeID];
 		        if (componentArray == nullptr)
 		            THROW_EXCEPTION(ComponentNotRegistered);
 
@@ -396,6 +400,7 @@ namespace nexo::ecs {
 		     * Removes the entity from all component arrays it exists in.
 		     *
 		     * @param entity The destroyed entity
+		     * @param entitySignature Signature of the entity to be destroyed
 		     */
 		    void entityDestroyed(Entity entity, const Signature &entitySignature);
 
@@ -418,7 +423,7 @@ namespace nexo::ecs {
 			auto registerGroup(const auto& nonOwned)
 			{
 			    // Generate a unique key for this group type combination
-			    GroupKey newGroupKey = generateGroupKey<Owned...>(nonOwned);
+			    const GroupKey newGroupKey = generateGroupKey<Owned...>(nonOwned);
 
 			    // Check if this exact group already exists
 			    auto it = m_groupRegistry.find(newGroupKey);
@@ -429,18 +434,18 @@ namespace nexo::ecs {
 			    }
 
 			    // Check for conflicts with existing groups
-			    for (const auto& [existingKey, existingGroup] : m_groupRegistry) {
-			        if (hasCommonOwnedComponents(existingKey, newGroupKey)) {
-			            for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; i++) {
-			                if (existingKey.ownedSignature.test(i) && newGroupKey.ownedSignature.test(i)) {
-			                    THROW_EXCEPTION(OverlappingGroupsException,
-			                                   existingKey.toString(),
-			                                   newGroupKey.toString(),
-			                                   i);
-			                }
-			            }
-			        }
-			    }
+				for (const auto& existingKey : std::ranges::views::keys(m_groupRegistry)) {
+					if (hasCommonOwnedComponents(existingKey, newGroupKey)) {
+						for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; i++) {
+							if (existingKey.ownedSignature.test(i) && newGroupKey.ownedSignature.test(i)) {
+								THROW_EXCEPTION(OverlappingGroupsException,
+												existingKey.toString(),
+												newGroupKey.toString(),
+												i);
+							}
+						}
+					}
+				}
 
 			    // No conflicts found, create the new group
 			    auto group = createNewGroup<Owned...>(nonOwned);
@@ -462,9 +467,9 @@ namespace nexo::ecs {
 			template<typename... Owned>
 			auto getGroup(const auto& nonOwned)
 			{
-			    GroupKey groupKey = generateGroupKey<Owned...>(nonOwned);
+				const GroupKey groupKey = generateGroupKey<Owned...>(nonOwned);
 
-			    auto it = m_groupRegistry.find(groupKey);
+				const auto it = m_groupRegistry.find(groupKey);
 			    if (it == m_groupRegistry.end())
         			THROW_EXCEPTION(GroupNotFound, "Group not found");
 
@@ -484,7 +489,7 @@ namespace nexo::ecs {
              * @param key2 Second group key to compare
              * @return true if the keys share at least one owned component, false otherwise
              */
-            [[nodiscard]] bool hasCommonOwnedComponents(const GroupKey& key1, const GroupKey& key2) const
+            [[nodiscard]] static bool hasCommonOwnedComponents(const GroupKey& key1, const GroupKey& key2)
             {
                 // If there's any bit that's set in both owned signatures, they share components
                 return (key1.ownedSignature & key2.ownedSignature).any();
@@ -512,7 +517,7 @@ namespace nexo::ecs {
 			 * @return Tuple of non-owned component arrays
 			 */
 			template<typename... NonOwning>
-			auto getNonOwnedTuple(const get_t<NonOwning...>& nonOwned)
+			auto getNonOwnedTuple(const get_t<NonOwning...>&)
 			{
 			    return std::make_tuple(getComponentArray<NonOwning>()...);
 			}
@@ -535,7 +540,7 @@ namespace nexo::ecs {
 
 			    // Find entities that should be in this group
 			    auto driver = std::get<0>(ownedArrays);
-			    std::size_t minSize = std::apply([](auto&&... arrays) -> std::size_t {
+			    const std::size_t minSize = std::apply([](auto&&... arrays) -> std::size_t {
 			        return std::min({ static_cast<std::size_t>(arrays->size())... });
 			    }, ownedArrays);
 
@@ -596,7 +601,7 @@ namespace nexo::ecs {
 			 * @param nonOwned The non-owned components tag
 			 */
 			template<typename... NonOwning>
-			void setNonOwnedBits(Signature& signature, const get_t<NonOwning...>& nonOwned)
+			static void setNonOwnedBits(Signature& signature, const get_t<NonOwning...>&)
 			{
 			    ((signature.set(getComponentTypeID<NonOwning>())), ...);
 			}

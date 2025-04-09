@@ -265,7 +265,6 @@ namespace nexo::ecs {
          	newComp.value = i * 10;
             componentArray->insert(i, newComp);
         }
-        size_t largeSize = componentArray->size();
 
         // Now remove many elements to trigger shrink
         for (Entity i = 0; i < 15; ++i) {

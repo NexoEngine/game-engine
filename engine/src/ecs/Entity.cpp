@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <ranges>
 
 namespace nexo::ecs {
 
@@ -42,11 +43,11 @@ namespace nexo::ecs {
         if (entity >= MAX_ENTITIES)
             THROW_EXCEPTION(OutOfRange, entity);
 
-        auto it = std::find(m_livingEntities.begin(), m_livingEntities.end(), entity);
+        const auto it = std::ranges::find(m_livingEntities, entity);
         if (it != m_livingEntities.end())
             m_livingEntities.erase(it);
         else
-        	return;
+            return;
         m_signatures[entity].reset();
 
         m_availableEntities.push_front(entity);
@@ -76,7 +77,7 @@ namespace nexo::ecs {
 
     std::span<const Entity> EntityManager::getLivingEntities() const
     {
-        return std::span<const Entity>(m_livingEntities);
+        return {m_livingEntities};
     }
 
 }

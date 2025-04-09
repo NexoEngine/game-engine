@@ -19,7 +19,6 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
-#include "ecs/System.hpp"
 
 namespace nexo::system {
 
@@ -40,7 +39,7 @@ namespace nexo::system {
      *  - components::TransformComponent
      *  - components::RenderComponent
      */
-	class RenderSystem : public ecs::GroupSystem<
+	class RenderSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::TransformComponent>,
 	        ecs::Read<components::RenderComponent>>,
