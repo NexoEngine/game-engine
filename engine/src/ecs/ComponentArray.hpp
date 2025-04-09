@@ -68,7 +68,7 @@ namespace nexo::ecs {
      */
     template<typename T, unsigned int capacity = 1024,
              typename = std::enable_if_t<(capacity >= 1)>>
-    class ComponentArray : public IComponentArray {
+    class alignas(64) ComponentArray : public IComponentArray {
     public:
         /**
          * @brief Type alias for the component type
@@ -86,34 +86,6 @@ namespace nexo::ecs {
             m_sparse.resize(capacity, INVALID_ENTITY);
             m_dense.reserve(capacity);
             m_componentArray.reserve(capacity);
-        }
-
-        // Move constructor
-        ComponentArray(ComponentArray&& other) noexcept
-            : m_componentArray(std::move(other.m_componentArray))
-            , m_sparse(std::move(other.m_sparse))
-            , m_dense(std::move(other.m_dense))
-            , m_size(other.m_size)
-            , m_groupSize(other.m_groupSize)
-        {
-            other.m_size = 0;
-            other.m_groupSize = 0;
-        }
-
-        // Move assignment
-        ComponentArray& operator=(ComponentArray&& other) noexcept
-        {
-            if (this != &other) {
-                m_componentArray = std::move(other.m_componentArray);
-                m_sparse = std::move(other.m_sparse);
-                m_dense = std::move(other.m_dense);
-                m_size = other.m_size;
-                m_groupSize = other.m_groupSize;
-
-                other.m_size = 0;
-                other.m_groupSize = 0;
-            }
-            return *this;
         }
 
         /**
@@ -143,6 +115,7 @@ namespace nexo::ecs {
             m_sparse[entity] = newIndex;
             m_dense.push_back(entity);
             m_componentArray.push_back(component);
+
             ++m_size;
         }
 

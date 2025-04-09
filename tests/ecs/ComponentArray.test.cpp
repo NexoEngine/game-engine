@@ -21,9 +21,6 @@ namespace nexo::ecs {
     struct TestComponent {
         int value;
 
-        TestComponent() = default;
-        TestComponent(int v) : value(v) {}
-
         bool operator==(const TestComponent& other) const {
             return value == other.value;
         }
