@@ -264,7 +264,7 @@ namespace nexo::ecs {
 		    template<typename T>
 		    void addComponent(Entity entity, T component, Signature signature)
 			{
-		        getComponentArray<T>()->insertData(entity, std::move(component));
+		        getComponentArray<T>()->insert(entity, std::move(component));
 
 				for (auto& [key, group] : m_groupRegistry)
 				{
@@ -291,7 +291,7 @@ namespace nexo::ecs {
 					if ((previousSignature & group->allSignature()) == group->allSignature())
 						group->removeFromGroup(entity);
 				}
-		        getComponentArray<T>()->removeData(entity);
+		        getComponentArray<T>()->remove(entity);
 		    }
 
 		    /**
@@ -317,7 +317,7 @@ namespace nexo::ecs {
 					if ((previousSignature & group->allSignature()) == group->allSignature())
 						group->removeFromGroup(entity);
 				}
-		        componentArray->removeData(entity);
+		        componentArray->remove(entity);
 		        return true;
 		    }
 
@@ -332,7 +332,7 @@ namespace nexo::ecs {
 		    template<typename T>
 		    [[nodiscard]] T& getComponent(Entity entity)
 			{
-		        return getComponentArray<T>()->getData(entity);
+		        return getComponentArray<T>()->get(entity);
 		    }
 
 		    /**
@@ -387,7 +387,7 @@ namespace nexo::ecs {
 		        if (!componentArray->hasComponent(entity))
 		            return std::nullopt;
 
-		        return componentArray->getData(entity);
+		        return componentArray->get(entity);
 		    }
 
 		    /**

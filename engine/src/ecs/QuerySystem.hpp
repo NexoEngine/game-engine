@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "ECSExceptions.hpp"
 #include "System.hpp"
 #include "Access.hpp"
 #include "ComponentArray.hpp"
@@ -61,8 +62,10 @@ namespace nexo::ecs {
 
 	        QuerySystem()
 			{
-	            if (!coord)
-					return;
+				if (!coord) {
+			        THROW_EXCEPTION(InternalError, "Coordinator is null in QuerySystem constructor");
+			        return;
+			    }
 
 	            // Set system signature based on required components (ignore singleton components)
 	            (setComponentSignatureIfRegular<Components>(m_signature), ...);
@@ -86,12 +89,23 @@ namespace nexo::ecs {
 	        getComponent(Entity entity)
 			{
 	            auto typeIndex = getTypeIndex<T>();
-	            auto componentArray = std::static_pointer_cast<ComponentArray<T>>(m_componentArrays[typeIndex]);
+				auto it = m_componentArrays.find(typeIndex);
+
+                if (it == m_componentArrays.end())
+         			THROW_EXCEPTION(InternalError, "Component array not found");
+
+                auto componentArray = std::static_pointer_cast<ComponentArray<T>>(it->second);
+
+                if (!componentArray)
+                	THROW_EXCEPTION(InternalError, "Failed to cast component array");
+
+                if (!componentArray->hasComponent(entity))
+                	THROW_EXCEPTION(InternalError, "Entity doesn't have requested component");
 
 	            if constexpr (hasReadAccess<T>())
-	                return componentArray->getData(entity);
+	                return componentArray->get(entity);
 	            else
-	                return componentArray->getData(entity);
+	                return componentArray->get(entity);
 	        }
 
 	        const Signature& getSignature() const { return m_signature; }
@@ -103,14 +117,15 @@ namespace nexo::ecs {
 	         *
 	         * @tparam ComponentAccessType The component access type to cache
 	         */
-	        template<typename ComponentAccessType>
-	        void cacheComponentArrayIfRegular()
-			{
-	            if constexpr (!IsSingleton<ComponentAccessType>::value) {
-	                using T = typename ComponentAccessType::ComponentType;
-	                m_componentArrays[getTypeIndex<T>()] = coord->template getComponentArray<T>();
-	            }
-	        }
+			template<typename ComponentAccessType>
+            void cacheComponentArrayIfRegular()
+            {
+                if constexpr (!IsSingleton<ComponentAccessType>::value) {
+                    using T = typename ComponentAccessType::ComponentType;
+                    auto componentArray = coord->template getComponentArray<T>();
+                    m_componentArrays[getTypeIndex<T>()] = componentArray;
+                }
+            }
 
 	        /**
 	         * @brief Sets the component bit in the system signature (only for regular components)
