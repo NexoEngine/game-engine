@@ -105,7 +105,7 @@ namespace nexo::editor {
 
     void EditorScene::deleteCamera(const ecs::Entity cameraId)
     {
-    	if (cameraId == m_activeCamera)
+    	if (static_cast<int>(cameraId) == m_activeCamera)
     		m_activeCamera = -1;
     	m_cameras.erase(cameraId);
     	if (!m_cameras.empty())
@@ -253,9 +253,9 @@ namespace nexo::editor {
 
             // Mouse is not inside the viewport
             if (!(mx >= 0 && my >= 0 && mx < m_viewSize.x && my < m_viewSize.y))
-            	return;
+                return;
 
-           	cameraComponent.m_renderTarget->bind();
+            cameraComponent.m_renderTarget->bind();
             int data = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
             cameraComponent.m_renderTarget->unbind();
             if (data == -1)
