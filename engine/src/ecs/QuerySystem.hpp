@@ -35,7 +35,13 @@ namespace nexo::ecs {
 														QuerySystem<Components...>,
 														Components...> {
 		private:
-	        // Helper template to check if a component type exists in the parameter pack with Read access
+			/**
+			* @brief Helper template to check if a component type has Read access in a parameter pack
+			*
+			* @tparam T The component type to check for Read access
+			* @tparam First The first component access type in the parameter pack
+			* @tparam Rest The remaining component access types
+			*/
 			template<typename T, typename First, typename... Rest>
 			struct HasReadAccess {
 				static constexpr bool value =
@@ -43,13 +49,23 @@ namespace nexo::ecs {
 					HasReadAccess<T, Rest...>::value);
 			};
 
-			// Base case for the template recursion
+			/**
+			* @brief Base case for HasReadAccess template recursion
+			*
+			* @tparam T The component type to check for Read access
+			* @tparam First The last component access type in the parameter pack
+			*/
 			template<typename T, typename First>
 			struct HasReadAccess<T, First> {
 				static constexpr bool value = std::is_same_v<First, Read<T>>;
 			};
 
-			// Convenience function to check read access
+			/**
+			* @brief Convenience function to check if a component has Read-only access
+			*
+			* @tparam T The component type to check
+			* @return true if the component has Read-only access, false otherwise
+			*/
 			template<typename T>
 			static constexpr bool hasReadAccess()
 			{
@@ -60,6 +76,15 @@ namespace nexo::ecs {
 	        // Make the base class a friend to access protected members
 			friend class SingletonComponentMixin<QuerySystem<Components...>, Components...>;
 
+			/**
+			* @brief Constructs a new QuerySystem
+			*
+			* Sets up the system signature based on required components,
+			* caches component arrays for faster access, and initializes
+			* singleton components.
+			*
+			* @throws InternalError if the coordinator is null
+			*/
 			QuerySystem()
 			{
 				if (!coord) {
@@ -102,7 +127,18 @@ namespace nexo::ecs {
 				return componentArray->get(entity);
 			}
 
+			/**
+			* @brief Gets the component signature for this system
+			*
+			* @return const Signature& Reference to the system's component signature
+			*/
 			const Signature& getSignature() const override { return m_signature; }
+
+			/**
+			* @brief Gets a mutable reference to the component signature for this system
+			*
+			* @return Signature& Reference to the system's component signature
+			*/
 			Signature& getSignature() { return m_signature; }
 
 	    protected:
@@ -139,6 +175,8 @@ namespace nexo::ecs {
 		private:
 			// Cache of component arrays for faster access
 			std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
+
+			/// Component signature defining required components for this system
 			Signature m_signature;
     };
 }

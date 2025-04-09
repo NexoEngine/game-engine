@@ -22,18 +22,19 @@
 namespace nexo::system {
 
 	/**
-     * @brief System responsible for updating directional lights in the scene.
-     *
-     * This system iterates over all directional light entities and updates the RenderContext with the
-     * directional light components from those entities.
-     *
-     * @note Required Components on directional light entities:
-     *  - components::SceneTag
-     *  - components::DirectionalLightComponent
-     *
-     * @note Required Singleton Component:
-     *  - components::RenderContext
-     */
+	* @brief System responsible for updating directional lights in the scene.
+	*
+	* This system iterates over all directional light entities in the active scene and updates
+	* the RenderContext's sceneLights collection with their directional light components.
+	*
+	* @note Component Access Rights:
+	*  - READ access to components::DirectionalLightComponent (owned)
+	*  - READ access to components::SceneTag (non-owned)
+	*  - WRITE access to components::RenderContext (singleton)
+	*
+	* @note The system uses scene partitioning to only process directional light entities
+	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
+	*/
 	class DirectionalLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::DirectionalLightComponent>>,

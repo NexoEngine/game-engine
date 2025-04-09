@@ -119,20 +119,43 @@ namespace nexo::ecs {
 					AccessType::Read;
 			};
 
-	        /**
-	         * @brief Access-controlled span wrapper for component arrays
-	         */
+			/**
+			* @brief Access-controlled span wrapper for component arrays
+			*
+			* Provides enforced read-only or read-write access to components
+			* based on the access permissions specified in the system.
+			*
+			* @tparam T The component type
+			*/
 			template<typename T>
 			class ComponentSpan {
 				private:
 					std::span<T> m_span;
 
 				public:
+					/**
+					* @brief Constructs a ComponentSpan from a raw span
+					*
+					* @param span The underlying component data span
+					*/
 					explicit ComponentSpan(std::span<T> span) : m_span(span) {}
 
+					/**
+					* @brief Returns the number of components in the span
+					*
+					* @return size_t Number of components
+					*/
 					[[nodiscard]] size_t size() const { return m_span.size(); }
 
-					// Conditionally define operator[] based on access type
+					/**
+					* @brief Access operator with enforced permissions
+					*
+					* Returns a mutable reference if Write access is specified,
+					* otherwise returns a const reference.
+					*
+					* @param index Element index to access
+					* @return Reference to component with appropriate const qualification
+					*/
 					template<typename U = T>
 					auto operator[](size_t index) -> std::conditional_t<
 						GetComponentAccess<
@@ -147,16 +170,42 @@ namespace nexo::ecs {
 					}
 					}
 
+					/**
+					* @brief Const access operator
+					*
+					* Always returns a const reference regardless of permissions.
+					*
+					* @param index Element index to access
+					* @return Const reference to component
+					*/
 					template<typename U = T>
 					auto operator[](size_t index) const -> const std::remove_const_t<U>&
 					{
 						return m_span[index];
 					}
 
-					// Iterator support
+					/**
+					* @brief Returns an iterator to the beginning of the span
+					* @return Iterator to the first element
+					*/
 					auto begin() { return m_span.begin(); }
+
+					/**
+					* @brief Returns an iterator to the end of the span
+					* @return Iterator one past the last element
+					*/
 					auto end() { return m_span.end(); }
+
+					/**
+					* @brief Returns a const iterator to the beginning of the span
+					* @return Const iterator to the first element
+					*/
 					auto begin() const { return m_span.begin(); }
+
+					/**
+					* @brief Returns a const iterator to the end of the span
+					* @return Const iterator one past the last element
+					*/
 					auto end() const { return m_span.end(); }
 			};
 
@@ -168,6 +217,12 @@ namespace nexo::ecs {
 							SingletonAccessTypes...>,
 				SingletonAccessTypes...>;
 
+			/**
+			* @brief Constructs a new GroupSystem
+			*
+			* Creates the component group and initializes singleton components.
+			* @throws InternalError if the coordinator is null
+			*/
 			GroupSystem()
 			{
 				static_assert(std::tuple_size_v<OwnedTypes> > 0,
@@ -252,9 +307,13 @@ namespace nexo::ecs {
 	        std::shared_ptr<ActualGroupType> m_group = nullptr;
 
 	    private:
-	        /**
-	         * @brief Implementation to create a group with the extracted component types
-	         */
+			/**
+			* @brief Implementation to create a group with the extracted component types
+			*
+			* @tparam OT Owned component types
+			* @tparam NOT Non-owned component types
+			* @return Shared pointer to the created group
+			*/
 			template<typename... OT, typename... NOT>
 			std::shared_ptr<ActualGroupType> createGroupImpl(std::tuple<OT...>, std::tuple<NOT...>)
 			{

@@ -73,7 +73,18 @@ namespace nexo::ecs {
             */
             [[nodiscard]] Signature getSignature(Entity entity) const;
 
+            /**
+             * @brief Returns the number of currently active entities
+             *
+             * @return std::uint32_t The count of living entities
+             */
             [[nodiscard]] std::uint32_t getLivingEntityCount() const;
+
+            /**
+             * @brief Retrieves a view of all currently active entities
+             *
+             * @return std::span<const Entity> A span containing all living entity IDs
+             */
             [[nodiscard]] std::span<const Entity> getLivingEntities() const;
 
         private:

@@ -28,24 +28,83 @@ namespace nexo::ecs {
 
 namespace nexo::ecs {
 
+	/**
+	* @class SparseSet
+	*
+	* @brief A sparse set implementation for efficient entity storage and lookup
+	*
+	* This class provides O(1) insertion, removal, and lookup operations for entities.
+	* It uses a sparse-dense pattern where entities are stored contiguously in a dense array,
+	* while maintaining a sparse lookup map to quickly find entity positions.
+	*/
     class SparseSet {
         public:
-            void insert(Entity entity);
+	        /**
+	         * @brief Insert an entity into the set
+	         *
+	         * @param entity The entity to insert
+	         */
+	        void insert(Entity entity);
 
-            void erase(Entity entity);
+	        /**
+	         * @brief Remove an entity from the set
+	         *
+	         * @param entity The entity to remove
+	         */
+	        void erase(Entity entity);
 
-            bool empty() const { return dense.empty(); }
+	        /**
+	         * @brief Check if the set is empty
+	         *
+	         * @return true if the set contains no entities, false otherwise
+	         */
+	        bool empty() const { return dense.empty(); }
 
-            bool contains(const Entity entity) const { return sparse.contains(entity); }
+	        /**
+	         * @brief Check if an entity exists in the set
+	         *
+	         * @param entity The entity to check
+	         * @return true if the entity exists in the set, false otherwise
+	         */
+	        bool contains(const Entity entity) const { return sparse.contains(entity); }
 
-            size_t size() const { return dense.size(); }
+	        /**
+	         * @brief Get the number of entities in the set
+	         *
+	         * @return The number of entities
+	         */
+	        size_t size() const { return dense.size(); }
 
-            const std::vector<Entity>& getDense() const { return dense; }
-            auto begin() const { return dense.begin(); }
-            auto end() const { return dense.end(); }
+	        /**
+	         * @brief Get the dense array of entities
+	         *
+	         * @return Const reference to the vector of entities
+	         */
+	        const std::vector<Entity>& getDense() const { return dense; }
+
+	        /**
+	         * @brief Get an iterator to the beginning of the entity collection
+	         *
+	         * @return Iterator to the first entity
+	         */
+	        auto begin() const { return dense.begin(); }
+
+	        /**
+	         * @brief Get an iterator to the end of the entity collection
+	         *
+	         * @return Iterator to the position after the last entity
+	         */
+	        auto end() const { return dense.end(); }
 
         private:
+            /**
+             * @brief Dense array of entities in insertion order
+             */
             std::vector<Entity> dense;
+
+            /**
+             * @brief Sparse lookup map from entity ID to position in dense array
+             */
             std::unordered_map<Entity, size_t> sparse;
     };
 
@@ -60,6 +119,9 @@ namespace nexo::ecs {
     class System {
         public:
             virtual ~System() = default;
+            /**
+             * @brief Global coordinator instance shared by all systems
+             */
             static std::shared_ptr<Coordinator> coord;
     };
 
@@ -72,6 +134,9 @@ namespace nexo::ecs {
         ~AQuerySystem() override = default;
         virtual const Signature &getSignature() const = 0;
 
+        /**
+         * @brief Entities that match this system's signature
+         */
         SparseSet entities;
 
     };
@@ -118,6 +183,14 @@ namespace nexo::ecs {
                 return system;
             }
 
+            /**
+             * @brief Registers a new group-based system of type T in the ECS framework
+             *
+             * @tparam T The type of the system to be registered (must derive from AGroupSystem)
+             * @tparam Args Constructor argument types for the system
+             * @param args Constructor arguments for the system
+             * @return std::shared_ptr<T> Shared pointer to the newly registered system
+             */
             template<typename T, typename... Args>
             std::shared_ptr<T> registerGroupSystem(Args&&... args)
             {
@@ -168,8 +241,19 @@ namespace nexo::ecs {
             */
             void entitySignatureChanged(Entity entity, Signature oldSignature, Signature newSignature);
         private:
-            std::unordered_map<std::type_index, Signature> m_signatures{};
-            std::unordered_map<std::type_index, std::shared_ptr<AQuerySystem>> m_querySystems{};
-            std::unordered_map<std::type_index, std::shared_ptr<AGroupSystem>> m_groupSystems{};
+	        /**
+	         * @brief Map of system type to component signature
+	         */
+	        std::unordered_map<std::type_index, Signature> m_signatures{};
+
+	        /**
+	         * @brief Map of query system type to system instance
+	         */
+	        std::unordered_map<std::type_index, std::shared_ptr<AQuerySystem>> m_querySystems{};
+
+	        /**
+	         * @brief Map of group system type to system instance
+	         */
+	        std::unordered_map<std::type_index, std::shared_ptr<AGroupSystem>> m_groupSystems{};
     };
 }

@@ -291,9 +291,32 @@ namespace nexo::ecs {
 			        std::size_t m_index; ///< Current index in the group.
 			};
 
+			/**
+			* @brief Returns an iterator to the beginning of the group
+			*
+			* @return GroupIterator Iterator pointing to the first entity
+			*/
 			GroupIterator begin() const { return GroupIterator(this, 0); }
+
+			/**
+			* @brief Returns an iterator to the end of the group
+			*
+			* @return GroupIterator Iterator pointing beyond the last entity
+			*/
 			GroupIterator end()   const { return GroupIterator(this, size()); }
+
+			/**
+			* @brief Returns an iterator to the beginning of the group (non-const version)
+			*
+			* @return GroupIterator Iterator pointing to the first entity
+			*/
 			GroupIterator begin() { return GroupIterator(this, 0); }
+
+			/**
+			* @brief Returns an iterator to the end of the group (non-const version)
+			*
+			* @return GroupIterator Iterator pointing beyond the last entity
+			*/
 			GroupIterator end()   { return GroupIterator(this, size()); }
 
 		    /**
@@ -445,6 +468,12 @@ namespace nexo::ecs {
 			// Sorting API
 			// =======================================
 
+			/**
+			* @brief Marks the group's sorting as invalidated
+			* Should be called when modifying a component that can affect the sorting
+			*
+			* When sorting is invalidated, the next call to sortBy() will perform a full resort.
+			*/
 			void invalidateSorting()
 			{
 				m_sortingInvalidated = true;
@@ -923,6 +952,9 @@ namespace nexo::ecs {
 				func(e, (std::get<I>(m_ownedArrays)->get(e))..., (std::get<J>(m_nonOwnedArrays)->get(e))...);
 			}
 
+			/**
+			* @brief Defines the direction for sorting operations
+			*/
 			enum class SortingOrder {
 				ASCENDING,
 				DESCENDING
