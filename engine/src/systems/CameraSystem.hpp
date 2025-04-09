@@ -39,7 +39,7 @@ namespace nexo::system {
 	* @note Required Singleton Component:
 	*  - components::RenderContext
 	*/
-	class CameraContextSystem : public ecs::GroupSystem<
+	class CameraContextSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::CameraComponent>>,
         ecs::NonOwned<
@@ -63,15 +63,15 @@ namespace nexo::system {
      *  - components::CameraComponent
      *  - components::TransformComponent
      */
-	class PerspectiveCameraControllerSystem : public ecs::QuerySystem<
-		ecs::Write<components::CameraComponent>,
-		ecs::Write<components::PerspectiveCameraController>,
-        ecs::Read<components::SceneTag>,
-        ecs::Write<components::TransformComponent>,
-    	ecs::ReadSingleton<components::RenderContext>>,
-     	LISTENS_TO(
-	        event::EventMouseScroll,
-	        event::EventMouseMove) {
+	class PerspectiveCameraControllerSystem final : public ecs::QuerySystem<
+		                                                ecs::Write<components::CameraComponent>,
+		                                                ecs::Write<components::PerspectiveCameraController>,
+		                                                ecs::Read<components::SceneTag>,
+		                                                ecs::Write<components::TransformComponent>,
+		                                                ecs::ReadSingleton<components::RenderContext>>,
+	                                                LISTENS_TO(
+		                                                event::EventMouseScroll,
+		                                                event::EventMouseMove) {
 		public:
 			PerspectiveCameraControllerSystem();
 			void update(Timestep ts);
@@ -93,15 +93,15 @@ namespace nexo::system {
      *  - components::CameraComponent
      *  - components::TransformComponent
      */
-	class PerspectiveCameraTargetSystem : public ecs::QuerySystem<
-		ecs::Write<components::CameraComponent>,
-		ecs::Write<components::PerspectiveCameraTarget>,
-        ecs::Read<components::SceneTag>,
-        ecs::Write<components::TransformComponent>,
-    	ecs::ReadSingleton<components::RenderContext>>,
-     	LISTENS_TO(
-			event::EventMouseScroll,
-	        event::EventMouseMove) {
+	class PerspectiveCameraTargetSystem final : public ecs::QuerySystem<
+		                                            ecs::Write<components::CameraComponent>,
+		                                            ecs::Write<components::PerspectiveCameraTarget>,
+		                                            ecs::Read<components::SceneTag>,
+		                                            ecs::Write<components::TransformComponent>,
+		                                            ecs::ReadSingleton<components::RenderContext>>,
+	                                            LISTENS_TO(
+		                                            event::EventMouseScroll,
+		                                            event::EventMouseMove) {
 		public:
 			PerspectiveCameraTargetSystem();
             void handleEvent(event::EventMouseMove &event) override;

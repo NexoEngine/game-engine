@@ -27,11 +27,11 @@ namespace nexo::system {
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
 			[](const components::SceneTag& tag) { return tag.id; }
 		);
 
-		const auto *partition = scenePartition.getPartition(renderContext.sceneRendered);
+		const auto *partition = scenePartition.getPartition(sceneRendered);
 
 		//TODO: Throw exception here ?
 		if (!partition)
@@ -39,9 +39,10 @@ namespace nexo::system {
 
 		const auto directionalLightSpan = get<components::DirectionalLightComponent>();
 
-		for (unsigned int i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalLightSpan[i];
+			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount] = directionalLightSpan[i];
+			renderContext.sceneLights.directionalLightCount++;
 		}
 	}
 }

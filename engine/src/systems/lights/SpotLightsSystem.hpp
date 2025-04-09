@@ -14,8 +14,6 @@
 #pragma once
 
 #include "GroupSystem.hpp"
-#include "ecs/System.hpp"
-#include "ecs/GroupSystem.hpp"
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
@@ -35,7 +33,7 @@ namespace nexo::system {
      * @note Required Singleton Component:
      *  - components::RenderContext
      */
-	class SpotLightsSystem : public ecs::GroupSystem<
+	class SpotLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::SpotLightComponent>>,
         ecs::NonOwned<

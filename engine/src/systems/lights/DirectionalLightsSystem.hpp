@@ -34,7 +34,7 @@ namespace nexo::system {
      * @note Required Singleton Component:
      *  - components::RenderContext
      */
-	class DirectionalLightsSystem : public ecs::GroupSystem<
+	class DirectionalLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::DirectionalLightComponent>>,
         ecs::NonOwned<

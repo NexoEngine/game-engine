@@ -32,50 +32,49 @@ namespace nexo::ecs {
      */
     template<typename... Components>
     class QuerySystem : public AQuerySystem, public SingletonComponentMixin<
-	    												QuerySystem<Components...>,
-	                									Components...> {
-	    private:
+														QuerySystem<Components...>,
+														Components...> {
+		private:
 	        // Helper template to check if a component type exists in the parameter pack with Read access
-	        template<typename T, typename First, typename... Rest>
-	        struct HasReadAccess {
-	            static constexpr bool value =
-	                (std::is_same_v<First, Read<T>> ||
-	                 HasReadAccess<T, Rest...>::value);
-	        };
+			template<typename T, typename First, typename... Rest>
+			struct HasReadAccess {
+				static constexpr bool value =
+					(std::is_same_v<First, Read<T>> ||
+					HasReadAccess<T, Rest...>::value);
+			};
 
-	        // Base case for the template recursion
-	        template<typename T, typename First>
-	        struct HasReadAccess<T, First> {
-	            static constexpr bool value = std::is_same_v<First, Read<T>>;
-	        };
+			// Base case for the template recursion
+			template<typename T, typename First>
+			struct HasReadAccess<T, First> {
+				static constexpr bool value = std::is_same_v<First, Read<T>>;
+			};
 
-	        // Convenience function to check read access
-	        template<typename T>
-	        static constexpr bool hasReadAccess()
+			// Convenience function to check read access
+			template<typename T>
+			static constexpr bool hasReadAccess()
 			{
-	            return HasReadAccess<T, Components...>::value;
-	        }
+				return HasReadAccess<T, Components...>::value;
+			}
 
 	    public:
 	        // Make the base class a friend to access protected members
-	        friend class SingletonComponentMixin<QuerySystem<Components...>, Components...>;
+			friend class SingletonComponentMixin<QuerySystem<Components...>, Components...>;
 
-	        QuerySystem()
+			QuerySystem()
 			{
 				if (!coord) {
-			        THROW_EXCEPTION(InternalError, "Coordinator is null in QuerySystem constructor");
-			        return;
-			    }
+					THROW_EXCEPTION(InternalError, "Coordinator is null in QuerySystem constructor");
+				}
 
-	            // Set system signature based on required components (ignore singleton components)
-	            (setComponentSignatureIfRegular<Components>(m_signature), ...);
+				// Set system signature based on required components (ignore singleton components)
+				(setComponentSignatureIfRegular<Components>(m_signature), ...);
 
-	            // Cache component arrays for faster access (ignore singleton components)
-	            (cacheComponentArrayIfRegular<Components>(), ...);
+				// Cache component arrays for faster access (ignore singleton components)
+				(cacheComponentArrayIfRegular<Components>(), ...);
 
-	            // Initialize singleton components
-	            this->initializeSingletonComponents();
-	        }
+				// Initialize singleton components
+				this->initializeSingletonComponents();
+			}
 
 	        /**
 	         * @brief Get a component for an entity with access type determined at compile time
@@ -84,32 +83,27 @@ namespace nexo::ecs {
 	         * @param entity The entity to get the component from
 	         * @return Reference to the component with appropriate const-ness
 	         */
-	        template<typename T>
-	        typename std::conditional<hasReadAccess<T>(), const T&, T&>::type
-	        getComponent(Entity entity)
+			template<typename T>
+			std::conditional_t<hasReadAccess<T>(), const T&, T&> getComponent(Entity entity)
 			{
-	            auto typeIndex = getTypeIndex<T>();
-				auto it = m_componentArrays.find(typeIndex);
+				const std::type_index typeIndex = getTypeIndex<T>();
+				const auto it = m_componentArrays.find(typeIndex);
 
-                if (it == m_componentArrays.end())
-         			THROW_EXCEPTION(InternalError, "Component array not found");
+				if (it == m_componentArrays.end())
+					THROW_EXCEPTION(InternalError, "Component array not found");
 
-                auto componentArray = std::static_pointer_cast<ComponentArray<T>>(it->second);
+				auto componentArray = std::static_pointer_cast<ComponentArray<T>>(it->second);
 
-                if (!componentArray)
-                	THROW_EXCEPTION(InternalError, "Failed to cast component array");
+				if (!componentArray)
+					THROW_EXCEPTION(InternalError, "Failed to cast component array");
 
-                if (!componentArray->hasComponent(entity))
-                	THROW_EXCEPTION(InternalError, "Entity doesn't have requested component");
+				if (!componentArray->hasComponent(entity))
+					THROW_EXCEPTION(InternalError, "Entity doesn't have requested component");
+				return componentArray->get(entity);
+			}
 
-	            if constexpr (hasReadAccess<T>())
-	                return componentArray->get(entity);
-	            else
-	                return componentArray->get(entity);
-	        }
-
-	        const Signature& getSignature() const { return m_signature; }
-	        Signature& getSignature() { return m_signature; }
+			const Signature& getSignature() const override { return m_signature; }
+			Signature& getSignature() { return m_signature; }
 
 	    protected:
 	        /**
@@ -118,14 +112,14 @@ namespace nexo::ecs {
 	         * @tparam ComponentAccessType The component access type to cache
 	         */
 			template<typename ComponentAccessType>
-            void cacheComponentArrayIfRegular()
-            {
-                if constexpr (!IsSingleton<ComponentAccessType>::value) {
-                    using T = typename ComponentAccessType::ComponentType;
-                    auto componentArray = coord->template getComponentArray<T>();
-                    m_componentArrays[getTypeIndex<T>()] = componentArray;
-                }
-            }
+			void cacheComponentArrayIfRegular()
+			{
+				if constexpr (!IsSingleton<ComponentAccessType>::value) {
+					using T = typename ComponentAccessType::ComponentType;
+					auto componentArray = coord->getComponentArray<T>();
+					m_componentArrays[getTypeIndex<T>()] = componentArray;
+				}
+			}
 
 	        /**
 	         * @brief Sets the component bit in the system signature (only for regular components)
@@ -133,18 +127,18 @@ namespace nexo::ecs {
 	         * @tparam ComponentAccessType The component access type
 	         * @param signature The signature to modify
 	         */
-	        template<typename ComponentAccessType>
-	        void setComponentSignatureIfRegular(Signature& signature)
+			template<typename ComponentAccessType>
+			void setComponentSignatureIfRegular(Signature& signature)
 			{
-	            if constexpr (!IsSingleton<ComponentAccessType>::value) {
-	                using T = typename ComponentAccessType::ComponentType;
-	                signature.set(coord->template getComponentType<T>(), true);
-	            }
-	        }
+				if constexpr (!IsSingleton<ComponentAccessType>::value) {
+					using T = typename ComponentAccessType::ComponentType;
+					signature.set(coord->getComponentType<T>(), true);
+				}
+			}
 
-	    private:
-	        // Cache of component arrays for faster access
-	        std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
-	        Signature m_signature;
+		private:
+			// Cache of component arrays for faster access
+			std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
+			Signature m_signature;
     };
 }

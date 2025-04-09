@@ -16,7 +16,6 @@
 
 #include <memory>
 #include <any>
-#include <set>
 
 #include "Components.hpp"
 #include "System.hpp"
@@ -78,13 +77,13 @@ namespace nexo::ecs {
              * @brief Registers a new singleton component
              *
              * @tparam T Class that should inherit from SingletonComponent class
-             * @param component
+             * @param args Optional argument to forward to the singleton component constructor
              */
-             template <typename T, typename... Args>
-             void registerSingletonComponent(Args&&... args)
-             {
-                 m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
-             }
+            template <typename T, typename... Args>
+            void registerSingletonComponent(Args&&... args)
+            {
+                m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
+            }
 
             /**
             * @brief Adds a component to an entity, updates its signature, and notifies systems.
@@ -95,9 +94,9 @@ namespace nexo::ecs {
             template <typename T>
             void addComponent(const Entity entity, T component)
             {
-				auto signature = m_entityManager->getSignature(entity);
-				auto oldSignature = signature;
-				signature.set(m_componentManager->getComponentType<T>(), true);
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
+                signature.set(m_componentManager->getComponentType<T>(), true);
                 m_componentManager->addComponent<T>(entity, component, signature);
 
                 m_entityManager->setSignature(entity, signature);
@@ -113,9 +112,9 @@ namespace nexo::ecs {
             template<typename T>
             void removeComponent(const Entity entity) const
             {
-				auto signature = m_entityManager->getSignature(entity);
-				auto oldSignature = signature;
-				signature.set(m_componentManager->getComponentType<T>(), false);
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
+                signature.set(m_componentManager->getComponentType<T>(), false);
                 m_componentManager->removeComponent<T>(entity, oldSignature);
 
 
@@ -135,10 +134,10 @@ namespace nexo::ecs {
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
-				auto signature = m_entityManager->getSignature(entity);
+                Signature signature = m_entityManager->getSignature(entity);
                 if (m_componentManager->tryRemoveComponent<T>(entity, signature))
                 {
-                	auto oldSignature = signature;
+                    Signature oldSignature = signature;
                     signature.set(m_componentManager->getComponentType<T>(), false);
                     m_entityManager->setSignature(entity, signature);
 
@@ -207,7 +206,7 @@ namespace nexo::ecs {
              * @return std::shared_ptr<ISingletonComponent> The pointer to the desired singleton component
              */
             template <typename T>
-            std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
+            std::shared_ptr<ISingletonComponent> getRawSingletonComponent() const
             {
                 return m_singletonComponentManager->getRawSingletonComponent<T>();
             }
@@ -237,19 +236,19 @@ namespace nexo::ecs {
             template<typename... Components>
             std::vector<Entity> getAllEntitiesWith() const
             {
-	            Signature requiredSignature;
-	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+                Signature requiredSignature;
+                (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
 
-				std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
-    			std::vector<Entity> result;
-       			result.reserve(livingEntities.size());
-				for (auto entity : livingEntities)
-				{
-					Signature entitySignature = m_entityManager->getSignature(entity);
-					if ((entitySignature & requiredSignature) == requiredSignature)
-						result.push_back(entity);
-				}
-				return result;
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                std::vector<Entity> result;
+                result.reserve(livingEntities.size());
+                for (Entity entity : livingEntities)
+                {
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
+                    if ((entitySignature & requiredSignature) == requiredSignature)
+                        result.push_back(entity);
+                }
+                return result;
             }
 
             /**
@@ -274,9 +273,9 @@ namespace nexo::ecs {
             std::shared_ptr<T> registerQuerySystem(Args&&... args) {
                 auto newQuerySystem =  m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
                 std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
-                Signature querySystemSignature = newQuerySystem->getSignature();
+                const Signature querySystemSignature = newQuerySystem->getSignature();
                 for (Entity entity : livingEntities) {
-                    Signature entitySignature = m_entityManager->getSignature(entity);
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
                     if ((entitySignature & querySystemSignature) == querySystemSignature) {
                         newQuerySystem->entities.insert(entity);
                     }
@@ -330,7 +329,7 @@ namespace nexo::ecs {
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {
-                const auto signature = m_entityManager->getSignature(entity);
+                const Signature signature = m_entityManager->getSignature(entity);
                 const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }

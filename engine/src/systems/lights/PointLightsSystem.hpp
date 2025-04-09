@@ -34,7 +34,7 @@ namespace nexo::system {
      * @note Required Singleton Component:
      *  - components::RenderContext
      */
-	class PointLightsSystem : public ecs::GroupSystem<
+	class PointLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::PointLightComponent>>,
         ecs::NonOwned<

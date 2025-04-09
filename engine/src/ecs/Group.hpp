@@ -45,7 +45,7 @@ namespace nexo::ecs {
 		     *
 		     * @return const Signature& Combined signature.
 		     */
-		    virtual const Signature& allSignature() const = 0;
+		    [[nodiscard]] virtual const Signature& allSignature() const = 0;
 		    /**
 		     * @brief Adds an entity to the group.
 		     *
@@ -142,49 +142,49 @@ namespace nexo::ecs {
 	 * @tparam NonOwnedTuple Tuple of pointers to non‑owned component arrays.
 	 */
 	template<typename OwnedTuple, typename NonOwnedTuple>
-	class Group : public IGroup {
+	class Group final : public IGroup {
 		public:
-		    /**
-		     * @brief Constructs a new Group.
-		     *
-		     * @tparam NonOwning Variadic template parameters for non‑owned components.
-		     * @param ownedArrays Tuple of pointers to owned component arrays.
-		     * @param nonOwnedArrays Tuple of pointers to non‑owned component arrays.
-		     *
-		     * The constructor computes the owned and non‑owned signatures and their combination.
-		     */
-		    template<typename... NonOwning>
-		    Group(OwnedTuple ownedArrays, NonOwnedTuple nonOwnedArrays)
-		        : m_ownedArrays(std::move(ownedArrays))
-		        , m_nonOwnedArrays(std::move(nonOwnedArrays))
-		    {
-					if (std::tuple_size_v<OwnedTuple> == 0)
-					    THROW_EXCEPTION(InternalError, "Group must have at least one owned component");
-				    m_ownedSignature = std::apply([](auto&&... arrays) -> Signature {
-				        Signature signature;
-				        ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
-				        return signature;
-				    }, m_ownedArrays);
+			/**
+			 * @brief Constructs a new Group.
+			 *
+			 * @tparam NonOwning Variadic template parameters for non‑owned components.
+			 * @param ownedArrays Tuple of pointers to owned component arrays.
+			 * @param nonOwnedArrays Tuple of pointers to non‑owned component arrays.
+			 *
+			 * The constructor computes the owned and non‑owned signatures and their combination.
+			 */
+			template<typename... NonOwning>
+			Group(OwnedTuple ownedArrays, NonOwnedTuple nonOwnedArrays)
+			    : m_ownedArrays(std::move(ownedArrays))
+			    , m_nonOwnedArrays(std::move(nonOwnedArrays))
+			{
+				if (std::tuple_size_v<OwnedTuple> == 0)
+				    THROW_EXCEPTION(InternalError, "Group must have at least one owned component");
+				m_ownedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) -> Signature {
+				    Signature signature;
+				    ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
+				    return signature;
+				}, m_ownedArrays);
 
-				    Signature nonOwnedSignature = std::apply([](auto&&... arrays) -> Signature {
-				        Signature signature;
-				        ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
-				        return signature;
-				    }, m_nonOwnedArrays);
+				const Signature nonOwnedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) -> Signature {
+				    Signature signature;
+				    ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
+				    return signature;
+				}, m_nonOwnedArrays);
 
-				    m_allSignature = m_ownedSignature | nonOwnedSignature;
-		    }
+				m_allSignature = m_ownedSignature | nonOwnedSignature;
+			}
 
 			// =======================================
 			// Core Group API
 			// =======================================
 
-		    /**
-		     * @brief Returns the number of entities in the group.
-		     *
-		     * @return std::size_t Number of entities.
-		     */
-			std::size_t size() const
+			/**
+			 * @brief Returns the number of entities in the group.
+			 *
+			 * @return std::size_t Number of entities.
+			 */
+			[[nodiscard]] std::size_t size() const
 			{
 			    auto firstArray = std::get<0>(m_ownedArrays);
 			    if (!firstArray) {
@@ -199,21 +199,21 @@ namespace nexo::ecs {
 		     * @return true If sorting is invalidated.
 		     * @return false Otherwise.
 		     */
-			bool sortingInvalidated() const { return m_sortingInvalidated; }
+			[[nodiscard]] bool sortingInvalidated() const { return m_sortingInvalidated; }
 
 		    /**
 		     * @brief Returns the signature for owned components.
 		     *
 		     * @return const Signature& Owned signature.
 		     */
-		    const Signature& ownedSignature() const { return m_ownedSignature; }
+		    [[nodiscard]] const Signature& ownedSignature() const { return m_ownedSignature; }
 
 		    /**
 		     * @brief Returns the overall signature for both owned and non‑owned components.
 		     *
 		     * @return const Signature& Combined signature.
 		     */
-		    const Signature& allSignature()   const override { return m_allSignature; }
+		    [[nodiscard]] const Signature& allSignature()   const override { return m_allSignature; }
 
 		    /**
 		     * @brief Iterator for Group.
@@ -308,17 +308,16 @@ namespace nexo::ecs {
 		    template<typename Func>
 		    void each(Func func) const
 			{
-		        using FirstOwned = std::tuple_element_t<0, OwnedTuple>;
-		        auto firstArray = std::get<0>(m_ownedArrays);
+				auto firstArray = std::get<0>(m_ownedArrays);
 				if (!firstArray) {
 					THROW_EXCEPTION(InternalError, "Component array is null");
 				}
-		        for (std::size_t i = 0; i < firstArray->groupSize(); ++i) {
-		            Entity e = firstArray->getEntityAtIndex(i);
-		            callFunc(func, e,
-		                     std::make_index_sequence<std::tuple_size_v<OwnedTuple>>{},
-		                     std::make_index_sequence<std::tuple_size_v<NonOwnedTuple>>{});
-		        }
+				for (std::size_t i = 0; i < firstArray->groupSize(); ++i) {
+					Entity e = firstArray->getEntityAtIndex(i);
+					callFunc(func, e,
+						std::make_index_sequence<std::tuple_size_v<OwnedTuple>>{},
+						std::make_index_sequence<std::tuple_size_v<NonOwnedTuple>>{});
+				}
 		    }
 
 		    /**
@@ -330,7 +329,7 @@ namespace nexo::ecs {
 		     * @param func Function to call for each entity in range.
 		     */
 		    template<typename Func>
-			void eachInRange(size_t startIndex, size_t count, Func func) const
+			void eachInRange(size_t startIndex, const size_t count, Func func) const
 			{
 				auto firstArray = std::get<0>(m_ownedArrays);
 				if (!firstArray) {
@@ -342,12 +341,12 @@ namespace nexo::ecs {
 				}
 				const size_t endIndex = std::min(startIndex + count, firstArray->groupSize());
 
-			    for (size_t i = startIndex; i < endIndex; i++) {
-			        Entity e = firstArray->getEntityAtIndex(i);
-			        callFunc(func, e,
-			                    std::make_index_sequence<std::tuple_size_v<OwnedTuple>>{},
-			                    std::make_index_sequence<std::tuple_size_v<NonOwnedTuple>>{});
-			    }
+				for (size_t i = startIndex; i < endIndex; i++) {
+					Entity e = firstArray->getEntityAtIndex(i);
+					callFunc(func, e,
+						std::make_index_sequence<std::tuple_size_v<OwnedTuple>>{},
+						std::make_index_sequence<std::tuple_size_v<NonOwnedTuple>>{});
+				}
 			}
 
 		    /**
@@ -359,9 +358,9 @@ namespace nexo::ecs {
 		     */
 		    void addToGroup(Entity e) override
 		    {
-		        std::apply([e](auto&&... arrays) {
-		            ((arrays->addToGroup(e)), ...);
-		        }, m_ownedArrays);
+				std::apply([e](auto&&... arrays) {
+					((arrays->addToGroup(e)), ...);
+				}, m_ownedArrays);
 				m_sortingInvalidated = true;
 				invalidatePartitions();
 		    }
@@ -375,9 +374,9 @@ namespace nexo::ecs {
 		     */
 		    void removeFromGroup(Entity e) override
 		    {
-		        std::apply([e](auto&&... arrays) {
-		            ((arrays->removeFromGroup(e)), ...);
-		        }, m_ownedArrays);
+				std::apply([e](auto&&... arrays) {
+					((arrays->removeFromGroup(e)), ...);
+				}, m_ownedArrays);
 				m_sortingInvalidated = true;
 				invalidatePartitions();
 		    }
@@ -390,11 +389,11 @@ namespace nexo::ecs {
 		     *
 		     * @return std::span<const Entity> Span of entity IDs.
 		     */
-		    std::span<const Entity> entities() const
-		    {
-		        auto entities = std::get<0>(m_ownedArrays)->entities();
-		        return entities.subspan(0, std::get<0>(m_ownedArrays)->groupSize());
-		    }
+			[[nodiscard]] std::span<const Entity> entities() const
+			{
+				const std::span<const Entity> entities = std::get<0>(m_ownedArrays)->entities();
+				return entities.subspan(0, std::get<0>(m_ownedArrays)->groupSize());
+			}
 
 			/**
 			 * @brief Retrieves the component array data for a given component type.
@@ -407,16 +406,16 @@ namespace nexo::ecs {
 			template<typename T>
 			auto get() const
 			{
-			    if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
-			        auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
+				if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
+					auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
 					if (!compArray) {
 						THROW_EXCEPTION(InternalError, "Component array is null");
 					}
-			        return compArray->getAllComponents().subspan(0, compArray->groupSize());
-			    } else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
-			        return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
-			    else
-			        static_assert(dependent_false<T>::value, "Component type not found in group");
+					return compArray->getAllComponents().subspan(0, compArray->groupSize());
+				} else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
+					return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
+				else
+					static_assert(dependent_false<T>::value, "Component type not found in group");
 			}
 
 			/**
@@ -430,16 +429,16 @@ namespace nexo::ecs {
 			template<typename T>
 			auto get()
 			{
-			    if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
-			        auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
+				if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
+					auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
 					if (!compArray) {
 						THROW_EXCEPTION(InternalError, "Component array is null");
 					}
-			        return compArray->getAllComponents().subspan(0, compArray->groupSize());
-			    } else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
-			        return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
-			    else
-			        static_assert(dependent_false<T>::value, "Component type not found in group");
+					return compArray->getAllComponents().subspan(0, compArray->groupSize());
+				} else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
+					return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
+				else
+					static_assert(dependent_false<T>::value, "Component type not found in group");
 			}
 
 			// =======================================
@@ -484,7 +483,7 @@ namespace nexo::ecs {
 
 			    // Get the driving array (always the first owned array)
 			    auto drivingArray = std::get<0>(m_ownedArrays);
-			    auto groupSize = drivingArray->groupSize();
+			    const size_t groupSize = drivingArray->groupSize();
 
 			    // Create a vector of entities to sort
 			    std::vector<Entity> entities;
@@ -501,8 +500,7 @@ namespace nexo::ecs {
 			            const auto& compB = compArray->get(b);
 			            if (ascending)
 			                return extractor(compA) < extractor(compB);
-			            else
-			                return extractor(compA) > extractor(compB);
+			            return extractor(compA) > extractor(compB);
 			        });
 
 			    // Reorder only the owned component arrays according to the new order
@@ -521,75 +519,75 @@ namespace nexo::ecs {
 			 */
 			template<typename KeyType>
 			class PartitionView {
-			public:
-			    /**
-			     * @brief Constructs a PartitionView.
-			     *
-			     * @param group Pointer to the group.
-			     * @param partitions Reference to a vector of Partition objects.
-			     */
-			    PartitionView(Group* group, const std::vector<Partition<KeyType>>& partitions)
-			        : m_group(group), m_partitions(partitions) {}
+				public:
+					/**
+					* @brief Constructs a PartitionView.
+					*
+					* @param group Pointer to the group.
+					* @param partitions Reference to a vector of Partition objects.
+					*/
+					PartitionView(Group* group, const std::vector<Partition<KeyType>>& partitions)
+						: m_group(group), m_partitions(partitions) {}
 
-			    /**
-			     * @brief Retrieves a partition by key.
-			     *
-			     * @param key Key to search for.
-			     * @return const Partition<KeyType>* Pointer to the partition if found; nullptr otherwise.
-			     */
-			    const Partition<KeyType>* getPartition(const KeyType& key) const
-				{
-			        for (const auto& partition : m_partitions) {
-			            if (partition.key == key)
-			                return &partition;
-			        }
-			        return nullptr;
-			    }
+					/**
+					* @brief Retrieves a partition by key.
+					*
+					* @param key Key to search for.
+					* @return const Partition<KeyType>* Pointer to the partition if found; nullptr otherwise.
+					*/
+					const Partition<KeyType>* getPartition(const KeyType& key) const
+					{
+						for (const auto& partition : m_partitions) {
+							if (partition.key == key)
+								return &partition;
+						}
+						return nullptr;
+					}
 
-			    /**
-			     * @brief Iterates over entities in a specific partition.
-			     *
-			     * @tparam Func Callable type.
-			     * @param key Key of the partition.
-			     * @param func Function to apply to each entity.
-			     */
-			    template<typename Func>
-			    void each(const KeyType& key, Func func) const
-				{
-			        const auto* partition = getPartition(key);
-			        if (!partition)
-						return;
+					/**
+					* @brief Iterates over entities in a specific partition.
+					*
+					* @tparam Func Callable type.
+					* @param key Key of the partition.
+					* @param func Function to apply to each entity.
+					*/
+					template<typename Func>
+					void each(const KeyType& key, Func func) const
+					{
+						const auto* partition = getPartition(key);
+						if (!partition)
+							return;
 
-			        m_group->eachInRange(partition->startIndex, partition->count, func);
-			    }
+						m_group->eachInRange(partition->startIndex, partition->count, func);
+					}
 
-			    /**
-			     * @brief Gets all partition keys.
-			     *
-			     * @return std::vector<KeyType> Vector of partition keys.
-			     */
-			    std::vector<KeyType> getPartitionKeys() const
-				{
-			        std::vector<KeyType> keys;
-			        keys.reserve(m_partitions.size());
-			        for (const auto& partition : m_partitions)
-			            keys.push_back(partition.key);
-			        return keys;
-			    }
+					/**
+					* @brief Gets all partition keys.
+					*
+					* @return std::vector<KeyType> Vector of partition keys.
+					*/
+					std::vector<KeyType> getPartitionKeys() const
+					{
+						std::vector<KeyType> keys;
+						keys.reserve(m_partitions.size());
+						for (const auto& partition : m_partitions)
+							keys.push_back(partition.key);
+						return keys;
+					}
 
-			    /**
-			     * @brief Returns the number of partitions.
-			     *
-			     * @return size_t Partition count.
-			     */
-			    size_t partitionCount() const
-				{
-			        return m_partitions.size();
-			    }
+					/**
+					* @brief Returns the number of partitions.
+					*
+					* @return size_t Partition count.
+					*/
+					[[nodiscard]] size_t partitionCount() const
+					{
+						return m_partitions.size();
+					}
 
-			private:
-			    Group* m_group; ///< Pointer to the group.
-			    const std::vector<Partition<KeyType>>& m_partitions; ///< Reference to partitions.
+				private:
+					Group* m_group; ///< Pointer to the group.
+					const std::vector<Partition<KeyType>>& m_partitions; ///< Reference to partitions.
 			};
 
 			/**
@@ -603,70 +601,69 @@ namespace nexo::ecs {
 			template<typename CompType, typename KeyType>
 			PartitionView<KeyType> getPartitionView(FieldExtractor<CompType, KeyType> keyExtractor)
 			{
-			    std::string typeId = typeid(KeyType).name();
-			    typeId += "_" + std::string(typeid(CompType).name());
+				std::string typeId = typeid(KeyType).name();
+				typeId += "_" + std::string(typeid(CompType).name());
 
-			    // Create entity-based key extractor that uses the component extractor
-			    EntityKeyExtractor<KeyType> entityKeyExtractor = [this, keyExtractor](Entity e) {
-			        // Get the component and extract the key
-			        if constexpr (tuple_contains_component_v<CompType, OwnedTuple>) {
-			            auto compArray = getOwnedImpl<CompType>();
-			            return keyExtractor(compArray->get(e));
-			        } else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>) {
-			            auto compArray = getNonOwnedImpl<CompType>();
-			            return keyExtractor(compArray->get(e));
-			        } else
-			            static_assert(dependent_false<CompType>::value, "Component type not found in group");
-			    };
+				// Create entity-based key extractor that uses the component extractor
+				EntityKeyExtractor<KeyType> entityKeyExtractor = [this, keyExtractor](Entity e) {
+				// Get the component and extract the key
+				if constexpr (tuple_contains_component_v<CompType, OwnedTuple>) {
+					auto compArray = getOwnedImpl<CompType>();
+					return keyExtractor(compArray->get(e));
+				} else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>) {
+					auto compArray = getNonOwnedImpl<CompType>();
+					return keyExtractor(compArray->get(e));
+				} else
+					static_assert(dependent_false<CompType>::value, "Component type not found in group");
+				};
 
-			    return getEntityPartitionView<KeyType>(typeId, entityKeyExtractor);
+				return getEntityPartitionView<KeyType>(typeId, entityKeyExtractor);
 			}
 
 			/**
-			 * @brief Returns a partition view based directly on entity IDs.
-			 *
-			 * @tparam KeyType Key type.
-			 * @param partitionId Identifier for the partition view.
-			 * @param keyExtractor Function to extract the key from an entity.
-			 * @return PartitionView<KeyType> View over the partitioned entities.
-			 */
+			* @brief Returns a partition view based directly on entity IDs.
+			*
+			* @tparam KeyType Key type.
+			* @param partitionId Identifier for the partition view.
+			* @param keyExtractor Function to extract the key from an entity.
+			* @return PartitionView<KeyType> View over the partitioned entities.
+			*/
 			template<typename KeyType>
-			PartitionView<KeyType> getEntityPartitionView(
-			    const std::string& partitionId,
-			    EntityKeyExtractor<KeyType> keyExtractor)
+			PartitionView<KeyType> getEntityPartitionView(const std::string& partitionId,
+															EntityKeyExtractor<KeyType> keyExtractor)
 			{
-			    // Check if we already have this partition view
-			    auto it = m_partitionStorageMap.find(partitionId);
-			    if (it == m_partitionStorageMap.end()) {
-			        // Create a new partition storage
-			        auto storage = std::make_unique<PartitionStorage<KeyType>>(this, keyExtractor);
-			        auto* storagePtr = storage.get();
-			        m_partitionStorageMap[partitionId] = std::move(storage);
+				// Check if we already have this partition view
+				auto it = m_partitionStorageMap.find(partitionId);
+				if (it == m_partitionStorageMap.end()) {
+					// Create a new partition storage
+					auto storage = std::make_unique<PartitionStorage<KeyType>>(this, keyExtractor);
+					auto* storagePtr = storage.get();
+					m_partitionStorageMap[partitionId] = std::move(storage);
 
-			        // Rebuild the partitions
-			        storagePtr->rebuild();
+					// Rebuild the partitions
+					storagePtr->rebuild();
 
-			        return PartitionView<KeyType>(this, storagePtr->getPartitions());
-			    }
+					return PartitionView<KeyType>(this, storagePtr->getPartitions());
+				}
 
-			    // Get the existing storage and cast to the right type
-			    auto* storage = static_cast<PartitionStorage<KeyType>*>(it->second.get());
+				// Get the existing storage and cast to the right type
+				auto* storage = static_cast<PartitionStorage<KeyType>*>(it->second.get());
 
-			    // Rebuild if needed
-			    if (storage->isDirty())
-			        storage->rebuild();
+				// Rebuild if needed
+				if (storage->isDirty())
+					storage->rebuild();
 
-			    // Return a view to the partitions
-			    return PartitionView<KeyType>(this, storage->getPartitions());
+				// Return a view to the partitions
+				return PartitionView<KeyType>(this, storage->getPartitions());
 			}
 
 			/**
-			 * @brief Invalidates all partition caches.
-			 */
+			* @brief Invalidates all partition caches.
+			*/
 			void invalidatePartitions()
 			{
-			    for (auto& [_, storage] : m_partitionStorageMap)
-			        storage->markDirty();
+			for (auto& [_, storage] : m_partitionStorageMap)
+				storage->markDirty();
 			}
 
 		private:
@@ -676,28 +673,28 @@ namespace nexo::ecs {
 			// =======================================
 
 			/**
-			 * @brief Interface for type-erased partition storage.
-			 *
-			 * This allows handling partition storage for different key types uniformly.
-			 */
+			* @brief Interface for type-erased partition storage.
+			*
+			* This allows handling partition storage for different key types uniformly.
+			*/
 			struct IPartitionStorage {
-			    /// Virtual destructor.
-			    virtual ~IPartitionStorage() = default;
-			    /**
-			     * @brief Checks if the partition storage is dirty (needs rebuilding).
-			     *
-			     * @return true If dirty.
-			     * @return false Otherwise.
-			     */
-			    virtual bool isDirty() const = 0;
-			    /**
-			     * @brief Marks the partition storage as dirty.
-			     */
-			    virtual void markDirty() = 0;
-			    /**
-			     * @brief Rebuilds the partition storage.
-			     */
-			    virtual void rebuild() = 0;
+				/// Virtual destructor.
+				virtual ~IPartitionStorage() = default;
+				/**
+				* @brief Checks if the partition storage is dirty (needs rebuilding).
+				*
+				* @return true If dirty.
+				* @return false Otherwise.
+				*/
+				[[nodiscard]] virtual bool isDirty() const = 0;
+				/**
+				* @brief Marks the partition storage as dirty.
+				*/
+				virtual void markDirty() = 0;
+				/**
+				* @brief Rebuilds the partition storage.
+				*/
+				virtual void rebuild() = 0;
 			};
 
 			/**
@@ -706,143 +703,143 @@ namespace nexo::ecs {
 			 * @tparam KeyType Type of the partition key.
 			 */
 			template<typename KeyType>
-			class PartitionStorage : public IPartitionStorage {
-			public:
-			    /**
-			     * @brief Constructs PartitionStorage.
-			     *
-			     * @param group Pointer to the group.
-			     * @param keyExtractor Function to extract key from an entity.
-			     */
-			    PartitionStorage(Group* group, EntityKeyExtractor<KeyType> keyExtractor)
-			        : m_group(group), m_keyExtractor(std::move(keyExtractor)), m_isDirty(true) {}
+			class PartitionStorage final : public IPartitionStorage {
+				public:
+					/**
+					* @brief Constructs PartitionStorage.
+					*
+					* @param group Pointer to the group.
+					* @param keyExtractor Function to extract key from an entity.
+					*/
+					PartitionStorage(Group* group, EntityKeyExtractor<KeyType> keyExtractor)
+						: m_group(group), m_keyExtractor(std::move(keyExtractor)), m_isDirty(true) {}
 
-			    bool isDirty() const override { return m_isDirty; }
-			    void markDirty() override { m_isDirty = true; }
+					[[nodiscard]] bool isDirty() const override { return m_isDirty; }
+					void markDirty() override { m_isDirty = true; }
 
-			    /**
-			     * @brief Rebuilds the partitions.
-			     *
-			     * This collects all entity keys and creates partitions. It then reorders
-			     * the group entities according to the new partition order.
-			     */
-			    void rebuild() override
-				{
-			        if (!m_isDirty)
-						return;
+					/**
+					* @brief Rebuilds the partitions.
+					*
+					* This collects all entity keys and creates partitions. It then reorders
+					* the group entities according to the new partition order.
+					*/
+					void rebuild() override
+					{
+						if (!m_isDirty)
+							return;
 
-			        auto drivingArray = std::get<0>(m_group->m_ownedArrays);
-			        auto groupSize = drivingArray->groupSize();
+						auto drivingArray = std::get<0>(m_group->m_ownedArrays);
+						const size_t groupSize = drivingArray->groupSize();
 
-			        // Skip if no entities
-			        if (groupSize == 0) {
-			            m_partitions.clear();
-			            m_isDirty = false;
-			            return;
-			        }
+						// Skip if no entities
+						if (groupSize == 0) {
+							m_partitions.clear();
+							m_isDirty = false;
+							return;
+						}
 
-			        // Collect all entity keys
-			        std::unordered_map<KeyType, std::vector<Entity>> keyToEntities;
+						// Collect all entity keys
+						std::unordered_map<KeyType, std::vector<Entity>> keyToEntities;
 
-			        for (size_t i = 0; i < groupSize; i++) {
-			            Entity e = drivingArray->getEntityAtIndex(i);
-			            KeyType key = m_keyExtractor(e);
-			            keyToEntities[key].push_back(e);
-			        }
+						for (size_t i = 0; i < groupSize; i++) {
+							Entity e = drivingArray->getEntityAtIndex(i);
+							KeyType key = m_keyExtractor(e);
+							keyToEntities[key].push_back(e);
+						}
 
-			        // Create the partitions
-			        m_partitions.clear();
-			        m_partitions.reserve(keyToEntities.size());
+						// Create the partitions
+						m_partitions.clear();
+						m_partitions.reserve(keyToEntities.size());
 
-			        std::vector<Entity> newOrder;
-			        newOrder.reserve(groupSize);
+						std::vector<Entity> newOrder;
+						newOrder.reserve(groupSize);
 
-			        size_t currentIndex = 0;
-			        for (auto& [key, entities] : keyToEntities) {
-			            Partition<KeyType> partition;
-			            partition.key = key;
-			            partition.startIndex = currentIndex;
-			            partition.count = entities.size();
-			            m_partitions.push_back(partition);
+						size_t currentIndex = 0;
+						for (auto& [key, entities] : keyToEntities) {
+							Partition<KeyType> partition;
+							partition.key = key;
+							partition.startIndex = currentIndex;
+							partition.count = entities.size();
+							m_partitions.push_back(partition);
 
-			            // Add these entities to the new order
-			            newOrder.insert(newOrder.end(), entities.begin(), entities.end());
+							// Add these entities to the new order
+							newOrder.insert(newOrder.end(), entities.begin(), entities.end());
 
-			            currentIndex += entities.size();
-			        }
+							currentIndex += entities.size();
+						}
 
-			        // Reorder the entities according to partitions
-			        m_group->reorderGroup(newOrder);
+						// Reorder the entities according to partitions
+						m_group->reorderGroup(newOrder);
 
-			        m_isDirty = false;
-			    }
+						m_isDirty = false;
+					}
 
-			    /**
-			     * @brief Gets the current partitions.
-			     *
-			     * @return const std::vector<Partition<KeyType>>& Reference to the partitions.
-			     */
-			    const std::vector<Partition<KeyType>>& getPartitions() const
-				{
-			        return m_partitions;
-			    }
+					/**
+					* @brief Gets the current partitions.
+					*
+					* @return const std::vector<Partition<KeyType>>& Reference to the partitions.
+					*/
+					const std::vector<Partition<KeyType>>& getPartitions() const
+					{
+						return m_partitions;
+					}
 
-			private:
-			    Group* m_group; ///< Pointer to the group.
-			    EntityKeyExtractor<KeyType> m_keyExtractor; ///< Function to extract a key from an entity.
-			    std::vector<Partition<KeyType>> m_partitions; ///< Vector of partitions.
-			    bool m_isDirty; ///< Flag indicating if partitions need rebuilding.
+				private:
+					Group* m_group; ///< Pointer to the group.
+					EntityKeyExtractor<KeyType> m_keyExtractor; ///< Function to extract a key from an entity.
+					std::vector<Partition<KeyType>> m_partitions; ///< Vector of partitions.
+					bool m_isDirty; ///< Flag indicating if partitions need rebuilding.
 			};
 
 			/**
-			 * @brief Reorders the group entities based on a new order.
-			 *
-			 * @param newOrder New order of entities.
-			 */
+			* @brief Reorders the group entities based on a new order.
+			*
+			* @param newOrder New order of entities.
+			*/
 			void reorderGroup(const std::vector<Entity>& newOrder)
 			{
-			    // Implementation to rearrange entities in all owned arrays
-			    std::apply([&](auto&&... arrays) {
-			        ((reorderArray(arrays, newOrder)), ...);
-			    }, m_ownedArrays);
+				// Implementation to rearrange entities in all owned arrays
+				std::apply([&](auto&&... arrays) {
+					((reorderArray(arrays, newOrder)), ...);
+				}, m_ownedArrays);
 			}
 
 			/**
-			 * @brief Reorders a single component array based on the new entity order.
-			 *
-			 * @tparam ArrayPtr Type of the component array pointer.
-			 * @param array Component array pointer.
-			 * @param newOrder New order of entities.
-			 */
+			* @brief Reorders a single component array based on the new entity order.
+			*
+			* @tparam ArrayPtr Type of the component array pointer.
+			* @param array Component array pointer.
+			* @param newOrder New order of entities.
+			*/
 			template<typename ArrayPtr>
 			void reorderArray(ArrayPtr array, const std::vector<Entity>& newOrder)
 			{
-			    size_t groupSize = array->groupSize();
-			    if (newOrder.size() != groupSize)
-			        THROW_EXCEPTION(InternalError, "New order size doesn't match group size");
+				size_t groupSize = array->groupSize();
+				if (newOrder.size() != groupSize)
+					THROW_EXCEPTION(InternalError, "New order size doesn't match group size");
 
-			    if (groupSize == 0)
-			        return; // Nothing to reorder
+				if (groupSize == 0)
+					return; // Nothing to reorder
 
-			    // Create a temporary storage for components
-			    using CompType = typename std::decay_t<decltype(*array)>::component_type;
-			    std::vector<CompType> tempComponents;
-			    tempComponents.reserve(groupSize);
+				// Create a temporary storage for components
+				using CompType = typename std::decay_t<decltype(*array)>::component_type;
+				std::vector<CompType> tempComponents;
+				tempComponents.reserve(groupSize);
 
-			    // Copy components in the new order
-			    try {
-			        for (Entity e : newOrder)
-			            tempComponents.push_back(array->get(e));
+				// Copy components in the new order
+				try {
+					for (Entity e : newOrder)
+						tempComponents.push_back(array->get(e));
 
-			        // Update the sparse-to-dense mapping and components
-			        for (size_t i = 0; i < groupSize; i++) {
-			            Entity e = newOrder[i];
-			            array->forceSetComponentAt(i, e, std::move(tempComponents[i]));
-			        }
-			    } catch (...) {
-			        // If anything goes wrong, don't leave the array in a partially-updated state
-			        THROW_EXCEPTION(InternalError, "Reordering failed, array may be in an inconsistent state");
-			    }
+					// Update the sparse-to-dense mapping and components
+					for (size_t i = 0; i < groupSize; i++) {
+						Entity e = newOrder[i];
+						array->forceSetComponentAt(i, e, std::move(tempComponents[i]));
+					}
+				} catch (...) {
+					// If anything goes wrong, don't leave the array in a partially-updated state
+					THROW_EXCEPTION(InternalError, "Reordering failed, array may be in an inconsistent state");
+				}
 			}
 
 			/**
@@ -853,14 +850,14 @@ namespace nexo::ecs {
 			 */
 			auto dereference(std::size_t index) const
 			{
-			    // Retrieve the entity from the first owned array.
-			    auto entity = std::get<0>(m_ownedArrays)->getEntityAtIndex(index);
-			    // Use std::forward_as_tuple to preserve references.
-			    auto ownedData = std::apply([entity](auto&&... arrays) {
-			        return std::forward_as_tuple(arrays->get(entity)...);
-			    }, m_ownedArrays);
-			    // We still need the entity by value, so use std::make_tuple for that.
-			    return std::tuple_cat(std::make_tuple(entity), ownedData);
+				// Retrieve the entity from the first owned array.
+				Entity entity = std::get<0>(m_ownedArrays)->getEntityAtIndex(index);
+				// Use std::forward_as_tuple to preserve references.
+				auto ownedData = std::apply([entity](auto&&... arrays) {
+					return std::forward_as_tuple(arrays->get(entity)...);
+				}, m_ownedArrays);
+				// We still need the entity by value, so use std::make_tuple for that.
+				return std::tuple_cat(std::make_tuple(entity), ownedData);
 			}
 
 		 	/**
@@ -870,19 +867,20 @@ namespace nexo::ecs {
 		 	 * @tparam I Current index in the tuple.
 		 	 * @return std::shared_ptr<ComponentArray<T>> Pointer to the component array.
 		 	 */
-		    template<typename T, std::size_t I = 0>
-		    auto getNonOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
-		    {
-		        if constexpr (I < std::tuple_size_v<NonOwnedTuple>) {
-		            using CurrentArrayPtr = std::tuple_element_t<I, NonOwnedTuple>;
-		            using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
-		            if constexpr (std::is_same_v<CurrentComponent, T>)
-		                return std::get<I>(m_nonOwnedArrays);
-		            else
-		                return getNonOwnedImpl<T, I + 1>();
-		        } else
-		            static_assert(I < std::tuple_size_v<NonOwnedTuple>, "Component type not found in group non‑owned arrays");
-		    }
+			template<typename T, std::size_t I = 0>
+			auto getNonOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
+			{
+				if constexpr (I < std::tuple_size_v<NonOwnedTuple>) {
+					using CurrentArrayPtr = std::tuple_element_t<I, NonOwnedTuple>;
+					using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
+					if constexpr (std::is_same_v<CurrentComponent, T>)
+						return std::get<I>(m_nonOwnedArrays);
+					else
+						return getNonOwnedImpl<T, I + 1>();
+				} else
+					static_assert(I < std::tuple_size_v<NonOwnedTuple>, "Component type not found in group non‑owned arrays");
+				return nullptr;
+			}
 
 		 	/**
 		 	 * @brief Helper: Recursively search the owned tuple for the ComponentArray with component_type == T.
@@ -891,19 +889,20 @@ namespace nexo::ecs {
 		 	 * @tparam I Current index in the tuple.
 		 	 * @return std::shared_ptr<ComponentArray<T>> Pointer to the component array.
 		 	 */
-		 	template<typename T, std::size_t I = 0>
-		    auto getOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
-		    {
-		        if constexpr (I < std::tuple_size_v<OwnedTuple>) {
-		            using CurrentArrayPtr = std::tuple_element_t<I, OwnedTuple>;
-		            using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
-		            if constexpr (std::is_same_v<CurrentComponent, T>)
-		                return std::get<I>(m_ownedArrays);
-		            else
-		                return getOwnedImpl<T, I + 1>();
-		        } else
-		            static_assert(I < std::tuple_size_v<OwnedTuple>, "Component type not found in group owned arrays");
-		    }
+			template<typename T, std::size_t I = 0>
+			auto getOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
+			{
+				if constexpr (I < std::tuple_size_v<OwnedTuple>) {
+					using CurrentArrayPtr = std::tuple_element_t<I, OwnedTuple>;
+					using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
+					if constexpr (std::is_same_v<CurrentComponent, T>)
+						return std::get<I>(m_ownedArrays);
+					else
+						return getOwnedImpl<T, I + 1>();
+				} else
+					static_assert(I < std::tuple_size_v<OwnedTuple>, "Component type not found in group owned arrays");
+				return nullptr;
+			}
 
 			/**
 			 * @brief Helper function to call a function with component data.
@@ -918,15 +917,11 @@ namespace nexo::ecs {
 			 * @param index_sequence for owned components.
 			 * @param index_sequence for non‑owned components.
 			 */
-		    template<typename Func, std::size_t... I, std::size_t... J>
-		    void callFunc(Func func, Entity e,
-		                  std::index_sequence<I...>,
-		                  std::index_sequence<J...>) const
-		    {
-		        func(e,
-		             (std::get<I>(m_ownedArrays)->get(e))...,
-		             (std::get<J>(m_nonOwnedArrays)->get(e))...);
-		    }
+			template<typename Func, std::size_t... I, std::size_t... J>
+			void callFunc(Func func, Entity e, std::index_sequence<I...>, std::index_sequence<J...>) const
+			{
+				func(e, (std::get<I>(m_ownedArrays)->get(e))..., (std::get<J>(m_nonOwnedArrays)->get(e))...);
+			}
 
 			enum class SortingOrder {
 				ASCENDING,

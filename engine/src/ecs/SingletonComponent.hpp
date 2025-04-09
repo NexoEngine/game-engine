@@ -28,11 +28,10 @@ namespace nexo::ecs {
 	*
 	* All singleton components must derive from this interface. It ensures proper polymorphic destruction.
 	*/
-    class ISingletonComponent {
-        public:
-            virtual ~ISingletonComponent() = default;
-    };
-
+	class ISingletonComponent {
+		public:
+			virtual ~ISingletonComponent() = default;
+	};
 
     /**
      * @brief Template class representing a singleton component.
@@ -41,11 +40,11 @@ namespace nexo::ecs {
      *
      * @tparam T The type of the singleton component.
      */
-     template <typename T>
-     class SingletonComponent final : public ISingletonComponent {
-     	public:
-    		static_assert(!std::is_copy_constructible_v<T>,
-                        "Singleton component types must have a deleted copy constructor");
+	template <typename T>
+	class SingletonComponent final : public ISingletonComponent {
+		public:
+			static_assert(!std::is_copy_constructible_v<T>,
+				"Singleton component types must have a deleted copy constructor");
 			/**
 			* @brief Templated constructor that perfectly forwards arguments to construct the instance.
 			*
@@ -59,12 +58,12 @@ namespace nexo::ecs {
 			template<typename... Args>
 			requires (std::is_constructible_v<T, Args...> && (!std::is_same_v<std::decay_t<Args>, T> && ...))
 			explicit SingletonComponent(Args&&... args)
-			    : _instance(std::forward<Args>(args)...)
+				: _instance(std::forward<Args>(args)...)
 			{
 			}
 
 			SingletonComponent() = default;
-			virtual ~SingletonComponent() = default;
+			~SingletonComponent() override = default;
 
 			// Prevent copying
 			SingletonComponent(const SingletonComponent&) = delete;
@@ -74,12 +73,11 @@ namespace nexo::ecs {
 			SingletonComponent(SingletonComponent&&) = default;
 			SingletonComponent& operator=(SingletonComponent&&) = default;
 
-	         T &getInstance() { return _instance; }
+			T &getInstance() { return _instance; }
 
-	     private:
-	         T _instance;
-     };
-
+		private:
+			T _instance;
+	};
 
     /**
      * @brief Manager for singleton components in the ECS.
@@ -87,8 +85,8 @@ namespace nexo::ecs {
      * The SingletonComponentManager is responsible for registering, retrieving, and unregistering
      * singleton components. Singleton components are globally unique and accessed via their type.
      */
-    class SingletonComponentManager {
-        public:
+	class SingletonComponentManager {
+		public:
 			/**
 			* @brief Registers a singleton component in place by forwarding constructor arguments.
 			*
@@ -104,65 +102,69 @@ namespace nexo::ecs {
 				using Decayed = std::decay_t<T>;
 				std::type_index typeName(typeid(Decayed));
 				if (m_singletonComponents.contains(typeName)) {
-				    LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
-				    return;
+					LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
+					return;
 				}
-				m_singletonComponents.insert({typeName, std::make_shared<SingletonComponent<Decayed>>(std::forward<Args>(args)...)});
+				m_singletonComponents.insert(
+					{typeName,
+					std::make_shared<SingletonComponent<Decayed>>(std::forward<Args>(args)...)}
+				);
 			}
 
-            /**
-             * @brief Retrieves a singleton component instance.
-             *
-             * @tparam T The type of the singleton component.
-             * @return T& A reference to the registered singleton component.
-             * @throws SingletonComponentNotRegistered if the component is not registered.
-             */
-            template <typename T>
-            T &getSingletonComponent()
-            {
-                const std::type_index typeName(typeid(T));
-                if (!m_singletonComponents.contains(typeName))
-                    THROW_EXCEPTION(SingletonComponentNotRegistered);
+			/**
+			* @brief Retrieves a singleton component instance.
+			*
+			* @tparam T The type of the singleton component.
+			* @return T& A reference to the registered singleton component.
+			* @throws SingletonComponentNotRegistered if the component is not registered.
+			*/
+			template <typename T>
+			T &getSingletonComponent()
+			{
+				const std::type_index typeName(typeid(T));
+				if (!m_singletonComponents.contains(typeName))
+					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
-                auto componentPtr = dynamic_cast<SingletonComponent<T>*>(m_singletonComponents[typeName].get());
+				auto componentPtr = dynamic_cast<SingletonComponent<T>*>(m_singletonComponents[typeName].get());
 
-                return componentPtr->getInstance();
-            }
+				return componentPtr->getInstance();
+			}
 
-            /**
-             * @brief Retrieves a singleton component pointer (internal use only).
-             *
-             * @tparam T The type of the singleton component.
-             * @return std::shared_ptr<ISingletonComponent> A shared pointer to the registered singleton component.
-             * @throws SingletonComponentNotRegistered if the component is not registered.
-             */
-            template <typename T>
-            std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
-            {
-                const std::type_index typeName(typeid(T));
-                if (!m_singletonComponents.contains(typeName))
-                    THROW_EXCEPTION(SingletonComponentNotRegistered);
+			/**
+			* @brief Retrieves a singleton component pointer (internal use only).
+			*
+			* @tparam T The type of the singleton component.
+			* @return std::shared_ptr<ISingletonComponent> A shared pointer to the registered singleton component.
+			* @throws SingletonComponentNotRegistered if the component is not registered.
+			*/
+			template <typename T>
+			std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
+			{
+				const std::type_index typeName(typeid(T));
+				if (!m_singletonComponents.contains(typeName))
+					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
-                return m_singletonComponents[typeName];
-            }
+				return m_singletonComponents[typeName];
+			}
 
-            /**
-             * @brief Unregisters a singleton component.
-             *
-             * Removes the singleton component of type T from the manager.
-             *
-             * @tparam T The type of the singleton component.
-             * @throws SingletonComponentNotRegistered if the component is not registered.
-             */
-            template <typename T>
-            void unregisterSingletonComponent()
-            {
-                const std::type_index typeName(typeid(T));
-                if (!m_singletonComponents.contains(typeName))
-                    THROW_EXCEPTION(SingletonComponentNotRegistered);
-                m_singletonComponents.erase(typeName);
-            }
-        private:
-            std::unordered_map<std::type_index, std::shared_ptr<ISingletonComponent>> m_singletonComponents{};
-    };
+			/**
+			* @brief Unregisters a singleton component.
+			*
+			* Removes the singleton component of type T from the manager.
+			*
+			* @tparam T The type of the singleton component.
+			* @throws SingletonComponentNotRegistered if the component is not registered.
+			*/
+			template <typename T>
+			void unregisterSingletonComponent()
+			{
+				const std::type_index typeName(typeid(T));
+				if (!m_singletonComponents.contains(typeName))
+					THROW_EXCEPTION(SingletonComponentNotRegistered);
+
+				m_singletonComponents.erase(typeName);
+			}
+		private:
+			std::unordered_map<std::type_index, std::shared_ptr<ISingletonComponent>> m_singletonComponents{};
+	};
 }
