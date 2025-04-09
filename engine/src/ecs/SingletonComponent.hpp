@@ -70,8 +70,8 @@ namespace nexo::ecs {
 			SingletonComponent& operator=(const SingletonComponent&) = delete;
 
 			// Allow moving
-			SingletonComponent(SingletonComponent&&) = default;
-			SingletonComponent& operator=(SingletonComponent&&) = default;
+			SingletonComponent(SingletonComponent&&) noexcept = default;
+			SingletonComponent& operator=(SingletonComponent&&) noexcept = default;
 
 			/**
 			* @brief Gets the singleton component instance

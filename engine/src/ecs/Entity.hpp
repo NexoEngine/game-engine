@@ -76,9 +76,9 @@ namespace nexo::ecs {
             /**
              * @brief Returns the number of currently active entities
              *
-             * @return std::uint32_t The count of living entities
+             * @return size_t The count of living entities
              */
-            [[nodiscard]] std::uint32_t getLivingEntityCount() const;
+            [[nodiscard]] size_t getLivingEntityCount() const;
 
             /**
              * @brief Retrieves a view of all currently active entities

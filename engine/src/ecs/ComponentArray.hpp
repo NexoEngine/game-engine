@@ -65,8 +65,8 @@ namespace nexo::ecs {
      * @note This class is not thread-safe. Access should be synchronized externally when
      *       used in multi-threaded contexts.
      */
-    template<typename T, unsigned int capacity = 1024,
-             typename = std::enable_if_t<(capacity >= 1)>>
+    template<typename T, unsigned int capacity = 1024>
+    requires (capacity >= 1)
     class alignas(64) ComponentArray final : public IComponentArray {
     public:
         /**
@@ -469,7 +469,7 @@ namespace nexo::ecs {
         {
             if (m_size < m_componentArray.capacity() / 2 && m_componentArray.capacity() > capacity) {
                 // Only shrink if vectors are significantly oversized to avoid frequent reallocations
-                auto newCapacity = static_cast<size_t>(m_size * 1.5);
+                auto newCapacity = static_cast<size_t>(m_size * 2);
                 if (newCapacity < capacity)
                     newCapacity = capacity;
 

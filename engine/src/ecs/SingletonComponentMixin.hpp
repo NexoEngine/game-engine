@@ -111,7 +111,7 @@ namespace nexo::ecs {
                 }
 
                 // Get the stored singleton component wrapper
-                auto& singletonComponentPtr = m_singletonComponents[typeIndex];
+                const auto& singletonComponentPtr = m_singletonComponents[typeIndex];
                 auto* componentWrapper = dynamic_cast<SingletonComponent<T>*>(singletonComponentPtr.get());
 
                 if (!componentWrapper)
