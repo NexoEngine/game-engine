@@ -172,8 +172,12 @@ namespace nexo::ecs {
 
 	        GroupSystem()
 			{
-	            if (!coord)
-					return;
+    			static_assert(std::tuple_size_v<OwnedTypes> > 0,
+                 	"GroupSystem must have at least one owned component type");
+				if (!coord) {
+			        THROW_EXCEPTION(InternalError, "Coordinator is null in GroupSystem constructor");
+			        return;
+			    }
 
 	            // Create the group
 	            m_group = createGroupImpl(
@@ -194,6 +198,9 @@ namespace nexo::ecs {
 	        template<typename T>
 	        auto get()
 			{
+			    if (!m_group) {
+			        THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
+			    }
 				constexpr bool isOwned = isOwnedComponent<T>();
 				if constexpr (isOwned) {
 					// Get the span from the group
@@ -232,34 +239,20 @@ namespace nexo::ecs {
 			}
 
 	        /**
-	         * @brief Get a component for an entity with appropriate access control
-	         *
-	         * @tparam AccessType The component access type (Read<T> or Write<T>)
-	         * @param entity The entity to get the component for
-	         * @return Component reference with appropriate const-ness
-	         */
-			template<typename T>
-			auto getComponent(Entity entity) {
-			    // Use GetComponentAccess to determine if T should be read-only
-			    if constexpr (GetComponentAccess<T>::accessType == AccessType::Read) {
-			        return std::cref(m_group->template get<T>(entity));
-			    } else {
-			        return std::ref(m_group->template get<T>(entity));
-			    }
-			}
-
-	        /**
 	         * @brief Get all entities in this group
 	         *
 	         * @return Span of entities in the group
 	         */
 	        auto getEntities() const
 			{
+			    if (!m_group) {
+			        THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
+			    }
 	            return m_group->entities();
 	        }
 
 	    protected:
-	        std::shared_ptr<ActualGroupType> m_group;
+	        std::shared_ptr<ActualGroupType> m_group = nullptr;
 
 	    private:
 	        /**

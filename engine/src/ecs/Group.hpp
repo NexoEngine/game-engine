@@ -15,6 +15,7 @@
 
 #include "Definitions.hpp"
 #include "ComponentArray.hpp"
+#include "ECSExceptions.hpp"
 #include "Exception.hpp"
 
 #include <functional>
@@ -157,6 +158,8 @@ namespace nexo::ecs {
 		        : m_ownedArrays(std::move(ownedArrays))
 		        , m_nonOwnedArrays(std::move(nonOwnedArrays))
 		    {
+					if (std::tuple_size_v<OwnedTuple> == 0)
+					    THROW_EXCEPTION(InternalError, "Group must have at least one owned component");
 				    m_ownedSignature = std::apply([](auto&&... arrays) -> Signature {
 				        Signature signature;
 				        ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
@@ -181,7 +184,14 @@ namespace nexo::ecs {
 		     *
 		     * @return std::size_t Number of entities.
 		     */
-		    std::size_t size() const { return std::get<0>(m_ownedArrays)->groupSize(); }
+			std::size_t size() const
+			{
+			    auto firstArray = std::get<0>(m_ownedArrays);
+			    if (!firstArray) {
+			        THROW_EXCEPTION(InternalError, "Component array is null");
+			    }
+			    return firstArray->groupSize();
+			}
 
 		    /**
 		     * @brief Checks if sorting has been invalidated.
@@ -235,6 +245,9 @@ namespace nexo::ecs {
 			         */
 			        reference operator*() const
 					{
+						if (m_index >= m_view->size()) {
+							THROW_EXCEPTION(OutOfRange, m_index);
+						}
 			            return m_view->dereference(m_index);
 			        }
 
@@ -297,6 +310,9 @@ namespace nexo::ecs {
 			{
 		        using FirstOwned = std::tuple_element_t<0, OwnedTuple>;
 		        auto firstArray = std::get<0>(m_ownedArrays);
+				if (!firstArray) {
+					THROW_EXCEPTION(InternalError, "Component array is null");
+				}
 		        for (std::size_t i = 0; i < firstArray->groupSize(); ++i) {
 		            Entity e = firstArray->getEntityAtIndex(i);
 		            callFunc(func, e,
@@ -316,8 +332,15 @@ namespace nexo::ecs {
 		    template<typename Func>
 			void eachInRange(size_t startIndex, size_t count, Func func) const
 			{
-			    auto firstArray = std::get<0>(m_ownedArrays);
-			    const size_t endIndex = std::min(startIndex + count, firstArray->groupSize());
+				auto firstArray = std::get<0>(m_ownedArrays);
+				if (!firstArray) {
+					THROW_EXCEPTION(InternalError, "Component array is null");
+				}
+
+				if (startIndex >= firstArray->groupSize()) {
+					return; // Nothing to iterate if start is beyond the end
+				}
+				const size_t endIndex = std::min(startIndex + count, firstArray->groupSize());
 
 			    for (size_t i = startIndex; i < endIndex; i++) {
 			        Entity e = firstArray->getEntityAtIndex(i);
@@ -386,7 +409,10 @@ namespace nexo::ecs {
 			{
 			    if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
 			        auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
-			        return compArray->rawData().subspan(0, compArray->groupSize());
+					if (!compArray) {
+						THROW_EXCEPTION(InternalError, "Component array is null");
+					}
+			        return compArray->getAllComponents().subspan(0, compArray->groupSize());
 			    } else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
 			        return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
 			    else
@@ -406,7 +432,10 @@ namespace nexo::ecs {
 			{
 			    if constexpr (tuple_contains_component_v<T, OwnedTuple>) {
 			        auto compArray = getOwnedImpl<T>();  // internal lookup in owned tuple
-			        return compArray->rawData().subspan(0, compArray->groupSize());
+					if (!compArray) {
+						THROW_EXCEPTION(InternalError, "Component array is null");
+					}
+			        return compArray->getAllComponents().subspan(0, compArray->groupSize());
 			    } else if constexpr (tuple_contains_component_v<T, NonOwnedTuple>)
 			        return getNonOwnedImpl<T>();         // internal lookup in non‑owned tuple
 			    else
@@ -416,6 +445,11 @@ namespace nexo::ecs {
 			// =======================================
 			// Sorting API
 			// =======================================
+
+			void invalidateSorting()
+			{
+				m_sortingInvalidated = true;
+			}
 
 			/**
 			 * @brief Sorts the group by a specified component field.
@@ -430,6 +464,12 @@ namespace nexo::ecs {
 			template<typename CompType, typename FieldType>
 			void sortBy(FieldExtractor<CompType, FieldType> extractor, bool ascending = true)
 			{
+				SortingOrder sortingOrder = ascending ? SortingOrder::ASCENDING : SortingOrder::DESCENDING;
+				if (sortingOrder != m_sortingOrder)
+				{
+					m_sortingOrder = sortingOrder;
+					m_sortingInvalidated = true;
+				}
 				if (!m_sortingInvalidated)
 					return;
 			    // Get the appropriate component array
@@ -457,8 +497,8 @@ namespace nexo::ecs {
 			    // Sort entities based on the extracted field from the component
 			    std::sort(entities.begin(), entities.end(),
 			        [&](Entity a, Entity b) {
-			            const auto& compA = compArray->getData(a);
-			            const auto& compB = compArray->getData(b);
+			            const auto& compA = compArray->get(a);
+			            const auto& compB = compArray->get(b);
 			            if (ascending)
 			                return extractor(compA) < extractor(compB);
 			            else
@@ -571,10 +611,10 @@ namespace nexo::ecs {
 			        // Get the component and extract the key
 			        if constexpr (tuple_contains_component_v<CompType, OwnedTuple>) {
 			            auto compArray = getOwnedImpl<CompType>();
-			            return keyExtractor(compArray->getData(e));
+			            return keyExtractor(compArray->get(e));
 			        } else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>) {
 			            auto compArray = getNonOwnedImpl<CompType>();
-			            return keyExtractor(compArray->getData(e));
+			            return keyExtractor(compArray->get(e));
 			        } else
 			            static_assert(dependent_false<CompType>::value, "Component type not found in group");
 			    };
@@ -779,7 +819,10 @@ namespace nexo::ecs {
 			{
 			    size_t groupSize = array->groupSize();
 			    if (newOrder.size() != groupSize)
-					THROW_EXCEPTION(InternalError, "New order size doesn't match group size");
+			        THROW_EXCEPTION(InternalError, "New order size doesn't match group size");
+
+			    if (groupSize == 0)
+			        return; // Nothing to reorder
 
 			    // Create a temporary storage for components
 			    using CompType = typename std::decay_t<decltype(*array)>::component_type;
@@ -787,13 +830,18 @@ namespace nexo::ecs {
 			    tempComponents.reserve(groupSize);
 
 			    // Copy components in the new order
-			    for (Entity e : newOrder)
-			        tempComponents.push_back(array->getData(e));
+			    try {
+			        for (Entity e : newOrder)
+			            tempComponents.push_back(array->get(e));
 
-			    // Update the sparse-to-dense mapping and components
-			    for (size_t i = 0; i < groupSize; i++) {
-			        Entity e = newOrder[i];
-			        array->forceSetComponentAt(i, e, std::move(tempComponents[i]));
+			        // Update the sparse-to-dense mapping and components
+			        for (size_t i = 0; i < groupSize; i++) {
+			            Entity e = newOrder[i];
+			            array->forceSetComponentAt(i, e, std::move(tempComponents[i]));
+			        }
+			    } catch (...) {
+			        // If anything goes wrong, don't leave the array in a partially-updated state
+			        THROW_EXCEPTION(InternalError, "Reordering failed, array may be in an inconsistent state");
 			    }
 			}
 
@@ -809,7 +857,7 @@ namespace nexo::ecs {
 			    auto entity = std::get<0>(m_ownedArrays)->getEntityAtIndex(index);
 			    // Use std::forward_as_tuple to preserve references.
 			    auto ownedData = std::apply([entity](auto&&... arrays) {
-			        return std::forward_as_tuple(arrays->getData(entity)...);
+			        return std::forward_as_tuple(arrays->get(entity)...);
 			    }, m_ownedArrays);
 			    // We still need the entity by value, so use std::make_tuple for that.
 			    return std::tuple_cat(std::make_tuple(entity), ownedData);
@@ -876,16 +924,21 @@ namespace nexo::ecs {
 		                  std::index_sequence<J...>) const
 		    {
 		        func(e,
-		             (std::get<I>(m_ownedArrays)->getData(e))...,
-		             (std::get<J>(m_nonOwnedArrays)->getData(e))...);
+		             (std::get<I>(m_ownedArrays)->get(e))...,
+		             (std::get<J>(m_nonOwnedArrays)->get(e))...);
 		    }
 
+			enum class SortingOrder {
+				ASCENDING,
+				DESCENDING
+			};
 		    // Member variables
 		    OwnedTuple m_ownedArrays;  ///< Tuple of pointers to owned component arrays.
 		    NonOwnedTuple m_nonOwnedArrays;  ///< Tuple of pointers to non‑owned component arrays.
 		    Signature      m_ownedSignature{}; ///< Signature for owned components.
 		    Signature      m_allSignature{};   ///< Combined signature for all components.
 			bool m_sortingInvalidated = true;    ///< Flag indicating if sorting is invalidated.
+			SortingOrder m_sortingOrder = SortingOrder::ASCENDING;
    			std::unordered_map<std::string, std::unique_ptr<IPartitionStorage>> m_partitionStorageMap; ///< Map storing partition data by ID.
 
 	};

@@ -20,8 +20,8 @@ namespace nexo::ecs {
 	{
 		if (contains(entity))
 		{
-		LOG(NEXO_WARN, "Entity {} already added to the sparse set", entity);
-		return;
+			LOG(NEXO_WARN, "Entity {} already added to the sparse set", entity);
+			return;
 		}
 
         sparse[entity] = dense.size();

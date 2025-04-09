@@ -47,6 +47,12 @@ namespace nexo::ecs {
             : Exception(std::format("Group not found for key: {}", groupKey), loc) {}
     };
 
+    class InvalidGroupComponent final : public Exception {
+        public:
+        explicit InvalidGroupComponent(const std::source_location loc = std::source_location::current())
+            : Exception("Component has not been found in the group", loc) {}
+    };
+
     class ComponentNotRegistered final : public Exception {
         public:
             explicit ComponentNotRegistered(const std::source_location loc = std::source_location::current())

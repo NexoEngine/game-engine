@@ -264,16 +264,6 @@ namespace nexo::ecs {
             }
 
             /**
-            * @brief Registers a new system within the SystemManager.
-            *
-            * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
-            */
-            template <typename T>
-            std::shared_ptr<T> registerSystem() {
-                return m_systemManager->registerSystem<T>();
-            }
-
-            /**
             * @brief Registers a new query system
             *
             * @tparam T The system type to register
@@ -282,7 +272,16 @@ namespace nexo::ecs {
             */
             template <typename T, typename... Args>
             std::shared_ptr<T> registerQuerySystem(Args&&... args) {
-                return m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
+                auto newQuerySystem =  m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                Signature querySystemSignature = newQuerySystem->getSignature();
+                for (Entity entity : livingEntities) {
+                    Signature entitySignature = m_entityManager->getSignature(entity);
+                    if ((entitySignature & querySystemSignature) == querySystemSignature) {
+                        newQuerySystem->entities.insert(entity);
+                    }
+                }
+                return newQuerySystem;
             }
 
             /**

@@ -18,6 +18,7 @@
 #include <array>
 #include <vector>
 #include <span>
+#include <unordered_set>
 
 #include "Definitions.hpp"
 

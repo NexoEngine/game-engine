@@ -59,8 +59,8 @@ namespace nexo::ecs {
     */
     class System {
         public:
+        	virtual ~System() = default;
             static std::shared_ptr<Coordinator> coord;
-            SparseSet entities;
 
     };
 
@@ -72,6 +72,9 @@ namespace nexo::ecs {
     public:
         virtual ~AQuerySystem() = default;
         virtual const Signature &getSignature() const = 0;
+
+        SparseSet entities;
+
     };
 
     /**
@@ -99,31 +102,10 @@ namespace nexo::ecs {
             * @tparam T - The type of the system to be registered.
             * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
             */
-            template<typename T>
-            std::shared_ptr<T> registerSystem()
-            {
-                std::type_index typeName(typeid(T));
-
-                if (m_systems.contains(typeName))
-                {
-                    LOG(NEXO_WARN, "ECS::SystemManager::registerSystem: trying to register a system more than once");
-                    return nullptr;
-                }
-
-                auto system = std::make_shared<T>();
-                m_systems.insert({typeName, system});
-                return system;
-            }
-
-            /**
-            * @brief Registers a new system of type T in the ECS framework.
-            *
-            * @tparam T - The type of the system to be registered.
-            * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
-            */
             template<typename T, typename... Args>
             std::shared_ptr<T> registerQuerySystem(Args&&... args)
             {
+            	static_assert(std::is_base_of<AQuerySystem, T>::value, "T must derive from AQuerySystem");
                 std::type_index typeName(typeid(T));
 
                 if (m_querySystems.contains(typeName))
@@ -140,6 +122,7 @@ namespace nexo::ecs {
             template<typename T, typename... Args>
             std::shared_ptr<T> registerGroupSystem(Args&&... args)
             {
+            	static_assert(std::is_base_of<AGroupSystem, T>::value, "T must derive from AGroupSystem");
                 std::type_index typeName(typeid(T));
 
                 if (m_groupSystems.contains(typeName))
@@ -187,7 +170,6 @@ namespace nexo::ecs {
             void entitySignatureChanged(Entity entity, Signature oldSignature, Signature newSignature);
         private:
             std::unordered_map<std::type_index, Signature> m_signatures{};
-            std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems{};
             std::unordered_map<std::type_index, std::shared_ptr<AQuerySystem>> m_querySystems{};
             std::unordered_map<std::type_index, std::shared_ptr<AGroupSystem>> m_groupSystems{};
     };
