@@ -206,7 +206,7 @@ namespace nexo::renderer {
         };
 
         int count = 0;
-        for (auto& element : layout) {
+        for (auto& _ : layout) {
             count++;
         }
         EXPECT_EQ(count, 2);

@@ -127,7 +127,7 @@ namespace nexo::editor {
              template<typename... Components, typename NodeCreator>
              void generateNodes(std::map<scene::SceneId, SceneObject> &scenes, NodeCreator nodeCreator)
              {
-                 const std::set<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
+                 const std::vector<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
                  for (const ecs::Entity entity : entities)
                  {
                      const auto& sceneTag = nexo::Application::m_coordinator->getComponent<components::SceneTag>(entity);

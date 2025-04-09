@@ -29,6 +29,7 @@
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "systems/CameraSystem.hpp"
+#include "systems/RenderSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -162,43 +163,16 @@ namespace nexo {
 
     void Application::registerSystems()
     {
-        m_cameraContextSystem = registerSystem<system::CameraContextSystem,
-        								       components::CameraComponent,
-        								       components::SceneTag>();
+        m_cameraContextSystem = m_coordinator->registerGroupSystem<system::CameraContextSystem>();
+        m_perspectiveCameraControllerSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
+        m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
 
-        m_perspectiveCameraControllerSystem = registerSystem<system::PerspectiveCameraControllerSystem,
-        										components::TransformComponent,
-        										components::CameraComponent,
-                  								components::PerspectiveCameraController,
-        										components::SceneTag>();
+        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
 
-        m_perspectiveCameraTargetSystem = registerSystem<system::PerspectiveCameraTargetSystem,
-        										components::TransformComponent,
-                  								components::CameraComponent,
-                          						components::PerspectiveCameraTarget,
-                                				components::SceneTag>();
-
-        m_renderSystem = registerSystem<system::RenderSystem,
-        				      		    components::RenderComponent,
-        						        components::TransformComponent,
-        								components::SceneTag>();
-
-        auto pointLightSystem = registerSystem<system::PointLightsSystem,
-        								       components::PointLightComponent,
-        								       components::SceneTag>();
-
-        auto directionalLightSystem = registerSystem<system::DirectionalLightsSystem,
-        											 components::DirectionalLightComponent,
-        											 components::SceneTag>();
-
-        auto spotLightSystem = registerSystem<system::SpotLightsSystem,
-        									  components::SpotLightComponent,
-        									  components::SceneTag>();
-
-        auto ambientLightSystem = registerSystem<system::AmbientLightSystem,
-        										 components::AmbientLightComponent,
-        										 components::SceneTag>();
-
+        auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
+        auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
+        auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
+        auto ambientLightSystem = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
         m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
     }
 

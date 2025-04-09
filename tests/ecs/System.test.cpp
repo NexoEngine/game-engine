@@ -1,4 +1,4 @@
-//// System.test.cpp //////////////////////////////////////////////////////////
+//// System.test.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,187 +7,215 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        26/11/2024
+//  Date:        09/04/2025
 //  Description: Test file for the system manager
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "ecs/System.hpp"
-#include "ecs/Signature.hpp"
+#include "System.hpp"
+#include "Coordinator.hpp"
 
 namespace nexo::ecs {
-    // Mock system for testing
-    class MockSystem : public System {
-        public:
-        MOCK_METHOD(void, update, (), (const));
-    };
+    class MockCoordinator : public Coordinator {};
 
-    class MockSystem2 : public System {
-        public:
-        MOCK_METHOD(void, update, (), (const));
-    };
-
-    class SystemManagerTest : public ::testing::Test {
-        protected:
-        void SetUp() override {
-            systemManager = std::make_unique<SystemManager>();
+    // Mock systems for testing
+    class MockQuerySystem : public AQuerySystem {
+    public:
+        const Signature& getSignature() const override {
+            return signature;
         }
 
-        std::unique_ptr<SystemManager> systemManager;
+        Signature signature;
     };
 
-    TEST_F(SystemManagerTest, RegisterSystem) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
+    class MockGroupSystem : public AGroupSystem {};
 
-        EXPECT_NE(mockSystem, nullptr);
-        EXPECT_TRUE(mockSystem->entities.empty());
+    // Invalid system that doesn't inherit correctly
+    class InvalidSystem {};
+
+    class SystemTest : public ::testing::Test {
+    protected:
+        void SetUp() override {
+            // Initialize the static coordinator
+            System::coord = std::make_shared<MockCoordinator>();
+        }
+
+        void TearDown() override {
+            // Clean up
+            System::coord.reset();
+        }
+
+        SystemManager systemManager;
+    };
+
+    // System Base Class Tests
+    TEST_F(SystemTest, CoordinatorInitialization) {
+        ASSERT_NE(System::coord, nullptr);
     }
 
-    TEST_F(SystemManagerTest, RegisterSystemTwice) {
-        systemManager->registerSystem<MockSystem>();
+    // AQuerySystem Tests
+    TEST_F(SystemTest, QuerySystemSignature) {
+        auto mockSystem = std::make_shared<MockQuerySystem>();
 
-        // Attempting to register the same system twice
-        EXPECT_NO_THROW(systemManager->registerSystem<MockSystem>());
+        // Test initial signature
+        Signature emptySignature;
+        EXPECT_EQ(mockSystem->getSignature(), emptySignature);
+
+        // Test modified signature
+        Signature newSignature;
+        newSignature.set(1, true); // Set some bit
+        mockSystem->signature = newSignature;
+        EXPECT_EQ(mockSystem->getSignature(), newSignature);
     }
 
-    TEST_F(SystemManagerTest, SetSignatureForSystem) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
+    TEST_F(SystemTest, QuerySystemEntities) {
+        auto mockSystem = std::make_shared<MockQuerySystem>();
 
-        Signature signature;
-        signature.set(1); // Set the 1st bit
-
-        EXPECT_NO_THROW(systemManager->setSignature<MockSystem>(signature));
-    }
-
-    TEST_F(SystemManagerTest, SetSignatureForUnregisteredSystem) {
-        Signature signature;
-        signature.set(1);
-
-        EXPECT_THROW(systemManager->setSignature<MockSystem>(signature), SystemNotRegistered);
-    }
-
-    TEST_F(SystemManagerTest, EntityDestroyed) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
-
-        Signature signature;
-        signature.set(1); // Set the 1st bit
-        systemManager->setSignature<MockSystem>(signature);
-
-        // Simulate an entity with the matching signature
-        Entity entity = 1;
-        mockSystem->entities.insert(entity);
-
-        systemManager->entityDestroyed(entity);
-
-        EXPECT_TRUE(mockSystem->entities.empty());
-    }
-
-    TEST_F(SystemManagerTest, EntitySignatureChanged_AddEntityToSystem) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
-
-        Signature systemSignature;
-        systemSignature.set(1); // Set the 1st bit
-        systemManager->setSignature<MockSystem>(systemSignature);
-
-        Entity entity = 1;
-        Signature entitySignature;
-        entitySignature.set(1); // Matches the system's signature
-
-        systemManager->entitySignatureChanged(entity, entitySignature);
-
-        EXPECT_TRUE(mockSystem->entities.contains(entity));
-    }
-
-    TEST_F(SystemManagerTest, EntitySignatureChanged_RemoveEntityFromSystem) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
-
-        Signature systemSignature;
-        systemSignature.set(1); // Set the 1st bit
-        systemManager->setSignature<MockSystem>(systemSignature);
-
-        Entity entity = 1;
-        Signature entitySignature;
-        entitySignature.set(1); // Matches the system's signature
-
-        // Add the entity
-        systemManager->entitySignatureChanged(entity, entitySignature);
-        EXPECT_TRUE(mockSystem->entities.contains(entity));
-
-        // Change signature to no longer match
-        entitySignature.reset(1); // Clear the 1st bit
-        systemManager->entitySignatureChanged(entity, entitySignature);
-
-        EXPECT_FALSE(mockSystem->entities.contains(entity));
-    }
-
-    TEST_F(SystemManagerTest, EntitySignatureChanged_IrrelevantEntity) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
-
-        Signature systemSignature;
-        systemSignature.set(1); // Set the 1st bit
-        systemManager->setSignature<MockSystem>(systemSignature);
-
-        Entity entity = 1;
-        Signature entitySignature;
-        entitySignature.set(2); // Does not match the system's signature
-
-        systemManager->entitySignatureChanged(entity, entitySignature);
-
-        EXPECT_FALSE(mockSystem->entities.contains(entity));
-    }
-
-    TEST_F(SystemManagerTest, EntityDestroyedTwice) {
-        auto mockSystem = systemManager->registerSystem<MockSystem>();
-
-        Signature signature;
-        signature.set(1); // Set the 1st bit
-        systemManager->setSignature<MockSystem>(signature);
-
-        Entity entity = 1;
-        mockSystem->entities.insert(entity);
-
-        systemManager->entityDestroyed(entity);
+        // Test initial state
         EXPECT_TRUE(mockSystem->entities.empty());
 
-        // Destroying the same entity again should not throw an error
-        EXPECT_NO_THROW(systemManager->entityDestroyed(entity));
-    }
-
-    TEST_F(SystemManagerTest, AddAndRemoveEntitiesFromMultipleSystems) {
-        auto system1 = systemManager->registerSystem<MockSystem>();
-        auto system2 = systemManager->registerSystem<MockSystem2>();
-
-        Signature signature1;
-        signature1.set(1); // Matches entities with component 1
-        systemManager->setSignature<MockSystem>(signature1);
-
-        Signature signature2;
-        signature2.set(2); // Matches entities with component 2
-        systemManager->setSignature<MockSystem2>(signature2);
-
-        // Add entities with different signatures
+        // Test adding entities
         Entity entity1 = 1;
+        mockSystem->entities.insert(entity1);
+        EXPECT_EQ(mockSystem->entities.size(), 1);
+        EXPECT_TRUE(mockSystem->entities.contains(entity1));
+
+        // Test adding more entities
         Entity entity2 = 2;
+        mockSystem->entities.insert(entity2);
+        EXPECT_EQ(mockSystem->entities.size(), 2);
+        EXPECT_TRUE(mockSystem->entities.contains(entity2));
 
-        Signature entitySignature1;
-        entitySignature1.set(1); // Matches system1
+        // Test removing entities
+        mockSystem->entities.erase(entity1);
+        EXPECT_EQ(mockSystem->entities.size(), 1);
+        EXPECT_FALSE(mockSystem->entities.contains(entity1));
+        EXPECT_TRUE(mockSystem->entities.contains(entity2));
+    }
 
-        Signature entitySignature2;
-        entitySignature2.set(2); // Matches system2
+    // SystemManager Tests
+    TEST_F(SystemTest, RegisterQuerySystem) {
+        // Register a system
+        auto system = systemManager.registerQuerySystem<MockQuerySystem>();
+        ASSERT_NE(system, nullptr);
 
-        systemManager->entitySignatureChanged(entity1, entitySignature1);
-        systemManager->entitySignatureChanged(entity2, entitySignature2);
+        // Try to register the same system again
+        auto duplicateSystem = systemManager.registerQuerySystem<MockQuerySystem>();
+        EXPECT_EQ(duplicateSystem, nullptr);
+    }
 
-        EXPECT_TRUE(system1->entities.contains(entity1));
-        EXPECT_FALSE(system1->entities.contains(entity2));
-        EXPECT_FALSE(system2->entities.contains(entity1));
-        EXPECT_TRUE(system2->entities.contains(entity2));
+    TEST_F(SystemTest, RegisterGroupSystem) {
+        // Register a system
+        auto system = systemManager.registerGroupSystem<MockGroupSystem>();
+        ASSERT_NE(system, nullptr);
 
-        // Change signature of entity1 to match system2
-        systemManager->entitySignatureChanged(entity1, entitySignature2);
-        EXPECT_FALSE(system1->entities.contains(entity1));
-        EXPECT_TRUE(system2->entities.contains(entity1));
+        // Try to register the same system again
+        auto duplicateSystem = systemManager.registerGroupSystem<MockGroupSystem>();
+        EXPECT_EQ(duplicateSystem, nullptr);
+    }
+
+    class SystemImplementationTest : public ::testing::Test {
+    protected:
+        void SetUp() override {
+            // Setup code
+            nexo::ecs::System::coord = std::make_shared<nexo::ecs::MockCoordinator>();
+
+            // Register systems
+            querySystem = systemManager.registerQuerySystem<nexo::ecs::MockQuerySystem>();
+            groupSystem = systemManager.registerGroupSystem<nexo::ecs::MockGroupSystem>();
+
+            // Set signatures
+            querySignature.set(0, true); // System requires component 0
+            querySystem->signature = querySignature;
+            systemManager.setSignature<nexo::ecs::MockQuerySystem>(querySignature);
+        }
+
+        void TearDown() override {
+            nexo::ecs::System::coord.reset();
+        }
+
+        nexo::ecs::SystemManager systemManager;
+        std::shared_ptr<nexo::ecs::MockQuerySystem> querySystem;
+        std::shared_ptr<nexo::ecs::MockGroupSystem> groupSystem;
+        nexo::ecs::Signature querySignature;
+    };
+
+    TEST_F(SystemImplementationTest, EntityDestroyedRemovesFromAllSystems) {
+        // Add entity to the system
+        nexo::ecs::Entity entity = 1;
+        querySystem->entities.insert(entity);
+
+        // Destroy entity
+        systemManager.entityDestroyed(entity, querySignature);
+
+        // Verify entity was removed
+        EXPECT_FALSE(querySystem->entities.contains(entity));
+    }
+
+    TEST_F(SystemImplementationTest, EntitySignatureChangedAddsToMatchingSystems) {
+        nexo::ecs::Entity entity = 1;
+        nexo::ecs::Signature oldSignature; // Empty
+        nexo::ecs::Signature newSignature;
+        newSignature.set(0, true); // Now matches querySystem
+
+        // Initially not in system
+        ASSERT_FALSE(querySystem->entities.contains(entity));
+
+        // Change signature
+        systemManager.entitySignatureChanged(entity, oldSignature, newSignature);
+
+        // Should be added to system
+        EXPECT_TRUE(querySystem->entities.contains(entity));
+    }
+
+    TEST_F(SystemImplementationTest, EntitySignatureChangedRemovesFromNonMatchingSystems) {
+        nexo::ecs::Entity entity = 1;
+        nexo::ecs::Signature oldSignature;
+        oldSignature.set(0, true); // Initially matches querySystem
+        nexo::ecs::Signature newSignature; // Empty, no longer matches
+
+        // Add to system
+        querySystem->entities.insert(entity);
+
+        // Change signature
+        systemManager.entitySignatureChanged(entity, oldSignature, newSignature);
+
+        // Should be removed from system
+        EXPECT_FALSE(querySystem->entities.contains(entity));
+    }
+
+    TEST_F(SystemImplementationTest, EntitySignatureChangedHandlesMultipleSystems) {
+        // Register another system with different signature
+        class AnotherMockQuerySystem : public AQuerySystem {
+        public:
+            const Signature& getSignature() const override {
+                return signature;
+            }
+
+            Signature signature;
+        };
+        auto otherSystem = systemManager.registerQuerySystem<AnotherMockQuerySystem>();
+        nexo::ecs::Signature otherSignature;
+        otherSignature.set(1, true); // This system requires component 1
+        otherSystem->signature = otherSignature;
+
+        nexo::ecs::Entity entity = 1;
+        nexo::ecs::Signature oldSignature;
+        oldSignature.set(0, true); // Matches only querySystem
+
+        nexo::ecs::Signature newSignature;
+        newSignature.set(1, true); // Matches only otherSystem
+
+        // Add to first system
+        querySystem->entities.insert(entity);
+        ASSERT_TRUE(querySystem->entities.contains(entity));
+        ASSERT_FALSE(otherSystem->entities.contains(entity));
+
+        // Change signature
+        systemManager.entitySignatureChanged(entity, oldSignature, newSignature);
+
+        // Should move from first to second system
+        EXPECT_FALSE(querySystem->entities.contains(entity));
+        EXPECT_TRUE(otherSystem->entities.contains(entity));
     }
 }
