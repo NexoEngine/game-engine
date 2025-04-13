@@ -62,14 +62,14 @@ namespace nexo::renderer {
              *
              * @param width The width of the texture in pixels.
              * @param height The height of the texture in pixels.
-             * @return A shared pointer to the created `Texture2D` instance.
+             * @return A unique pointer to the created `Texture2D` instance.
              *
              * Example:
              * ```cpp
              * auto blankTexture = Texture2D::create(512, 512);
              * ```
              */
-            static std::shared_ptr<Texture2D> create(unsigned int width, unsigned int height);
+            static std::unique_ptr<Texture2D> create(unsigned int width, unsigned int height);
 
             /**
              * @brief Creates a 2D texture from file in memory.
@@ -80,7 +80,7 @@ namespace nexo::renderer {
              *
              * @param buffer The memory buffer containing the texture image data.
              * @param len The length of the memory buffer in bytes.
-             * @return A shared pointer to the created `Texture2D` instance.
+             * @return A unique pointer to the created `Texture2D` instance.
              *
              * Example:
              * ```cpp
@@ -88,7 +88,7 @@ namespace nexo::renderer {
              * auto texture = Texture2D::create(imageData.data(), imageData.size());
              * ```
              */
-            static std::shared_ptr<Texture2D> create(uint8_t *buffer, unsigned int len);
+            static std::unique_ptr<Texture2D> create(uint8_t* buffer, unsigned int len);
 
             /**
             * @brief Creates a 2D texture from an image file.
@@ -98,14 +98,14 @@ namespace nexo::renderer {
             * for rendering after creation.
             *
             * @param path The file path to the texture image.
-            * @return A shared pointer to the created `Texture2D` instance.
+            * @return A unique pointer to the created `Texture2D` instance.
             *
             * Example:
             * ```cpp
             * auto texture = Texture2D::create("assets/textures/brick_wall.png");
             * ```
             */
-            static std::shared_ptr<Texture2D> create(const std::string &path);
+            static std::unique_ptr<Texture2D> create(const std::string& path);
     };
 
 }
