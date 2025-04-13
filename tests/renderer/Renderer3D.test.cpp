@@ -381,7 +381,7 @@ namespace nexo::renderer {
 	        {{ 0.0f,  0.5f, 0.0f}, {0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, -1}
 	    };
 	    std::vector<unsigned int> indices = {0, 1, 2};
-	    auto texture = Texture2D::create(4, 4);
+	    std::shared_ptr texture = Texture2D::create(4, 4);
 
 	    // Use an OpenGL query to count the number of triangles drawn
 	    GLuint query;
