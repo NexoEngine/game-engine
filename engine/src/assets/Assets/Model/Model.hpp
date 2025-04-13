@@ -16,23 +16,16 @@
 
 #include "assets/Asset.hpp"
 
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
+#include <components/Shapes3D.hpp>
 
 namespace nexo::assets {
-
-    struct ModelData {
-        // Model data
-        // TODO: Implement model data
-        const aiScene *scene;
-    };
 
     /**
      * @class Model
      *
      * @brief Represents a 3D model asset.
      */
-    class Model final : public Asset<ModelData, AssetType::MODEL> {
+    class Model final : public Asset<components::Model, AssetType::MODEL> {
         public:
             Model() = default;
 
