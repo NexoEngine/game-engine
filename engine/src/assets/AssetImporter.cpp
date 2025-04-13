@@ -16,7 +16,9 @@
 #include "AssetImporterBase.hpp"
 #include "AssetCatalog.hpp"
 
+#include "Assets/Model/Model.hpp"
 #include "Assets/Model/ModelImporter.hpp"
+#include "Assets/Texture/Texture.hpp"
 #include "Assets/Texture/TextureImporter.hpp"
 
 namespace nexo::assets {
