@@ -97,15 +97,26 @@ namespace nexo::renderer {
         GLenum internalFormat = 0;
         GLenum dataFormat = 0;
 
-        if (channels == 4) {
-            internalFormat = GL_RGBA8;
-            dataFormat = GL_RGBA;
-        } else if (channels == 3) {
-            internalFormat = GL_RGB8;
-            dataFormat = GL_RGB;
-        } else {
-            stbi_image_free(data);
-            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, debugPath);
+        switch (channels) {
+            [[likely]] case 4:
+                m_internalFormat = GL_RGBA8;
+                m_dataFormat = GL_RGBA;
+                break;
+            [[likely]] case 3:
+                m_internalFormat = GL_RGB8;
+                m_dataFormat = GL_RGB;
+                break;
+            case 2:
+                m_internalFormat = GL_RG8;
+                m_dataFormat = GL_RG;
+                break;
+            case 1:
+                m_internalFormat = GL_R8;
+                m_dataFormat = GL_RED;
+                break;
+            default:
+                stbi_image_free(data);
+                THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, debugPath);
         }
 
         m_internalFormat = internalFormat;
