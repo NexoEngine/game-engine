@@ -14,15 +14,12 @@
 
 #pragma once
 
-#include <array>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include <components/Shapes3D.hpp>
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
-#include "ModelParameters.hpp"
 
 namespace nexo::assets {
 
