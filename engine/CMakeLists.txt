@@ -60,6 +60,7 @@ set(COMMON_SOURCES
         engine/src/assets/AssetImporter.cpp
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
+        engine/src/assets/Assets/Texture/TextureImporter.cpp
 )
 
 # Add API-specific sources

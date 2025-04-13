@@ -14,7 +14,17 @@
 
 #include "ModelImporter.hpp"
 
-#include <core/exceptions/Exceptions.hpp>
+#include <array>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <components/Shapes3D.hpp>
+
+#include "assets/AssetImporterBase.hpp"
+#include "assets/Assets/Model/Model.hpp"
+#include "ModelParameters.hpp"
+
+#include "core/exceptions/Exceptions.hpp"
 
 namespace nexo::assets {
     
