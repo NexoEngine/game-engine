@@ -162,7 +162,7 @@ namespace nexo::editor {
 					auto &app = nexo::getApp();
 					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
 					app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
-					auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
+					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 					framebuffer = cameraComponent.m_renderTarget;
 					app.getSceneManager().deleteScene(previewParams.sceneId);
 					entityBase = static_cast<int>(entity);
