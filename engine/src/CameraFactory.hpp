@@ -23,6 +23,6 @@ namespace nexo {
 		public:
 			static ecs::Entity createPerspectiveCamera(glm::vec3 pos, unsigned int width,
        									               unsigned int height, std::shared_ptr<renderer::Framebuffer> renderTarget = nullptr,
-                               				           float fov = 45.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+                               				           const glm::vec4 &clearColor = {0.0f, 0.0f, 0.0f, 1.0f}, float fov = 45.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
 	};
 }
