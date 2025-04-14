@@ -35,7 +35,6 @@
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/LightSystem.hpp"
-#include "systems/OnSceneDeletedSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
@@ -188,29 +187,6 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
-            scene::SceneId createScene(const std::string &sceneName, bool active = true);
-            void deleteScene(scene::SceneId sceneId);
-            scene::LayerId addNewLayer(scene::SceneId sceneId, const std::string &layerName = "Default Layer");
-            scene::LayerId addNewOverlay(scene::SceneId sceneId, const std::string &overlayName = "Default Overlay");
-            void removeLayer(scene::SceneId sceneId, scene::LayerId id);
-            void removeOverlay(scene::SceneId sceneId, scene::LayerId id);
-            void activateScene(scene::SceneId sceneId);
-            void activateLayer(scene::SceneId, scene::LayerId id);
-            void deactivateScene(scene::SceneId sceneId);
-            void deactivateLayer(scene::SceneId sceneId, scene::LayerId id);
-            void setSceneRenderStatus(scene::SceneId sceneId, bool status);
-            void setLayerRenderStatus(scene::SceneId sceneId, scene::LayerId id, bool status);
-            bool isSceneActive(const scene::SceneId sceneId) { return m_sceneManager.isSceneActive(sceneId); };
-            bool isSceneRendered(const scene::SceneId sceneId) { return m_sceneManager.isSceneRendered(sceneId); };
-            void addEntityToScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void removeEntityFromScene(ecs::Entity entity, scene::SceneId sceneId, int layerId = -1);
-            void attachCamera(scene::SceneId sceneId, const std::shared_ptr<camera::Camera> &camera, scene::LayerId id);
-            void detachCamera(scene::SceneId sceneId, scene::LayerId id);
-            std::shared_ptr<camera::Camera> getCamera(scene::SceneId sceneId, scene::LayerId id);
-            unsigned int addLightToScene(scene::SceneId sceneId, const std::shared_ptr<components::Light> &light);
-            void removeLightFromScene(scene::SceneId sceneId, unsigned int index);
-            void setAmbientLightValue(scene::SceneId sceneId, float value);
-            float getAmbientLightValue(scene::SceneId sceneId);
             system::PhysicsSystemWrapper& getPhysicsSystem() { return physicsSystem; }
             /**
              * @brief Deletes an existing entity.
