@@ -161,10 +161,9 @@ namespace std {
 	struct hash<nexo::ecs::GroupKey> {
 		size_t operator()(const nexo::ecs::GroupKey& key) const noexcept
 		{
-			// Create a combined hash of both signatures
 			const size_t h1 = std::hash<nexo::ecs::Signature>()(key.ownedSignature);
 			const size_t h2 = std::hash<nexo::ecs::Signature>()(key.nonOwnedSignature);
-			return h1 ^ (h2 << 1); // Combine hashes with a bit shift
+			return h1 ^ (h2 << 1);
 		}
 	};
 }
@@ -270,10 +269,10 @@ namespace nexo::ecs {
 			{
 		        getComponentArray<T>()->insert(entity, std::move(component));
 
-				for (const auto& group : std::ranges::views::values(m_groupRegistry))
-				{
-				    if ((signature & group->allSignature()) == group->allSignature())
-					    group->addToGroup(entity);
+				for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
+				    if ((signature & group->allSignature()) == group->allSignature()) {
+		    			group->addToGroup(entity);
+					}
 				}
 		    }
 
@@ -422,7 +421,6 @@ namespace nexo::ecs {
 			template<typename... Owned>
 			auto registerGroup(const auto& nonOwned)
 			{
-			    // Generate a unique key for this group type combination
 			    const GroupKey newGroupKey = generateGroupKey<Owned...>(nonOwned);
 
 			    // Check if this exact group already exists
@@ -447,7 +445,6 @@ namespace nexo::ecs {
 					}
 				}
 
-			    // No conflicts found, create the new group
 			    auto group = createNewGroup<Owned...>(nonOwned);
 			    m_groupRegistry[newGroupKey] = group;
 			    return group;
@@ -491,7 +488,6 @@ namespace nexo::ecs {
              */
             [[nodiscard]] static bool hasCommonOwnedComponents(const GroupKey& key1, const GroupKey& key2)
             {
-                // If there's any bit that's set in both owned signatures, they share components
                 return (key1.ownedSignature & key2.ownedSignature).any();
             }
 
@@ -558,7 +554,6 @@ namespace nexo::ecs {
             			valid = (valid && ... && arrays->hasComponent(e));
 			        }, nonOwnedArrays);
 
-			        // Add to group if valid
 			        if (valid) {
 			            std::apply([&](auto&&... arrays) {
 			                ((arrays->addToGroup(e)), ...);
@@ -566,7 +561,6 @@ namespace nexo::ecs {
 			        }
 			    }
 
-			    // Create and return the group
 			    return std::make_shared<Group<OwnedTuple, NonOwnedTuple>>(ownedArrays, nonOwnedArrays);
 			}
 
