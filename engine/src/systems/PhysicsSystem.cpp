@@ -64,7 +64,7 @@ namespace nexo::system {
         JPH::ShapeRefC shape;
         switch (shapeType) {
             case ShapeType::Box:
-                shape = JPH::BoxShapeSettings(JPH::Vec3(1.0f, 1.0f, 1.0f)).Create().Get();
+                shape = JPH::BoxShapeSettings(JPH::Vec3(0.5f, 0.5f, 0.5f)).Create().Get();
             break;
             case ShapeType::Sphere:
                 shape = JPH::SphereShapeSettings(1.0f).Create().Get();
@@ -88,10 +88,15 @@ namespace nexo::system {
 
             auto& transform = coordinator.getComponent<components::TransformComponent>(entity);
             auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
-            JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
-            physicsSystem->GetBodyInterface().SetPosition(bodyComp.bodyID, position, JPH::EActivation::Activate);
+
+            const JPH::Vec3 position = physicsSystem->GetBodyInterface().GetPosition(bodyComp.bodyID);
+            transform.pos = glm::vec3(position.GetX(), position.GetY(), position.GetZ());
+            LOG(NEXO_INFO, "Entity {} moved to position: x={}, y={}, z={}", entity, transform.pos.x, transform.pos.y, transform.pos.z);
+            LOG(NEXO_INFO, "Entity {} body pos = ({}, {}, {})", entity, position.GetX(), position.GetY(), position.GetZ());
+
         }
     }
+
 
     void PhysicsSystem::ApplyForce(JPH::BodyID bodyID, const JPH::Vec3& force) {
         bodyInterface->AddForce(bodyID, force);
