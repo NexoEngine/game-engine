@@ -1,19 +1,7 @@
-//// SingletonComponentMixin.hpp //////////////////////////////////////////////
-//
-//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
-//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
-//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
-//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
-//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
-//
-//  Author:      Mehdy MORVAN
-//  Date:        06/04/2025
-//  Description: Base class for common singleton components operations in systems
-//
-///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include "Access.hpp"
+#include "Definitions.hpp"
 #include "SingletonComponent.hpp"
 #include <unordered_map>
 #include <typeindex>
@@ -31,26 +19,43 @@ namespace nexo::ecs {
     class SingletonComponentMixin {
         private:
 
-			/**
-			* @brief Helper to check if a singleton component has read-only access in the parameter pack
-			*
-			* This checks all SingletonAccessTypes to see if any match the given type T with ReadSingleton access.
-			*
-			* @tparam T The singleton component type to check
-			*/
+            /**
+            * @brief Helper to check if a singleton component has read-only access in the parameter pack
+            *
+            * This checks all SingletonAccessTypes to see if any match the given type T with ReadSingleton access.
+            *
+            * @tparam T The singleton component type to check
+            */
             template<typename T>
             struct HasReadSingletonAccessImpl {
                 static constexpr bool value = (... || (IsReadSingleton<SingletonAccessTypes>::value &&
                                                         std::is_same_v<typename SingletonAccessTypes::ComponentType, T>));
             };
 
+        public:
+            /**
+             * @brief Rebind this mixin with a different derived class
+             *
+             * @tparam NewDerived The new derived class to use
+             */
+            template<typename NewDerived>
+            using RebindWithDerived = SingletonComponentMixin<NewDerived, SingletonAccessTypes...>;
+
+            /**
+             * @brief Rebind this mixin with an additional singleton component
+             *
+             * @tparam NewComponent The new singleton component access type to add
+             */
+            template<typename NewComponent>
+            using RebindWithComponent = SingletonComponentMixin<Derived, SingletonAccessTypes..., NewComponent>;
+
         protected:
-			/**
-			* @brief Cache of singleton components for faster access
-			*
-			* Maps component type IDs to their singleton component instances
-			*/
-            std::unordered_map<std::type_index, std::shared_ptr<ISingletonComponent>> m_singletonComponents;
+            /**
+            * @brief Cache of singleton components for faster access
+            *
+            * Maps component type IDs to their singleton component instances
+            */
+            std::unordered_map<ComponentType, std::shared_ptr<ISingletonComponent>> m_singletonComponents;
 
             /**
             * @brief Initializes singleton components for this system
@@ -69,23 +74,19 @@ namespace nexo::ecs {
             template<typename T>
             void cacheSingletonComponent()
             {
-                try {
-                    auto* derived = static_cast<Derived*>(this);
-                    std::shared_ptr<ISingletonComponent> instance = derived->coord->template getRawSingletonComponent<T>();
-                    m_singletonComponents[getTypeIndex<T>()] = instance;
-                } catch (const nexo::ecs::SingletonComponentNotRegistered&) {
-                    // Singleton not registered yet, we'll try again when getSingleton is called
-                }
+                auto* derived = static_cast<Derived*>(this);
+                std::shared_ptr<ISingletonComponent> instance = derived->coord->template getRawSingletonComponent<T>();
+                m_singletonComponents[getUniqueComponentTypeID<T>()] = instance;
             }
 
         public:
 
-			/**
-			* @brief Checks if a singleton component has read-only access
-			*
-			* @tparam T The singleton component type to check
-			* @return true if the component has read-only access, false if it has read-write access
-			*/
+            /**
+            * @brief Checks if a singleton component has read-only access
+            *
+            * @tparam T The singleton component type to check
+            * @return true if the component has read-only access, false if it has read-write access
+            */
             template<typename T>
             static constexpr bool hasReadSingletonAccess()
             {
@@ -103,14 +104,13 @@ namespace nexo::ecs {
             template<typename T>
             std::conditional_t<hasReadSingletonAccess<T>(), const T&, T&> getSingleton()
             {
-                const std::type_index typeIndex = getTypeIndex<T>();
+                const ComponentType typeIndex = getUniqueComponentTypeID<T>();
 
                 if (!m_singletonComponents.contains(typeIndex)) {
                     // Late binding in case the singleton was registered after system creation
                     cacheSingletonComponent<T>();
                 }
 
-                // Get the stored singleton component wrapper
                 const auto& singletonComponentPtr = m_singletonComponents[typeIndex];
                 auto* componentWrapper = dynamic_cast<SingletonComponent<T>*>(singletonComponentPtr.get());
 
@@ -118,13 +118,54 @@ namespace nexo::ecs {
                     THROW_EXCEPTION(SingletonComponentNotRegistered);
 
                 // Return the reference with appropriate constness
-                if constexpr (hasReadSingletonAccess<T>()) {
-                    // For read-only access, return const reference
+                if constexpr (hasReadSingletonAccess<T>())
                     return const_cast<const T&>(componentWrapper->getInstance());
-                } else {
-                    // For read-write access, return non-const reference
+                else
                     return componentWrapper->getInstance();
-                }
             }
+    };
+
+    /**
+     * @brief Base case specialization for SingletonComponentMixin with no components
+     *
+     * This specialization serves as the termination point for template recursion
+     * when filtering singleton components. It provides a minimal implementation
+     * with placeholder rebinding methods that allow component accumulation during
+     * the template recursion process.
+     */
+    template<>
+    class SingletonComponentMixin<void> {
+        public:
+            /**
+            * @brief Rebind this base mixin with a derived class type
+            *
+            * This allows transitioning from the void placeholder to a concrete
+            * derived type when no singleton components were found.
+            *
+            * @tparam NewDerived The derived class type to bind to
+            */
+            template<typename NewDerived>
+            using RebindWithDerived = SingletonComponentMixin<NewDerived>;
+
+            /**
+             * @brief Begin building a mixin with a singleton component
+             *
+             * This is called when the first singleton component is found during
+             * template recursion, transitioning from the void base case to a
+             * mixin with actual components.
+             *
+             * @tparam NewComponent The first singleton component access type
+             */
+            template<typename NewComponent>
+            using RebindWithComponent = SingletonComponentMixin<void, NewComponent>;
+
+        protected:
+            /**
+            * @brief No-op implementation of singleton component initialization
+            *
+            * Since this specialization represents a mixin with no singleton components,
+            * there's nothing to initialize.
+            */
+            void initializeSingletonComponents() {}
     };
 }
