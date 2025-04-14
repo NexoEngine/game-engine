@@ -18,17 +18,17 @@
 
 namespace nexo::renderer {
 
-	void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
+	void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
 	{
 
 	}
 
-    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& rotation, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
+    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& rotation, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
     {
 
     }
 
-    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::mat4& transform, [[maybe_unused]] const components::Material& material, [[maybe_unused]] int entityID) const
+    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::mat4& transform, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
     {
 
     }
