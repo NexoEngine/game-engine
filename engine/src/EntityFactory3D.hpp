@@ -66,11 +66,3 @@ namespace nexo
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
     };
 }
-
-namespace nexo::utils
-{
-    std::shared_ptr<components::MeshNode> loadModel(const std::string& path);
-    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode const *node, const aiScene* scene);
-    components::Mesh processMesh(const std::string &path, aiMesh* mesh, const aiScene* scene);
-    glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
-}
