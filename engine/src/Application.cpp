@@ -297,6 +297,11 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
+        const auto time = static_cast<float>(glfwGetTime());
+        const Timestep timestep = time - m_lastFrameTime;
+        m_lastFrameTime = time;
+        auto scenesIds = m_sceneManager.getSceneIDs();
+        physicsSystem.Update(timestep.getSeconds(), *m_coordinator);
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         m_scriptingSystem->update();
