@@ -20,7 +20,6 @@
 
 #include <vector>
 #include <span>
-#include <type_traits>
 
 namespace nexo::ecs {
     /**
@@ -146,7 +145,6 @@ namespace nexo::ecs {
                     m_sparse[m_dense[groupLastIndex]] = groupLastIndex;
                 }
                 --m_groupSize;
-                // Now update indexToRemove to reflect the new position.
                 indexToRemove = groupLastIndex;
             }
 
@@ -298,7 +296,6 @@ namespace nexo::ecs {
             if (index != m_groupSize) {
                 std::swap(m_componentArray[index], m_componentArray[m_groupSize]);
                 std::swap(m_dense[index], m_dense[m_groupSize]);
-                // Update sparse mapping for both swapped entities.
                 m_sparse[m_dense[index]] = index;
                 m_sparse[m_dense[m_groupSize]] = m_groupSize;
             }
@@ -324,7 +321,6 @@ namespace nexo::ecs {
             size_t index = m_sparse[entity];
             if (index >= m_groupSize)
                 return;
-            // Decrement group size first; the entity to remove is at index.
             --m_groupSize;
             if (index != m_groupSize) {
                 std::swap(m_componentArray[index], m_componentArray[m_groupSize]);
@@ -349,13 +345,8 @@ namespace nexo::ecs {
             if (index >= m_size)
                 THROW_EXCEPTION(OutOfRange, index);
 
-            // Update the sparse mapping
             m_sparse[entity] = index;
-
-            // Update the dense array
             m_dense[index] = entity;
-
-            // Update the component
             m_componentArray[index] = std::move(component);
         }
 
