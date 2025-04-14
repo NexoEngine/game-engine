@@ -12,17 +12,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <array>
+
 #include "Renderer3D.hpp"
 #include "RenderCommand.hpp"
 #include "Logger.hpp"
 #include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
-
-#include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
-#include <array>
-#include <Path.hpp>
+#include "Path.hpp"
 
 namespace nexo::renderer {
 

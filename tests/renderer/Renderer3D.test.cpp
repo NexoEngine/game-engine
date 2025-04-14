@@ -221,7 +221,7 @@ namespace nexo::renderer {
 	    glm::vec3 position = {0.0f, 0.0f, 0.0f};
 	    glm::vec3 size = {1.0f, 1.0f, 1.0f};
 
-	    components::Material material;
+	    renderer::Material material;
 	    material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
 	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
 
@@ -312,7 +312,7 @@ namespace nexo::renderer {
 	    glm::vec3 size = {2.0f, 2.0f, 2.0f};
 	    glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
 
-	    components::Material material;
+	    renderer::Material material;
 	    material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
 	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
 	    material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -346,7 +346,7 @@ namespace nexo::renderer {
 	                          glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
 	                          glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
 
-	    components::Material material;
+	    renderer::Material material;
 	    material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
 	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
 
