@@ -460,7 +460,7 @@ namespace nexo::ecs {
         {
             if (m_size < m_componentArray.capacity() / 2 && m_componentArray.capacity() > capacity) {
                 // Only shrink if vectors are significantly oversized to avoid frequent reallocations
-                auto newCapacity = static_cast<size_t>(m_size * 2);
+                size_t newCapacity = m_size * 2;
                 if (newCapacity < capacity)
                     newCapacity = capacity;
 
