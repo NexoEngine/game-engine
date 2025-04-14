@@ -146,6 +146,8 @@ namespace nexo::assets {
         explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
             : GenericAssetRef(assetPtr) {}
 
+        explicit(false) AssetRef(std::nullptr_t) : GenericAssetRef(nullptr) {}
+
         /**
          * @brief Locks the asset reference, providing safe access
          * @return A shared_ptr to the asset, or empty shared_ptr if expired

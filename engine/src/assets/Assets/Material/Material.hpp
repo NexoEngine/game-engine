@@ -1,4 +1,4 @@
-//// Model.hpp ////////////////////////////////////////////////////////////////
+//// Material.hpp /////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -8,7 +8,7 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        24/02/2025
-//  Description: Header file for the Model class
+//  Description: Header file for the Material class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,21 +16,20 @@
 
 #include "assets/Asset.hpp"
 
-#include "components/Shapes3D.hpp"
-#include "assets/Assets/Material/Material.hpp"
+#include <components/Shapes3D.hpp>
 
 namespace nexo::assets {
 
     /**
-     * @class Model
+     * @class Material
      *
-     * @brief Represents a 3D model asset.
+     * @brief Represents a material asset.
      */
-    class Model final : public Asset<components::Model, AssetType::MODEL> {
+    class Material final : public Asset<components::Material, AssetType::MATERIAL> {
         public:
-            Model() = default;
+            Material() = default;
 
-            ~Model() override = default;
+            ~Material() override = default;
     };
 
 }

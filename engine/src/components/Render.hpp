@@ -66,7 +66,7 @@ namespace nexo::components
     };
 
     struct Renderable3D final : Renderable {
-        Material material;
+        Material material; // TODO: replace with AssetRef
         std::shared_ptr<Shape3D> shape;
 
         explicit Renderable3D(Material  material,

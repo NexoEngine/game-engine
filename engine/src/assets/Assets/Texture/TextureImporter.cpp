@@ -36,8 +36,9 @@ namespace nexo::assets {
 
     void TextureImporter::importImpl(AssetImporterContext& ctx)
     {
+        // TODO: we need to import textures independently from graphics API back end renderer::Texture2D::create implementation
         auto asset = new Texture();
-        std::shared_ptr<renderer::Texture> rendererTexture;
+        std::shared_ptr<renderer::Texture2D> rendererTexture;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
             rendererTexture = renderer::Texture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
         else {
@@ -54,6 +55,9 @@ namespace nexo::assets {
 
     bool TextureImporter::canReadMemory(const ImporterMemoryInput& input)
     {
+        if (input.formatHint == "ARGB8888") { // Special case for ARGB8888 format (from assimp model textures)
+            return true;
+        }
         const int ok = stbi_info_from_memory(input.memoryData.data(), input.memoryData.size(), nullptr, nullptr, nullptr);
         return ok;
     }

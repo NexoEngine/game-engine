@@ -38,6 +38,7 @@ namespace nexo::assets {
     enum class AssetType {
         UNKNOWN,
         TEXTURE,
+        MATERIAL,
         MODEL,
         SOUND,
         MUSIC,
@@ -56,6 +57,7 @@ namespace nexo::assets {
     constexpr const char *AssetTypeNames[] = {
         "UNKNOWN",
         "TEXTURE",
+        "MATERIAL",
         "MODEL",
         "SOUND",
         "MUSIC",
