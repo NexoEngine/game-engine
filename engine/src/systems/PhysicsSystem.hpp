@@ -172,6 +172,7 @@ namespace nexo::system {
         void SetGravity(const JPH::Vec3& gravity);
         void ActivateBody(JPH::BodyID bodyID);
         void DeactivateBody(JPH::BodyID bodyID);
+        JPH::BodyInterface* getBodyInterface() const { return bodyInterface; }
 
     private:
         JPH::TempAllocatorImpl* tempAllocator;
