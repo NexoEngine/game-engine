@@ -149,16 +149,4 @@ namespace nexo::ecs {
      */
     template<typename T>
     struct IsSingleton : std::bool_constant<IsReadSingleton<T>::value || IsWriteSingleton<T>::value> {};
-
-    /**
-     * @brief Gets the type index for a component
-     *
-     * @tparam T The component type
-     * @return std::type_index The type index
-     */
-    template<typename T>
-    std::type_index getTypeIndex()
-    {
-        return std::type_index(typeid(T));
-    }
 }
