@@ -60,13 +60,13 @@ namespace nexo::editor {
 		{
 			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
 			auto &app = nexo::getApp();
-			auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-			cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
 			app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
+			auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 			m_framebuffer = cameraComponent.m_renderTarget;
 			materialModified = false;
 			app.getSceneManager().deleteScene(previewParams.sceneId);
 		}
+
 		if (!m_framebuffer)
 			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failed to initialize framebuffer in Material Inspector window");
 		// --- Material preview ---
