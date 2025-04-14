@@ -21,6 +21,7 @@
 
 #include <array>
 #include <glm/glm.hpp>
+#include <optional>
 
 namespace nexo::renderer {
 
@@ -324,9 +325,9 @@ namespace nexo::renderer {
          */
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<Texture2D>& texture, int entityID = -1) const;
 
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
-        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const renderer::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const renderer::Material& material, int entityID = -1) const;
+        void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const renderer::Material& material, int entityID = -1) const;
 
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const components::Material& material, int entityID) const;
