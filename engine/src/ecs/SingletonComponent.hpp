@@ -18,6 +18,7 @@
 #include <typeindex>
 #include <memory>
 
+#include "Definitions.hpp"
 #include "Logger.hpp"
 #include "ECSExceptions.hpp"
 
@@ -104,15 +105,14 @@ namespace nexo::ecs {
 			template <typename T, typename... Args>
 			void registerSingletonComponent(Args&&... args)
 			{
-				using Decayed = std::decay_t<T>;
-				std::type_index typeName(typeid(Decayed));
+			    ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (m_singletonComponents.contains(typeName)) {
 					LOG(NEXO_WARN, "ECS::SingletonComponentManager::registerSingletonComponent: trying to register a singleton component more than once");
 					return;
 				}
 				m_singletonComponents.insert(
 					{typeName,
-					std::make_shared<SingletonComponent<Decayed>>(std::forward<Args>(args)...)}
+					std::make_shared<SingletonComponent<T>>(std::forward<Args>(args)...)}
 				);
 			}
 
@@ -126,7 +126,7 @@ namespace nexo::ecs {
 			template <typename T>
 			T &getSingletonComponent()
 			{
-				const std::type_index typeName(typeid(T));
+			    ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
@@ -145,7 +145,7 @@ namespace nexo::ecs {
 			template <typename T>
 			std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
 			{
-				const std::type_index typeName(typeid(T));
+			    ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
@@ -163,13 +163,13 @@ namespace nexo::ecs {
 			template <typename T>
 			void unregisterSingletonComponent()
 			{
-				const std::type_index typeName(typeid(T));
+				ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
 				m_singletonComponents.erase(typeName);
 			}
 		private:
-			std::unordered_map<std::type_index, std::shared_ptr<ISingletonComponent>> m_singletonComponents{};
+			std::unordered_map<ComponentType, std::shared_ptr<ISingletonComponent>> m_singletonComponents{};
 	};
 }
