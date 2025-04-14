@@ -13,14 +13,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Render3D.hpp"
-#include "Transform.hpp"
-#include "renderer/RendererContext.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <optional>
+
+#include "Render3D.hpp"
+#include "Transform.hpp"
+#include "renderer/RendererContext.hpp"
+#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::components {
 
@@ -35,7 +36,31 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            renderer3D.drawCube(transf.pos, transf.size, transf.quat, material, entityID);
+
+            // lock all textures
+            auto albedoTextureAsset = material.albedoTexture.lock();
+            auto normalMapAsset = material.normalMap.lock();
+            auto metallicMapAsset = material.metallicMap.lock();
+            auto roughnessMapAsset = material.roughnessMap.lock();
+            auto emissiveMapAsset = material.emissiveMap.lock();
+
+
+            renderer::Material inputMaterial = {
+                .albedoColor = material.albedoColor,
+                .specularColor = material.specularColor,
+                .emissiveColor = material.emissiveColor,
+                .roughness = material.roughness,
+                .metallic = material.metallic,
+                .opacity = material.opacity,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->data->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->data->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->data->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->data->texture : nullptr,
+                .shader = material.shader
+            };
+
+            renderer3D.drawCube(transf.pos, transf.size, transf.quat, inputMaterial, entityID);
         }
 
         [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
@@ -47,7 +72,7 @@ namespace nexo::components {
         std::string name;
         std::vector<renderer::Vertex> vertices;
         std::vector<unsigned int> indices;
-        std::optional<Material> material;
+        assets::AssetRef<assets::Material> material;
     };
 
     struct MeshNode {
@@ -64,7 +89,14 @@ namespace nexo::components {
                 std::vector<renderer::Vertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
-                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.material->albedoTexture, entityID);
+
+                {
+                    const auto meshMaterialAsset = mesh.material.lock();
+                    const auto albedoTextureAsset = meshMaterialAsset && meshMaterialAsset->isLoaded() ? meshMaterialAsset->data->albedoTexture.lock() : nullptr;
+
+                    const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr;
+                    renderer3D.drawMesh(transformedVertices, mesh.indices, albedoTexture, entityID);
+                }
             }
 
             for (const auto &child: children)

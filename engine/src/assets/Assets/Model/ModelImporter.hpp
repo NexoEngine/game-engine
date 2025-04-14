@@ -20,6 +20,7 @@
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
+#include "assets/AssetRef.hpp"
 
 namespace nexo::assets {
 
@@ -33,15 +34,19 @@ namespace nexo::assets {
             void importImpl(AssetImporterContext& ctx) override;
 
         protected:
-            Model *m_model = nullptr; //< Model being imported
-            Assimp::Importer m_importer;              //< Assimp importer instance
-
-        private:
             Model* loadModel(AssetImporterContext& ctx);
+            void loadEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene);
+            void loadMaterials(AssetImporterContext& ctx, const aiScene* scene);
+
             std::shared_ptr<components::MeshNode> processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
             components::Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
+
             static glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
 
+            Model *m_model = nullptr; //< Model being imported
+            Assimp::Importer m_importer;              //< Assimp importer instance
+            std::unordered_map<const char *, AssetRef<Texture>> m_textures; //< Map of textures used in the model, std::string is the texture name (path, or *0, *1, etc. for embedded textures, see assimp)
+            std::vector<AssetRef<Material>> m_materials; //< Map of materials used in the model, index is the assimp material index
     };
 
 } // namespace nexo::assets
