@@ -526,14 +526,14 @@ namespace nexo::ecs {
 			        entities.push_back(drivingArray->getEntityAtIndex(i));
 
 			    // Sort entities based on the extracted field from the component
-			    std::ranges::sort(entities.begin(), entities.end(),
-			        [&](Entity a, Entity b) {
-			            const auto& compA = compArray->get(a);
-			            const auto& compB = compArray->get(b);
-			            if (ascending)
-			                return extractor(compA) < extractor(compB);
-			            return extractor(compA) > extractor(compB);
-			        });
+				std::ranges::sort(entities,
+                    [&](Entity a, Entity b) {
+                        const auto& compA = compArray->get(a);
+                        const auto& compB = compArray->get(b);
+                        if (ascending)
+                            return extractor(compA) < extractor(compB);
+                        return extractor(compA) > extractor(compB);
+                });
 
 			    reorderGroup(entities);
 				m_sortingInvalidated = false;
@@ -743,7 +743,7 @@ namespace nexo::ecs {
 					PartitionStorage(Group* group, EntityKeyExtractor<KeyType> keyExtractor)
 						: m_group(group), m_keyExtractor(std::move(keyExtractor)) {}
 
-					bool isDirty() const override { return m_isDirty; }
+					[[nodiscard]] bool isDirty() const override { return m_isDirty; }
 					void markDirty() override { m_isDirty = true; }
 
 					/**
