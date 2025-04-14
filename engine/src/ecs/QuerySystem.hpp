@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "Definitions.hpp"
 #include "ECSExceptions.hpp"
 #include "System.hpp"
 #include "Access.hpp"
@@ -25,15 +26,57 @@
 
 namespace nexo::ecs {
     /**
+     * @brief Metaprogramming helper to extract singleton components from a parameter pack
+     *
+     * This template recursively filters a list of components, extracting only the
+     * singleton components to pass to SingletonComponentMixin. This ensures that
+     * regular components aren't processed by the mixin.
+     *
+     * @tparam Components Component access specifiers to filter for singleton types
+     */
+    template<typename... Components>
+    struct ExtractSingletonComponents;
+
+    /**
+     * @brief Base case specialization for empty component list
+     *
+     * When no components remain to be processed, this provides a void-specialized
+     * SingletonComponentMixin as the base type.
+     */
+    template<>
+    struct ExtractSingletonComponents<> {
+        using type = SingletonComponentMixin<void>;
+    };
+
+    /**
+     * @brief Recursive case for ExtractSingletonComponents
+     *
+     * Checks if the current component is a singleton. If it is, includes it in
+     * the mixin via RebindWithComponent. If not, skips it and continues with the rest.
+     *
+     * @tparam Component The current component to check
+     * @tparam Rest Remaining components to process
+     */
+    template<typename Component, typename... Rest>
+    struct ExtractSingletonComponents<Component, Rest...> {
+        // If Component is a singleton access type, include it in the mixin
+        using type = std::conditional_t<
+            IsSingleton<Component>::value,
+            // Add this component to the mixin along with other singleton components
+            typename ExtractSingletonComponents<Rest...>::type::template RebindWithComponent<Component>,
+            // Skip this component and continue with the rest
+            typename ExtractSingletonComponents<Rest...>::type
+        >;
+    };
+    /**
      * @class QuerySystem
      * @brief System that directly queries component arrays
      *
      * @tparam Components Component access specifiers (Read<T>, Write<T>, ReadSingleton<T>, WriteSingleton<T>)
      */
-    template<typename... Components>
-    class QuerySystem : public AQuerySystem, public SingletonComponentMixin<
-														QuerySystem<Components...>,
-														Components...> {
+     template<typename... Components>
+     class QuerySystem : public AQuerySystem,
+                         public ExtractSingletonComponents<Components...>::type::template RebindWithDerived<QuerySystem<Components...>> {
 		private:
 			/**
 			* @brief Helper template to check if a component type has Read access in a parameter pack
@@ -73,9 +116,6 @@ namespace nexo::ecs {
 			}
 
 	    public:
-	        // Make the base class a friend to access protected members
-			friend class SingletonComponentMixin<QuerySystem<Components...>, Components...>;
-
 			/**
 			* @brief Constructs a new QuerySystem
 			*
@@ -87,9 +127,8 @@ namespace nexo::ecs {
 			*/
 			QuerySystem()
 			{
-				if (!coord) {
+				if (!coord)
 					THROW_EXCEPTION(InternalError, "Coordinator is null in QuerySystem constructor");
-				}
 
 				// Set system signature based on required components (ignore singleton components)
 				(setComponentSignatureIfRegular<Components>(m_signature), ...);
@@ -111,7 +150,7 @@ namespace nexo::ecs {
 			template<typename T>
 			std::conditional_t<hasReadAccess<T>(), const T&, T&> getComponent(Entity entity)
 			{
-				const std::type_index typeIndex = getTypeIndex<T>();
+				const ComponentType typeIndex = getUniqueComponentTypeID<T>();
 				const auto it = m_componentArrays.find(typeIndex);
 
 				if (it == m_componentArrays.end())
@@ -153,7 +192,7 @@ namespace nexo::ecs {
 				if constexpr (!IsSingleton<ComponentAccessType>::value) {
 					using T = typename ComponentAccessType::ComponentType;
 					auto componentArray = coord->getComponentArray<T>();
-					m_componentArrays[getTypeIndex<T>()] = componentArray;
+					m_componentArrays[getUniqueComponentTypeID<T>()] = componentArray;
 				}
 			}
 
@@ -174,7 +213,7 @@ namespace nexo::ecs {
 
 		private:
 			// Cache of component arrays for faster access
-			std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> m_componentArrays;
+			std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
 
 			/// Component signature defining required components for this system
 			Signature m_signature;
