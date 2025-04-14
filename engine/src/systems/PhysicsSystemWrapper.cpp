@@ -44,31 +44,15 @@ namespace nexo::system {
         JPH::BoxShapeSettings shapeSettings(JPH::Vec3(transform.size.x / 2.0f, transform.size.y / 2.0f, transform.size.z / 2.0f));
         JPH::ShapeRefC shape = shapeSettings.Create().Get();
 
-        // Conversion de la rotation en quaternion Jolt
-        JPH::Quat rotationQuat = JPH::Quat::sEulerAngles(JPH::Vec3(
-            glm::radians(transform.rotation.x),
-            glm::radians(transform.rotation.y),
-            glm::radians(transform.rotation.z)
-        ));
-
-        // Création de la matrice de transformation avec rotation et position
-        JPH::RMat44 bodyTransform = JPH::RMat44::sRotationTranslation(
-            rotationQuat,
-            JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z)
-        );
-
         // Création du body statique
         JPH::BodyCreationSettings bodySettings(
             shape,
             JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
-            JPH::Quat::sEulerAngles(JPH::Vec3(
-                glm::radians(transform.rotation.x),
-                glm::radians(transform.rotation.y),
-                glm::radians(transform.rotation.z)
-            )),
+            JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w), // <- ici
             JPH::EMotionType::Static,
             Layers::NON_MOVING
         );
+
 
         auto* bodyInterface = physicsSystem.getBodyInterface();
         JPH::Body* body = bodyInterface->CreateBody(bodySettings);
