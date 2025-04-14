@@ -34,7 +34,7 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct Material {
+    struct InternalMaterial {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         int albedoTexIndex = 0; // Default: 0 (white texture)
         glm::vec4 specularColor = glm::vec4(1.0f);
@@ -47,6 +47,24 @@ namespace nexo::renderer {
         int metallicTexIndex = 0; // Default: 0 (white texture)
         float opacity = 1.0f;
         int opacityTexIndex = 0; // Default: 0 (white texture)
+    };
+
+    struct Material {
+        glm::vec4 albedoColor = glm::vec4(1.0f);
+        glm::vec4 specularColor = glm::vec4(1.0f);
+        glm::vec3 emissiveColor = glm::vec3(0.0f);
+
+        float roughness = 0.0f;  // 0 = smooth, 1 = rough
+        float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
+        float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
+
+        std::shared_ptr<Texture2D> albedoTexture = nullptr;
+        std::shared_ptr<Texture2D> normalMap = nullptr;
+        std::shared_ptr<Texture2D> metallicMap = nullptr;
+        std::shared_ptr<Texture2D> roughnessMap = nullptr;
+        std::shared_ptr<Texture2D> emissiveMap = nullptr;
+
+        std::optional<std::shared_ptr<renderer::Shader>> shader = std::nullopt;
     };
 
     //TODO: Add stats for the meshes
@@ -244,7 +262,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and material.
@@ -260,7 +278,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and material.
@@ -276,7 +294,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cube using a specified transformation and color.
@@ -290,7 +308,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCube(const glm::mat4& transform, const components::Material &material, int entityID = -1) const;
+        void drawCube(const glm::mat4& transform, const Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a custom 3D mesh.
@@ -371,7 +389,7 @@ namespace nexo::renderer {
          *
          * @throws RendererNotInitialized if the renderer is not initialized.
          */
-        void setMaterialUniforms(const renderer::Material& material) const;
+        void setMaterialUniforms(const renderer::InternalMaterial& material) const;
     };
 
 }
