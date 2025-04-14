@@ -1,3 +1,16 @@
+//// SingletonComponentMixin.hpp //////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        09/04/2025
+//  Description: Header file for the singleton component mixin class
+//
+///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include "Access.hpp"
@@ -166,6 +179,9 @@ namespace nexo::ecs {
             * Since this specialization represents a mixin with no singleton components,
             * there's nothing to initialize.
             */
-            void initializeSingletonComponents() {}
+            void initializeSingletonComponents()
+            {
+                // No-op method
+            }
     };
 }
