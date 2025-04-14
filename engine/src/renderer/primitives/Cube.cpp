@@ -130,7 +130,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -181,7 +181,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -226,7 +226,7 @@ namespace nexo::renderer {
 
 		m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -260,7 +260,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const Material& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -274,7 +274,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -312,7 +312,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const Material& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -329,7 +329,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -367,7 +367,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const Material& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -384,7 +384,7 @@ namespace nexo::renderer {
 
        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-       renderer::Material mat;
+       renderer::InternalMaterial mat;
        mat.albedoColor = material.albedoColor;
        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
        mat.specularColor = material.specularColor;
@@ -422,7 +422,7 @@ namespace nexo::renderer {
        m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::mat4& transform, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::mat4& transform, const Material& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -432,7 +432,7 @@ namespace nexo::renderer {
 
 	    m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::InternalMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;

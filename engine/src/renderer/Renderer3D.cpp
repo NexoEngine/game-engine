@@ -186,7 +186,7 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer3D::setMaterialUniforms(const renderer::Material& material) const
+    void Renderer3D::setMaterialUniforms(const renderer::InternalMaterial& material) const
     {
         if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
