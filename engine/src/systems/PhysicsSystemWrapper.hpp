@@ -25,6 +25,7 @@ namespace nexo::system {
         void Init(ecs::Coordinator& coordinator);
         void Update(float dt, ecs::Coordinator& coordinator);
         void AddPhysicsBody(ecs::Entity entity, const components::TransformComponent& transform);
+        void AddStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
 
     private:
         ecs::Coordinator* m_coordinator = nullptr;
