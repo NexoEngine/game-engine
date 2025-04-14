@@ -150,6 +150,27 @@ namespace nexo::assets {
              * @return GenericAssetRef A reference to the registered asset, or a null reference if the asset pointer was null.
              */
             GenericAssetRef registerAsset(const AssetLocation& location, IAsset *asset);
+
+            /**
+             * @brief Creates and registers a new asset in the catalog.
+             *
+             * This method creates a new asset of the specified type, registers it in the catalog, and returns a reference to it.
+             *
+             * @tparam AssetType The type of asset to create. Must be derived from IAsset.
+             * @param location The asset's location metadata.
+             * @param data Optional data to load the asset. Default is nullptr.
+             * @return AssetRef<AssetType> A reference to the created and registered asset.
+             */
+            template <typename AssetType>
+                requires std::derived_from<AssetType, IAsset>
+            AssetRef<AssetType> createAsset(const AssetLocation& location, void *data = nullptr)
+            {
+                auto asset = new AssetType();
+                asset->setRawData(data);
+                auto assetRef = registerAsset(location, asset);
+                return assetRef.template as<AssetType>();
+            }
+
         private:
             std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
     };
