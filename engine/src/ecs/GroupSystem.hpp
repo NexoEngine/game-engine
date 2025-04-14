@@ -163,11 +163,10 @@ namespace nexo::ecs {
 																					const std::remove_const_t<U>&
 						>
 					{
-						if constexpr (GetComponentAccess<std::remove_const_t<U>>::accessType == AccessType::Write) {
+						if constexpr (GetComponentAccess<std::remove_const_t<U>>::accessType == AccessType::Write)
 							return const_cast<std::remove_const_t<U>&>(m_span[index]);
-						} else {
+						else
 							return m_span[index];
-					}
 					}
 
 					/**
@@ -226,18 +225,16 @@ namespace nexo::ecs {
 			GroupSystem()
 			{
 				static_assert(std::tuple_size_v<OwnedTypes> > 0,
-				"GroupSystem must have at least one owned component type");
-				if (!coord) {
-					THROW_EXCEPTION(InternalError, "Coordinator is null in GroupSystem constructor");
-				}
+				               "GroupSystem must have at least one owned component type");
 
-				// Create the group
+				if (!coord)
+					THROW_EXCEPTION(InternalError, "Coordinator is null in GroupSystem constructor");
+
 				m_group = createGroupImpl(
 					tupleToTypeList<OwnedTypes>(),
 					tupleToTypeList<NonOwnedTypes>()
 				);
 
-				// Initialize singleton components
 				this->initializeSingletonComponents();
 			}
 
@@ -250,9 +247,9 @@ namespace nexo::ecs {
 			template<typename T>
 			auto get()
 			{
-				if (!m_group) {
+				if (!m_group)
 					THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
-				}
+
 				constexpr bool isOwned = isOwnedComponent<T>();
 				if constexpr (isOwned) {
 					// Get the span from the group
@@ -269,11 +266,10 @@ namespace nexo::ecs {
 					auto componentArray = m_group->template get<T>();
 
 					// Apply access control by wrapping in a special pointer wrapper if needed
-					if constexpr (GetComponentAccess<T>::accessType == AccessType::Read) {
+					if constexpr (GetComponentAccess<T>::accessType == AccessType::Read)
 						return std::shared_ptr<const ComponentArray<T>>(m_group->template get<T>());
-					} else {
+					else
 						return componentArray;
-				}
 				}
 			}
 
@@ -297,9 +293,9 @@ namespace nexo::ecs {
 	         */
 			[[nodiscard]] std::span<const Entity> getEntities() const
 			{
-				if (!m_group) {
+				if (!m_group)
 					THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
-				}
+
 				return m_group->entities();
 			}
 
@@ -320,9 +316,13 @@ namespace nexo::ecs {
 				if constexpr (sizeof...(OT) > 0) {
 					if constexpr (sizeof...(NOT) > 0) {
 						auto group = coord->registerGroup<OT...>(nexo::ecs::get<NOT...>());
+						if (!group)
+							THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
 						return std::static_pointer_cast<ActualGroupType>(group);
 					} else {
 						auto group = coord->registerGroup<OT...>(nexo::ecs::get<>());
+						if (!group)
+							THROW_EXCEPTION(InternalError, "Group is null in GroupSystem");
 						return std::static_pointer_cast<ActualGroupType>(group);
 					}
 				}
