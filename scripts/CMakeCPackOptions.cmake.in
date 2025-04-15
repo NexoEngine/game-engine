@@ -64,7 +64,6 @@ elseif (CPACK_GENERATOR MATCHES "NSIS")
         Unspecified
         documentation
         headers
-        licenses
     )
 else()
     message(WARNING "Unknown CPACK_GENERATOR: ${CPACK_GENERATOR}, cannot configure package generator specific settings. This may result in a broken package.")

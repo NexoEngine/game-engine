@@ -34,6 +34,14 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/config/" DESTINATION config)
 install(DIRECTORY DESTINATION logs)
 
+# Install licenses
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/licenses/"
+        DESTINATION "external/licenses/"
+)
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/COPYRIGHT"
+        DESTINATION "."
+)
+
 # Component documenation
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/docs/"
         DESTINATION docs
@@ -52,16 +60,6 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src" # source directory
         DESTINATION "headers/" # target directory
         FILES_MATCHING # install only matched files
             PATTERN "*.hpp" # select header files
-)
-
-# Component licenses
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/licenses/"
-        DESTINATION "external/licenses/"
-        COMPONENT licenses
-)
-install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/COPYRIGHT"
-        DESTINATION "."
-        COMPONENT licenses
 )
 
 # Generate license files
