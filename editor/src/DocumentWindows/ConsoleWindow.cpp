@@ -214,29 +214,24 @@ namespace nexo::editor {
             m_logs.emplace_back(LogMessage{nexoLevelToLoguruLevel(LogLevel::ERROR), std::format("[Error formatting log message]: {}", e.what())});
         }
 
-        scrollToBottom = true;
+        m_scrollToBottom = true;
     }
 
     void ConsoleWindow::executeCommand(const char *command_line)
     {
-        commands.emplace_back(command_line);
+        m_commands.emplace_back(command_line);
         addLog("{}\n", command_line);
     }
 
     void ConsoleWindow::calcLogPadding()
     {
         m_logPadding = 0.0f;
-        for (const auto &[verbosity, message, prefix]: m_logs)
-        {
-            if (!selectedVerbosityLevels.contains(verbosity))
-                continue;
 
-            const std::string tag = verbosityToString(verbosity);
+        for (const auto &selectedLevel : m_selectedVerbosityLevels) {
+            const std::string tag = verbosityToString(selectedLevel);
             const ImVec2 textSize = ImGui::CalcTextSize(tag.c_str());
             if (textSize.x > m_logPadding)
-            {
                 m_logPadding = textSize.x;
-            }
         }
         m_logPadding += ImGui::GetStyle().ItemSpacing.x;
     }
@@ -290,16 +285,16 @@ namespace nexo::editor {
 
         for (const auto &[level, name]: levels)
         {
-            bool selected = (selectedVerbosityLevels.contains(level));
+            bool selected = (m_selectedVerbosityLevels.contains(level));
             if (ImGui::Checkbox(name, &selected))
             {
                 if (selected)
                 {
-                    selectedVerbosityLevels.insert(level);
+                    m_selectedVerbosityLevels.insert(level);
                     calcLogPadding();
                 } else
                 {
-                    selectedVerbosityLevels.erase(level);
+                    m_selectedVerbosityLevels.erase(level);
                     calcLogPadding();
                 }
             }
@@ -308,7 +303,7 @@ namespace nexo::editor {
         ImGui::Separator();
         ImGui::Checkbox("File logging", &m_exportLog);
         if (ImGui::Button("Open log folder"))
-            utils::openFolder(Path::resolvePathRelativeToExe("../logs"));
+            utils::openFolder(Path::resolvePathRelativeToExe("../logs").string());
 
         ImGui::EndPopup();
     }
@@ -328,7 +323,7 @@ namespace nexo::editor {
         auto id = 0;
         for (const auto &[verbosity, message, prefix]: m_logs)
         {
-            if (!selectedVerbosityLevels.contains(verbosity))
+            if (!m_selectedVerbosityLevels.contains(verbosity))
                 continue;
 
             ImGui::PushID(id++);
@@ -336,17 +331,17 @@ namespace nexo::editor {
             ImGui::PopID();
         }
 
-        if (scrollToBottom)
+        if (m_scrollToBottom)
             ImGui::SetScrollHereY(1.0f);
-        scrollToBottom = false;
+        m_scrollToBottom = false;
 
         ImGui::EndChild();
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 60.0f);
 
-        if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), ImGuiInputTextFlags_EnterReturnsTrue))
+        if (ImGui::InputText("Input", m_inputBuf, IM_ARRAYSIZE(m_inputBuf), ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            executeCommand(inputBuf);
-            std::memset(inputBuf, '\0', sizeof(inputBuf));
+            executeCommand(m_inputBuf);
+            std::memset(m_inputBuf, '\0', sizeof(m_inputBuf));
         }
 
         ImGui::SameLine();
