@@ -53,3 +53,29 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src" # source directory
         FILES_MATCHING # install only matched files
             PATTERN "*.hpp" # select header files
 )
+
+# Create license file
+# install licenses
+file(GLOB LICENSE_DIRS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/*")
+set(LICENSE_LIST "" CACHE INTERNAL "")
+foreach(LICENSE_DIR ${LICENSE_DIRS})
+    if (EXISTS ${LICENSE_DIR}/copyright)
+        cmake_path(GET LICENSE_DIR FILENAME LICENSE_LIB_NAME)
+        if ("${LICENSE_LIB_NAME}" MATCHES "boost-*")
+            set(LICENSE_LIB_NAME "boost")
+        endif()
+        list(FIND LICENSE_LIST ${LICENSE_LIB_NAME} LICENSE_LIB_NAME_FOUND)
+        if (NOT LICENSE_LIB_NAME_FOUND EQUAL -1)
+            continue()
+        endif()
+        install(FILES ${LICENSE_DIR}/copyright DESTINATION "external/licenses" RENAME ${LICENSE_LIB_NAME}
+                COMPONENT licenses EXCLUDE_FROM_ALL)
+        list(APPEND LICENSE_LIST ${LICENSE_LIB_NAME})
+    endif()
+endforeach()
+list(LENGTH LICENSE_LIST LICENSE_LIST_LENGTH)
+message(STATUS "Found ${LICENSE_LIST_LENGTH} licenses: ${LICENSE_LIST}")
+
+install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/copyright.cmake"
+        COMPONENT licenses EXCLUDE_FROM_ALL
+)
