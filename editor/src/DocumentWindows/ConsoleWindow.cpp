@@ -142,11 +142,11 @@ namespace nexo::editor {
                                 const loguru::Message &message)
     {
         const auto console = static_cast<ConsoleWindow *>(userData);
-        console->addLog({
-            .verbosity = message.verbosity,
-            .message = message.message,
-            .prefix = message.prefix
-        });
+        LogMessage newMessage;
+        newMessage.verbosity = message.verbosity;
+        newMessage.message = message.message;
+        newMessage.prefix = message.prefix;
+        console->addLog(newMessage);
     }
 
 
@@ -208,16 +208,23 @@ namespace nexo::editor {
     void ConsoleWindow::addLog(const char *fmt, Args &&... args)
     {
         try {
-            std::string formattedMessage = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
+            // Create a buffer for the formatted message
+            char buffer[1024];
+            snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+
             LogMessage newMessage;
             newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::USER);
-            newMessage.message = formattedMessage;
+            newMessage.message = std::string(buffer);
             newMessage.prefix = "";
             m_logs.push_back(newMessage);
-        } catch (const std::format_error &e) {
+        } catch (const std::exception &e) {
             LogMessage newMessage;
             newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::ERROR);
-            newMessage.message = std::format("[Error formatting log message]: {}", e.what());
+
+            char errorBuffer[1024];
+            snprintf(errorBuffer, sizeof(errorBuffer), "[Error formatting log message]: %s", e.what());
+            newMessage.message = std::string(errorBuffer);
+
             newMessage.prefix = "";
             m_logs.push_back(newMessage);
         }
@@ -225,10 +232,10 @@ namespace nexo::editor {
         m_scrollToBottom = true;
     }
 
-    void ConsoleWindow::executeCommand(const char *command_line)
+    void ConsoleWindow::executeCommand(const char *commandLine)
     {
-        m_commands.emplace_back(command_line);
-        addLog("{}\n", command_line);
+        m_commands.emplace_back(commandLine);
+        addLog("%s", commandLine);
     }
 
     void ConsoleWindow::calcLogPadding()
