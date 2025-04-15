@@ -28,7 +28,6 @@
 #include "Editor.hpp"
 #include "Logger.hpp"
 #include "Path.hpp"
-#include "tinyfiledialogs.h"
 #include "utils/FileSystem.hpp"
 
 #include <IconsFontAwesome.h>
@@ -202,29 +201,26 @@ namespace nexo::editor {
     	m_logs.clear();
     }
 
-    // Fix the addLog template function
     template<typename... Args>
     void ConsoleWindow::addLog(const char *fmt, Args &&... args)
     {
         try {
             char buffer[1024];
-            // Use vsnprintf for better compatibility
             int result = snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
-            if (result < 0) {
-                throw std::runtime_error("Formatting error");
-            }
+            if (result < 0)
+                return;
 
             LogMessage newMessage;
-            newMessage.verbosity = loguru::Verbosity_1; // Use direct constants instead of enum conversion
+            newMessage.verbosity = loguru::Verbosity_1;
             newMessage.message = std::string(buffer);
             newMessage.prefix = "";
             m_logs.push_back(newMessage);
         } catch (const std::exception &e) {
             LogMessage newMessage;
-            newMessage.verbosity = loguru::Verbosity_ERROR; // Use direct constants
+            newMessage.verbosity = loguru::Verbosity_ERROR;
 
             char errorBuffer[1024];
-            snprintf(errorBuffer, sizeof(errorBuffer), "[Error formatting log message]: %s", e.what());
+            snprintf(errorBuffer, sizeof(errorBuffer), "Error formatting log message: %s", e.what());
             newMessage.message = std::string(errorBuffer);
 
             newMessage.prefix = "";

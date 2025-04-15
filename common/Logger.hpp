@@ -56,6 +56,7 @@ namespace nexo {
             case LogLevel::ERR: return "ERROR";
             case LogLevel::WARN: return "WARN";
             case LogLevel::INFO: return "INFO";
+            case LogLevel::USER: return "USER";
             case LogLevel::DEBUG: return "DEBUG";
             case LogLevel::DEV: return "DEV";
         }
