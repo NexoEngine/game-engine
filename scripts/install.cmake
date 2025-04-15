@@ -54,8 +54,17 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src" # source directory
             PATTERN "*.hpp" # select header files
 )
 
-# Create license file
-# install licenses
+# Component licenses
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/licenses/"
+        DESTINATION "external/licenses/"
+        COMPONENT licenses
+)
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/COPYRIGHT"
+        DESTINATION "."
+        COMPONENT licenses
+)
+
+# Generate license files
 file(GLOB LICENSE_DIRS "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/*")
 set(LICENSE_LIST "" CACHE INTERNAL "")
 foreach(LICENSE_DIR ${LICENSE_DIRS})
@@ -69,13 +78,15 @@ foreach(LICENSE_DIR ${LICENSE_DIRS})
             continue()
         endif()
         install(FILES ${LICENSE_DIR}/copyright DESTINATION "external/licenses" RENAME ${LICENSE_LIB_NAME}
-                COMPONENT licenses EXCLUDE_FROM_ALL)
+                COMPONENT generate-licenses EXCLUDE_FROM_ALL)
         list(APPEND LICENSE_LIST ${LICENSE_LIB_NAME})
     endif()
 endforeach()
 list(LENGTH LICENSE_LIST LICENSE_LIST_LENGTH)
-message(STATUS "Found ${LICENSE_LIST_LENGTH} licenses: ${LICENSE_LIST}")
 
+# Generate copyright file
 install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/copyright.cmake"
-        COMPONENT licenses EXCLUDE_FROM_ALL
+        COMPONENT generate-copyright EXCLUDE_FROM_ALL
 )
+
+
