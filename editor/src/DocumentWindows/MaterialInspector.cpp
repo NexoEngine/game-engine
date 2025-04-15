@@ -16,6 +16,7 @@
 #include "DocumentWindows/InspectorWindow.hpp"
 #include "Exception.hpp"
 #include "components/Render.hpp"
+#include "components/Render3D.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "Components/Widgets.hpp"
@@ -77,11 +78,9 @@ namespace nexo::editor {
 		auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
 		if (!inspectorWindow)
 			return;
-		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector>();
-		if (std::holds_alternative<components::Material*>(materialVariant)) {
-		    auto materialPtr = std::get<components::Material*>(materialVariant);
-			materialModified = Widgets::drawMaterialInspector(materialPtr);
-		}
+		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector, components::Material>();
+		if (materialVariant)
+			materialModified = Widgets::drawMaterialInspector(materialVariant);
 	}
 
 	void MaterialInspector::show()
