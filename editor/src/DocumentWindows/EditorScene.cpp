@@ -16,7 +16,9 @@
 
 #include <Path.hpp>
 
+#include "ADocumentWindow.hpp"
 #include "EntityFactory3D.hpp"
+#include "IconsFontAwesome.h"
 #include "LightFactory.hpp"
 #include "CameraFactory.hpp"
 #include "Nexo.hpp"
@@ -196,10 +198,12 @@ namespace nexo::editor {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto &selector = Selector::get();
+        m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + " " + m_windowName);
+        const std::string &sceneWindowName = m_windowName + "###" + std::string(NEXO_WND_USTRID_DEFAULT_SCENE);
 
-        if (ImGui::Begin(m_windowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
-            firstDockSetup(m_windowName);
+            firstDockSetup(NEXO_WND_USTRID_DEFAULT_SCENE);
         	auto &app = getApp();
             m_viewPosition = ImGui::GetCursorScreenPos();
 
