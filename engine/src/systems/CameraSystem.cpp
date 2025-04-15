@@ -21,6 +21,7 @@
 #include "core/event/KeyCodes.hpp"
 #include "Application.hpp"
 #include "core/event/WindowEvent.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <numbers>
 
@@ -39,9 +40,12 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		//TODO: Throw exception here ?
-		if (!partition)
-			return;
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneRendered));
+
 		const auto cameraSpan = get<components::CameraComponent>();
 		const auto transformComponentArray = get<components::TransformComponent>();
 		const auto entitySpan = m_group->entities();

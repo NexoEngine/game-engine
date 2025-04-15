@@ -14,6 +14,7 @@
 
 #include "AmbientLightSystem.hpp"
 
+#include "Logger.hpp"
 #include "components/Light.hpp"
 #include "ecs/Coordinator.hpp"
 
@@ -32,9 +33,12 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		//TODO: Throw exception here ?
-		if (!partition)
-			return;
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneRendered));
+
 
 		const auto ambientSpan = get<components::AmbientLightComponent>();
 		if (ambientSpan.size())

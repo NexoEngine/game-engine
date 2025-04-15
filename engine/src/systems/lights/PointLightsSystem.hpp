@@ -34,6 +34,8 @@ namespace nexo::system {
 	*
 	* @note The system uses scene partitioning to only process point light entities
 	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
+	*
+    * @throws TooManyPointLightsException if the count of point light entities exceeds MAX_POINT_LIGHTS.
 	*/
 	class PointLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<

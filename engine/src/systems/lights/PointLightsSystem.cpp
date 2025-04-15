@@ -35,9 +35,11 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		//TODO: Throw exception here ?
-		if (!partition)
-			return;
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No point light found in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No point light found in scene {}, skipping", sceneRendered));
 
 		if (partition->count > MAX_POINT_LIGHTS)
 		    THROW_EXCEPTION(core::TooManyPointLightsException, sceneRendered, partition->count);
