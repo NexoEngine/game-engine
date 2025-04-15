@@ -82,18 +82,23 @@ namespace nexo::editor {
         private:
             float m_logPadding = 0.0f;
             char inputBuf[512] = {};
-            std::deque<std::string> items;
             bool scrollToBottom = true;
             std::vector<std::string> commands; // History of executed commands.
+            size_t m_maxLogCapacity = 200;
+            size_t m_maxBufferLogToExportCapacity = 20;
+            std::string m_logFilePath = "";
+            bool m_exportLog = true;
 
             std::set<loguru::Verbosity> selectedVerbosityLevels = {
                 loguru::Verbosity_FATAL,
                 loguru::Verbosity_ERROR,
                 loguru::Verbosity_WARNING,
                 loguru::Verbosity_INFO,
+                loguru::Verbosity_1,
             };
 
             std::vector<LogMessage> m_logs;
+            std::vector<LogMessage> m_bufferLogsToExport;
 
             /**
              * @brief Clears all log entries and display items.
@@ -112,6 +117,7 @@ namespace nexo::editor {
              */
             void addLog(const LogMessage& message);
             void displayLog(loguru::Verbosity verbosity, const std::string &msg) const;
+            void exportLogsBuffered();
             void showVerbositySettingsPopup();
 
             /**
