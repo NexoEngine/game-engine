@@ -14,7 +14,19 @@
 
 #include <imgui.h>
 #include <format>
+#include <iostream>
+#include <fstream>
+#include <chrono>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include <string>
 #include "ConsoleWindow.hpp"
+#include "Editor.hpp"
+#include "Logger.hpp"
+#include "Path.hpp"
+#include "tinyfiledialogs.h"
+#include "utils/FileSystem.hpp"
 
 #include <IconsFontAwesome.h>
 
@@ -38,8 +50,9 @@ namespace nexo::editor {
             case loguru::Verbosity_WARNING: return "[WARNING]";
             case loguru::Verbosity_INFO: return "[INFO]";
             case loguru::Verbosity_INVALID: return "[INVALID]";
-            case loguru::Verbosity_1: return "[DEBUG]";
-            case loguru::Verbosity_2: return "[DEV]";
+            case loguru::Verbosity_1: return "[USER]";
+            case loguru::Verbosity_2: return "[DEBUG]";
+            case loguru::Verbosity_3: return "[DEV]";
             default: return "[UNKNOWN]";
         }
     }
@@ -61,8 +74,9 @@ namespace nexo::editor {
             case LogLevel::ERROR: return loguru::Verbosity_ERROR;
             case LogLevel::WARN: return loguru::Verbosity_WARNING;
             case LogLevel::INFO: return loguru::Verbosity_INFO;
-            case LogLevel::DEBUG: return loguru::Verbosity_1;
-            case LogLevel::DEV: return loguru::Verbosity_2;
+            case LogLevel::USER: return loguru::Verbosity_1;
+            case LogLevel::DEBUG: return loguru::Verbosity_2;
+            case LogLevel::DEV: return loguru::Verbosity_3;
             default: return loguru::Verbosity_INVALID;
         }
         return loguru::Verbosity_INVALID;
@@ -94,13 +108,33 @@ namespace nexo::editor {
                 break; // Yellow
             case loguru::Verbosity_INFO: color = ImVec4(0.0f, 0.5f, 1.0f, 1.0f);
                 break; // Blue
-            case loguru::Verbosity_1: color = ImVec4(0.898f, 0.0f, 1.0f, 1.0f); // Debug
+            case loguru::Verbosity_1: color = ImVec4(0.09f, 0.67f, 0.14f, 1.0f); // User
+                break; // Green
+            case loguru::Verbosity_2: color = ImVec4(0.898f, 0.0f, 1.0f, 1.0f); // Debug
                 break; // Pink
-            case loguru::Verbosity_2: color = ImVec4(0.388f, 0.055f, 0.851f, 1.0f); // Debug
+            case loguru::Verbosity_3: color = ImVec4(0.388f, 0.055f, 0.851f, 1.0f); // Dev
                 break; // Purple
             default: color = ImVec4(1, 1, 1, 1); // White
         }
         return color;
+    }
+
+    static const std::string generateLogFilePath()
+    {
+        auto now = std::chrono::system_clock::now();
+        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+        std::tm localTime;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    localtime_s(&localTime, &now_time);
+#else
+    localtime_r(&now_time, &localTime);
+#endif
+
+        std::ostringstream oss;
+        // Format: YYYY-MM-DD-HHMMSS, e.g., 2025-04-15-123045
+        oss << "../logs/NEXO-" << std::put_time(&localTime, "%Y-%m-%d-%H%M%S") << ".log";
+        return oss.str();
     }
 
 
@@ -126,6 +160,9 @@ namespace nexo::editor {
 		    VLOG_F(loguruLevel, "%s", message.c_str());
 		};
 		Logger::setCallback(engineLogCallback);
+		m_logFilePath = Path::resolvePathRelativeToExe(generateLogFilePath()).string();
+		m_logs.reserve(m_maxLogCapacity);
+		m_bufferLogsToExport.reserve(m_maxBufferLogToExportCapacity);
     };
 
     void ConsoleWindow::setup()
@@ -140,25 +177,41 @@ namespace nexo::editor {
 
     void ConsoleWindow::addLog(const LogMessage &message)
     {
+        if (m_logs.size() >= m_maxLogCapacity) {
+            m_bufferLogsToExport.push_back(message);
+            m_logs.erase(m_logs.begin());
+        }
+
+        if (m_bufferLogsToExport.size() > m_maxBufferLogToExportCapacity) {
+            exportLogsBuffered();
+            m_bufferLogsToExport.clear();
+        }
+
         m_logs.push_back(message);
     }
 
     void ConsoleWindow::clearLog()
     {
+        exportLogsBuffered();
+        if (m_exportLog) {
+            std::ofstream logFile(m_logFilePath, std::ios::app);
+            for (const auto& log : m_logs) {
+                logFile << verbosityToString(log.verbosity) << " "
+                        << log.message << std::endl;
+            }
+        }
+
     	m_logs.clear();
-        items.clear();
     }
 
     template<typename... Args>
     void ConsoleWindow::addLog(const char *fmt, Args &&... args)
     {
-        try
-        {
+        try {
             std::string formattedMessage = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
-            items.emplace_back(formattedMessage);
-        } catch (const std::format_error &e)
-        {
-            items.emplace_back(std::format("[Error formatting log message]: {}", e.what()));
+            m_logs.emplace_back(LogMessage{nexoLevelToLoguruLevel(LogLevel::USER), formattedMessage});
+        } catch (const std::format_error &e) {
+            m_logs.emplace_back(LogMessage{nexoLevelToLoguruLevel(LogLevel::ERROR), std::format("[Error formatting log message]: {}", e.what())});
         }
 
         scrollToBottom = true;
@@ -167,7 +220,7 @@ namespace nexo::editor {
     void ConsoleWindow::executeCommand(const char *command_line)
     {
         commands.emplace_back(command_line);
-        addLog("# {}\n", command_line);
+        addLog("{}\n", command_line);
     }
 
     void ConsoleWindow::calcLogPadding()
@@ -206,6 +259,17 @@ namespace nexo::editor {
         ImGui::PopTextWrapPos();
     }
 
+    void ConsoleWindow::exportLogsBuffered()
+    {
+        if (!m_exportLog)
+            return;
+        std::ofstream logFile(m_logFilePath, std::ios::app);
+        for (const auto& log : m_bufferLogsToExport) {
+            logFile << verbosityToString(log.verbosity) << " "
+                    << log.message << std::endl;
+        }
+    }
+
     void ConsoleWindow::showVerbositySettingsPopup()
     {
         ImGui::Text("Select Verbosity Levels");
@@ -219,8 +283,9 @@ namespace nexo::editor {
             {loguru::Verbosity_ERROR, "ERROR"},
             {loguru::Verbosity_WARNING, "WARNING"},
             {loguru::Verbosity_INFO, "INFO"},
-            {loguru::Verbosity_1, "DEBUG"},
-            {loguru::Verbosity_2, "DEV"},
+            {loguru::Verbosity_1, "USER"},
+            {loguru::Verbosity_2, "DEBUG"},
+            {loguru::Verbosity_3, "DEV"}
         };
 
         for (const auto &[level, name]: levels)
@@ -239,6 +304,11 @@ namespace nexo::editor {
                 }
             }
         }
+
+        ImGui::Separator();
+        ImGui::Checkbox("File logging", &m_exportLog);
+        if (ImGui::Button("Open log folder"))
+            utils::openFolder(Path::resolvePathRelativeToExe("../logs"));
 
         ImGui::EndPopup();
     }
