@@ -4,10 +4,10 @@
 
 👋​ Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality! 🤩✨​🚀​
 
-[![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml) 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
+[![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
 
 ## Table of Contents
@@ -28,8 +28,11 @@
   - [The Team](#the-team)
   - [Join the NEXO community](#join-the-nexo-community)
   - [Acknowledgements](#acknowledgements)
+  - [License](#license)
+    - [How to extract the third-party licenses file](#how-to-extract-the-third-party-licenses-file)
+    - [How to generate the COPYRIGHT file](#how-to-generate-the-copyright-file)
 
-> [!NOTE]  
+> [!NOTE]
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
 
 ## Project Overview
@@ -185,6 +188,34 @@ Visit our [blog](https://www.nexo-engine.com/blog) to find out more about how NE
 
 This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.
 
-We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey 🚀​
+We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey.
 
-Thank you for you support 🫶​
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file,
+you can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+
+### How to extract the third-party licenses file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-licenses
+```
+
+This will extract all licenses per third-party library in the `/path/to/install/external/licenses` directory.
+
+> [!NOTE]
+> These licenses are automatically extracted from vcpkg, there might be missing third-party libraries.
+
+### How to generate the COPYRIGHT file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-copyright
+```
+
+This will generate the COPYRIGHT file in the `/path/to/install` directory.
+
+> [!WARNING]
+> By default the COPYRIGHT file is generated with some `TODO:`, the generator cannot always determine exact licenses for some files. Please check each entry for errors.
