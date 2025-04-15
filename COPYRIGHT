@@ -24,13 +24,25 @@ Comment: NEXO Engine
 Copyright: 2025 NEXO Engine contributors
 License: MIT
 
+Files:
+ resources/nexo.ico
+ resources/nexo.png
+ resources/nexo.rc
+ resources/nexo_header.bmp
+Comment: NEXO Engine Logo
+Copyright: 2025 NEXO Engine contributors
+License: CC-BY-SA-4.0
+
 Files: *
 Copyright: 2006-2021, assimp team
 License: BSD-3-clause
 Comment:
  assimp full license in /external/licenses/assimp
 
-Files: *
+Files:
+ engine/*
+ editor/*
+ common/*
 Copyright: Boost Software License - Version 1.0 - August 17th, 2003
 License: BSL-1.0
 Comment:
@@ -48,38 +60,46 @@ License: Apache-2.0
 Comment:
  egl-registry full license in /external/licenses/egl-registry
 
-Files: *
+Files:
+ engine/*
 Copyright: 2013-2021 David Herberth
 License: MIT
 Comment:
  glad full license in /external/licenses/glad
 
-Files: *
+Files:
+ engine/*
 Copyright: 2002-2006 Marcus Geelnard
            2006-2019 Camilla Löwy
 License: zlib/libpng
 Comment:
  glfw3 full license in /external/licenses/glfw3
 
-Files: *
+Files:
+ engine/*
+ editor/*
+ common/*
 Copyright: 2005 - G-Truc Creation
 License: MIT
 Comment:
  glm full license in /external/licenses/glm
 
-Files: *
+Files:
+ tests/*
 Copyright: 2008, Google Inc.
 License: BSD-3-clause
 Comment:
  gtest full license in /external/licenses/gtest
 
-Files: *
+Files:
+ editor/*
 Copyright: 2014-2025 Omar Cornut
 License: MIT
 Comment:
  imgui full license in /external/licenses/imgui
 
-Files: *
+Files:
+ editor/*
 Copyright: 2016 Cedric Guillemet
 License: MIT
 Comment:
@@ -91,7 +111,8 @@ License: BSD-3-clause
 Comment:
  jhasse-poly2tri full license in /external/licenses/jhasse-poly2tri
 
-Files: *
+Files:
+ engine/*
 Copyright: 2021 Jorrit Rouwe
 License: MIT
 Comment:
@@ -103,7 +124,10 @@ License: public-domain
 Comment:
  kubazip full license in /external/licenses/kubazip
 
-Files: *
+Files:
+ engine/*
+ editor/*
+ common/*
 Copyright: Emil Ernerfeldt
 License: public-domain
 Comment:
@@ -115,7 +139,10 @@ License: zlib
 Comment:
  minizip full license in /external/licenses/minizip
 
-Files: *
+Files:
+ engine/*
+ editor/*
+ common/*
 Copyright: 2013-2022 Niels Lohmann
 License: MIT
 Comment:
@@ -145,13 +172,15 @@ License: MIT
 Comment:
  rapidjson full license in /external/licenses/rapidjson
 
-Files: *
+Files:
+ engine/*
 Copyright: 2017 Sean Barrett
 License: MIT or public-domain
 Comment:
  stb full license in /external/licenses/stb
 
-Files: *
+Files:
+ editor/*
 Copyright: Pascal Costanza
 License: zlib/libpng
 Comment:
@@ -163,19 +192,19 @@ License: BSL-1.0
 Comment:
  utfcpp full license in /external/licenses/utfcpp
 
-Files: *
+Files: vcpkg
 Copyright: Microsoft Corporation
 License: MIT
 Comment:
  vcpkg-cmake full license in /external/licenses/vcpkg-cmake
 
-Files: *
+Files: vcpkg
 Copyright: Microsoft Corporation
 License: MIT
 Comment:
  vcpkg-cmake-config full license in /external/licenses/vcpkg-cmake-config
 
-Files: *
+Files: vcpkg
 Copyright: Microsoft Corporation
 License: MIT
 Comment:
