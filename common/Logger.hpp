@@ -20,6 +20,8 @@
 #include <format>
 #include <string_view>
 #include <source_location>
+#include <unordered_set>
+#include <mutex>
 
 namespace nexo {
 
@@ -75,6 +77,61 @@ namespace nexo {
             std::cout << "[" << toString(level) << "] " << message << std::endl;
     }
 
+    /**
+     * @brief Registry to track which log messages have been emitted
+     *
+     * This class is used to ensure certain messages are only logged once
+     * until they are explicitly reset.
+     */
+    class OnceRegistry {
+    public:
+        /**
+         * @brief Get the singleton instance of the registry
+         *
+         * @return OnceRegistry& Reference to the registry
+         */
+        static OnceRegistry& instance() {
+            static OnceRegistry registry;
+            return registry;
+        }
+
+        /**
+         * @brief Check if a message has been logged and mark it as logged
+         *
+         * @param key The unique identifier for the message
+         * @return true If this is the first time seeing this message
+         * @return false If this message has been logged before
+         */
+        bool shouldLog(const std::string& key) {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_loggedKeys.insert(key).second;
+        }
+
+        /**
+         * @brief Reset a specific message so it can be logged again
+         *
+         * @param key The unique identifier for the message to reset
+         */
+        void reset(const std::string& key) {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_loggedKeys.erase(key);
+        }
+
+        /**
+         * @brief Reset all messages so they can be logged again
+         */
+        void resetAll() {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_loggedKeys.clear();
+        }
+
+    private:
+        OnceRegistry() = default;
+
+        std::unordered_set<std::string> m_loggedKeys;
+        std::mutex m_mutex;
+    };
+
     class Logger {
         public:
             static void setCallback(std::function<void(LogLevel, const std::string &)> callback)
@@ -102,6 +159,65 @@ namespace nexo {
                     logString(level, ss.str());
                 }
             }
+
+            /**
+             * @brief Generate a key incorporating format string and parameter values
+             *
+             * @tparam Args Variadic template for format arguments
+             * @param fmt Format string
+             * @param args Format arguments
+             * @return std::string Key incorporating the parameters
+             */
+            template<typename... Args>
+            static std::string generateKey(const std::string_view fmt, const std::string& location, Args&&... args)
+            {
+                std::stringstream ss;
+                ss << fmt << "@" << location << "|";
+
+                // Add parameter values to the key
+                ((ss << toFormatFriendly(args) << "|"), ...);
+
+                return ss.str();
+            }
+
+            /**
+             * @brief Log a message only once until reset
+             *
+             * This method logs a message only the first time it is called with a given key.
+             * The key incorporates both the format string and the parameter values.
+             *
+             * @tparam Args Variadic template for format arguments
+             * @param level Log level
+             * @param loc Source location of the log call
+             * @param fmt Format string
+             * @param key Key including format string and parameter values
+             * @param args Format arguments
+             */
+            template<typename... Args>
+            static void logOnce(const LogLevel level, const std::source_location loc,
+                                const std::string_view fmt, const std::string& key, Args &&... args)
+            {
+                if (OnceRegistry::instance().shouldLog(key)) {
+                    logWithFormat(level, loc, fmt, std::forward<Args>(args)...);
+                }
+            }
+
+            /**
+             * @brief Reset a specific log message so it can be logged again with logOnce
+             *
+             * @param key The unique identifier for the log message to reset
+             */
+            static void resetOnce(const std::string& key) {
+                OnceRegistry::instance().reset(key);
+            }
+
+            /**
+             * @brief Reset all log messages so they can be logged again with logOnce
+             */
+            static void resetAllOnce() {
+                OnceRegistry::instance().resetAll();
+            }
+
         private:
             static void logString(const LogLevel level, const std::string &message)
             {
@@ -120,6 +236,26 @@ namespace nexo {
 
 #define LOG_EXCEPTION(exception) \
     LOG(NEXO_ERROR, "{}:{} - Exception: {}", exception.getFile(), exception.getLine(), exception.getMessage())
+
+/**
+ * @brief Generate a unique key for a log message incorporating format and parameters
+ *
+ * This creates a key that includes both the format string and the parameter values,
+ * allowing specific message instances to be reset later.
+ */
+#define NEXO_LOG_ONCE_KEY(fmt, ...) \
+    nexo::Logger::generateKey(fmt, std::string(__FILE__) + ":" + std::to_string(__LINE__), ##__VA_ARGS__)
+
+/**
+ * @brief Log a message only once until it's reset
+ *
+ * This ensures the message is only logged the first time this line is executed
+ * with these specific parameters. Subsequent calls with the same parameters
+ * will be ignored until the message is reset.
+ */
+#define LOG_ONCE(level, fmt, ...) \
+    nexo::Logger::logOnce(level, std::source_location::current(), fmt, \
+        NEXO_LOG_ONCE_KEY(fmt, ##__VA_ARGS__), ##__VA_ARGS__)
 
 #define NEXO_FATAL nexo::LogLevel::FATAL
 #define NEXO_ERROR nexo::LogLevel::ERROR
