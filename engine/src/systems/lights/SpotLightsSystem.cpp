@@ -16,6 +16,7 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
@@ -36,6 +37,9 @@ namespace nexo::system {
 		//TODO: Throw exception here ?
 		if (!partition)
 			return;
+
+		if (partition->count > MAX_SPOT_LIGHTS)
+		    THROW_EXCEPTION(core::TooManySpotLightsException, sceneRendered, partition->count);
 
 		const auto spotLightSpan = get<components::SpotLightComponent>();
 
