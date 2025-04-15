@@ -40,11 +40,13 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+		auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneName));
 
 		const auto cameraSpan = get<components::CameraComponent>();
 		const auto transformComponentArray = get<components::TransformComponent>();
