@@ -34,6 +34,8 @@ namespace nexo::system {
 	*
 	* @note The system uses scene partitioning to only process directional light entities
 	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
+	*
+    * @throws TooManyDirectionalLightsException if the count of directional light entities exceeds MAX_DIRECTIONAL_LIGHTS.
 	*/
 	class DirectionalLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<

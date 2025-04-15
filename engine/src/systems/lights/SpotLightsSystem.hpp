@@ -33,6 +33,8 @@ namespace nexo::system {
 	*
 	* @note The system uses scene partitioning to only process spot light entities
 	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
+	*
+    * @throws TooManySpotLightsException if the count of spot light entities exceeds MAX_SPOT_LIGHTS.
 	*/
 	class SpotLightsSystem final : public ecs::GroupSystem<
 		ecs::Owned<

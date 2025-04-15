@@ -21,6 +21,7 @@
 #include "components/Render.hpp"
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -98,9 +99,11 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		//TODO: Throw exception here ?
-		if (!partition)
-			return;
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneRendered));
 
 		const auto transformSpan = get<components::TransformComponent>();
 		const auto renderSpan = get<components::RenderComponent>();
