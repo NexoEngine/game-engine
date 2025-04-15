@@ -75,7 +75,7 @@ namespace nexo::editor {
             void show() override;
             void update() override;
 
-            void executeCommand(const char* command_line);
+            void executeCommand(const char* commandLine);
 
         private:
             char m_inputBuf[512] = {};
