@@ -44,7 +44,8 @@ namespace nexo {
         WARN,
         INFO,
         DEBUG,
-        DEV
+        DEV,
+        USER
     };
 
     inline std::string toString(const LogLevel level)
