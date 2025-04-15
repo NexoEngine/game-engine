@@ -190,9 +190,12 @@ We thank Epitech for the opportunity to work on such an engaging project and for
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file,
-you can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.<br/>
+For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file.<br/>
+You can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+
+> [!TIP]
+> For any license inquiry, please contact us at [nexo.engine@gmail.com](mailto:nexo.engine@gmail.com?subject=[NEXO%20Engine]%20License)
 
 ### How to extract the third-party licenses file
 
