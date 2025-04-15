@@ -21,6 +21,9 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
 #include "ConsoleWindow.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
@@ -125,15 +128,18 @@ namespace nexo::editor {
         std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
         std::tm localTime;
-#if defined(_MSC_VER) || defined(__MINGW32__)
-    localtime_s(&localTime, &now_time);
-#else
-    localtime_r(&now_time, &localTime);
-#endif
+        // Use simpler #ifdef to avoid complex errors
+    #ifdef _WIN32
+        localtime_s(&localTime, &now_time);
+    #else
+        localtime_r(&now_time, &localTime);
+    #endif
+
+        char timeBuffer[64];
+        std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d-%H%M%S", &localTime);
 
         std::ostringstream oss;
-        // Format: YYYY-MM-DD-HHMMSS, e.g., 2025-04-15-123045
-        oss << "../logs/NEXO-" << std::put_time(&localTime, "%Y-%m-%d-%H%M%S") << ".log";
+        oss << "../logs/NEXO-" << timeBuffer << ".log";
         return oss.str();
     }
 
@@ -204,22 +210,26 @@ namespace nexo::editor {
     	m_logs.clear();
     }
 
+    // Fix the addLog template function
     template<typename... Args>
     void ConsoleWindow::addLog(const char *fmt, Args &&... args)
     {
         try {
-            // Create a buffer for the formatted message
             char buffer[1024];
-            snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+            // Use vsnprintf for better compatibility
+            int result = snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+            if (result < 0) {
+                throw std::runtime_error("Formatting error");
+            }
 
             LogMessage newMessage;
-            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::USER);
+            newMessage.verbosity = loguru::Verbosity_1; // Use direct constants instead of enum conversion
             newMessage.message = std::string(buffer);
             newMessage.prefix = "";
             m_logs.push_back(newMessage);
         } catch (const std::exception &e) {
             LogMessage newMessage;
-            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::ERROR);
+            newMessage.verbosity = loguru::Verbosity_ERROR; // Use direct constants
 
             char errorBuffer[1024];
             snprintf(errorBuffer, sizeof(errorBuffer), "[Error formatting log message]: %s", e.what());
