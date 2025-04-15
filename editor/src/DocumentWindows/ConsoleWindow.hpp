@@ -75,21 +75,19 @@ namespace nexo::editor {
             void show() override;
             void update() override;
 
-            template <typename... Args>
-            void addLog(const char* fmt, Args&&... args);
             void executeCommand(const char* command_line);
 
         private:
-            float m_logPadding = 0.0f;
-            char inputBuf[512] = {};
-            bool scrollToBottom = true;
-            std::vector<std::string> commands; // History of executed commands.
-            size_t m_maxLogCapacity = 200;
-            size_t m_maxBufferLogToExportCapacity = 20;
+            char m_inputBuf[512] = {};
+            std::vector<std::string> m_commands; // History of executed commands.
+
             std::string m_logFilePath = "";
             bool m_exportLog = true;
 
-            std::set<loguru::Verbosity> selectedVerbosityLevels = {
+            bool m_scrollToBottom = true;
+
+
+            std::set<loguru::Verbosity> m_selectedVerbosityLevels = {
                 loguru::Verbosity_FATAL,
                 loguru::Verbosity_ERROR,
                 loguru::Verbosity_WARNING,
@@ -97,8 +95,12 @@ namespace nexo::editor {
                 loguru::Verbosity_1,
             };
 
+            float m_logPadding = 0.0f;
             std::vector<LogMessage> m_logs;
+            size_t m_maxLogCapacity = 200;
             std::vector<LogMessage> m_bufferLogsToExport;
+            size_t m_maxBufferLogToExportCapacity = 20;
+
 
             /**
              * @brief Clears all log entries and display items.
@@ -116,6 +118,9 @@ namespace nexo::editor {
              * @param message The log message to append.
              */
             void addLog(const LogMessage& message);
+
+            template <typename... Args>
+            void addLog(const char* fmt, Args&&... args);
             void displayLog(loguru::Verbosity verbosity, const std::string &msg) const;
             void exportLogsBuffered();
             void showVerbositySettingsPopup();
