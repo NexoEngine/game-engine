@@ -112,15 +112,14 @@ namespace nexo::editor {
 			}
 
 			/**
-			 * @brief Retrieves the material data associated with the specified sub-inspector type.
+			 * @brief Retrieves the material data associated with the specified sub-inspector window type.
 			 *
-			 * This templated function searches for data in the sub-inspector data map using the type index of T.
-			 * If an entry for T exists, it returns the associated pointer to a material; otherwise, it returns a variant
-			 * containing std::monostate to indicate that no data is set.
+			 * This templated function searches for data in the sub-inspector data map using the type index of WindowType.
+			 * If an entry for WindowType exists, it returns the associated pointer to a Data type; otherwise, it returns nullptr
 			 *
-			 * @tparam T The sub-inspector type used to look up the associated data.
-			 * @return std::variant<std::monostate, components::Material*> A variant holding a pointer to components::Material if set,
-			 *         or std::monostate if no data is available.
+			 * @tparam WindowType The sub-inspector type used to look up the associated data.
+			 * @tparam Data The type of data to retrieve.
+			 * @return A pointer to the Data type if found, or nullptr if not found.
 			 */
 			template<typename WindowType, typename Data>
 			Data *getSubInspectorData() const
