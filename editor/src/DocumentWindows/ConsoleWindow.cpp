@@ -209,15 +209,17 @@ namespace nexo::editor {
     {
         try {
             std::string formattedMessage = std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
-            m_logs.push_back({
-                .verbosity = nexoLevelToLoguruLevel(LogLevel::USER),
-                .message = formattedMessage,
-                .prefix = ""});
+            LogMessage newMessage;
+            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::USER);
+            newMessage.message = formattedMessage;
+            newMessage.prefix = "";
+            m_logs.push_back(newMessage);
         } catch (const std::format_error &e) {
-            m_logs.push_back({
-                .verbosity = nexoLevelToLoguruLevel(LogLevel::ERROR),
-                .message = std::format("[Error formatting log message]: {}", e.what()),
-                .prefix = ""});
+            LogMessage newMessage;
+            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::ERROR);
+            newMessage.message = std::format("[Error formatting log message]: {}", e.what());
+            newMessage.prefix = "";
+            m_logs.push_back(newMessage);
         }
 
         m_scrollToBottom = true;
