@@ -64,11 +64,18 @@ namespace nexo::ecs {
 
         protected:
             /**
-            * @brief Cache of singleton components for faster access
+            * @brief Cache of strongly-typed singleton components for faster access
             *
-            * Maps component type IDs to their singleton component instances
+            * Stores components with their specific types to avoid dynamic casting
             */
-            std::unordered_map<ComponentType, std::shared_ptr<ISingletonComponent>> m_singletonComponents;
+            template<typename T>
+            using SingletonComponentPtr = std::shared_ptr<SingletonComponent<T>>;
+
+            // Type-specific cache for fast access without dynamic_cast
+            template<typename T>
+            struct TypedComponentCache {
+                static inline SingletonComponentPtr<T> instance = nullptr;
+            };
 
             /**
             * @brief Initializes singleton components for this system
@@ -89,7 +96,10 @@ namespace nexo::ecs {
             {
                 auto* derived = static_cast<Derived*>(this);
                 std::shared_ptr<ISingletonComponent> instance = derived->coord->template getRawSingletonComponent<T>();
-                m_singletonComponents[getUniqueComponentTypeID<T>()] = instance;
+
+                // Store in the type-specific cache
+                auto typedInstance = std::static_pointer_cast<SingletonComponent<T>>(instance);
+                TypedComponentCache<T>::instance = typedInstance;
             }
 
         public:
@@ -117,24 +127,21 @@ namespace nexo::ecs {
             template<typename T>
             std::conditional_t<hasReadSingletonAccess<T>(), const T&, T&> getSingleton()
             {
-                const ComponentType typeIndex = getUniqueComponentTypeID<T>();
-
-                if (!m_singletonComponents.contains(typeIndex)) {
+                if (!TypedComponentCache<T>::instance) {
                     // Late binding in case the singleton was registered after system creation
                     cacheSingletonComponent<T>();
                 }
 
-                const auto& singletonComponentPtr = m_singletonComponents[typeIndex];
-                auto* componentWrapper = dynamic_cast<SingletonComponent<T>*>(singletonComponentPtr.get());
+                auto& typedComponent = TypedComponentCache<T>::instance;
 
-                if (!componentWrapper)
+                if (!typedComponent)
                     THROW_EXCEPTION(SingletonComponentNotRegistered);
 
                 // Return the reference with appropriate constness
                 if constexpr (hasReadSingletonAccess<T>())
-                    return const_cast<const T&>(componentWrapper->getInstance());
+                    return const_cast<const T&>(typedComponent->getInstance());
                 else
-                    return componentWrapper->getInstance();
+                    return typedComponent->getInstance();
             }
     };
 
