@@ -40,7 +40,7 @@ namespace nexo {
 
     enum class LogLevel {
         FATAL,
-        ERROR,
+        ERR,
         WARN,
         INFO,
         DEBUG,
@@ -53,9 +53,10 @@ namespace nexo {
         switch (level)
         {
             case LogLevel::FATAL: return "FATAL";
-            case LogLevel::ERROR: return "ERROR";
+            case LogLevel::ERR: return "ERROR";
             case LogLevel::WARN: return "WARN";
             case LogLevel::INFO: return "INFO";
+            case LogLevel::USER: return "USER";
             case LogLevel::DEBUG: return "DEBUG";
             case LogLevel::DEV: return "DEV";
         }
@@ -72,7 +73,7 @@ namespace nexo {
 
     inline void defaultCallback(const LogLevel level, const std::string &message)
     {
-        if (level == LogLevel::FATAL || level == LogLevel::ERROR)
+        if (level == LogLevel::FATAL || level == LogLevel::ERR)
             std::cerr << "[" << toString(level) << "] " << message << std::endl;
         else
             std::cout << "[" << toString(level) << "] " << message << std::endl;
@@ -259,7 +260,7 @@ namespace nexo {
         NEXO_LOG_ONCE_KEY(fmt, ##__VA_ARGS__), ##__VA_ARGS__)
 
 #define NEXO_FATAL nexo::LogLevel::FATAL
-#define NEXO_ERROR nexo::LogLevel::ERROR
+#define NEXO_ERROR nexo::LogLevel::ERR
 #define NEXO_WARN nexo::LogLevel::WARN
 #define NEXO_INFO nexo::LogLevel::INFO
 #define NEXO_DEBUG nexo::LogLevel::DEBUG

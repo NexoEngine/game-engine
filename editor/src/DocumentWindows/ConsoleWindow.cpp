@@ -21,11 +21,13 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
 #include "ConsoleWindow.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
 #include "Path.hpp"
-#include "tinyfiledialogs.h"
 #include "utils/FileSystem.hpp"
 
 #include <IconsFontAwesome.h>
@@ -71,7 +73,7 @@ namespace nexo::editor {
         switch (level)
         {
             case LogLevel::FATAL: return loguru::Verbosity_FATAL;
-            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case LogLevel::ERR: return loguru::Verbosity_ERROR;
             case LogLevel::WARN: return loguru::Verbosity_WARNING;
             case LogLevel::INFO: return loguru::Verbosity_INFO;
             case LogLevel::USER: return loguru::Verbosity_1;
@@ -119,22 +121,17 @@ namespace nexo::editor {
         return color;
     }
 
-    static const std::string generateLogFilePath()
+    static std::string generateLogFilePath()
     {
-        auto now = std::chrono::system_clock::now();
-        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        auto now = std::time(nullptr);
+        auto tm = *std::localtime(&now);
 
-        std::tm localTime;
-#if defined(_MSC_VER) || defined(__MINGW32__)
-    localtime_s(&localTime, &now_time);
-#else
-    localtime_r(&now_time, &localTime);
-#endif
+        std::ostringstream ss;
+        ss << "../logs/NEXO-";
+        ss << std::put_time(&tm, "%Y-%m-%d-%H%M%S");
+        ss << ".log";
 
-        std::ostringstream oss;
-        // Format: YYYY-MM-DD-HHMMSS, e.g., 2025-04-15-123045
-        oss << "../logs/NEXO-" << std::put_time(&localTime, "%Y-%m-%d-%H%M%S") << ".log";
-        return oss.str();
+        return ss.str();
     }
 
 
@@ -208,21 +205,22 @@ namespace nexo::editor {
     void ConsoleWindow::addLog(const char *fmt, Args &&... args)
     {
         try {
-            // Create a buffer for the formatted message
             char buffer[1024];
-            snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+            int result = snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+            if (result < 0)
+                return;
 
             LogMessage newMessage;
-            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::USER);
+            newMessage.verbosity = loguru::Verbosity_1;
             newMessage.message = std::string(buffer);
             newMessage.prefix = "";
             m_logs.push_back(newMessage);
         } catch (const std::exception &e) {
             LogMessage newMessage;
-            newMessage.verbosity = nexoLevelToLoguruLevel(LogLevel::ERROR);
+            newMessage.verbosity = loguru::Verbosity_ERROR;
 
             char errorBuffer[1024];
-            snprintf(errorBuffer, sizeof(errorBuffer), "[Error formatting log message]: %s", e.what());
+            snprintf(errorBuffer, sizeof(errorBuffer), "Error formatting log message: %s", e.what());
             newMessage.message = std::string(errorBuffer);
 
             newMessage.prefix = "";
