@@ -122,25 +122,29 @@ namespace nexo::editor {
         return color;
     }
 
-    static const std::string generateLogFilePath()
+    static std::string generateLogFilePath()
     {
-        auto now = std::chrono::system_clock::now();
-        std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        // Get current time
+        time_t rawtime;
+        time(&rawtime);
 
-        std::tm localTime;
-        // Use simpler #ifdef to avoid complex errors
-    #ifdef _WIN32
-        localtime_s(&localTime, &now_time);
-    #else
-        localtime_r(&now_time, &localTime);
-    #endif
+        // Format without relying on C++20 features
+        char buffer[64];
 
-        char timeBuffer[64];
-        std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d-%H%M%S", &localTime);
+        #if defined(_MSC_VER)
+        struct tm timeinfo;
+        localtime_s(&timeinfo, &rawtime);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H%M%S", &timeinfo);
+        #else
+        struct tm* timeinfo;
+        timeinfo = localtime(&rawtime);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H%M%S", timeinfo);
+        #endif
 
-        std::ostringstream oss;
-        oss << "../logs/NEXO-" << timeBuffer << ".log";
-        return oss.str();
+        std::string result = "../logs/NEXO-";
+        result += buffer;
+        result += ".log";
+        return result;
     }
 
 
