@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <span>
+#include <algorithm>
 
 namespace nexo::ecs {
     /**
@@ -458,9 +459,9 @@ namespace nexo::ecs {
          */
         void shrinkIfNeeded()
         {
-            if (m_size < m_componentArray.capacity() / 2 && m_componentArray.capacity() > capacity) {
+            if (m_size < m_componentArray.capacity() / 4 && m_componentArray.capacity() > capacity * 2) {
                 // Only shrink if vectors are significantly oversized to avoid frequent reallocations
-                size_t newCapacity = m_size * 2;
+                size_t newCapacity = std::max(m_size * 2, static_cast<size_t>(capacity));
                 if (newCapacity < capacity)
                     newCapacity = capacity;
 
