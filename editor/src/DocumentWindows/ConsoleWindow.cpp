@@ -74,7 +74,7 @@ namespace nexo::editor {
         switch (level)
         {
             case LogLevel::FATAL: return loguru::Verbosity_FATAL;
-            case LogLevel::ERROR: return loguru::Verbosity_ERROR;
+            case LogLevel::ERR: return loguru::Verbosity_ERROR;
             case LogLevel::WARN: return loguru::Verbosity_WARNING;
             case LogLevel::INFO: return loguru::Verbosity_INFO;
             case LogLevel::USER: return loguru::Verbosity_1;
@@ -124,7 +124,6 @@ namespace nexo::editor {
 
     static std::string generateLogFilePath()
     {
-        // Use a completely platform-agnostic approach
         auto now = std::time(nullptr);
         auto tm = *std::localtime(&now);
 
