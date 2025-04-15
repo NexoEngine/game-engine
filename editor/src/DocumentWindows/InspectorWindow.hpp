@@ -122,17 +122,25 @@ namespace nexo::editor {
 			 * @return std::variant<std::monostate, components::Material*> A variant holding a pointer to components::Material if set,
 			 *         or std::monostate if no data is available.
 			 */
-			template<typename T>
-			std::variant<std::monostate, components::Material*> getSubInspectorData() const
+			template<typename WindowType, typename Data>
+			Data *getSubInspectorData() const
 			{
-			    auto it = m_subInspectorData.find(std::type_index(typeid(T)));
-			    return (it != m_subInspectorData.end()) ? it->second : std::variant<std::monostate, components::Material*>{std::monostate{}};
+			    auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
+				if (it != m_subInspectorData.end()) {
+                    try {
+                        return std::any_cast<Data*>(it->second);
+                    }
+                    catch (const std::bad_any_cast& e) {
+                        return nullptr;
+                    }
+				}
+				return nullptr;
 			}
 	    private:
 			std::unordered_map<std::type_index, std::shared_ptr<IEntityProperty>> m_entityProperties;
 
 			std::unordered_map<std::type_index, bool> m_subInspectorVisibility;
-   			std::unordered_map<std::type_index, std::variant<std::monostate, components::Material *>> m_subInspectorData;
+   			std::unordered_map<std::type_index, std::any> m_subInspectorData;
 
 			/**
 			* @brief Displays the scene's properties in the inspector UI.
