@@ -233,8 +233,8 @@ namespace nexo::system {
 				continue;
 			}
 
-			auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(entity);
-			const auto &transformTargetComponent = coord->getComponent<components::TransformComponent>(targetComponent.targetEntity);
+			auto &transformCameraComponent = getComponent<components::TransformComponent>(entity);
+			const auto &transformTargetComponent = getComponent<components::TransformComponent>(targetComponent.targetEntity);
 
 			float deltaX = targetComponent.lastMousePosition.x - currentMousePosition.x;
 			float deltaY = targetComponent.lastMousePosition.y - currentMousePosition.y;
