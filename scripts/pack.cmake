@@ -72,6 +72,13 @@ cpack_add_component(headers
                     DISABLED
                     GROUP optional
 )
+
+cpack_add_component(licenses
+                    DISPLAY_NAME "Licenses"
+                    DESCRIPTION "The licenses of the NEXO Engine. Will be installed in the licenses directory."
+                    REQUIRED
+)
+
 cpack_add_component_group(optional
                           DISPLAY_NAME "Optional Components"
                           DESCRIPTION "Optional components of the NEXO Engine."
