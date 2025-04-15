@@ -13,9 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PointLightsSystem.hpp"
+#include "Exception.hpp"
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
@@ -36,6 +38,9 @@ namespace nexo::system {
 		//TODO: Throw exception here ?
 		if (!partition)
 			return;
+
+		if (partition->count > MAX_POINT_LIGHTS)
+		    THROW_EXCEPTION(core::TooManyPointLightsException, sceneRendered, partition->count);
 
 		const auto pointLightSpan = get<components::PointLightComponent>();
 
