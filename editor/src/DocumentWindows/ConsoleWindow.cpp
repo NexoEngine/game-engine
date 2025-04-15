@@ -124,25 +124,16 @@ namespace nexo::editor {
 
     static std::string generateLogFilePath()
     {
-        // Completely avoid preprocessor branching for struct definitions
-        char buffer[64];
+        // Use a completely platform-agnostic approach
+        auto now = std::time(nullptr);
+        auto tm = *std::localtime(&now);
 
-        // Get current time as string - using only basic C functions
-        const time_t currentTime = time(nullptr);
+        std::ostringstream ss;
+        ss << "../logs/NEXO-";
+        ss << std::put_time(&tm, "%Y-%m-%d-%H%M%S");
+        ss << ".log";
 
-    #ifdef _WIN32
-        // Windows version - without struct declaration inside preprocessor block
-        struct tm timeinfo;
-        localtime_s(&timeinfo, &currentTime);
-        strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H%M%S", &timeinfo);
-    #else
-        // Unix version - without struct declaration inside preprocessor block
-        struct tm* timeinfo = localtime(&currentTime);
-        strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H%M%S", timeinfo);
-    #endif
-
-        // Simple string concatenation
-        return std::string("../logs/NEXO-") + buffer + ".log";
+        return ss.str();
     }
 
 
