@@ -22,6 +22,7 @@
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/exceptions/Exceptions.hpp"
+#include "Application.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -99,11 +100,13 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+		auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
 		const auto transformSpan = get<components::TransformComponent>();
 		const auto renderSpan = get<components::RenderComponent>();
