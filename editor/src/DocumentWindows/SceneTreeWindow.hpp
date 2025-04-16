@@ -14,6 +14,7 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "EditorScene.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
 #include "core/scene/SceneManager.hpp"
@@ -290,5 +291,7 @@ namespace nexo::editor {
              * The popup is closed either upon successful scene creation or when the "Cancel" button is clicked.
              */
             void sceneCreationMenu();
+            bool handleSceneCreation(const std::string &newSceneName);
+            bool setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName);
     };
 }
