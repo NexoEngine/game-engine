@@ -96,7 +96,7 @@ namespace nexo::editor {
             if (m_firstOpened)
             	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            if (ImGui::Begin("Material Inspector" "###" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
+            if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
             {
             	firstDockSetup(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
                 renderMaterialInspector(selectedEntity);
