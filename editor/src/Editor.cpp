@@ -247,8 +247,7 @@ namespace nexo::editor {
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
-        if (!ImGui::DockBuilderGetNode(dockspaceID))
-        {
+        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
@@ -286,14 +285,15 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            const std::string defaultSceneUniqueStrId = std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(0); // for the default scene
+            ImGui::DockBuilderDockWindow(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
 
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            m_windowRegistry.setDockId(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, consoleNode);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
@@ -306,14 +306,8 @@ namespace nexo::editor {
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-        else if (!dockingRegistryFilled)
-        {
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
+        else if (!dockingRegistryFilled) {
+            setAllWindowDockIDsFromConfig(m_windowRegistry);
          	dockingRegistryFilled = true;
         }
 
