@@ -166,10 +166,10 @@ namespace nexo::editor {
     {
         const auto viewPortOffset = ImGui::GetCursorPos();
        	auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        const ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
         // Resize handling
-        if (const ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-            m_viewSize.x != viewportPanelSize.x || m_viewSize.y != viewportPanelSize.y)
+        if ((viewportPanelSize.x > 0 && viewportPanelSize.y > 0) && (m_viewSize.x != viewportPanelSize.x || m_viewSize.y != viewportPanelSize.y))
         {
         	cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
         							static_cast<unsigned int>(viewportPanelSize.y));
@@ -198,12 +198,12 @@ namespace nexo::editor {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto &selector = Selector::get();
-        m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + " " + m_windowName);
-        const std::string &sceneWindowName = m_windowName + "###" + std::string(NEXO_WND_USTRID_DEFAULT_SCENE);
+        m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
+        const std::string &sceneWindowName = m_windowName + std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId);
 
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
-            firstDockSetup(NEXO_WND_USTRID_DEFAULT_SCENE);
+            firstDockSetup(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
         	auto &app = getApp();
             m_viewPosition = ImGui::GetCursorScreenPos();
 
@@ -243,9 +243,8 @@ namespace nexo::editor {
             return;
         if (m_focused && m_hovered)
             handleKeyEvents();
-
-        auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
+        auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
             auto [mx, my] = ImGui::GetMousePos();
