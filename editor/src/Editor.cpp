@@ -126,6 +126,7 @@ namespace nexo::editor {
 
         // Depending definitions
         colors[ImGuiCol_WindowBg]               = colWindowBg;
+        colors[ImGuiCol_PopupBg]                = colWindowBg;
         colors[ImGuiCol_TitleBg]                = colTitleBg;
         colors[ImGuiCol_TitleBgActive]          = colTitleBgActive;
         colors[ImGuiCol_TitleBgCollapsed]       = colTitleBg;
