@@ -13,8 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "WindowRegistry.hpp"
+
 #include <string>
 #include <imgui.h>
+#include <vector>
 
 namespace nexo::editor {
 	/**
@@ -28,4 +31,8 @@ namespace nexo::editor {
 	* @return ImGuiID The dock ID corresponding to the window. Returns 0 if not found.
 	*/
 	ImGuiID findWindowDockIDFromConfig(const std::string& windowName);
+
+	const std::vector<std::string> findAllEditorScenes();
+
+	void setAllWindowDockIDsFromConfig(WindowRegistry& registry);
 }
