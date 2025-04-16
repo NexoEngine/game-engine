@@ -102,11 +102,6 @@ namespace nexo::system {
 
 		auto &app = Application::getInstance();
         const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
-		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
-            return;
-        }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
 		const auto transformSpan = get<components::TransformComponent>();
 		const auto renderSpan = get<components::RenderComponent>();
@@ -123,6 +118,14 @@ namespace nexo::system {
 				renderer::RenderCommand::clear();
 				camera.renderTarget->clearAttachment<int>(1, -1);
             }
+
+            if (!partition) {
+                LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+                camera.renderTarget->unbind();
+                renderContext.cameras.pop();
+                continue;
+            }
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
             for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
             {
