@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PopupManager.hpp"
+#include "Components/Components.hpp"
 #include "Logger.hpp"
 
 #include <imgui.h>
@@ -51,11 +52,32 @@ namespace nexo::editor {
             return false;
         if (m_popups.at(popupModalName))
         {
-            LOG(NEXO_INFO, "Opened {} popup", popupModalName);
-
             ImGui::OpenPopup(popupModalName.c_str());
             m_popups.at(popupModalName) = false;
         }
-        return ImGui::BeginPopupModal(popupModalName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize
+                               | ImGuiWindowFlags_NoBackground
+                               | ImGuiWindowFlags_NoTitleBar;
+        if (!ImGui::BeginPopupModal(popupModalName.c_str(), nullptr, flags))
+            return false;
+
+        ImVec2 pMin = ImGui::GetWindowPos();
+        ImVec2 size = ImGui::GetWindowSize();
+        ImVec2 pMax = ImVec2(pMin.x + size.x, pMin.y + size.y);
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        const std::vector<Components::GradientStop> stops = {
+            { 0.06f, IM_COL32(58 / 3, 124 / 3, 161 / 3, 255) },
+            { 0.26f, IM_COL32(88 / 3,  87 / 3, 154 / 3, 255) },
+            { 0.50f, IM_COL32(88 / 3,  87 / 3, 154 / 3, 255) },
+            { 0.73f, IM_COL32(58 / 3, 124 / 3, 161 / 3, 255) },
+        };
+        float angle = 148.0f;
+
+        Components::drawRectFilledLinearGradient(pMin, pMax, angle, stops, drawList);
+
+        return true;
     }
+
 }
