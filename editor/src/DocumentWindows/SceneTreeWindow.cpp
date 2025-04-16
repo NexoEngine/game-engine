@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "ADocumentWindow.hpp"
+#include "utils/Config.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
 #include "Primitive.hpp"
 
@@ -90,7 +92,14 @@ namespace nexo::editor {
 
     void SceneTreeWindow::sceneSelected([[maybe_unused]] const SceneObject &obj) const
     {
-    	//TODO: Delete scene
+        if (ImGui::MenuItem("Delete Scene")) {
+            auto &app = Application::getInstance();
+            auto &selector = Selector::get();
+            selector.unselectEntity();
+            const std::string &sceneName = selector.getUiHandle(obj.uuid, obj.uiName);
+            m_windowRegistry.unregisterWindow<EditorScene>(sceneName);
+            app.getSceneManager().deleteScene(obj.data.sceneProperties.sceneId);
+        }
     }
 
     void SceneTreeWindow::lightSelected(const SceneObject &obj) const
@@ -192,37 +201,96 @@ namespace nexo::editor {
         }
     }
 
+    bool SceneTreeWindow::setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName)
+    {
+        ImGuiWindow* floatingWindow = ImGui::FindWindowByName(floatingWindowName.c_str());
+        if (!floatingWindow)
+            return false;
+
+        // Create a new docking node
+        auto newDockId = ImGui::GetID("##DockNode");
+
+        // Configure the docking node
+        ImGui::DockBuilderRemoveNode(newDockId);
+        ImGui::DockBuilderAddNode(newDockId, ImGuiDockNodeFlags_None);
+
+        // Set node size and position based on the floating window
+        ImVec2 windowPos = floatingWindow->Pos;
+        ImVec2 windowSize = floatingWindow->Size;
+        ImGui::DockBuilderSetNodeSize(newDockId, windowSize);
+        ImGui::DockBuilderSetNodePos(newDockId, windowPos);
+
+        // Dock the windows to this node
+        ImGui::DockBuilderDockWindow(floatingWindowName.c_str(), newDockId);
+        ImGui::DockBuilderFinish(newDockId);
+
+        // Update the registry with the new dock IDs
+        m_windowRegistry.setDockId(floatingWindowName, newDockId);
+        m_windowRegistry.setDockId(newSceneName, newDockId);
+        return true;
+    }
+
+    bool SceneTreeWindow::handleSceneCreation(const std::string &newSceneName)
+    {
+        if (newSceneName.empty()) {
+            LOG(NEXO_WARN, "Scene name is empty !");
+            return false;
+        }
+
+        auto newScene = std::make_shared<EditorScene>(newSceneName, m_windowRegistry);
+        newScene->setDefault();
+        newScene->setup();
+        m_windowRegistry.registerWindow<EditorScene>(newScene);
+
+        auto currentEditorSceneWindow = m_windowRegistry.getWindows<EditorScene>();
+        // If no editor scene is open, check the config file
+        if (currentEditorSceneWindow.empty()) {
+            const std::vector<std::string> &editorSceneInConfig = findAllEditorScenes();
+            if (!editorSceneInConfig.empty()) {
+                auto dockId = m_windowRegistry.getDockId(editorSceneInConfig[0]);
+                if (!dockId)
+                    return false;
+                m_windowRegistry.setDockId(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(newScene->getSceneId()), *dockId);
+                return true;
+            }
+            // If nothing is present in config file, simply let it float
+            return false;
+        }
+
+        // Else we retrieve the first active editor scene
+        const std::string windowName = std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(currentEditorSceneWindow[0]->getSceneId());
+        auto dockId = m_windowRegistry.getDockId(windowName);
+        // If we dont find the dockId, it means the scene is floating, so we create a new dock space node
+        if (!dockId) {
+            setupNewDockSpaceNode(windowName, std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(newScene->getSceneId()));
+            return true;
+        }
+        m_windowRegistry.setDockId(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(newScene->getSceneId()), *dockId);
+        return true;
+    }
+
     void SceneTreeWindow::sceneCreationMenu()
     {
-        if (m_popupManager.showPopupModal("Create New Scene"))
-        {
-            static char sceneNameBuffer[256] = "";
+        if (!m_popupManager.showPopupModal("Create New Scene"))
+            return;
 
-            ImGui::Text("Enter Scene Name:");
-            ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
+        static char sceneNameBuffer[256] = "";
 
-            if (ImGui::Button("Create"))
-            {
-                if (const std::string newSceneName(sceneNameBuffer); !newSceneName.empty())
-                {
-                	//TOOD: create scene
-                    auto newScene = std::make_shared<EditorScene>(sceneNameBuffer, m_windowRegistry);
-                    newScene->setDefault();
-                    newScene->setup();
-                    m_windowRegistry.registerWindow<EditorScene>(newScene);
-                    memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+        ImGui::Text("Enter Scene Name:");
+        ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
 
-                    m_popupManager.closePopupInContext();
-                } else
-                    LOG(NEXO_WARN, "Scene name is empty !");
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel"))
+        if (ImGui::Button("Create")) {
+            if (handleSceneCreation(sceneNameBuffer)) {
+                memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
                 m_popupManager.closePopupInContext();
-
-            m_popupManager.closePopup();
+            }
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+            m_popupManager.closePopupInContext();
+
+        m_popupManager.closePopup();
     }
 
     void SceneTreeWindow::show()
@@ -230,7 +298,7 @@ namespace nexo::editor {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
-        if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" "###" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
         {
 	        firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
             // Opens the right click popup when no items are hovered
