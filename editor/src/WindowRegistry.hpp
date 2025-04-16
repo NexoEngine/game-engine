@@ -60,6 +60,29 @@ namespace nexo::editor {
 			    windowsOfType.push_back(window);
 			}
 
+			template<typename T>
+			requires std::derived_from<T, IDocumentWindow>
+			void unregisterWindow(const std::string &windowName)
+			{
+                auto it = m_windows.find(typeid(T));
+                if (it == m_windows.end()) {
+                    LOG(NEXO_WARN, "Window of type {} not found", typeid(T).name());
+                    return;
+                }
+
+                auto &windowsOfType = it->second;
+                auto found = std::ranges::find_if(windowsOfType, [&windowName](const auto &w) {
+                    return w->getWindowName() == windowName;
+                });
+
+                if (found == windowsOfType.end()) {
+                    LOG(NEXO_WARN, "Window of type {} with name {} not found", typeid(T).name(), windowName);
+                    return;
+                }
+
+                windowsOfType.erase(found);
+			}
+
 			/**
 			 * @brief Retrieves a registered window of the specified type and name.
 			 *
@@ -147,6 +170,8 @@ namespace nexo::editor {
 			 * @return std::optional<ImGuiID> The docking identifier if it exists; otherwise, an empty optional.
 			 */
 			std::optional<ImGuiID> getDockId(const std::string& name) const;
+
+			void resetDockId(const std::string &name);
 
 			/**
 			 * @brief Initializes all managed windows.
