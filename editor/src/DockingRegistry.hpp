@@ -47,6 +47,8 @@ namespace nexo::editor {
 			 */
 			std::optional<ImGuiID> getDockId(const std::string& name) const;
 
+			void resetDockId(const std::string &name);
+
 		private:
 			std::unordered_map<std::string, ImGuiID, TransparentStringHash, std::equal_to<>> dockIds;
 	};
