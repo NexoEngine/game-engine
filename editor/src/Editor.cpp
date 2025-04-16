@@ -126,7 +126,6 @@ namespace nexo::editor {
 
         // Depending definitions
         colors[ImGuiCol_WindowBg]               = colWindowBg;
-        colors[ImGuiCol_PopupBg]                = colWindowBg;
         colors[ImGuiCol_TitleBg]                = colTitleBg;
         colors[ImGuiCol_TitleBgActive]          = colTitleBgActive;
         colors[ImGuiCol_TitleBgCollapsed]       = colTitleBg;
@@ -159,6 +158,7 @@ namespace nexo::editor {
         colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
         colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
         colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_PopupBg]                = ImVec4(0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
