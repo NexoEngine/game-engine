@@ -22,12 +22,12 @@
 
 namespace nexo::editor {
 
-    #define NEXO_WND_USTRID_INSPECTOR "Inspector"
-    #define NEXO_WND_USTRID_SCENE_TREE "Scene Tree"
-    #define NEXO_WND_USTRID_ASSET_MANAGER "Asset Manager"
-    #define NEXO_WND_USTRID_CONSOLE "Console"
-    #define NEXO_WND_USTRID_MATERIAL_INSPECTOR "Material Inspector"
-    #define NEXO_WND_USTRID_DEFAULT_SCENE "Default Scene"
+    #define NEXO_WND_USTRID_INSPECTOR "###Inspector"
+    #define NEXO_WND_USTRID_SCENE_TREE "###Scene Tree"
+    #define NEXO_WND_USTRID_ASSET_MANAGER "###Asset Manager"
+    #define NEXO_WND_USTRID_CONSOLE "###Console"
+    #define NEXO_WND_USTRID_MATERIAL_INSPECTOR "###Material Inspector"
+    #define NEXO_WND_USTRID_DEFAULT_SCENE "###Default Scene"
 
     class ADocumentWindow : public IDocumentWindow {
         public:
@@ -79,10 +79,20 @@ namespace nexo::editor {
                     const ImGuiID currentDockID = currentWindow->DockId;
                     auto dockId = m_windowRegistry.getDockId(windowName);
 
-                    if (m_firstOpened && (!isDocked || (dockId && currentDockID != *dockId)))
-                        currentWindow->DockId = *dockId;
-                    else if (dockId && currentDockID != *dockId)
+                    // If it's the first time opening the window and we have a dock id saved in the registry, then we force set it
+                    if (m_firstOpened && ((dockId && currentDockID != *dockId)))
+                        ImGui::DockBuilderDockWindow(windowName.c_str(), *dockId);
+                    // If the docks ids differ, it means the window got rearranged in the global layout
+                    // If we are docked but we dont have a dock id saved in the registry, it means the user moved the window
+                    // In both cases, we update our docking registry with the new dock id
+                    else if ((dockId && currentDockID != *dockId) || (isDocked && !dockId))
                         m_windowRegistry.setDockId(windowName, currentDockID);
+
+
+                    // If it is not docked anymore, we have a floating window without docking node,
+                    // So we erase it from the docking registry
+                    if (!m_firstOpened && !isDocked)
+                        m_windowRegistry.resetDockId(windowName);
                     m_firstOpened = false;
                 }
             }
