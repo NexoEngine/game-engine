@@ -82,6 +82,7 @@ namespace nexo::renderer {
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
         m_storage->textureShader->setUniformMatrix("viewProjection", viewProjection);
+        m_storage->cameraPosition = cameraPos;
         m_storage->textureShader->setUniformFloat3("camPos", cameraPos);
         m_storage->indexCount = 0;
         m_storage->vertexBufferPtr = m_storage->vertexBufferBase.data();
