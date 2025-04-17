@@ -15,6 +15,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <functional>
 
 namespace nexo::editor {
 
@@ -26,6 +27,8 @@ namespace nexo::editor {
      */
     class PopupManager {
         public:
+            using PopupCallback = std::function<void()>;
+
 
 			/**
 			* @brief Opens a popup by name.
@@ -35,6 +38,8 @@ namespace nexo::editor {
 			* @param popupName The unique name of the popup.
 			*/
             void openPopup(const std::string &popupName);
+
+            void openPopupWithCallback(const std::string &popupName, PopupCallback callback);
 
 			/**
 			* @brief Displays a modal popup.
@@ -72,6 +77,8 @@ namespace nexo::editor {
 			*/
             void closePopupInContext() const;
 
+            void runPopupCallback(const std::string &popupName);
+
         private:
             struct TransparentHasher {
                 using is_transparent = void; // Required for heterogeneous lookup
@@ -81,5 +88,6 @@ namespace nexo::editor {
             };
 
             std::unordered_map<std::string, bool, TransparentHasher, std::equal_to<>> m_popups;
+            std::unordered_map<std::string, PopupCallback> m_callbacks; // Store callbacks
     };
 }
