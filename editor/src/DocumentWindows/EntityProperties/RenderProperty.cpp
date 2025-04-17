@@ -125,6 +125,8 @@ namespace nexo::editor {
 
     void RenderProperty::show(ecs::Entity entity)
     {
+        if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity))
+            return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
         if (renderComponent.type == components::RenderType::RENDER_3D)
