@@ -151,7 +151,7 @@ namespace nexo::editor {
                             break;
                         }
                     }
-                });
+                }, ImVec2(1440,900));
             }
 
             ImGui::EndMenu();  // <-- matches the BeginMenu("Add Entity")
@@ -256,7 +256,6 @@ namespace nexo::editor {
             m_popupManager.closePopup();
         }
 
-        ImGui::SetNextWindowSize(ImVec2(1440,900));
         if (m_popupManager.showPopupModal("Popup camera inspector")) {
             m_popupManager.runPopupCallback("Popup camera inspector");
             m_popupManager.closePopup();
