@@ -328,6 +328,7 @@ namespace nexo::editor {
             if (EntityPropertiesComponents::drawHeader("##CameraNode", "Camera"))
             {
                 auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(camera);
+                cameraComponent.render = true;
                 Widgets::drawCameraProperties(cameraComponent);
                 ImGui::TreePop();
             }
