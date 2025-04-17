@@ -17,16 +17,21 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <Logger.hpp>
+#include "Path.hpp"
 
 #include "Components.hpp"
 #include "Definitions.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
+#include "Texture.hpp"
 #include "components/Camera.hpp"
 #include "EntityPropertiesComponents.hpp"
 #include "CameraFactory.hpp"
+#include "components/Render3D.hpp"
 #include "components/Transform.hpp"
+#include "components/Uuid.hpp"
 #include "tinyfiledialogs.h"
+#include "context/Selector.hpp"
 
 namespace nexo::editor {
 	bool Widgets::drawColorEditor(
@@ -191,8 +196,16 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(sceneViewportSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(sceneViewportSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        ecs::Entity defaultCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
+        ecs::Entity defaultCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<ecs::Entity>(defaultCamera));
+
+        components::Material billboardMat{};
+        std::shared_ptr<renderer::Texture2D> cameraIconTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png"));
+        billboardMat.albedoTexture = cameraIconTexture;
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        app.m_coordinator->addComponent(defaultCamera, renderComponent);
         return defaultCamera;
 	}
 
@@ -312,17 +325,36 @@ namespace nexo::editor {
         {
             camera = createDefaultPerspectiveCamera(sceneId, ImVec2(previewWidth, totalHeight));
         }
+
+        static char cameraName[128] = "";
+        static bool nameIsEmpty = false;
         ImGui::Columns(2, "CameraCreatorColumns", false);
 
         ImGui::SetColumnWidth(0, inspectorWidth);
         // --- Left Side: Camera Inspector ---
         {
             ImGui::BeginChild("CameraInspector", ImVec2(inspectorWidth - 4, totalHeight), true);
-            static char cameraName[128] = "";
             ImGui::AlignTextToFramePadding();
             ImGui::Text("Name");
             ImGui::SameLine();
+            if (nameIsEmpty) {
+                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+                ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+            }
             ImGui::InputText("##CameraName", cameraName, IM_ARRAYSIZE(cameraName));
+            if (nameIsEmpty) {
+                ImGui::PopStyleVar();
+                ImGui::PopStyleColor();
+
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+                ImGui::TextWrapped("Name is empty");
+                ImGui::PopStyleColor();
+                ImGui::Spacing();
+            } else {
+                ImGui::Spacing();
+            }
+            if (nameIsEmpty && cameraName[0] != '\0')
+                nameIsEmpty = false;
             ImGui::Spacing();
 
             if (EntityPropertiesComponents::drawHeader("##CameraNode", "Camera"))
@@ -375,12 +407,28 @@ namespace nexo::editor {
 
         if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
         {
+            if (cameraName[0] == '\0') {
+                nameIsEmpty = true;
+                return false;
+            }
+            nameIsEmpty = false;
+            auto &selector = Selector::get();
+            auto &uuid = app.m_coordinator->getComponent<components::UuidComponent>(camera);
+            auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(camera);
+            cameraComponent.active = false;
+            selector.setUiHandle(uuid.uuid, std::string(ICON_FA_CAMERA "  ") + cameraName);
+            camera = ecs::MAX_ENTITIES;
+            cameraName[0] = '\0';
             ImGui::CloseCurrentPopup();
             return true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
+            nameIsEmpty = false;
+            app.deleteEntity(camera);
+            camera = ecs::MAX_ENTITIES;
+            cameraName[0] = '\0';
             ImGui::CloseCurrentPopup();
             return true;
         }
