@@ -57,15 +57,16 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(m_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_viewSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
-        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
+        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
-        m_cameras.insert(static_cast<ecs::Entity>(m_activeCamera));
-        app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_activeCamera));
+        m_cameras.insert(static_cast<ecs::Entity>(m_editorCamera));
+        app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
         components::PerspectiveCameraController controller;
-        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_activeCamera), controller);
+        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_editorCamera), controller);
         components::EditorCameraTag editorCameraTag;
-        Application::m_coordinator->addComponent(m_activeCamera, editorCameraTag);
+        Application::m_coordinator->addComponent(m_editorCamera, editorCameraTag);
+        m_activeCamera = m_editorCamera;
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene)
