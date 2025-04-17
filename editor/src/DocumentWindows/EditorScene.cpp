@@ -64,6 +64,8 @@ namespace nexo::editor {
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_activeCamera));
         components::PerspectiveCameraController controller;
         Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_activeCamera), controller);
+        components::EditorCameraTag editorCameraTag;
+        Application::m_coordinator->addComponent(m_activeCamera, editorCameraTag);
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene)
@@ -90,12 +92,6 @@ namespace nexo::editor {
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
-
-        std::shared_ptr<renderer::Texture2D> billboardTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png"));
-        components::Material billboardMat{};
-        billboardMat.albedoTexture = billboardTexture;
-        const ecs::Entity billboard = EntityFactory3D::createBillboard({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, billboardMat);
-        app.getSceneManager().getScene(m_sceneId).addEntity(billboard);
     }
 
     void EditorScene::setupWindow()

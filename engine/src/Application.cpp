@@ -70,6 +70,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::UuidComponent>();
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
+        m_coordinator->registerComponent<components::EditorCameraTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
