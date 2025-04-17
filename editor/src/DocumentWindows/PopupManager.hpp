@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <imgui.h>
 
 namespace nexo::editor {
 
@@ -29,6 +30,11 @@ namespace nexo::editor {
         public:
             using PopupCallback = std::function<void()>;
 
+            struct PopupProps {
+                bool open = false;
+                PopupCallback callback = nullptr;
+                ImVec2 size = ImVec2(0, 0);
+            };
 
 			/**
 			* @brief Opens a popup by name.
@@ -37,9 +43,9 @@ namespace nexo::editor {
 			*
 			* @param popupName The unique name of the popup.
 			*/
-            void openPopup(const std::string &popupName);
+            void openPopup(const std::string &popupName, const ImVec2 &popupSize = ImVec2(0, 0));
 
-            void openPopupWithCallback(const std::string &popupName, PopupCallback callback);
+            void openPopupWithCallback(const std::string &popupName, PopupCallback callback, const ImVec2 &popupSize = ImVec2(0, 0));
 
 			/**
 			* @brief Displays a modal popup.
@@ -87,7 +93,6 @@ namespace nexo::editor {
                 }
             };
 
-            std::unordered_map<std::string, bool, TransparentHasher, std::equal_to<>> m_popups;
-            std::unordered_map<std::string, PopupCallback> m_callbacks; // Store callbacks
+            std::unordered_map<std::string, PopupProps, TransparentHasher, std::equal_to<>> m_popups;
     };
 }
