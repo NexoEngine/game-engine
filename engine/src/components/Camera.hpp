@@ -105,6 +105,8 @@ namespace nexo::components {
         }
     };
 
+    struct EditorCameraTag {};
+
     /**
      * @brief Component used to control a perspective camera using mouse input.
      *
