@@ -166,6 +166,8 @@ void main()
     vec3 norm = normalize(vNormal);
     vec3 viewDir = normalize(camPos - vFragPos);
     vec3 result = vec3(0.0);
+    if (texture(uTexture[material.albedoTexIndex], vTexCoord).a < 0.1)
+        discard;
     vec3 ambient = ambientLight * material.albedoColor.rgb * vec3(texture(uTexture[material.albedoTexIndex], vTexCoord));
     result += ambient;
 
