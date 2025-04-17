@@ -22,6 +22,7 @@
 #include "LightFactory.hpp"
 #include "CameraFactory.hpp"
 #include "Nexo.hpp"
+#include "Texture.hpp"
 #include "WindowRegistry.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
@@ -89,6 +90,12 @@ namespace nexo::editor {
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
+
+        std::shared_ptr<renderer::Texture2D> billboardTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png"));
+        components::Material billboardMat{};
+        billboardMat.albedoTexture = billboardTexture;
+        const ecs::Entity billboard = EntityFactory3D::createBillboard({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, billboardMat);
+        app.getSceneManager().getScene(m_sceneId).addEntity(billboard);
     }
 
     void EditorScene::setupWindow()
