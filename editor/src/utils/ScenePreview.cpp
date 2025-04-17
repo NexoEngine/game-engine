@@ -113,6 +113,8 @@ namespace nexo::editor::utils {
         // Update the camera's transform.
         auto &cameraTransform = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
         cameraTransform.pos = cameraPos;
+        auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        cameraComponent.render = true;
 
         // Compute the camera's orientation so that it looks at the target.
         glm::vec3 newFront = glm::normalize(targetPos - cameraPos);

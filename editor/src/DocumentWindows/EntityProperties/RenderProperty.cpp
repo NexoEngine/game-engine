@@ -47,6 +47,7 @@ namespace nexo::editor {
             utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
             auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
+            cameraComponent.render = true;
         }
         auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
@@ -183,7 +184,7 @@ namespace nexo::editor {
                     // --- Material Action Buttons ---
                     if (ImGui::Button("Create new material"))
                     {
-                        m_popupManager.openPopup("Create new material");
+                        m_popupManager.openPopup("Create new material", ImVec2(1440,900));
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Modify Material"))
@@ -199,7 +200,6 @@ namespace nexo::editor {
             ImGui::TreePop();
         }
 
-        ImGui::SetNextWindowSize(ImVec2(1440,900));
         if (m_popupManager.showPopupModal("Create new material"))
         {
             createMaterialPopup(entity);

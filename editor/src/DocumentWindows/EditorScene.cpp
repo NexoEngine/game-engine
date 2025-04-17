@@ -57,6 +57,8 @@ namespace nexo::editor {
         framebufferSpecs.height = static_cast<unsigned int>(m_viewSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
         m_activeCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
+        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        cameraComponent.render = true;
         m_cameras.insert(static_cast<ecs::Entity>(m_activeCamera));
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_activeCamera));
         components::PerspectiveCameraController controller;
