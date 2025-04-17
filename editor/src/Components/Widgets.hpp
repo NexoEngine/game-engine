@@ -17,8 +17,11 @@
 #include <glm/glm.hpp>
 #include <string>
 
+#include "components/Camera.hpp"
 #include "components/Render3D.hpp"
+#include "components/Transform.hpp"
 #include "renderer/Texture.hpp"
+#include "core/scene/SceneManager.hpp"
 
 namespace nexo::editor {
 
@@ -73,5 +76,10 @@ namespace nexo::editor {
              * @return true if any material property was modified; false otherwise.
              */
 			static bool drawMaterialInspector(components::Material *material);
+
+			static void drawTransformProperties(components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler);
+			static void drawCameraProperties(components::CameraComponent &cameraComponent);
+
+			static bool drawCameraCreator(const scene::SceneId sceneId, ImVec2 sceneViewportSize);
 	};
 }
