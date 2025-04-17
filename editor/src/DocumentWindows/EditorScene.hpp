@@ -64,6 +64,7 @@ namespace nexo::editor {
 			 * @return scene::SceneId The identifier of this scene.
 			 */
 			[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
+			[[nodiscard]] ImVec2 getViewportSize() const {return m_viewSize;};
 
 
 			/**
