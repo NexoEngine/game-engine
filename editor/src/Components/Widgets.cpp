@@ -200,7 +200,7 @@ namespace nexo::editor {
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<ecs::Entity>(defaultCamera));
 
         components::Material billboardMat{};
-        std::shared_ptr<renderer::Texture2D> cameraIconTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png"));
+        std::shared_ptr<renderer::Texture2D> cameraIconTexture = renderer::Texture2D::create(Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png").string());
         billboardMat.albedoTexture = cameraIconTexture;
         auto billboard = std::make_shared<components::BillBoard>();
         auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
