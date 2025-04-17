@@ -92,6 +92,7 @@ namespace nexo::editor {
             std::string m_sceneUuid;
             std::set<ecs::Entity> m_cameras;
             int m_activeCamera = -1;
+            int m_editorCamera = -1;
 
             /**
              * @brief Sets the main scene window's view size.
