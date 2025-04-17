@@ -15,12 +15,14 @@
 
 #include <queue>
 #include "Camera.hpp"
+#include "Types.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "Light.hpp"
 
 namespace nexo::components {
 	struct RenderContext {
 		int sceneRendered = -1;
+		SceneType sceneType;
 		renderer::Renderer3D renderer3D;
 		std::queue<CameraContext> cameras;
 		LightContext sceneLights;

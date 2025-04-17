@@ -91,6 +91,7 @@ namespace nexo::system {
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+		const SceneType sceneType = renderContext.sceneType;
 
 		setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
 
@@ -129,9 +130,11 @@ namespace nexo::system {
 
             for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
             {
+                const ecs::Entity entity = entitySpan[i];
+                if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
+                    continue;
 				const auto &transform = transformSpan[i];
 				const auto &render = renderSpan[i];
-				const ecs::Entity entity = entitySpan[i];
 				if (render.isRendered)
 				{
 					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
