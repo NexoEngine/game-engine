@@ -21,7 +21,7 @@ namespace nexo::components {
 
     struct TransformComponent final {
         glm::vec3 pos;
-        glm::vec3 size;
+        glm::vec3 size = glm::vec3(1.0f);
         glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     };
 
