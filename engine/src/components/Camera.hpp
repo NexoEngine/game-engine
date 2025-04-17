@@ -48,6 +48,7 @@ namespace nexo::components {
         glm::vec4 clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f};  ///< Background clear color.
 
         bool active = true;                 ///< Indicates if the camera is active.
+        bool render = false;                ///< Indicates if the camera has to be rendered.
         bool main = true;                   ///< Indicates if the camera is the main camera.
         bool resizing = false;              ///< Internal flag indicating if the camera is resizing.
 
