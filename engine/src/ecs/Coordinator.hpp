@@ -25,6 +25,35 @@
 
 namespace nexo::ecs {
 
+    template <typename T>
+    struct Exclude {
+        using type = T;
+    };
+
+    // Check if type is an Exclude specialization
+    template <typename T>
+    struct is_exclude : std::false_type {};
+
+    template <typename T>
+    struct is_exclude<Exclude<T>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_exclude_v = is_exclude<T>::value;
+
+    // Extract the actual type from Exclude<T>
+    template <typename T>
+    struct extract_type {
+        using type = T;
+    };
+
+    template <typename T>
+    struct extract_type<Exclude<T>> {
+        using type = T;
+    };
+
+    template <typename T>
+    using extract_type_t = typename extract_type<T>::type;
+
     /**
      * @class Coordinator
      *
@@ -234,26 +263,40 @@ namespace nexo::ecs {
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
             /**
-             * @brief Retrieves all entities that have the specified components.
-             *
-             * @tparam Components The component types to filter by.
-             * @return std::set<Entity> A set of entities that contain all the specified components.
-             */
+            * @brief Retrieves all entities that have the specified components.
+            *
+            * @tparam Components The component types to filter by.
+            * @return std::set<Entity> A set of entities that contain all the specified components.
+            */
             template<typename... Components>
             std::vector<Entity> getAllEntitiesWith() const
             {
+                // Prepare signatures
                 Signature requiredSignature;
-                (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+                Signature excludeSignature;
 
+                // Process each component type
+                (processComponentSignature<Components>(requiredSignature, excludeSignature), ...);
+
+                // Query entities
                 std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
                 std::vector<Entity> result;
                 result.reserve(livingEntities.size());
+
                 for (Entity entity : livingEntities)
                 {
                     const Signature entitySignature = m_entityManager->getSignature(entity);
-                    if ((entitySignature & requiredSignature) == requiredSignature)
+
+                    // Entity must have all required components
+                    bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
+
+                    // Entity must not have any excluded components
+                    bool hasAnyExcluded = (entitySignature & excludeSignature).any();
+
+                    if (hasAllRequired && !hasAnyExcluded)
                         result.push_back(entity);
                 }
+
                 return result;
             }
 
@@ -354,6 +397,18 @@ namespace nexo::ecs {
                 return signature.test(componentType);
             }
         private:
+
+            template<typename Component>
+            void processComponentSignature(Signature& required, Signature& excluded) const {
+                if constexpr (is_exclude_v<Component>) {
+                    // This is an excluded component
+                    using ActualType = typename Component::type;
+                    excluded.set(m_componentManager->getComponentType<ActualType>(), true);
+                } else {
+                    // This is a required component
+                    required.set(m_componentManager->getComponentType<Component>(), true);
+                }
+            }
 
             std::shared_ptr<ComponentManager> m_componentManager;
             std::shared_ptr<EntityManager> m_entityManager;
