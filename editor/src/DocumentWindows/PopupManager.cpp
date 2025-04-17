@@ -19,15 +19,24 @@
 #include <imgui.h>
 
 namespace nexo::editor {
-    void PopupManager::openPopup(const std::string &popupName)
+    void PopupManager::openPopup(const std::string &popupName, const ImVec2 &popupSize)
     {
-        m_popups[popupName] = true;
+        PopupProps props{
+            .open = true,
+            .callback = nullptr,
+            .size = popupSize
+        };
+        m_popups[popupName] = props;
     }
 
-    void PopupManager::openPopupWithCallback(const std::string &popupName, PopupCallback callback)
+    void PopupManager::openPopupWithCallback(const std::string &popupName, PopupCallback callback, const ImVec2 &popupSize)
     {
-        m_popups[popupName] = true;
-        m_callbacks[popupName] = callback;
+        PopupProps props{
+            .open = true,
+            .callback = callback,
+            .size = popupSize
+        };
+        m_popups[popupName] = props;
     }
 
     void PopupManager::closePopup() const
@@ -44,10 +53,15 @@ namespace nexo::editor {
     {
         if (!m_popups.contains(popupName))
             return false;
-        if (m_popups.at(popupName))
+        PopupProps &props = m_popups.at(popupName);
+        if (props.open)
         {
             ImGui::OpenPopup(popupName.c_str());
-            m_popups.at(popupName) = false;
+            props.open = false;
+        }
+        if (props.size.x != 0 && props.size.y != 0)
+        {
+            ImGui::SetNextWindowSize(props.size);
         }
         return ImGui::BeginPopup(popupName.c_str());
     }
@@ -56,10 +70,16 @@ namespace nexo::editor {
     {
         if (!m_popups.contains(popupModalName))
             return false;
-        if (m_popups.at(popupModalName))
+        PopupProps &props = m_popups.at(popupModalName);
+        if (m_popups.at(popupModalName).open)
         {
             ImGui::OpenPopup(popupModalName.c_str());
-            m_popups.at(popupModalName) = false;
+            props.open = false;
+        }
+
+        if (props.size.x != 0 && props.size.y != 0)
+        {
+            ImGui::SetNextWindowSize(props.size);
         }
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize
@@ -87,9 +107,9 @@ namespace nexo::editor {
 
     void PopupManager::runPopupCallback(const std::string &popupName)
     {
-        if (m_callbacks.contains(popupName))
+        if (m_popups.contains(popupName) && m_popups.at(popupName).callback != nullptr)
         {
-            m_callbacks[popupName]();
+            m_popups.at(popupName).callback();
         }
     }
 
