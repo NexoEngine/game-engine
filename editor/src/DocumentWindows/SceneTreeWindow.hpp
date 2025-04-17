@@ -256,7 +256,7 @@ namespace nexo::editor {
              *
              * @param obj The scene object representing the scene to be deleted.
              */
-            void sceneSelected(const SceneObject &obj) const;
+            void sceneSelected(const SceneObject &obj);
 
             /**
              * @brief Displays a context menu option to delete a light node.
