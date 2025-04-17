@@ -24,6 +24,12 @@ namespace nexo::editor {
         m_popups[popupName] = true;
     }
 
+    void PopupManager::openPopupWithCallback(const std::string &popupName, PopupCallback callback)
+    {
+        m_popups[popupName] = true;
+        m_callbacks[popupName] = callback;
+    }
+
     void PopupManager::closePopup() const
     {
         ImGui::EndPopup();
@@ -61,7 +67,6 @@ namespace nexo::editor {
                                | ImGuiWindowFlags_NoTitleBar;
         if (!ImGui::BeginPopupModal(popupModalName.c_str(), nullptr, flags))
             return false;
-
         ImVec2 pMin = ImGui::GetWindowPos();
         ImVec2 size = ImGui::GetWindowSize();
         ImVec2 pMax = ImVec2(pMin.x + size.x, pMin.y + size.y);
@@ -78,6 +83,14 @@ namespace nexo::editor {
         Components::drawRectFilledLinearGradient(pMin, pMax, angle, stops, drawList);
 
         return true;
+    }
+
+    void PopupManager::runPopupCallback(const std::string &popupName)
+    {
+        if (m_callbacks.contains(popupName))
+        {
+            m_callbacks[popupName]();
+        }
     }
 
 }
