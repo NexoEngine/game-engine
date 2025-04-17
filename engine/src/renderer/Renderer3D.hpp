@@ -78,6 +78,8 @@ namespace nexo::renderer {
         static constexpr unsigned int maxTextureSlots = 32;
         static constexpr unsigned int maxTransforms = 1024;
 
+        glm::vec3 cameraPosition;
+
         std::shared_ptr<Shader> textureShader;
         std::shared_ptr<VertexArray> vertexArray;
         std::shared_ptr<VertexBuffer> vertexBuffer;
@@ -304,6 +306,9 @@ namespace nexo::renderer {
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
+
+        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
+        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const components::Material& material, int entityID) const;
 
         /**
          * @brief Resets rendering statistics.

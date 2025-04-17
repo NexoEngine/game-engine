@@ -14,6 +14,7 @@
 
 #include "EntityFactory3D.hpp"
 #include "components/Light.hpp"
+#include "components/Shapes3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
@@ -84,6 +85,46 @@ namespace nexo {
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newModel, uuid);
         return newModel;
+    }
+
+    ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color)
+    {
+        components::TransformComponent transform{};
+
+        transform.pos = pos;
+        transform.size = size;
+        components::Material material{};
+        material.albedoColor = color;
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, billboard);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newBillboard = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newBillboard, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newBillboard, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newBillboard, uuid);
+
+        return newBillboard;
+    }
+
+    ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material)
+    {
+        components::TransformComponent transform{};
+
+        transform.pos = pos;
+        transform.size = size;
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, billboard);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newBillboard = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newBillboard, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newBillboard, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newBillboard, uuid);
+
+        return newBillboard;
     }
 }
 
