@@ -248,6 +248,8 @@ namespace nexo::editor {
              */
             bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
 
+            void handleHovering(const SceneObject &obj) const;
+
             /**
              * @brief Displays a context menu option to delete a scene.
              *
@@ -278,6 +280,7 @@ namespace nexo::editor {
              * @param obj The scene object representing the camera to be deleted.
              */
             void cameraSelected(const SceneObject &obj) const;
+            void cameraHovered(const SceneObject &obj) const;
             void entitySelected(const SceneObject &obj) const;
             void showNode(SceneObject &object);
             void sceneContextMenu();
