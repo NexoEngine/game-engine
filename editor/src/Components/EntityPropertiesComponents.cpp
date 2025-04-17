@@ -17,31 +17,50 @@
 
 namespace nexo::editor {
 
-	bool EntityPropertiesComponents::drawHeader(const std::string &label, std::string_view headerText)
-	{
-	    float increasedPadding = 2.0f;
-	    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
-	                        ImVec2(ImGui::GetStyle().FramePadding.x, increasedPadding));
+    bool EntityPropertiesComponents::drawHeader(const std::string &label, std::string_view headerText)
+    {
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImGui::PushStyleVar(
+            ImGuiStyleVar_FramePadding,
+            ImVec2(style.FramePadding.x, 3.0f)
+        );
 
-	    bool open = ImGui::TreeNodeEx(label.c_str(),
-	                                  ImGuiTreeNodeFlags_DefaultOpen |
-	                                  ImGuiTreeNodeFlags_Framed |
-	                                  ImGuiTreeNodeFlags_AllowItemOverlap);
-	    ImGui::PopStyleVar();
+        bool open = ImGui::TreeNodeEx(
+            label.c_str(),
+            ImGuiTreeNodeFlags_DefaultOpen |
+            ImGuiTreeNodeFlags_Framed |
+            ImGuiTreeNodeFlags_AllowItemOverlap |
+            ImGuiTreeNodeFlags_SpanAvailWidth
+        );
 
-	    // Horizontal centering:
-	    const float arrowPosX = ImGui::GetCursorPosX();
-	    ImGui::SameLine(0.0f, 0.0f);
-	    const float totalWidth = ImGui::GetContentRegionAvail().x + arrowPosX;
-	    const ImVec2 textSize = ImGui::CalcTextSize(headerText.data());
-	    const float textPosX = (totalWidth - textSize.x) * 0.5f;
-	    ImGui::SetCursorPosX(textPosX);
-    	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.5f); // This stuff seems strange, should check in the long run if there is a better way
+        ImGui::PopStyleVar();
 
-	    ImGui::TextUnformatted(headerText.data());
+        // We retrieve the bounding box of the tree node
+        ImVec2 bbMin = ImGui::GetItemRectMin();
+        ImVec2 bbMax = ImGui::GetItemRectMax();
+        ImVec2 bbSize = ImVec2(bbMax.x - bbMin.x, bbMax.y - bbMin.y);
 
-	    return open;
-	}
+        ImVec2 textSize = ImGui::CalcTextSize(headerText.data());
+
+        // We manually compute the absolute screen position
+        ImVec2 textPos;
+        textPos.x = bbMin.x + (bbSize.x - textSize.x) * 0.5f;
+        textPos.y = bbMin.y + (bbSize.y - textSize.y) * 0.5f;
+
+        // Draw directly on top of it
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        dl->AddText(
+            ImGui::GetFont(),
+            ImGui::GetFontSize(),
+            textPos,
+            ImGui::GetColorU32(ImGuiCol_Text),
+            headerText.data()
+        );
+
+        return open;
+    }
+
+
 
 	void EntityPropertiesComponents::drawRowLabel(const ChannelLabel &rowLabel)
 	{
@@ -57,7 +76,7 @@ namespace nexo::editor {
 		    //ImVec2 cellPos = ImGui::GetCursorPos();
 		}
 		//ImGui::SetWindowFontScale(1.11f);
-
+		ImGui::AlignTextToFramePadding();
 		ImGui::TextUnformatted(rowLabel.label.c_str());
 		//ImGui::SetWindowFontScale(1.0f);
 	}
