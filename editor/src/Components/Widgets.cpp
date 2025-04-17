@@ -14,11 +14,18 @@
 
 #include "Widgets.hpp"
 
+#include <imgui.h>
 #include <imgui_internal.h>
 #include <Logger.hpp>
 
 #include "Components.hpp"
+#include "Definitions.hpp"
 #include "IconsFontAwesome.h"
+#include "Nexo.hpp"
+#include "components/Camera.hpp"
+#include "EntityPropertiesComponents.hpp"
+#include "CameraFactory.hpp"
+#include "components/Transform.hpp"
 #include "tinyfiledialogs.h"
 
 namespace nexo::editor {
@@ -165,5 +172,217 @@ namespace nexo::editor {
 		ImGui::SameLine();
 		modified = Widgets::drawColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
 		return modified;
+	}
+
+	static ecs::Entity createDefaultPerspectiveCamera(const scene::SceneId sceneId, ImVec2 sceneViewportSize)
+	{
+        auto &app = getApp();
+        renderer::FramebufferSpecs framebufferSpecs;
+        framebufferSpecs.attachments = {
+            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
+        };
+        const ImVec2 availSize = ImGui::GetContentRegionAvail();
+        const float totalWidth = availSize.x;
+        float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
+
+        // Define layout: 60% for inspector, 40% for preview
+        const float inspectorWidth = totalWidth * 0.4f;
+        const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panel
+        framebufferSpecs.width = static_cast<unsigned int>(sceneViewportSize.x);
+        framebufferSpecs.height = static_cast<unsigned int>(sceneViewportSize.y);
+        const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
+        ecs::Entity defaultCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
+        app.getSceneManager().getScene(sceneId).addEntity(static_cast<ecs::Entity>(defaultCamera));
+        return defaultCamera;
+	}
+
+	void Widgets::drawTransformProperties(components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler)
+	{
+	    // Increase cell padding so rows have more space:
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        auto& [pos, size, quat] = transformComponent;
+
+        if (ImGui::BeginTable("InspectorTransformTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            // Only the first column has a fixed width
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &pos.x);
+
+            const glm::vec3 computedEuler = math::customQuatToEuler(quat);
+
+            lastDisplayedEuler = computedEuler;
+            glm::vec3 rotation = lastDisplayedEuler;
+
+            // Draw the Rotation row.
+            // When the user edits the rotation, we compute the delta from the last displayed Euler,
+            // convert that delta into an incremental quaternion, and update the master quaternion.
+            if (EntityPropertiesComponents::drawRowDragFloat3("Rotation", "X", "Y", "Z", &rotation.x)) {
+                const glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
+                const glm::quat deltaQuat = glm::radians(deltaEuler);
+                quat = glm::normalize(deltaQuat * quat);
+                lastDisplayedEuler = math::customQuatToEuler(quat);
+                rotation = lastDisplayedEuler;
+            }
+            EntityPropertiesComponents::drawRowDragFloat3("Scale", "X", "Y", "Z", &size.x);
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar();
+	}
+
+	void Widgets::drawCameraProperties(components::CameraComponent &cameraComponent)
+	{
+	    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("CameraInspectorViewPortParams", 4,
+     			ImGuiTableFlags_SizingStretchProp))
+        {
+     			ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+     			ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+     			ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+     			ImGui::TableSetupColumn("##Lock", ImGuiTableColumnFlags_WidthStretch);
+                    				glm::vec2 viewPort = {cameraComponent.width, cameraComponent.height};
+                     			std::vector<ImU32> badgeColors;
+                           	std::vector<ImU32> textBadgeColors;
+
+     			const bool disabled = cameraComponent.viewportLocked;
+     			if (disabled)
+        				ImGui::BeginDisabled();
+     			if (EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled))
+     			{
+        				if (!cameraComponent.viewportLocked)
+        				cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
+     			}
+     			if (disabled)
+        				ImGui::EndDisabled();
+
+     			ImGui::TableSetColumnIndex(3);
+
+     			// Lock button
+     			const std::string lockBtnLabel = cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
+     			if (Components::drawButton(lockBtnLabel)) {
+        				cameraComponent.viewportLocked = !cameraComponent.viewportLocked;
+     			}
+
+
+     			ImGui::EndTable();
+        }
+
+        if (ImGui::BeginTable("InspectorCameraVariables", 2, ImGuiTableFlags_SizingStretchProp))
+                            {
+     			ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+     			ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+     			EntityPropertiesComponents::drawRowDragFloat1("FOV", "", &cameraComponent.fov, 30.0f, 120.0f, 0.3f);
+     			EntityPropertiesComponents::drawRowDragFloat1("Near plane", "", &cameraComponent.nearPlane, 0.01f, 1.0f, 0.001f);
+     			EntityPropertiesComponents::drawRowDragFloat1("Far plane", "", &cameraComponent.farPlane, 100.0f, 10000.0f, 1.0f);
+
+                                ImGui::EndTable();
+                            }
+
+
+        ImGui::PopStyleVar();
+
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Clear Color");
+        ImGui::SameLine();
+        Widgets::drawColorEditor("##ColorEditor Spot light", &cameraComponent.clearColor, &colorPickerMode, &showColorPicker);
+	}
+
+	bool Widgets::drawCameraCreator(const scene::SceneId sceneId, ImVec2 sceneViewportSize)
+	{
+	    auto &app = getApp();
+
+        const ImVec2 availSize = ImGui::GetContentRegionAvail();
+        const float totalWidth = availSize.x;
+        float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
+
+        // Define layout: 60% for inspector, 40% for preview
+        const float inspectorWidth = totalWidth * 0.4f;
+        const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
+        static ecs::Entity camera = ecs::MAX_ENTITIES;
+        if (camera == ecs::MAX_ENTITIES)
+        {
+            camera = createDefaultPerspectiveCamera(sceneId, ImVec2(previewWidth, totalHeight));
+        }
+        ImGui::Columns(2, "CameraCreatorColumns", false);
+
+        ImGui::SetColumnWidth(0, inspectorWidth);
+        // --- Left Side: Camera Inspector ---
+        {
+            ImGui::BeginChild("CameraInspector", ImVec2(inspectorWidth - 4, totalHeight), true);
+            static char cameraName[128] = "";
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Name");
+            ImGui::SameLine();
+            ImGui::InputText("##CameraName", cameraName, IM_ARRAYSIZE(cameraName));
+            ImGui::Spacing();
+
+            if (EntityPropertiesComponents::drawHeader("##CameraNode", "Camera"))
+            {
+                auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(camera);
+                Widgets::drawCameraProperties(cameraComponent);
+                ImGui::TreePop();
+            }
+
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Spacing();
+
+            if (EntityPropertiesComponents::drawHeader("##TransformNode", "Transform Component"))
+            {
+                static glm::vec3 lastDisplayedEuler(0.0f);
+                auto &transformComponent = app.m_coordinator->getComponent<components::TransformComponent>(camera);
+                Widgets::drawTransformProperties(transformComponent, lastDisplayedEuler);
+                ImGui::TreePop();
+            }
+
+            ImGui::EndChild();
+        }
+        ImGui::NextColumn();
+        // --- Right Side: Camera Preview ---
+        {
+            ImGui::BeginChild("CameraPreview", ImVec2(previewWidth - 4, totalHeight), true);
+
+            auto &app = getApp();
+            app.run(sceneId, RenderingType::FRAMEBUFFER);
+            auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(camera);
+            const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
+
+            const float displayHeight = totalHeight - 20;
+            const float displayWidth = displayHeight;
+
+            ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
+            ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
+                        ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::EndChild();
+        }
+
+        ImGui::Columns(1);
+        ImGui::Spacing();
+
+        // Bottom buttons - centered
+        constexpr float buttonWidth = 120.0f;
+
+        if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+            return true;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+            return true;
+        }
+        return false;
 	}
 }
