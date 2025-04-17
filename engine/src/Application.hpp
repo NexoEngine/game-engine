@@ -18,6 +18,7 @@
 #include <vector>
 #include <glad/glad.h>
 
+#include "Types.hpp"
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
@@ -37,10 +38,7 @@
 
 namespace nexo {
 
-    enum class RenderingType {
-        WINDOW,
-        FRAMEBUFFER
-    };
+
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -93,8 +91,9 @@ namespace nexo {
              *
              * @param sceneId The ID of the scene to render.
              * @param renderingType The rendering mode (e.g., WINDOW or other types).
+             * @param sceneType The type of scene to render.
              */
-            void run(scene::SceneId sceneId, RenderingType renderingType);
+            void run(scene::SceneId sceneId, RenderingType renderingType, SceneType sceneType = SceneType::GAME);
 
             /**
              * @brief Ends the current frame by clearing processed events.

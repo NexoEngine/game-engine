@@ -17,6 +17,7 @@
 #include <Path.hpp>
 
 #include "ADocumentWindow.hpp"
+#include "Application.hpp"
 #include "EntityFactory3D.hpp"
 #include "IconsFontAwesome.h"
 #include "LightFactory.hpp"
@@ -249,7 +250,7 @@ namespace nexo::editor {
             return;
         if (m_focused && m_hovered)
             handleKeyEvents();
-        runEngine(m_sceneId, RenderingType::FRAMEBUFFER);
+        runEngine(m_sceneId, RenderingType::FRAMEBUFFER, SceneType::EDITOR);
         auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {

@@ -241,13 +241,14 @@ namespace nexo {
 	    m_lastFrameTime = time;
     }
 
-    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
+    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType, const SceneType sceneType)
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
          	renderContext.sceneRendered = sceneId;
+            renderContext.sceneType = sceneType;
         	if (m_SceneManager.getScene(sceneId).isRendered())
 			{
 				m_cameraContextSystem->update();
