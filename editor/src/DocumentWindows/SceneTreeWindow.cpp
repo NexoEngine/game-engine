@@ -14,6 +14,7 @@
 
 #include "SceneTreeWindow.hpp"
 #include "ADocumentWindow.hpp"
+#include "Coordinator.hpp"
 #include "utils/Config.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
 #include "Primitive.hpp"
@@ -522,7 +523,7 @@ namespace nexo::editor {
               return this->newSpotLightNode(sceneId, uiId, entity);
          });
 
-        generateNodes<components::CameraComponent, components::SceneTag>(
+        generateNodes<components::CameraComponent, components::SceneTag, ecs::Exclude<components::EditorCameraTag>>(
         	sceneNodes,
     	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newCameraNode(sceneId, uiId, entity);
