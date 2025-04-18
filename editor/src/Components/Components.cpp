@@ -40,6 +40,105 @@ namespace nexo::editor {
         return clicked;
     }
 
+    bool Components::drawComponentButton(
+            const std::string &uniqueId,
+            const std::string &icon,
+            const std::string &label,
+            const ImVec2 &itemSize
+    ) {
+        ImGui::PushID(uniqueId.c_str());
+        std::string invisButtonLabel = "##" + uniqueId;
+        // Create invisible button
+        if (ImGui::InvisibleButton(invisButtonLabel.c_str(), itemSize))
+        {
+            ImGui::PopID();
+            return true;
+            // app.m_coordinator->addComponent(camera, components::PerspectiveCameraTarget{});
+            //showComponentSelector = false;
+        }
+
+        // Draw the background (like a button would have)
+        ImVec2 p0 = ImGui::GetItemRectMin();
+        ImVec2 p1 = ImGui::GetItemRectMax();
+        ImGui::GetWindowDrawList()->AddRectFilled(
+            p0, p1,
+            ImGui::GetColorU32(ImGui::IsItemHovered() ? ImGuiCol_ButtonHovered : ImGuiCol_Button),
+            ImGui::GetStyle().FrameRounding
+        );
+
+        // Increase icon size even further (2x larger)
+        float iconScale = 1.5f;
+        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::SetWindowFontScale(iconScale);
+        ImVec2 iconSize = ImGui::CalcTextSize(icon.c_str());
+        ImGui::SetWindowFontScale(1.0f);
+        ImGui::PopFont();
+
+        // Draw the icon centered
+        ImVec2 iconPos = ImVec2(
+            p0.x + (p1.x - p0.x - iconSize.x) * 0.45f,
+            p0.y + (p1.y - p0.y) * 0.25f - iconSize.y * 0.5f  // Position at 35% from top
+        );
+        ImGui::GetWindowDrawList()->AddText(
+            ImGui::GetFont(), ImGui::GetFontSize() * iconScale,
+            iconPos, ImGui::GetColorU32(ImGuiCol_Text),
+            icon.c_str()
+        );
+
+        // Implement text wrapping for the label
+        float wrapWidth = p1.x - p0.x - 10.0f; // Available width with padding
+        float textHeight = ImGui::GetFontSize();
+        float textY = p0.y + (p1.y - p0.y) * 0.60f; // Position at 75% from top
+
+        // Calculate if we need to wrap (if text is wider than button)
+        ImVec2 textSize = ImGui::CalcTextSize(label.c_str());
+        if (textSize.x > wrapWidth) {
+            // Find where to split the text
+            size_t splitPos = label.find(" ");
+
+            if (splitPos != std::string::npos) {
+                // Split at space
+                std::string line1 = label.substr(0, splitPos);
+                std::string line2 = label.substr(splitPos + 1);
+
+                // Draw first line
+                ImVec2 line1Pos = ImVec2(
+                    p0.x + (p1.x - p0.x - ImGui::CalcTextSize(line1.c_str()).x) * 0.5f,
+                    textY - textHeight * 0.5f
+                );
+                ImGui::GetWindowDrawList()->AddText(line1Pos, ImGui::GetColorU32(ImGuiCol_Text), line1.c_str());
+
+                // Draw second line
+                ImVec2 line2Pos = ImVec2(
+                    p0.x + (p1.x - p0.x - ImGui::CalcTextSize(line2.c_str()).x) * 0.5f,
+                    textY + textHeight * 0.5f
+                );
+                ImGui::GetWindowDrawList()->AddText(line2Pos, ImGui::GetColorU32(ImGuiCol_Text), line2.c_str());
+            } else {
+                // No space to split, just draw the text with possible cutoff
+                ImVec2 textPos = ImVec2(
+                    p0.x + (p1.x - p0.x - textSize.x) * 0.5f,
+                    textY
+                );
+                ImGui::GetWindowDrawList()->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
+            }
+        } else {
+            // No wrapping needed, just center the text
+            ImVec2 textPos = ImVec2(
+                p0.x + (p1.x - p0.x - textSize.x) * 0.5f,
+                textY
+            );
+            ImGui::GetWindowDrawList()->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
+        }
+
+        // Add border when hovered or active
+        if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+            ImGui::GetWindowDrawList()->AddRect(p0, p1, ImGui::GetColorU32(ImGuiCol_ButtonActive), ImGui::GetStyle().FrameRounding);
+
+        ImGui::PopID();
+        return false;
+    }
+
     void Components::drawButtonBorder(
         const ImU32 borderColor,
         const ImU32 borderColorHovered,
@@ -319,5 +418,90 @@ namespace nexo::editor {
             // Draw the filled and colored polygon.
             fillConvexPolygon(drawList, segPoly, polyColors);
         }
+    }
+
+    bool Components::drawRowEntityDropdown(const std::string &label, ecs::Entity &targetEntity,
+                                        const std::vector<ecs::Entity>& entities,
+                                        const std::function<std::string(ecs::Entity)>& getNameFunc)
+    {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(label.c_str());
+
+        ImGui::TableNextColumn();
+
+        // Create a unique ID for this widget
+        ImGui::PushID(label.c_str());
+
+        //ImGui::SetNextItemWidth(-FLT_MIN); // Use all available width
+
+        bool changed = false;
+
+        // Build entity-name mapping
+        static std::vector<std::pair<ecs::Entity, std::string>> entityNamePairs;
+        static ecs::Entity lastTargetEntity = 0;
+        static std::vector<ecs::Entity> lastEntities;
+
+        // Only rebuild the mapping if entities list changed or target entity changed
+        bool needRebuild = lastTargetEntity != targetEntity ||
+                          lastEntities.size() != entities.size();
+
+        if (!needRebuild) {
+            for (size_t i = 0; i < entities.size() && !needRebuild; i++) {
+                needRebuild = lastEntities[i] != entities[i];
+            }
+        }
+
+        if (needRebuild) {
+            entityNamePairs.clear();
+            entityNamePairs.reserve(entities.size());
+            lastEntities = entities;
+            lastTargetEntity = targetEntity;
+
+            for (ecs::Entity entity : entities) {
+                std::string name = getNameFunc(entity);
+                entityNamePairs.emplace_back(entity, name);
+            }
+        }
+
+        // Find current index
+        int currentIndex = -1;
+        for (size_t i = 0; i < entityNamePairs.size(); i++) {
+            if (entityNamePairs[i].first == targetEntity) {
+                currentIndex = static_cast<int>(i);
+                break;
+            }
+        }
+
+        // Add a "None" option if we want to allow null selection
+        std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
+
+        // Draw the combo box
+        if (ImGui::BeginCombo("##entity_dropdown", currentItemName.c_str()))
+        {
+            // Optional: Add a "None" option for clearing the target
+            if (ImGui::Selectable("None", targetEntity == ecs::MAX_ENTITIES)) {
+                targetEntity = ecs::MAX_ENTITIES;
+                changed = true;
+            }
+
+            for (size_t i = 0; i < entityNamePairs.size(); i++)
+            {
+                const bool isSelected = (currentIndex == static_cast<int>(i));
+                if (ImGui::Selectable(entityNamePairs[i].second.c_str(), isSelected))
+                {
+                    targetEntity = entityNamePairs[i].first;
+                    changed = true;
+                }
+
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::PopID();
+        return changed;
     }
 }
