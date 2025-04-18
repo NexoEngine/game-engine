@@ -420,6 +420,55 @@ namespace nexo::editor {
         }
     }
 
+
+    bool Components::drawToolbarButton(const std::string& uniqueId, const std::string& icon,
+                                    const ImVec2& size,
+                                    const std::vector<GradientStop>& gradientStops,
+                                    float gradientAngle,
+                                    const ImU32 borderColor,
+                                    const ImU32 borderColorHovered,
+                                    const ImU32 borderColorActive,
+                                    const ImU32 iconColor)
+	{
+    	ImGui::PushID(uniqueId.c_str());
+
+        // Create invisible button for interaction
+        bool clicked = ImGui::InvisibleButton(("##" + uniqueId).c_str(), size);
+
+        // Get button rectangle coordinates
+        ImVec2 p_min = ImGui::GetItemRectMin();
+        ImVec2 p_max = ImGui::GetItemRectMax();
+
+        // Draw the gradient background
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        drawRectFilledLinearGradient(p_min, p_max, gradientAngle, gradientStops, drawList);
+
+        // Draw the icon
+        //ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImVec2 iconSize = ImGui::CalcTextSize(icon.c_str());
+        ImVec2 iconPos = ImVec2(
+            p_min.x + (p_max.x - p_min.x - iconSize.x) * 0.5f,
+            p_min.y + (p_max.y - p_min.y - iconSize.y) * 0.5f
+        );
+
+        // Draw the icon with specified color
+        drawList->AddText(iconPos, iconColor, icon.c_str());
+        //ImGui::PopFont();
+
+        // Draw border with highlighting
+        ImU32 currentBorderColor = borderColor;
+        if (ImGui::IsItemHovered())
+            currentBorderColor = borderColorHovered;
+        if (ImGui::IsItemActive())
+            currentBorderColor = borderColorActive;
+
+        const float borderThickness = 1.5f;
+        drawList->AddRect(p_min, p_max, currentBorderColor, 3.0f, 0, borderThickness);
+
+        ImGui::PopID();
+        return clicked;
+	}
+
     bool Components::drawRowEntityDropdown(const std::string &label, ecs::Entity &targetEntity,
                                         const std::vector<ecs::Entity>& entities,
                                         const std::function<std::string(ecs::Entity)>& getNameFunc)

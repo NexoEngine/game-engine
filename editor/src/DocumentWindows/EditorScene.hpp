@@ -16,10 +16,14 @@
 #include "ADocumentWindow.hpp"
 #include "IDocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
+#include "Components/Components.hpp"
+#include "Components/Widgets.hpp"
+#include "PopupManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
 
 namespace nexo::editor {
+
     class EditorScene : public ADocumentWindow {
         public:
         	using ADocumentWindow::ADocumentWindow;
@@ -77,11 +81,31 @@ namespace nexo::editor {
             ImVec2 m_viewportBounds[2];
             ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE m_currentGizmoMode = ImGuizmo::WORLD;
+            bool m_snapTranslateOn = false;
+            glm::vec3 m_snapTranslate = {10.0f, 10.0f, 10.0f};
+            bool m_snapRotateOn = false;
+            float m_angleSnap = 90.0f;
+            bool m_gridEnabled = false;
+            bool m_snapToGrid = false;
+            bool m_wireframeEnabled = false;
 
             int m_sceneId = -1;
             std::string m_sceneUuid;
             int m_activeCamera = -1;
             int m_editorCamera = -1;
+
+            PopupManager m_popupManager;
+
+            const std::vector<Components::GradientStop> m_buttonGradient = {
+                {0.0f, IM_COL32(50, 50, 70, 230)},
+                {1.0f, IM_COL32(30, 30, 45, 230)}
+            };
+
+            // Selected button gradient - lighter blue gradient
+            const std::vector<Components::GradientStop> m_selectedGradient = {
+                {0.0f, IM_COL32(70, 70, 120, 230)},
+                {1.0f, IM_COL32(50, 50, 100, 230)}
+            };
 
             /**
              * @brief Sets the main scene window's view size.
@@ -102,7 +126,14 @@ namespace nexo::editor {
              * a popup placeholder for adding primitive entities, and a draggable input for adjusting the target frames per second (FPS).
              * The toolbar is positioned relative to the current view to align with the scene layout.
              */
-            void renderToolbar() const;
+            void renderToolbar();
+            void initialToolbarSetup(const float buttonWidth, const float buttonHeight);
+            void renderEditorCameraToolbarButton();
+            bool renderGizmoModeToolbarButton(const bool showGizmoModeMenu, Widgets::ButtonProps &activeGizmoMode, Widgets::ButtonProps &inactiveGizmoMode);
+            void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu);
+            void renderSnapSubMenu(const ImVec2 &snapButtonPos, const ImVec2 &buttonSize, bool &showSnapMenu);
+            void snapSettingsPopup();
+            bool renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<Components::GradientStop> & gradientStop);
 
             /**
              * @brief Renders the transformation gizmo for the selected entity.
@@ -115,7 +146,7 @@ namespace nexo::editor {
              *
              * If the gizmo is actively manipulated, the entity's transform component is updated with the new values.
              */
-            void renderGizmo() const;
+            void renderGizmo();
             void renderView();
     };
 }

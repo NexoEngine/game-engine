@@ -155,6 +155,20 @@ namespace nexo::editor {
 		     */
 		    static void drawRectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle, std::vector<GradientStop> stops, ImDrawList* drawList = nullptr);
 
+		    static bool drawToolbarButton(const std::string& uniqueId, const std::string& icon,
+				const ImVec2& size = ImVec2(40, 40),
+                const std::vector<GradientStop>& gradientStops = {
+                    {0.0f, IM_COL32(60, 60, 80, 255)},
+                    {1.0f, IM_COL32(30, 30, 40, 255)}
+                },
+                float gradientAngle = 45.0f,
+                const ImU32 borderColor = IM_COL32(100, 100, 120, 255),
+                const ImU32 borderColorHovered = IM_COL32(150, 150, 200, 255),
+                const ImU32 borderColorActive = IM_COL32(200, 200, 255, 255),
+                const ImU32 iconColor = IM_COL32(255, 255, 255, 255)
+			);
+
+
 
 		    static bool drawRowEntityDropdown(const std::string &label, ecs::Entity &targetEntity,
                                      const std::vector<ecs::Entity>& entities,
