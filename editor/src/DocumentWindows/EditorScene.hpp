@@ -16,11 +16,10 @@
 #include "ADocumentWindow.hpp"
 #include "IDocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "Components/Components.hpp"
-#include "Components/Widgets.hpp"
 #include "PopupManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
+#include "ImNexo/Widgets.hpp"
 
 namespace nexo::editor {
 
@@ -37,6 +36,8 @@ namespace nexo::editor {
              * - Creating and configuring the scene.
              */
             void setup() override;
+
+            // No-op method in this class
             void shutdown() override;
 
             /**
@@ -68,10 +69,30 @@ namespace nexo::editor {
 			 * @return scene::SceneId The identifier of this scene.
 			 */
 			[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
+
+            /**
+            * @brief Gets the current viewport size.
+            *
+            * @return ImVec2 The width and height of the viewport in pixels.
+            */
 			[[nodiscard]] ImVec2 getViewportSize() const {return m_viewSize;};
 
+			/**
+			 * @brief Sets the active camera for this scene.
+			 *
+			 * Deactivates the current camera and switches to the specified camera entity.
+			 * The previously active camera will have its render and active flags set to false.
+			 *
+			 * @param cameraId Entity ID of the camera to set as active.
+			 */
 			void setCamera(ecs::Entity cameraId);
 
+            /**
+             * @brief Marks this scene as the default scene.
+             *
+             * When a scene is set as the default, it will be populated with
+             * default entities (lights, basic geometry) during setup.
+             */
             void setDefault() { m_defaultScene = true; };
 
         private:
@@ -96,13 +117,13 @@ namespace nexo::editor {
 
             PopupManager m_popupManager;
 
-            const std::vector<Components::GradientStop> m_buttonGradient = {
+            const std::vector<ImNexo::GradientStop> m_buttonGradient = {
                 {0.0f, IM_COL32(50, 50, 70, 230)},
                 {1.0f, IM_COL32(30, 30, 45, 230)}
             };
 
             // Selected button gradient - lighter blue gradient
-            const std::vector<Components::GradientStop> m_selectedGradient = {
+            const std::vector<ImNexo::GradientStop> m_selectedGradient = {
                 {0.0f, IM_COL32(70, 70, 120, 230)},
                 {1.0f, IM_COL32(50, 50, 100, 230)}
             };
@@ -113,10 +134,30 @@ namespace nexo::editor {
              * Configures the view to a default size of 1280x720 pixels.
              */
             void setupWindow();
-            void setupImguizmo() const;
+
+            /**
+             * @brief Creates and initializes a scene with basic components.
+             *
+             * Sets up the scene with a framebuffer, editor camera, and loads default
+             * entities if this is the default scene.
+             */
             void setupScene();
+
+            /**
+             * @brief Populates the scene with default entities.
+             *
+             * Creates standard light sources (ambient, directional, point, spot)
+             * and a simple ground plane in the scene.
+             */
             void loadDefaultEntities() const;
 
+            /**
+             * @brief Handles keyboard input events for the scene.
+             *
+             * Processes key presses for navigation, selection, and other scene-specific
+             * operations when the scene window is focused.
+             * @note not implemented yet
+             */
             void handleKeyEvents() const;
 
             /**
@@ -127,13 +168,92 @@ namespace nexo::editor {
              * The toolbar is positioned relative to the current view to align with the scene layout.
              */
             void renderToolbar();
+
+            /**
+             * @brief Sets up the initial layout and style for the toolbar.
+             *
+             * Creates a child window with specific size and style settings for the toolbar,
+             * positions it at the top of the viewport, and configures spacing.
+             *
+             * @param buttonWidth Standard width for toolbar buttons
+             * @param buttonHeight Standard height for toolbar buttons
+             */
             void initialToolbarSetup(const float buttonWidth, const float buttonHeight);
+
+            /**
+             * @brief Renders the editor camera button in the toolbar.
+             *
+             * Shows either a camera settings button (when editor camera is active) or a
+             * "switch back to editor camera" button (when a different camera is active).
+             */
             void renderEditorCameraToolbarButton();
-            bool renderGizmoModeToolbarButton(const bool showGizmoModeMenu, Widgets::ButtonProps &activeGizmoMode, Widgets::ButtonProps &inactiveGizmoMode);
+
+            /**
+             * @brief Renders the button to toggle between world/local coordinate modes.
+             *
+             * Updates the button props based on the current mode and renders the appropriate
+             * button with correct styling.
+             *
+             * @param showGizmoModeMenu Flag indicating if the mode dropdown menu is visible
+             * @param activeGizmoMode Reference to store the active mode button properties
+             * @param inactiveGizmoMode Reference to store the inactive mode button properties
+             * @return true if the button was clicked
+             */
+            bool renderGizmoModeToolbarButton(
+                const bool showGizmoModeMenu,
+                ImNexo::ButtonProps &activeGizmoMode,
+                ImNexo::ButtonProps &inactiveGizmoMode
+            );
+
+            /**
+             * @brief Renders the primitive creation dropdown menu.
+             *
+             * Creates a dropdown with buttons for adding primitive shapes like cubes,
+             * spheres, etc. to the scene.
+             *
+             * @param primitiveButtonPos Position of the parent button that opened this menu
+             * @param buttonSize Size of buttons in the dropdown
+             * @param showPrimitiveMenu Reference to the flag controlling menu visibility
+             */
             void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu);
+
+            /**
+             * @brief Renders the snap settings dropdown menu.
+             *
+             * Creates a dropdown with toggles for different snapping modes (translate, rotate)
+             * and their settings.
+             *
+             * @param snapButtonPos Position of the parent button that opened this menu
+             * @param buttonSize Size of buttons in the dropdown
+             * @param showSnapMenu Reference to the flag controlling menu visibility
+             */
             void renderSnapSubMenu(const ImVec2 &snapButtonPos, const ImVec2 &buttonSize, bool &showSnapMenu);
+
+            /**
+             * @brief Handles the snap settings popup dialog.
+             *
+             * Creates a modal popup allowing users to configure fine-grained snap settings
+             * like translate values and rotation angles.
+             */
             void snapSettingsPopup();
-            bool renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<Components::GradientStop> & gradientStop);
+
+            /**
+             * @brief Renders a standard toolbar button with optional tooltip and styling.
+             *
+             * Creates a gradient button with the specified icon and shows a tooltip on hover.
+             *
+             * @param uniqueId Unique identifier for the ImGui control
+             * @param icon Font icon to display on the button
+             * @param tooltip Text to show when hovering over the button
+             * @param gradientStop Color gradient for the button background
+             * @return true if the button was clicked
+             */
+            bool renderToolbarButton(
+                const std::string &uniqueId,
+                const std::string &icon,
+                const std::string &tooltip,
+                const std::vector<ImNexo::GradientStop> & gradientStop
+            );
 
             /**
              * @brief Renders the transformation gizmo for the selected entity.
@@ -147,6 +267,13 @@ namespace nexo::editor {
              * If the gizmo is actively manipulated, the entity's transform component is updated with the new values.
              */
             void renderGizmo();
+
+            /**
+             * @brief Renders the main viewport showing the 3D scene.
+             *
+             * Handles resizing of the viewport, draws the framebuffer texture containing the
+             * rendered scene, and updates viewport bounds for input handling.
+             */
             void renderView();
     };
 }

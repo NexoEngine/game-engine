@@ -21,24 +21,38 @@ namespace nexo::editor {
 
 	constexpr auto LOGURU_CALLBACK_NAME = "GEE";
 
+	/**
+     * @brief Structure representing a formatted log message.
+     *
+     * Contains all necessary information for displaying a log message in the console,
+     * including its verbosity level, the message text, and an optional prefix.
+     */
     struct LogMessage {
-        loguru::Verbosity verbosity;
-        std::string message;
-        std::string prefix;
+        loguru::Verbosity verbosity; ///< The verbosity level of the log message
+        std::string message;         ///< The content of the log message
+        std::string prefix;          ///< Optional prefix for the log message
     };
 
+
+    /**
+     * @brief Console window for displaying and managing application logs.
+     *
+     * This class provides a visual interface for viewing log messages with different
+     * verbosity levels, executing commands, and managing log settings. It integrates
+     * with the loguru logging system to display real-time log messages.
+     */
     class ConsoleWindow final : public ADocumentWindow {
         public:
-			/**
-			* @brief Constructs and initializes a ConsoleWindow.
-			*
-			* This constructor sets up the console's logging functionality by registering a loguru callback via
-			* loguru::add_callback to route log messages to the console (using the static loguruCallback) and by
-			* establishing an engine log callback that maps custom LogLevel messages to loguru verbosity levels
-			* using nexoLevelToLoguruLevel before logging them with VLOG_F.
-			*
-			* @param registry The window registry used to register this console window.
-			*/
+            /**
+            * @brief Constructs and initializes a ConsoleWindow.
+            *
+            * This constructor sets up the console's logging functionality by registering a loguru callback via
+            * loguru::add_callback to route log messages to the console (using the static loguruCallback) and by
+            * establishing an engine log callback that maps custom LogLevel messages to loguru verbosity levels
+            * using nexoLevelToLoguruLevel before logging them with VLOG_F.
+            *
+            * @param registry The window registry used to register this console window.
+            */
             explicit ConsoleWindow(const std::string &windowName, WindowRegistry &registry);
 
             /**
@@ -51,6 +65,7 @@ namespace nexo::editor {
                 loguru::remove_callback(LOGURU_CALLBACK_NAME);
             };
 
+            // No-op method in this class
             void setup() override;
 
             /**
@@ -73,8 +88,19 @@ namespace nexo::editor {
              * cleared afterward. Additionally, a popup for adjusting verbosity settings is available, accessible via a button.
              */
             void show() override;
+
+            // No-op method in this class
             void update() override;
 
+            /**
+             * @brief Executes a command entered in the console.
+             *
+             * Processes the given command line, adds it to the command history,
+             * and displays it in the log.
+             *
+             * @param commandLine The command text to execute.
+             * @note not implemented yet
+             */
             void executeCommand(const char* commandLine);
 
         private:
@@ -119,10 +145,42 @@ namespace nexo::editor {
              */
             void addLog(const LogMessage& message);
 
+            /**
+             * @brief Adds a formatted log message to the console.
+             *
+             * Creates a log message using printf-style formatting and adds it to the log collection.
+             *
+             * @tparam Args Variadic template for format arguments
+             * @param fmt Format string similar to printf
+             * @param args Arguments for the format string
+             */
             template <typename... Args>
             void addLog(const char* fmt, Args&&... args);
+
+            /**
+             * @brief Displays a single log entry in the console UI.
+             *
+             * Renders a log message with appropriate styling based on its verbosity level.
+             *
+             * @param verbosity The verbosity level that determines the message's color
+             * @param msg The message text to display
+             */
             void displayLog(loguru::Verbosity verbosity, const std::string &msg) const;
+
+            /**
+             * @brief Exports buffered logs to the log file.
+             *
+             * Writes any logs in the export buffer to the configured log file,
+             * helping to prevent memory buildup from excessive logging.
+             */
             void exportLogsBuffered();
+
+            /**
+             * @brief Displays the popup for configuring verbosity settings.
+             *
+             * Shows a popup menu that allows the user to select which verbosity levels
+             * to display in the console and configure other log-related settings.
+             */
             void showVerbositySettingsPopup();
 
             /**

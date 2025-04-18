@@ -29,14 +29,26 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Stores scene identification information.
+     *
+     * Contains the scene's unique identifier and its associated window ID
+     * to facilitate operations that require both scene and UI context.
+     */
 	struct SceneProperties {
-        scene::SceneId sceneId;
-        WindowId windowId;
+        scene::SceneId sceneId;  ///< The unique identifier for the scene
+        WindowId windowId;       ///< The associated window identifier in the UI
     };
 
+    /**
+     * @brief Links an entity with its parent scene information.
+     *
+     * Combines entity ID with scene properties to maintain the hierarchical
+     * relationship between entities and their containing scenes.
+     */
     struct EntityProperties {
-        SceneProperties sceneProperties;
-        ecs::Entity entity;
+        SceneProperties sceneProperties;  ///< Properties of the scene containing this entity
+        ecs::Entity entity;               ///< The entity identifier
     };
 
     /**
@@ -80,7 +92,10 @@ namespace nexo::editor {
        		using ADocumentWindow::ADocumentWindow;
             ~SceneTreeWindow() override;
 
+            // No-op method in this class
             void setup() override;
+
+            // No-op method in this class
             void shutdown() override;
 
             /**
@@ -248,6 +263,14 @@ namespace nexo::editor {
              */
             bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
 
+            /**
+             * @brief Handles camera preview tooltips when hovering over camera nodes.
+             *
+             * When hovering over a camera node, renders a preview tooltip showing the camera's
+             * view and enables rendering for that camera temporarily.
+             *
+             * @param obj The scene object (camera) being hovered over.
+             */
             void handleHovering(const SceneObject &obj) const;
 
             /**
@@ -280,9 +303,43 @@ namespace nexo::editor {
              * @param obj The scene object representing the camera to be deleted.
              */
             void cameraSelected(const SceneObject &obj) const;
+
+            /**
+             * @brief Handles camera preview when hovering over a camera node.
+             *
+             * Renders a small preview of what the camera sees when the cursor
+             * hovers over the camera node in the scene tree.
+             *
+             * @param obj The scene object representing the camera being hovered.
+             */
             void cameraHovered(const SceneObject &obj) const;
+
+            /**
+             * @brief Displays context menu options for an entity.
+             *
+             * Shows options like "Delete Entity" when right-clicking on an entity
+             * in the scene tree. Handles entity deletion when selected.
+             *
+             * @param obj The scene object representing the entity.
+             */
             void entitySelected(const SceneObject &obj) const;
+
+            /**
+             * @brief Renders a node and its children in the scene tree.
+             *
+             * Handles the recursive display of scene tree nodes, including selection,
+             * renaming, and context menus for each node type.
+             *
+             * @param object The scene object to render.
+             */
             void showNode(SceneObject &object);
+
+            /**
+             * @brief Shows the context menu for the scene tree background.
+             *
+             * Displays options like "Create Scene" when right-clicking on an empty
+             * area of the scene tree.
+             */
             void sceneContextMenu();
 
             /**
@@ -294,7 +351,28 @@ namespace nexo::editor {
              * The popup is closed either upon successful scene creation or when the "Cancel" button is clicked.
              */
             void sceneCreationMenu();
+
+            /**
+             * @brief Creates a new scene with the provided name.
+             *
+             * Validates the scene name, creates a new EditorScene object, and configures
+             * appropriate docking settings for the new scene window.
+             *
+             * @param newSceneName The name for the new scene.
+             * @return true if the scene was created successfully, false otherwise.
+             */
             bool handleSceneCreation(const std::string &newSceneName);
+
+            /**
+             * @brief Sets up docking for a new scene window.
+             *
+             * Creates a new docking node and configures it to contain the specified windows,
+             * positioning it at the location of the existing floating window.
+             *
+             * @param floatingWindowName The name of the existing floating window to use as a reference.
+             * @param newSceneName The name of the new scene window to dock.
+             * @return true if the docking setup was successful, false otherwise.
+             */
             bool setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName);
     };
 }
