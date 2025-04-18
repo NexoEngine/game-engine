@@ -13,30 +13,28 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "DirectionalLightProperty.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
 #include "components/Light.hpp"
+#include "ImNexo/Widgets.hpp"
 
 namespace nexo::editor {
 
-	void DirectionalLightProperty::show(const ecs::Entity entity)
-	{
+    void DirectionalLightProperty::show(const ecs::Entity entity)
+    {
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
 
-
-        if (EntityPropertiesComponents::drawHeader("##DirectionalNode", "Directional light"))
+        if (ImNexo::Header("##DirectionalNode", "Directional light"))
         {
-       		ImGui::Spacing();
-        	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-			static bool showColorPicker = false;
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			glm::vec4 color = {directionalComponent.color, 1.0f};
-			Widgets::drawColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
-			directionalComponent.color = color;
+            ImGui::Spacing();
+            static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+            static bool showColorPicker = false;
+            ImGui::Text("Color");
+            ImGui::SameLine();
+            glm::vec4 color = {directionalComponent.color, 1.0f};
+            ImNexo::ColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
+            directionalComponent.color = color;
 
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-   			if (ImGui::BeginTable("InspectorDirectionTable", 4,
+            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+            if (ImGui::BeginTable("InspectorDirectionTable", 4,
                 ImGuiTableFlags_SizingStretchProp))
             {
                 ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
@@ -44,12 +42,12 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                EntityPropertiesComponents::drawRowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
+                ImNexo::RowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
 
                 ImGui::EndTable();
             }
             ImGui::PopStyleVar();
-        	ImGui::TreePop();
+            ImGui::TreePop();
         }
-	}
+    }
 }

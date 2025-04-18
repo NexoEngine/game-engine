@@ -13,11 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CameraProperty.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
 #include "components/Camera.hpp"
-#include "IconsFontAwesome.h"
-#include "Components/Components.hpp"
+#include "ImNexo/Elements.hpp"
+#include "ImNexo/EntityProperties.hpp"
 
 namespace nexo::editor {
 
@@ -25,66 +23,10 @@ namespace nexo::editor {
 	{
         auto& cameraComponent = Application::getEntityComponent<components::CameraComponent>(entity);
 
-		if (EntityPropertiesComponents::drawHeader("##CameraNode", "Camera"))
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-			if (ImGui::BeginTable("InspectorViewPortParams", 4,
-				ImGuiTableFlags_SizingStretchProp))
-			{
-				ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-				ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-				ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-				ImGui::TableSetupColumn("##Lock", ImGuiTableColumnFlags_WidthStretch);
-   				glm::vec2 viewPort = {cameraComponent.width, cameraComponent.height};
-       			std::vector<ImU32> badgeColors;
-            	std::vector<ImU32> textBadgeColors;
-
-				const bool disabled = cameraComponent.viewportLocked;
-				if (disabled)
-					ImGui::BeginDisabled();
-				if (EntityPropertiesComponents::drawRowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled))
-				{
-					if (!cameraComponent.viewportLocked)
-						cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
-				}
-				if (disabled)
-					ImGui::EndDisabled();
-
-				ImGui::TableSetColumnIndex(3);
-
-				// Lock button
-				const std::string lockBtnLabel = cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
-				if (Components::drawButton(lockBtnLabel)) {
-					cameraComponent.viewportLocked = !cameraComponent.viewportLocked;
-				}
-
-
-				ImGui::EndTable();
-			}
-
-			if (ImGui::BeginTable("InspectorCameraVariables", 2, ImGuiTableFlags_SizingStretchProp))
-            {
-				ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-				ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-
-				EntityPropertiesComponents::drawRowDragFloat1("FOV", "", &cameraComponent.fov, 30.0f, 120.0f, 0.3f);
-				EntityPropertiesComponents::drawRowDragFloat1("Near plane", "", &cameraComponent.nearPlane, 0.01f, 1.0f, 0.001f);
-				EntityPropertiesComponents::drawRowDragFloat1("Far plane", "", &cameraComponent.farPlane, 100.0f, 10000.0f, 1.0f);
-
-                ImGui::EndTable();
-            }
-
-
-			ImGui::PopStyleVar();
-
-			ImGui::Spacing();
-			static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-			static bool showColorPicker = false;
-			ImGui::Text("Clear Color");
-			ImGui::SameLine();
-			Widgets::drawColorEditor("##ColorEditor Spot light", &cameraComponent.clearColor, &colorPickerMode, &showColorPicker);
-
-        	ImGui::TreePop();
+        if (ImNexo::Header("##CameraNode", "Camera"))
+        {
+            ImNexo::Camera(cameraComponent);
+            ImGui::TreePop();
         }
 	}
 }

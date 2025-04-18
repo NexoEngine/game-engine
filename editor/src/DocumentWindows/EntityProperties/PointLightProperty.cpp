@@ -13,10 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PointLightProperty.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
 #include "components/Light.hpp"
 #include "math/Light.hpp"
+#include "ImNexo/Widgets.hpp"
 
 namespace nexo::editor {
 
@@ -24,7 +23,7 @@ namespace nexo::editor {
 	{
         auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
 
-        if (EntityPropertiesComponents::drawHeader("##PointNode", "Point light"))
+        if (ImNexo::Header("##PointNode", "Point light"))
         {
        		ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
@@ -32,7 +31,7 @@ namespace nexo::editor {
 			ImGui::Text("Color");
 			ImGui::SameLine();
 			glm::vec4 color = {pointComponent.color, 1.0f};
-			Widgets::drawColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
+			ImNexo::ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
 			pointComponent.color = color;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
@@ -44,7 +43,7 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &pointComponent.pos.x);
+                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &pointComponent.pos.x);
 
                 ImGui::EndTable();
             }

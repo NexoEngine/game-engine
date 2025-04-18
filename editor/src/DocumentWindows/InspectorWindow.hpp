@@ -37,6 +37,8 @@ namespace nexo::editor {
 			* properties in the inspector UI.
 			*/
 	        void setup() override;
+
+			// No-op method in this class
 	        void shutdown() override;
 
 			/**
@@ -47,6 +49,8 @@ namespace nexo::editor {
 			* if a valid selection exists, displays either scene or entity properties depending on the selection type.
 			*/
 	        void show() override;
+
+			// No-op method in this class
 	        void update() override;
 
 			/**
