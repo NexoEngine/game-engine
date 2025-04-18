@@ -17,6 +17,7 @@
 #include <glm/glm.hpp>
 #include <string>
 
+#include "Components/Components.hpp"
 #include "components/Camera.hpp"
 #include "components/Render3D.hpp"
 #include "components/Transform.hpp"
@@ -83,5 +84,26 @@ namespace nexo::editor {
 			static void drawCameraControllerProperties(components::PerspectiveCameraController &cameraControllerComponent);
 
 			static bool drawCameraCreator(const scene::SceneId sceneId, ImVec2 sceneViewportSize);
+
+
+			struct ButtonProps {
+                std::string uniqueId;
+                std::string icon;
+                std::function<void()> onClick = nullptr;
+                std::function<void()> onRightClick = nullptr;
+                std::string tooltip = "";
+
+                std::vector<Components::GradientStop> buttonGradient = {
+                    {0.0f, IM_COL32(50, 50, 70, 230)},
+                    {1.0f, IM_COL32(30, 30, 45, 230)}
+                };
+            };
+            enum class DropdownOrientation {
+                DOWN,   // Dropdown appears below the button
+                UP,     // Dropdown appears above the button
+                RIGHT,  // Dropdown appears to the right of the button
+                LEFT    // Dropdown appears to the left of the button
+            };
+			static void drawVerticalButtonDropDown(const ImVec2& buttonPos, const ImVec2 buttonSize, const std::vector<ButtonProps> &buttonProps, bool &closure, const DropdownOrientation orientation = DropdownOrientation::DOWN);
 	};
 }
