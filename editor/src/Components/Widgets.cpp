@@ -309,6 +309,60 @@ namespace nexo::editor {
         Widgets::drawColorEditor("##ColorEditor Spot light", &cameraComponent.clearColor, &colorPickerMode, &showColorPicker);
 	}
 
+	void Widgets::drawCameraTargetProperties(components::PerspectiveCameraTarget &cameraTargetComponent)
+	{
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorControllerTable", 2,
+                ImGuiTableFlags_SizingStretchProp))
+        {
+            auto &app = getApp();
+            auto &selector = Selector::get();
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            const std::vector<ecs::Entity> &entities = app.m_coordinator->getAllEntitiesWith<
+                                                            components::TransformComponent,
+                                                            ecs::Exclude<components::CameraComponent>,
+                                                            ecs::Exclude<components::DirectionalLightComponent>,
+                                                            ecs::Exclude<components::PointLightComponent>,
+                                                            ecs::Exclude<components::AmbientLightComponent>,
+                                                            ecs::Exclude<components::SpotLightComponent>>();
+
+            EntityPropertiesComponents::drawRowDragFloat1("Mouse sensitivity", "", &cameraTargetComponent.mouseSensitivity, 0.1f);
+            EntityPropertiesComponents::drawRowDragFloat1("Distance", "", &cameraTargetComponent.distance, 0.1f);
+            Components::drawRowEntityDropdown(
+                "Target Entity",
+                cameraTargetComponent.targetEntity, entities,
+                [&app, &selector](ecs::Entity e) {
+                    return selector.getUiHandle(
+                            app.m_coordinator->getComponent<components::UuidComponent>(e).uuid,
+                            std::to_string(e)
+                    );
+            });
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar();
+	}
+
+	void Widgets::drawCameraControllerProperties(components::PerspectiveCameraController &cameraControllerComponent)
+	{
+    	ImGui::Spacing();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorControllerTable", 2,
+                ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            EntityPropertiesComponents::drawRowDragFloat1("Mouse sensitivity", "", &cameraControllerComponent.mouseSensitivity);
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar();
+	}
+
 	bool Widgets::drawCameraCreator(const scene::SceneId sceneId, ImVec2 sceneViewportSize)
 	{
 	    auto &app = getApp();
@@ -377,7 +431,107 @@ namespace nexo::editor {
                 ImGui::TreePop();
             }
 
-            ImGui::EndChild();
+            if (app.m_coordinator->entityHasComponent<components::PerspectiveCameraTarget>(camera) &&
+                EntityPropertiesComponents::drawHeader("##PerspectiveCameraTarget", "Camera Target Component"))
+            {
+                auto &cameraTargetComponent = app.m_coordinator->getComponent<components::PerspectiveCameraTarget>(camera);
+                Widgets::drawCameraTargetProperties(cameraTargetComponent);
+                ImGui::TreePop();
+            }
+
+            if (app.m_coordinator->entityHasComponent<components::PerspectiveCameraController>(camera) &&
+                EntityPropertiesComponents::drawHeader("##PerspectiveCameraController", "Camera Controller Component"))
+            {
+                auto &cameraControllerComponent = app.m_coordinator->getComponent<components::PerspectiveCameraController>(camera);
+                Widgets::drawCameraControllerProperties(cameraControllerComponent);
+                ImGui::TreePop();
+            }
+
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Spacing();
+            // Add Component button
+            const float buttonWidth = inspectorWidth - 16;
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+            float centeredX = (inspectorWidth - buttonWidth) * 0.5f;
+            ImGui::SetCursorPosX(centeredX);
+
+            // Static variables for state tracking
+            static bool showComponentSelector = false;
+            static float animProgress = 0.0f;
+            static float lastClickTime = 0.0f;
+
+            // Button with arrow indicating state
+            std::string buttonText = "Add Component " + std::string(showComponentSelector ? ICON_FA_CHEVRON_UP : ICON_FA_CHEVRON_DOWN);
+
+            if (Components::drawButton(buttonText.c_str(), ImVec2(buttonWidth, 0)))
+            {
+                showComponentSelector = !showComponentSelector;
+                if (showComponentSelector) {
+                    lastClickTime = ImGui::GetTime();
+                    animProgress = 0.0f;
+                }
+            }
+            ImGui::PopStyleVar();
+
+            // Component selector with just two options
+            if (showComponentSelector)
+            {
+                // Animation calculation
+                const float animDuration = 0.25f;
+                float timeSinceClick = ImGui::GetTime() - lastClickTime;
+                animProgress = std::min(timeSinceClick / animDuration, 1.0f);
+
+                // Simplified component grid with compact layout
+                const float maxGridHeight = 90.0f;
+                const float currentHeight = maxGridHeight * animProgress;
+
+                // Create child window for components with animated height
+                ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4)); // Reduce spacing between items
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 8)); // Better padding inside items
+
+                ImGui::BeginChild("ComponentSelector", ImVec2(buttonWidth, currentHeight), 0, ImGuiWindowFlags_NoScrollbar);
+
+                if (animProgress > 0.5f)
+                {
+                    // Center elements horizontally with proper spacing
+                    const float itemSize = 75.0f;
+
+                    // Draw component buttons side-by-side with controlled spacing
+                    ImGui::BeginGroup();
+
+                    if (!app.m_coordinator->entityHasComponent<components::PerspectiveCameraTarget>(camera) &&
+                        !app.m_coordinator->entityHasComponent<components::PerspectiveCameraController>(camera) &&
+                        Components::drawComponentButton("camera_target", ICON_FA_CAMERA, "Camera target", ImVec2(75.0f, 75.0f)))
+                    {
+                        components::PerspectiveCameraTarget cameraTarget{};
+                        app.m_coordinator->addComponent(camera, cameraTarget);
+                        showComponentSelector = false;
+                    }
+                    ImGui::SameLine();
+                    if (!app.m_coordinator->entityHasComponent<components::PerspectiveCameraTarget>(camera) &&
+                        !app.m_coordinator->entityHasComponent<components::PerspectiveCameraController>(camera) &&
+                        Components::drawComponentButton("camera_controller", ICON_FA_GAMEPAD, "Camera Controller", ImVec2(75.0f, 75.0f)))
+                    {
+                        components::PerspectiveCameraController cameraController{};
+                        app.m_coordinator->addComponent(camera, cameraController);
+                        showComponentSelector = false;
+                    }
+                    ImGui::EndGroup();
+                }
+
+                ImGui::EndChild();
+                ImGui::PopStyleVar(3);
+
+                // Reset animation if needed
+                if (!showComponentSelector && animProgress >= 1.0f) {
+                    animProgress = 0.0f;
+                }
+            }
+
+            ImGui::EndChild(); // End CameraInspector
         }
         ImGui::NextColumn();
         // --- Right Side: Camera Preview ---
