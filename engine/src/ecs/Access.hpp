@@ -149,31 +149,4 @@ namespace nexo::ecs {
      */
     template<typename T>
     struct IsSingleton : std::bool_constant<IsReadSingleton<T>::value || IsWriteSingleton<T>::value> {};
-
-    /**
-     * @brief Wrapper for component types that should exclude entities from a group
-     *
-     * Used to specify component types that, if present on an entity, will exclude
-     * that entity from the group even if it has all the required components.
-     *
-     * @tparam Components Component types that exclude entities
-     */
-    template<typename... Components>
-    struct ExcludeComponents {
-        using ComponentTypes = std::tuple<Components...>;
-    };
-
-    /**
-     * @brief Helper function to create an Exclude object
-     *
-     * Similar to the get<> helper that already exists in your codebase,
-     * this provides a cleaner syntax for creating exclusions.
-     *
-     * @tparam Components Component types to exclude
-     * @return Exclude<Components...> object
-     */
-    template<typename... Components>
-    ExcludeComponents<Components...> exclude() {
-        return ExcludeComponents<Components...>{};
-    }
 }
