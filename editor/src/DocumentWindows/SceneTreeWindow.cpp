@@ -215,10 +215,22 @@ namespace nexo::editor {
         if (ImGui::MenuItem("Delete Camera"))
         {
          	const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
-          	for (const auto &scene : scenes)
-           		scene->deleteCamera(obj.data.entity);
         	selector.unselectEntity();
         	app.deleteEntity(obj.data.entity);
+        }
+
+        if (ImGui::MenuItem("Switch to"))
+        {
+            auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
+            cameraComponent.render = true;
+            cameraComponent.active = true;
+            const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
+            for (const auto &scene : scenes) {
+                if (scene->getSceneId() == obj.data.sceneProperties.sceneId) {
+                    scene->setCamera(obj.data.entity);
+                    break;
+                }
+            }
         }
     }
 

@@ -61,7 +61,6 @@ namespace nexo::editor {
         m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
-        m_cameras.insert(static_cast<ecs::Entity>(m_editorCamera));
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
         components::PerspectiveCameraController controller;
         Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_editorCamera), controller);
@@ -112,13 +111,13 @@ namespace nexo::editor {
     	// Will be implemeneted later
     }
 
-    void EditorScene::deleteCamera(const ecs::Entity cameraId)
+    void EditorScene::setCamera(ecs::Entity cameraId)
     {
-    	if (static_cast<int>(cameraId) == m_activeCamera)
-    		m_activeCamera = -1;
-    	m_cameras.erase(cameraId);
-    	if (!m_cameras.empty())
-    		m_activeCamera = *m_cameras.begin();
+        auto &app = getApp();
+        auto &oldCameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        oldCameraComponent.active = false;
+        oldCameraComponent.render = false;
+        m_activeCamera = cameraId;
     }
 
     void EditorScene::renderToolbar() const
@@ -250,7 +249,8 @@ namespace nexo::editor {
             return;
         if (m_focused && m_hovered)
             handleKeyEvents();
-        runEngine(m_sceneId, RenderingType::FRAMEBUFFER, SceneType::EDITOR);
+        SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
+        runEngine(m_sceneId, RenderingType::FRAMEBUFFER, sceneType);
         auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
