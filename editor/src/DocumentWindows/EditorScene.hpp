@@ -66,17 +66,7 @@ namespace nexo::editor {
 			[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
 			[[nodiscard]] ImVec2 getViewportSize() const {return m_viewSize;};
 
-
-			/**
-			* @brief Removes a camera from the scene and updates the active camera.
-			*
-			* Removes the specified camera entity from the collection. If the removed camera was the active one,
-			* it resets the active camera to an invalid state (-1) and, if any cameras remain, sets the active camera
-			* to the first available camera in the collection.
-			*
-			* @param cameraId The identifier of the camera entity to delete.
-			*/
-            void deleteCamera(ecs::Entity cameraId);
+			void setCamera(ecs::Entity cameraId);
 
             void setDefault() { m_defaultScene = true; };
 
@@ -90,7 +80,6 @@ namespace nexo::editor {
 
             int m_sceneId = -1;
             std::string m_sceneUuid;
-            std::set<ecs::Entity> m_cameras;
             int m_activeCamera = -1;
             int m_editorCamera = -1;
 

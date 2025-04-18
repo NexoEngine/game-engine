@@ -32,6 +32,11 @@ namespace nexo::editor {
 	    return std::static_pointer_cast<T>(ptr);
 	}
 
+	template<typename T>
+	std::shared_ptr<T> castWindow(std::shared_ptr<IDocumentWindow>& ptr) {
+	    return std::static_pointer_cast<T>(ptr);
+	}
+
 	class WindowRegistry {
 		public:
 
@@ -145,6 +150,25 @@ namespace nexo::editor {
 			    auto it = m_windows.find(typeid(T));
 			    if (it == m_windows.end()) {
 			        static const std::vector<std::shared_ptr<IDocumentWindow>> empty;
+			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);
+			    }
+			    return std::ranges::transform_view(std::ranges::ref_view(it->second), caster);
+			}
+
+			template<typename T>
+			requires std::derived_from<T, IDocumentWindow>
+			std::ranges::transform_view<
+			    std::ranges::ref_view<std::vector<std::shared_ptr<IDocumentWindow>>>,
+			    std::shared_ptr<T>(*)(std::shared_ptr<IDocumentWindow>&)
+			>
+			getWindows()
+			{
+			    // Helper: non-capturing function for casting:
+			    std::shared_ptr<T>(*caster)(std::shared_ptr<IDocumentWindow>&) = &castWindow<T>;
+
+			    auto it = m_windows.find(typeid(T));
+			    if (it == m_windows.end()) {
+			        static std::vector<std::shared_ptr<IDocumentWindow>> empty;
 			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);
 			    }
 			    return std::ranges::transform_view(std::ranges::ref_view(it->second), caster);
