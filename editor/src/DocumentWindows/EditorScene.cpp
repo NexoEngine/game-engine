@@ -134,7 +134,7 @@ namespace nexo::editor {
             return;
         const ecs::Entity entity = selector.getSelectedEntity();
         const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
-        const auto &cameraComponent = coord->getComponent<components::CameraComponent>(m_activeCamera);
+        auto &cameraComponent = coord->getComponent<components::CameraComponent>(m_activeCamera);
         ImGuizmo::SetOrthographic(cameraComponent.type == components::CameraType::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
         ImGuizmo::SetID(static_cast<int>(entity));
@@ -162,10 +162,12 @@ namespace nexo::editor {
 
         if (ImGuizmo::IsUsing())
         {
+            cameraComponent.active = false;
             transf->get().pos = translation;
             transf->get().quat = quaternion;
             transf->get().size = scale;
-        }
+        } else
+            cameraComponent.active = true;
     }
 
     void EditorScene::renderView()
