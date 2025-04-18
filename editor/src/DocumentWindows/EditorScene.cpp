@@ -26,13 +26,12 @@
 #include "Nexo.hpp"
 #include "Texture.hpp"
 #include "WindowRegistry.hpp"
-#include "Components/Widgets.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
 #include "math/Matrix.hpp"
 #include "context/Selector.hpp"
 #include "utils/String.hpp"
+#include "ImNexo/Widgets.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -44,7 +43,6 @@ namespace nexo::editor {
 
     void EditorScene::setup()
     {
-        setupImguizmo();
         setupWindow();
         setupScene();
     }
@@ -53,7 +51,6 @@ namespace nexo::editor {
     {
         auto &app = getApp();
 
-        // New handling
         m_sceneId = static_cast<int>(app.getSceneManager().createScene(m_windowName));
         renderer::FramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
@@ -75,11 +72,6 @@ namespace nexo::editor {
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene)
             loadDefaultEntities();
-    }
-
-    void EditorScene::setupImguizmo() const
-    {
-        ImGuizmo::SetOrthographic(true);
     }
 
     void EditorScene::loadDefaultEntities() const
@@ -144,20 +136,20 @@ namespace nexo::editor {
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
     }
 
-    bool EditorScene::renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<Components::GradientStop> & gradientStop)
+    bool EditorScene::renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<ImNexo::GradientStop> & gradientStop)
     {
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
-        bool clicked = Components::drawToolbarButton(uniqueId, icon, ImVec2(buttonWidth, buttonHeight), gradientStop);
+        bool clicked = ImNexo::IconGradientButton(uniqueId, icon, ImVec2(buttonWidth, buttonHeight), gradientStop);
         if (!tooltip.empty() && ImGui::IsItemHovered())
-            ImGui::SetTooltip(tooltip.c_str());
+            ImGui::SetTooltip("%s", tooltip.c_str());
         return clicked;
     }
 
     void EditorScene::renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu)
     {
         auto &app = getApp();
-        static const std::vector<Widgets::ButtonProps> buttonProps =
+        static const std::vector<ImNexo::ButtonProps> buttonProps =
         {
             {
                 .uniqueId = "cube_primitive",
@@ -171,12 +163,12 @@ namespace nexo::editor {
                 .tooltip = "Create Cube"
             }
         };
-        Widgets::drawVerticalButtonDropDown(primitiveButtonPos, buttonSize, buttonProps, showPrimitiveMenu);
+        ImNexo::ButtonDropDown(primitiveButtonPos, buttonSize, buttonProps, showPrimitiveMenu);
     }
 
     void EditorScene::renderSnapSubMenu(const ImVec2 &snapButtonPos, const ImVec2 &buttonSize, bool &showSnapMenu)
     {
-        const std::vector<Widgets::ButtonProps> buttonProps =
+        const std::vector<ImNexo::ButtonProps> buttonProps =
         {
             {
                 .uniqueId = "toggle_translate_snap",
@@ -222,7 +214,7 @@ namespace nexo::editor {
             //     .buttonGradient = (m_snapScaleOn) ? m_selectedGradient : buttonGradient
             // }
         };
-        Widgets::drawVerticalButtonDropDown(snapButtonPos, buttonSize, buttonProps, showSnapMenu);
+        ImNexo::ButtonDropDown(snapButtonPos, buttonSize, buttonProps, showSnapMenu);
     }
 
     void EditorScene::snapSettingsPopup()
@@ -239,7 +231,7 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                EntityPropertiesComponents::drawRowDragFloat3("Translate Snap", "X", "Y", "Z", &this->m_snapTranslate.x);
+                ImNexo::RowDragFloat3("Translate Snap", "X", "Y", "Z", &this->m_snapTranslate.x);
                 ImGui::EndTable();
             }
 
@@ -252,7 +244,7 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Empty1", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Empty2", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                EntityPropertiesComponents::drawRowDragFloat1("Rotate Snap", "", &this->m_angleSnap);
+                ImNexo::RowDragFloat1("Rotate Snap", "", &this->m_angleSnap);
                 ImGui::EndTable();
             }
             ImGui::Spacing();
@@ -262,7 +254,7 @@ namespace nexo::editor {
             float windowWidth = ImGui::GetWindowSize().x;
             ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
-            if (ImGui::Button("OK", ImVec2(buttonWidth, 0.0f)))
+            if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
                 m_popupManager.closePopupInContext();
             }
@@ -295,10 +287,10 @@ namespace nexo::editor {
         }
     }
 
-    bool EditorScene::renderGizmoModeToolbarButton(const bool showGizmoModeMenu, Widgets::ButtonProps &activeGizmoMode, Widgets::ButtonProps &inactiveGizmoMode)
+    bool EditorScene::renderGizmoModeToolbarButton(const bool showGizmoModeMenu, ImNexo::ButtonProps &activeGizmoMode, ImNexo::ButtonProps &inactiveGizmoMode)
     {
-        static const Widgets::ButtonProps gizmoLocalModeButtonProps = {"local_coords", ICON_FA_CROSSHAIRS, [this]() {this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;}, nullptr, "Local coordinates"};
-        static const Widgets::ButtonProps gizmoWorldModeButtonProps = {"world_coords", ICON_FA_GLOBE, [this]() {this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;}, nullptr, "World coordinates"};
+        static const ImNexo::ButtonProps gizmoLocalModeButtonProps = {"local_coords", ICON_FA_CROSSHAIRS, [this]() {this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;}, nullptr, "Local coordinates"};
+        static const ImNexo::ButtonProps gizmoWorldModeButtonProps = {"world_coords", ICON_FA_GLOBE, [this]() {this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;}, nullptr, "World coordinates"};
         if (m_currentGizmoMode == ImGuizmo::MODE::LOCAL) {
             activeGizmoMode = gizmoLocalModeButtonProps;
             inactiveGizmoMode = gizmoWorldModeButtonProps;
@@ -338,18 +330,18 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Gizmo operation button --------
-        static const Widgets::ButtonProps gizmoTranslateButtonProps = Widgets::ButtonProps{"translate", ICON_FA_ARROWS, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;}, nullptr, "Translate"};
-        static const Widgets::ButtonProps gizmoRotateButtonProps = Widgets::ButtonProps{"rotate", ICON_FA_REFRESH, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;}, nullptr, "Rotate"};
-        static const Widgets::ButtonProps gizmoScaleButtonProps = Widgets::ButtonProps{"scale", ICON_FA_EXPAND, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;}, nullptr, "Scale"};
-        static const Widgets::ButtonProps gizmoUniversalButtonProps = Widgets::ButtonProps{"universal", ICON_FA_ARROWS_ALT, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;}, nullptr, "Universal"};
-        std::vector<Widgets::ButtonProps> gizmoButtons = {
+        static const ImNexo::ButtonProps gizmoTranslateButtonProps = ImNexo::ButtonProps{"translate", ICON_FA_ARROWS, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;}, nullptr, "Translate"};
+        static const ImNexo::ButtonProps gizmoRotateButtonProps = ImNexo::ButtonProps{"rotate", ICON_FA_REFRESH, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;}, nullptr, "Rotate"};
+        static const ImNexo::ButtonProps gizmoScaleButtonProps = ImNexo::ButtonProps{"scale", ICON_FA_EXPAND, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;}, nullptr, "Scale"};
+        static const ImNexo::ButtonProps gizmoUniversalButtonProps = ImNexo::ButtonProps{"universal", ICON_FA_ARROWS_ALT, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;}, nullptr, "Universal"};
+        std::vector<ImNexo::ButtonProps> gizmoButtons = {
             gizmoTranslateButtonProps,
             gizmoRotateButtonProps,
             gizmoScaleButtonProps,
             gizmoUniversalButtonProps
         };
 
-        Widgets::ButtonProps activeOp;
+        ImNexo::ButtonProps activeOp;
         switch (m_currentGizmoOperation) {
             case ImGuizmo::OPERATION::TRANSLATE:
                 activeOp = gizmoTranslateButtonProps;
@@ -382,8 +374,8 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Gizmo operation button --------
-        Widgets::ButtonProps activeGizmoMode;
-        Widgets::ButtonProps inactiveGizmoMode;
+        ImNexo::ButtonProps activeGizmoMode;
+        ImNexo::ButtonProps inactiveGizmoMode;
         ImVec2 changeGizmoModePos = ImGui::GetCursorScreenPos();
         static bool showGizmoModeMenu = false;
         bool changeGizmoModeClicked = renderGizmoModeToolbarButton(showGizmoModeMenu, activeGizmoMode, inactiveGizmoMode);
@@ -444,13 +436,13 @@ namespace nexo::editor {
         // -------- Gizmo operation sub-menu --------
         if (showGizmoOpMenu)
         {
-            Widgets::drawVerticalButtonDropDown(changeGizmoOpPos, buttonSize, gizmoButtons, showGizmoOpMenu);
+            ImNexo::ButtonDropDown(changeGizmoOpPos, buttonSize, gizmoButtons, showGizmoOpMenu);
         }
 
         // -------- Gizmo mode sub-menu --------
         if (showGizmoModeMenu)
         {
-            Widgets::drawVerticalButtonDropDown(changeGizmoModePos, buttonSize, {inactiveGizmoMode}, showGizmoModeMenu);
+            ImNexo::ButtonDropDown(changeGizmoModePos, buttonSize, {inactiveGizmoMode}, showGizmoModeMenu);
         }
 
         // -------- Snap sub-menu --------

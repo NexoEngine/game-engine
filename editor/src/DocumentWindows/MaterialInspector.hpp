@@ -30,7 +30,11 @@ namespace nexo::editor {
 			 * rendering to renderMaterialInspector() if the Material Inspector is visible.
 			 */
 			void show() override;
+
+			// No-op method in this class
         	void shutdown() override;
+
+            // No-op method in this class
          	void update() override;
 
 		private:

@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PopupManager.hpp"
-#include "Components/Components.hpp"
+#include "ImNexo/Elements.hpp"
 #include "Logger.hpp"
 
 #include <imgui.h>
@@ -92,7 +92,7 @@ namespace nexo::editor {
         ImVec2 pMax = ImVec2(pMin.x + size.x, pMin.y + size.y);
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        const std::vector<Components::GradientStop> stops = {
+        const std::vector<ImNexo::GradientStop> stops = {
             { 0.06f, IM_COL32(58 / 3, 124 / 3, 161 / 3, 255) },
             { 0.26f, IM_COL32(88 / 3,  87 / 3, 154 / 3, 255) },
             { 0.50f, IM_COL32(88 / 3,  87 / 3, 154 / 3, 255) },
@@ -100,7 +100,7 @@ namespace nexo::editor {
         };
         float angle = 148.0f;
 
-        Components::drawRectFilledLinearGradient(pMin, pMax, angle, stops, drawList);
+        ImNexo::RectFilledLinearGradient(pMin, pMax, angle, stops, drawList);
 
         return true;
     }

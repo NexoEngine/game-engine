@@ -20,6 +20,7 @@
 #include <variant>
 
 #include "Application.hpp"
+#include "ImNexo/Elements.hpp"
 #include "EntityProperties/RenderProperty.hpp"
 #include "EntityProperties/TransformProperty.hpp"
 #include "EntityProperties/AmbientLightProperty.hpp"
@@ -30,13 +31,10 @@
 #include "EntityProperties/CameraController.hpp"
 #include "components/Transform.hpp"
 #include "utils/ScenePreview.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "context/Selector.hpp"
 #include "core/scene/SceneManager.hpp"
-
-#include "Components/Widgets.hpp"
 
 extern ImGuiID g_materialInspectorDockID;
 
@@ -96,10 +94,9 @@ namespace nexo::editor
 		if (size_t spacePos = uiHandle.find(' '); spacePos != std::string::npos)
 			uiHandle = uiHandle.substr(spacePos + 1);
 
-		if (EntityPropertiesComponents::drawHeader("##SceneNode", uiHandle))
+		if (ImNexo::Header("##SceneNode", uiHandle))
 		{
 			ImGui::Spacing();
-	  		//ImGui::SetWindowFontScale(1.15f);
 			ImGui::Columns(2, "sceneProps");
 			ImGui::SetColumnWidth(0, 80);
 

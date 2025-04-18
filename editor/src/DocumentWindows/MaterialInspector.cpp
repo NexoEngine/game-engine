@@ -19,9 +19,9 @@
 #include "components/Render3D.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
-#include "Components/Widgets.hpp"
 #include "context/Selector.hpp"
 #include "exceptions/Exceptions.hpp"
+#include "ImNexo/Panels.hpp"
 
 namespace nexo::editor {
 
@@ -80,7 +80,7 @@ namespace nexo::editor {
 			return;
 		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector, components::Material>();
 		if (materialVariant)
-			materialModified = Widgets::drawMaterialInspector(materialVariant);
+			materialModified = ImNexo::MaterialInspector(materialVariant);
 	}
 
 	void MaterialInspector::show()

@@ -25,6 +25,7 @@
 #include <cstring>
 #include <ctime>
 #include "ConsoleWindow.hpp"
+#include "ImNexo/Elements.hpp"
 #include "Editor.hpp"
 #include "Logger.hpp"
 #include "Path.hpp"
@@ -315,7 +316,7 @@ namespace nexo::editor {
 
         ImGui::Separator();
         ImGui::Checkbox("File logging", &m_exportLog);
-        if (ImGui::Button("Open log folder"))
+        if (ImNexo::Button("Open log folder"))
             utils::openFolder(Path::resolvePathRelativeToExe("../logs").string());
 
         ImGui::EndPopup();
@@ -358,7 +359,7 @@ namespace nexo::editor {
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("..."))
+        if (ImNexo::Button("..."))
             ImGui::OpenPopup("VerbositySettings");
 
         if (ImGui::BeginPopup("VerbositySettings"))
