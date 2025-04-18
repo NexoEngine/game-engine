@@ -79,6 +79,8 @@ namespace nexo::editor {
 
 			static void drawTransformProperties(components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler);
 			static void drawCameraProperties(components::CameraComponent &cameraComponent);
+			static void drawCameraTargetProperties(components::PerspectiveCameraTarget &cameraTargetComponent);
+			static void drawCameraControllerProperties(components::PerspectiveCameraController &cameraControllerComponent);
 
 			static bool drawCameraCreator(const scene::SceneId sceneId, ImVec2 sceneViewportSize);
 	};
