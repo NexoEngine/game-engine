@@ -32,17 +32,21 @@
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
 #include "LightFactory.hpp"
-#include "Components/Widgets.hpp"
+#include "ImNexo/Panels.hpp"
 
 namespace nexo::editor {
 
     SceneTreeWindow::~SceneTreeWindow() = default;
 
     void SceneTreeWindow::setup()
-    {}
+    {
+        // Nothing to setup
+    }
 
     void SceneTreeWindow::shutdown()
-    {}
+    {
+        // Nothing to shutdown
+    }
 
     void SceneTreeWindow::handleRename(SceneObject &obj)
     {
@@ -164,14 +168,14 @@ namespace nexo::editor {
                     const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
                     for (const auto &scene : editorScenes) {
                         if (scene->getSceneId() == obj.data.sceneProperties.sceneId) {
-                            Widgets::drawCameraCreator(obj.data.sceneProperties.sceneId, scene->getViewportSize());
+                            ImNexo::CameraInspector(obj.data.sceneProperties.sceneId, scene->getViewportSize());
                             break;
                         }
                     }
                 }, ImVec2(1440,900));
             }
 
-            ImGui::EndMenu();  // <-- matches the BeginMenu("Add Entity")
+            ImGui::EndMenu();
         }
     }
 
@@ -393,7 +397,7 @@ namespace nexo::editor {
         ImGui::Text("Enter Scene Name:");
         ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
 
-        if (ImGui::Button("Create")) {
+        if (ImNexo::Button("Create")) {
             if (handleSceneCreation(sceneNameBuffer)) {
                 memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
                 m_popupManager.closePopupInContext();
@@ -401,7 +405,7 @@ namespace nexo::editor {
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("Cancel"))
+        if (ImNexo::Button("Cancel"))
             m_popupManager.closePopupInContext();
 
         m_popupManager.closePopup();

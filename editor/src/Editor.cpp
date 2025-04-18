@@ -21,12 +21,12 @@
 #include "Path.hpp"
 #include "backends/ImGuiBackend.hpp"
 #include "IconsFontAwesome.h"
+#include "ImNexo/Elements.hpp"
 
 #include "imgui.h"
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
-#include <Components/Components.hpp>
 
 ImGuiID g_materialInspectorDockID = 0;
 
@@ -348,7 +348,7 @@ namespace nexo::editor {
                         ImGuiWindowFlags_NoScrollbar |
                         ImGuiWindowFlags_NoBackground);
 
-        const std::vector<Components::GradientStop> stops = {
+        const std::vector<ImNexo::GradientStop> stops = {
             { 0.06f, IM_COL32(58, 124, 161, 255) },
             {0.26f, IM_COL32(88, 87, 154, 255) },
             { 0.50f, IM_COL32(88, 87, 154, 255) },
@@ -357,7 +357,7 @@ namespace nexo::editor {
 
         float angle = 148;
 
-        Components::drawRectFilledLinearGradient(viewport->Pos,
+        ImNexo::RectFilledLinearGradient(viewport->Pos,
                 ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
 
         ImGui::End();

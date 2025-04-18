@@ -27,17 +27,17 @@ namespace nexo::editor {
     };
 
     class AEntityProperty : public IEntityProperty {
-    	public:
-   			/**
-			 * @brief Constructs an AEntityProperty instance.
-			 *
-			 * Initializes the entity property by storing a reference to the provided InspectorWindow,
-			 * which is used for displaying and managing entity properties in the editor.
-			 *
-			 * @param inspector Reference to the InspectorWindow associated with this property.
-			 */
-			explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
-      	protected:
-       		InspectorWindow &m_inspector;
+        public:
+            /**
+            * @brief Constructs an AEntityProperty instance.
+            *
+            * Initializes the entity property by storing a reference to the provided InspectorWindow,
+            * which is used for displaying and managing entity properties in the editor.
+            *
+            * @param inspector Reference to the InspectorWindow associated with this property.
+            */
+            explicit AEntityProperty(InspectorWindow &inspector) : m_inspector(inspector) {};
+        protected:
+            InspectorWindow &m_inspector;
     };
 };
