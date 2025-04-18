@@ -588,4 +588,85 @@ namespace nexo::editor {
         }
         return false;
 	}
+
+	void Widgets::drawVerticalButtonDropDown(const ImVec2& buttonPos, const ImVec2 buttonSize, const std::vector<ButtonProps> &buttonProps, bool &closure, DropdownOrientation orientation)
+	{
+	    constexpr float buttonSpacing = 5.0f;
+        constexpr float padding = 10.0f;
+        const auto &app = getApp();
+
+        // Calculate menu dimensions
+        const float menuWidth = buttonSize.x + padding;  // Add padding
+        const float menuHeight = buttonProps.size() * buttonSize.y +
+                                (buttonProps.size() - 1) * buttonSpacing + 2 * buttonSpacing;
+
+        // Calculate menu position based on orientation
+        ImVec2 menuPos;
+        switch (orientation) {
+            case DropdownOrientation::DOWN:
+                menuPos = ImVec2(buttonPos.x - padding / 2.0f, buttonPos.y + buttonSize.y);
+                break;
+            case DropdownOrientation::UP:
+                menuPos = ImVec2(buttonPos.x - padding / 2.0f, buttonPos.y - menuHeight);
+                break;
+            case DropdownOrientation::RIGHT:
+                menuPos = ImVec2(buttonPos.x + buttonSize.x, buttonPos.y - padding / 2.0f);
+                break;
+            case DropdownOrientation::LEFT:
+                menuPos = ImVec2(buttonPos.x - menuWidth, buttonPos.y - padding / 2.0f);
+                break;
+        }
+
+        // Adjust layout for horizontal orientations
+        bool isHorizontal = (orientation == DropdownOrientation::LEFT ||
+                            orientation == DropdownOrientation::RIGHT);
+
+        // For horizontal layouts, swap width and height
+        ImVec2 menuSize = isHorizontal ?
+                         ImVec2(menuHeight, buttonSize.y + 10.0f) :
+                         ImVec2(menuWidth, menuHeight);
+
+        // Create a separate overlay child window for the primitive buttons
+        ImGui::SetNextWindowPos(menuPos);
+        ImGui::SetNextWindowSize(menuSize);
+        ImGui::SetNextWindowBgAlpha(0.2f);
+
+        // Style adjustments
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, buttonSpacing));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,
+                           isHorizontal ? ImVec2(buttonSpacing, 0) : ImVec2(0, buttonSpacing));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        if (ImGui::Begin("##PrimitiveMenuOverlay", nullptr,
+                        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            for (const auto &button : buttonProps)
+            {
+                // Strangely here the clicked inside here does not seem to work
+                Components::drawToolbarButton(button.uniqueId, button.icon, ImVec2(buttonSize.x, buttonSize.y), button.buttonGradient);
+                // So we rely on IsItemClicked from imgui
+                if (button.onClick && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+                {
+                    button.onClick();
+                    closure = false;
+                }
+                if (button.onRightClick && ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                {
+                    button.onRightClick();
+                }
+                if (!button.tooltip.empty() && ImGui::IsItemHovered())
+                    ImGui::SetTooltip(button.tooltip.c_str());
+            }
+        }
+        // Check for clicks outside to close menu
+        if (ImGui::IsMouseClicked(0) && !ImGui::IsWindowHovered())
+        {
+            closure = false;
+        }
+        ImGui::End();
+
+        ImGui::PopStyleVar(3);
+	}
 }
