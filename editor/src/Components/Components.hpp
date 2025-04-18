@@ -16,6 +16,9 @@
 #include <imgui.h>
 #include <string>
 #include <vector>
+#include <functional>
+
+#include "ecs/Coordinator.hpp"
 
 namespace nexo::editor {
 
@@ -42,6 +45,8 @@ namespace nexo::editor {
              * @return true if the button was clicked; false otherwise.
              */
 			static bool drawButton(const std::string &label, const ImVec2& size = ImVec2(0, 0), ImU32 bg = 0, ImU32 bgHovered = 0, ImU32 bgActive = 0, ImU32 txtColor = 0);
+
+			static bool drawComponentButton(const std::string &uniqueId, const std::string &icon, const std::string &label, const ImVec2 &itemSize);
 
    			/**
              * @brief Draws a border around the last item.
@@ -149,5 +154,10 @@ namespace nexo::editor {
 		     * @param stops Vector of gradient stops, each defined by a position (0.0f to 1.0f) and a color
 		     */
 		    static void drawRectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle, std::vector<GradientStop> stops, ImDrawList* drawList = nullptr);
+
+
+		    static bool drawRowEntityDropdown(const std::string &label, ecs::Entity &targetEntity,
+                                     const std::vector<ecs::Entity>& entities,
+                                     const std::function<std::string(ecs::Entity)>& getNameFunc);
 	};
 }
