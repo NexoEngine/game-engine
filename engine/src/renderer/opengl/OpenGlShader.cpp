@@ -15,6 +15,7 @@
 #include "OpenGlShader.hpp"
 #include "Exception.hpp"
 #include "Logger.hpp"
+#include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
 
 #include <cstring>
@@ -36,6 +37,7 @@ namespace nexo::renderer {
 
     OpenGlShader::OpenGlShader(const std::string &path)
     {
+        std::cout << path << std::endl;
         const std::string src = readFile(path);
         auto shaderSources = preProcess(src, path);
         compile(shaderSources);
@@ -45,6 +47,7 @@ namespace nexo::renderer {
         const auto lastDot = path.rfind('.');
         const auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
         m_name = path.substr(lastSlash, count);
+        setupUniformLocations();
     }
 
     OpenGlShader::OpenGlShader(std::string name, const std::string_view &vertexSource,
@@ -54,6 +57,7 @@ namespace nexo::renderer {
         preProcessedSource[GL_VERTEX_SHADER] = vertexSource;
         preProcessedSource[GL_FRAGMENT_SHADER] = fragmentSource;
         compile(preProcessedSource);
+        setupUniformLocations();
     }
 
     OpenGlShader::~OpenGlShader()
@@ -177,6 +181,16 @@ namespace nexo::renderer {
             glDetachShader(program, id);
     }
 
+    void OpenGlShader::setupUniformLocations()
+    {
+        glUseProgram(m_id);
+        for (const auto &[key, name] : ShaderUniformsName) {
+            const int loc = glGetUniformLocation(m_id, name.c_str());
+            m_uniformLocations[key] = loc;
+        }
+        glUseProgram(0);
+    }
+
     void OpenGlShader::bind() const
     {
         glUseProgram(m_id);
@@ -197,9 +211,29 @@ namespace nexo::renderer {
         return true;
     }
 
+    bool OpenGlShader::setUniformFloat(const ShaderUniforms uniform, const float value) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
+        if (loc == -1)
+            return false;
+
+        glUniform1f(loc, value);
+        return true;
+    }
+
     bool OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            return false;
+
+        glUniform3f(loc, values.x, values.y, values.z);
+        return true;
+    }
+
+    bool OpenGlShader::setUniformFloat3(const ShaderUniforms uniform, const glm::vec3 &values) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
             return false;
 
@@ -217,9 +251,29 @@ namespace nexo::renderer {
         return true;
     }
 
+    bool OpenGlShader::setUniformFloat4(const ShaderUniforms uniform, const glm::vec4 &values) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
+        if (loc == -1)
+            return false;
+
+        glUniform4f(loc, values.x, values.y, values.z, values.w);
+        return true;
+    }
+
     bool OpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            return false;
+
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+        return true;
+    }
+
+    bool OpenGlShader::setUniformMatrix(const ShaderUniforms uniform, const glm::mat4 &matrix) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
             return false;
 
@@ -237,9 +291,29 @@ namespace nexo::renderer {
         return true;
     }
 
+    bool OpenGlShader::setUniformInt(const ShaderUniforms uniform, const int value) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
+        if (loc == -1)
+            return false;
+
+        glUniform1i(loc, value);
+        return true;
+    }
+
     bool OpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            return false;
+
+        glUniform1iv(loc, static_cast<int>(count), values);
+        return true;
+    }
+
+    bool OpenGlShader::setUniformIntArray(const ShaderUniforms uniform, const int *values, const unsigned int count) const
+    {
+        const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
             return false;
 
