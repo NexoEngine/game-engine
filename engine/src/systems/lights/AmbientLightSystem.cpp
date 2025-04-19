@@ -42,10 +42,11 @@ namespace nexo::system {
         }
         nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneName));
 
+        if (partition->count != 1)
+            LOG_ONCE(NEXO_WARN, "For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count);
+        else
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count));
 
-		const auto ambientSpan = get<components::AmbientLightComponent>();
-		if (ambientSpan.size())
-			renderContext.sceneLights.ambientLight = ambientSpan[0].color;
-
+        renderContext.sceneLights.ambientLight = get<components::AmbientLightComponent>()[0].color;
 	}
 }

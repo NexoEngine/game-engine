@@ -28,21 +28,21 @@ struct Material {
 uniform Material uMaterial;
 
 uniform sampler2D uTexture[32];
-uniform float uTime; // For subtle animation
+uniform float uTime;
 
 void main()
 {
     if (texture(uTexture[uMaterial.albedoTexIndex], vTexCoord).a < 0.1)
         discard;
-    // Base colors
-    vec4 purpleColor = vec4(0.5, 0.0, 1.0, 1.0); // Purple
-    vec4 blueColor = vec4(0.0, 0.4, 0.9, 1.0); // Blue
+
+    vec4 purpleColor = vec4(0.5, 0.0, 1.0, 1.0);
+    vec4 blueColor = vec4(0.0, 0.4, 0.9, 1.0);
 
     // Color shifting effect
     float colorShift = (sin(uTime * 3.0) * 0.5 + 0.5);
     vec4 baseColor = mix(purpleColor, blueColor, colorShift);
 
-    // Contrast pulsation (different frequency than color shift)
+    // Contrast pulsation
     float contrastPulse = (sin(uTime * 2.3) * 0.5 + 0.5) * 0.5 + 0.5; // Range from 0.5 to 1.0
 
     // Apply contrast variation
