@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Selector.hpp"
+#include "Application.hpp"
+#include "components/Editor.hpp"
 
 namespace nexo::editor {
 	int Selector::getSelectedEntity() const
@@ -27,8 +29,14 @@ namespace nexo::editor {
 
 	void Selector::setSelectedEntity(std::string_view uuid, const int entity)
 	{
+    	if (m_selectionType != SelectionType::NONE && m_selectionType != SelectionType::SCENE)
+    	{
+        	Application::m_coordinator->removeComponent<components::SelectedTag>(m_selectedEntity);
+    	}
 		m_selectedUuid = uuid;
 		m_selectedEntity = entity;
+        components::SelectedTag selectTag{};
+        Application::m_coordinator->addComponent(m_selectedEntity, selectTag);
 	}
 
 	void Selector::setSelectedScene(int scene)
@@ -41,12 +49,16 @@ namespace nexo::editor {
 		return m_selectedScene;
 	}
 
-	void Selector::unselectEntity()
-	{
-		m_selectionType = SelectionType::NONE;
-		m_selectedEntity = -1;
-		m_selectedUuid = "";
-	}
+    void Selector::unselectEntity()
+    {
+        if (m_selectionType != SelectionType::NONE && m_selectionType != SelectionType::SCENE)
+        {
+            Application::m_coordinator->removeComponent<components::SelectedTag>(m_selectedEntity);
+        }
+        m_selectionType = SelectionType::NONE;
+        m_selectedEntity = -1;
+        m_selectedUuid = "";
+    }
 
 	SelectionType Selector::getSelectionType() const
 	{
