@@ -15,6 +15,7 @@
 #include "RenderSystem.hpp"
 #include "RendererContext.hpp"
 #include "components/Editor.hpp"
+#include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Camera.hpp"
@@ -45,7 +46,7 @@ namespace nexo::system {
     *  - pointLights (and pointLightCount)
     *  - spotLights (and spotLightCount)
     */
-    static void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext)
+    void RenderSystem::setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext)
     {
         static std::shared_ptr<renderer::Shader> lastShader = nullptr;
         if (lastShader == shader)
@@ -61,20 +62,28 @@ namespace nexo::system {
         shader->setUniformFloat3("uDirLight.direction", directionalLight.direction);
         shader->setUniformFloat4("uDirLight.color", glm::vec4(directionalLight.color, 1.0f));
 
+        // Well we are doing something very stupid here, but any way this render system is fucked
+        // In the future, we should have a material/light pre-pass that sets all uniforms of the the material
+        // But for now the material is embedded into the renderable which is also scuffed
+        const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
+        const auto &transformComponentArray = coord->getComponentArray<components::TransformComponent>();
         for (unsigned int i = 0; i < lightContext.pointLightCount; ++i)
         {
-            auto pointLight = lightContext.pointLights[i];
-            shader->setUniformFloat3(std::format("uPointLights[{}].position", i), pointLight.pos);
+            const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
+            const auto &transform = transformComponentArray->get(lightContext.pointLights[i]);
+            shader->setUniformFloat3(std::format("uPointLights[{}].position", i), transform.pos);
             shader->setUniformFloat4(std::format("uPointLights[{}].color", i), glm::vec4(pointLight.color, 1.0f));
             shader->setUniformFloat(std::format("uPointLights[{}].constant", i), pointLight.constant);
             shader->setUniformFloat(std::format("uPointLights[{}].linear", i), pointLight.linear);
             shader->setUniformFloat(std::format("uPointLights[{}].quadratic", i), pointLight.quadratic);
         }
 
+        const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
         for (unsigned int i = 0; i < lightContext.spotLightCount; ++i)
         {
-            auto spotLight = lightContext.spotLights[i];
-            shader->setUniformFloat3(std::format("uSpotLights[{}].position", i), spotLight.pos);
+            const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
+            const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
+            shader->setUniformFloat3(std::format("uSpotLights[{}].position", i), transform.pos);
             shader->setUniformFloat4(std::format("uSpotLights[{}].color", i), glm::vec4(spotLight.color, 1.0f));
             shader->setUniformFloat(std::format("uSpotLights[{}].constant", i), spotLight.constant);
             shader->setUniformFloat(std::format("uSpotLights[{}].linear", i), spotLight.linear);

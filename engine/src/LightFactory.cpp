@@ -16,6 +16,7 @@
 #include "Application.hpp"
 
 #include "components/Light.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo {
@@ -42,7 +43,9 @@ namespace nexo {
 	ecs::Entity LightFactory::createPointLight(glm::vec3 position, glm::vec3 color, float linear, float quadratic)
 	{
 		ecs::Entity newPointLight = Application::m_coordinator->createEntity();
-		components::PointLightComponent newPointLightComponent(position, color, linear, quadratic);
+		components::TransformComponent transformComponent(position);
+		Application::m_coordinator->addComponent<components::TransformComponent>(newPointLight, transformComponent);
+		components::PointLightComponent newPointLightComponent(color, linear, quadratic);
 		Application::m_coordinator->addComponent<components::PointLightComponent>(newPointLight, newPointLightComponent);
 		components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newPointLight, uuid);
@@ -55,7 +58,9 @@ namespace nexo {
 											  float outerCutOff)
 	{
 		ecs::Entity newSpotLight = Application::m_coordinator->createEntity();
-		components::SpotLightComponent newSpotLightComponent(position, direction, color, cutOff, outerCutOff, linear, quadratic);
+		components::TransformComponent transformComponent(position);
+		Application::m_coordinator->addComponent<components::TransformComponent>(newSpotLight, transformComponent);
+		components::SpotLightComponent newSpotLightComponent(direction, color, cutOff, outerCutOff, linear, quadratic);
 		Application::m_coordinator->addComponent<components::SpotLightComponent>(newSpotLight, newSpotLightComponent);
 		components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newSpotLight, uuid);
