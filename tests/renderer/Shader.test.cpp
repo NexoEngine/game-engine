@@ -166,9 +166,23 @@ namespace nexo::renderer {
 
         // Uniforms values
         constexpr unsigned int nbUniforms = 6;
-        const char *uniformsName[nbUniforms] = {"uFloat", "uVec3", "uVec4", "uInt", "uModel", "uIntArray"};
-        constexpr GLenum uniformsType[nbUniforms] = {GL_FLOAT, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT, GL_FLOAT_MAT4, GL_SAMPLER_2D};
-        constexpr int uniformsSize[nbUniforms] ={1, 1, 1, 1, 1, 3};
+        const std::unordered_map<std::string, GLenum> uniformsTypeMap = {
+            {"uFloat", GL_FLOAT},
+            {"uVec3", GL_FLOAT_VEC3},
+            {"uVec4", GL_FLOAT_VEC4},
+            {"uInt", GL_INT},
+            {"uModel", GL_FLOAT_MAT4},
+            {"uIntArray", GL_SAMPLER_2D}
+        };
+
+        const std::unordered_map<std::string, int> uniformsSizeMap = {
+            {"uFloat", 1},
+            {"uVec3", 1},
+            {"uVec4", 1},
+            {"uInt", 1},
+            {"uModel", 1},
+            {"uIntArray", 3}
+        };
 
         OpenGlShader shader("TestShader", vertexShaderSourceTestUniforms, fragmentShaderSourceTestUniforms);
         shader.bind();
@@ -190,21 +204,17 @@ namespace nexo::renderer {
 
             // The uniform is not an array
             if (std::string(name).find('[') == std::string::npos) {
-                // Validate name
-                EXPECT_EQ(std::string(name), uniformsName[i]);
                 // Validate size (should be always one)
-                EXPECT_EQ(size, uniformsSize[i]);
+                EXPECT_EQ(size, uniformsSizeMap.at(name));
                 // Validate type
-                EXPECT_EQ(type, uniformsType[i]);
+                EXPECT_EQ(type, uniformsTypeMap.at(name));
             } else {
                 // Retrieve the base name of the array
                 std::string baseName = std::string(name).substr(0, std::string(name).find('['));
-                // Validate name
-                EXPECT_EQ(baseName, uniformsName[i]);
                 // Validate size
-                EXPECT_EQ(size, uniformsSize[i]);
+                EXPECT_EQ(size, uniformsSizeMap.at(baseName.c_str()));
                 // Validate type
-                EXPECT_EQ(type, uniformsType[i]);
+                EXPECT_EQ(type, uniformsTypeMap.at(baseName.c_str()));
             }
         }
 
