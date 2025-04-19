@@ -17,11 +17,15 @@
 #include "TransformProperty.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/EntityProperties.hpp"
+#include "components/Light.hpp"
 
 namespace nexo::editor {
 
     void TransformProperty::show(ecs::Entity entity)
     {
+        if (Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
+            return;
         auto& transformComponent = Application::getEntityComponent<components::TransformComponent>(entity);
         static glm::vec3 lastDisplayedEuler(0.0f);
 

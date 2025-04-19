@@ -22,6 +22,7 @@ namespace nexo::editor {
 	void SpotLightProperty::show(ecs::Entity entity)
 	{
         auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
+        auto &transformComponent = Application::getEntityComponent<components::TransformComponent>(entity);
 
         if (ImNexo::Header("##SpotNode", "Spot light"))
         {
@@ -44,7 +45,7 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
                 ImNexo::RowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x, -FLT_MAX, FLT_MAX, 0.1f);
-                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &spotComponent.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
+                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &transformComponent.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
 
 
                 ImGui::EndTable();
