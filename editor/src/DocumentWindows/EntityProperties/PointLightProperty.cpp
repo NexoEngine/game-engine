@@ -14,6 +14,7 @@
 
 #include "PointLightProperty.hpp"
 #include "components/Light.hpp"
+#include "components/Transform.hpp"
 #include "math/Light.hpp"
 #include "ImNexo/Widgets.hpp"
 
@@ -22,6 +23,7 @@ namespace nexo::editor {
 	void PointLightProperty::show(const ecs::Entity entity)
 	{
         auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
+        auto &transform = Application::getEntityComponent<components::TransformComponent>(entity);
 
         if (ImNexo::Header("##PointNode", "Point light"))
         {
@@ -43,7 +45,7 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &pointComponent.pos.x);
+                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &transform.pos.x);
 
                 ImGui::EndTable();
             }
