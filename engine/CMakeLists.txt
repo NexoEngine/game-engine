@@ -25,6 +25,7 @@ set(COMMON_SOURCES
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderLibrary.cpp
         engine/src/renderer/ShaderStorageBuffer.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
