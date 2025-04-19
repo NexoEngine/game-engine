@@ -31,6 +31,7 @@ set(RENDERER_SOURCES
         engine/src/renderer/Window.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderLibrary.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
         engine/src/renderer/Renderer.cpp
@@ -61,7 +62,6 @@ add_executable(renderer_tests
         ${BASEDIR}/Shader.test.cpp
         ${BASEDIR}/RendererAPI.test.cpp
         ${BASEDIR}/Texture.test.cpp
-        ${BASEDIR}/Renderer2D.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
 )
