@@ -154,7 +154,7 @@ namespace ImNexo {
                     button.onRightClick();
                 }
                 if (!button.tooltip.empty() && ImGui::IsItemHovered())
-                    ImGui::SetTooltip(button.tooltip.c_str());
+                    ImGui::SetTooltip("%s", button.tooltip.c_str());
             }
         }
         // Check for clicks outside to close menu
