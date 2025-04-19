@@ -122,6 +122,82 @@ namespace nexo::renderer {
                 _rendererApi->drawIndexed(vertexArray, indexCount);
             }
 
+            static void setDepthTest(bool enable)
+            {
+                _rendererApi->setDepthTest(enable);
+            }
+
+            static void setDepthFunc(unsigned int func)
+            {
+                _rendererApi->setDepthFunc(func);
+            }
+
+            /**
+             * @brief Enables or disables the stencil test.
+             *
+             * The stencil test allows for masking certain portions of the screen during rendering.
+             * When enabled, fragments are drawn only if they pass a comparison test against the
+             * corresponding value in the stencil buffer.
+             *
+             * @param enable True to enable stencil testing, false to disable it.
+             *
+             * Usage:
+             * - Enable the stencil test before performing operations that will write to or use the stencil buffer.
+             * - Disable the stencil test when regular rendering should resume.
+             */
+            static void setStencilTest(bool enable) { _rendererApi->setStencilTest(enable); }
+
+            /**
+             * @brief Sets the stencil mask that controls which bits of the stencil buffer are updated.
+             *
+             * The stencil mask determines which bits in the stencil buffer can be modified when
+             * stencil operations are performed. Only the bits that have a 1 in the corresponding
+             * position of the mask will be affected.
+             *
+             * @param mask The bit mask to use for stencil write operations.
+             *
+             * Usage:
+             * - Set a specific mask before performing stencil operations to control which bits are affected.
+             */
+            static void setStencilMask(unsigned int mask) { _rendererApi->setStencilMask(mask); }
+
+            /**
+             * @brief Configures the stencil function used for stencil testing.
+             *
+             * The stencil function defines how the stencil test compares a reference value to the
+             * current value in the stencil buffer. The comparison result determines whether a fragment
+             * passes the stencil test and how the stencil buffer is updated.
+             *
+             * @param func The comparison function to use (e.g., GL_EQUAL, GL_ALWAYS, GL_LESS).
+             * @param ref The reference value to compare against.
+             * @param mask The mask that is ANDed with both the reference value and stored stencil value before comparison.
+             *
+             * Usage:
+             * - Configure before performing operations that rely on specific stencil buffer values.
+             */
+            static void setStencilFunc(unsigned int func, int ref, unsigned int mask) {
+                _rendererApi->setStencilFunc(func, ref, mask);
+            }
+
+            /**
+             * @brief Sets the operations to perform on the stencil buffer based on test outcomes.
+             *
+             * This method configures what happens to the stencil buffer value when the stencil test:
+             * - fails (sfail)
+             * - passes, but the depth test fails (dpfail)
+             * - passes, and the depth test also passes (dppass)
+             *
+             * @param sfail Operation to perform when the stencil test fails.
+             * @param dpfail Operation to perform when the stencil test passes but depth test fails.
+             * @param dppass Operation to perform when both stencil and depth tests pass.
+             *
+             * Usage:
+             * - Set before performing complex stencil operations like object outlining or shadow volumes.
+             */
+            static void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) {
+                _rendererApi->setStencilOp(sfail, dpfail, dppass);
+            }
+
         private:
             /**
             * @brief Static pointer to the active `RendererApi` implementation.
