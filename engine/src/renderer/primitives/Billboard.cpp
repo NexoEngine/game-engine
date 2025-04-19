@@ -77,47 +77,45 @@ namespace nexo::renderer {
     }
 
     /**
-     * @brief Calculates a billboard rotation matrix that makes the quad face the camera.
-     *
-     * @param billboardPosition The position of the billboard in world space.
-     * @param cameraPosition The position of the camera in world space.
-     * @param cameraUp The up vector of the camera (usually {0,1,0}).
-     * @param constrainToY Whether to only rotate around Y-axis (true) or do full rotation (false).
-     * @return glm::mat4 The rotation matrix for the billboard.
-     */
+    * @brief Calculates a billboard rotation matrix that makes the quad face the camera.
+    *
+    * @param billboardPosition The position of the billboard in world space.
+    * @param cameraPosition The position of the camera in world space.
+    * @param cameraUp The up vector of the camera (usually {0,1,0}).
+    * @param constrainToY Whether to only rotate around Y-axis (true) or do full rotation (false).
+    * @return glm::mat4 The rotation matrix for the billboard.
+    */
     static glm::mat4 calculateBillboardRotation(
         const glm::vec3& billboardPosition,
         const glm::vec3& cameraPosition,
         const glm::vec3& cameraUp = glm::vec3(0.0f, 1.0f, 0.0f),
         bool constrainToY = false)
     {
-        // Direction from billboard to camera
         glm::vec3 look = glm::normalize(cameraPosition - billboardPosition);
 
         if (constrainToY) {
-            // For Y-axis constrained billboards (like trees)
-            look.y = 0.0f; // Zero out the Y component
-            look = glm::normalize(look); // Re-normalize
+            look.y = 0.0f;
+            look = glm::normalize(look);
 
-            // Calculate right vector from up and look
             glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
+            glm::vec3 up = glm::cross(look, right);
 
-            // Create rotation matrix for Y-axis constrained billboard
+            return glm::mat4(
+            glm::vec4(right, 0.0f),
+            glm::vec4(up, 0.0f),
+            glm::vec4(-look, 0.0f), // Negative look preserves winding
+            glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+            );
+        } else {
+            glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
+            glm::vec3 up = glm::cross(look, right);
+
             return glm::mat4(
                 glm::vec4(right, 0.0f),
-                glm::vec4(cameraUp, 0.0f),
-                glm::vec4(look, 0.0f),
+                glm::vec4(up, 0.0f),
+                glm::vec4(-look, 0.0f), // Negative look preserves winding
                 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
             );
-        }
-        else {
-            // For full billboards (complete rotation to face camera)
-            // Create a look-at matrix but use it as a rotation matrix
-            return glm::transpose(glm::lookAt(
-                glm::vec3(0.0f),  // Eye at origin
-                look,             // Look in the direction of camera
-                cameraUp          // Camera's up vector
-            ));
         }
     }
 
@@ -133,25 +131,20 @@ namespace nexo::renderer {
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
-        // Get camera position from view matrix
         glm::vec3 cameraPos = m_storage->cameraPosition;
 
-        // Calculate billboard rotation to face camera
         glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
 
-        // Create transformation matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     billboardRotation *
                                     glm::scale(glm::mat4(1.0f), glm::vec3(size.x, size.y, 1.0f));
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        // Set material
         renderer::Material mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
-        // Generate mesh data
         std::array<glm::vec3, 6> verts{};
         std::array<glm::vec2, 6> texCoords{};
         std::array<glm::vec3, 6> normals{};
@@ -161,7 +154,6 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < 6; ++i)
             indices[i] = i;
 
-        // Vertex data
         for (unsigned int i = 0; i < 6; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -171,7 +163,6 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr++;
         }
 
-        // Index data
         std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
@@ -189,28 +180,24 @@ namespace nexo::renderer {
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
-        // Get camera position from view matrix
         glm::vec3 cameraPos = m_storage->cameraPosition;
 
-        // Calculate billboard rotation to face camera
         glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
 
-        // Create transformation matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     billboardRotation *
                                     glm::scale(glm::mat4(1.0f), glm::vec3(size.x, size.y, 1.0f));
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        // Set material
         renderer::Material mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
+        std::cout << "Material Albedo Texture Index: " << mat.albedoTexIndex << std::endl;
         mat.specularColor = material.specularColor;
         mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
         setMaterialUniforms(mat);
 
-        // Generate mesh data
         std::array<glm::vec3, 6> verts{};
         std::array<glm::vec2, 6> texCoords{};
         std::array<glm::vec3, 6> normals{};
@@ -220,7 +207,6 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < 6; ++i)
             indices[i] = i;
 
-        // Vertex data
         for (unsigned int i = 0; i < 6; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
@@ -230,7 +216,6 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr++;
         }
 
-        // Index data
         std::ranges::for_each(indices, [this](unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
