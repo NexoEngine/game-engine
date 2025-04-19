@@ -48,5 +48,7 @@ namespace nexo::system {
     	ecs::WriteSingleton<components::RenderContext>> {
 			public:
 				void update();
+			private:
+			    void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext);
 	};
 }
