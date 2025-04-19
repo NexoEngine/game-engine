@@ -37,7 +37,6 @@ namespace nexo::renderer {
 
     OpenGlShader::OpenGlShader(const std::string &path)
     {
-        std::cout << path << std::endl;
         const std::string src = readFile(path);
         auto shaderSources = preProcess(src, path);
         compile(shaderSources);
