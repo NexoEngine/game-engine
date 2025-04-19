@@ -16,6 +16,7 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
+#include "ShaderLibrary.hpp"
 #include "components/Render3D.hpp"
 
 #include <array>
@@ -80,7 +81,9 @@ namespace nexo::renderer {
 
         glm::vec3 cameraPosition;
 
-        std::shared_ptr<Shader> textureShader;
+        ShaderLibrary shaderLibrary;
+
+        std::shared_ptr<Shader> currentSceneShader = nullptr;
         std::shared_ptr<VertexArray> vertexArray;
         std::shared_ptr<VertexBuffer> vertexBuffer;
         std::shared_ptr<IndexBuffer> indexBuffer;
@@ -169,7 +172,7 @@ namespace nexo::renderer {
          * - RendererNotInitialized if the renderer is not initialized.
          * - RendererSceneLifeCycleFailure if called without proper initialization.
          */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos);
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos, const std::string &shader = "");
 
         /**
          * @brief Ends the current 3D rendering scene.
@@ -330,7 +333,7 @@ namespace nexo::renderer {
          */
         [[nodiscard]] Renderer3DStats getStats() const;
 
-        std::shared_ptr<Shader> &getShader() const {return m_storage->textureShader;};
+        std::shared_ptr<Shader> &getShader() const {return m_storage->currentSceneShader;};
 
         std::shared_ptr<Renderer3DStorage> getInternalStorage() const { return m_storage; };
     private:
