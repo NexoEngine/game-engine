@@ -17,7 +17,6 @@
 #include <glm/glm.hpp>
 #include <array>
 
-constexpr unsigned int MAX_DIRECTIONAL_LIGHTS = 8;
 constexpr unsigned int MAX_POINT_LIGHTS = 8;
 constexpr unsigned int MAX_SPOT_LIGHTS = 8;
 
@@ -81,12 +80,11 @@ namespace nexo::components {
     };
 
     struct LightContext {
-    	glm::vec3 ambientLight;
-     	std::array<PointLightComponent, MAX_POINT_LIGHTS> pointLights;
-      	unsigned int pointLightCount = 0;
-     	std::array<SpotLightComponent, MAX_SPOT_LIGHTS> spotLights;
-      	unsigned int spotLightCount = 0;
-     	std::array<DirectionalLightComponent, MAX_DIRECTIONAL_LIGHTS> directionalLights;
-      	unsigned int directionalLightCount = 0;
+        glm::vec3 ambientLight;
+        std::array<PointLightComponent, MAX_POINT_LIGHTS> pointLights;
+        unsigned int pointLightCount = 0;
+        std::array<SpotLightComponent, MAX_SPOT_LIGHTS> spotLights;
+        unsigned int spotLightCount = 0;
+        DirectionalLightComponent dirLight;
     };
 }
