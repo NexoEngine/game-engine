@@ -126,7 +126,7 @@ namespace nexo::ecs {
                 Signature signature = m_entityManager->getSignature(entity);
                 const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), true);
-                m_componentManager->addComponent<T>(entity, component, signature);
+                m_componentManager->addComponent<T>(entity, component, oldSignature, signature);
 
                 m_entityManager->setSignature(entity, signature);
 
@@ -144,7 +144,7 @@ namespace nexo::ecs {
                 Signature signature = m_entityManager->getSignature(entity);
                 const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), false);
-                m_componentManager->removeComponent<T>(entity, oldSignature);
+                m_componentManager->removeComponent<T>(entity, oldSignature, signature);
 
 
                 m_entityManager->setSignature(entity, signature);
@@ -164,10 +164,10 @@ namespace nexo::ecs {
             void tryRemoveComponent(const Entity entity) const
             {
                 Signature signature = m_entityManager->getSignature(entity);
-                if (m_componentManager->tryRemoveComponent<T>(entity, signature))
+                Signature oldSignature = signature;
+                signature.set(m_componentManager->getComponentType<T>(), false);
+                if (m_componentManager->tryRemoveComponent<T>(entity, oldSignature, signature))
                 {
-                    Signature oldSignature = signature;
-                    signature.set(m_componentManager->getComponentType<T>(), false);
                     m_entityManager->setSignature(entity, signature);
 
                     m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
