@@ -18,6 +18,7 @@
 #include "AEntityProperty.hpp"
 #include "Application.hpp"
 #include "Framebuffer.hpp"
+#include "components/Light.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
@@ -126,7 +127,9 @@ namespace nexo::editor {
 
     void RenderProperty::show(ecs::Entity entity)
     {
-        if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity))
+        if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
             return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
