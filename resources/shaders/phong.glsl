@@ -34,7 +34,6 @@ void main()
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 
-#define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 8
 #define MAX_SPOT_LIGHTS 8
 
@@ -73,12 +72,12 @@ uniform sampler2D uTexture[32];
 
 uniform vec3 uCamPos;
 
+uniform vec3 uAmbientLight;
 uniform DirectionalLight uDirLight;
 uniform PointLight uPointLights[MAX_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform SpotLight uSpotLights[MAX_SPOT_LIGHTS];
 uniform int uNumSpotLights;
-uniform vec3 uAmbientLight;
 
 struct Material {
     vec4 albedoColor;
@@ -106,7 +105,6 @@ vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
     float shininess = mix(128.0, 2.0, uMaterial.roughness);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
     // combine results
-    //vec3 ambient = ambientLight * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 diffuse = light.color.rgb * diff * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 specular = light.color.rgb * spec * uMaterial.specularColor.rgb * vec3(texture(uTexture[uMaterial.specularTexIndex], vTexCoord));
     return (diffuse + specular);
@@ -125,10 +123,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     // combine results
-    //vec3 ambient = ambientLight * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 diffuse = light.color.rgb * diff * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 specular = light.color.rgb * spec * uMaterial.specularColor.rgb * vec3(texture(uTexture[uMaterial.specularTexIndex], vTexCoord));
-    //ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
     return (diffuse + specular);
@@ -151,10 +147,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float epsilon = light.cutOff - light.outerCutoff;
     float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
     // combine results
-    //vec3 ambient = ambientLight * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 diffuse = light.color.rgb * diff * uMaterial.albedoColor.rgb * vec3(texture(uTexture[uMaterial.albedoTexIndex], vTexCoord));
     vec3 specular = light.color.rgb * spec * uMaterial.specularColor.rgb * vec3(texture(uTexture[uMaterial.specularTexIndex], vTexCoord));
-    //ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
     return (diffuse + specular);

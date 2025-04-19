@@ -60,7 +60,7 @@ namespace nexo::components {
 			sceneLights.ambientLight = glm::vec3(0.0f);
 			sceneLights.pointLightCount = 0;
 			sceneLights.spotLightCount = 0;
-			sceneLights.directionalLightCount = 0;
+			sceneLights.dirLight = DirectionalLightComponent{};
 		}
 	};
 }
