@@ -46,11 +46,11 @@ namespace nexo::system {
 		if (partition->count > MAX_SPOT_LIGHTS)
 		    THROW_EXCEPTION(core::TooManySpotLightsException, sceneRendered, partition->count);
 
-		const auto spotLightSpan = get<components::SpotLightComponent>();
+		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
 		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = spotLightSpan[i];
+			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = entitySpan[i];
 			renderContext.sceneLights.spotLightCount++;
 		}
 	}
