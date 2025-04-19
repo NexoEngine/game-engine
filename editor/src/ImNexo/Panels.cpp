@@ -106,8 +106,10 @@ namespace ImNexo {
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<nexo::ecs::Entity>(defaultCamera));
 
         nexo::components::Material billboardMat{};
+        billboardMat.isOpaque = false;
         std::shared_ptr<nexo::renderer::Texture2D> cameraIconTexture = nexo::renderer::Texture2D::create(nexo::Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png").string());
         billboardMat.albedoTexture = cameraIconTexture;
+        billboardMat.shader = "Albedo unshaded transparent";
         auto billboard = std::make_shared<nexo::components::BillBoard>();
         auto renderable = std::make_shared<nexo::components::Renderable3D>(billboardMat, billboard);
         nexo::components::RenderComponent renderComponent(renderable, nexo::components::RenderType::RENDER_3D);
