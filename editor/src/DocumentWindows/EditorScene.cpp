@@ -32,6 +32,7 @@
 #include "math/Matrix.hpp"
 #include "context/Selector.hpp"
 #include "utils/String.hpp"
+#include "utils/EditorProps.hpp"
 #include "ImNexo/Widgets.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -82,10 +83,12 @@ namespace nexo::editor {
         const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
         scene.addEntity(ambientLight);
         const ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
+        utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
         scene.addEntity(pointLight);
         const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
         scene.addEntity(directionalLight);
         const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
+        utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(spotLight);
         const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
                                                                {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
