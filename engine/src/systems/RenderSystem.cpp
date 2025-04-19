@@ -51,18 +51,15 @@ namespace nexo::system {
         if (lastShader == shader)
             return;
         lastShader = shader;
-        //shader->bind();
+        if (!lastShader)
+            return;
         shader->setUniformFloat3("uAmbientLight", lightContext.ambientLight);
-        shader->setUniformInt("uNumDirLights", lightContext.directionalLightCount);
         shader->setUniformInt("uNumPointLights", lightContext.pointLightCount);
         shader->setUniformInt("uNumSpotLights", lightContext.spotLightCount);
 
-        if (lightContext.directionalLightCount)
-        {
-            auto directionalLight = lightContext.directionalLights[0];
-            shader->setUniformFloat3("uDirLight.direction", directionalLight.direction);
-            shader->setUniformFloat4("uDirLight.color", glm::vec4(directionalLight.color, 1.0f));
-        }
+        const auto &directionalLight = lightContext.dirLight;
+        shader->setUniformFloat3("uDirLight.direction", directionalLight.direction);
+        shader->setUniformFloat4("uDirLight.color", glm::vec4(directionalLight.color, 1.0f));
 
         for (unsigned int i = 0; i < lightContext.pointLightCount; ++i)
         {
@@ -86,7 +83,6 @@ namespace nexo::system {
             shader->setUniformFloat(std::format("uSpotLights[{}].cutOff", i), spotLight.cutOff);
             shader->setUniformFloat(std::format("uSpotLights[{}].outerCutoff", i), spotLight.outerCutoff);
         }
-        //shader->unbind();
     }
 
 	void RenderSystem::update()
@@ -97,8 +93,6 @@ namespace nexo::system {
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 		const SceneType sceneType = renderContext.sceneType;
-
-		//setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
 
 		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
 			[](const components::SceneTag& tag) { return tag.id; }
@@ -189,5 +183,7 @@ namespace nexo::system {
 			}
 			renderContext.cameras.pop();
 		}
+		// We have to do this for now to reset the shader stored as a static here, this will change later
+		setupLights(nullptr, renderContext.sceneLights);
 	}
 }
