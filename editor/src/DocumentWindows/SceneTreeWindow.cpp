@@ -105,10 +105,10 @@ namespace nexo::editor {
             return nodeOpen;
         if (ImGui::IsItemClicked())
         {
-	        auto &selector = Selector::get();
-        	selector.setSelectedEntity(obj.uuid, obj.data.entity);
-         	selector.setSelectionType(obj.type);
-          	selector.setSelectedScene(obj.data.sceneProperties.sceneId);
+            auto &selector = Selector::get();
+            selector.setSelectedEntity(obj.uuid, obj.data.entity);
+            selector.setSelectionType(obj.type);
+            selector.setSelectedScene(obj.data.sceneProperties.sceneId);
         }
         return nodeOpen;
     }
