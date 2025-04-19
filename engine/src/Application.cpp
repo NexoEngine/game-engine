@@ -24,6 +24,7 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
+#include "components/Editor.hpp"
 #include "components/Uuid.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
@@ -71,6 +72,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
         m_coordinator->registerComponent<components::EditorCameraTag>();
+        m_coordinator->registerComponent<components::SelectedTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
