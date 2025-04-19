@@ -28,6 +28,7 @@
 #include "WindowRegistry.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
+#include "components/Editor.hpp"
 #include "math/Matrix.hpp"
 #include "context/Selector.hpp"
 #include "utils/String.hpp"
@@ -462,7 +463,7 @@ namespace nexo::editor {
     {
         const auto &coord = nexo::Application::m_coordinator;
         auto const &selector = Selector::get();
-        if (selector.getSelectionType() != SelectionType::ENTITY ||
+        if (selector.getSelectionType() == SelectionType::SCENE ||
             selector.getSelectedScene() != m_sceneId)
             return;
         const ecs::Entity entity = selector.getSelectedEntity();
@@ -640,8 +641,12 @@ namespace nexo::editor {
             const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
             if (uuid)
             {
+                auto &app = getApp();
                	selector.setSelectedEntity(uuid->get().uuid, data);
-                selector.setSelectionType(SelectionType::ENTITY);
+                if (app.m_coordinator->entityHasComponent<components::CameraComponent>(data))
+                    selector.setSelectionType(SelectionType::CAMERA);
+                else
+                    selector.setSelectionType(SelectionType::ENTITY);
             }
             selector.setSelectedScene(m_sceneId);
         }
