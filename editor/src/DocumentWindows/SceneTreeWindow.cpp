@@ -16,8 +16,10 @@
 #include "ADocumentWindow.hpp"
 #include "Coordinator.hpp"
 #include "utils/Config.hpp"
+#include "utils/EditorProps.hpp"
 #include "DocumentWindows/InspectorWindow.hpp"
 #include "Primitive.hpp"
+#include "Path.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -153,10 +155,12 @@ namespace nexo::editor {
                 }
                 if (ImGui::MenuItem("Point")) {
                     const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
+                    utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(pointLight);
                 }
                 if (ImGui::MenuItem("Spot")) {
                     const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
+                    utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(spotLight);
                 }
                 ImGui::EndMenu();
@@ -585,7 +589,13 @@ namespace nexo::editor {
               return this->newCameraNode(sceneId, uiId, entity);
          });
 
-        generateNodes<components::RenderComponent, components::TransformComponent, components::SceneTag, ecs::Exclude<components::CameraComponent>>(
+        generateNodes<
+        components::RenderComponent,
+        components::TransformComponent,
+        components::SceneTag,
+        ecs::Exclude<components::CameraComponent>,
+        ecs::Exclude<components::SpotLightComponent>,
+        ecs::Exclude<components::PointLightComponent>>(
         	sceneNodes,
     	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newEntityNode(sceneId, uiId, entity);

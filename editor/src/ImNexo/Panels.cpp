@@ -22,6 +22,7 @@
 #include "IconsFontAwesome.h"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
+#include "utils/EditorProps.hpp"
 
 namespace ImNexo {
     bool MaterialInspector(nexo::components::Material *material)
@@ -104,16 +105,7 @@ namespace ImNexo {
         const auto renderTarget = nexo::renderer::Framebuffer::create(framebufferSpecs);
         nexo::ecs::Entity defaultCamera = nexo::CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<nexo::ecs::Entity>(defaultCamera));
-
-        nexo::components::Material billboardMat{};
-        billboardMat.isOpaque = false;
-        std::shared_ptr<nexo::renderer::Texture2D> cameraIconTexture = nexo::renderer::Texture2D::create(nexo::Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png").string());
-        billboardMat.albedoTexture = cameraIconTexture;
-        billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<nexo::components::BillBoard>();
-        auto renderable = std::make_shared<nexo::components::Renderable3D>(billboardMat, billboard);
-        nexo::components::RenderComponent renderComponent(renderable, nexo::components::RenderType::RENDER_3D);
-        app.m_coordinator->addComponent(defaultCamera, renderComponent);
+        nexo::editor::utils::addPropsTo(defaultCamera, nexo::editor::utils::PropsType::CAMERA);
         return defaultCamera;
 	}
 
