@@ -106,6 +106,9 @@ namespace nexo::renderer {
             */
             void setClearDepth(float depth) override;
 
+            void setDepthTest(bool enable) override;
+            void setDepthFunc(unsigned int func) override;
+
             /**
              * @brief Renders indexed geometry using OpenGL.
              *
@@ -119,6 +122,11 @@ namespace nexo::renderer {
              * - InvalidValue if the `vertexArray` is null.
              */
             void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount = 0) override;
+
+            void setStencilTest(bool enable) override;
+            void setStencilMask(unsigned int mask) override;
+            void setStencilFunc(unsigned int func, int ref, unsigned int mask) override;
+            void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) override;
         private:
             bool m_initialized = false;
             unsigned int m_maxWidth = 0;
