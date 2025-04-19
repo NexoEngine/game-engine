@@ -193,7 +193,6 @@ namespace nexo::renderer {
         renderer::Material mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        std::cout << "Material Albedo Texture Index: " << mat.albedoTexIndex << std::endl;
         mat.specularColor = material.specularColor;
         mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
         setMaterialUniforms(mat);
