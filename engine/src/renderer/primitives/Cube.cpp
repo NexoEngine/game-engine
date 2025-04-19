@@ -128,7 +128,7 @@ namespace nexo::renderer {
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     glm::scale(glm::mat4(1.0f), size);
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = color;
@@ -179,7 +179,7 @@ namespace nexo::renderer {
 									rotationMat *
                                     glm::scale(glm::mat4(1.0f), size);
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = color;
@@ -224,7 +224,7 @@ namespace nexo::renderer {
 	    }
 
 
-		m_storage->textureShader->setUniformMatrix("matModel", transform);
+		m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = color;
@@ -272,7 +272,7 @@ namespace nexo::renderer {
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     glm::scale(glm::mat4(1.0f), size);
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = material.albedoColor;
@@ -327,7 +327,7 @@ namespace nexo::renderer {
         							rotationMat *
                                     glm::scale(glm::mat4(1.0f), size);
 
-        m_storage->textureShader->setUniformMatrix("matModel", transform);
+        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = material.albedoColor;
@@ -382,7 +382,7 @@ namespace nexo::renderer {
        							rotationMat *
                                    glm::scale(glm::mat4(1.0f), size);
 
-       m_storage->textureShader->setUniformMatrix("matModel", transform);
+       m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
        renderer::Material mat;
        mat.albedoColor = material.albedoColor;
@@ -430,7 +430,7 @@ namespace nexo::renderer {
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
-	    m_storage->textureShader->setUniformMatrix("matModel", transform);
+	    m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
         renderer::Material mat;
         mat.albedoColor = material.albedoColor;
