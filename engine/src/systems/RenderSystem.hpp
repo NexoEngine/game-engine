@@ -50,5 +50,6 @@ namespace nexo::system {
 				void update();
 			private:
 			    void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext);
+				void renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext);
 	};
 }
