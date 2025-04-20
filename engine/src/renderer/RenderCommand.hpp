@@ -122,9 +122,19 @@ namespace nexo::renderer {
                 _rendererApi->drawIndexed(vertexArray, indexCount);
             }
 
+            static void drawUnIndexed(unsigned int verticesCount)
+            {
+                _rendererApi->drawUnIndexed(verticesCount);
+            }
+
             static void setDepthTest(bool enable)
             {
                 _rendererApi->setDepthTest(enable);
+            }
+
+            static void setDepthMask(bool enable)
+            {
+                _rendererApi->setDepthMask(enable);
             }
 
             static void setDepthFunc(unsigned int func)

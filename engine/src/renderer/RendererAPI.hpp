@@ -113,6 +113,7 @@ namespace nexo::renderer {
 
             virtual void setDepthTest(bool enable) = 0;
             virtual void setDepthFunc(unsigned int func) = 0;
+            virtual void setDepthMask(bool enable) = 0;
 
             /**
             * @brief Issues a draw call for indexed geometry.
@@ -126,6 +127,8 @@ namespace nexo::renderer {
             * Must be implemented by subclasses.
             */
             virtual void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int count = 0) = 0;
+
+            virtual void drawUnIndexed(unsigned int verticesCount) = 0;
 
             virtual void setStencilTest(bool enable) = 0;
             virtual void setStencilMask(unsigned int mask) = 0;
