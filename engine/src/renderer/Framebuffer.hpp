@@ -194,6 +194,8 @@ namespace nexo::renderer {
              */
             virtual void resize(unsigned int width, unsigned int height) = 0;
 
+            virtual const glm::vec2 getSize() const = 0;
+
             virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const = 0;
 
 
