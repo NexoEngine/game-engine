@@ -106,7 +106,6 @@ namespace nexo::editor {
             glm::vec3 m_snapTranslate = {10.0f, 10.0f, 10.0f};
             bool m_snapRotateOn = false;
             float m_angleSnap = 90.0f;
-            bool m_gridEnabled = false;
             bool m_snapToGrid = false;
             bool m_wireframeEnabled = false;
 
@@ -237,6 +236,8 @@ namespace nexo::editor {
              */
             void snapSettingsPopup();
 
+            void gridSettingsPopup();
+
             /**
              * @brief Renders a standard toolbar button with optional tooltip and styling.
              *
@@ -252,7 +253,8 @@ namespace nexo::editor {
                 const std::string &uniqueId,
                 const std::string &icon,
                 const std::string &tooltip,
-                const std::vector<ImNexo::GradientStop> & gradientStop
+                const std::vector<ImNexo::GradientStop> & gradientStop,
+                bool *rightClicked = nullptr
             );
 
             /**

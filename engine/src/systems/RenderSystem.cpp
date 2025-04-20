@@ -106,9 +106,10 @@ namespace nexo::system {
         gridShader->bind();
 
         // Grid appearance
-        gridShader->setUniformFloat("uGridSize", 100.0f);  // Size of grid from center to edge
-        gridShader->setUniformFloat("uGridCellSize", 0.025f); // Base size of each cell
-        gridShader->setUniformFloat("uGridMinPixelsBetweenCells", 2.0f); // For LOD calculation
+        const components::RenderContext::GridParams &gridParams = renderContext.gridParams;
+        gridShader->setUniformFloat("uGridSize", gridParams.gridSize);  // Size of grid from center to edge
+        gridShader->setUniformFloat("uGridCellSize", gridParams.cellSize); // Base size of each cell
+        gridShader->setUniformFloat("uGridMinPixelsBetweenCells", gridParams.minPixelsBetweenCells); // For LOD calculation
 
         gridShader->setUniformFloat4("uGridColorThin", {0.5f, 0.55f, 0.7f, 0.6f});   // Soft blue-purple
         gridShader->setUniformFloat4("uGridColorThick", {0.7f, 0.75f, 0.9f, 0.8f});  // Lighter blue-purple
@@ -224,7 +225,7 @@ namespace nexo::system {
                }
             }
 
-            if (sceneType == SceneType::EDITOR)
+            if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
             {
                 renderGrid(camera, renderContext);
             }

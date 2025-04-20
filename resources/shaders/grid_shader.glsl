@@ -19,7 +19,7 @@
 #version 430
 
 uniform mat4 uViewProjection = mat4(1.0);
-uniform float uGridSize = 100.0;
+uniform float uGridSize;
 uniform vec3 uCamPos;
 
 out vec3 FragPos;
