@@ -27,6 +27,7 @@
 #include "Texture.hpp"
 #include "WindowRegistry.hpp"
 #include "components/Camera.hpp"
+#include "components/RenderContext.hpp"
 #include "components/Uuid.hpp"
 #include "components/Editor.hpp"
 #include "math/Matrix.hpp"
@@ -140,13 +141,15 @@ namespace nexo::editor {
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
     }
 
-    bool EditorScene::renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<ImNexo::GradientStop> & gradientStop)
+    bool EditorScene::renderToolbarButton(const std::string &uniqueId, const std::string &icon, const std::string &tooltip, const std::vector<ImNexo::GradientStop> & gradientStop, bool *rightClicked)
     {
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
         bool clicked = ImNexo::IconGradientButton(uniqueId, icon, ImVec2(buttonWidth, buttonHeight), gradientStop);
         if (!tooltip.empty() && ImGui::IsItemHovered())
             ImGui::SetTooltip("%s", tooltip.c_str());
+        if (rightClicked != nullptr)
+            *rightClicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);
         return clicked;
     }
 
@@ -268,6 +271,51 @@ namespace nexo::editor {
         }
     }
 
+    void EditorScene::gridSettingsPopup()
+    {
+        if (m_popupManager.showPopupModal("Grid settings"))
+        {
+            auto &app = getApp();
+            components::RenderContext::GridParams &gridSettings =
+                app.m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
+
+            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+            ImGui::Indent(10.0f);
+
+            if (ImGui::BeginTable("GridSettings", 2,
+                ImGuiTableFlags_SizingStretchProp))
+            {
+                ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                ImNexo::RowDragFloat1("Grid size", "", &gridSettings.gridSize, 50.0f, 150.0f);
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip("The total size of the grid");
+                ImNexo::RowDragFloat1("Pixel cell spacing", "", &gridSettings.minPixelsBetweenCells, 0.0f, 100.0f, 0.1f);
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip("Level of detail of internal cells");
+                ImNexo::RowDragFloat1("Cell size", "", &gridSettings.cellSize, 0.1f, 20.0f, 0.02f);
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip("The size of the internal cells");
+                ImGui::EndTable();
+            }
+
+            ImGui::Spacing();
+            ImGui::Spacing();
+
+            float buttonWidth = 120.0f;
+            float windowWidth = ImGui::GetWindowSize().x;
+            ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
+
+            if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
+            {
+                m_popupManager.closePopupInContext();
+            }
+            ImGui::Unindent(10.0f);
+            ImGui::PopStyleVar();
+            m_popupManager.closePopup();
+        }
+    }
+
     void EditorScene::renderEditorCameraToolbarButton()
     {
         auto &app = getApp();
@@ -308,6 +356,7 @@ namespace nexo::editor {
 
     void EditorScene::renderToolbar()
     {
+        auto &app = getApp();
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
         constexpr ImVec2 buttonSize{buttonWidth, buttonHeight};
@@ -400,10 +449,15 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Grid enabled button --------
-        if (renderToolbarButton("grid_enabled", ICON_FA_TH_LARGE, "Enable / Disable grid", m_gridEnabled ? m_selectedGradient : m_buttonGradient))
+        bool rightClicked = false;
+        components::RenderContext::GridParams &gridParams = app.m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
+        if (renderToolbarButton("grid_enabled", ICON_FA_TH_LARGE, "Enable / Disable grid", gridParams.enabled ? m_selectedGradient : m_buttonGradient, &rightClicked))
         {
-            m_gridEnabled = !m_gridEnabled;
+            gridParams.enabled = !gridParams.enabled;
+
         }
+        if (rightClicked)
+            m_popupManager.openPopup("Grid settings", ImVec2(300, 180));
 
         ImGui::SameLine();
 
@@ -411,6 +465,7 @@ namespace nexo::editor {
         if (renderToolbarButton("snap_to_grid", ICON_FA_TH, "Enable snapping to grid", m_snapToGrid ? m_selectedGradient : m_buttonGradient))
         {
             m_snapToGrid = !m_snapToGrid;
+
         }
 
         ImGui::SameLine();
@@ -457,6 +512,9 @@ namespace nexo::editor {
 
         // -------- Snap settings popup --------
         snapSettingsPopup();
+
+        // -------- Grid settings popup --------
+        gridSettingsPopup();
 
         // IMPORTANT: Restore original cursor position so we don't affect layout
         ImGui::SetCursorPos(originalCursorPos);
