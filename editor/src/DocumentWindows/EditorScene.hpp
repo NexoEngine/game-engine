@@ -257,6 +257,8 @@ namespace nexo::editor {
                 bool *rightClicked = nullptr
             );
 
+            ImGuizmo::OPERATION getLastGuizmoOperation();
+
             /**
              * @brief Renders the transformation gizmo for the selected entity.
              *

@@ -462,10 +462,10 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Snap to gridbutton --------
-        if (renderToolbarButton("snap_to_grid", ICON_FA_TH, "Enable snapping to grid", m_snapToGrid ? m_selectedGradient : m_buttonGradient))
+        // NOTE: This seems complicated to implement using ImGuizmo, we leave it for now but i dont know if it will be implemented
+        if (renderToolbarButton("snap_to_grid", ICON_FA_TH, "Enable snapping to grid\n(only horizontal translation and scaling)", m_snapToGrid ? m_selectedGradient : m_buttonGradient))
         {
             m_snapToGrid = !m_snapToGrid;
-
         }
 
         ImGui::SameLine();
@@ -520,6 +520,20 @@ namespace nexo::editor {
         ImGui::SetCursorPos(originalCursorPos);
     }
 
+    ImGuizmo::OPERATION EditorScene::getLastGuizmoOperation()
+    {
+        for (int bitPos = 0; bitPos <= 13; bitPos++)
+        {
+            // Create a mask for this bit position
+            ImGuizmo::OPERATION op = static_cast<ImGuizmo::OPERATION>(1u << bitPos);
+
+            // Check if this bit is set
+            if (ImGuizmo::IsOver(op))
+                return op;
+        }
+        return ImGuizmo::OPERATION::UNIVERSAL;
+    }
+
     void EditorScene::renderGizmo()
     {
         const auto &coord = nexo::Application::m_coordinator;
@@ -546,22 +560,12 @@ namespace nexo::editor {
 
         static ImGuizmo::OPERATION lastOperation;
         if (!ImGuizmo::IsUsing())
-        {
-            if (ImGuizmo::IsOver(ImGuizmo::OPERATION::TRANSLATE))
-            {
-                lastOperation = ImGuizmo::OPERATION::TRANSLATE;
-            }
-            else if (ImGuizmo::IsOver(ImGuizmo::OPERATION::ROTATE))
-            {
-                lastOperation = ImGuizmo::OPERATION::ROTATE;
-            }
-        }
-
+            lastOperation = getLastGuizmoOperation();
 
         float *snap = nullptr;
-        if (m_snapTranslateOn && lastOperation == ImGuizmo::OPERATION::TRANSLATE) {
+        if (m_snapTranslateOn && lastOperation & ImGuizmo::OPERATION::TRANSLATE) {
             snap = &m_snapTranslate.x;
-        } else if (m_snapRotateOn && lastOperation == ImGuizmo::OPERATION::ROTATE) {
+        } else if (m_snapRotateOn && lastOperation & ImGuizmo::OPERATION::ROTATE) {
             snap = &m_angleSnap;
         }
 
