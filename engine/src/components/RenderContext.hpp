@@ -20,12 +20,20 @@
 #include "Light.hpp"
 
 namespace nexo::components {
-	struct RenderContext {
-		int sceneRendered = -1;
-		SceneType sceneType;
-		renderer::Renderer3D renderer3D;
-		std::queue<CameraContext> cameras;
-		LightContext sceneLights;
+        struct RenderContext {
+            int sceneRendered = -1;
+            SceneType sceneType;
+            struct GridParams {
+                bool enabled = true;
+                float gridSize = 100.0f;
+                float minPixelsBetweenCells = 2.0f;
+                float cellSize = 0.025f;
+            };
+            GridParams gridParams;
+            renderer::Renderer3D renderer3D;
+            std::queue<CameraContext> cameras;
+            LightContext sceneLights;
+
 
 		RenderContext()
 		{
