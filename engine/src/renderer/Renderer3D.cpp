@@ -66,6 +66,8 @@ namespace nexo::renderer {
             "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
         auto albedoUnshadedTransparent = m_storage->shaderLibrary.load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
             "../resources/shaders/albedo_unshaded_transparent.glsl").string());
+        m_storage->shaderLibrary.load("Grid shader", Path::resolvePathRelativeToExe(
+            "../resources/shaders/grid_shader.glsl").string());
         phong->bind();
         phong->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
         phong->unbind();
