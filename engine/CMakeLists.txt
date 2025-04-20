@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Vector.cpp
+        common/math/Projection.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
