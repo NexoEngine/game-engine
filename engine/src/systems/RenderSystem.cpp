@@ -21,6 +21,8 @@
 #include "components/Camera.hpp"
 #include "components/Transform.hpp"
 #include "components/Render.hpp"
+#include "core/event/Input.hpp"
+#include "math/Projection.hpp"
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/exceptions/Exceptions.hpp"
@@ -92,6 +94,43 @@ namespace nexo::system {
             shader->setUniformFloat(std::format("uSpotLights[{}].cutOff", i), spotLight.cutOff);
             shader->setUniformFloat(std::format("uSpotLights[{}].outerCutoff", i), spotLight.outerCutoff);
         }
+    }
+
+    void RenderSystem::renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext)
+    {
+        //TODO: Implement a way to do this without relying on camera render target when none is bound
+        if (!camera.renderTarget)
+            return;
+        renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Grid shader");
+        auto gridShader = renderContext.renderer3D.getShader();
+        gridShader->bind();
+
+        // Grid appearance
+        gridShader->setUniformFloat("uGridSize", 100.0f);  // Size of grid from center to edge
+        gridShader->setUniformFloat("uGridCellSize", 0.025f); // Base size of each cell
+        gridShader->setUniformFloat("uGridMinPixelsBetweenCells", 2.0f); // For LOD calculation
+
+        gridShader->setUniformFloat4("uGridColorThin", {0.5f, 0.55f, 0.7f, 0.6f});   // Soft blue-purple
+        gridShader->setUniformFloat4("uGridColorThick", {0.7f, 0.75f, 0.9f, 0.8f});  // Lighter blue-purple
+        const glm::vec2 &mousePos = event::getMousePosition();
+        const glm::vec2 &screenSize = camera.renderTarget->getSize();
+        const glm::vec3 &rayDir = math::projectRayToWorld(mousePos.x, mousePos.y, camera.viewProjectionMatrix, camera.cameraPosition, screenSize.x, screenSize.y);
+
+        glm::vec3 mouseWorldPos = camera.cameraPosition;
+        if (rayDir.y != 0.0f) {
+            float t = -camera.cameraPosition.y / rayDir.y;
+            if (t > 0.0f) {
+                mouseWorldPos = camera.cameraPosition + rayDir * t;
+            }
+        }
+        // For glowing effect
+        gridShader->setUniformFloat3("uMouseWorldPos", mouseWorldPos);
+        gridShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
+
+        renderer::RenderCommand::setDepthMask(false);
+        renderer::RenderCommand::drawUnIndexed(6);
+        gridShader->unbind();
+        renderer::RenderCommand::setDepthMask(true);
     }
 
 	void RenderSystem::update()
@@ -183,6 +222,11 @@ namespace nexo::system {
                         renderer::RenderCommand::setStencilMask(0xFF);
 					}
                }
+            }
+
+            if (sceneType == SceneType::EDITOR)
+            {
+                renderGrid(camera, renderContext);
             }
 
 			if (camera.renderTarget != nullptr)
