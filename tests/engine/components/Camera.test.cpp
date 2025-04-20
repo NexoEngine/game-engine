@@ -28,6 +28,7 @@ public:
     void unbind() override {}
     void setClearColor(const glm::vec4 &) override {}
     unsigned int getFramebufferId() const override { return 0; }
+    const glm::vec2 getSize() const override { return glm::vec2(0.0f); }
     void resize(unsigned int, unsigned int ) override {}
     void getPixelWrapper(unsigned int, int, int, void *, const std::type_info &) const override {}
     void clearAttachmentWrapper(unsigned int, const void *, const std::type_info &) const override {}
