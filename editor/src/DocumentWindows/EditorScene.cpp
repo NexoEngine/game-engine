@@ -61,7 +61,7 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(m_viewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_viewSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 0.0f, 0.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
@@ -82,16 +82,16 @@ namespace nexo::editor {
         scene::Scene &scene = app.getSceneManager().getScene(m_sceneId);
         const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
         scene.addEntity(ambientLight);
-        const ecs::Entity pointLight = LightFactory::createPointLight({1.2f, 5.0f, 0.1f});
+        const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
         utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
         scene.addEntity(pointLight);
         const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
         scene.addEntity(directionalLight);
-        const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, -2.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
+        const ecs::Entity spotLight = LightFactory::createSpotLight({-2.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
         utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(spotLight);
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, -5.0f, -5.0f}, {20.0f, 1.0f, 20.0f},
-                                                               {0.0f, 0.0f, 0.0f}, {1.0f, 0.5f, 0.31f, 1.0f});
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
+                                                               {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
     }
 
