@@ -28,6 +28,7 @@ namespace nexo::renderer {
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
         glEnable(GL_STENCIL_TEST);
         glStencilFunc(GL_ALWAYS, 0, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -97,6 +98,16 @@ namespace nexo::renderer {
         glDepthFunc(func);
     }
 
+    void OpenGlRendererApi::setDepthMask(bool enable)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        if (enable)
+            glDepthMask(GL_TRUE);
+        else
+            glDepthMask(GL_FALSE);
+    }
+
     void OpenGlRendererApi::drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, const unsigned int indexCount)
     {
         if (!m_initialized)
@@ -105,6 +116,13 @@ namespace nexo::renderer {
             THROW_EXCEPTION(InvalidValue, "OPENGL", "Vertex array cannot be null");
         const unsigned int count = indexCount ? vertexArray->getIndexBuffer()->getCount() : indexCount;
         glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
+    }
+
+    void OpenGlRendererApi::drawUnIndexed(unsigned int verticesCount)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glDrawArrays(GL_TRIANGLES, 0, verticesCount);
     }
 
     void OpenGlRendererApi::setStencilTest(bool enable)
