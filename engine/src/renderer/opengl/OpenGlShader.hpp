@@ -58,9 +58,11 @@ namespace nexo::renderer {
             void unbind() const override;
 
             bool setUniformFloat(const std::string &name, const float value) const override;
+            bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const override;
             bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
             bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
             bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const override;
+            bool setUniformBool(const std::string &name, bool value) const override;
             bool setUniformInt(const std::string &name, int value) const override;
             bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
 
