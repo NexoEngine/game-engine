@@ -220,6 +220,16 @@ namespace nexo::renderer {
         return true;
     }
 
+    bool OpenGlShader::setUniformFloat2(const std::string &name, const glm::vec2 &values) const
+    {
+        const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            return false;
+
+        glUniform2f(loc, values.x, values.y);
+        return true;
+    }
+
     bool OpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
@@ -281,6 +291,16 @@ namespace nexo::renderer {
     }
 
     bool OpenGlShader::setUniformInt(const std::string &name, const int value) const
+    {
+        const int loc = glGetUniformLocation(m_id, name.c_str());
+        if (loc == -1)
+            return false;
+
+        glUniform1i(loc, value);
+        return true;
+    }
+
+    bool OpenGlShader::setUniformBool(const std::string &name, bool value) const
     {
         const int loc = glGetUniformLocation(m_id, name.c_str());
         if (loc == -1)
