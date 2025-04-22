@@ -15,6 +15,7 @@
 
 #include "Access.hpp"
 #include "GroupSystem.hpp"
+#include "components/Camera.hpp"
 #include "components/Render.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
@@ -47,9 +48,19 @@ namespace nexo::system {
         	ecs::Read<components::SceneTag>>,
     	ecs::WriteSingleton<components::RenderContext>> {
 			public:
-				void update();
+                RenderSystem();
+                void update();
+
 			private:
 			    void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext);
 				void renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext);
+				void renderOutline(
+				    components::RenderContext &renderContext,
+					const components::CameraContext &camera,
+					const components::RenderComponent &renderComponent,
+					const components::TransformComponent &transformComponent
+				);
+                std::shared_ptr<renderer::VertexArray> m_fullscreenQuad;
+                std::shared_ptr<renderer::Framebuffer> m_maskFramebuffer;
 	};
 }
