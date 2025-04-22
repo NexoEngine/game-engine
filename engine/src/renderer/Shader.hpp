@@ -130,9 +130,11 @@ namespace nexo::renderer {
             virtual void unbind() const = 0;
 
             virtual bool setUniformFloat(const std::string &name, float value) const = 0;
+            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const = 0;
             virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
             virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
             virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformBool(const std::string &name, bool value) const = 0;
             virtual bool setUniformInt(const std::string &name, int value) const = 0;
             virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
