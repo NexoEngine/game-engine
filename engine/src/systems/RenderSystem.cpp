@@ -33,6 +33,41 @@
 
 namespace nexo::system {
 
+    RenderSystem::RenderSystem()
+    {
+        renderer::FramebufferSpecs maskFramebufferSpecs;
+        maskFramebufferSpecs.attachments = { renderer::FrameBufferTextureFormats::RGBA8 };
+        maskFramebufferSpecs.width = 1280;  // Default size, will be resized as needed
+        maskFramebufferSpecs.height = 720;
+        m_maskFramebuffer = renderer::Framebuffer::create(maskFramebufferSpecs);
+
+        // Create fullscreen quad for post-processing
+        m_fullscreenQuad = renderer::createVertexArray();
+
+        // Define fullscreen quad vertices (position and texture coordinates)
+        float quadVertices[] = {
+            // positions        // texture coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f
+        };
+
+        auto quadVB = renderer::createVertexBuffer(sizeof(quadVertices));
+        quadVB->setData(quadVertices, sizeof(quadVertices));
+
+        renderer::BufferLayout quadLayout = {
+            {renderer::ShaderDataType::FLOAT3, "aPosition"},
+            {renderer::ShaderDataType::FLOAT2, "aTexCoord"}
+        };
+
+        quadVB->setLayout(quadLayout);
+        m_fullscreenQuad->addVertexBuffer(quadVB);
+    }
+
     /**
     * @brief Sets up the lighting uniforms in the given shader.
     *
@@ -129,8 +164,69 @@ namespace nexo::system {
         gridShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
 
         renderer::RenderCommand::setDepthMask(false);
+        glDisable(GL_CULL_FACE);
         renderer::RenderCommand::drawUnIndexed(6);
         gridShader->unbind();
+        renderer::RenderCommand::setDepthMask(true);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
+
+    void RenderSystem::renderOutline(
+        components::RenderContext &renderContext,
+        const components::CameraContext &camera,
+        const components::RenderComponent &renderComponent,
+        const components::TransformComponent &transformComponent
+    ) {
+        if (m_maskFramebuffer->getSize().x != camera.renderTarget->getSize().x ||
+            m_maskFramebuffer->getSize().y != camera.renderTarget->getSize().y) {
+                m_maskFramebuffer->resize(
+                    static_cast<unsigned int>(camera.renderTarget->getSize().x),
+                    static_cast<unsigned int>(camera.renderTarget->getSize().y)
+                );
+        }
+
+        // Step 2: Render selected object to mask texture
+        m_maskFramebuffer->bind();
+        renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});
+        renderer::RenderCommand::clear();
+        const auto &material = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable)->material;
+
+
+        std::string maskShaderName = "Flat color";
+        if (!material.isOpaque)
+            maskShaderName = "Albedo unshaded transparent";
+
+        renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, maskShaderName);
+        auto context = std::make_shared<renderer::RendererContext>();
+        context->renderer3D = renderContext.renderer3D;
+        renderComponent.draw(context, transformComponent);
+        renderContext.renderer3D.endScene();
+
+
+        m_maskFramebuffer->unbind();
+        if (camera.renderTarget != nullptr)
+            camera.renderTarget->bind();
+
+        // Step 3: Draw full-screen quad with outline post-process shader
+        renderer::RenderCommand::setDepthMask(false);
+        renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Outline pulse flat");
+        auto outlineShader = renderContext.renderer3D.getShader();
+        outlineShader->bind();
+        unsigned int maskTexture = m_maskFramebuffer->getColorAttachmentId(0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, maskTexture);
+        outlineShader->setUniformInt("uMaskTexture", 0);
+        outlineShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
+        outlineShader->setUniformFloat2("uScreenSize", {camera.renderTarget->getSize().x, camera.renderTarget->getSize().y});
+        outlineShader->setUniformFloat("uOutlineWidth", 10.0f);
+
+        m_fullscreenQuad->bind();
+        renderer::RenderCommand::drawUnIndexed(6);
+        m_fullscreenQuad->unbind();
+        renderContext.renderer3D.endScene();
+
+        outlineShader->unbind();
         renderer::RenderCommand::setDepthMask(true);
     }
 
@@ -156,11 +252,9 @@ namespace nexo::system {
 		const auto renderSpan = get<components::RenderComponent>();
 		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
-		while (!renderContext.cameras.empty())
-		{
+		while (!renderContext.cameras.empty()) {
 			const components::CameraContext &camera = renderContext.cameras.front();
-			if (camera.renderTarget != nullptr)
-			{
+			if (camera.renderTarget != nullptr) {
 				camera.renderTarget->bind();
 				//TODO: Find a way to automatically clear color attachments
 				renderer::RenderCommand::setClearColor(camera.clearColor);
@@ -176,8 +270,10 @@ namespace nexo::system {
             }
             nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
-            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
-            {
+            if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
+                renderGrid(camera, renderContext);
+
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
                 const ecs::Entity entity = entitySpan[i];
                 if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
                     continue;
@@ -187,13 +283,6 @@ namespace nexo::system {
 				const auto &material = std::dynamic_pointer_cast<components::Renderable3D>(render.renderable)->material;
 				if (render.isRendered)
 				{
-				    bool isSelected = coord->entityHasComponent<components::SelectedTag>(entity);
-				    if (isSelected)
-					{
-    					renderer::RenderCommand::setStencilFunc(GL_ALWAYS, 1, 0xFF);
-                        renderer::RenderCommand::setStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-                        renderer::RenderCommand::setStencilMask(0xFF);
-					}
 					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, material.shader);
 					auto shader = renderContext.renderer3D.getShader();
 					setupLights(shader, renderContext.sceneLights);
@@ -201,40 +290,13 @@ namespace nexo::system {
 					context->renderer3D = renderContext.renderer3D;
 					render.draw(context, transform, static_cast<int>(entity));
 					renderContext.renderer3D.endScene();
-					if (isSelected)
-					{
-                        renderer::RenderCommand::setStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-                        renderer::RenderCommand::setStencilMask(0x00);
-                        renderer::RenderCommand::setDepthFunc(GL_LEQUAL);
-                        float scaleFactor = 1.015f;
-                        if (material.isOpaque)
-                            renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Outline pulse flat");
-                        else {
-                            renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Outline pulse transparent flat");
-                            scaleFactor = 1.1f; //Sligthly larger for transparency
-                        }
-                        auto outlineShader = renderContext.renderer3D.getShader();
-                        outlineShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
-                        render.draw(context, {transform.pos, transform.size * scaleFactor, transform.quat});
-                        renderContext.renderer3D.endScene();
-                        renderer::RenderCommand::setDepthFunc(GL_LESS);
-                        renderer::RenderCommand::setStencilFunc(GL_ALWAYS, 0, 0xFF);
-                        renderer::RenderCommand::setStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-                        renderer::RenderCommand::setStencilMask(0xFF);
-					}
+					if (coord->entityHasComponent<components::SelectedTag>(entity))
+					   renderOutline(renderContext, camera, render, transform);
                }
             }
 
-            if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
-            {
-                renderGrid(camera, renderContext);
-            }
-
 			if (camera.renderTarget != nullptr)
-			{
 				camera.renderTarget->unbind();
-
-			}
 			renderContext.cameras.pop();
 		}
 		// We have to do this for now to reset the shader stored as a static here, this will change later
