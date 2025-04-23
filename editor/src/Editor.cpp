@@ -333,7 +333,115 @@ namespace nexo::editor {
 
         m_windowRegistry.render();
 
+        std::vector<CommandInfo> possibleCommands;
+        {
+            auto focusedWindow = m_windowRegistry.getFocusedWindow();
+            if (focusedWindow)
+            {
+                WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
+                m_inputManager.processInputs(currentState);
+                possibleCommands = m_inputManager.getPossibleCommands(currentState);
+            }
+        }
+
+        const float bottomBarHeight = 38.0f;
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
         auto viewport = ImGui::GetMainViewport();
+
+        ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - bottomBarHeight));
+        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, bottomBarHeight));
+        ImGui::SetNextWindowViewport(viewport->ID);
+
+        ImGuiWindowFlags bottomBarFlags =
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoNav |
+            ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBackground;
+
+        if (ImGui::Begin("CommandsBar", nullptr, bottomBarFlags))
+        {
+            const float textScaleFactor = 0.90f; // 15% larger text
+            ImGui::SetWindowFontScale(textScaleFactor);
+            // Vertically center the content
+            float windowHeight = ImGui::GetWindowHeight();
+            float textHeight = ImGui::GetTextLineHeight();
+            float paddingY = (windowHeight - textHeight) * 0.5f;
+
+            // Apply the vertical padding
+            ImGui::SetCursorPosY(paddingY);
+
+            // Start with a small horizontal padding
+            ImGui::SetCursorPosX(10.0f);
+
+            if (!possibleCommands.empty())
+            {
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                // Use horizontal layout for commands, left-aligned
+                for (const auto& cmd : possibleCommands)
+                {
+                    // Calculate text sizes for proper positioning and border sizing
+                    ImVec2 keySize = ImGui::CalcTextSize(cmd.key.c_str());
+                    ImVec2 colonSize = ImGui::CalcTextSize(":");
+                    ImVec2 descSize = ImGui::CalcTextSize(cmd.description.c_str());
+
+                    // Position of the start of this command
+                    ImVec2 commandStart = ImGui::GetCursorScreenPos();
+
+                    // Total size of command group with padding
+                    float commandWidth = keySize.x + colonSize.x + 5.0f + descSize.x;
+                    float commandHeight = std::max(keySize.y, std::max(colonSize.y, descSize.y));
+
+                    // Add padding around the entire command
+                    float borderPadding = 6.0f;
+                    float borderCornerRadius = 3.0f;
+
+                    // Draw the gradient border rectangle
+                    ImVec2 rectMin = ImVec2(commandStart.x - borderPadding, commandStart.y - borderPadding);
+                    ImVec2 rectMax = ImVec2(commandStart.x + commandWidth + borderPadding,
+                                           commandStart.y + commandHeight + borderPadding);
+
+                    // Draw gradient border rectangle
+                    drawList->AddRect(
+                        rectMin,
+                        rectMax,
+                        IM_COL32(58, 124, 161, 200),  // Gradient start color
+                        borderCornerRadius,
+                        0,
+                        1.5f  // Border thickness
+                    );
+
+                    // Dark inner background
+                    drawList->AddRectFilled(
+                        ImVec2(rectMin.x + 1, rectMin.y + 1),
+                        ImVec2(rectMax.x - 1, rectMax.y - 1),
+                        IM_COL32(10, 11, 25, 200),  // Dark inner background
+                        borderCornerRadius - 0.5f
+                    );
+
+                    // Draw the command components
+                    const std::string &key = cmd.key + ":";
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", key.c_str());
+                    ImGui::SameLine(0.0f, 5.0f);
+                    ImGui::Text("%s", cmd.description.c_str());
+
+                    // Add space between commands
+                    ImGui::SameLine(0.0f, 20.0f);
+
+                    // Update cursor position to account for the border we added
+                    ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, commandStart.y));
+                }
+            }
+        }
+        ImGui::End();
+        ImGui::PopStyleColor(2); // Pop both text and bg colors
+
+
+
+
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
