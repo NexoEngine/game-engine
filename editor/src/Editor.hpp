@@ -24,6 +24,7 @@
 #include <type_traits>
 
 #include "WindowRegistry.hpp"
+#include "inputs/InputManager.hpp"
 
 namespace nexo::editor {
 
@@ -167,5 +168,6 @@ namespace nexo::editor {
             bool m_quit = false;
             bool m_showDemoWindow = false;
             WindowRegistry m_windowRegistry;
+            InputManager m_inputManager;
     };
 }
