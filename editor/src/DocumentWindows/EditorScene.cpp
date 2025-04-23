@@ -48,6 +48,55 @@ namespace nexo::editor {
     {
         setupWindow();
         setupScene();
+
+        m_globalState = {static_cast<unsigned int>(EditorState::GLOBAL)};
+        m_globalState.registerCommand(
+            {
+                "Ctrl Context",
+                "Ctrl",
+                []{
+                    //std::cout << "Ctrl pressed" << std::endl;
+                },
+                true,
+                {
+                    {
+                        "Copy",
+                        "C",
+                        []{
+                            std::cout << "Copy command executed" << std::endl;
+                        },
+                        false,
+                    },
+                    {
+                        "Paste",
+                        "V",
+                        []{
+                            std::cout << "Paste command executed" << std::endl;
+                        },
+                        false,
+                    },
+                    {
+                        "Sub child",
+                        "Shift",
+                        nullptr,
+                        true,
+                        {
+                            {
+                                "Delete",
+                                "X",
+                                []{
+                                    std::cout << "Sub sub command executed" << std::endl;
+                                },
+                                false,
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        m_windowState = m_globalState;
+
     }
 
     void EditorScene::setupScene()
@@ -640,9 +689,8 @@ namespace nexo::editor {
             ImGui::Dummy(ImVec2(0, 5));
             m_viewPosition = ImGui::GetCursorScreenPos();
 
-
-            m_focused = ImGui::IsWindowFocused();
-            m_hovered = ImGui::IsWindowHovered();
+            m_focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+            m_hovered = ImGui::IsWindowHovered(ImGuiFocusedFlags_RootAndChildWindows);
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
             if (m_focused && selector.getSelectedScene() != m_sceneId)
             {
