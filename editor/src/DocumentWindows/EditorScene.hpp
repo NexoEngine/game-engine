@@ -14,12 +14,15 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
+#include "inputs/WindowState.hpp"
 #include "IDocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
+#include "inputs/WindowState.hpp"
 #include "PopupManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
 #include "ImNexo/Widgets.hpp"
+#include "inputs/InputManager.hpp"
 
 namespace nexo::editor {
 
@@ -279,5 +282,13 @@ namespace nexo::editor {
              * rendered scene, and updates viewport bounds for input handling.
              */
             void renderView();
+
+            enum class EditorState {
+                GLOBAL,
+                GIZMO,
+                NB_STATE
+            };
+
+            WindowState m_globalState;
     };
 }
