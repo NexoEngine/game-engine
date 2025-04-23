@@ -26,6 +26,9 @@ set(SRCS
         editor/src/utils/String.cpp
         editor/src/utils/FileSystem.cpp
         editor/src/utils/EditorProps.cpp
+        editor/src/inputs/Command.cpp
+        editor/src/inputs/InputManager.cpp
+        editor/src/inputs/WindowState.cpp
         editor/src/Editor.cpp
         editor/src/WindowRegistry.cpp
         editor/src/DockingRegistry.cpp
