@@ -17,6 +17,7 @@
 #include "IDocumentWindow.hpp"
 #include "Nexo.hpp"
 #include "WindowRegistry.hpp"
+#include "inputs/WindowState.hpp"
 
 #include <imgui_internal.h>
 
@@ -59,6 +60,8 @@ namespace nexo::editor {
             [[nodiscard]] bool &getOpened() override { return m_opened; }
 
             [[nodiscard]] const std::string &getWindowName() const override { return m_windowName; }
+
+            [[nodiscard]] const WindowState &getWindowState() const override { return m_windowState; };
 
             /**
              * @brief Initializes the docking configuration for the document window on its first display.
@@ -106,6 +109,7 @@ namespace nexo::editor {
             bool m_firstOpened = true;
 
             std::string m_windowName;
+            WindowState m_windowState;
 
             WindowRegistry &m_windowRegistry;
     };
