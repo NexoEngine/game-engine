@@ -243,13 +243,13 @@ namespace nexo::assets {
 
     components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene)
     {
-        std::vector<renderer::Vertex> vertices;
+        std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
         vertices.reserve(mesh->mNumVertices);
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
-            renderer::Vertex vertex{};
+            renderer::NxVertex vertex{};
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
             if (mesh->HasNormals()) {
