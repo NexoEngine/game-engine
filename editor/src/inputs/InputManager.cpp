@@ -69,6 +69,15 @@ namespace nexo::editor {
         }
     }
 
+    // Add this method implementation
+    std::vector<CommandInfo> InputManager::getAllPossibleCommands(const WindowState& windowState) const {
+        std::vector<CommandInfo> allCommands;
+        // Use an empty signature to get all commands
+        std::bitset<ImGuiKey_NamedKey_COUNT> emptySignature;
+        collectPossibleCommands(windowState.getCommands(), emptySignature, allCommands);
+        return allCommands;
+    }
+
     std::vector<CommandInfo> InputManager::getPossibleCommands(const WindowState& windowState) const {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
 

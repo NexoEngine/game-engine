@@ -333,7 +333,12 @@ namespace nexo::editor {
 
         m_windowRegistry.render();
 
+        // Get the commands to display in the bottom bar
         std::vector<CommandInfo> possibleCommands;
+        static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
+        static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
+        const float commandPersistTime = 2.0f;             // Show last commands for 2 seconds
+
         {
             auto focusedWindow = m_windowRegistry.getFocusedWindow();
             if (focusedWindow)
@@ -341,6 +346,31 @@ namespace nexo::editor {
                 WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
                 m_inputManager.processInputs(currentState);
                 possibleCommands = m_inputManager.getPossibleCommands(currentState);
+
+                // Update the last valid commands if we have any
+                if (!possibleCommands.empty())
+                {
+                    lastValidCommands = possibleCommands;
+                    commandDisplayTimer = commandPersistTime; // Reset timer
+                }
+                else if (commandDisplayTimer > 0.0f)
+                {
+                    // Use the last valid commands if timer is still active
+                    possibleCommands = lastValidCommands;
+                    commandDisplayTimer -= ImGui::GetIO().DeltaTime;
+                }
+                else if (lastValidCommands.empty())
+                {
+                    // Fallback: If we've never had commands, grab all possible commands from the window
+                    // This is a more complex operation but ensures we always have something to show
+                    possibleCommands = m_inputManager.getAllPossibleCommands(currentState);
+                    lastValidCommands = possibleCommands;
+                }
+                else
+                {
+                    // Use the last valid set of commands
+                    possibleCommands = lastValidCommands;
+                }
             }
         }
 
