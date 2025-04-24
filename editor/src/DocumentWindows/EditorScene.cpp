@@ -57,6 +57,7 @@ namespace nexo::editor {
                 "Shift context",
                 "Shift",
                 nullptr,
+                nullptr,
                 true,
                 {
                     {
@@ -65,6 +66,7 @@ namespace nexo::editor {
                         [this]{
                             this->m_popupManager.openPopup("Add new entity popup");
                         },
+                        nullptr,
                         false,
                     }
                 }
@@ -77,6 +79,7 @@ namespace nexo::editor {
                 [this]{
                     LOG(NEXO_WARN, "Select all not implemented yet");
                 },
+                nullptr,
                 false
             }
         );
@@ -92,6 +95,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -103,6 +107,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -114,6 +119,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -128,6 +134,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
+                nullptr,
                 false,
             }
         );
@@ -139,6 +146,31 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Rotate",
+                "R",
+                [this]{
+                    this->m_windowState = m_gizmoRotateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+                },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Scale",
+                "S",
+                [this]{
+                    this->m_windowState = m_gizmoScaleState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+                },
+                nullptr,
                 false,
             }
         );
@@ -148,6 +180,9 @@ namespace nexo::editor {
                 "X",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_X;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
                 false,
             }
@@ -159,6 +194,9 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Y;
                 },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+                },
                 false,
             }
         );
@@ -168,6 +206,9 @@ namespace nexo::editor {
                 "Z",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Z;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
                 false,
             }
@@ -183,6 +224,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
+                nullptr,
                 false,
             }
         );
@@ -194,17 +236,31 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 false,
             }
         );
         m_gizmoRotateState.registerCommand(
             {
-                "Screen rotation",
+                "Translate",
+                "G",
+                [this]{
+                    this->m_windowState = m_gizmoTranslateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+                },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Scale",
                 "S",
                 [this]{
-                    this->m_windowState = m_gizmoRotateState;
-                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_SCREEN;
+                    this->m_windowState = m_gizmoScaleState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -214,6 +270,9 @@ namespace nexo::editor {
                 "X",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_X;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
                 false,
             }
@@ -225,6 +284,9 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Y;
                 },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+                },
                 false,
             }
         );
@@ -234,6 +296,9 @@ namespace nexo::editor {
                 "Z",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Z;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
                 false,
             }
@@ -249,6 +314,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
+                nullptr,
                 false,
             }
         );
@@ -260,6 +326,31 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Translate",
+                "G",
+                [this]{
+                    this->m_windowState = m_gizmoTranslateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+                },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Rotate",
+                "R",
+                [this]{
+                    this->m_windowState = m_gizmoRotateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+                },
+                nullptr,
                 false,
             }
         );
@@ -269,6 +360,9 @@ namespace nexo::editor {
                 "X",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_X;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 false,
             }
@@ -280,6 +374,9 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Y;
                 },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+                },
                 false,
             }
         );
@@ -289,6 +386,9 @@ namespace nexo::editor {
                 "Z",
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Z;
+                },
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 false,
             }
