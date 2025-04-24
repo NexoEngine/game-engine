@@ -36,7 +36,7 @@ namespace nexo::components
 
         bool isRendered = true;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context,
+        virtual void draw(std::shared_ptr<renderer::NxRendererContext> &context,
                           const TransformComponent &transf, int entityID) const = 0;
         [[nodiscard]] virtual std::shared_ptr<Renderable> clone() const = 0;
     };
@@ -51,7 +51,7 @@ namespace nexo::components
         {
         };
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context,
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context,
                   const TransformComponent &transform, int entityID) const override
         {
             shape->draw(context, transform, sprite, entityID);
@@ -72,7 +72,7 @@ namespace nexo::components
         explicit Renderable3D(Material  material,
                               const std::shared_ptr<Shape3D> &shape) : material(std::move(material)), shape(shape) {};
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, int entityID) const override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, int entityID) const override
         {
             shape->draw(context, transf, material, entityID);
         }
@@ -97,7 +97,7 @@ namespace nexo::components
         {
         }
 
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transform, const int entityID = -1) const
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transform, const int entityID = -1) const
         {
             if (isRendered && renderable)
                 renderable->draw(context, transform, entityID);

@@ -35,11 +35,11 @@ namespace nexo::system {
 
     RenderSystem::RenderSystem()
     {
-        renderer::FramebufferSpecs maskFramebufferSpecs;
-        maskFramebufferSpecs.attachments = { renderer::FrameBufferTextureFormats::RGBA8 };
+        renderer::NxFramebufferSpecs maskFramebufferSpecs;
+        maskFramebufferSpecs.attachments = { renderer::NxFrameBufferTextureFormats::RGBA8 };
         maskFramebufferSpecs.width = 1280;  // Default size, will be resized as needed
         maskFramebufferSpecs.height = 720;
-        m_maskFramebuffer = renderer::Framebuffer::create(maskFramebufferSpecs);
+        m_maskFramebuffer = renderer::NxFramebuffer::create(maskFramebufferSpecs);
 
         // Create fullscreen quad for post-processing
         m_fullscreenQuad = renderer::createVertexArray();
@@ -257,8 +257,8 @@ namespace nexo::system {
 			if (camera.renderTarget != nullptr) {
 				camera.renderTarget->bind();
 				//TODO: Find a way to automatically clear color attachments
-				renderer::RenderCommand::setClearColor(camera.clearColor);
-				renderer::RenderCommand::clear();
+				renderer::NxRenderCommand::setClearColor(camera.clearColor);
+				renderer::NxRenderCommand::clear();
 				camera.renderTarget->clearAttachment<int>(1, -1);
             }
 
@@ -286,7 +286,7 @@ namespace nexo::system {
 					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, material.shader);
 					auto shader = renderContext.renderer3D.getShader();
 					setupLights(shader, renderContext.sceneLights);
-					auto context = std::make_shared<renderer::RendererContext>();
+					auto context = std::make_shared<renderer::NxRendererContext>();
 					context->renderer3D = renderContext.renderer3D;
 					render.draw(context, transform, static_cast<int>(entity));
 					renderContext.renderer3D.endScene();

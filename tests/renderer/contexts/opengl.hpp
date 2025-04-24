@@ -67,17 +67,17 @@ namespace nexo::renderer {
         }
     };
 
-    class MockVertexBuffer : public VertexBuffer {
+    class MockVertexBuffer : public NxVertexBuffer {
         public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setLayout, (const BufferLayout &layout), (override));
-        MOCK_METHOD(BufferLayout, getLayout, (), (const, override));
+        MOCK_METHOD(void, setLayout, (const NxBufferLayout &layout), (override));
+        MOCK_METHOD(NxBufferLayout, getLayout, (), (const, override));
         MOCK_METHOD(void, setData, (void *data, unsigned int size), (override));
         MOCK_METHOD(unsigned int, getId, (), (const override));
     };
 
-    class MockIndexBuffer : public IndexBuffer {
+    class MockIndexBuffer : public NxIndexBuffer {
         public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));

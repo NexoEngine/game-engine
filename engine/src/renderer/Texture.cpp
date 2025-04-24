@@ -15,34 +15,34 @@
 #include "Texture.hpp"
 #include "Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlTexture2D.hpp"
 #endif
 
 namespace nexo::renderer {
 
-    std::shared_ptr<Texture2D> Texture2D::create(unsigned int width, unsigned int height)
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(unsigned int width, unsigned int height)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(width, height);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(width, height);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<Texture2D> Texture2D::create(uint8_t* buffer, unsigned int len)
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(uint8_t* buffer, unsigned int len)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(buffer, len);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(buffer, len);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<Texture2D> Texture2D::create(const std::string &path)
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const std::string &path)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(path);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(path);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
 }

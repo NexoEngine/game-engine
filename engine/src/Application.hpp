@@ -217,7 +217,7 @@ namespace nexo {
 
             scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
-            [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
+            [[nodiscard]] const std::shared_ptr<renderer::NxWindow> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
 
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
@@ -241,7 +241,7 @@ namespace nexo {
             bool m_isRunning = true;
             bool m_isMinimized = false;
             bool m_displayProfileResult = true;
-            std::shared_ptr<renderer::Window> m_window;
+            std::shared_ptr<renderer::NxWindow> m_window;
 
             float m_lastFrameTime = 0.0f;
             Timestep m_currentTimestep;

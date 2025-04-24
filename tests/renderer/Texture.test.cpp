@@ -41,8 +41,8 @@ namespace nexo::renderer {
     };
 
     TEST_F(OpenGlTexture2DTest, CreateTextureFromDimensions) {
-        OpenGlTexture2D texture1(256, 520);
-        OpenGlTexture2D texture2(520, 256);
+        NxOpenGlTexture2D texture1(256, 520);
+        NxOpenGlTexture2D texture2(520, 256);
 
         // Validate that each texture is unique
         EXPECT_NE(texture1.getId(), texture2.getId());
@@ -71,7 +71,7 @@ namespace nexo::renderer {
     TEST_F(OpenGlTexture2DTest, CreateTextureFromFile) {
         //TODO: make this test with a real texture file
         createTemporaryTextureFile();
-        OpenGlTexture2D texture(temporaryTextureFilePath);
+        NxOpenGlTexture2D texture(temporaryTextureFilePath);
 
         // Validate dimensions
         std::cout << texture.getWidth() << std::endl;
@@ -82,13 +82,13 @@ namespace nexo::renderer {
     }
 
     TEST_F(OpenGlTexture2DTest, CreateTextureFromInvalidFile) {
-        EXPECT_THROW(OpenGlTexture2D texture("InvalidFile");, FileNotFoundException);
+        EXPECT_THROW(NxOpenGlTexture2D texture("InvalidFile");, NxFileNotFoundException);
     }
 
     TEST_F(OpenGlTexture2DTest, SetDataValidSize) {
         unsigned int width = 128;
         unsigned int height = 128;
-        OpenGlTexture2D texture(width, height);
+        NxOpenGlTexture2D texture(width, height);
 
         // Validate setting data with correct size
         std::vector<unsigned char> data(width * height * 4, 255); // RGBA white
@@ -105,17 +105,17 @@ namespace nexo::renderer {
     TEST_F(OpenGlTexture2DTest, SetDataInvalidSize) {
         unsigned int width = 128;
         unsigned int height = 128;
-        OpenGlTexture2D texture(width, height);
+        NxOpenGlTexture2D texture(width, height);
 
         // Create invalid data (size mismatch)
         std::vector<unsigned char> invalidData(width * height * 3, 255); // Missing alpha channel
-        EXPECT_THROW(texture.setData(invalidData.data(), invalidData.size()), TextureSizeMismatch);
+        EXPECT_THROW(texture.setData(invalidData.data(), invalidData.size()), NxTextureSizeMismatch);
     }
 
     TEST_F(OpenGlTexture2DTest, BindTextureToSlot) {
         unsigned int width = 64;
         unsigned int height = 64;
-        OpenGlTexture2D texture(width, height);
+        NxOpenGlTexture2D texture(width, height);
 
         unsigned int slot = 5;
         texture.bind(slot);
@@ -133,8 +133,8 @@ namespace nexo::renderer {
     TEST_F(OpenGlTexture2DTest, TextureEqualityOperator) {
         unsigned int width = 64;
         unsigned int height = 64;
-        OpenGlTexture2D texture1(width, height);
-        OpenGlTexture2D texture2(width, height);
+        NxOpenGlTexture2D texture1(width, height);
+        NxOpenGlTexture2D texture2(width, height);
 
         // Validate equality operator
         EXPECT_FALSE(texture1 == texture2); // Different textures

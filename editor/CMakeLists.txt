@@ -114,7 +114,7 @@ target_link_libraries(nexoEditor PRIVATE Boost::uuid)
 include_directories(include)
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
-    target_compile_definitions(nexoEditor PRIVATE GRAPHICS_API_OPENGL)
+    target_compile_definitions(nexoEditor PRIVATE NX_GRAPHICS_API_OPENGL)
 endif()
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
