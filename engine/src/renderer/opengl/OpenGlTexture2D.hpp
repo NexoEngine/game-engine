@@ -19,10 +19,10 @@
 
 namespace nexo::renderer {
     /**
-    * @class OpenGlTexture2D
-    * @brief OpenGL-specific implementation of the `Texture2D` class.
+    * @class NxOpenGlTexture2D
+    * @brief OpenGL-specific implementation of the `NxTexture2D` class.
     *
-    * The `OpenGlTexture2D` class manages 2D textures in an OpenGL rendering context.
+    * The `NxOpenGlTexture2D` class manages 2D textures in an OpenGL rendering context.
     * It supports texture creation, data uploading, and binding/unbinding operations.
     *
     * Responsibilities:
@@ -30,9 +30,9 @@ namespace nexo::renderer {
     * - Load texture data from files or raw memory.
     * - Provide texture binding and unbinding functionality.
     */
-    class OpenGlTexture2D final : public Texture2D {
+    class NxOpenGlTexture2D final : public NxTexture2D {
         public:
-            ~OpenGlTexture2D() override;
+            ~NxOpenGlTexture2D() override;
 
             /**
             * @brief Loads an OpenGL 2D texture from an image file.
@@ -42,15 +42,15 @@ namespace nexo::renderer {
             * internal and data formats based on the number of channels in the image.
             *
             * @param path The file path to the texture image.
-            * @throw FileNotFoundException If the file cannot be found.
-            * @throw TextureUnsupportedFormat If the image format is unsupported.
+            * @throw NxFileNotFoundException If the file cannot be found.
+            * @throw NxTextureUnsupportedFormat If the image format is unsupported.
             *
             * Example:
             * ```cpp
-            * auto texture = std::make_shared<OpenGlTexture2D>("textures/wood.jpg");
+            * auto texture = std::make_shared<NxOpenGlTexture2D>("textures/wood.jpg");
             * ```
             */
-            explicit OpenGlTexture2D(const std::string &path);
+            explicit NxOpenGlTexture2D(const std::string &path);
 
             /**
             * @brief Creates a blank OpenGL 2D texture with the specified dimensions.
@@ -63,10 +63,10 @@ namespace nexo::renderer {
             *
             * Example:
             * ```cpp
-            * auto texture = std::make_shared<OpenGlTexture2D>(256, 256);
+            * auto texture = std::make_shared<NxOpenGlTexture2D>(256, 256);
             * ```
             */
-            OpenGlTexture2D(unsigned int width, unsigned int height);
+            NxOpenGlTexture2D(unsigned int width, unsigned int height);
 
             /**
              * @brief Creates a OpenGL 2D texture from file in memory.
@@ -81,10 +81,10 @@ namespace nexo::renderer {
              * Example:
              * ```cpp
              * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
-             * auto texture = std::make_shared<OpenGlTexture2D>(imageData.data(), imageData.size());
+             * auto texture = std::make_shared<NxOpenGlTexture2D>(imageData.data(), imageData.size());
              * ```
              */
-            OpenGlTexture2D(const uint8_t *buffer, unsigned int len);
+            NxOpenGlTexture2D(const uint8_t *buffer, unsigned int len);
 
             [[nodiscard]] unsigned int getWidth() const override {return m_width;};
             [[nodiscard]] unsigned int getHeight() const override {return m_height;};
@@ -138,7 +138,7 @@ namespace nexo::renderer {
             *
             * @param data A pointer to the pixel data.
             * @param size The size of the data in bytes.
-            * @throw TextureSizeMismatch If the size of the data does not match the texture's dimensions.
+            * @throw NxTextureSizeMismatch If the size of the data does not match the texture's dimensions.
             *
             * Example:
             * ```cpp

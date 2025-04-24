@@ -55,10 +55,10 @@ namespace nexo::renderer {
     };
 
     /**
-    * @class Shader
+    * @class NxShader
     * @brief Abstract class representing a shader program in the rendering pipeline.
     *
-    * The `Shader` class provides a generic interface for creating and managing shader
+    * The `NxShader` class provides a generic interface for creating and managing shader
     * programs. These programs are used to execute rendering operations on the GPU.
     *
     * Responsibilities:
@@ -67,18 +67,18 @@ namespace nexo::renderer {
     * - Set uniform variables to pass data from the CPU to the GPU.
     *
     * Subclasses:
-    * - `OpenGlShader`: Implements this interface using OpenGL-specific functionality.
+    * - `NxOpenGlShader`: Implements this interface using OpenGL-specific functionality.
     *
     * Example Usage:
     * ```cpp
-    * auto shader = Shader::create("path/to/shader.glsl");
+    * auto shader = NxShader::create("path/to/shader.glsl");
     * shader->bind();
     * shader->setUniformFloat("uTime", 1.0f);
     * ```
     */
-    class Shader {
+    class NxShader {
         public:
-            virtual ~Shader() = default;
+            virtual ~NxShader() = default;
 
             /**
             * @brief Creates a shader program from a source file.
@@ -90,10 +90,10 @@ namespace nexo::renderer {
             * @return A shared pointer to the created `Shader` instance.
             *
             * Throws:
-            * - `UnknownGraphicsApi` if no graphics API is supported.
-            * - `ShaderCreationFailed` if shader compilation fails.
+            * - `NxUnknownGraphicsApi` if no graphics API is supported.
+            * - `NxShaderCreationFailed` if shader compilation fails.
             */
-            static std::shared_ptr<Shader> create(const std::string &path);
+            static std::shared_ptr<NxShader> create(const std::string &path);
 
             /**
             * @brief Creates a shader program from source code strings.
@@ -106,10 +106,10 @@ namespace nexo::renderer {
             * @return A shared pointer to the created `Shader` instance.
             *
             * Throws:
-            * - `UnknownGraphicsApi` if no graphics API is supported.
-            * - `ShaderCreationFailed` if shader compilation fails.
+            * - `NxUnknownGraphicsApi` if no graphics API is supported.
+            * - `NxShaderCreationFailed` if shader compilation fails.
             */
-            static std::shared_ptr<Shader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
+            static std::shared_ptr<NxShader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
 
             /**
             * @brief Binds the shader program for use in the rendering pipeline.
@@ -145,7 +145,7 @@ namespace nexo::renderer {
             virtual bool setUniformInt(const ShaderUniforms uniform, int value) const = 0;
             virtual bool setUniformIntArray(const ShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
-            void addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer);
+            void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
             virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
             virtual void bindStorageBuffer(unsigned int index) const = 0;
@@ -155,7 +155,7 @@ namespace nexo::renderer {
             virtual unsigned int getProgramId() const = 0;
         protected:
             static std::string readFile(const std::string &filepath);
-        	std::vector<std::shared_ptr<ShaderStorageBuffer>> m_storageBuffers;
+        	std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
             std::unordered_map<ShaderUniforms, int> m_uniformLocations;
     };
 

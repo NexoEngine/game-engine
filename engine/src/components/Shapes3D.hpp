@@ -28,12 +28,12 @@ namespace nexo::components {
     struct Shape3D {
         virtual ~Shape3D() = default;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
+        virtual void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
         [[nodiscard]] virtual std::shared_ptr<Shape3D> clone() const = 0;
     };
 
     struct Cube final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
 
@@ -45,7 +45,7 @@ namespace nexo::components {
             auto emissiveMapAsset = material.emissiveMap.lock();
 
 
-            renderer::Material inputMaterial = {
+            renderer::NxMaterial inputMaterial = {
                 .albedoColor = material.albedoColor,
                 .specularColor = material.specularColor,
                 .emissiveColor = material.emissiveColor,
@@ -70,7 +70,7 @@ namespace nexo::components {
 
     struct Mesh {
         std::string name;
-        std::vector<renderer::Vertex> vertices;
+        std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
         assets::AssetRef<assets::Material> material;
     };
@@ -80,13 +80,13 @@ namespace nexo::components {
         std::vector<Mesh> meshes;
         std::vector<std::shared_ptr<MeshNode>> children;
 
-        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
+        void draw(renderer::NxRenderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
         {
             const glm::mat4 localTransform = parentTransform * transform;
             for (const auto &mesh: meshes)
             {
                 //TODO: Implement a way to pass the transform directly to the shader
-                std::vector<renderer::Vertex> transformedVertices = mesh.vertices;
+                std::vector<renderer::NxVertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
 
@@ -120,7 +120,7 @@ namespace nexo::components {
         explicit Model(const std::shared_ptr<MeshNode> &rootNode) : root(rootNode) {};
 
         // NOT WORKING ANYMORE
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Pass the material to the draw mesh function

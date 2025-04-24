@@ -116,11 +116,11 @@ namespace nexo::renderer {
 		std::ranges::copy(norm, normals.begin());
     }
 
-	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, const int entityID) const
+	void NxRenderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, const int entityID) const
     {
         if (!m_renderingScene)
         {
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
@@ -130,7 +130,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -164,11 +164,11 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
@@ -181,7 +181,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -215,18 +215,18 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID) const
+    void NxRenderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
 
 		m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -260,11 +260,11 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const Material& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
@@ -274,7 +274,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -312,11 +312,11 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const Material& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const NxMaterial& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
@@ -329,7 +329,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -367,11 +367,11 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const Material& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const NxMaterial& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 
 	    }
@@ -384,7 +384,7 @@ namespace nexo::renderer {
 
        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-       renderer::InternalMaterial mat;
+       renderer::NxIndexedMaterial mat;
        mat.albedoColor = material.albedoColor;
        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
        mat.specularColor = material.specularColor;
@@ -422,17 +422,17 @@ namespace nexo::renderer {
        m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::mat4& transform, const Material& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::mat4& transform, const NxMaterial& material, int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
-	        THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
 	                    "Renderer not rendering a scene, make sure to call beginScene first");
 	    }
 
 	    m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::InternalMaterial mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;

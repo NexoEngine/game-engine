@@ -22,11 +22,11 @@
 
 namespace nexo::renderer {
 
-    OpenGlTexture2D::OpenGlTexture2D(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
     {
         const unsigned int maxTextureSize = getMaxTextureSize();
         if (width > maxTextureSize || height > maxTextureSize)
-            THROW_EXCEPTION(TextureInvalidSize, "OPENGL", width, height, maxTextureSize);
+            THROW_EXCEPTION(NxTextureInvalidSize, "OPENGL", width, height, maxTextureSize);
         m_internalFormat = GL_RGBA8;
         m_dataFormat = GL_RGBA;
 
@@ -40,7 +40,7 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    OpenGlTexture2D::OpenGlTexture2D(const std::string &path)
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const std::string &path)
     {
         int width = 0;
         int height = 0;
@@ -49,16 +49,16 @@ namespace nexo::renderer {
         //stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         if (!data)
-            THROW_EXCEPTION(FileNotFoundException, path);
+            THROW_EXCEPTION(NxFileNotFoundException, path);
         ingestDataFromStb(data, width, height, channels, path);
     }
 
-    OpenGlTexture2D::~OpenGlTexture2D()
+    NxOpenGlTexture2D::~NxOpenGlTexture2D()
     {
         glDeleteTextures(1, &m_id);
     }
 
-    OpenGlTexture2D::OpenGlTexture2D(const uint8_t* buffer, unsigned int len)
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t* buffer, unsigned int len)
     {
         int width = 0;
         int height = 0;
@@ -67,28 +67,28 @@ namespace nexo::renderer {
         //stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = stbi_load_from_memory(buffer, len, &width, &height, &channels, 0);
         if (!data)
-            THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, "(buffer)");
+            THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, "(buffer)");
         ingestDataFromStb(data, width, height, channels, "(buffer)");
     }
 
-    unsigned int OpenGlTexture2D::getMaxTextureSize() const
+    unsigned int NxOpenGlTexture2D::getMaxTextureSize() const
     {
         int maxTextureSize = 0;
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
         return static_cast<unsigned int>(maxTextureSize);
     }
 
-    void OpenGlTexture2D::setData(void *data, const unsigned int size)
+    void NxOpenGlTexture2D::setData(void *data, const unsigned int size)
     {
         if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
-            THROW_EXCEPTION(TextureSizeMismatch, "OPENGL", size, expectedSize);
+            THROW_EXCEPTION(NxTextureSizeMismatch, "OPENGL", size, expectedSize);
         glBindTexture(GL_TEXTURE_2D, m_id);
         // Update the entire texture with new data
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(m_width), static_cast<int>(m_height), m_dataFormat, GL_UNSIGNED_BYTE, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void OpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
+    void NxOpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
         const std::string& debugPath)
     {
         m_width = width;
@@ -116,7 +116,7 @@ namespace nexo::renderer {
                 break;
             default:
                 stbi_image_free(data);
-                THROW_EXCEPTION(TextureUnsupportedFormat, "OPENGL", channels, debugPath);
+                THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, debugPath);
         }
 
         m_internalFormat = internalFormat;
@@ -135,13 +135,13 @@ namespace nexo::renderer {
     }
 
 
-    void OpenGlTexture2D::bind(const unsigned int slot) const
+    void NxOpenGlTexture2D::bind(const unsigned int slot) const
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_id);
     }
 
-    void OpenGlTexture2D::unbind(const unsigned int slot) const
+    void NxOpenGlTexture2D::unbind(const unsigned int slot) const
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);

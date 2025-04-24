@@ -18,26 +18,26 @@
 
 namespace nexo::renderer {
 
-	void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
+	void NxRenderer3D::drawMesh([[maybe_unused]] const std::vector<NxVertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::NxMaterial& material, [[maybe_unused]] int entityID) const
 	{
 
 	}
 
-    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& rotation, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
+    void NxRenderer3D::drawMesh([[maybe_unused]] const std::vector<NxVertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::vec3& position, [[maybe_unused]] const glm::vec3& rotation, [[maybe_unused]] const glm::vec3& size, [[maybe_unused]] const renderer::NxMaterial& material, [[maybe_unused]] int entityID) const
     {
 
     }
 
-    void Renderer3D::drawMesh([[maybe_unused]] const std::vector<Vertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::mat4& transform, [[maybe_unused]] const renderer::Material& material, [[maybe_unused]] int entityID) const
+    void NxRenderer3D::drawMesh([[maybe_unused]] const std::vector<NxVertex>& vertices, [[maybe_unused]] const std::vector<unsigned int>& indices, [[maybe_unused]] const glm::mat4& transform, [[maybe_unused]] const renderer::NxMaterial& material, [[maybe_unused]] int entityID) const
     {
 
     }
 
-    void Renderer3D::drawMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices,
-                              [[maybe_unused]] const std::shared_ptr<Texture2D> &texture, int entityID) const
+    void NxRenderer3D::drawMesh(const std::vector<NxVertex> &vertices, const std::vector<unsigned int> &indices,
+                              [[maybe_unused]] const std::shared_ptr<NxTexture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if ((m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data()) + vertices.size() > m_storage->maxVertices ||
             m_storage->indexCount + indices.size() > m_storage->maxIndices)
