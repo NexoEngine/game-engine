@@ -18,7 +18,7 @@
 
 namespace nexo::renderer {
 
-    class OpenGlVertexBuffer final : public VertexBuffer {
+    class NxOpenGlVertexBuffer final : public NxVertexBuffer {
         public:
             /**
              * @brief Constructs a new vertex buffer and initializes it with vertex data.
@@ -34,7 +34,7 @@ namespace nexo::renderer {
              * - `glBindBuffer`: Binds the buffer as the current vertex buffer (GL_ARRAY_BUFFER).
              * - `glBufferData`: Allocates GPU memory and uploads the vertex data.
              */
-            OpenGlVertexBuffer(const float *vertices, unsigned int size);
+            NxOpenGlVertexBuffer(const float *vertices, unsigned int size);
 
             /**
              * @brief Constructs an empty vertex buffer with a specified size.
@@ -52,7 +52,7 @@ namespace nexo::renderer {
              * Usage:
              * - Call `setData` later to populate the buffer with vertex data dynamically.
              */
-            explicit OpenGlVertexBuffer(unsigned int size);
+            explicit NxOpenGlVertexBuffer(unsigned int size);
 
             /**
             * @brief Destroys the vertex buffer and releases GPU resources.
@@ -62,7 +62,7 @@ namespace nexo::renderer {
             * OpenGL Calls:
             * - `glDeleteBuffers`: Deletes the buffer object associated with the buffer ID.
             */
-            ~OpenGlVertexBuffer() override;
+            ~NxOpenGlVertexBuffer() override;
 
             /**
              * @brief Binds the vertex buffer as the active buffer in the OpenGL context.
@@ -88,8 +88,8 @@ namespace nexo::renderer {
              */
             void unbind() const override;
 
-            void setLayout(const BufferLayout &layout) override { _layout = layout; };
-            [[nodiscard]] BufferLayout getLayout() const override { return _layout; };
+            void setLayout(const NxBufferLayout &layout) override { _layout = layout; };
+            [[nodiscard]] NxBufferLayout getLayout() const override { return _layout; };
 
             /**
              * @brief Updates the data in the vertex buffer.
@@ -113,10 +113,10 @@ namespace nexo::renderer {
 
         private:
             unsigned int _id{};
-            BufferLayout _layout;
+            NxBufferLayout _layout;
     };
 
-    class OpenGlIndexBuffer final : public IndexBuffer {
+    class NxOpenGlIndexBuffer final : public NxIndexBuffer {
         public:
             /**
              * @brief Constructs a new OpenGL index buffer.
@@ -128,7 +128,7 @@ namespace nexo::renderer {
              * - `glGenBuffers`: Generates a new buffer object.
              * - `glBindBuffer`: Binds the buffer as the current index buffer (GL_ELEMENT_ARRAY_BUFFER).
             */
-            OpenGlIndexBuffer();
+            NxOpenGlIndexBuffer();
 
             /**
              * @brief Destroys the index buffer and releases GPU resources.
@@ -138,7 +138,7 @@ namespace nexo::renderer {
              * OpenGL Calls:
              * - `glDeleteBuffers`: Deletes the buffer object associated with the buffer ID.
             */
-            ~OpenGlIndexBuffer() override;
+            ~NxOpenGlIndexBuffer() override;
 
             /**
              * @brief Binds the index buffer as the active buffer in the OpenGL context.

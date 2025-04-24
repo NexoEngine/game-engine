@@ -20,7 +20,7 @@
 
 namespace nexo {
 	ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width,
-    									               unsigned int height, std::shared_ptr<renderer::Framebuffer> renderTarget,
+       									               unsigned int height, std::shared_ptr<renderer::NxFramebuffer> renderTarget,
                              				           const glm::vec4 &clearColor, float fov, float nearPlane, float farPlane)
 	{
 		components::TransformComponent transform{};

@@ -26,21 +26,21 @@
 
 namespace nexo::renderer {
 
-    void Renderer3D::init()
+    void NxRenderer3D::init()
     {
-        m_storage = std::make_shared<Renderer3DStorage>();
+        m_storage = std::make_shared<NxRenderer3DStorage>();
 
         m_storage->vertexArray = createVertexArray();
-        m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(Vertex));
+        m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(NxVertex));
 
         // Layout
-        const BufferLayout cubeVertexBufferLayout = {
-            {ShaderDataType::FLOAT3, "aPos"},
-            {ShaderDataType::FLOAT2, "aTexCoord"},
-            {ShaderDataType::FLOAT3, "aNormal"},
-            {ShaderDataType::FLOAT3, "aTangent"},
-            {ShaderDataType::FLOAT3, "aBiTangent"},
-            {ShaderDataType::INT, "aEntityID"}
+        const NxBufferLayout cubeVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"},
+            {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},
+            {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"},
+            {NxShaderDataType::INT, "aEntityID"}
         };
         m_storage->vertexBuffer->setLayout(cubeVertexBufferLayout);
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
@@ -49,13 +49,13 @@ namespace nexo::renderer {
         m_storage->vertexArray->setIndexBuffer(m_storage->indexBuffer);
 
         // Texture
-        m_storage->whiteTexture = Texture2D::create(1, 1);
+        m_storage->whiteTexture = NxTexture2D::create(1, 1);
         unsigned int whiteTextureData = 0xffffffff;
         m_storage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
 
         // Shader
-        std::array<int, Renderer3DStorage::maxTextureSlots> samplers{};
-        for (int i = 0; i < static_cast<int>(Renderer3DStorage::maxTextureSlots); ++i)
+        std::array<int, NxRenderer3DStorage::maxTextureSlots> samplers{};
+        for (int i = 0; i < static_cast<int>(NxRenderer3DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
         auto phong = m_storage->shaderLibrary.load("Phong", Path::resolvePathRelativeToExe(
@@ -85,17 +85,17 @@ namespace nexo::renderer {
         LOG(NEXO_DEV, "Renderer3D initialized");
     }
 
-    void Renderer3D::shutdown()
+    void NxRenderer3D::shutdown()
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         m_storage.reset();
     }
 
-    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos, const std::string &shader)
+    void NxRenderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos, const std::string &shader)
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         if (shader.empty())
             m_storage->currentSceneShader = m_storage->shaderLibrary.get("Phong");
         else
@@ -113,12 +113,12 @@ namespace nexo::renderer {
         m_renderingScene = true;
     }
 
-    void Renderer3D::endScene() const
+    void NxRenderer3D::endScene() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         const auto vertexDataSize = static_cast<unsigned int>(
             reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
@@ -133,14 +133,14 @@ namespace nexo::renderer {
         flushAndReset();
     }
 
-    void Renderer3D::flush() const
+    void NxRenderer3D::flush() const
     {
         m_storage->currentSceneShader->bind();
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             m_storage->textureSlots[i]->bind(i);
         }
-        RenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
+        NxRenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
         m_storage->stats.drawCalls++;
         m_storage->vertexArray->unbind();
         m_storage->vertexBuffer->unbind();
@@ -151,7 +151,7 @@ namespace nexo::renderer {
         }
     }
 
-    void Renderer3D::flushAndReset() const
+    void NxRenderer3D::flushAndReset() const
     {
         flush();
         m_storage->indexCount = 0;
@@ -160,7 +160,7 @@ namespace nexo::renderer {
         m_storage->textureSlotIndex = 1;
     }
 
-    int Renderer3D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
+    int NxRenderer3D::getTextureIndex(const std::shared_ptr<NxTexture2D> &texture) const
     {
         int textureIndex = 0.0f;
 
@@ -186,10 +186,10 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer3D::setMaterialUniforms(const renderer::InternalMaterial& material) const
+    void NxRenderer3D::setMaterialUniforms(const renderer::NxIndexedMaterial& material) const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
 
         m_storage->currentSceneShader->setUniformFloat4("uMaterial.albedoColor", material.albedoColor);
         m_storage->currentSceneShader->setUniformInt("uMaterial.albedoTexIndex", material.albedoTexIndex);
@@ -205,18 +205,18 @@ namespace nexo::renderer {
         m_storage->currentSceneShader->setUniformInt("uMaterial.opacityTexIndex", material.opacityTexIndex);
     }
 
-    void Renderer3D::resetStats() const
+    void NxRenderer3D::resetStats() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.cubeCount = 0;
     }
 
-    Renderer3DStats Renderer3D::getStats() const
+    NxRenderer3DStats NxRenderer3D::getStats() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         return m_storage->stats;
     }
 

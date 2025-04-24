@@ -20,46 +20,46 @@
 
 namespace nexo::renderer {
 
-	class OutOfRangeException final : public Exception {
+	class NxOutOfRangeException final : public Exception {
         public:
-            explicit OutOfRangeException(unsigned int index, unsigned int size,
+            explicit NxOutOfRangeException(unsigned int index, unsigned int size,
                                          const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Index {} is out of range [0, {})", index, size), loc) {}
     };
 
-    class FileNotFoundException final : public Exception {
+    class NxFileNotFoundException final : public Exception {
         public:
-            explicit FileNotFoundException(const std::string &filePath,
+            explicit NxFileNotFoundException(const std::string &filePath,
                                            const std::source_location loc = std::source_location::current())
                 : Exception(std::format("File not found: {}", filePath), loc) {}
     };
 
-    class UnknownGraphicsApi final : public Exception {
+    class NxUnknownGraphicsApi final : public Exception {
         public:
-            explicit UnknownGraphicsApi(const std::string &backendApiName,
+            explicit NxUnknownGraphicsApi(const std::string &backendApiName,
                                         const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Unknown graphics API: {}", backendApiName), loc) {}
     };
 
-    class GraphicsApiInitFailure final : public Exception {
+    class NxGraphicsApiInitFailure final : public Exception {
         public:
-            explicit GraphicsApiInitFailure(const std::string &backendApiName,
+            explicit NxGraphicsApiInitFailure(const std::string &backendApiName,
                                             const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Failed to initialize graphics API: {}", backendApiName), loc) {}
     };
 
-    class GraphicsApiNotInitialized final : public Exception {
+    class NxGraphicsApiNotInitialized final : public Exception {
         public:
-            explicit GraphicsApiNotInitialized(const std::string &backendApiName,
+            explicit NxGraphicsApiNotInitialized(const std::string &backendApiName,
                                                const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] API is not initialized, call the init function first", backendApiName),
                             loc)
             {}
     };
 
-    class GraphicsApiViewportResizingFailure final : public Exception {
+    class NxGraphicsApiViewportResizingFailure final : public Exception {
         public:
-            explicit GraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
+            explicit NxGraphicsApiViewportResizingFailure(const std::string &backendApi, const bool tooBig,
                                                         const unsigned int width, const unsigned int height,
                                                         const std::source_location loc =
                                                                 std::source_location::current())
@@ -67,49 +67,49 @@ namespace nexo::renderer {
                                         backendApi, width, height, (tooBig ? "big" : "small")), loc) {}
     };
 
-    class GraphicsApiWindowInitFailure final : public Exception {
+    class NxGraphicsApiWindowInitFailure final : public Exception {
         public:
-            explicit GraphicsApiWindowInitFailure(const std::string &backendApiName,
+            explicit NxGraphicsApiWindowInitFailure(const std::string &backendApiName,
                                                   const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Failed to initialize graphics API: {}", backendApiName), loc) {}
     };
 
-    class InvalidValue final : public Exception {
+    class NxInvalidValue final : public Exception {
         public:
-            explicit InvalidValue(const std::string &backendApiName, const std::string &msg,
+            explicit NxInvalidValue(const std::string &backendApiName, const std::string &msg,
                                   const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Invalid value: {}", backendApiName, msg), loc) {}
     };
 
-    class ShaderCreationFailed final : public Exception {
+    class NxShaderCreationFailed final : public Exception {
         public:
-            explicit ShaderCreationFailed(const std::string &backendApi, const std::string &message,
+            explicit NxShaderCreationFailed(const std::string &backendApi, const std::string &message,
                                           const std::string &path = "",
                                           const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Failed to create the shader ({}): {}", backendApi, path, message), loc)
             {}
     };
 
-    class ShaderInvalidUniform final : public Exception {
+    class NxShaderInvalidUniform final : public Exception {
         public:
-            explicit ShaderInvalidUniform(const std::string &backendApi, const std::string &shaderName,
+            explicit NxShaderInvalidUniform(const std::string &backendApi, const std::string &shaderName,
                                           const std::string &uniformName,
                                           const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Failed to retrieve uniform \"{}\" in shader: {}", backendApi, uniformName,
                                         shaderName), loc) {}
     };
 
-    class FramebufferCreationFailed final : public Exception {
+    class NxFramebufferCreationFailed final : public Exception {
         public:
-            explicit FramebufferCreationFailed(const std::string &backendApi,
+            explicit NxFramebufferCreationFailed(const std::string &backendApi,
                                                const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Failed to create the framebuffer", backendApi), loc)
             {}
     };
 
-    class FramebufferResizingFailed final : public Exception {
+    class NxFramebufferResizingFailed final : public Exception {
         public:
-            explicit FramebufferResizingFailed(const std::string &backendApi, const bool tooBig,
+            explicit NxFramebufferResizingFailed(const std::string &backendApi, const bool tooBig,
                                                const unsigned int width, const unsigned int height,
                                                const std::source_location loc =
                                                        std::source_location::current())
@@ -117,67 +117,67 @@ namespace nexo::renderer {
                                         backendApi, width, height, (tooBig ? "big" : "small")), loc) {}
     };
 
-    class FramebufferUnsupportedColorFormat final : public Exception {
+    class NxFramebufferUnsupportedColorFormat final : public Exception {
         public:
-            explicit FramebufferUnsupportedColorFormat(const std::string &backendApiName,
+            explicit NxFramebufferUnsupportedColorFormat(const std::string &backendApiName,
                                                        const std::source_location loc =
                                                                std::source_location::current())
                 : Exception(std::format("[{}] Unsupported framebuffer color attachment format", backendApiName), loc) {}
     };
 
-    class FramebufferUnsupportedDepthFormat final : public Exception {
+    class NxFramebufferUnsupportedDepthFormat final : public Exception {
         public:
-            explicit FramebufferUnsupportedDepthFormat(const std::string &backendApiName,
+            explicit NxFramebufferUnsupportedDepthFormat(const std::string &backendApiName,
                                                        const std::source_location loc =
                                                                std::source_location::current())
                 : Exception(std::format("[{}] Unsupported framebuffer depth attachment format", backendApiName), loc) {}
     };
 
-    class FramebufferReadFailure final : public Exception {
+    class NxFramebufferReadFailure final : public Exception {
         public:
-            explicit FramebufferReadFailure(const std::string &backendApiName, int index, int x, int y, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Unable to read framebuffer with index {} at coordinate ({}, {})", backendApiName, index, x, y), loc) {}
+            explicit NxFramebufferReadFailure(const std::string &backendApiName, int index, int x, int y, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Unable to read framebuffer with index {} at coordinate ({}, {})", backendApiName, index, x, y), loc) {}
     };
 
-    class FramebufferInvalidIndex final : public Exception {
+    class NxFramebufferInvalidIndex final : public Exception {
         public:
-            explicit FramebufferInvalidIndex(const std::string &backendApiName, int index, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Invalid attachment index : {}", backendApiName, index), loc) {};
+            explicit NxFramebufferInvalidIndex(const std::string &backendApiName, int index, const std::source_location loc = std::source_location::current()) : Exception(std::format("[{}] Invalid attachment index : {}", backendApiName, index), loc) {};
     };
 
-    class BufferLayoutEmpty final : public Exception {
+    class NxBufferLayoutEmpty final : public Exception {
         public:
-            explicit BufferLayoutEmpty(const std::string &backendApi,
+            explicit NxBufferLayoutEmpty(const std::string &backendApi,
                                        const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Vertex buffer layout cannot be empty", backendApi), loc) {}
     };
 
-    enum class RendererType {
+    enum class NxRendererType {
         RENDERER_2D,
         RENDERER_3D
     };
 
-    class RendererNotInitialized final : public Exception {
+    class NxRendererNotInitialized final : public Exception {
         public:
-            explicit RendererNotInitialized(const RendererType type,
+            explicit NxRendererNotInitialized(const NxRendererType type,
                                             const std::source_location loc =
                                                     std::source_location::current())
                 : Exception(std::format("{} Renderer not initialized, call the init function first",
-                                        (type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")), loc)
+                                        (type == NxRendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]")), loc)
             {}
     };
 
-    class RendererSceneLifeCycleFailure : public Exception {
+    class NxRendererSceneLifeCycleFailure final : public Exception {
         public:
-            explicit RendererSceneLifeCycleFailure(const RendererType type, const std::string &msg,
+            explicit NxRendererSceneLifeCycleFailure(const NxRendererType type, const std::string &msg,
                                                    const std::source_location loc =
                                                            std::source_location::current())
                 : Exception(std::format("{} {}",
-                                        (type == RendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]"), msg),
+                                        (type == NxRendererType::RENDERER_2D ? "[RENDERER 2D]" : "[RENDERER 3D]"), msg),
                             loc) {}
     };
 
-    class TextureInvalidSize final : public Exception {
+    class NxTextureInvalidSize final : public Exception {
         public:
-            explicit TextureInvalidSize(const std::string &backendApi,
+            explicit NxTextureInvalidSize(const std::string &backendApi,
                                         const unsigned int width, const unsigned int height,
                                         const unsigned int maxTextureSize,
                                         const std::source_location loc = std::source_location::current())
@@ -185,9 +185,9 @@ namespace nexo::renderer {
                                         backendApi, width, height, maxTextureSize), loc) {}
     };
 
-    class TextureUnsupportedFormat final : public Exception {
+    class NxTextureUnsupportedFormat final : public Exception {
         public:
-            explicit TextureUnsupportedFormat(const std::string &backendApi, const int channels,
+            explicit NxTextureUnsupportedFormat(const std::string &backendApi, const int channels,
                                               const std::string &path,
                                               const std::source_location loc =
                                                       std::source_location::current())
@@ -195,17 +195,17 @@ namespace nexo::renderer {
                                         backendApi, channels, path), loc) {}
     };
 
-    class TextureSizeMismatch final : public Exception {
+    class NxTextureSizeMismatch final : public Exception {
         public:
-            explicit TextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
+            explicit NxTextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
                                          const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Data size does not match the texture size: {} != {}",
                                         backendApi, dataSize, expectedSize), loc) {}
     };
 
-    class StbiLoadException final : public Exception {
+    class NxStbiLoadException final : public Exception {
         public:
-            explicit StbiLoadException(const std::string &msg,
+            explicit NxStbiLoadException(const std::string &msg,
                                        const std::source_location loc = std::source_location::current())
                 : Exception(std::format("STBI load failed: {}", msg), loc) {}
     };
