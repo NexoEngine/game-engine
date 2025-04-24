@@ -26,7 +26,8 @@ namespace nexo::editor {
             Command(
                 const std::string &description,
                 const std::string &key,
-                const std::function<void()> &callback,
+                const std::function<void()> &pressedCallback,
+                const std::function<void()> &releaseCallback,
                 bool isModifier = false,
                 const std::vector<Command> &childrens = {}
             );
@@ -45,7 +46,8 @@ namespace nexo::editor {
             std::bitset<ImGuiKey_NamedKey_COUNT> m_signature;
             std::string m_description;
             std::string m_key;
-            std::function<void()> m_callback;
+            std::function<void()> m_pressedCallback;
+            std::function<void()> m_releaseCallback;
             bool m_isModifier;
             std::vector<Command> m_childrens;
     };
