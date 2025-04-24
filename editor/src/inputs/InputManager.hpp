@@ -35,6 +35,7 @@ namespace nexo::editor {
 
         // Update these method signatures:
         std::vector<CommandInfo> getPossibleCommands(const WindowState& windowState) const;
+        std::vector<CommandInfo> getAllPossibleCommands(const WindowState& windowState) const;
 
     private:
         // Current and previous key states for detecting changes
