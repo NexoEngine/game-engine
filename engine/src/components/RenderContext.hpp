@@ -32,7 +32,7 @@ namespace nexo::components {
                 float cellSize = 0.025f;
             };
             GridParams gridParams;
-            renderer::Renderer3D renderer3D;
+            renderer::NxRenderer3D renderer3D;
             std::queue<CameraContext> cameras;
             LightContext sceneLights;
 

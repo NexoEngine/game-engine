@@ -19,10 +19,10 @@
 namespace nexo::renderer {
 
     /**
-    * @class OpenGlVertexArray
-    * @brief OpenGL-specific implementation of the `VertexArray` class.
+    * @class NxOpenGlVertexArray
+    * @brief OpenGL-specific implementation of the `NxVertexArray` class.
     *
-    * The `OpenGlVertexArray` class manages vertex and index buffers in an OpenGL
+    * The `NxOpenGlVertexArray` class manages vertex and index buffers in an OpenGL
     * context. It handles the configuration of vertex attributes and facilitates
     * binding/unbinding of the vertex array for rendering.
     *
@@ -31,7 +31,7 @@ namespace nexo::renderer {
     * - Configure vertex attributes using buffer layouts.
     * - Bind/unbind the VAO for rendering operations.
     */
-    class OpenGlVertexArray final : public VertexArray {
+    class NxOpenGlVertexArray final : public NxVertexArray {
         public:
             /**
             * @brief Creates an OpenGL vertex array object (VAO).
@@ -39,8 +39,8 @@ namespace nexo::renderer {
             * Initializes a new VAO and assigns it a unique ID. This ID is used to reference
             * the VAO in OpenGL operations.
             */
-            OpenGlVertexArray();
-            ~OpenGlVertexArray() override = default;
+            NxOpenGlVertexArray();
+            ~NxOpenGlVertexArray() override = default;
 
             /**
             * @brief Binds the vertex array object (VAO) to the OpenGL context.
@@ -65,10 +65,10 @@ namespace nexo::renderer {
             * buffer layout. The attributes are assigned sequential indices.
             *
             * @param vertexBuffer The vertex buffer to add.
-            * @throw InvalidValue If the vertex buffer is null.
-            * @throw BufferLayoutEmpty If the vertex buffer's layout is empty.
+            * @throw NxInvalidValue If the vertex buffer is null.
+            * @throw NxBufferLayoutEmpty If the vertex buffer's layout is empty.
             */
-            void addVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) override;
+            void addVertexBuffer(const std::shared_ptr<NxVertexBuffer> &vertexBuffer) override;
 
             /**
             * @brief Sets the index buffer for the vertex array.
@@ -76,17 +76,17 @@ namespace nexo::renderer {
             * Associates an index buffer with the vertex array, enabling indexed rendering.
             *
             * @param indexBuffer The index buffer to set.
-            * @throw InvalidValue If the index buffer is null.
+            * @throw NxInvalidValue If the index buffer is null.
             */
-            void setIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer) override;
+            void setIndexBuffer(const std::shared_ptr<NxIndexBuffer> &indexBuffer) override;
 
-            [[nodiscard]] const std::vector<std::shared_ptr<VertexBuffer>> &getVertexBuffers() const override;
-            [[nodiscard]] const std::shared_ptr<IndexBuffer> &getIndexBuffer() const override;
+            [[nodiscard]] const std::vector<std::shared_ptr<NxVertexBuffer>> &getVertexBuffers() const override;
+            [[nodiscard]] const std::shared_ptr<NxIndexBuffer> &getIndexBuffer() const override;
 
             unsigned int getId() const override;
         private:
-            std::vector<std::shared_ptr<VertexBuffer>> _vertexBuffers;
-            std::shared_ptr<IndexBuffer> _indexBuffer;
+            std::vector<std::shared_ptr<NxVertexBuffer>> _vertexBuffers;
+            std::shared_ptr<NxIndexBuffer> _indexBuffer;
 
             unsigned int _id{};
     };

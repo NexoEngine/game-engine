@@ -17,10 +17,10 @@
 #include "Renderer3D.hpp"
 
 namespace nexo::renderer {
-    class RendererContext {
+    class NxRendererContext {
         public:
-            RendererContext() = default;
-            Renderer2D renderer2D;
-            Renderer3D renderer3D;
+            NxRendererContext() = default;
+            NxRenderer2D renderer2D;
+            NxRenderer3D renderer3D;
     };
 }

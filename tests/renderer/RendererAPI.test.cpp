@@ -22,13 +22,13 @@
 
 namespace nexo::renderer {
     TEST_F(OpenGLTest, InitializationTest) {
-        OpenGlRendererApi rendererApi;
+        NxOpenGlRendererApi rendererApi;
         // Validate init
         EXPECT_NO_THROW(rendererApi.init());
     }
 
     TEST_F(OpenGLTest, ViewportSetup) {
-        OpenGlRendererApi rendererApi;
+        NxOpenGlRendererApi rendererApi;
         rendererApi.init();
 
         // Validate viewport resizing
@@ -50,19 +50,19 @@ namespace nexo::renderer {
 
 
         // Validate invalid viewport values
-        EXPECT_THROW(rendererApi.setViewport(0, 0, 0, 600), GraphicsApiViewportResizingFailure);
-        EXPECT_THROW(rendererApi.setViewport(0, 0, 800, 0), GraphicsApiViewportResizingFailure);
+        EXPECT_THROW(rendererApi.setViewport(0, 0, 0, 600), NxGraphicsApiViewportResizingFailure);
+        EXPECT_THROW(rendererApi.setViewport(0, 0, 800, 0), NxGraphicsApiViewportResizingFailure);
 
         // Validate too big dimensions
         unsigned int width = 0;
         unsigned int height = 0;
         rendererApi.getMaxViewportSize(&width, &height);
         EXPECT_THROW(rendererApi.setViewport(0, 0, width + 1, height),
-                     GraphicsApiViewportResizingFailure);
+                     NxGraphicsApiViewportResizingFailure);
     }
 
     TEST_F(OpenGLTest, ClearTest) {
-        OpenGlRendererApi rendererApi;
+        NxOpenGlRendererApi rendererApi;
         rendererApi.init();
 
         // Validate clear color via opengl getters
@@ -104,19 +104,19 @@ namespace nexo::renderer {
     }
 
     TEST_F(OpenGLTest, ExceptionOnUninitializedAPI) {
-        OpenGlRendererApi rendererApi;
+        NxOpenGlRendererApi rendererApi;
 
         // Validate exception is thrown for uninitialized API methods
-        EXPECT_THROW(rendererApi.setViewport(0, 0, 800, 600), GraphicsApiNotInitialized);
-        EXPECT_THROW(rendererApi.clear(), GraphicsApiNotInitialized);
-        EXPECT_THROW(rendererApi.setClearColor(glm::vec4(1.0f)), GraphicsApiNotInitialized);
+        EXPECT_THROW(rendererApi.setViewport(0, 0, 800, 600), NxGraphicsApiNotInitialized);
+        EXPECT_THROW(rendererApi.clear(), NxGraphicsApiNotInitialized);
+        EXPECT_THROW(rendererApi.setClearColor(glm::vec4(1.0f)), NxGraphicsApiNotInitialized);
 
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
-        EXPECT_THROW(rendererApi.drawIndexed(vertexArray), GraphicsApiNotInitialized);
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
+        EXPECT_THROW(rendererApi.drawIndexed(vertexArray), NxGraphicsApiNotInitialized);
 
         // Validate exception is thrown when passing a null vertex array
         rendererApi.init();
-        EXPECT_THROW(rendererApi.drawIndexed(nullptr), InvalidValue);
+        EXPECT_THROW(rendererApi.drawIndexed(nullptr), NxInvalidValue);
     }
 
 }

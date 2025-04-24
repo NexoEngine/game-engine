@@ -13,20 +13,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "RenderCommand.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlRendererAPI.hpp"
 #endif
 
 namespace nexo::renderer {
 
-    #ifdef GRAPHICS_API_OPENGL
-        RendererApi *RenderCommand::_rendererApi = new OpenGlRendererApi;
+    #ifdef NX_GRAPHICS_API_OPENGL
+        NxRendererApi *NxRenderCommand::_rendererApi = new NxOpenGlRendererApi;
     #endif
 
-    void RenderCommand::init()
+    void NxRenderCommand::init()
     {
         if (!_rendererApi)
-            THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         _rendererApi->init();
     }
 }
