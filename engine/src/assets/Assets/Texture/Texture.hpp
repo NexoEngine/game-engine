@@ -19,7 +19,7 @@
 namespace nexo::assets {
 
     struct TextureData {
-        std::shared_ptr<renderer::Texture2D> texture;
+        std::shared_ptr<renderer::NxTexture2D> texture;
     };
 
     /**

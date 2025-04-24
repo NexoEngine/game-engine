@@ -36,14 +36,14 @@ namespace nexo::assets {
 
     void TextureImporter::importImpl(AssetImporterContext& ctx)
     {
-        // TODO: we need to import textures independently from graphics API back end renderer::Texture2D::create implementation
+        // TODO: we need to import textures independently from graphics API back end renderer::NxTexture2D::create implementation
         auto asset = new Texture();
-        std::shared_ptr<renderer::Texture2D> rendererTexture;
+        std::shared_ptr<renderer::NxTexture2D> rendererTexture;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
-            rendererTexture = renderer::Texture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
+            rendererTexture = renderer::NxTexture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
         else {
             auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
-            rendererTexture = renderer::Texture2D::create(data.data(), data.size());
+            rendererTexture = renderer::NxTexture2D::create(data.data(), data.size());
         }
         auto assetData = new TextureData();
         assetData->texture = rendererTexture;
