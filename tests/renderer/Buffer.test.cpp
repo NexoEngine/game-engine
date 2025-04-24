@@ -24,17 +24,17 @@
 namespace nexo::renderer {
 
     // Mock for testing abstract classes
-    class MockVertexBuffer : public VertexBuffer {
+    class MockVertexBuffer : public NxVertexBuffer {
     public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setLayout, (const BufferLayout&), (override));
-        MOCK_METHOD(BufferLayout, getLayout, (), (const, override));
+        MOCK_METHOD(void, setLayout, (const NxBufferLayout&), (override));
+        MOCK_METHOD(NxBufferLayout, getLayout, (), (const, override));
         MOCK_METHOD(void, setData, (void*, unsigned int), (override));
         MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 
-    class MockIndexBuffer : public IndexBuffer {
+    class MockIndexBuffer : public NxIndexBuffer {
     public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
@@ -135,52 +135,52 @@ namespace nexo::renderer {
 
     // Tests for ShaderDataType operations
     TEST(ShaderDataTypeTest, ShaderDataTypeSizeReturnsCorrectSizes) {
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT), 4);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT2), 8);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT3), 12);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::FLOAT4), 16);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::MAT3), 36);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::MAT4), 64);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT), 4);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT2), 8);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT3), 12);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::INT4), 16);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::BOOL), 1);
-        EXPECT_EQ(shaderDataTypeSize(ShaderDataType::NONE), 0);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::FLOAT), 4);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::FLOAT2), 8);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::FLOAT3), 12);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::FLOAT4), 16);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::MAT3), 36);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::MAT4), 64);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::INT), 4);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::INT2), 8);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::INT3), 12);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::INT4), 16);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::BOOL), 1);
+        EXPECT_EQ(shaderDataTypeSize(NxShaderDataType::NONE), 0);
     }
 
     // Tests for BufferElements
     TEST(BufferElementsTest, ConstructorSetsProperties) {
-        BufferElements element(ShaderDataType::FLOAT3, "Position", false);
+        NxBufferElements element(NxShaderDataType::FLOAT3, "Position", false);
 
         EXPECT_EQ(element.name, "Position");
-        EXPECT_EQ(element.type, ShaderDataType::FLOAT3);
+        EXPECT_EQ(element.type, NxShaderDataType::FLOAT3);
         EXPECT_EQ(element.size, 12); // FLOAT3 = 3 * 4 bytes
         EXPECT_EQ(element.offset, 0); // Initial offset is 0
         EXPECT_FALSE(element.normalized);
     }
 
     TEST(BufferElementsTest, GetComponentCountReturnsCorrectCount) {
-        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT, "").getComponentCount(), 1);
-        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT2, "").getComponentCount(), 2);
-        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT3, "").getComponentCount(), 3);
-        EXPECT_EQ(BufferElements(ShaderDataType::FLOAT4, "").getComponentCount(), 4);
-        EXPECT_EQ(BufferElements(ShaderDataType::INT, "").getComponentCount(), 1);
-        EXPECT_EQ(BufferElements(ShaderDataType::INT2, "").getComponentCount(), 2);
-        EXPECT_EQ(BufferElements(ShaderDataType::INT3, "").getComponentCount(), 3);
-        EXPECT_EQ(BufferElements(ShaderDataType::INT4, "").getComponentCount(), 4);
-        EXPECT_EQ(BufferElements(ShaderDataType::MAT3, "").getComponentCount(), 9);
-        EXPECT_EQ(BufferElements(ShaderDataType::MAT4, "").getComponentCount(), 16);
-        EXPECT_EQ(BufferElements(ShaderDataType::BOOL, "").getComponentCount(), 1);
-        EXPECT_EQ(BufferElements(ShaderDataType::NONE, "").getComponentCount(), -1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::FLOAT, "").getComponentCount(), 1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::FLOAT2, "").getComponentCount(), 2);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::FLOAT3, "").getComponentCount(), 3);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::FLOAT4, "").getComponentCount(), 4);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::INT, "").getComponentCount(), 1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::INT2, "").getComponentCount(), 2);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::INT3, "").getComponentCount(), 3);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::INT4, "").getComponentCount(), 4);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT3, "").getComponentCount(), 9);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT4, "").getComponentCount(), 16);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::BOOL, "").getComponentCount(), 1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::NONE, "").getComponentCount(), -1);
     }
 
     // Tests for BufferLayout
     TEST(BufferLayoutTest, ConstructorWithInitializerListCalculatesOffsetsAndStride) {
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"},
-            {ShaderDataType::FLOAT4, "Color"},
-            {ShaderDataType::FLOAT2, "TexCoord"}
+        NxBufferLayout layout = {
+            {NxShaderDataType::FLOAT3, "Position"},
+            {NxShaderDataType::FLOAT4, "Color"},
+            {NxShaderDataType::FLOAT2, "TexCoord"}
         };
 
         EXPECT_EQ(layout.getStride(), 36); // 12 + 16 + 8
@@ -194,15 +194,15 @@ namespace nexo::renderer {
     }
 
     TEST(BufferLayoutTest, EmptyConstructorCreatesEmptyLayout) {
-        BufferLayout layout;
+        NxBufferLayout layout;
         EXPECT_EQ(layout.getStride(), 0);
         EXPECT_TRUE(layout.getElements().empty());
     }
 
     TEST(BufferLayoutTest, IteratorFunctionsWork) {
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"},
-            {ShaderDataType::FLOAT4, "Color"}
+        NxBufferLayout layout = {
+            {NxShaderDataType::FLOAT3, "Position"},
+            {NxShaderDataType::FLOAT4, "Color"}
         };
 
         int count = 0;
@@ -215,8 +215,8 @@ namespace nexo::renderer {
     // Mocking tests for abstract classes
     TEST(BufferMockTest, MockVertexBufferCanCallMethods) {
         MockVertexBuffer buffer;
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"}
+        NxBufferLayout layout = {
+            {NxShaderDataType::FLOAT3, "Position"}
         };
 
         EXPECT_CALL(buffer, setLayout(testing::_)).Times(1);
@@ -227,7 +227,7 @@ namespace nexo::renderer {
         EXPECT_CALL(buffer, getId()).WillOnce(testing::Return(1));
 
         buffer.setLayout(layout);
-        BufferLayout retrievedLayout = buffer.getLayout();
+        NxBufferLayout retrievedLayout = buffer.getLayout();
         buffer.bind();
         buffer.unbind();
         float data[] = {1.0f, 2.0f, 3.0f};
@@ -262,7 +262,7 @@ namespace nexo::renderer {
     TEST_F(BufferFactoryTest, CreateVertexBufferWithDataReturnsValidBuffer) {
         float vertices[] = {1.0f, 2.0f, 3.0f};
 
-        #ifdef GRAPHICS_API_OPENGL
+        #ifdef NX_GRAPHICS_API_OPENGL
             auto buffer = createVertexBuffer(vertices, sizeof(vertices));
             ASSERT_NE(buffer, nullptr);
             EXPECT_NE(buffer->getId(), 0);
@@ -272,7 +272,7 @@ namespace nexo::renderer {
     }
 
     TEST_F(BufferFactoryTest, CreateVertexBufferWithSizeReturnsValidBuffer) {
-        #ifdef GRAPHICS_API_OPENGL
+        #ifdef NX_GRAPHICS_API_OPENGL
             auto buffer = createVertexBuffer(1024);
             ASSERT_NE(buffer, nullptr);
             EXPECT_NE(buffer->getId(), 0);
@@ -282,7 +282,7 @@ namespace nexo::renderer {
     }
 
     TEST_F(BufferFactoryTest, CreateIndexBufferReturnsValidBuffer) {
-        #ifdef GRAPHICS_API_OPENGL
+        #ifdef NX_GRAPHICS_API_OPENGL
             auto buffer = createIndexBuffer();
             ASSERT_NE(buffer, nullptr);
             EXPECT_NE(buffer->getId(), 0);
@@ -292,11 +292,11 @@ namespace nexo::renderer {
     }
 
     // OpenGL specific implementation tests - using TEST_F with OpenGLBufferTest fixture
-    #ifdef GRAPHICS_API_OPENGL
+    #ifdef NX_GRAPHICS_API_OPENGL
     TEST_F(OpenGLBufferTest, OpenGlVertexBufferWithDataWorksCorrectly) {
 
         float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
-        OpenGlVertexBuffer buffer(vertices, sizeof(vertices));
+        NxOpenGlVertexBuffer buffer(vertices, sizeof(vertices));
 
         EXPECT_NE(buffer.getId(), 0);
 
@@ -305,11 +305,11 @@ namespace nexo::renderer {
         EXPECT_NO_THROW(buffer.unbind());
 
         // Test layout setting and retrieval
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"}
+        NxBufferLayout layout = {
+            {NxShaderDataType::FLOAT3, "Position"}
         };
         EXPECT_NO_THROW(buffer.setLayout(layout));
-        BufferLayout retrievedLayout = buffer.getLayout();
+        NxBufferLayout retrievedLayout = buffer.getLayout();
         EXPECT_EQ(retrievedLayout.getStride(), layout.getStride());
 
         // Test setting new data
@@ -319,7 +319,7 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLBufferTest, OpenGlVertexBufferEmptyConstructorWorksCorrectly) {
 
-        OpenGlVertexBuffer buffer(1024);
+        NxOpenGlVertexBuffer buffer(1024);
 
         EXPECT_NE(buffer.getId(), 0);
 
@@ -334,7 +334,7 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLBufferTest, OpenGlIndexBufferWorksCorrectly) {
 
-        OpenGlIndexBuffer buffer;
+        NxOpenGlIndexBuffer buffer;
 
         EXPECT_NE(buffer.getId(), 0);
 
@@ -347,5 +347,5 @@ namespace nexo::renderer {
         EXPECT_NO_THROW(buffer.setData(indices, 6));
         EXPECT_EQ(buffer.getCount(), 6);
     }
-    #endif // GRAPHICS_API_OPENGL
+    #endif // NX_GRAPHICS_API_OPENGL
 }

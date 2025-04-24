@@ -39,7 +39,7 @@ namespace nexo::event {
              *
              * @param window Shared pointer to the window for input polling.
              */
-            explicit Input(const std::shared_ptr<renderer::Window> &window) : m_window(window) {};
+            explicit Input(const std::shared_ptr<renderer::NxWindow> &window) : m_window(window) {};
 
             /**
              * @brief Checks if the specified key is currently pressed.
@@ -100,10 +100,10 @@ namespace nexo::event {
              *
              * @param window Shared pointer to the window used for input.
              */
-            static void init(const std::shared_ptr<renderer::Window>& window);
+            static void init(const std::shared_ptr<renderer::NxWindow>& window);
 
         protected:
-            std::shared_ptr<renderer::Window> m_window;
+            std::shared_ptr<renderer::NxWindow> m_window;
         private:
             static std::shared_ptr<Input> _instance;
     };

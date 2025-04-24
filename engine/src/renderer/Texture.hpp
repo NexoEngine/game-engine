@@ -19,7 +19,7 @@
 namespace nexo::renderer {
 
     /**
-    * @class Texture
+    * @class NxTexture
     * @brief Abstract base class for representing textures in a rendering system.
     *
     * The `Texture` class provides a common interface for managing texture resources
@@ -31,12 +31,12 @@ namespace nexo::renderer {
     * - Manage texture data.
     * - Bind and unbind textures to specific texture slots.
     *
-    * Derived classes (e.g., `OpenGlTexture2D`) implement platform-specific behavior for
+    * Derived classes (e.g., `NxOpenGlTexture2D`) implement platform-specific behavior for
     * managing textures in different rendering backends.
     */
-    class Texture {
+    class NxTexture {
         public:
-            virtual ~Texture() = default;
+            virtual ~NxTexture() = default;
 
             [[nodiscard]] virtual unsigned int getWidth() const = 0;
             [[nodiscard]] virtual unsigned int getHeight() const = 0;
@@ -49,10 +49,10 @@ namespace nexo::renderer {
 
             virtual void setData(void *data, unsigned int size) = 0;
 
-            bool operator==(const Texture &other) const { return this->getId() == other.getId(); };
+            bool operator==(const NxTexture &other) const { return this->getId() == other.getId(); };
     };
 
-    class Texture2D :  public Texture {
+    class NxTexture2D :  public NxTexture {
         public:
             /**
              * @brief Creates a blank 2D texture with the specified dimensions.
@@ -62,14 +62,14 @@ namespace nexo::renderer {
              *
              * @param width The width of the texture in pixels.
              * @param height The height of the texture in pixels.
-             * @return A shared pointer to the created `Texture2D` instance.
+             * @return A shared pointer to the created `NxTexture2D` instance.
              *
              * Example:
              * ```cpp
-             * auto blankTexture = Texture2D::create(512, 512);
+             * auto blankTexture = NxTexture2D::create(512, 512);
              * ```
              */
-            static std::shared_ptr<Texture2D> create(unsigned int width, unsigned int height);
+            static std::shared_ptr<NxTexture2D> create(unsigned int width, unsigned int height);
 
             /**
              * @brief Creates a 2D texture from file in memory.
@@ -80,15 +80,15 @@ namespace nexo::renderer {
              *
              * @param buffer The memory buffer containing the texture image data.
              * @param len The length of the memory buffer in bytes.
-             * @return A shared pointer to the created `Texture2D` instance.
+             * @return A shared pointer to the created `NxTexture2D` instance.
              *
              * Example:
              * ```cpp
              * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
-             * auto texture = Texture2D::create(imageData.data(), imageData.size());
+             * auto texture = NxTexture2D::create(imageData.data(), imageData.size());
              * ```
              */
-            static std::shared_ptr<Texture2D> create(uint8_t *buffer, unsigned int len);
+            static std::shared_ptr<NxTexture2D> create(uint8_t *buffer, unsigned int len);
 
             /**
             * @brief Creates a 2D texture from an image file.
@@ -98,14 +98,14 @@ namespace nexo::renderer {
             * for rendering after creation.
             *
             * @param path The file path to the texture image.
-            * @return A shared pointer to the created `Texture2D` instance.
+            * @return A shared pointer to the created `NxTexture2D` instance.
             *
             * Example:
             * ```cpp
-            * auto texture = Texture2D::create("assets/textures/brick_wall.png");
+            * auto texture = NxTexture2D::create("assets/textures/brick_wall.png");
             * ```
             */
-            static std::shared_ptr<Texture2D> create(const std::string &path);
+            static std::shared_ptr<NxTexture2D> create(const std::string &path);
     };
 
 }

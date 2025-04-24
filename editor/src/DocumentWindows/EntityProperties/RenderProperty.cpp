@@ -157,7 +157,7 @@ namespace nexo::editor {
             renderComponent.isRendered = !hidden;
 
             ImNexo::ToggleButtonWithSeparator("Material", &sectionOpen);
-            static std::shared_ptr<renderer::Framebuffer> framebuffer = nullptr;
+            static std::shared_ptr<renderer::NxFramebuffer> framebuffer = nullptr;
             static int entityBase = -1;
             if (sectionOpen)
             {

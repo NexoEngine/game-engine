@@ -54,18 +54,18 @@ namespace nexo::editor::utils {
 	static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy, const glm::vec2 &previewSize, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
-  		renderer::FramebufferSpecs framebufferSpecs;
+  		renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            renderer::FrameBufferTextureFormats::RGBA8,
-            renderer::FrameBufferTextureFormats::RED_INTEGER,
-            renderer::FrameBufferTextureFormats::Depth
+            renderer::NxFrameBufferTextureFormats::RGBA8,
+            renderer::NxFrameBufferTextureFormats::RED_INTEGER,
+            renderer::NxFrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(previewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(previewSize.y);
         const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         const auto &transformComponent = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
-        auto framebuffer = renderer::Framebuffer::create(framebufferSpecs);
+        auto framebuffer = renderer::NxFramebuffer::create(framebufferSpecs);
 
         float distance = transformComponentBase.size.z * 2.0f;
 

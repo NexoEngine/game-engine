@@ -63,7 +63,7 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, ShaderCreationFromSource)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
 
         // Validate that the shader is bound
         EXPECT_NO_THROW(shader.bind());
@@ -96,7 +96,7 @@ namespace nexo::renderer {
 
         createTemporaryShaderFile(shaderFileContent);
 
-        OpenGlShader shader(temporaryShaderFilePath);
+        NxOpenGlShader shader(temporaryShaderFilePath);
 
         // Validate that the shader is bound
         EXPECT_NO_THROW(shader.bind());
@@ -114,7 +114,7 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, InvalidShaderFile)
     {
-        EXPECT_THROW(OpenGlShader("non_existing_file.glsl"), FileNotFoundException);
+        EXPECT_THROW(NxOpenGlShader("non_existing_file.glsl"), NxFileNotFoundException);
     }
 
     TEST_F(ShaderTest, InvalidShaderSource)
@@ -131,7 +131,7 @@ namespace nexo::renderer {
         createTemporaryShaderFile(invalidShaderSource);
 
         // Validate shader compiling failure
-        EXPECT_THROW(OpenGlShader shader(temporaryShaderFilePath), ShaderCreationFailed);
+        EXPECT_THROW(NxOpenGlShader shader(temporaryShaderFilePath), NxShaderCreationFailed);
 
         deleteTemporaryShaderFile();
     }
@@ -184,7 +184,7 @@ namespace nexo::renderer {
             {"uIntArray", 3}
         };
 
-        OpenGlShader shader("TestShader", vertexShaderSourceTestUniforms, fragmentShaderSourceTestUniforms);
+        NxOpenGlShader shader("TestShader", vertexShaderSourceTestUniforms, fragmentShaderSourceTestUniforms);
         shader.bind();
 
         /////////////////////// BASE UNIFORM CHECKUP ///////////////////////////
@@ -295,13 +295,13 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, GetShaderName)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
         EXPECT_EQ(shader.getName(), "TestShader");
     }
 
     TEST_F(ShaderTest, InvalidUniformName)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
         shader.bind();
 
         // Validate failure on invalid uniform name

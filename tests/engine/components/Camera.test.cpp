@@ -22,7 +22,7 @@
 #include <cmath>
 
 // Dummy implementation of the Framebuffer interface for testing.
-class DummyFramebuffer : public nexo::renderer::Framebuffer {
+class DummyFramebuffer : public nexo::renderer::NxFramebuffer {
 public:
     void bind() override {}
     void unbind() override {}
@@ -32,13 +32,13 @@ public:
     void resize(unsigned int, unsigned int ) override {}
     void getPixelWrapper(unsigned int, int, int, void *, const std::type_info &) const override {}
     void clearAttachmentWrapper(unsigned int, const void *, const std::type_info &) const override {}
-    [[nodiscard]] nexo::renderer::FramebufferSpecs &getSpecs() override { static nexo::renderer::FramebufferSpecs specs; return specs; }
-    [[nodiscard]] const nexo::renderer::FramebufferSpecs &getSpecs() const override { static nexo::renderer::FramebufferSpecs specs; return specs; }
+    [[nodiscard]] nexo::renderer::NxFramebufferSpecs &getSpecs() override { static nexo::renderer::NxFramebufferSpecs specs; return specs; }
+    [[nodiscard]] const nexo::renderer::NxFramebufferSpecs &getSpecs() const override { static nexo::renderer::NxFramebufferSpecs specs; return specs; }
     [[nodiscard]] unsigned int getColorAttachmentId(unsigned int) const override { return 0; }
     unsigned int getDepthAttachmentId() const override { return 0; }
 };
 
-std::shared_ptr<nexo::renderer::Framebuffer> createDummyFramebuffer() {
+std::shared_ptr<nexo::renderer::NxFramebuffer> createDummyFramebuffer() {
     return std::make_shared<DummyFramebuffer>();
 }
 
