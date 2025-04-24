@@ -35,6 +35,7 @@
 #include "utils/String.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Widgets.hpp"
+#include "ImNexo/Panels.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -49,54 +50,249 @@ namespace nexo::editor {
         setupWindow();
         setupScene();
 
+        // ================= GLOBAL STATE =============================
         m_globalState = {static_cast<unsigned int>(EditorState::GLOBAL)};
         m_globalState.registerCommand(
             {
-                "Ctrl Context",
-                "Ctrl",
-                []{
-                    //std::cout << "Ctrl pressed" << std::endl;
-                },
+                "Shift context",
+                "Shift",
+                nullptr,
                 true,
                 {
                     {
-                        "Copy",
-                        "C",
-                        []{
-                            std::cout << "Copy command executed" << std::endl;
+                        "Add entity",
+                        "A",
+                        [this]{
+                            this->m_popupManager.openPopup("Add new entity popup");
                         },
                         false,
-                    },
-                    {
-                        "Paste",
-                        "V",
-                        []{
-                            std::cout << "Paste command executed" << std::endl;
-                        },
-                        false,
-                    },
-                    {
-                        "Sub child",
-                        "Shift",
-                        nullptr,
-                        true,
-                        {
-                            {
-                                "Delete",
-                                "X",
-                                []{
-                                    std::cout << "Sub sub command executed" << std::endl;
-                                },
-                                false,
-                            }
-                        }
                     }
                 }
             }
         );
-
+        m_globalState.registerCommand(
+            {
+                "Select all",
+                "A",
+                [this]{
+                    LOG(NEXO_WARN, "Select all not implemented yet");
+                },
+                false
+            }
+        );
         m_windowState = m_globalState;
 
+        // ================= GIZMO STATE =============================
+        m_gizmoState = {static_cast<unsigned int>(EditorState::GIZMO)};
+        m_gizmoState.registerCommand(
+            {
+                "Translate",
+                "G",
+                [this]{
+                    this->m_windowState = m_gizmoTranslateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+                },
+                false,
+            }
+        );
+        m_gizmoState.registerCommand(
+            {
+                "Rotate",
+                "R",
+                [this]{
+                    this->m_windowState = m_gizmoRotateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+                },
+                false,
+            }
+        );
+        m_gizmoState.registerCommand(
+            {
+                "Scale",
+                "S",
+                [this]{
+                    this->m_windowState = m_gizmoScaleState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+                },
+                false,
+            }
+        );
+
+        // ================= TRANSLATE STATE =============================
+        m_gizmoTranslateState = {static_cast<unsigned int>(EditorState::GIZMO_TRANSLATE)};
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Universal",
+                "U",
+                [this]{
+                    this->m_windowState = m_gizmoState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
+                },
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Translate",
+                "G",
+                [this]{
+                    this->m_windowState = m_gizmoTranslateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+                },
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Lock X",
+                "X",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_X;
+                },
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Lock Y",
+                "Y",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Y;
+                },
+                false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Lock Z",
+                "Z",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Z;
+                },
+                false,
+            }
+        );
+
+        // ================= ROTATE STATE =============================
+        m_gizmoRotateState = {static_cast<unsigned int>(EditorState::GIZMO_ROTATE)};
+        m_gizmoRotateState.registerCommand(
+            {
+                "Universal",
+                "U",
+                [this]{
+                    this->m_windowState = m_gizmoState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
+                },
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Rotate",
+                "R",
+                [this]{
+                    this->m_windowState = m_gizmoRotateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+                },
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Screen rotation",
+                "S",
+                [this]{
+                    this->m_windowState = m_gizmoRotateState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_SCREEN;
+                },
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Lock X",
+                "X",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_X;
+                },
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Lock Y",
+                "Y",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Y;
+                },
+                false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Lock Z",
+                "Z",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Z;
+                },
+                false,
+            }
+        );
+
+        // ================= SCALE STATE =============================
+        m_gizmoScaleState = {static_cast<unsigned int>(EditorState::GIZMO_SCALE)};
+        m_gizmoScaleState.registerCommand(
+            {
+                "Universal",
+                "U",
+                [this]{
+                    this->m_windowState = m_gizmoState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
+                },
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Scale",
+                "S",
+                [this]{
+                    this->m_windowState = m_gizmoScaleState;
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+                },
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Lock X",
+                "X",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_X;
+                },
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Lock Y",
+                "Y",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Y;
+                },
+                false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Lock Z",
+                "Z",
+                [this]{
+                    this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Z;
+                },
+                false,
+            }
+        );
     }
 
     void EditorScene::setupScene()
@@ -608,8 +804,10 @@ namespace nexo::editor {
                                     glm::scale(glm::mat4(1.0f), {transf->get().size.x, transf->get().size.y, transf->get().size.z});
 
         static ImGuizmo::OPERATION lastOperation;
-        if (!ImGuizmo::IsUsing())
+        if (!ImGuizmo::IsUsing()) {
             lastOperation = getLastGuizmoOperation();
+            //m_windowState = m_globalState;
+        }
 
         float *snap = nullptr;
         if (m_snapTranslateOn && lastOperation & ImGuizmo::OPERATION::TRANSLATE) {
@@ -714,6 +912,55 @@ namespace nexo::editor {
 	            renderToolbar();
 
             }
+
+            if (m_popupManager.showPopup("Add new entity popup"))
+            {
+                auto &app = Application::getInstance();
+                auto &sceneManager = app.getSceneManager();
+                const auto sceneId = m_sceneId;
+
+                // --- Primitives submenu ---
+                if (ImGui::BeginMenu("Primitives")) {
+                    if (ImGui::MenuItem("Cube")) {
+                        const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                               {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+                        sceneManager.getScene(sceneId).addEntity(newCube);
+                    }
+                    ImGui::EndMenu();
+                }
+
+                // --- Model item (with file‑dialog) ---
+                if (ImGui::MenuItem("Model")) {
+                    //TODO: import model
+                }
+
+                // --- Lights submenu ---
+                if (ImGui::BeginMenu("Lights")) {
+                    if (ImGui::MenuItem("Directional")) {
+                        const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
+                        sceneManager.getScene(sceneId).addEntity(directionalLight);
+                    }
+                    if (ImGui::MenuItem("Point")) {
+                        const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
+                        utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
+                        sceneManager.getScene(sceneId).addEntity(pointLight);
+                    }
+                    if (ImGui::MenuItem("Spot")) {
+                        const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
+                        utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
+                        sceneManager.getScene(sceneId).addEntity(spotLight);
+                    }
+                    ImGui::EndMenu();
+                }
+
+                // --- Camera item ---
+                if (ImGui::MenuItem("Camera")) {
+                    m_popupManager.openPopupWithCallback("Popup camera inspector", [this]() {
+                        ImNexo::CameraInspector(this->m_sceneId, this->m_viewSize);
+                    }, ImVec2(1440,900));
+                }
+                m_popupManager.closePopup();
+            }
         }
         ImGui::End();
         ImGui::PopStyleVar();
@@ -749,11 +996,18 @@ namespace nexo::editor {
             if (data == -1)
             {
             	selector.unselectEntity();
+                m_windowState = m_globalState;
              	return;
             }
             const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
             if (uuid)
             {
+                if (m_currentGizmoOperation == ImGuizmo::OPERATION::TRANSLATE)
+                    m_windowState = m_gizmoTranslateState;
+                else if (m_currentGizmoOperation == ImGuizmo::OPERATION::ROTATE)
+                    m_windowState = m_gizmoRotateState;
+                else
+                    m_windowState = m_gizmoState;
                 auto &app = getApp();
                	selector.setSelectedEntity(uuid->get().uuid, data);
                 if (app.m_coordinator->entityHasComponent<components::CameraComponent>(data))

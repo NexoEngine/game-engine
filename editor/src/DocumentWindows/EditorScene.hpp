@@ -286,9 +286,16 @@ namespace nexo::editor {
             enum class EditorState {
                 GLOBAL,
                 GIZMO,
+                GIZMO_TRANSLATE,
+                GIZMO_ROTATE,
+                GIZMO_SCALE,
                 NB_STATE
             };
 
             WindowState m_globalState;
+            WindowState m_gizmoState;
+            WindowState m_gizmoTranslateState;
+            WindowState m_gizmoRotateState;
+            WindowState m_gizmoScaleState;
     };
 }
