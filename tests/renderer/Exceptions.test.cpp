@@ -129,7 +129,7 @@ namespace nexo::renderer {
         constexpr const char* expectedFile = __FILE__;
         constexpr unsigned int expectedLine = __LINE__ + 2;
 
-        GraphicsApiNotInitialized ex("OpenGL");
+        NxGraphicsApiNotInitialized ex("OpenGL");
         std::string formattedMessage = ex.what();
 
         EXPECT_NE(formattedMessage.find("[OpenGL] API is not initialized, call the init function first"), std::string::npos);
@@ -273,7 +273,7 @@ namespace nexo::renderer {
         constexpr const char* expectedFile = __FILE__;
         constexpr unsigned int expectedLine = __LINE__ + 2;
 
-        TextureSizeMismatch ex("OpenGL", 1024, 2048);
+        NxTextureSizeMismatch ex("OpenGL", 1024, 2048);
         std::string formattedMessage = ex.what();
 
         EXPECT_NE(formattedMessage.find("[OpenGL] Data size does not match the texture size: 1024 != 2048"), std::string::npos);
