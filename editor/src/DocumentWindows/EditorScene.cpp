@@ -89,6 +89,22 @@ namespace nexo::editor {
         m_gizmoState = {static_cast<unsigned int>(EditorState::GIZMO)};
         m_gizmoState.registerCommand(
             {
+                "Delete",
+                "X",
+                [this]{
+                        auto &selector = Selector::get();
+                        ecs::Entity selectedEntity = selector.getSelectedEntity();
+                        selector.unselectEntity();
+                        auto &app = nexo::getApp();
+                        app.deleteEntity(selectedEntity);
+                        this->m_windowState = m_globalState;
+                },
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoState.registerCommand(
+            {
                 "Translate",
                 "G",
                 [this]{
@@ -121,6 +137,30 @@ namespace nexo::editor {
                 },
                 nullptr,
                 false,
+            }
+        );
+        m_gizmoState.registerCommand(
+            {
+                "Shift context",
+                "Shift",
+                nullptr,
+                nullptr,
+                true,
+                {
+                    {
+                        "Toggle snapping",
+                        "S",
+                        [this]{
+                            m_snapTranslateOn = true;
+                            m_snapRotateOn = true;
+                        },
+                        [this]{
+                            m_snapTranslateOn = false;
+                            m_snapRotateOn = false;
+                        },
+                        false,
+                    }
+                }
             }
         );
 
@@ -172,6 +212,28 @@ namespace nexo::editor {
                 },
                 nullptr,
                 false,
+            }
+        );
+        m_gizmoTranslateState.registerCommand(
+            {
+                "Shift context",
+                "Shift",
+                nullptr,
+                nullptr,
+                true,
+                {
+                    {
+                        "Toggle snapping",
+                        "S",
+                        [this]{
+                            m_snapTranslateOn = true;
+                        },
+                        [this]{
+                            m_snapTranslateOn = false;
+                        },
+                        false,
+                    }
+                }
             }
         );
         m_gizmoTranslateState.registerCommand(
@@ -262,6 +324,28 @@ namespace nexo::editor {
                 },
                 nullptr,
                 false,
+            }
+        );
+        m_gizmoRotateState.registerCommand(
+            {
+                "Shift context",
+                "Shift",
+                nullptr,
+                nullptr,
+                true,
+                {
+                    {
+                        "Toggle snapping",
+                        "S",
+                        [this]{
+                            m_snapRotateOn = true;
+                        },
+                        [this]{
+                            m_snapRotateOn = false;
+                        },
+                        false,
+                    }
+                }
             }
         );
         m_gizmoRotateState.registerCommand(
