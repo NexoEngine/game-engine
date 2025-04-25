@@ -197,6 +197,7 @@ namespace nexo::assets {
 
         friend class AssetRef<TAssetData>;
         public:
+            using AssetDataType = TAssetData;
             static constexpr AssetType TYPE = TAssetType;
 
             /**
