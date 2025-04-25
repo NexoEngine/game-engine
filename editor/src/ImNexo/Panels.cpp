@@ -61,19 +61,27 @@ namespace ImNexo {
 		}
 
 	    // --- Albedo texture ---
-	    static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
-	    static bool showColorPickerAlbedo = false;
-		modified = TextureButton("Albedo texture", material->albedoTexture) || modified;
-		ImGui::SameLine();
-		modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
+        {
+            static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
+		    static bool showColorPickerAlbedo = false;
+		    const auto albedoTextureAsset = material->albedoTexture.lock();
+		    auto albedoTexture = albedoTextureAsset ? albedoTextureAsset->data->texture : nullptr;
+		    modified = TextureButton("Albedo texture", albedoTexture) || modified;
+		    ImGui::SameLine();
+		    modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
+        }
 
 		// --- Specular texture ---
-		static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
-		static bool showColorPickerSpecular = false;
-		modified = TextureButton("Specular texture", material->metallicMap) || modified;
-		ImGui::SameLine();
-		modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
-		return modified;
+        {
+            static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
+		    static bool showColorPickerSpecular = false;
+		    const auto metallicTextureAsset = material->metallicMap.lock();
+		    auto metallicTexture = metallicTextureAsset ? metallicTextureAsset->data->texture : nullptr;
+		    modified = TextureButton("Specular texture", metallicTexture) || modified;
+		    ImGui::SameLine();
+		    modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
+		    return modified;
+        }
 	}
 
     /**
@@ -89,9 +97,9 @@ namespace ImNexo {
 	static nexo::ecs::Entity createDefaultPerspectiveCamera(const nexo::scene::SceneId sceneId, ImVec2 sceneViewportSize)
 	{
         auto &app = nexo::getApp();
-        nexo::renderer::FramebufferSpecs framebufferSpecs;
+        nexo::renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            nexo::renderer::FrameBufferTextureFormats::RGBA8, nexo::renderer::FrameBufferTextureFormats::RED_INTEGER, nexo::renderer::FrameBufferTextureFormats::Depth
+            nexo::renderer::NxFrameBufferTextureFormats::RGBA8, nexo::renderer::NxFrameBufferTextureFormats::RED_INTEGER, nexo::renderer::NxFrameBufferTextureFormats::Depth
         };
         const ImVec2 availSize = ImGui::GetContentRegionAvail();
         const float totalWidth = availSize.x;
@@ -102,7 +110,7 @@ namespace ImNexo {
         const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panel
         framebufferSpecs.width = static_cast<unsigned int>(sceneViewportSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(sceneViewportSize.y);
-        const auto renderTarget = nexo::renderer::Framebuffer::create(framebufferSpecs);
+        const auto renderTarget = nexo::renderer::NxFramebuffer::create(framebufferSpecs);
         nexo::ecs::Entity defaultCamera = nexo::CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<nexo::ecs::Entity>(defaultCamera));
         nexo::editor::utils::addPropsTo(defaultCamera, nexo::editor::utils::PropsType::CAMERA);

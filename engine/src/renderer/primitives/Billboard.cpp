@@ -119,7 +119,7 @@ namespace nexo::renderer {
         }
     }
 
-    void Renderer3D::drawBillboard(
+    void NxRenderer3D::drawBillboard(
         const glm::vec3& position,
         const glm::vec2& size,
         const glm::vec4& color,
@@ -127,7 +127,7 @@ namespace nexo::renderer {
     {
         if (!m_renderingScene)
         {
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
@@ -141,7 +141,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -168,7 +168,7 @@ namespace nexo::renderer {
         });
     }
 
-    void Renderer3D::drawBillboard(
+    void NxRenderer3D::drawBillboard(
         const glm::vec3& position,
         const glm::vec2& size,
         const components::Material& material,
@@ -176,7 +176,7 @@ namespace nexo::renderer {
     {
         if (!m_renderingScene)
         {
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
@@ -190,11 +190,16 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::Material mat;
+        auto albedoTextureAsset = material.albedoTexture.lock();
+        auto metallicTextureAsset = material.metallicMap.lock();
+        auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr;
+        auto metallicTexture = metallicTextureAsset && metallicTextureAsset->isLoaded() ? metallicTextureAsset->data->texture : nullptr;
+
+        renderer::NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
+        mat.albedoTexIndex = getTextureIndex(albedoTexture);
         mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
+        mat.specularTexIndex = getTextureIndex(metallicTexture);
         setMaterialUniforms(mat);
 
         std::array<glm::vec3, 6> verts{};
