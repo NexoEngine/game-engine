@@ -65,7 +65,7 @@ namespace nexo::renderer {
         std::shared_ptr<NxTexture2D> roughnessMap = nullptr;
         std::shared_ptr<NxTexture2D> emissiveMap = nullptr;
 
-        std::optional<std::shared_ptr<renderer::NxShader>> shader = std::nullopt;
+        std::string shader = "";
     };
 
     //TODO: Add stats for the meshes
