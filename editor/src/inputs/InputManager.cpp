@@ -25,8 +25,20 @@ namespace nexo::editor {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
         std::bitset<ImGuiKey_NamedKey_COUNT> releasedSignature;
 
+        static const std::set<ImGuiKey> excludedKeys = {
+            ImGuiKey_MouseLeft,
+            ImGuiKey_MouseRight,
+            ImGuiKey_MouseMiddle,
+            ImGuiKey_MouseX1,
+            ImGuiKey_MouseX2,
+            ImGuiKey_MouseWheelX,
+            ImGuiKey_MouseWheelY
+        };
+
         // -5 to avoid reserved mod key
         for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_COUNT + ImGuiKey_NamedKey_BEGIN - 5; key++) {
+            if (excludedKeys.contains(static_cast<ImGuiKey>(key)))
+                continue;
             if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key)) || ImGui::IsKeyDown(static_cast<ImGuiKey>(key)))
             {
                 pressedSignature.set(static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN));
@@ -47,24 +59,36 @@ namespace nexo::editor {
         const std::bitset<ImGuiKey_NamedKey_COUNT>& releasedSignature
     ) {
         for (const auto& command : commands) {
+            // Handle pressed callbacks
             if (command.exactMatch(pressedSignature)) {
-                // Execute the command on exact match
                 command.executePressedCallback();
             }
-            else if (command.partialMatch(pressedSignature) && !command.getChildren().empty()) {
-                // If partial match and has children, check children commands
-                auto remainingBits = pressedSignature ^ command.getSignature();
-                processCommands(command.getChildren(), remainingBits, releasedSignature);
-            }
 
+            // Handle released callbacks
             if (command.exactMatch(releasedSignature)) {
-                // Execute the command on exact match
                 command.executeReleasedCallback();
             }
-            else if (command.partialMatch(releasedSignature) && !command.getChildren().empty()) {
-                // If partial match and has children, check children commands
-                auto remainingBits = releasedSignature ^ command.getSignature();
-                processCommands(command.getChildren(), pressedSignature, remainingBits);
+
+            // Process child commands for partial matches
+            if (!command.getChildren().empty()) {
+                // Special case: When a modifier is held down and child keys are pressed/released
+                if (command.isModifier() && (command.getSignature() & pressedSignature) == command.getSignature()) {
+                    // The modifier is currently pressed
+                    auto remainingPressedBits = pressedSignature ^ command.getSignature();
+
+                    // Process child commands with the remaining pressed bits and ALL released bits
+                    // This ensures child release events work while modifier is held
+                    processCommands(command.getChildren(), remainingPressedBits, releasedSignature);
+                }
+                // Standard partial match cases
+                else if (command.partialMatch(pressedSignature)) {
+                    auto remainingPressedBits = pressedSignature ^ command.getSignature();
+                    processCommands(command.getChildren(), remainingPressedBits, releasedSignature);
+                }
+                else if (command.partialMatch(releasedSignature)) {
+                    auto remainingReleasedBits = releasedSignature ^ command.getSignature();
+                    processCommands(command.getChildren(), pressedSignature, remainingReleasedBits);
+                }
             }
         }
     }
