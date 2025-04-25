@@ -99,7 +99,7 @@ namespace ImNexo {
     }
 
 
-    bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::Texture2D> &texture)
+    bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::NxTexture2D> &texture)
 	{
 		bool textureModified = false;
 		constexpr ImVec2 previewSize(32, 32);
@@ -122,7 +122,7 @@ namespace ImNexo {
             if (filePath)
             {
             const std::string path(filePath);
-                std::shared_ptr<nexo::renderer::Texture2D> newTexture = nexo::renderer::Texture2D::create(path);
+                std::shared_ptr<nexo::renderer::NxTexture2D> newTexture = nexo::renderer::NxTexture2D::create(path);
                 if (newTexture)
                 {
                     texture = newTexture;

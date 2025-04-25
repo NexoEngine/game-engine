@@ -52,7 +52,7 @@ namespace nexo::system {
                 void update();
 
 			private:
-			    void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext);
+			    void setupLights(const std::shared_ptr<renderer::NxShader>& shader, const components::LightContext& lightContext);
 				void renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext);
 				void renderOutline(
 				    components::RenderContext &renderContext,
@@ -60,7 +60,7 @@ namespace nexo::system {
 					const components::RenderComponent &renderComponent,
 					const components::TransformComponent &transformComponent
 				);
-                std::shared_ptr<renderer::VertexArray> m_fullscreenQuad;
-                std::shared_ptr<renderer::Framebuffer> m_maskFramebuffer;
+                std::shared_ptr<renderer::NxVertexArray> m_fullscreenQuad;
+                std::shared_ptr<renderer::NxFramebuffer> m_maskFramebuffer;
 	};
 }

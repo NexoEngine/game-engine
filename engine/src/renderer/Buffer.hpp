@@ -139,7 +139,7 @@ namespace nexo::renderer {
      * @class NxBufferLayout
      * @brief Defines the structure and layout of elements in a vertex buffer.
      *
-     * A BufferLayout is a collection of BufferElements, each specifying a data type,
+     * A NxBufferLayout is a collection of BufferElements, each specifying a data type,
      * size, and offset. The layout is essential for ensuring correct binding and
      * rendering of vertex attributes in a graphics pipeline.
      *
@@ -148,7 +148,7 @@ namespace nexo::renderer {
      * - @param _stride The total size (in bytes) of one vertex in the layout.
      *
      * Functions:
-     * - @constructor BufferLayout(const std::initializer_list<BufferElements> elements)
+     * - @constructor NxBufferLayout(const std::initializer_list<BufferElements> elements)
      *   Initializes the layout with a list of buffer elements and calculates offsets/stride.
      *
      * - @return getElements() Retrieves the list of BufferElements.
@@ -241,7 +241,7 @@ namespace nexo::renderer {
              * The layout defines the structure of the data stored in the buffer (e.g., positions,
              * normals, colors) and how they are passed to the vertex shader.
              *
-             * @param layout The BufferLayout object defining the structure of the buffer data.
+             * @param layout The NxBufferLayout object defining the structure of the buffer data.
              *
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
@@ -254,7 +254,7 @@ namespace nexo::renderer {
              * Provides information about the data structure stored in the buffer, including
              * element types, sizes, and offsets.
              *
-             * @return The BufferLayout object associated with this vertex buffer.
+             * @return The NxBufferLayout object associated with this vertex buffer.
              *
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
