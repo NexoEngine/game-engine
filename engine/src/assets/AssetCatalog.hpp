@@ -22,6 +22,8 @@
 #include "AssetLocation.hpp"
 #include "Assets/Texture/Texture.hpp"
 
+#include "Assets/Texture/Texture.hpp"
+
 namespace nexo::assets {
 
     /**
