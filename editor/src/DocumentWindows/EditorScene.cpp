@@ -79,7 +79,20 @@ namespace nexo::editor {
                 "Select all",
                 "A",
                 [this]{
-                    LOG(NEXO_WARN, "Select all not implemented yet");
+                    auto &selector = Selector::get();
+                    auto &app = nexo::getApp();
+                    auto &scene = app.getSceneManager().getScene(m_sceneId);
+
+                    selector.clearSelection();
+
+                    for (const auto entity : scene.getEntities()) {
+                        if (entity == m_editorCamera) continue; // Skip editor camera
+
+                        const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+                        if (uuidComponent)
+                            selector.addToSelection(uuidComponent->get().uuid, entity);
+                    }
+                    m_windowState = m_gizmoState;
                 },
                 nullptr,
                 nullptr,
@@ -95,12 +108,14 @@ namespace nexo::editor {
                 "Delete",
                 "X",
                 [this]{
-                        auto &selector = Selector::get();
-                        ecs::Entity selectedEntity = selector.getSelectedEntity();
-                        selector.unselectEntity();
-                        auto &app = nexo::getApp();
-                        app.deleteEntity(selectedEntity);
-                        this->m_windowState = m_globalState;
+                    auto &selector = Selector::get();
+                    const auto &selectedEntities = selector.getSelectedEntities();
+                    auto &app = nexo::getApp();
+
+                    for (const auto entity : selectedEntities)
+                        app.deleteEntity(entity);
+                    selector.clearSelection();
+                    this->m_windowState = m_globalState;
                 },
                 nullptr,
                 nullptr,
@@ -922,7 +937,7 @@ namespace nexo::editor {
         if (m_activeCamera == m_editorCamera) {
             if (renderToolbarButton("editor_camera", ICON_FA_CAMERA, "Edit Editor Camera Setting", m_buttonGradient)) {
                 const auto &uuidComponent = app.m_coordinator->getComponent<components::UuidComponent>(m_editorCamera);
-                selector.setSelectedEntity(uuidComponent.uuid, m_editorCamera);
+                selector.addToSelection(uuidComponent.uuid, m_editorCamera);
             }
         } else {
             if (renderToolbarButton("switch_back", ICON_FA_EXCHANGE, "Switch back to editor camera", m_buttonGradient)) {
@@ -1136,21 +1151,44 @@ namespace nexo::editor {
     {
         const auto &coord = nexo::Application::m_coordinator;
         auto const &selector = Selector::get();
-        if (selector.getSelectionType() == SelectionType::SCENE ||
-            selector.getSelectedScene() != m_sceneId)
+        if (selector.getPrimarySelectionType() == SelectionType::SCENE ||
+            selector.getSelectedScene() != m_sceneId ||
+            !selector.hasSelection())
             return;
-        const ecs::Entity entity = selector.getSelectedEntity();
-        const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
-        auto &cameraComponent = coord->getComponent<components::CameraComponent>(m_activeCamera);
-        ImGuizmo::SetOrthographic(cameraComponent.type == components::CameraType::ORTHOGRAPHIC);
-        ImGuizmo::SetDrawlist();
-        ImGuizmo::SetID(static_cast<int>(entity));
-        ImGuizmo::SetRect(m_viewPosition.x, m_viewPosition.y, m_viewSize.x, m_viewSize.y);
-        glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformCameraComponent);
-        glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
-        const auto transf = coord->tryGetComponent<components::TransformComponent>(entity);
+
+        // Get all selected entities and find the first one with a transform component
+        const auto &selectedEntities = selector.getSelectedEntities();
+        ecs::Entity targetEntity = selector.getPrimaryEntity();
+        auto transf = coord->tryGetComponent<components::TransformComponent>(targetEntity);
+
+        if (!transf) {
+            for (const auto entity : selectedEntities) {
+                if (entity != targetEntity) {
+                    auto entityTransf = coord->tryGetComponent<components::TransformComponent>(entity);
+                    if (entityTransf) {
+                        targetEntity = entity;
+                        transf = entityTransf;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Still no entity with transform component found
         if (!transf)
             return;
+
+        const auto &transformCameraComponent = coord->getComponent<components::TransformComponent>(m_activeCamera);
+        auto &cameraComponent = coord->getComponent<components::CameraComponent>(m_activeCamera);
+
+        ImGuizmo::SetOrthographic(cameraComponent.type == components::CameraType::ORTHOGRAPHIC);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetID(static_cast<int>(targetEntity));
+        ImGuizmo::SetRect(m_viewPosition.x, m_viewPosition.y, m_viewSize.x, m_viewSize.y);
+
+        glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformCameraComponent);
+        glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
+
         const glm::mat4 rotationMat = glm::toMat4(transf->get().quat);
         glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), transf->get().pos) *
                                     rotationMat *
@@ -1159,7 +1197,6 @@ namespace nexo::editor {
         static ImGuizmo::OPERATION lastOperation;
         if (!ImGuizmo::IsUsing()) {
             lastOperation = getLastGuizmoOperation();
-            //m_windowState = m_globalState;
         }
 
         float *snap = nullptr;
@@ -1176,20 +1213,54 @@ namespace nexo::editor {
                              glm::value_ptr(transformMatrix),
                              nullptr, snap);
 
-        glm::vec3 translation(0);
-        glm::vec3 scale(0);
-        glm::quat quaternion;
-
-        math::decomposeTransformQuat(transformMatrix, translation, quaternion, scale);
-
         if (ImGuizmo::IsUsing())
         {
             cameraComponent.active = false;
-            transf->get().pos = translation;
-            transf->get().quat = quaternion;
-            transf->get().size = scale;
-        } else
+
+            glm::vec3 originalPos = transf->get().pos;
+            glm::quat originalRot = transf->get().quat;
+            glm::vec3 originalScale = transf->get().size;
+
+            glm::vec3 newPos;
+            glm::vec3 newScale;
+            glm::quat newRot;
+
+            math::decomposeTransformQuat(transformMatrix, newPos, newRot, newScale);
+
+            // Calculate deltas
+            glm::vec3 positionDelta = newPos - originalPos;
+            glm::vec3 scaleFactor = newScale / originalScale; // Element-wise division
+            glm::quat rotationDelta = newRot * glm::inverse(originalRot);
+
+            // Apply transformation to target entity
+            transf->get().pos = newPos;
+            transf->get().quat = newRot;
+            transf->get().size = newScale;
+
+            // Apply same transformation to all other selected entities with transform components
+            for (const auto entity : selectedEntities) {
+                if (entity == targetEntity) continue; // Skip target entity, already transformed
+
+                auto entityTransf = coord->tryGetComponent<components::TransformComponent>(entity);
+                if (entityTransf) {
+                    if (m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE)
+                        entityTransf->get().pos += positionDelta;
+
+
+                    if (m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE)
+                        entityTransf->get().quat = rotationDelta * entityTransf->get().quat;
+
+
+                    if (m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE) {
+                        entityTransf->get().size.x *= scaleFactor.x;
+                        entityTransf->get().size.y *= scaleFactor.y;
+                        entityTransf->get().size.z *= scaleFactor.z;
+                    }
+                }
+            }
+        } else {
             cameraComponent.active = true;
+        }
     }
 
     void EditorScene::renderView()
@@ -1246,7 +1317,7 @@ namespace nexo::editor {
             if (m_focused && selector.getSelectedScene() != m_sceneId)
             {
                 selector.setSelectedScene(m_sceneId);
-                selector.unselectEntity();
+                selector.clearSelection();
             }
 
             if (m_activeCamera == -1)
@@ -1321,54 +1392,87 @@ namespace nexo::editor {
 
     void EditorScene::update()
     {
-    	auto &selector = Selector::get();
-    	//m_windowName = selector.getUiHandle(m_sceneUuid, m_windowName);
+        auto &selector = Selector::get();
         if (!m_opened || m_activeCamera == -1)
             return;
         if (m_focused && m_hovered)
             handleKeyEvents();
         SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER, sceneType);
+
         auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
+
+        // Handle mouse clicks for selection
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
         {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
             my -= m_viewportBounds[0].y;
 
-            // Flip the y-coordinate to match opengl texture format (maybe make it modular in some way)
+            // Flip the y-coordinate to match opengl texture format
             my = m_viewSize.y - my;
 
-            // Mouse is not inside the viewport
+            // Check if mouse is inside viewport
             if (!(mx >= 0 && my >= 0 && mx < m_viewSize.x && my < m_viewSize.y))
                 return;
 
             cameraComponent.m_renderTarget->bind();
-            int data = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
+            int entityId = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
             cameraComponent.m_renderTarget->unbind();
-            if (data == -1)
-            {
-            	selector.unselectEntity();
-                m_windowState = m_globalState;
-             	return;
+
+            // Check for multi-selection key modifiers
+            bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
+            bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+
+            if (entityId == -1) {
+                // Clicked on empty space - clear selection unless shift/ctrl is held
+                if (!isShiftPressed && !isCtrlPressed) {
+                    selector.clearSelection();
+                    m_windowState = m_globalState;
+                }
+                return;
             }
-            const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(data);
-            if (uuid)
-            {
-                if (m_currentGizmoOperation == ImGuizmo::OPERATION::TRANSLATE)
-                    m_windowState = m_gizmoTranslateState;
-                else if (m_currentGizmoOperation == ImGuizmo::OPERATION::ROTATE)
-                    m_windowState = m_gizmoRotateState;
-                else
-                    m_windowState = m_gizmoState;
+
+            const auto uuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entityId);
+            if (uuid) {
                 auto &app = getApp();
-               	selector.setSelectedEntity(uuid->get().uuid, data);
-                if (app.m_coordinator->entityHasComponent<components::CameraComponent>(data))
-                    selector.setSelectionType(SelectionType::CAMERA);
+
+                // Determine selection type
+                SelectionType selType = SelectionType::ENTITY;
+                if (app.m_coordinator->entityHasComponent<components::CameraComponent>(entityId)) {
+                    selType = SelectionType::CAMERA;
+                } else if (app.m_coordinator->entityHasComponent<components::DirectionalLightComponent>(entityId)) {
+                    selType = SelectionType::DIR_LIGHT;
+                } else if (app.m_coordinator->entityHasComponent<components::PointLightComponent>(entityId)) {
+                    selType = SelectionType::POINT_LIGHT;
+                } else if (app.m_coordinator->entityHasComponent<components::SpotLightComponent>(entityId)) {
+                    selType = SelectionType::SPOT_LIGHT;
+                } else if (app.m_coordinator->entityHasComponent<components::AmbientLightComponent>(entityId)) {
+                    selType = SelectionType::AMBIENT_LIGHT;
+                }
+
+                // Handle different selection modes
+                if (isCtrlPressed)
+                    selector.toggleSelection(uuid->get().uuid, entityId, selType);
+                else if (isShiftPressed)
+                    selector.addToSelection(uuid->get().uuid, entityId, selType);
                 else
-                    selector.setSelectionType(SelectionType::ENTITY);
+                    selector.selectEntity(uuid->get().uuid, entityId, selType);
+
+                // Update window state based on primary selection's transform mode
+                if (selector.hasSelection()) {
+                    if (m_currentGizmoOperation == ImGuizmo::OPERATION::TRANSLATE)
+                        m_windowState = m_gizmoTranslateState;
+                    else if (m_currentGizmoOperation == ImGuizmo::OPERATION::ROTATE)
+                        m_windowState = m_gizmoRotateState;
+                    else if (m_currentGizmoOperation == ImGuizmo::OPERATION::SCALE)
+                        m_windowState = m_gizmoScaleState;
+                    else
+                        m_windowState = m_gizmoState;
+                }
+
+                selector.setSelectedScene(m_sceneId);
             }
-            selector.setSelectedScene(m_sceneId);
         }
     }
 
