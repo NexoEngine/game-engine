@@ -120,6 +120,7 @@ namespace nexo::components {
         float mouseSensitivity = 0.1f;///< Sensitivity factor for mouse movement.
         float yaw = 0.0f;             ///< Yaw angle in degrees.
         float pitch = 0.0f;           ///< Pitch angle in degrees.
+        float translationSpeed = 5.0f; ///< Camera speed
     };
 
     /**
