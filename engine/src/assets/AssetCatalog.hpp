@@ -14,12 +14,16 @@
 
 #pragma once
 
+#include <memory>
+
 #include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
 #include "Asset.hpp"
 
 #include <unordered_map>
 #include <memory>
+
+#include "Assets/Texture/Texture.hpp"
 
 namespace nexo::assets {
 
@@ -133,7 +137,7 @@ namespace nexo::assets {
              */
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
-            [[nodiscard]] std::ranges::view auto getAssetsOfTypeView() const;
+            [[nodiscard]] decltype(auto) getAssetsOfTypeView() const;
 
             /**
              * @brief Registers an asset in the catalog.
@@ -158,15 +162,24 @@ namespace nexo::assets {
              *
              * @tparam AssetType The type of asset to create. Must be derived from IAsset.
              * @param location The asset's location metadata.
-             * @param data Optional data to load the asset. Default is nullptr.
+             * @param args Constructor arguments for the asset.
              * @return AssetRef<AssetType> A reference to the created and registered asset.
              */
+            template <typename AssetType, typename... Args>
+                requires std::derived_from<AssetType, IAsset>
+            AssetRef<AssetType> createAsset(const AssetLocation& location, Args&& ...args)
+            {
+                auto asset = new AssetType(std::forward<Args>(args)...);
+                auto assetRef = registerAsset(location, asset);
+                return assetRef.template as<AssetType>();
+            }
+
             template <typename AssetType>
                 requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> createAsset(const AssetLocation& location, void *data = nullptr)
+            AssetRef<AssetType> createAsset(const AssetLocation& location, typename AssetType::AssetDataType* assetData)
             {
                 auto asset = new AssetType();
-                asset->setRawData(data);
+                asset->setData(assetData);
                 auto assetRef = registerAsset(location, asset);
                 return assetRef.template as<AssetType>();
             }
@@ -190,7 +203,7 @@ namespace nexo::assets {
     }
 
     template<typename AssetType> requires std::derived_from<AssetType, IAsset>
-    std::ranges::view auto AssetCatalog::getAssetsOfTypeView() const
+    decltype(auto) AssetCatalog::getAssetsOfTypeView() const
     {
         // TODO: AssetType::TYPE is not a thing, need to find a way to get the type of the asset
         static_assert(true, "Filtering not implemented yet");

@@ -24,11 +24,14 @@ namespace nexo::editor::utils {
 
     static void addCameraProps(ecs::Entity entity)
     {
-        auto &app = getApp();
+        auto& app = getApp();
+        auto& catalog = assets::AssetCatalog::getInstance();
         nexo::components::Material billboardMat{};
         billboardMat.isOpaque = false;
-        static const std::shared_ptr<nexo::renderer::NxTexture2D> cameraIconTexture =
-            nexo::renderer::NxTexture2D::create(nexo::Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png").string());
+        static const assets::AssetRef<assets::Texture> cameraIconTexture = catalog.createAsset<assets::Texture>(
+            assets::AssetLocation("_internal::cameraIcon@_internal"),
+            Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png")
+        );
         billboardMat.albedoTexture = cameraIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
         auto billboard = std::make_shared<nexo::components::BillBoard>();
@@ -39,11 +42,14 @@ namespace nexo::editor::utils {
 
     static void addPointLightProps(ecs::Entity entity)
     {
-        auto &app = getApp();
+        auto& app = getApp();
+        auto& catalog = assets::AssetCatalog::getInstance();
         nexo::components::Material billboardMat{};
         billboardMat.isOpaque = false;
-        static const std::shared_ptr<renderer::NxTexture2D> pointLightIconTexture =
-            renderer::NxTexture2D::create(Path::resolvePathRelativeToExe("../resources/textures/pointLightIcon.png").string());
+        static const assets::AssetRef<assets::Texture> pointLightIconTexture = catalog.createAsset<assets::Texture>(
+            assets::AssetLocation("_internal::pointLightIcon@_internal"),
+            Path::resolvePathRelativeToExe("../resources/textures/pointLightIcon.png")
+        );
         billboardMat.albedoTexture = pointLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
         auto billboard = std::make_shared<nexo::components::BillBoard>();
@@ -54,11 +60,14 @@ namespace nexo::editor::utils {
 
     static void addSpotLightProps(ecs::Entity entity)
     {
-        auto &app = getApp();
+        auto& app = getApp();
+        auto& catalog = assets::AssetCatalog::getInstance();
         nexo::components::Material billboardMat{};
         billboardMat.isOpaque = false;
-        static const std::shared_ptr<renderer::NxTexture2D> spotLightIconTexture =
-            renderer::NxTexture2D::create(Path::resolvePathRelativeToExe("../resources/textures/spotLightIcon.png").string());
+        static const assets::AssetRef<assets::Texture> spotLightIconTexture = catalog.createAsset<assets::Texture>(
+            assets::AssetLocation("_internal::spotLightIcon@_internal"),
+            Path::resolvePathRelativeToExe("../resources/textures/spotLightIcon.png")
+        );
         billboardMat.albedoTexture = spotLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
         auto billboard = std::make_shared<nexo::components::BillBoard>();
