@@ -94,7 +94,7 @@ namespace nexo::renderer {
      * @struct NxFramebufferSpecs
      * @brief Represents the specifications for creating a framebuffer.
      *
-     * FramebufferSpecs encapsulates all the necessary properties for initializing a framebuffer,
+     * NxFramebufferSpecs encapsulates all the necessary properties for initializing a framebuffer,
      * including dimensions, attachments, sampling, and swap chain behavior.
      *
      * Members:
@@ -120,7 +120,7 @@ namespace nexo::renderer {
      *
      * A framebuffer is an off-screen rendering target that stores the results of
      * rendering operations. It can have multiple texture attachments, such as color,
-     * depth, and stencil buffers. The `Framebuffer` class provides an abstraction layer
+     * depth, and stencil buffers. The `NxFramebuffer` class provides an abstraction layer
      * for creating and managing framebuffers across different graphics APIs (e.g., OpenGL, Vulkan).
      *
      * Key Features:
@@ -131,7 +131,7 @@ namespace nexo::renderer {
      * - Resizable: The framebuffer can be resized dynamically to match the viewport dimensions.
      *
      * Usage:
-     * - The `Framebuffer` class is an abstract base class. Platform or API-specific
+     * - The `NxFramebuffer` class is an abstract base class. Platform or API-specific
      *   implementations (e.g., NxOpenGLFramebuffer) must inherit and implement the
      *   pure virtual methods.
      *
@@ -242,7 +242,7 @@ namespace nexo::renderer {
              * This method provides access to the framebuffer's specifications, including
              * dimensions, attachments, and sampling options.
              *
-             * @return A reference to the FramebufferSpecs struct.
+             * @return A reference to the NxFramebufferSpecs struct.
              */
             [[nodiscard]] virtual NxFramebufferSpecs &getSpecs() = 0;
 
@@ -251,7 +251,7 @@ namespace nexo::renderer {
             *
             * This method provides read-only access to the framebuffer's specifications.
             *
-            * @return A constant reference to the FramebufferSpecs struct.
+            * @return A constant reference to the NxFramebufferSpecs struct.
             */
             [[nodiscard]] virtual const NxFramebufferSpecs &getSpecs() const = 0;
             /**
@@ -279,7 +279,7 @@ namespace nexo::renderer {
              *
              * @param specs The specifications for creating the framebuffer, including dimensions,
              *              attachments, and sampling options.
-             * @return A shared pointer to the created Framebuffer instance.
+             * @return A shared pointer to the created NxFramebuffer instance.
              *
              * Throws:
              * - Implementation-specific exceptions if framebuffer creation fails.

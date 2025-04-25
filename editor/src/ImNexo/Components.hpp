@@ -58,10 +58,10 @@ namespace ImNexo {
     * the passed texture pointer is updated and the function returns true.
     *
     * @param label A unique label identifier for the button.
-    * @param texture A shared pointer to the renderer::Texture2D that holds the texture.
+    * @param texture A shared pointer to the renderer::NxTexture2D that holds the texture.
     * @return true if the texture was modified; false otherwise.
     */
-	bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::Texture2D> &texture);
+	bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::NxTexture2D> &texture);
 
     /**
      * @brief Creates a customizable gradient button with a centered icon.

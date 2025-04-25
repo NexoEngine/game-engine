@@ -71,18 +71,18 @@ namespace nexo::renderer {
         m_storage->shaderLibrary.load("Flat color", Path::resolvePathRelativeToExe(
             "../resources/shaders/flat_color.glsl").string());
         phong->bind();
-        phong->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        phong->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         phong->unbind();
         outlinePulseTransparentFlat->bind();
-        outlinePulseTransparentFlat->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        outlinePulseTransparentFlat->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         outlinePulseTransparentFlat->unbind();
         albedoUnshadedTransparent->bind();
-        albedoUnshadedTransparent->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        albedoUnshadedTransparent->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         albedoUnshadedTransparent->unbind();
 
         m_storage->textureSlots[0] = m_storage->whiteTexture;
 
-        LOG(NEXO_DEV, "Renderer3D initialized");
+        LOG(NEXO_DEV, "NxRenderer3D initialized");
     }
 
     void NxRenderer3D::shutdown()
@@ -162,7 +162,7 @@ namespace nexo::renderer {
 
     int NxRenderer3D::getTextureIndex(const std::shared_ptr<NxTexture2D> &texture) const
     {
-        int textureIndex = 0.0f;
+        int textureIndex = 0;
 
         if (!texture)
             return textureIndex;
