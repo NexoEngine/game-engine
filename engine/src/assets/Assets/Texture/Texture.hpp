@@ -31,6 +31,20 @@ namespace nexo::assets {
         public:
             Texture() = default;
 
+            /**
+             * @brief Constructs a Texture object from a file path.
+             *
+             * @param path The path to the texture file.
+             */
+            explicit Texture(const std::filesystem::path &path)
+                : Asset()
+            {
+                auto texture = renderer::NxTexture2D::create(path.string());
+                auto textureData = new TextureData();
+                textureData->texture = texture;
+                setData(textureData);
+            }
+
             ~Texture() override = default;
     };
 
