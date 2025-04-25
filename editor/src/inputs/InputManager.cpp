@@ -24,6 +24,8 @@ namespace nexo::editor {
     void InputManager::processInputs(const WindowState& windowState) {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
         std::bitset<ImGuiKey_NamedKey_COUNT> releasedSignature;
+        std::bitset<ImGuiKey_NamedKey_COUNT> repeatSignature;
+        std::bitset<ImGuiKey_NamedKey_COUNT> currentlyHeldKeys;
 
         static const std::set<ImGuiKey> excludedKeys = {
             ImGuiKey_MouseLeft,
@@ -35,22 +37,119 @@ namespace nexo::editor {
             ImGuiKey_MouseWheelY
         };
 
-        // -5 to avoid reserved mod key
+        // Track keys that were held down last frame
+        static std::bitset<ImGuiKey_NamedKey_COUNT> lastFrameHeldKeys;
+
+        // Track multiple-press detection
+        static std::vector<float> keyLastPressTime(ImGuiKey_NamedKey_COUNT, -1.0f);
+        static std::vector<int> keyPressCount(ImGuiKey_NamedKey_COUNT, 0);
+        const float multiPressThreshold = 0.3f; // Time threshold for multiple press detection (seconds)
+
+        float currentTime = ImGui::GetTime();
+
         for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_COUNT + ImGuiKey_NamedKey_BEGIN - 5; key++) {
             if (excludedKeys.contains(static_cast<ImGuiKey>(key)))
                 continue;
-            if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key)) || ImGui::IsKeyDown(static_cast<ImGuiKey>(key)))
-            {
-                pressedSignature.set(static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN));
-            }
-            if (ImGui::IsKeyReleased(static_cast<ImGuiKey>(key)))
-            {
-                releasedSignature.set(static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN));
+
+            ImGuiKey imKey = static_cast<ImGuiKey>(key);
+            size_t idx = static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN);
+
+            bool keyDown = ImGui::IsKeyDown(imKey);
+            bool keyPressed = ImGui::IsKeyPressed(imKey, false);
+
+            // Update currently held keys
+            if (keyDown) {
+                currentlyHeldKeys.set(idx);
+
+                // Handle key press detection
+                if (!lastFrameHeldKeys[idx]) {  // Key was just pressed this frame
+                    pressedSignature.set(idx);
+
+                    // Handle multiple press detection
+                    if (currentTime - keyLastPressTime[idx] < multiPressThreshold) {
+                        keyPressCount[idx]++;
+                        if (keyPressCount[idx] > 1) {
+                            repeatSignature.set(idx);
+                        }
+                    } else {
+                        keyPressCount[idx] = 1;
+                    }
+                    keyLastPressTime[idx] = currentTime;
+                }
+            } else {
+                // Key is not down
+                if (lastFrameHeldKeys[idx]) {
+                    // Key was just released
+                    releasedSignature.set(idx);
+                } else if (keyLastPressTime[idx] > 0 && currentTime - keyLastPressTime[idx] > multiPressThreshold) {
+                    // Too much time has passed since last press, reset the counter
+                    keyPressCount[idx] = 0;
+                }
             }
         }
 
-        // Process commands for the current window
-        processCommands(windowState.getCommands(), pressedSignature, releasedSignature);
+        // Get all commands to process
+        const auto& commands = windowState.getCommands();
+
+        // STEP 1: Find and process modifier/key combinations first
+        bool modifierCombinationProcessed = false;
+
+        for (const auto& command : commands) {
+            if (command.isModifier()) {
+                // Check if modifier is pressed
+                std::bitset<ImGuiKey_NamedKey_COUNT> modifierSignature = command.getSignature();
+                if ((modifierSignature & currentlyHeldKeys) == modifierSignature) {
+                    // This modifier is held down, now check its children
+                    for (const auto& childCmd : command.getChildren()) {
+                        // Find a key that was just pressed while the modifier is held
+                        std::bitset<ImGuiKey_NamedKey_COUNT> childSignature = childCmd.getSignature();
+                        if ((childSignature & pressedSignature).any()) {
+                            // We found a modifier+key combination! Execute it
+                            childCmd.executePressedCallback();
+                            modifierCombinationProcessed = true;
+                            std::cout << "Executed modifier combination! Mod: " << command.getKey()
+                                      << " + Key: " << childCmd.getKey() << std::endl;
+                            break; // Process only one modifier combination at a time
+                        }
+
+                        // Check for key releases while modifier is held
+                        if ((childSignature & releasedSignature).any()) {
+                            childCmd.executeReleasedCallback();
+                        }
+                    }
+
+                    if (modifierCombinationProcessed) {
+                        break; // Stop checking other modifiers once we've processed one
+                    }
+                }
+            }
+        }
+
+        // STEP 2: Only process regular commands if no modifier combination was processed
+        if (!modifierCombinationProcessed) {
+            for (const auto& command : commands) {
+                // Skip modifiers, we already handled them
+                if (command.isModifier()) continue;
+
+                // Handle pressed callbacks
+                if (command.exactMatch(pressedSignature)) {
+                    command.executePressedCallback();
+                }
+
+                // Handle released callbacks
+                if (command.exactMatch(releasedSignature)) {
+                    command.executeReleasedCallback();
+                }
+            }
+        }
+
+        // Process repeat commands
+        if (repeatSignature.any()) {
+            processRepeatCommands(windowState.getCommands(), repeatSignature, currentlyHeldKeys);
+        }
+
+        // Store current key state for next frame
+        lastFrameHeldKeys = currentlyHeldKeys;
     }
 
     void InputManager::processCommands(
@@ -58,36 +157,96 @@ namespace nexo::editor {
         const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
         const std::bitset<ImGuiKey_NamedKey_COUNT>& releasedSignature
     ) {
+        // First pass: Check for modifier keys and their children
         for (const auto& command : commands) {
-            // Handle pressed callbacks
+            // Only process modifiers in the first pass
+            if (!command.isModifier()) continue;
+
+            // Check if this modifier is currently pressed
+            if ((command.getSignature() & pressedSignature) == command.getSignature()) {
+                // Calculate remaining pressed keys after removing the modifier
+                auto remainingPressedBits = pressedSignature;
+                remainingPressedBits ^= command.getSignature();
+
+                // Process child commands with this modifier
+                bool childCommandExecuted = false;
+
+                for (const auto& child : command.getChildren()) {
+                    // Check if child exactly matches remaining bits (modifier+key combination)
+                    if (child.exactMatch(remainingPressedBits)) {
+                        // We found an exact match for a modifier+key combination
+                        child.executePressedCallback();
+                        childCommandExecuted = true;
+
+                        // Debugging
+                        std::cout << "Executed modifier child: " << child.getKey()
+                                  << " with modifier: " << command.getKey() << std::endl;
+                    }
+
+                    // Check for child key releases while modifier is held
+                    if (child.exactMatch(releasedSignature)) {
+                        child.executeReleasedCallback();
+                    }
+                }
+
+                // If we executed a child command, return early to prevent regular commands from executing
+                if (childCommandExecuted) {
+                    return;
+                }
+            }
+        }
+
+        // Second pass: Process regular commands if no modifier combinations were executed
+        for (const auto& command : commands) {
+            // Skip modifiers in the second pass
+            if (command.isModifier()) continue;
+
+            // Handle pressed callbacks for non-modifiers
             if (command.exactMatch(pressedSignature)) {
                 command.executePressedCallback();
             }
 
-            // Handle released callbacks
+            // Handle released callbacks for non-modifiers
             if (command.exactMatch(releasedSignature)) {
                 command.executeReleasedCallback();
             }
+        }
+    }
 
-            // Process child commands for partial matches
+    void InputManager::processRepeatCommands(
+        const std::span<const Command>& commands,
+        const std::bitset<ImGuiKey_NamedKey_COUNT>& repeatSignature,
+        const std::bitset<ImGuiKey_NamedKey_COUNT>& currentlyHeldKeys
+    ) {
+        for (const auto& command : commands) {
+            // If this is a non-modifier command that has a repeat key
+            if (command.exactMatch(repeatSignature)) {
+                command.executeRepeatCallback();
+            }
+
+            // Handle cases where a modifier is held and another key is repeating
             if (!command.getChildren().empty()) {
-                // Special case: When a modifier is held down and child keys are pressed/released
-                if (command.isModifier() && (command.getSignature() & pressedSignature) == command.getSignature()) {
-                    // The modifier is currently pressed
-                    auto remainingPressedBits = pressedSignature ^ command.getSignature();
+                // Special case for modifiers: if the modifier key is held and a child key is repeating
+                if (command.isModifier() && (command.getSignature() & currentlyHeldKeys) == command.getSignature()) {
+                    // Check if any child key is in the repeat signature
+                    for (const auto& child : command.getChildren()) {
+                        // If this child is directly repeating
+                        if ((child.getSignature() & repeatSignature) == child.getSignature() &&
+                            child.getSignature() != command.getSignature()) {
+                            child.executeRepeatCallback();
+                        }
+                    }
 
-                    // Process child commands with the remaining pressed bits and ALL released bits
-                    // This ensures child release events work while modifier is held
-                    processCommands(command.getChildren(), remainingPressedBits, releasedSignature);
+                    // Also check deeper in the hierarchy
+                    auto remainingBits = repeatSignature;
+                    processRepeatCommands(command.getChildren(), remainingBits, currentlyHeldKeys);
                 }
-                // Standard partial match cases
-                else if (command.partialMatch(pressedSignature)) {
-                    auto remainingPressedBits = pressedSignature ^ command.getSignature();
-                    processCommands(command.getChildren(), remainingPressedBits, releasedSignature);
-                }
-                else if (command.partialMatch(releasedSignature)) {
-                    auto remainingReleasedBits = releasedSignature ^ command.getSignature();
-                    processCommands(command.getChildren(), pressedSignature, remainingReleasedBits);
+                // Standard partial match handling
+                else if (command.partialMatch(repeatSignature)) {
+                    auto remainingBits = repeatSignature ^ command.getSignature();
+                    if (remainingBits.any()) {
+                        processRepeatCommands(command.getChildren(), remainingBits, currentlyHeldKeys);
+                    }
                 }
             }
         }
