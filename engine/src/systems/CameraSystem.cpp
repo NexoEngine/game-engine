@@ -83,7 +83,6 @@ namespace nexo::system {
 
 	    for (const ecs::Entity entity : entities)
 		{
-			constexpr float translationSpeed = 5.0f;
 			auto &sceneTag = getComponent<components::SceneTag>(entity);
 			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
 				continue;
@@ -91,25 +90,31 @@ namespace nexo::system {
 			if (!cameraComponent.active)
 				continue;
 			auto &transform = getComponent<components::TransformComponent>(entity);
+			auto &cameraController = getComponent<components::PerspectiveCameraController>(entity);
 
 			cameraComponent.resizing = false;
+
+            if (event::isKeyPressed(NEXO_KEY_SHIFT))
+                cameraController.translationSpeed = 10.0f;
+            if (event::isKeyReleased(NEXO_KEY_SHIFT))
+                cameraController.translationSpeed = 5.0f;
 
 			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 up    = transform.quat * glm::vec3(0.0f, 1.0f,  0.0f);
 			glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f,  0.0f);
 
 			if (event::isKeyPressed(NEXO_KEY_Z))
-				transform.pos += front * translationSpeed * deltaTime; // Forward
+				transform.pos += front * cameraController.translationSpeed * deltaTime; // Forward
 			if (event::isKeyPressed(NEXO_KEY_S))
-				transform.pos -= front * translationSpeed * deltaTime; // Backward
+				transform.pos -= front * cameraController.translationSpeed * deltaTime; // Backward
 			if (event::isKeyPressed(NEXO_KEY_Q))
-				transform.pos -= right * translationSpeed * deltaTime; // Left
+				transform.pos -= right * cameraController.translationSpeed * deltaTime; // Left
 			if (event::isKeyPressed(NEXO_KEY_D))
-				transform.pos += right * translationSpeed * deltaTime; // Right
+				transform.pos += right * cameraController.translationSpeed * deltaTime; // Right
 			if (event::isKeyPressed(NEXO_KEY_SPACE))
-				transform.pos += up * translationSpeed * deltaTime;    // Up
+				transform.pos += up * cameraController.translationSpeed * deltaTime;    // Up
 			if (event::isKeyPressed(NEXO_KEY_TAB))
-				transform.pos -= up * translationSpeed * deltaTime;    // Down
+				transform.pos -= up * cameraController.translationSpeed * deltaTime;    // Down
 		}
 	}
 
