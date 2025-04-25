@@ -94,9 +94,6 @@ namespace nexo::renderer {
         m_width = width;
         m_height = height;
 
-        GLenum internalFormat = 0;
-        GLenum dataFormat = 0;
-
         switch (channels) {
             [[likely]] case 4:
                 m_internalFormat = GL_RGBA8;
@@ -119,12 +116,9 @@ namespace nexo::renderer {
                 THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, debugPath);
         }
 
-        m_internalFormat = internalFormat;
-        m_dataFormat = dataFormat;
-
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(m_internalFormat), width, height, 0, m_dataFormat, GL_UNSIGNED_BYTE, data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

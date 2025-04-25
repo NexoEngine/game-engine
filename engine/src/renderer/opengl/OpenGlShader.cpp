@@ -210,7 +210,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat(const ShaderUniforms uniform, const float value) const
+    bool NxOpenGlShader::setUniformFloat(const NxShaderUniforms uniform, const float value) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
@@ -240,7 +240,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat3(const ShaderUniforms uniform, const glm::vec3 &values) const
+    bool NxOpenGlShader::setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
@@ -260,7 +260,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat4(const ShaderUniforms uniform, const glm::vec4 &values) const
+    bool NxOpenGlShader::setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
@@ -280,7 +280,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformMatrix(const ShaderUniforms uniform, const glm::mat4 &matrix) const
+    bool NxOpenGlShader::setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
@@ -310,7 +310,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformInt(const ShaderUniforms uniform, const int value) const
+    bool NxOpenGlShader::setUniformInt(const NxShaderUniforms uniform, const int value) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)
@@ -330,7 +330,7 @@ namespace nexo::renderer {
         return true;
     }
 
-    bool NxOpenGlShader::setUniformIntArray(const ShaderUniforms uniform, const int *values, const unsigned int count) const
+    bool NxOpenGlShader::setUniformIntArray(const NxShaderUniforms uniform, const int *values, const unsigned int count) const
     {
         const int loc = m_uniformLocations.at(uniform);
         if (loc == -1)

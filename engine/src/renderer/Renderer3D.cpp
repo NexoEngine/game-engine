@@ -71,13 +71,13 @@ namespace nexo::renderer {
         m_storage->shaderLibrary.load("Flat color", Path::resolvePathRelativeToExe(
             "../resources/shaders/flat_color.glsl").string());
         phong->bind();
-        phong->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
+        phong->setUniformIntArray(NxShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         phong->unbind();
         outlinePulseTransparentFlat->bind();
-        outlinePulseTransparentFlat->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
+        outlinePulseTransparentFlat->setUniformIntArray(NxShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         outlinePulseTransparentFlat->unbind();
         albedoUnshadedTransparent->bind();
-        albedoUnshadedTransparent->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
+        albedoUnshadedTransparent->setUniformIntArray(NxShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         albedoUnshadedTransparent->unbind();
 
         m_storage->textureSlots[0] = m_storage->whiteTexture;
