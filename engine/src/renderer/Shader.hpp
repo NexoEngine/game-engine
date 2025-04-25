@@ -23,7 +23,7 @@
 
 namespace nexo::renderer {
 
-    enum class ShaderUniforms {
+    enum class NxShaderUniforms {
         VIEW_PROJECTION,
         MODEL_MATRIX,
         CAMERA_POSITION,
@@ -40,18 +40,18 @@ namespace nexo::renderer {
         MATERIAL
     };
 
-    inline const std::unordered_map<ShaderUniforms, std::string> ShaderUniformsName = {
-        {ShaderUniforms::VIEW_PROJECTION, "uViewProjection"},
-        {ShaderUniforms::MODEL_MATRIX, "uMatModel"},
-        {ShaderUniforms::CAMERA_POSITION, "uCamPos"},
-        {ShaderUniforms::TEXTURE_SAMPLER, "uTexture"},
-        {ShaderUniforms::DIR_LIGHT, "uDirLight"},
-        {ShaderUniforms::AMBIENT_LIGHT, "uAmbientLight"},
-        {ShaderUniforms::POINT_LIGHT_ARRAY, "uPointLights"},
-        {ShaderUniforms::NB_POINT_LIGHT, "uNbPointLights"},
-        {ShaderUniforms::SPOT_LIGHT_ARRAY, "uSpotLights"},
-        {ShaderUniforms::NB_SPOT_LIGHT, "uNbSpotLights"},
-        {ShaderUniforms::MATERIAL, "uMaterial"}
+    inline const std::unordered_map<NxShaderUniforms, std::string> ShaderUniformsName = {
+        {NxShaderUniforms::VIEW_PROJECTION, "uViewProjection"},
+        {NxShaderUniforms::MODEL_MATRIX, "uMatModel"},
+        {NxShaderUniforms::CAMERA_POSITION, "uCamPos"},
+        {NxShaderUniforms::TEXTURE_SAMPLER, "uTexture"},
+        {NxShaderUniforms::DIR_LIGHT, "uDirLight"},
+        {NxShaderUniforms::AMBIENT_LIGHT, "uAmbientLight"},
+        {NxShaderUniforms::POINT_LIGHT_ARRAY, "uPointLights"},
+        {NxShaderUniforms::NB_POINT_LIGHT, "uNbPointLights"},
+        {NxShaderUniforms::SPOT_LIGHT_ARRAY, "uSpotLights"},
+        {NxShaderUniforms::NB_SPOT_LIGHT, "uNbSpotLights"},
+        {NxShaderUniforms::MATERIAL, "uMaterial"}
     };
 
     /**
@@ -138,12 +138,12 @@ namespace nexo::renderer {
             virtual bool setUniformInt(const std::string &name, int value) const = 0;
             virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
-            virtual bool setUniformFloat(const ShaderUniforms uniform, const float value) const = 0;
-            virtual bool setUniformFloat3(const ShaderUniforms uniform, const glm::vec3 &values) const = 0;
-            virtual bool setUniformFloat4(const ShaderUniforms uniform, const glm::vec4 &values) const = 0;
-            virtual bool setUniformMatrix(const ShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
-            virtual bool setUniformInt(const ShaderUniforms uniform, int value) const = 0;
-            virtual bool setUniformIntArray(const ShaderUniforms uniform, const int *values, unsigned int count) const = 0;
+            virtual bool setUniformFloat(const NxShaderUniforms uniform, const float value) const = 0;
+            virtual bool setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
+            virtual bool setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const = 0;
+            virtual bool setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformInt(const NxShaderUniforms uniform, int value) const = 0;
+            virtual bool setUniformIntArray(const NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
             void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
@@ -156,7 +156,7 @@ namespace nexo::renderer {
         protected:
             static std::string readFile(const std::string &filepath);
         	std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
-            std::unordered_map<ShaderUniforms, int> m_uniformLocations;
+            std::unordered_map<NxShaderUniforms, int> m_uniformLocations;
     };
 
 
