@@ -58,6 +58,7 @@ namespace nexo::editor {
                 "Shift",
                 nullptr,
                 nullptr,
+                nullptr,
                 true,
                 {
                     {
@@ -66,6 +67,7 @@ namespace nexo::editor {
                         [this]{
                             this->m_popupManager.openPopup("Add new entity popup");
                         },
+                        nullptr,
                         nullptr,
                         false,
                     }
@@ -79,6 +81,7 @@ namespace nexo::editor {
                 [this]{
                     LOG(NEXO_WARN, "Select all not implemented yet");
                 },
+                nullptr,
                 nullptr,
                 false
             }
@@ -100,6 +103,7 @@ namespace nexo::editor {
                         this->m_windowState = m_globalState;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -111,6 +115,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 nullptr,
                 false,
             }
@@ -124,6 +129,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -136,6 +142,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -143,6 +150,7 @@ namespace nexo::editor {
             {
                 "Shift context",
                 "Shift",
+                nullptr,
                 nullptr,
                 nullptr,
                 true,
@@ -158,6 +166,7 @@ namespace nexo::editor {
                             m_snapTranslateOn = false;
                             m_snapRotateOn = false;
                         },
+                        nullptr,
                         false,
                     }
                 }
@@ -175,6 +184,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -187,6 +197,12 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
                 nullptr,
+                [this]{
+                    if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
+                        this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
+                    else
+                        this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
+                },
                 false,
             }
         );
@@ -198,6 +214,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 nullptr,
                 false,
             }
@@ -211,6 +228,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -220,8 +238,45 @@ namespace nexo::editor {
                 "Shift",
                 nullptr,
                 nullptr,
+                nullptr,
                 true,
                 {
+                    {
+                        "Exclude X",
+                        "X",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_X);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_X);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Y",
+                        "Y",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Y);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Y);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Z",
+                        "Z",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Z);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Z);
+                        },
+                        nullptr,
+                        false,
+                    },
                     {
                         "Toggle snapping",
                         "S",
@@ -231,6 +286,7 @@ namespace nexo::editor {
                         [this]{
                             m_snapTranslateOn = false;
                         },
+                        nullptr,
                         false,
                     }
                 }
@@ -246,6 +302,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -259,6 +316,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -272,6 +330,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -287,6 +346,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -297,8 +357,14 @@ namespace nexo::editor {
                 [this]{
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
+                }, // << Key pressed
+                nullptr, // << Key released
+                [this]{
+                    if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
+                        this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
+                    else
+                        this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
+                }, // << Key repeat
                 false,
             }
         );
@@ -310,6 +376,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 nullptr,
                 false,
             }
@@ -323,6 +390,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -332,8 +400,45 @@ namespace nexo::editor {
                 "Shift",
                 nullptr,
                 nullptr,
+                nullptr,
                 true,
                 {
+                    {
+                        "Exclude X",
+                        "X",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_X);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_X);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Y",
+                        "Y",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Y);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_Y);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Z",
+                        "Z",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Z);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_Z);
+                        },
+                        nullptr,
+                        false,
+                    },
                     {
                         "Toggle snapping",
                         "S",
@@ -343,8 +448,9 @@ namespace nexo::editor {
                         [this]{
                             m_snapRotateOn = false;
                         },
+                        nullptr,
                         false,
-                    }
+                    },
                 }
             }
         );
@@ -358,6 +464,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -371,6 +478,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -384,6 +492,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -399,6 +508,7 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
                 },
                 nullptr,
+                nullptr,
                 false,
             }
         );
@@ -411,6 +521,12 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
                 nullptr,
+                [this]{
+                    if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
+                        this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
+                    else
+                        this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
+                },
                 false,
             }
         );
@@ -422,6 +538,7 @@ namespace nexo::editor {
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
                 },
+                nullptr,
                 nullptr,
                 false,
             }
@@ -435,7 +552,56 @@ namespace nexo::editor {
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
                 },
                 nullptr,
+                nullptr,
                 false,
+            }
+        );
+        m_gizmoScaleState.registerCommand(
+            {
+                "Shift context",
+                "Shift",
+                nullptr,
+                nullptr,
+                nullptr,
+                true,
+                {
+                    {
+                        "Exclude X",
+                        "X",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_X);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_X);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Y",
+                        "Y",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Y);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Y);
+                        },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Exclude Z",
+                        "Z",
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Z);
+                        },
+                        [this]{
+                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Z);
+                        },
+                        nullptr,
+                        false,
+                    }
+                }
             }
         );
         m_gizmoScaleState.registerCommand(
@@ -448,6 +614,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -461,6 +628,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
                 false,
             }
         );
@@ -474,6 +642,7 @@ namespace nexo::editor {
                 [this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
                 },
+                nullptr,
                 false,
             }
         );
