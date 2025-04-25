@@ -27,6 +27,7 @@
 #include "Texture.hpp"
 #include "WindowRegistry.hpp"
 #include "components/Camera.hpp"
+#include "components/Render.hpp"
 #include "components/RenderContext.hpp"
 #include "components/Uuid.hpp"
 #include "components/Editor.hpp"
@@ -66,6 +67,35 @@ namespace nexo::editor {
                         "A",
                         [this]{
                             this->m_popupManager.openPopup("Add new entity popup");
+                        },
+                        nullptr,
+                        nullptr,
+                        false,
+                    }
+                }
+            }
+        );
+        m_globalState.registerCommand(
+            {
+                "Control context",
+                "Ctrl",
+                nullptr,
+                nullptr,
+                nullptr,
+                true,
+                {
+                    {
+                        "Unhide all",
+                        "H",
+                        [this]{
+                            auto &app = getApp();
+                            const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
+                            for (const auto entity : entities) {
+                                if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                                    auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                                    renderComponent.isRendered = true;
+                                }
+                            }
                         },
                         nullptr,
                         nullptr,
@@ -116,6 +146,28 @@ namespace nexo::editor {
                         app.deleteEntity(entity);
                     selector.clearSelection();
                     this->m_windowState = m_globalState;
+                },
+                nullptr,
+                nullptr,
+                false,
+            }
+        );
+        m_gizmoState.registerCommand(
+            {
+                "Hide",
+                "H",
+                [this]{
+                    auto &selector = Selector::get();
+                    const auto &selectedEntities = selector.getSelectedEntities();
+                    auto &app = nexo::getApp();
+
+                    for (const auto entity : selectedEntities) {
+                        if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                            auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                            renderComponent.isRendered = !renderComponent.isRendered;
+                        }
+                    }
+                    selector.clearSelection();
                 },
                 nullptr,
                 nullptr,
@@ -181,6 +233,24 @@ namespace nexo::editor {
                             m_snapTranslateOn = false;
                             m_snapRotateOn = false;
                         },
+                        nullptr,
+                        false,
+                    },
+                    {
+                        "Hide all but selection",
+                        "H",
+                        [this]{
+                            auto &app = getApp();
+                            const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
+                            auto &selector = Selector::get();
+                            for (const auto entity : entities) {
+                                if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity) && !selector.isEntitySelected(entity)) {
+                                    auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                                    renderComponent.isRendered = false;
+                                }
+                            }
+                        },
+                        nullptr,
                         nullptr,
                         false,
                     }
