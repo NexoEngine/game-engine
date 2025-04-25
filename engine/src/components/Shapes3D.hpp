@@ -145,7 +145,7 @@ namespace nexo::components {
     };
 
     struct BillBoard final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
             renderer3D.drawBillboard(transf.pos, transf.size, material, entityID);

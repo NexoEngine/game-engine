@@ -84,7 +84,7 @@ namespace nexo::renderer {
     void NxOpenGlRendererApi::setDepthTest(bool enable)
     {
         if (!m_initialized)
-            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (enable)
             glEnable(GL_DEPTH_TEST);
         else
@@ -94,14 +94,14 @@ namespace nexo::renderer {
     void NxOpenGlRendererApi::setDepthFunc(unsigned int func)
     {
         if (!m_initialized)
-            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glDepthFunc(func);
     }
 
     void NxOpenGlRendererApi::setDepthMask(bool enable)
     {
         if (!m_initialized)
-            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (enable)
             glDepthMask(GL_TRUE);
         else
@@ -149,10 +149,10 @@ namespace nexo::renderer {
         glStencilFunc(func, ref, mask);
     }
 
-    void OpenGlRendererApi::setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass)
+    void NxOpenGlRendererApi::setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass)
     {
         if (!m_initialized)
-            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glStencilOp(sfail, dpfail, dppass);
     }
 }

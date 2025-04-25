@@ -59,9 +59,9 @@ namespace nexo::system {
         auto quadVB = renderer::createVertexBuffer(sizeof(quadVertices));
         quadVB->setData(quadVertices, sizeof(quadVertices));
 
-        renderer::BufferLayout quadLayout = {
-            {renderer::ShaderDataType::FLOAT3, "aPosition"},
-            {renderer::ShaderDataType::FLOAT2, "aTexCoord"}
+        renderer::NxBufferLayout quadLayout = {
+            {renderer::NxShaderDataType::FLOAT3, "aPosition"},
+            {renderer::NxShaderDataType::FLOAT2, "aTexCoord"}
         };
 
         quadVB->setLayout(quadLayout);
@@ -83,9 +83,9 @@ namespace nexo::system {
     *  - pointLights (and pointLightCount)
     *  - spotLights (and spotLightCount)
     */
-    void RenderSystem::setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext)
+    void RenderSystem::setupLights(const std::shared_ptr<renderer::NxShader>& shader, const components::LightContext& lightContext)
     {
-        static std::shared_ptr<renderer::Shader> lastShader = nullptr;
+        static std::shared_ptr<renderer::NxShader> lastShader = nullptr;
         if (lastShader == shader)
             return;
         lastShader = shader;
@@ -163,11 +163,11 @@ namespace nexo::system {
         gridShader->setUniformFloat3("uMouseWorldPos", mouseWorldPos);
         gridShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
 
-        renderer::RenderCommand::setDepthMask(false);
+        renderer::NxRenderCommand::setDepthMask(false);
         glDisable(GL_CULL_FACE);
-        renderer::RenderCommand::drawUnIndexed(6);
+        renderer::NxRenderCommand::drawUnIndexed(6);
         gridShader->unbind();
-        renderer::RenderCommand::setDepthMask(true);
+        renderer::NxRenderCommand::setDepthMask(true);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
     }
@@ -188,8 +188,8 @@ namespace nexo::system {
 
         // Step 2: Render selected object to mask texture
         m_maskFramebuffer->bind();
-        renderer::RenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});
-        renderer::RenderCommand::clear();
+        renderer::NxRenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});
+        renderer::NxRenderCommand::clear();
         const auto &material = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable)->material;
 
 
@@ -198,7 +198,7 @@ namespace nexo::system {
             maskShaderName = "Albedo unshaded transparent";
 
         renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, maskShaderName);
-        auto context = std::make_shared<renderer::RendererContext>();
+        auto context = std::make_shared<renderer::NxRendererContext>();
         context->renderer3D = renderContext.renderer3D;
         renderComponent.draw(context, transformComponent);
         renderContext.renderer3D.endScene();
@@ -209,7 +209,7 @@ namespace nexo::system {
             camera.renderTarget->bind();
 
         // Step 3: Draw full-screen quad with outline post-process shader
-        renderer::RenderCommand::setDepthMask(false);
+        renderer::NxRenderCommand::setDepthMask(false);
         renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Outline pulse flat");
         auto outlineShader = renderContext.renderer3D.getShader();
         outlineShader->bind();
@@ -222,12 +222,12 @@ namespace nexo::system {
         outlineShader->setUniformFloat("uOutlineWidth", 10.0f);
 
         m_fullscreenQuad->bind();
-        renderer::RenderCommand::drawUnIndexed(6);
+        renderer::NxRenderCommand::drawUnIndexed(6);
         m_fullscreenQuad->unbind();
         renderContext.renderer3D.endScene();
 
         outlineShader->unbind();
-        renderer::RenderCommand::setDepthMask(true);
+        renderer::NxRenderCommand::setDepthMask(true);
     }
 
 	void RenderSystem::update()
