@@ -1,4 +1,3 @@
-//// SceneTreeWindow.cpp //////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -105,11 +104,19 @@ namespace nexo::editor {
         const bool nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), baseFlags);
         if (!nodeOpen)
             return nodeOpen;
+
         if (ImGui::IsItemClicked())
         {
             auto &selector = Selector::get();
-            selector.setSelectedEntity(obj.uuid, obj.data.entity);
-            selector.setSelectionType(obj.type);
+            bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
+            bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+
+            if (isCtrlPressed)
+                selector.toggleSelection(obj.uuid, obj.data.entity, obj.type);
+            else if (isShiftPressed)
+                selector.addToSelection(obj.uuid, obj.data.entity, obj.type);
+            else
+                selector.selectEntity(obj.uuid, obj.data.entity, obj.type);
             selector.setSelectedScene(obj.data.sceneProperties.sceneId);
         }
         return nodeOpen;
@@ -120,7 +127,7 @@ namespace nexo::editor {
         if (ImGui::MenuItem("Delete Scene")) {
             auto &app = Application::getInstance();
             auto &selector = Selector::get();
-            selector.unselectEntity();
+            selector.clearSelection();
             const std::string &sceneName = selector.getUiHandle(obj.uuid, obj.uiName);
             m_windowRegistry.unregisterWindow<EditorScene>(sceneName);
             app.getSceneManager().deleteScene(obj.data.sceneProperties.sceneId);
@@ -187,10 +194,28 @@ namespace nexo::editor {
     {
         auto &app = Application::getInstance();
         auto &selector = Selector::get();
-        if (ImGui::MenuItem("Delete Light"))
+
+        // Check if we're operating on a single item or multiple items
+        const auto& selectedEntities = selector.getSelectedEntities();
+        bool multipleSelected = selectedEntities.size() > 1;
+
+        std::string menuText = multipleSelected ?
+            "Delete Selected Lights (" + std::to_string(selectedEntities.size()) + ")" :
+            "Delete Light";
+
+        if (ImGui::MenuItem(menuText.c_str()))
         {
-        	selector.unselectEntity();
-        	app.deleteEntity(obj.data.entity);
+            if (multipleSelected) {
+                // Delete all selected lights
+                for (const auto& entityId : selectedEntities) {
+                    app.deleteEntity(entityId);
+                }
+                selector.clearSelection();
+            } else {
+                // Delete just this light
+                selector.clearSelection();
+                app.deleteEntity(obj.data.entity);
+            }
         }
     }
 
@@ -218,16 +243,34 @@ namespace nexo::editor {
 
     void SceneTreeWindow::cameraSelected(const SceneObject &obj) const
     {
-    	auto &app = Application::getInstance();
-    	auto &selector = Selector::get();
-        if (ImGui::MenuItem("Delete Camera"))
+        auto &app = Application::getInstance();
+        auto &selector = Selector::get();
+
+        // Check if we're operating on a single item or multiple items
+        const auto& selectedEntities = selector.getSelectedEntities();
+        bool multipleSelected = selectedEntities.size() > 1;
+
+        std::string deleteMenuText = multipleSelected ?
+            "Delete Selected Cameras (" + std::to_string(selectedEntities.size()) + ")" :
+            "Delete Camera";
+
+        if (ImGui::MenuItem(deleteMenuText.c_str()))
         {
-         	const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
-        	selector.unselectEntity();
-        	app.deleteEntity(obj.data.entity);
+            if (multipleSelected) {
+                // Delete all selected cameras
+                for (const auto& entityId : selectedEntities) {
+                    app.deleteEntity(entityId);
+                }
+                selector.clearSelection();
+            } else {
+                // Delete just this camera
+                selector.clearSelection();
+                app.deleteEntity(obj.data.entity);
+            }
         }
 
-        if (ImGui::MenuItem("Switch to"))
+        // Switch to camera only makes sense for a single camera
+        if (!multipleSelected && ImGui::MenuItem("Switch to"))
         {
             auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
             cameraComponent.render = true;
@@ -244,12 +287,30 @@ namespace nexo::editor {
 
     void SceneTreeWindow::entitySelected(const SceneObject &obj) const
     {
-        if (ImGui::MenuItem("Delete Entity"))
+        auto &selector = Selector::get();
+        auto &app = nexo::getApp();
+
+        // Check if we're operating on a single item or multiple items
+        const auto& selectedEntities = selector.getSelectedEntities();
+        bool multipleSelected = selectedEntities.size() > 1;
+
+        std::string menuText = multipleSelected ?
+            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
+            "Delete Entity";
+
+        if (ImGui::MenuItem(menuText.c_str()))
         {
-        	auto &selector = Selector::get();
-         	selector.unselectEntity();
-            auto &app = nexo::getApp();
-            app.deleteEntity(obj.data.entity);
+            if (multipleSelected) {
+                // Delete all selected entities
+                for (const auto& entityId : selectedEntities) {
+                    app.deleteEntity(entityId);
+                }
+                selector.clearSelection();
+            } else {
+                // Delete just this entity
+                selector.clearSelection();
+                app.deleteEntity(obj.data.entity);
+            }
         }
     }
 
@@ -262,8 +323,11 @@ namespace nexo::editor {
         if (leaf)
             baseFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
-        // Checks if the object is selected
-        if (auto const &selector = Selector::get(); selector.isEntitySelected() && object.uuid == selector.getSelectedUuid())
+        // Check if this object is selected
+        auto const &selector = Selector::get();
+        bool isSelected = selector.isEntitySelected(object.data.entity);
+
+        if (isSelected)
             baseFlags |= ImGuiTreeNodeFlags_Selected;
 
         bool nodeOpen = false;
@@ -280,12 +344,14 @@ namespace nexo::editor {
         // Handles the right click on each different type of object
         if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
         {
-            // Renaming works on every object excepts entities and cameras
-            if (ImGui::MenuItem("Rename"))
+            // Only show rename option for the primary selected entity or for non-selected entities
+            if ((!isSelected || (isSelected && selector.getPrimaryEntity() == object.data.entity)) &&
+                ImGui::MenuItem("Rename"))
             {
                 m_renameTarget = {object.type, object.uuid};
                 m_renameBuffer = object.uiName;
             }
+
             if (object.type == SelectionType::SCENE)
                 sceneSelected(object);
             else if (object.type == SelectionType::DIR_LIGHT || object.type == SelectionType::POINT_LIGHT || object.type == SelectionType::SPOT_LIGHT)
@@ -422,23 +488,57 @@ namespace nexo::editor {
 
         if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
         {
-	        firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
+            firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
+
+            auto &selector = Selector::get();
+            bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+
+            // Ctrl+A to select all entities in current scene
+            if (isCtrlPressed && ImGui::IsKeyPressed(ImGuiKey_A) && ImGui::IsWindowFocused()) {
+                // Get current scene ID
+                int currentSceneId = selector.getSelectedScene();
+                if (currentSceneId != -1) {
+                    auto &app = nexo::getApp();
+                    auto &scene = app.getSceneManager().getScene(currentSceneId);
+
+                    selector.clearSelection();
+
+                    // Add all entities in the scene to selection
+                    for (const auto entity : scene.getEntities()) {
+                        const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+                        if (uuidComponent) {
+                            selector.addToSelection(uuidComponent->get().uuid, entity);
+                        }
+                    }
+                }
+            }
+
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
-                    ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
+                    ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered()) {
                 m_popupManager.openPopup("Scene Tree Context Menu");
+            }
+
+            // Display multi-selection count at top of window if applicable
+            const auto& selectedEntities = selector.getSelectedEntities();
+            if (selectedEntities.size() > 1) {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
+                ImGui::Text("%zu entities selected", selectedEntities.size());
+                ImGui::PopStyleColor();
+                ImGui::Separator();
+            }
+
             if (!root_.children.empty()) {
                 for (auto &node : root_.children)
                     showNode(node);
             }
             sceneContextMenu();
             sceneCreationMenu();
-
-
         }
         ImGui::End();
     }
 
+    // Node creation methods
     SceneObject SceneTreeWindow::newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const
     {
         SceneObject sceneNode;
@@ -455,53 +555,53 @@ namespace nexo::editor {
 
     void SceneTreeWindow::newLightNode(SceneObject &lightNode, const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity, const std::string &uiName) const
     {
-      	const SceneProperties sceneProperties{sceneId, uiId};
-       	lightNode.data.sceneProperties = sceneProperties;
+        const SceneProperties sceneProperties{sceneId, uiId};
+        lightNode.data.sceneProperties = sceneProperties;
         lightNode.data.entity = lightEntity;
         auto &selector = Selector::get();
         const auto entityUuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(lightEntity);
         if (entityUuid)
         {
-       		lightNode.uuid = entityUuid->get().uuid;
-         	lightNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
+            lightNode.uuid = entityUuid->get().uuid;
+            lightNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
         } else
-        	lightNode.uiName = uiName;
+            lightNode.uiName = uiName;
     }
 
     SceneObject SceneTreeWindow::newAmbientLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity) const
     {
-    	SceneObject lightNode;
-    	lightNode.type = SelectionType::AMBIENT_LIGHT;
+        SceneObject lightNode;
+        lightNode.type = SelectionType::AMBIENT_LIGHT;
         const std::string uiName = std::format("{}Ambient light ", ObjectTypeToIcon.at(lightNode.type));
-      	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
-       	return lightNode;
+        newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
+        return lightNode;
     }
 
     SceneObject SceneTreeWindow::newDirectionalLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity)
     {
-   		SceneObject lightNode;
-   		lightNode.type = SelectionType::DIR_LIGHT;
+        SceneObject lightNode;
+        lightNode.type = SelectionType::DIR_LIGHT;
         const std::string uiName = std::format("{}Directional light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbDirLights);
-      	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
-       	return lightNode;
+        newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
+        return lightNode;
     }
 
     SceneObject SceneTreeWindow::newSpotLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity)
     {
-  		SceneObject lightNode;
-  		lightNode.type = SelectionType::SPOT_LIGHT;
-    	const std::string uiName = std::format("{}Spot light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbSpotLights);
-     	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
-      	return lightNode;
+        SceneObject lightNode;
+        lightNode.type = SelectionType::SPOT_LIGHT;
+        const std::string uiName = std::format("{}Spot light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbSpotLights);
+        newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
+        return lightNode;
     }
 
     SceneObject SceneTreeWindow::newPointLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity)
     {
-  		SceneObject lightNode;
-  		lightNode.type = SelectionType::POINT_LIGHT;
-    	const std::string uiName = std::format("{}Point light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbPointLights);
-     	newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
-      	return lightNode;
+        SceneObject lightNode;
+        lightNode.type = SelectionType::POINT_LIGHT;
+        const std::string uiName = std::format("{}Point light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbPointLights);
+        newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
+        return lightNode;
     }
 
     SceneObject SceneTreeWindow::newCameraNode(const scene::SceneId sceneId, const WindowId uiId,
@@ -517,17 +617,17 @@ namespace nexo::editor {
         const auto entityUuid = nexo::Application::m_coordinator->tryGetComponent<components::UuidComponent>(cameraEntity);
         if (entityUuid)
         {
-       		cameraNode.uuid = entityUuid->get().uuid;
-         	cameraNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
+            cameraNode.uuid = entityUuid->get().uuid;
+            cameraNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
         } else
-        	cameraNode.uiName = uiName;
+            cameraNode.uiName = uiName;
         return cameraNode;
     }
 
     SceneObject SceneTreeWindow::newEntityNode(const scene::SceneId sceneId, const WindowId uiId,
                                                const ecs::Entity entity) const
     {
-     	auto &selector = Selector::get();
+        auto &selector = Selector::get();
         SceneObject entityNode;
         const std::string uiName = std::format("{}{}", ObjectTypeToIcon.at(SelectionType::ENTITY), entity);
         entityNode.type = SelectionType::ENTITY;
@@ -536,11 +636,11 @@ namespace nexo::editor {
         const auto entityUuid = nexo::Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
         if (entityUuid)
         {
-       		entityNode.uuid = entityUuid->get().uuid;
-         	entityNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
+            entityNode.uuid = entityUuid->get().uuid;
+            entityNode.uiName = selector.getUiHandle(entityUuid->get().uuid, uiName);
         }
         else
-        	entityNode.uiName = uiName;
+            entityNode.uiName = uiName;
         return entityNode;
     }
 
@@ -559,33 +659,33 @@ namespace nexo::editor {
         std::map<scene::SceneId, SceneObject> sceneNodes;
         for (const auto &scene : scenes)
         {
-        	sceneNodes[scene->getSceneId()] = newSceneNode(scene->getWindowName(), scene->getSceneId(), windowId);
+            sceneNodes[scene->getSceneId()] = newSceneNode(scene->getWindowName(), scene->getSceneId(), windowId);
         }
 
         generateNodes<components::AmbientLightComponent, components::SceneTag>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newAmbientLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::DirectionalLightComponent, components::SceneTag>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newDirectionalLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::PointLightComponent, components::SceneTag>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newPointLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::SpotLightComponent, components::SceneTag>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newSpotLightNode(sceneId, uiId, entity);
          });
 
         generateNodes<components::CameraComponent, components::SceneTag, ecs::Exclude<components::EditorCameraTag>>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newCameraNode(sceneId, uiId, entity);
          });
 
@@ -596,14 +696,14 @@ namespace nexo::editor {
         ecs::Exclude<components::CameraComponent>,
         ecs::Exclude<components::SpotLightComponent>,
         ecs::Exclude<components::PointLightComponent>>(
-        	sceneNodes,
-    	    [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes,
+            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return this->newEntityNode(sceneId, uiId, entity);
          });
 
         for (const auto &[_, sceneNode] : sceneNodes)
         {
-        	root_.children.push_back(sceneNode);
+            root_.children.push_back(sceneNode);
         }
     }
 }

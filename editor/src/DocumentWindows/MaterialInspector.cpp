@@ -86,7 +86,7 @@ namespace nexo::editor {
 	void MaterialInspector::show()
 	{
   		auto const &selector = Selector::get();
-        const int selectedEntity = selector.getSelectedEntity();
+        const int selectedEntity = selector.getPrimaryEntity();
         auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
         if (!inspectorWindow)
             return;

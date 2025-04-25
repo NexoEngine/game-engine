@@ -17,78 +17,164 @@
 #include "components/Editor.hpp"
 
 namespace nexo::editor {
-	int Selector::getSelectedEntity() const
-	{
-		return m_selectedEntity;
-	}
 
-	const std::string &Selector::getSelectedUuid() const
-	{
-		return m_selectedUuid;
-	}
-
-	void Selector::setSelectedEntity(std::string_view uuid, const int entity)
-	{
-    	if (m_selectionType != SelectionType::NONE && m_selectionType != SelectionType::SCENE)
-    	{
-        	Application::m_coordinator->removeComponent<components::SelectedTag>(m_selectedEntity);
-    	}
-		m_selectedUuid = uuid;
-		m_selectedEntity = entity;
-        components::SelectedTag selectTag{};
-        Application::m_coordinator->addComponent(m_selectedEntity, selectTag);
-	}
-
-	void Selector::setSelectedScene(int scene)
-	{
-		m_selectedScene = scene;
-	}
-
-	int Selector::getSelectedScene() const
-	{
-		return m_selectedScene;
-	}
-
-    void Selector::unselectEntity()
+    int Selector::getPrimaryEntity() const
     {
-        if (m_selectionType != SelectionType::NONE && m_selectionType != SelectionType::SCENE)
-        {
-            Application::m_coordinator->removeComponent<components::SelectedTag>(m_selectedEntity);
+        if (m_selectedEntities.empty()) {
+            return -1;
         }
-        m_selectionType = SelectionType::NONE;
-        m_selectedEntity = -1;
-        m_selectedUuid = "";
+        return m_selectedEntities.front().entityId; // First entity is the primary
     }
 
-	SelectionType Selector::getSelectionType() const
-	{
-		return m_selectionType;
-	}
+    const std::vector<int>& Selector::getSelectedEntities() const
+    {
+        static std::vector<int> entityIds;
+        entityIds.clear();
 
-	void Selector::setSelectionType(SelectionType type)
-	{
-		m_selectionType = type;
-	}
+        for (const auto& data : m_selectedEntities) {
+            entityIds.push_back(data.entityId);
+        }
 
-	bool Selector::isEntitySelected() const
-	{
-		return (m_selectedEntity != -1);
-	}
+        return entityIds;
+    }
 
-	const std::string &Selector::getUiHandle(const std::string &uuid, const std::string &defaultHandle)
-	{
-		const auto it = m_uiHandles.find(uuid);
-		if (it == m_uiHandles.end())
-		{
-			m_uiHandles[uuid] = defaultHandle;
-			return defaultHandle;
-		}
-    	return it->second;
-	}
+    const std::string& Selector::getPrimaryUuid() const
+    {
+        static std::string emptyString;
+        if (m_selectedEntities.empty()) {
+            return emptyString;
+        }
+        return m_selectedEntities.front().uuid;
+    }
 
-	void Selector::setUiHandle(const std::string &uuid, std::string_view handle)
-	{
-		m_uiHandles[uuid] = handle;
-	}
+    std::vector<std::string> Selector::getSelectedUuids() const
+    {
+        std::vector<std::string> uuids;
+        uuids.reserve(m_selectedEntities.size());
 
+        for (const auto& data : m_selectedEntities) {
+            uuids.push_back(data.uuid);
+        }
+
+        return uuids;
+    }
+
+    void Selector::selectEntity(std::string_view uuid, int entity, SelectionType type)
+    {
+        clearSelection();
+        addToSelection(uuid, entity, type);
+    }
+
+    bool Selector::addToSelection(std::string_view uuid, int entity, SelectionType type)
+    {
+        if (m_selectedEntityIds.find(entity) != m_selectedEntityIds.end())
+            return false;
+
+        SelectionData data = {
+            .entityId = entity,
+            .uuid = std::string(uuid),
+            .type = type
+        };
+        m_selectedEntities.push_back(std::move(data));
+        m_selectedEntityIds.insert(entity);
+
+        addSelectedTag(entity);
+        return true;
+    }
+
+    bool Selector::toggleSelection(std::string_view uuid, int entity, SelectionType type)
+    {
+        if (isEntitySelected(entity)) {
+            removeFromSelection(entity);
+            return false;
+        } else {
+            addToSelection(uuid, entity, type);
+            return true;
+        }
+    }
+
+    bool Selector::removeFromSelection(int entity) {
+        if (m_selectedEntityIds.find(entity) == m_selectedEntityIds.end())
+            return false;
+
+        m_selectedEntityIds.erase(entity);
+        for (auto it = m_selectedEntities.begin(); it != m_selectedEntities.end(); ++it) {
+            if (it->entityId == entity) {
+                m_selectedEntities.erase(it);
+                break;
+            }
+        }
+
+        removeSelectedTag(entity);
+        return true;
+    }
+
+    void Selector::setSelectedScene(int scene)
+    {
+        m_selectedScene = scene;
+    }
+
+    int Selector::getSelectedScene() const
+    {
+        return m_selectedScene;
+    }
+
+    void Selector::clearSelection()
+    {
+        for (const auto& data : m_selectedEntities)
+            removeSelectedTag(data.entityId);
+
+        m_selectedEntities.clear();
+        m_selectedEntityIds.clear();
+    }
+
+    bool Selector::isEntitySelected(int entity) const
+    {
+        return m_selectedEntityIds.find(entity) != m_selectedEntityIds.end();
+    }
+
+    bool Selector::hasSelection() const
+    {
+        return !m_selectedEntities.empty();
+    }
+
+    SelectionType Selector::getPrimarySelectionType() const
+    {
+        if (m_selectedEntities.empty()) {
+            return SelectionType::NONE;
+        }
+        return m_selectedEntities.front().type;
+    }
+
+    void Selector::setSelectionType(SelectionType type)
+    {
+        m_defaultSelectionType = type;
+    }
+
+    const std::string& Selector::getUiHandle(const std::string& uuid, const std::string& defaultHandle)
+    {
+        const auto it = m_uiHandles.find(uuid);
+        if (it == m_uiHandles.end()) {
+            m_uiHandles[uuid] = defaultHandle;
+            return defaultHandle;
+        }
+        return it->second;
+    }
+
+    void Selector::setUiHandle(const std::string& uuid, std::string_view handle)
+    {
+        m_uiHandles[uuid] = handle;
+    }
+
+    void Selector::addSelectedTag(int entity)
+    {
+        components::SelectedTag selectTag{};
+        Application::m_coordinator->addComponent(entity, selectTag);
+    }
+
+    void Selector::removeSelectedTag(int entity)
+    {
+        if (Application::m_coordinator->entityHasComponent<components::SelectedTag>(entity))
+            Application::m_coordinator->removeComponent<components::SelectedTag>(entity);
+    }
 }
