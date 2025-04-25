@@ -330,7 +330,7 @@ namespace nexo::renderer {
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const renderer::NxMaterial& material, int entityID = -1) const;
 
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
-        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const components::Material& material, int entityID) const;
+        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const NxMaterial& material, int entityID) const;
 
         /**
          * @brief Resets rendering statistics.
