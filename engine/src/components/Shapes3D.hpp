@@ -148,7 +148,31 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            renderer3D.drawBillboard(transf.pos, transf.size, material, entityID);
+
+            // lock all textures
+            auto albedoTextureAsset = material.albedoTexture.lock();
+            auto normalMapAsset = material.normalMap.lock();
+            auto metallicMapAsset = material.metallicMap.lock();
+            auto roughnessMapAsset = material.roughnessMap.lock();
+            auto emissiveMapAsset = material.emissiveMap.lock();
+
+
+            renderer::NxMaterial inputMaterial = {
+                .albedoColor = material.albedoColor,
+                .specularColor = material.specularColor,
+                .emissiveColor = material.emissiveColor,
+                .roughness = material.roughness,
+                .metallic = material.metallic,
+                .opacity = material.opacity,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->data->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->data->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->data->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->data->texture : nullptr,
+                .shader = material.shader
+            };
+
+            renderer3D.drawBillboard(transf.pos, transf.size, inputMaterial, entityID);
         }
 
         [[nodiscard]] std::shared_ptr<Shape3D> clone() const override

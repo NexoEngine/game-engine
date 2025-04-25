@@ -171,7 +171,7 @@ namespace nexo::renderer {
     void NxRenderer3D::drawBillboard(
         const glm::vec3& position,
         const glm::vec2& size,
-        const components::Material& material,
+        const NxMaterial& material,
         int entityID) const
     {
         if (!m_renderingScene)
@@ -190,16 +190,11 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        auto albedoTextureAsset = material.albedoTexture.lock();
-        auto metallicTextureAsset = material.metallicMap.lock();
-        auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr;
-        auto metallicTexture = metallicTextureAsset && metallicTextureAsset->isLoaded() ? metallicTextureAsset->data->texture : nullptr;
-
         renderer::NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = getTextureIndex(albedoTexture);
+        mat.albedoTexIndex = getTextureIndex(material.albedoTexture);
         mat.specularColor = material.specularColor;
-        mat.specularTexIndex = getTextureIndex(metallicTexture);
+        mat.specularTexIndex = getTextureIndex(material.metallicMap);
         setMaterialUniforms(mat);
 
         std::array<glm::vec3, 6> verts{};
