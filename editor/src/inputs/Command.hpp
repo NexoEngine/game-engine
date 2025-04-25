@@ -28,6 +28,7 @@ namespace nexo::editor {
                 const std::string &key,
                 const std::function<void()> &pressedCallback,
                 const std::function<void()> &releaseCallback,
+                const std::function<void()> &repeatCallback,
                 bool isModifier = false,
                 const std::vector<Command> &childrens = {}
             );
@@ -36,6 +37,7 @@ namespace nexo::editor {
             bool partialMatch(const std::bitset<ImGuiKey_NamedKey_COUNT> &inputSignature) const;
             void executePressedCallback() const;
             void executeReleasedCallback() const;
+            void executeRepeatCallback() const;
             const std::span<const Command> getChildren() const;
             const std::bitset<ImGuiKey_NamedKey_COUNT> &getSignature() const;
             const std::string &getKey() const;
@@ -48,6 +50,7 @@ namespace nexo::editor {
             std::string m_key;
             std::function<void()> m_pressedCallback;
             std::function<void()> m_releaseCallback;
+            std::function<void()> m_repeatCallback;
             bool m_isModifier;
             std::vector<Command> m_childrens;
     };

@@ -26,9 +26,10 @@ namespace nexo::editor {
         const std::string &key,
         const std::function<void()> &pressedCallback,
         const std::function<void()> &releaseCallback,
+        const std::function<void()> &repeatCallback,
         bool isModifier,
         const std::vector<Command> &children)
-    : m_description(description), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_isModifier(isModifier), m_childrens(children)
+    : m_description(description), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(children)
     {
         // Create a mapping of key names to ImGuiKey values
         static const std::unordered_map<std::string, ImGuiKey> keyMap = {
@@ -142,6 +143,12 @@ namespace nexo::editor {
     {
         if (m_releaseCallback)
             m_releaseCallback();
+    }
+
+    void Command::executeRepeatCallback() const
+    {
+        if (m_repeatCallback)
+            m_repeatCallback();
     }
 
     const std::span<const Command> Command::getChildren() const
