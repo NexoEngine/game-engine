@@ -35,8 +35,10 @@ namespace nexo::assets {
 
         protected:
             Model* loadModel(AssetImporterContext& ctx);
-            void loadEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene);
-            void loadMaterials(AssetImporterContext& ctx, const aiScene* scene);
+            void loadSceneEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene);
+            AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture *texture);
+            renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
+            void loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene);
 
             std::shared_ptr<components::MeshNode> processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
             components::Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
