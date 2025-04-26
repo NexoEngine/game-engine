@@ -24,7 +24,7 @@
 
 namespace nexo::assets {
 
-    class ModelImporter final : public AssetImporterBase {
+    class ModelImporter : public AssetImporterBase {
         public:
             ModelImporter() = default;
             ~ModelImporter() override = default;
@@ -37,12 +37,12 @@ namespace nexo::assets {
             Model* loadModel(AssetImporterContext& ctx);
             void loadSceneEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene);
             AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture *texture);
-            renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
             void loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene);
 
             std::shared_ptr<components::MeshNode> processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
             components::Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
 
+            static renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
             static glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
 
             Model *m_model = nullptr; //< Model being imported
