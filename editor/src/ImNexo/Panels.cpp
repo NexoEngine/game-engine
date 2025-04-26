@@ -80,8 +80,8 @@ namespace ImNexo {
 		    modified = TextureButton("Specular texture", metallicTexture) || modified;
 		    ImGui::SameLine();
 		    modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
-		    return modified;
         }
+        return modified;
 	}
 
     /**

@@ -75,8 +75,8 @@ namespace nexo::assets {
             throw core::LoadModelException(ctx.location.getFullLocation(), m_importer.GetErrorString());
         }
 
-        loadEmbeddedTextures(ctx, scene);
-        loadMaterials(ctx, scene);
+        loadSceneEmbeddedTextures(ctx, scene);
+        loadSceneMaterials(ctx, scene);
 
         auto meshNode = processNode(ctx, scene->mRootNode, scene);
         if (!meshNode) {
@@ -87,38 +87,113 @@ namespace nexo::assets {
         return model;
     }
 
-    void ModelImporter::loadEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene)
+    void ModelImporter::loadSceneEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene)
     {
         m_textures.reserve(scene->mNumTextures);
         // Load embedded textures
         for (int i = 0; scene->mNumTextures; ++i) {
             aiTexture *texture = scene->mTextures[i];
-            AssetImporter assetImporter;
-            ImporterInputVariant inputVariant;
-            if (texture->mHeight == 0) { // Compressed texture
-                inputVariant = ImporterMemoryInput{
-                    // Reinterpret cast to uint8_t* because this is raw memory data, not aiTexels, see assimp docs
-                    .memoryData = std::vector<uint8_t>(reinterpret_cast<uint8_t *>(texture->pcData), reinterpret_cast<uint8_t *>(texture->pcData) + texture->mWidth),
-                    .formatHint = std::string(texture->achFormatHint)
-                };
-            } else { // Uncompressed texture
-                // TODO: implement RGBA8888 format
-                /*inputVariant = ImporterMemoryInput{
-                    .memoryData = std::vector<uint8_t>(texture->pcData, texture->pcData + (texture->mWidth * texture->mHeight * 4)),
-                    .formatHint = std::string(texture->achFormatHint)
-                };*/
-                return;
-            }
-
-            auto assetTexture = assetImporter.importAsset<Texture>(
-                ctx.genUniqueDependencyLocation<Texture>(),
-                inputVariant);
-            m_textures.emplace(texture->mFilename.C_Str(), assetTexture);
+            auto loadedTexture = loadEmbeddedTexture(ctx, texture);
+            m_textures.emplace(texture->mFilename.C_Str(), loadedTexture);
         }
 
     }
 
-    void ModelImporter::loadMaterials(AssetImporterContext& ctx, const aiScene* scene)
+    AssetRef<Texture> ModelImporter::loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture)
+    {
+
+        if (texture->mHeight == 0) { // Compressed texture
+            AssetImporter assetImporter;
+            const ImporterInputVariant inputVariant = ImporterMemoryInput{
+                // Reinterpret cast to uint8_t* because this is raw memory data, not aiTexels, see assimp docs
+                .memoryData = std::vector<uint8_t>(reinterpret_cast<uint8_t *>(texture->pcData), reinterpret_cast<uint8_t *>(texture->pcData) + texture->mWidth),
+                .formatHint = std::string(texture->achFormatHint)
+            };
+
+            return assetImporter.importAsset<Texture>(
+                ctx.genUniqueDependencyLocation<Texture>(),
+                inputVariant);
+        } else { // Uncompressed texture
+            auto& catalog = AssetCatalog::getInstance();
+
+            renderer::NxTextureFormat format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
+            if (format == renderer::NxTextureFormat::INVALID) {
+                LOG(NEXO_WARN, "ModelImporter: Model {}: Texture {} has an invalid format hint: {}", std::quoted(ctx.location.getFullLocation()), texture->mFilename.C_Str(), texture->achFormatHint);
+                return nullptr;
+            }
+
+            return catalog.createAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(),
+                reinterpret_cast<uint8_t*>(texture->pcData), texture->mWidth, texture->mHeight, format);
+        }
+
+
+    }
+
+    renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
+    {
+        // Split into channels (first 4 chars) and bit depths (next 4 chars)
+        std::string_view channels(achFormatHint, 4);
+        std::string_view bits_str(achFormatHint + 4, 4);
+
+        // Parse active channels and their bit depths
+        struct ChannelInfo { char code; int bits; };
+        std::vector<ChannelInfo> active_channels;
+
+        for (int i = 0; i < 4; ++i) {
+            const char ch = static_cast<char>(std::tolower(channels[i]));
+            if (not (ch == 'r' || ch == 'g' || ch == 'b')) {
+                return renderer::NxTextureFormat::INVALID;
+            }
+            if (not std::isdigit(bits_str[i])) {
+                return renderer::NxTextureFormat::INVALID;
+            }
+            const int bits = bits_str[i] - '0';
+
+            if (ch != '\0' && bits > 0) {
+                active_channels.push_back({ch, bits});
+            }
+        }
+
+        // Check all active channels have exactly 8 bits
+        for (const auto& ci : active_channels) {
+            if (ci.bits != 8) return renderer::NxTextureFormat::INVALID;
+        }
+
+        // Match channel patterns
+        switch (active_channels.size()) {
+            case 1:
+                if (active_channels[0].code == 'r')
+                    return renderer::NxTextureFormat::R8;
+                break;
+
+            case 2:
+                if (active_channels[0].code == 'r' &&
+                    active_channels[1].code == 'g')
+                    return renderer::NxTextureFormat::RG8;
+                break;
+
+            case 3:
+                if (active_channels[0].code == 'r' &&
+                    active_channels[1].code == 'g' &&
+                    active_channels[2].code == 'b')
+                    return renderer::NxTextureFormat::RGB8;
+                break;
+
+            case 4:
+                if (active_channels[0].code == 'r' &&
+                    active_channels[1].code == 'g' &&
+                    active_channels[2].code == 'b' &&
+                    active_channels[3].code == 'a')
+                    return renderer::NxTextureFormat::RGBA8;
+                break;
+            default:
+                break;
+        }
+
+        return renderer::NxTextureFormat::INVALID;
+    }
+
+    void ModelImporter::loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene)
     {
         m_materials.assign(scene->mNumMaterials, nullptr);
 
