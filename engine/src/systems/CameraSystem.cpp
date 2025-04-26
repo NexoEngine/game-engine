@@ -25,6 +25,7 @@
 #include <numbers>
 
 namespace nexo::system {
+
 	void CameraContextSystem::update()
 	{
 		auto &renderContext = getSingleton<components::RenderContext>();
