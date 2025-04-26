@@ -24,20 +24,40 @@ namespace nexo::renderer {
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
     {
-        const unsigned int maxTextureSize = getMaxTextureSize();
-        if (width > maxTextureSize || height > maxTextureSize)
-            THROW_EXCEPTION(NxTextureInvalidSize, "OPENGL", width, height, maxTextureSize);
-        m_internalFormat = GL_RGBA8;
-        m_dataFormat = GL_RGBA;
+        createOpenGLTexture(nullptr, width, height, GL_RGBA8, GL_RGBA);
+    }
 
-        glGenTextures(1, &m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(m_internalFormat), static_cast<int>(width), static_cast<int>(height), 0, m_dataFormat, GL_UNSIGNED_BYTE, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t* buffer, const unsigned int width, const unsigned int height,
+        const NxTextureFormat format) : m_width(width), m_height(height)
+    {
+        if (!buffer)
+            THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Buffer is null");
+
+        GLint internalFormat = 0;
+        GLenum dataFormat = 0;
+        switch (format) {
+            [[likely]] case NxTextureFormat::RGBA8:
+                internalFormat = GL_RGBA8;
+                dataFormat = GL_RGBA;
+                break;
+            [[likely]] case NxTextureFormat::RGB8:
+                internalFormat = GL_RGB8;
+                dataFormat = GL_RGB;
+                break;
+            case NxTextureFormat::RG8:
+                internalFormat = GL_RG8;
+                dataFormat = GL_RG;
+                break;
+            case NxTextureFormat::R8:
+                internalFormat = GL_R8;
+                dataFormat = GL_RED;
+                break;
+
+            default:
+                THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", static_cast<int>(format), "");
+        }
+
+        createOpenGLTexture(buffer, width, height, internalFormat, dataFormat);
     }
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const std::string &path)
@@ -50,7 +70,14 @@ namespace nexo::renderer {
         stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         if (!data)
             THROW_EXCEPTION(NxFileNotFoundException, path);
-        ingestDataFromStb(data, width, height, channels, path);
+
+        try {
+            ingestDataFromStb(data, width, height, channels, path);
+        } catch (const Exception& e) {
+            stbi_image_free(data);
+            throw;
+        }
+        stbi_image_free(data);
     }
 
     NxOpenGlTexture2D::~NxOpenGlTexture2D()
@@ -68,7 +95,14 @@ namespace nexo::renderer {
         stbi_uc *data = stbi_load_from_memory(buffer, len, &width, &height, &channels, 0);
         if (!data)
             THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, "(buffer)");
-        ingestDataFromStb(data, width, height, channels, "(buffer)");
+
+        try {
+            ingestDataFromStb(data, width, height, channels, "(buffer)");
+        } catch (const Exception& e) {
+            stbi_image_free(data);
+            throw;
+        }
+        stbi_image_free(data);
     }
 
     unsigned int NxOpenGlTexture2D::getMaxTextureSize() const
@@ -91,43 +125,54 @@ namespace nexo::renderer {
     void NxOpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
         const std::string& debugPath)
     {
-        m_width = width;
-        m_height = height;
-
+        GLint internalFormat = 0;
+        GLenum dataFormat = 0;
         switch (channels) {
-            [[likely]] case 4:
-                m_internalFormat = GL_RGBA8;
-                m_dataFormat = GL_RGBA;
+            [[likely]] case 4: // red, green, blue, alpha
+                internalFormat = GL_RGBA8;
+                dataFormat = GL_RGBA;
                 break;
-            [[likely]] case 3:
-                m_internalFormat = GL_RGB8;
-                m_dataFormat = GL_RGB;
+            [[likely]] case 3: // red, green, blue
+                internalFormat = GL_RGB8;
+                dataFormat = GL_RGB;
                 break;
-            case 2:
-                m_internalFormat = GL_RG8;
-                m_dataFormat = GL_RG;
+            case 2: // grey, alpha
+                internalFormat = GL_RG8;
+                dataFormat = GL_RG;
                 break;
-            case 1:
-                m_internalFormat = GL_R8;
-                m_dataFormat = GL_RED;
+            case 1: // grey
+                internalFormat = GL_R8;
+                dataFormat = GL_RED;
                 break;
             default:
-                stbi_image_free(data);
                 THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, debugPath);
         }
 
+        createOpenGLTexture(data, static_cast<unsigned int>(width), static_cast<unsigned int>(height), internalFormat, dataFormat);
+    }
+
+    void NxOpenGlTexture2D::createOpenGLTexture(const uint8_t* buffer, const unsigned int width, const unsigned int height,
+        const GLint internalFormat, const GLenum dataFormat)
+    {
+        const unsigned int maxTextureSize = getMaxTextureSize();
+        if (width > maxTextureSize || height > maxTextureSize)
+            THROW_EXCEPTION(NxTextureInvalidSize, "OPENGL", width, height, maxTextureSize);
+
+        const auto glWidth = static_cast<GLsizei>(width);
+        const auto glHeight = static_cast<GLsizei>(height);
+
+        m_internalFormat = internalFormat;
+        m_dataFormat = dataFormat;
+
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(m_internalFormat), width, height, 0, m_dataFormat, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, glWidth, glHeight, 0, m_dataFormat, GL_UNSIGNED_BYTE, buffer);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glBindTexture(GL_TEXTURE_2D, 0);
-
-        stbi_image_free(data);
     }
-
 
     void NxOpenGlTexture2D::bind(const unsigned int slot) const
     {

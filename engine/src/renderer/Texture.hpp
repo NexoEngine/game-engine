@@ -13,8 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <iostream>
+#include <algorithm>
 #include <memory>
+#include <string>
+
+#include "String.hpp"
 
 namespace nexo::renderer {
 
@@ -52,6 +55,45 @@ namespace nexo::renderer {
             bool operator==(const NxTexture &other) const { return this->getId() == other.getId(); };
     };
 
+    /**
+     * @enum NxTextureFormat
+     * @brief Enumeration of texture formats.
+     *
+     * This enum defines various texture formats that can be used in the rendering system.
+     * Each format corresponds to a specific pixel layout and color depth.
+     *
+     * For example:
+     * - `R8` represents a single-channel texture with 8 bits per channel.
+     * - `RG8` represents a two-channel texture with 8 bits per channel.
+     * - `RGB8` represents a three-channel texture with 8 bits per channel.
+     * - `RGBA8` represents a four-channel texture with 8 bits per channel.
+     *
+     * @note If a texture format is invalid, it is represented by `INVALID`, which value is 0.
+     */
+    enum class NxTextureFormat {
+        INVALID = 0, // Invalid texture format, used for error reporting
+
+        R8 = 1,      // 1 channel RED, 8 bits per channel
+        RG8,         // 2 channels RED GREEN, 8 bits per channel
+        RGB8,        // 3 channels RED GREEN BLUE, 8 bits per channel
+        RGBA8,       // 4 channels RED GREEN BLUE ALPHA, 8 bits per channel
+
+        _NB_FORMATS_ // Number of texture formats, used for array sizing
+    };
+
+    constexpr const std::string& NxTextureFormatToString(const NxTextureFormat format)
+    {
+        switch (format) {
+            case NxTextureFormat::R8:    return "R8";
+            case NxTextureFormat::RG8:   return "RG8";
+            case NxTextureFormat::RGB8:  return "RGB8";
+            case NxTextureFormat::RGBA8: return "RGBA8";
+            default: return "INVALID";
+        }
+    }
+
+    NxTextureFormat NxTextureFormatFromString(const std::string_view &format);
+
     class NxTexture2D :  public NxTexture {
         public:
             /**
@@ -70,6 +112,36 @@ namespace nexo::renderer {
              * ```
              */
             static std::shared_ptr<NxTexture2D> create(unsigned int width, unsigned int height);
+
+
+            /**
+             * @brief Creates a 2D texture from raw pixel data in memory.
+             *
+             * Creates a texture from a raw pixel buffer with the specified dimensions and format.
+             * This is useful when you have direct access to pixel data that wasn't loaded through
+             * compressed images files or when you want to create textures from procedurally generated data.
+             *
+             * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
+             *        in a format that matches the specified NxTextureFormat. The data consists
+             *        of height scanlines of width pixels, with each pixel consisting of N components
+             *        (where N depends on the format). The first pixel pointed to is top-left-most
+             *        in the image. There is no padding between image scanlines or between pixels.
+             *        Each component is an 8-bit unsigned value (uint8_t).
+             * @param width The width of the texture in pixels.
+             * @param height The height of the texture in pixels.
+             * @param format The format of the pixel data, which determines the number of components
+             *        per pixel.
+             * @return A shared pointer to the created NxTexture2D instance.
+             *
+             * Example:
+             * ```cpp
+             * // Create a 128x128 RGBA texture with custom data
+             * std::vector<uint8_t> pixelData(128 * 128 * 4); // 4 components (RGBA)
+             * // Fill pixelData with your custom values...
+             * auto texture = NxTexture2D::create(pixelData.data(), 128, 128, NxTextureFormat::RGBA8);
+             * ```
+             */
+            static std::shared_ptr<NxTexture2D> create(uint8_t *buffer, unsigned int width, unsigned int height, NxTextureFormat format);
 
             /**
              * @brief Creates a 2D texture from file in memory.
