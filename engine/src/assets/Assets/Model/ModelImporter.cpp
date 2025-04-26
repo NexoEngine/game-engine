@@ -131,6 +131,10 @@ namespace nexo::assets {
 
     renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
     {
+        if (std::strlen(achFormatHint) != 8) {
+            return renderer::NxTextureFormat::INVALID;
+        }
+
         // Split into channels (first 4 chars) and bit depths (next 4 chars)
         std::string_view channels(achFormatHint, 4);
         std::string_view bits_str(achFormatHint + 4, 4);
@@ -141,7 +145,7 @@ namespace nexo::assets {
 
         for (int i = 0; i < 4; ++i) {
             const char ch = static_cast<char>(std::tolower(channels[i]));
-            if (not (ch == 'r' || ch == 'g' || ch == 'b')) {
+            if (not (ch == 'r' || ch == 'g' || ch == 'b' || ch == 'a')) {
                 return renderer::NxTextureFormat::INVALID;
             }
             if (not std::isdigit(bits_str[i])) {
@@ -284,10 +288,11 @@ namespace nexo::assets {
                 materialComponent->metallicMap ? "Yes" : "No",
                 materialComponent->roughnessMap ? "Yes" : "No");
 
-            AssetCatalog::getInstance().createAsset<Material>(
+            auto materialRef = AssetCatalog::getInstance().createAsset<Material>(
                 ctx.genUniqueDependencyLocation<Material>(),
                 materialComponent
             );
+            m_materials[matIdx] = materialRef;
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
     }
 
