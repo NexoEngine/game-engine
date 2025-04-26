@@ -37,6 +37,7 @@ add_executable(engine_tests
     ${BASEDIR}/assets/AssetRef.test.cpp
     ${BASEDIR}/assets/AssetImporterContext.test.cpp
     ${BASEDIR}/assets/AssetImporter.test.cpp
+    ${BASEDIR}/assets/Assets/Model/ModelImporter.test.cpp
         # Add other engine test files here
 )
 

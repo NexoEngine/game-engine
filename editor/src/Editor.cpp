@@ -327,7 +327,7 @@ namespace nexo::editor {
         buildDockspace();
 
         drawMenuBar();
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
 
 
