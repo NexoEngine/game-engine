@@ -92,7 +92,7 @@ namespace nexo::assets {
             * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
              *        in a format that matches the specified NxTextureFormat. The data consists
              *        of height scanlines of width pixels, with each pixel consisting of N components
-             *        (where N depends on the format). The first pixel pointed to is top-left-most
+             *        (where N depends on the format). The first pixel pointed to is bottom-left-most
              *        in the image. There is no padding between image scanlines or between pixels.
              *        Each component is an 8-bit unsigned value (uint8_t).
              * @param width The width of the texture in pixels.
@@ -103,7 +103,7 @@ namespace nexo::assets {
              * @throws NxTextureUnsupportedFormat If the specified format is not supported.
              * @throws NxTextureInvalidSize If the dimensions exceed the maximum texture size.
              */
-            Texture(uint8_t* buffer, unsigned int width, unsigned int height, renderer::NxTextureFormat format)
+            Texture(const uint8_t *buffer, const unsigned int width, const unsigned int height, const renderer::NxTextureFormat format)
                 : Asset()
             {
                 auto texture = renderer::NxTexture2D::create(buffer, width, height, format);
@@ -125,7 +125,7 @@ namespace nexo::assets {
              * @throws NxTextureUnsupportedFormat If the image format is not supported.
              * @throws NxTextureInvalidSize If the image dimensions exceed the maximum texture size.
              */
-            Texture(uint8_t* buffer, unsigned int size)
+            Texture(const uint8_t* buffer, const unsigned int size)
                 : Asset()
             {
                 auto texture = renderer::NxTexture2D::create(buffer, size);
