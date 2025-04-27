@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "Path.hpp"
+#include "../tests/renderer/contexts/opengl.hpp"
 
 using namespace testing;
 using namespace nexo::assets;
@@ -42,9 +43,10 @@ class TestModelImporter : public ModelImporter {
 };
 
 // Test fixture for ModelImporter tests
-class ModelImporterTestFixture : public Test {
+class ModelImporterTestFixture : public nexo::renderer::OpenGLTest {
 protected:
     void SetUp() override {
+        OpenGLTest::SetUp();
         // Clean up the catalog before each test
         auto& catalog = AssetCatalog::getInstance();
         for (auto& asset : catalog.getAssets()) {
@@ -52,8 +54,9 @@ protected:
         }
     }
 
-        void TearDown() override
+    void TearDown() override
     {
+        OpenGLTest::TearDown();
         // Clean up the catalog after each test
         auto& catalog = AssetCatalog::getInstance();
         for (auto& asset : catalog.getAssets()) {
@@ -168,16 +171,69 @@ TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat) {
 
 // Additional test for processing empty mesh
 TEST_F(ModelImporterTestFixture, ImportCubeModel) {
+    auto& catalog = AssetCatalog::getInstance();
+
     AssetImporterContext ctx = {};
     ctx.location = AssetLocation("test::cube_model@test_folder");
     ctx.input = ImporterFileInput{std::filesystem::path(nexo::Path::resolvePathRelativeToExe("../tests/engine/assets/Assets/Model/cube.obj"))};
     importer.import(ctx);
 
-    /*
     EXPECT_NE(ctx.getMainAsset(), nullptr);
     EXPECT_EQ(ctx.getMainAsset()->getType(), Model::TYPE);
     EXPECT_EQ(ctx.getMainAsset()->isLoaded(), true);
-    */
 
+    const auto allAssets = catalog.getAssets();
+    EXPECT_EQ(allAssets.size(), 3); // 2 materials + 1 texture
 
+    auto model = static_cast<Model*>(ctx.getMainAsset());
+    // Now verify the model data
+    const auto& modelData = model->getData();
+    ASSERT_NE(modelData, nullptr);
+
+    const auto root = modelData->root;
+
+    // Root mesh in this case has zero mesh but 1 child
+    ASSERT_EQ(modelData->root->meshes.size(), 0);
+    ASSERT_EQ(root->children.size(), 1);
+    const auto child = root->children[0];
+    EXPECT_EQ(child->children.size(), 0);
+    EXPECT_EQ(child->meshes.size(), 1);
+    const auto childMesh = child->meshes[0];
+
+    // Get the mesh and verify its properties
+    EXPECT_EQ(childMesh.name, "Cube");
+
+    // A cube should have 8 vertices and 12 triangles (36 indices)
+    EXPECT_EQ(childMesh.vertices.size(), 24); // 24 because each vertex is duplicated for different face normals/UVs
+    EXPECT_EQ(childMesh.indices.size(), 36);  // 6 faces × 2 triangles × 3 vertices
+
+    // Check the Material reference
+    const auto material = childMesh.material.lock();
+    EXPECT_NE(material, nullptr);
+
+    const auto materialData = material->getData();
+    EXPECT_NE(materialData, nullptr);
+
+    EXPECT_NE(materialData->albedoTexture, nullptr);
+    const auto albedoTextureAsset = materialData->albedoTexture.lock();
+    EXPECT_NE(albedoTextureAsset, nullptr);
+    EXPECT_EQ(albedoTextureAsset->getType(), Texture::TYPE);
+
+    const auto albedoTexture = albedoTextureAsset->getData();
+    EXPECT_NE(albedoTexture->texture, nullptr);
+    EXPECT_EQ(albedoTexture->texture->getWidth(), 64);
+    EXPECT_EQ(albedoTexture->texture->getHeight(), 64);
+
+    // Check material properties from the MTL file
+    EXPECT_FLOAT_EQ(materialData->specularColor.r, 0.5f);
+    EXPECT_FLOAT_EQ(materialData->specularColor.g, 0.5f);
+    EXPECT_FLOAT_EQ(materialData->specularColor.b, 0.5f);
+
+    EXPECT_FLOAT_EQ(materialData->emissiveColor.r, 0.0f);
+    EXPECT_FLOAT_EQ(materialData->emissiveColor.g, 0.0f);
+    EXPECT_FLOAT_EQ(materialData->emissiveColor.b, 0.0f);
+
+    // Check roughness and metallic properties if supported
+    EXPECT_FLOAT_EQ(materialData->roughness, 0.5f); // Pr in MTL
+    EXPECT_FLOAT_EQ(materialData->metallic, 0.7f);  // Pm in MTL
 }
