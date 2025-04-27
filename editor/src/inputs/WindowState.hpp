@@ -24,7 +24,7 @@ namespace nexo::editor {
             WindowState(unsigned int id) : m_id(id) {}
             ~WindowState() = default;
 
-            const unsigned int getId() const;
+            unsigned int getId() const;
             void registerCommand(const Command &command);
             const std::span<const Command> getCommands() const;
         private:
