@@ -56,12 +56,12 @@ protected:
 
     void TearDown() override
     {
-        OpenGLTest::TearDown();
         // Clean up the catalog after each test
         auto& catalog = AssetCatalog::getInstance();
         for (auto& asset : catalog.getAssets()) {
             catalog.deleteAsset(asset);
         }
+        OpenGLTest::TearDown();
     }
 
     TestModelImporter importer;
