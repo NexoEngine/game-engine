@@ -32,6 +32,16 @@ namespace nexo::renderer {
         return NxTextureFormat::INVALID;
     }
 
+    void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, size_t size)
+    {
+        uint32_t *pixels = reinterpret_cast<uint32_t *>(bytes);
+        const size_t width = size / 4;
+
+        for (size_t i = 0; i < width; ++i) {
+            pixels[i] = (pixels[i] << 8) | (pixels[i] >> 24);
+        }
+    }
+
     std::shared_ptr<NxTexture2D> NxTexture2D::create(unsigned int width, unsigned int height)
     {
         #ifdef NX_GRAPHICS_API_OPENGL

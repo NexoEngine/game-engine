@@ -118,6 +118,10 @@ namespace nexo::assets {
 
             renderer::NxTextureFormat format;
             if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
+                renderer::NxTextureFormatConvertArgb8ToRgba8(
+                    reinterpret_cast<uint8_t*>(texture->pcData),
+                texture->mWidth * texture->mHeight * sizeof(aiTexel)
+                );
                 format = renderer::NxTextureFormat::RGBA8;
             } else {
                 format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
@@ -258,7 +262,7 @@ namespace nexo::assets {
                 aiString aiStr;
                 if (material->GetTexture(type, 0, &aiStr) == AI_SUCCESS) {
                     const char* cStr = aiStr.C_Str();
-                    if (cStr[0] == '*') {
+                    if (cStr[0] == '*' || scene->GetEmbeddedTexture(cStr)) {
                         // Embedded texture
                         if (const auto it = m_textures.find(cStr) ; it != m_textures.end()) {
                             return it->second;
