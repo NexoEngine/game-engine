@@ -116,7 +116,13 @@ namespace nexo::assets {
         } else { // Uncompressed texture
             auto& catalog = AssetCatalog::getInstance();
 
-            renderer::NxTextureFormat format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
+            renderer::NxTextureFormat format;
+            if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
+                format = renderer::NxTextureFormat::RGBA8;
+            } else {
+                format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
+            }
+
             if (format == renderer::NxTextureFormat::INVALID) {
                 LOG(NEXO_WARN, "ModelImporter: Model {}: Texture {} has an invalid format hint: {}", std::quoted(ctx.location.getFullLocation()), texture->mFilename.C_Str(), texture->achFormatHint);
                 return nullptr;
@@ -228,8 +234,8 @@ namespace nexo::assets {
                 materialComponent->emissiveColor = { color.r, color.g, color.b };
             }
 
-            if (float roughness = 0.0f; material->Get(AI_MATKEY_SHININESS, roughness) == AI_SUCCESS) {
-                materialComponent->roughness = 1.0f - (roughness / 100.0f); // Convert glossiness to roughness
+            if (float roughness = 0.0f; material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == AI_SUCCESS) {
+                materialComponent->roughness = roughness;
             }
 
             // Load Metallic
