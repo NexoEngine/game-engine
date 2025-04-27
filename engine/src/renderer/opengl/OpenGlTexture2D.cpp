@@ -27,7 +27,7 @@ namespace nexo::renderer {
         createOpenGLTexture(nullptr, width, height, GL_RGBA8, GL_RGBA);
     }
 
-    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t* buffer, const unsigned int width, const unsigned int height,
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t *buffer, const unsigned int width, const unsigned int height,
         const NxTextureFormat format) : m_width(width), m_height(height)
     {
         if (!buffer)
@@ -61,6 +61,7 @@ namespace nexo::renderer {
     }
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const std::string &path)
+        : m_path(path)
     {
         int width = 0;
         int height = 0;
@@ -163,6 +164,8 @@ namespace nexo::renderer {
 
         m_internalFormat = internalFormat;
         m_dataFormat = dataFormat;
+        m_width = width;
+        m_height = height;
 
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
