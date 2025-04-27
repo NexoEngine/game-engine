@@ -503,14 +503,15 @@ namespace nexo::ecs {
 				if (!m_sortingInvalidated)
 					return;
 
-			    std::shared_ptr<ComponentArray<CompType>> compArray;
+				std::shared_ptr<ComponentArray<CompType>> compArray;
 
-			    if constexpr (tuple_contains_component_v<CompType, OwnedTuple>)
-			        compArray = getOwnedImpl<CompType>();
-			    else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>)
-			        compArray = getNonOwnedImpl<CompType>();
-			    else
-			        static_assert(dependent_false<CompType>::value, "Component type not found in group");
+				if constexpr (tuple_contains_component_v<CompType, OwnedTuple>) {
+					compArray = getOwnedImpl<CompType>();
+				} else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>) {
+					compArray = getNonOwnedImpl<CompType>();
+				} else {
+				    static_assert(dependent_false<CompType>::value, "Component type not found in group");
+			    }
 
 				if (!compArray)
 					THROW_EXCEPTION(InternalError, "Component array is null");
