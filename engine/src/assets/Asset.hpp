@@ -139,27 +139,29 @@ namespace nexo::assets {
         AssetLocation location;      //< Location of the asset
     };
 
+    /**
+     * @brief Pure virtual interface for all assets
+     */
     class IAsset {
         friend class AssetCatalog;
         friend class AssetImporter;
         public:
-            //IAsset() = delete;
             virtual ~IAsset() = default;
-
-            [[nodiscard]] virtual const AssetMetadata& getMetadata() const { return m_metadata; }
-            [[nodiscard]] virtual AssetType getType() const { return getMetadata().type; }
-            [[nodiscard]] virtual AssetID getID() const { return getMetadata().id; }
-            [[nodiscard]] virtual AssetStatus getStatus() const { return getMetadata().status; }
-
-            [[nodiscard]] virtual bool isLoaded() const { return getStatus() == AssetStatus::LOADED; }
-            [[nodiscard]] virtual bool isErrored() const { return getStatus() == AssetStatus::ERROR; }
-
+    
+            [[nodiscard]] virtual const AssetMetadata& getMetadata() const = 0;
+            [[nodiscard]] virtual AssetType getType() const = 0;
+            [[nodiscard]] virtual AssetID getID() const = 0;
+            [[nodiscard]] virtual AssetStatus getStatus() const = 0;
+    
+            [[nodiscard]] virtual bool isLoaded() const = 0;
+            [[nodiscard]] virtual bool isErrored() const = 0;
+    
             /**
              * @brief Get the asset data pointer
              * @return Raw pointer to the asset data
              */
             [[nodiscard]] virtual void* getRawData() const = 0;
-
+    
             /**
              * @brief Set the asset data pointer
              * @param rawData Raw pointer to the asset data
@@ -177,29 +179,24 @@ namespace nexo::assets {
                 })
             {
             }
-
+    
         public:
             AssetMetadata m_metadata;
-
+    
             /**
              * @brief Get the metadata of the asset (for modification)
              */
             //[[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
-
-            /*virtual AssetStatus load() = 0;
-            virtual AssetStatus unload() = 0;*/
-
     };
-
+    
     template<typename TAssetData, AssetType TAssetType>
     class Asset : public IAsset {
         friend class AssetCatalog;
-
         friend class AssetRef<TAssetData>;
         public:
             using AssetDataType = TAssetData;
             static constexpr AssetType TYPE = TAssetType;
-
+    
             /**
              * @brief Destructor that releases the allocated asset data.
              *
@@ -209,26 +206,33 @@ namespace nexo::assets {
             {
                 delete data;
             }
-
+    
             TAssetData *data;
 
+            [[nodiscard]] const AssetMetadata& getMetadata() const override { return m_metadata; }
+            [[nodiscard]] AssetType getType() const override { return getMetadata().type; }
+            [[nodiscard]] AssetID getID() const override { return getMetadata().id; }
+            [[nodiscard]] AssetStatus getStatus() const override { return getMetadata().status; }
+
+            [[nodiscard]] bool isLoaded() const override { return getStatus() == AssetStatus::LOADED; }
+            [[nodiscard]] bool isErrored() const override { return getStatus() == AssetStatus::ERROR; }
+    
             // Implementation of IAsset virtual methods
             [[nodiscard]] void* getRawData() const override {
                 return data;
             }
-
+    
             IAsset& setRawData(void* rawData) override {
                 delete data;  // Clean up existing data
                 if (rawData == nullptr) {
                     m_metadata.status = AssetStatus::UNLOADED;
                 } else {
-
                     m_metadata.status = AssetStatus::LOADED;
                 }
                 data = static_cast<TAssetData*>(rawData);
                 return *this;
             }
-
+    
             [[nodiscard]] TAssetData* getData() const {
                 return data;
             }
@@ -243,7 +247,7 @@ namespace nexo::assets {
                 data = newData;
                 return *this;
             }
-
+    
         protected:
             explicit Asset() : data(nullptr)
             {
@@ -255,12 +259,10 @@ namespace nexo::assets {
                 m_metadata.type = TAssetType;
                 m_metadata.status = AssetStatus::LOADED;
             }
-
+    
         private:
-
             /*virtual AssetStatus load() = 0;
             virtual AssetStatus unload() = 0;*/
-
     };
 
 } // namespace nexo::editor
