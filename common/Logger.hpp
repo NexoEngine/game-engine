@@ -71,12 +71,13 @@ namespace nexo {
         return path;
     }
 
-    inline void defaultCallback(const LogLevel level, const std::string &message)
+    inline void defaultCallback(const LogLevel level, const std::source_location& loc, const std::string &message)
     {
-        if (level == LogLevel::FATAL || level == LogLevel::ERR)
-            std::cerr << "[" << toString(level) << "] " << message << std::endl;
-        else
-            std::cout << "[" << toString(level) << "] " << message << std::endl;
+        std::ostream& outputStream = level == LogLevel::FATAL || level == LogLevel::ERR
+            ? std::cerr
+            : std::cout;
+
+        outputStream << "[" << toString(level) << "] " << getFileName(loc.file_name()) << ":" << loc.line() << " - " << message << std::endl;
     }
 
     /**
@@ -136,7 +137,7 @@ namespace nexo {
 
     class Logger {
         public:
-            static void setCallback(std::function<void(LogLevel, const std::string &)> callback)
+            static void setCallback(std::function<void(LogLevel, const std::source_location& loc, const std::string&)> callback)
             {
                 logCallback = std::move(callback);
             }
@@ -152,14 +153,7 @@ namespace nexo {
                     },
                     transformed);
 
-                if (level == LogLevel::INFO)
-                    logString(level, message);
-                else
-                {
-                    std::stringstream ss;
-                    ss << getFileName(loc.file_name()) << ":" << loc.line() << " - " << message;
-                    logString(level, ss.str());
-                }
+                logCallback(level, loc, message);
             }
 
             /**
@@ -221,14 +215,7 @@ namespace nexo {
             }
 
         private:
-            static void logString(const LogLevel level, const std::string &message)
-            {
-                if (logCallback)
-                    logCallback(level, message);
-                else
-                    defaultCallback(level, message);
-            }
-            static inline std::function<void(LogLevel, const std::string &)> logCallback = nullptr;
+            static inline std::function<void(LogLevel, const std::source_location& loc, const std::string &)> logCallback = defaultCallback;
     };
 
 }
