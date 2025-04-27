@@ -78,7 +78,7 @@ namespace nexo::renderer {
              * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
              *        in a format that matches the specified NxTextureFormat. The data consists
              *        of height scanlines of width pixels, with each pixel consisting of N components
-             *        (where N depends on the format). The first pixel pointed to is top-left-most
+             *        (where N depends on the format). The first pixel pointed to is bottom-left-most
              *        in the image. There is no padding between image scanlines or between pixels.
              *        Each component is an 8-bit unsigned value (uint8_t).
              * @param width The width of the texture in pixels. Must not exceed the maximum texture
@@ -104,7 +104,7 @@ namespace nexo::renderer {
              * auto texture =  std::make_shared<NxOpenGlTexture2D>(pixelData.data(), 256, 256, NxTextureFormat::RGBA8);
              * ```
              */
-            NxOpenGlTexture2D(const uint8_t* buffer, unsigned int width, unsigned int height, NxTextureFormat format);
+            NxOpenGlTexture2D(const uint8_t *buffer, unsigned int width, unsigned int height, NxTextureFormat format);
 
             /**
              * @brief Creates an OpenGL 2D texture from a file in memory (raw content).

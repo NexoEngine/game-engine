@@ -40,7 +40,7 @@ namespace nexo::renderer {
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<NxTexture2D> NxTexture2D::create(uint8_t* buffer, unsigned int width, unsigned int height,
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const uint8_t *buffer, unsigned int width, unsigned int height,
         NxTextureFormat format)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
@@ -49,7 +49,7 @@ namespace nexo::renderer {
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<NxTexture2D> NxTexture2D::create(uint8_t* buffer, unsigned int len)
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const uint8_t* buffer, unsigned int len)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlTexture2D>(buffer, len);
