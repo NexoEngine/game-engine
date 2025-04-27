@@ -153,9 +153,11 @@ namespace nexo::editor {
 		loguru::add_callback(LOGURU_CALLBACK_NAME, &ConsoleWindow::loguruCallback,
 		                         this, loguru::Verbosity_MAX);
 
-		auto engineLogCallback = [](const LogLevel level, const std::string &message) {
+		auto engineLogCallback = [](const LogLevel level, const std::source_location& loc, const std::string &message) {
 		    const auto loguruLevel = nexoLevelToLoguruLevel(level);
-		    VLOG_F(loguruLevel, "%s", message.c_str());
+		    if (loguruLevel > loguru::current_verbosity_cutoff())
+		        return;
+		    loguru::log(loguruLevel, loc.file_name(), loc.line(), "%s", message.c_str());
 		};
 		Logger::setCallback(engineLogCallback);
 		m_logFilePath = Path::resolvePathRelativeToExe(generateLogFilePath()).string();
