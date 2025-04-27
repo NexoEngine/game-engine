@@ -13,12 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
-
-#include "String.hpp"
 
 namespace nexo::renderer {
 
@@ -82,7 +79,16 @@ namespace nexo::renderer {
         _NB_FORMATS_ // Number of texture formats, used for array sizing
     };
 
-    constexpr const std::string_view NxTextureFormatToString(const NxTextureFormat format)
+    /**
+     * @brief Converts a NxTextureFormat enum value to its string representation.
+     *
+     * This function takes a NxTextureFormat enum value and returns its corresponding
+     * string representation. The string is a human-readable format name (e.g., "R8", "RGBA8").
+     *
+     * @param format The NxTextureFormat enum value to convert.
+     * @return A string_view representing the format name.
+     */
+    [[nodiscard]] constexpr std::string_view NxTextureFormatToString(const NxTextureFormat format)
     {
         switch (format) {
             case NxTextureFormat::R8:    return "R8";
@@ -93,7 +99,29 @@ namespace nexo::renderer {
         }
     }
 
+    /**
+     * @brief Converts a string representation of a texture format to its NxTextureFormat enum value.
+     *
+     * This function takes a string representation of a texture format (e.g., "R8", "RGBA8") and
+     * returns the corresponding NxTextureFormat enum value. If the string does not match any
+     * known format, it returns NxTextureFormat::INVALID.
+     *
+     * @param format The string representation of the texture format.
+     * @return The corresponding NxTextureFormat enum value.
+     */
     NxTextureFormat NxTextureFormatFromString(const std::string_view &format);
+
+    /**
+     * @brief Converts ARGB8 format to RGBA8 format in place.
+     *
+     * This function takes a pointer to a byte array and its size, and converts the
+     * pixel data from ARGB8 format to RGBA8 format. The conversion is done in place,
+     * meaning the original data will be modified.
+     *
+     * @param bytes Pointer to the byte array containing ARGB8 pixel data.
+     * @param size Size of the byte array in bytes.
+     */
+    void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, size_t size);
 
     class NxTexture2D :  public NxTexture {
         public:
