@@ -42,7 +42,7 @@ namespace nexo::editor {
             const std::bitset<ImGuiKey_NamedKey_COUNT> &getSignature() const;
             const std::string &getKey() const;
             const std::string &getDescription() const;
-            const bool isModifier() const;
+            bool isModifier() const;
 
             class Builder {
                 public:
