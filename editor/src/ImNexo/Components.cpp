@@ -99,17 +99,16 @@ namespace ImNexo {
     }
 
 
-    bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::NxTexture2D> &texture)
+    bool TextureButton(const std::string &label, const std::shared_ptr<nexo::renderer::NxTexture2D>& texture, std::filesystem::path& outPath)
 	{
-		bool textureModified = false;
+		bool modified = false;
 		constexpr ImVec2 previewSize(32, 32);
         ImGui::PushID(label.c_str());
 
         const ImTextureID textureId = texture ? static_cast<ImTextureID>(static_cast<intptr_t>(texture->getId())) : 0;
         const std::string textureButton = std::string("##TextureButton") + label;
 
-        if (ImGui::ImageButton(textureButton.c_str(), textureId, previewSize))
-        {
+        if (ImGui::ImageButton(textureButton.c_str(), textureId, previewSize)) {
             const char* filePath = tinyfd_openFileDialog(
                 "Open Texture",
                 "",
@@ -119,22 +118,16 @@ namespace ImNexo {
                 0
             );
 
-            if (filePath)
-            {
-            const std::string path(filePath);
-                std::shared_ptr<nexo::renderer::NxTexture2D> newTexture = nexo::renderer::NxTexture2D::create(path);
-                if (newTexture)
-                {
-                    texture = newTexture;
-                    textureModified = true;
-                }
+            if (filePath) {
+                outPath = filePath;
+                modified = true;
             }
         }
         ButtonBorder(IM_COL32(255,255,255,0), IM_COL32(255,255,255,255), IM_COL32(255,255,255,0), 0.0f, 0, 2.0f);
 		ImGui::PopID();
 		ImGui::SameLine();
 		ImGui::Text("%s", label.c_str());
-		return textureModified;
+		return modified;
 	}
 
     bool IconGradientButton(

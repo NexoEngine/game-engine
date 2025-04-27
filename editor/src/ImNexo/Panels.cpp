@@ -20,6 +20,7 @@
 #include "CameraFactory.hpp"
 #include "Path.hpp"
 #include "IconsFontAwesome.h"
+#include "assets/AssetCatalog.hpp"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
 #include "utils/EditorProps.hpp"
@@ -60,13 +61,25 @@ namespace ImNexo {
 			//TODO: implement rendering mode
 		}
 
+    	auto& catalog = nexo::assets::AssetCatalog::getInstance();
 	    // --- Albedo texture ---
         {
             static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerAlbedo = false;
-		    const auto albedoTextureAsset = material->albedoTexture.lock();
-		    auto albedoTexture = albedoTextureAsset ? albedoTextureAsset->data->texture : nullptr;
-		    modified = TextureButton("Albedo texture", albedoTexture) || modified;
+		    const auto asset = material->albedoTexture.lock();
+		    auto albedoTexture = asset && asset->isLoaded() ? asset->data->texture : nullptr;
+
+			std::filesystem::path newTexturePath;
+		    if (TextureButton("Albedo texture", albedoTexture, newTexturePath)
+		    	&& !newTexturePath.empty()) {
+		    	// TODO: /!\ This is not futureproof, this would modify the texture for every asset that use this material
+		    	const auto newTexture = catalog.createAsset<nexo::assets::Texture>(
+					nexo::assets::AssetLocation(newTexturePath.filename().string()),
+					newTexturePath
+				);
+		    	if (newTexture)
+		    		material->albedoTexture = newTexture;
+		    }
 		    ImGui::SameLine();
 		    modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
         }
@@ -75,12 +88,23 @@ namespace ImNexo {
         {
             static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerSpecular = false;
-		    const auto metallicTextureAsset = material->metallicMap.lock();
-		    auto metallicTexture = metallicTextureAsset ? metallicTextureAsset->data->texture : nullptr;
-		    modified = TextureButton("Specular texture", metallicTexture) || modified;
+		    const auto asset = material->metallicMap.lock();
+		    auto metallicTexture = asset && asset->isLoaded() ? asset->data->texture : nullptr;
+
+			std::filesystem::path newTexturePath;
+		    if (TextureButton("Specular texture", metallicTexture, newTexturePath)
+		    	&& !newTexturePath.empty()) {
+		    	// TODO: /!\ This is not futureproof, this would modify the texture for every asset that use this material
+				const auto newTexture = catalog.createAsset<nexo::assets::Texture>(
+					nexo::assets::AssetLocation(newTexturePath.filename().string()),
+					newTexturePath
+				);
+		    	if (newTexture)
+		    		material->metallicMap = newTexture;
+		    }
 		    ImGui::SameLine();
 		    modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
-        }
+		}
         return modified;
 	}
 
