@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <filesystem>
 #include <imgui.h>
 #include <string>
 #include <vector>
@@ -54,14 +55,15 @@ namespace ImNexo {
     /**
     * @brief Draws a texture button that displays a texture preview.
     *
-    * When clicked, opens a file dialog to select a new texture. If a new texture is loaded,
-    * the passed texture pointer is updated and the function returns true.
+    * When pressed, opens a file dialog to select a new texture. If a path was
+    * selected, it is set in `outPath` and the function returns true.
     *
-    * @param label A unique label identifier for the button.
-    * @param texture A shared pointer to the renderer::NxTexture2D that holds the texture.
-    * @return true if the texture was modified; false otherwise.
+    * @param[in] label A unique label identifier for the button.
+    * @param[in] texture A shared pointer to the renderer::NxTexture2D that holds the texture.
+    * @param[out] outPath The path to the selected texture.
+    * @return true if a texture path was set; false otherwise.
     */
-	bool TextureButton(const std::string &label, std::shared_ptr<nexo::renderer::NxTexture2D> &texture);
+	bool TextureButton(const std::string &label, const std::shared_ptr<nexo::renderer::NxTexture2D>& texture, std::filesystem::path& outPath);
 
     /**
      * @brief Creates a customizable gradient button with a centered icon.
