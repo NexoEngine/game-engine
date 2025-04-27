@@ -20,6 +20,8 @@
 #include <cctype>
 #include <iostream>
 
+#include "String.hpp"
+
 namespace nexo::editor {
     Command::Command(
         const std::string &description,
@@ -166,7 +168,7 @@ namespace nexo::editor {
         return m_key;
     }
 
-    const bool Command::isModifier() const
+    bool Command::isModifier() const
     {
         return m_isModifier;
     }
