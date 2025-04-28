@@ -14,7 +14,7 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
-#include "EditorScene.hpp"
+#include "DocumentWindows/EditorScene/EditorScene.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
 #include "core/scene/SceneManager.hpp"
