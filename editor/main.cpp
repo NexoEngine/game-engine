@@ -17,7 +17,7 @@
 #include "src/DocumentWindows/EditorScene/EditorScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 #include "src/DocumentWindows/InspectorWindow.hpp"
-#include "src/DocumentWindows/AssetManagerWindow.hpp"
+#include "src/DocumentWindows/AssetManager/AssetManagerWindow.hpp"
 #include "src/DocumentWindows/MaterialInspector.hpp"
 
 #include <thread>

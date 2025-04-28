@@ -73,7 +73,6 @@ namespace nexo::editor {
         void drawAssetsGrid();
         void drawAsset(const assets::GenericAssetRef& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize);
         void handleSelection(int index, bool isSelected);
-        ImU32 getAssetTypeOverlayColor(assets::AssetType type) const;
     };
 
 } // namespace nexo::editor
