@@ -18,7 +18,7 @@
 #include "IDocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "inputs/WindowState.hpp"
-#include "PopupManager.hpp"
+#include "../PopupManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
 #include "ImNexo/Widgets.hpp"
@@ -145,6 +145,13 @@ namespace nexo::editor {
              */
             void setupScene();
 
+            void setupGlobalState();
+            void setupGizmoState();
+            void setupGizmoTranslateState();
+            void setupGizmoRotateState();
+            void setupGizmoScaleState();
+            void setupShortcuts();
+
             /**
              * @brief Populates the scene with default entities.
              *
@@ -152,15 +159,6 @@ namespace nexo::editor {
              * and a simple ground plane in the scene.
              */
             void loadDefaultEntities() const;
-
-            /**
-             * @brief Handles keyboard input events for the scene.
-             *
-             * Processes key presses for navigation, selection, and other scene-specific
-             * operations when the scene window is focused.
-             * @note not implemented yet
-             */
-            void handleKeyEvents() const;
 
             /**
              * @brief Renders the toolbar overlay within the main scene view.
@@ -274,6 +272,19 @@ namespace nexo::editor {
              * If the gizmo is actively manipulated, the entity's transform component is updated with the new values.
              */
             void renderGizmo();
+            void setupGizmoContext(const components::TransformComponent& cameraTransform,
+                                   const components::CameraComponent& camera);
+            float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
+            void captureInitialTransformStates(const std::vector<int>& entities);
+            void applyTransformToEntities(
+                ecs::Entity sourceEntity,
+                const components::TransformComponent& sourceTransform,
+                const components::TransformComponent& newTransform,
+                const std::vector<int>& targetEntities);
+            void createTransformUndoActions(const std::vector<int>& entities);
+            static bool s_wasUsingGizmo;
+            static ImGuizmo::OPERATION s_lastOperation;
+            static std::unordered_map<ecs::Entity, components::TransformComponent::Memento> s_initialTransformStates;
 
             /**
              * @brief Renders the main viewport showing the 3D scene.
@@ -282,6 +293,13 @@ namespace nexo::editor {
              * rendered scene, and updates viewport bounds for input handling.
              */
             void renderView();
+            void renderNoActiveCamera();
+            void renderNewEntityPopup();
+
+            void handleSelection();
+            int sampleEntityTexture(float mx, float my);
+            void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
+            void updateWindowState();
 
             enum class EditorState {
                 GLOBAL,
