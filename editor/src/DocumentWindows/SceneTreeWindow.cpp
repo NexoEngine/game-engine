@@ -16,7 +16,7 @@
 #include "Coordinator.hpp"
 #include "utils/Config.hpp"
 #include "utils/EditorProps.hpp"
-#include "DocumentWindows/InspectorWindow.hpp"
+#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "Primitive.hpp"
 #include "Path.hpp"
 

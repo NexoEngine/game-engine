@@ -25,7 +25,7 @@ namespace nexo::editor {
     class InspectorWindow final : public ADocumentWindow {
 	    public:
 			using ADocumentWindow::ADocumentWindow;
-	        ~InspectorWindow() override;
+	        ~InspectorWindow() override = default;
 
 			/**
 			* @brief Initializes the property handlers for various entity component types.
