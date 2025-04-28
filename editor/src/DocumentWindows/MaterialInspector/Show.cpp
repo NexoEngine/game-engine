@@ -1,4 +1,4 @@
-//// MaterialInspector.cpp ///////////////////////////////////////////////////////////////
+//// Show.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,35 +7,20 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        25/03/2025
-//  Description: Source file for the material inspector window
+//  Date:        28/04/2025
+//  Description: Source file for the material inspector rendering
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MaterialInspector.hpp"
-#include "DocumentWindows/InspectorWindow.hpp"
-#include "Exception.hpp"
-#include "components/Render.hpp"
-#include "components/Render3D.hpp"
 #include "utils/ScenePreview.hpp"
-#include "components/Camera.hpp"
-#include "context/Selector.hpp"
-#include "exceptions/Exceptions.hpp"
+#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "ImNexo/Panels.hpp"
+#include "context/Selector.hpp"
 
 namespace nexo::editor {
 
-	void MaterialInspector::setup()
-	{
-		// No need to setup anything
-	}
-
-	void MaterialInspector::shutdown()
-	{
-		// No need to delete anything since the destructor of the framebuffer will handle it
-	}
-
-	void MaterialInspector::renderMaterialInspector(int selectedEntity)
+    void MaterialInspector::renderMaterialInspector(int selectedEntity)
 	{
 		bool &materialModified = m_materialModified;
 		static utils::ScenePreviewOut previewParams;
@@ -52,7 +37,7 @@ namespace nexo::editor {
 			{
 				m_ecsEntity = -1;
 			}
-   		}
+      		}
 
 		if (m_ecsEntity == -1)
 			return;
@@ -85,28 +70,23 @@ namespace nexo::editor {
 
 	void MaterialInspector::show()
 	{
-  		auto const &selector = Selector::get();
-        const int selectedEntity = selector.getPrimaryEntity();
-        auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
-        if (!inspectorWindow)
-            return;
+     		auto const &selector = Selector::get();
+           const int selectedEntity = selector.getPrimaryEntity();
+           auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
+           if (!inspectorWindow)
+               return;
 		if (inspectorWindow->getSubInspectorVisibility<MaterialInspector>())
-        {
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
-            if (m_firstOpened)
-            	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+           {
+               ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
+               if (m_firstOpened)
+               	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-            if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
-            {
-            	firstDockSetup(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
-                renderMaterialInspector(selectedEntity);
-            }
-            ImGui::End();
-        }
-	}
-
-	void MaterialInspector::update()
-	{
-		// No need to update anything
+               if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
+               {
+               	firstDockSetup(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
+                   renderMaterialInspector(selectedEntity);
+               }
+               ImGui::End();
+           }
 	}
 }
