@@ -19,6 +19,7 @@
 
 #include "ADocumentWindow.hpp"
 #include "Application.hpp"
+#include "Definitions.hpp"
 #include "EntityFactory3D.hpp"
 #include "IconsFontAwesome.h"
 #include "LightFactory.hpp"
@@ -29,10 +30,14 @@
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
 #include "components/RenderContext.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Editor.hpp"
 #include "math/Matrix.hpp"
 #include "context/Selector.hpp"
+#include "context/actions/StateAction.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "context/ActionManager.hpp"
 #include "utils/String.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Widgets.hpp"
@@ -141,11 +146,14 @@ namespace nexo::editor {
                     auto &selector = Selector::get();
                     const auto &selectedEntities = selector.getSelectedEntities();
                     auto &app = nexo::getApp();
+                    auto& actionManager = ActionManager::get();
+                    auto deleteAction = actionManager.prepareEntityDeletion(selectedEntities[0]);
 
                     for (const auto entity : selectedEntities)
                         app.deleteEntity(entity);
                     selector.clearSelection();
                     this->m_windowState = m_globalState;
+                    actionManager.recordAction(std::move(deleteAction));
                 },
                 nullptr,
                 nullptr,
@@ -1244,7 +1252,6 @@ namespace nexo::editor {
             }
         }
 
-        // Still no entity with transform component found
         if (!transf)
             return;
 
@@ -1276,6 +1283,26 @@ namespace nexo::editor {
             snap = &m_angleSnap;
         }
 
+        // Track ImGuizmo state across frames
+        static bool wasUsingGizmo = false;
+        bool isUsingGizmo = ImGuizmo::IsUsing();
+
+        // Store initial states when starting to use gizmo
+        static std::unordered_map<ecs::Entity, components::TransformComponent::Memento> initialStates;
+
+        // Check if we're just starting to use the gizmo this frame
+        if (!wasUsingGizmo && ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGuizmo::IsOver()) {
+            initialStates.clear();
+            initialStates[targetEntity] = transf->get().save();
+            for (const auto entity : selectedEntities) {
+                if (entity != targetEntity) {
+                    auto entityTransf = coord->tryGetComponent<components::TransformComponent>(entity);
+                    if (entityTransf)
+                        initialStates[entity] = entityTransf->get().save();
+                }
+            }
+        }
+
         ImGuizmo::Enable(true);
         ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projectionMatrix),
                              m_currentGizmoOperation,
@@ -1283,8 +1310,10 @@ namespace nexo::editor {
                              glm::value_ptr(transformMatrix),
                              nullptr, snap);
 
-        if (ImGuizmo::IsUsing())
-        {
+        isUsingGizmo = ImGuizmo::IsUsing();
+
+        if (isUsingGizmo) {
+            // Disable camera movement during gizmo manipulation
             cameraComponent.active = false;
 
             glm::vec3 originalPos = transf->get().pos;
@@ -1302,12 +1331,10 @@ namespace nexo::editor {
             glm::vec3 scaleFactor = newScale / originalScale; // Element-wise division
             glm::quat rotationDelta = newRot * glm::inverse(originalRot);
 
-            // Apply transformation to target entity
             transf->get().pos = newPos;
             transf->get().quat = newRot;
             transf->get().size = newScale;
 
-            // Apply same transformation to all other selected entities with transform components
             for (const auto entity : selectedEntities) {
                 if (entity == targetEntity) continue; // Skip target entity, already transformed
 
@@ -1316,10 +1343,8 @@ namespace nexo::editor {
                     if (m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE)
                         entityTransf->get().pos += positionDelta;
 
-
                     if (m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE)
                         entityTransf->get().quat = rotationDelta * entityTransf->get().quat;
-
 
                     if (m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE) {
                         entityTransf->get().size.x *= scaleFactor.x;
@@ -1328,9 +1353,63 @@ namespace nexo::editor {
                     }
                 }
             }
-        } else {
+        } else if (wasUsingGizmo) {
             cameraComponent.active = true;
+
+            auto& actionManager = ActionManager::get();
+            if (selectedEntities.size() > 1) {
+                // Multiple entities selected
+                auto groupAction = actionManager.createActionGroup();
+                bool anyChanges = false;
+
+                for (const auto entity : selectedEntities) {
+                    auto entityTransf = coord->tryGetComponent<components::TransformComponent>(entity);
+                    if (entityTransf && initialStates.find(entity) != initialStates.end()) {
+                        auto beforeState = initialStates[entity];
+                        auto afterState = entityTransf->get().save();
+
+                        // Check if the transform actually changed
+                        if (beforeState.position != afterState.position ||
+                            beforeState.rotation != afterState.rotation ||
+                            beforeState.scale != afterState.scale) {
+
+                            std::string operationName;
+                            switch (m_currentGizmoOperation) {
+                                case ImGuizmo::OPERATION::TRANSLATE: operationName = "Move"; break;
+                                case ImGuizmo::OPERATION::ROTATE: operationName = "Rotate"; break;
+                                case ImGuizmo::OPERATION::SCALE: operationName = "Scale"; break;
+                                default: operationName = "Transform"; break;
+                            }
+
+                            auto action = std::make_unique<ComponentChangeAction<components::TransformComponent>>(
+                                entity, beforeState, afterState);
+
+                            groupAction->addAction(std::move(action));
+                            anyChanges = true;
+                        }
+                    }
+                }
+
+                // Only record if any transforms changed
+                if (anyChanges)
+                    actionManager.recordAction(std::move(groupAction));
+            } else {
+                auto beforeState = initialStates[targetEntity];
+                auto afterState = transf->get().save();
+
+                // Check if the transform actually changed
+                if (beforeState.position != afterState.position ||
+                    beforeState.rotation != afterState.rotation ||
+                    beforeState.scale != afterState.scale) {
+                    actionManager.recordComponentChange<components::TransformComponent>(
+                        targetEntity, beforeState, afterState);
+                }
+            }
+
+            initialStates.clear();
         }
+
+        wasUsingGizmo = isUsingGizmo;
     }
 
     void EditorScene::renderView()
