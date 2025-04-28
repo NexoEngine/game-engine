@@ -141,7 +141,6 @@ TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat) {
     std::string hint = "abgr0000";
     do {
         hint.replace(hint.begin() + 4, hint.begin() + 8, "0000");
-        GTEST_LOG_(INFO) << "HINT: " << hint;
 
         const auto rPos = std::ranges::find(hint, 'r');
         const auto gPos = std::ranges::find(hint, 'g');
