@@ -47,13 +47,9 @@ namespace nexo::ecs {
     {
         std::vector<std::type_index> types;
 
-        // Get the entity's signature which already tells us which components it has
         Signature signature = m_entityManager->getSignature(entity);
 
-        // We need a mapping from component type IDs to type_index
-        // This could be stored as a member variable and populated during registerComponent
-
-        // If we have that mapping:
+        // We have a mapping from component type IDs to type_index
         for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
             if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
                 types.emplace_back(m_typeIDtoTypeIndex.at(type));
