@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "ADocumentWindow.hpp"
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "utils/Config.hpp"
@@ -317,23 +318,8 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-    void Editor::render()
+    void Editor::handleGlobalCommands()
     {
-    	getApp().beginFrame();
-
-        ImGuiBackend::begin();
-
-        ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
-        ImGuizmo::BeginFrame();
-        buildDockspace();
-
-        drawMenuBar();
-        // ImGui::ShowDemoWindow();
-
-
-
-        m_windowRegistry.render();
-
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
         {
             if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
@@ -345,48 +331,52 @@ namespace nexo::editor {
                 ActionManager::get().undo();
             }
         }
+    }
 
-        // Get the commands to display in the bottom bar
+    std::vector<CommandInfo> Editor::handleFocusedWindowCommands()
+    {
         std::vector<CommandInfo> possibleCommands;
         static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
         static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
         const float commandPersistTime = 2.0f;             // Show last commands for 2 seconds
 
+        auto focusedWindow = m_windowRegistry.getFocusedWindow();
+        if (focusedWindow)
         {
-            auto focusedWindow = m_windowRegistry.getFocusedWindow();
-            if (focusedWindow)
-            {
-                WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
-                m_inputManager.processInputs(currentState);
-                possibleCommands = m_inputManager.getPossibleCommands(currentState);
+            WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
+            m_inputManager.processInputs(currentState);
+            possibleCommands = m_inputManager.getPossibleCommands(currentState);
 
-                // Update the last valid commands if we have any
-                if (!possibleCommands.empty())
-                {
-                    lastValidCommands = possibleCommands;
-                    commandDisplayTimer = commandPersistTime; // Reset timer
-                }
-                else if (commandDisplayTimer > 0.0f)
-                {
-                    // Use the last valid commands if timer is still active
-                    possibleCommands = lastValidCommands;
-                    commandDisplayTimer -= ImGui::GetIO().DeltaTime;
-                }
-                else if (lastValidCommands.empty())
-                {
-                    // Fallback: If we've never had commands, grab all possible commands from the window
-                    // This is a more complex operation but ensures we always have something to show
-                    possibleCommands = m_inputManager.getAllPossibleCommands(currentState);
-                    lastValidCommands = possibleCommands;
-                }
-                else
-                {
-                    // Use the last valid set of commands
-                    possibleCommands = lastValidCommands;
-                }
+            // Update the last valid commands if we have any
+            if (!possibleCommands.empty())
+            {
+                lastValidCommands = possibleCommands;
+                commandDisplayTimer = commandPersistTime; // Reset timer
+            }
+            else if (commandDisplayTimer > 0.0f)
+            {
+                // Use the last valid commands if timer is still active
+                possibleCommands = lastValidCommands;
+                commandDisplayTimer -= ImGui::GetIO().DeltaTime;
+            }
+            else if (lastValidCommands.empty())
+            {
+                // Fallback: If we've never had commands, grab all possible commands from the window
+                // This is a more complex operation but ensures we always have something to show
+                possibleCommands = m_inputManager.getAllPossibleCommands(currentState);
+                lastValidCommands = possibleCommands;
+            }
+            else
+            {
+                // Use the last valid set of commands
+                possibleCommands = lastValidCommands;
             }
         }
+        return possibleCommands;
+    }
 
+    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands)
+    {
         const float bottomBarHeight = 38.0f;
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
@@ -402,9 +392,12 @@ namespace nexo::editor {
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoScrollbar |
             ImGuiWindowFlags_NoNav |
-            ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBackground;
+            ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoFocusOnAppearing |
+            ImGuiWindowFlags_NoInputs |
+            ImGuiWindowFlags_NoBackground;
 
-        if (ImGui::Begin("CommandsBar", nullptr, bottomBarFlags))
+        if (ImGui::Begin(NEXO_WND_USTRID_BOTTOM_BAR, nullptr, bottomBarFlags))
         {
             const float textScaleFactor = 0.90f; // 15% larger text
             ImGui::SetWindowFontScale(textScaleFactor);
@@ -481,10 +474,11 @@ namespace nexo::editor {
         }
         ImGui::End();
         ImGui::PopStyleColor(2); // Pop both text and bg colors
+    }
 
-
-
-
+    void Editor::drawBackground()
+    {
+        auto viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
@@ -506,12 +500,34 @@ namespace nexo::editor {
             {0.73f, IM_COL32(58, 124, 161, 255) },
         };
 
-        float angle = 148;
+        constexpr float angle = 148;
 
         ImNexo::RectFilledLinearGradient(viewport->Pos,
                 ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
 
         ImGui::End();
+    }
+
+    void Editor::render()
+    {
+    	getApp().beginFrame();
+
+        ImGuiBackend::begin();
+
+        ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+        ImGuizmo::BeginFrame();
+        buildDockspace();
+
+        drawMenuBar();
+        // ImGui::ShowDemoWindow();
+        m_windowRegistry.render();
+
+        handleGlobalCommands();
+
+        // Get the commands to display in the bottom bar
+        std::vector<CommandInfo> possibleCommands = handleFocusedWindowCommands();
+        drawShortcutBar(possibleCommands);
+        drawBackground();
 
         ImGui::Render();
 
