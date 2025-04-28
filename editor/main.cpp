@@ -14,7 +14,7 @@
 
 #include "src/Editor.hpp"
 #include "src/DocumentWindows/ConsoleWindow.hpp"
-#include "src/DocumentWindows/EditorScene.hpp"
+#include "src/DocumentWindows/EditorScene/EditorScene.hpp"
 #include "src/DocumentWindows/SceneTreeWindow.hpp"
 #include "src/DocumentWindows/InspectorWindow.hpp"
 #include "src/DocumentWindows/AssetManagerWindow.hpp"

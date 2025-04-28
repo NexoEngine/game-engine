@@ -24,7 +24,7 @@
 #include <imgui_internal.h>
 #include <random>
 
-#include "EditorScene.hpp"
+#include "DocumentWindows/EditorScene/EditorScene.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "components/Render.hpp"
