@@ -13,8 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <string>
-
 namespace nexo::editor {
 
     /**
@@ -24,10 +22,8 @@ namespace nexo::editor {
         public:
             virtual ~Action() = default;
 
-            // Redo the action after it was undone
             virtual void redo() = 0;
 
-            // Undo the action's effects
             virtual void undo() = 0;
     };
 

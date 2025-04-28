@@ -33,24 +33,6 @@ namespace nexo::editor {
                 const typename T::Memento& after
             ) : m_target(target), m_beforeState(before), m_afterState(after){}
 
-            static std::unique_ptr<StateAction<T>> createFromOperation(
-                T& target,
-                std::function<void()> operation
-            ) {
-
-                // Capture before state
-                auto beforeState = target.save();
-
-                // Execute operation
-                operation();
-
-                // Capture after state
-                auto afterState = target.save();
-
-                // Create action
-                return std::make_unique<StateAction<T>>(target, beforeState, afterState);
-            }
-
             void redo() override
             {
                 m_target = m_afterState.restore();
