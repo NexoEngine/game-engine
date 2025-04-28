@@ -18,6 +18,7 @@ set(SRCS
         editor/src/context/ActionManager.cpp
         editor/src/context/ActionHistory.cpp
         editor/src/context/ActionGroup.cpp
+        editor/src/context/actions/EntityActions.cpp
         editor/src/ImNexo/EntityProperties.cpp
         editor/src/ImNexo/Components.cpp
         editor/src/ImNexo/Elements.cpp
