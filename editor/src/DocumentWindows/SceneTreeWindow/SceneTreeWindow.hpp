@@ -20,7 +20,7 @@
 #include "core/scene/SceneManager.hpp"
 #include "context/Selector.hpp"
 
-#include "PopupManager.hpp"
+#include "../PopupManager.hpp"
 
 #include <unordered_map>
 #include <utility>
@@ -90,7 +90,7 @@ namespace nexo::editor {
     class SceneTreeWindow : public ADocumentWindow {
         public:
        		using ADocumentWindow::ADocumentWindow;
-            ~SceneTreeWindow() override;
+            ~SceneTreeWindow() override = default;
 
             // No-op method in this class
             void setup() override;

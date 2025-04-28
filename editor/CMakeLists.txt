@@ -61,7 +61,15 @@ set(SRCS
         editor/src/DocumentWindows/MaterialInspector/Show.cpp
         editor/src/DocumentWindows/MaterialInspector/Shutdown.cpp
         editor/src/DocumentWindows/MaterialInspector/Update.cpp
-        editor/src/DocumentWindows/SceneTreeWindow.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Hovering.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Init.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/NodeHandling.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Rename.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/SceneCreation.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Selection.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Show.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Shutdown.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Update.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
