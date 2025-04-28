@@ -19,6 +19,11 @@
 
 namespace nexo::editor {
 
+    std::string verbosityToString(const loguru::Verbosity level);
+    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level);
+    const ImVec4 getVerbosityColor(loguru::Verbosity level);
+    std::string generateLogFilePath();
+
 	constexpr auto LOGURU_CALLBACK_NAME = "GEE";
 
 	/**
@@ -154,8 +159,35 @@ namespace nexo::editor {
              * @param fmt Format string similar to printf
              * @param args Arguments for the format string
              */
-            template <typename... Args>
-            void addLog(const char* fmt, Args&&... args);
+             // Add this implementation to your ConsoleWindow.hpp file
+             template<typename... Args>
+             void addLog(const char *fmt, Args &&... args)
+             {
+                 try {
+                     char buffer[1024];
+                     int result = snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
+                     if (result < 0)
+                         return;
+
+                     LogMessage newMessage;
+                     newMessage.verbosity = loguru::Verbosity_1;
+                     newMessage.message = std::string(buffer);
+                     newMessage.prefix = "";
+                     m_logs.push_back(newMessage);
+                 } catch (const std::exception &e) {
+                     LogMessage newMessage;
+                     newMessage.verbosity = loguru::Verbosity_ERROR;
+
+                     char errorBuffer[1024];
+                     snprintf(errorBuffer, sizeof(errorBuffer), "Error formatting log message: %s", e.what());
+                     newMessage.message = std::string(errorBuffer);
+
+                     newMessage.prefix = "";
+                     m_logs.push_back(newMessage);
+                 }
+
+                 m_scrollToBottom = true;
+             }
 
             /**
              * @brief Displays a single log entry in the console UI.
