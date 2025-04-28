@@ -141,7 +141,8 @@ namespace nexo::assets {
 
     renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
     {
-        if (std::strlen(achFormatHint) != 8) {
+        if (std::memchr(achFormatHint, '\0', 9) == nullptr
+            || std::strlen(achFormatHint) != 8) {
             return renderer::NxTextureFormat::INVALID;
         }
 
