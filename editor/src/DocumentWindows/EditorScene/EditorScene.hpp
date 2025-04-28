@@ -145,6 +145,11 @@ namespace nexo::editor {
              */
             void setupScene();
 
+            void hideAllButSelectionCallback();
+            void selectAllCallback();
+            void unhideAllCallback();
+            void deleteCallback();
+
             void setupGlobalState();
             void setupGizmoState();
             void setupGizmoTranslateState();
