@@ -22,6 +22,7 @@
 #include "backends/ImGuiBackend.hpp"
 #include "IconsFontAwesome.h"
 #include "ImNexo/Elements.hpp"
+#include "context/ActionManager.hpp"
 
 #include "imgui.h"
 #include <imgui_internal.h>
@@ -332,6 +333,18 @@ namespace nexo::editor {
 
 
         m_windowRegistry.render();
+
+        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
+        {
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
+            {
+                ActionManager::get().redo();
+            }
+            else
+            {
+                ActionManager::get().undo();
+            }
+        }
 
         // Get the commands to display in the bottom bar
         std::vector<CommandInfo> possibleCommands;
