@@ -44,6 +44,10 @@ set(SRCS
         editor/src/DocumentWindows/EditorScene/Shutdown.cpp
         editor/src/DocumentWindows/EditorScene/Toolbar.cpp
         editor/src/DocumentWindows/EditorScene/Update.cpp
+        editor/src/DocumentWindows/AssetManager/Init.cpp
+        editor/src/DocumentWindows/AssetManager/Show.cpp
+        editor/src/DocumentWindows/AssetManager/Shutdown.cpp
+        editor/src/DocumentWindows/AssetManager/Update.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/InspectorWindow.cpp
@@ -57,7 +61,6 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/CameraProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraController.cpp
         editor/src/DocumentWindows/EntityProperties/CameraTarget.cpp
-        editor/src/DocumentWindows/AssetManagerWindow.cpp
 )
 
 # Windows App Icon
