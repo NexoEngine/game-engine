@@ -103,7 +103,31 @@ namespace nexo::components
                 renderable->draw(context, transform, entityID);
         }
 
-        [[nodiscard]] RenderComponent clone() const {
+        struct Memento {
+            bool isRendered = true;
+            RenderType type = RenderType::RENDER_2D;
+
+            std::shared_ptr<Renderable> renderable;
+
+            RenderComponent restore() const
+            {
+                RenderComponent restored(renderable, type);
+                restored.isRendered = isRendered;
+                return restored;
+            }
+        };
+
+        Memento save() const
+        {
+            return {
+                isRendered,
+                type,
+                renderable ? renderable->clone() : nullptr
+            };
+        }
+
+        [[nodiscard]] RenderComponent clone() const
+        {
             RenderComponent copy;
             copy.isRendered = isRendered;
             copy.type = type;
