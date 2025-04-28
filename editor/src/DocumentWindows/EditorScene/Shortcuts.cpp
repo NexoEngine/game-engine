@@ -19,85 +19,152 @@
 
 namespace nexo::editor {
 
+    static void hideCallback()
+    {
+        auto &selector = Selector::get();
+        const auto &selectedEntities = selector.getSelectedEntities();
+        auto &app = nexo::getApp();
+        auto& actionManager = ActionManager::get();
+        auto actionGroup = actionManager.createActionGroup();
+        for (const auto entity : selectedEntities) {
+            auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            auto beforeState = renderComponent.save();
+            renderComponent.isRendered = !renderComponent.isRendered;
+            auto afterState = renderComponent.save();
+            actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
+                entity, beforeState, afterState));
+        }
+        actionManager.recordAction(std::move(actionGroup));
+        selector.clearSelection();
+    }
+
+    void EditorScene::selectAllCallback()
+    {
+        auto &selector = Selector::get();
+        auto &app = nexo::getApp();
+        auto &scene = app.getSceneManager().getScene(m_sceneId);
+
+        selector.clearSelection();
+
+        for (const auto entity : scene.getEntities()) {
+            if (entity == m_editorCamera) continue; // Skip editor camera
+
+            const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+            if (uuidComponent)
+                selector.addToSelection(uuidComponent->get().uuid, entity);
+        }
+        m_windowState = m_gizmoState;
+    }
+
+    void EditorScene::hideAllButSelectionCallback()
+    {
+        auto &app = getApp();
+        const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
+        auto &selector = Selector::get();
+        auto &actionManager = ActionManager::get();
+        auto actionGroup = actionManager.createActionGroup();
+        for (const auto entity : entities) {
+            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity) && !selector.isEntitySelected(entity)) {
+                auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                if (renderComponent.isRendered) {
+                    auto beforeState = renderComponent.save();
+                    renderComponent.isRendered = false;
+                    auto afterState = renderComponent.save();
+                    actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
+                        entity, beforeState, afterState));
+                }
+            }
+        }
+        actionManager.recordAction(std::move(actionGroup));
+    }
+
+    void EditorScene::deleteCallback()
+    {
+        auto &selector = Selector::get();
+        const auto &selectedEntities = selector.getSelectedEntities();
+        auto &app = nexo::getApp();
+        auto& actionManager = ActionManager::get();
+        if (selectedEntities.size() > 1) {
+            auto actionGroup = actionManager.createActionGroup();
+            for (const auto entity : selectedEntities) {
+                actionGroup->addAction(actionManager.prepareEntityDeletion(entity));
+                app.deleteEntity(entity);
+            }
+            actionManager.recordAction(std::move(actionGroup));
+        } else {
+            auto deleteAction = actionManager.prepareEntityDeletion(selectedEntities[0]);
+            app.deleteEntity(selectedEntities[0]);
+            actionManager.recordAction(std::move(deleteAction));
+        }
+        selector.clearSelection();
+        this->m_windowState = m_globalState;
+    }
+
+    void EditorScene::unhideAllCallback()
+    {
+        auto &app = getApp();
+        const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
+        auto &actionManager = ActionManager::get();
+        auto actionGroup = actionManager.createActionGroup();
+        for (const auto entity : entities) {
+            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+                if (!renderComponent.isRendered) {
+                    auto beforeState = renderComponent.save();
+                    renderComponent.isRendered = true;
+                    auto afterState = renderComponent.save();
+                    actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
+                        entity, beforeState, afterState));
+                }
+            }
+        }
+        actionManager.recordAction(std::move(actionGroup));
+    }
+
     void EditorScene::setupGlobalState()
     {
         // ================= GLOBAL STATE =============================
         m_globalState = {static_cast<unsigned int>(EditorState::GLOBAL)};
+
+        // Shift context
         m_globalState.registerCommand(
-            {
-                "Shift context",
-                "Shift",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Add entity",
-                        "A",
-                        [this]{
-                            this->m_popupManager.openPopup("Add new entity popup");
-                        },
-                        nullptr,
-                        nullptr,
-                        false,
-                    }
-                }
-            }
+            Command::create()
+                .description("Shift context")
+                .key("Shift")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Add entity")
+                        .key("A")
+                        .onPressed([this]{ this->m_popupManager.openPopup("Add new entity popup"); })
+                        .build()
+                )
+                .build()
         );
+
+        // Control context
         m_globalState.registerCommand(
-            {
-                "Control context",
-                "Ctrl",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Unhide all",
-                        "H",
-                        [this]{
-                            auto &app = getApp();
-                            const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
-                            for (const auto entity : entities) {
-                                if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
-                                    auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
-                                    renderComponent.isRendered = true;
-                                }
-                            }
-                        },
-                        nullptr,
-                        nullptr,
-                        false,
-                    }
-                }
-            }
+            Command::create()
+                .description("Control context")
+                .key("Ctrl")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Unhide all")
+                        .key("H")
+                        .onPressed([this]() { this->unhideAllCallback(); })
+                        .build()
+                )
+                .build()
         );
+
+        // Select all
         m_globalState.registerCommand(
-            {
-                "Select all",
-                "A",
-                [this]{
-                    auto &selector = Selector::get();
-                    auto &app = nexo::getApp();
-                    auto &scene = app.getSceneManager().getScene(m_sceneId);
-
-                    selector.clearSelection();
-
-                    for (const auto entity : scene.getEntities()) {
-                        if (entity == m_editorCamera) continue; // Skip editor camera
-
-                        const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
-                        if (uuidComponent)
-                            selector.addToSelection(uuidComponent->get().uuid, entity);
-                    }
-                    m_windowState = m_gizmoState;
-                },
-                nullptr,
-                nullptr,
-                false
-            }
+            Command::create()
+                .description("Select all")
+                .key("A")
+                .onPressed([this]{ this->selectAllCallback(); })
+                .build()
         );
     }
 
@@ -105,318 +172,254 @@ namespace nexo::editor {
     {
         // ================= GIZMO STATE =============================
         m_gizmoState = {static_cast<unsigned int>(EditorState::GIZMO)};
+
+        // Delete
         m_gizmoState.registerCommand(
-            {
-                "Delete",
-                "Delete",
-                [this]{
-                    auto &selector = Selector::get();
-                    const auto &selectedEntities = selector.getSelectedEntities();
-                    auto &app = nexo::getApp();
-                    auto& actionManager = ActionManager::get();
-                    if (selectedEntities.size() > 1) {
-                        auto actionGroup = actionManager.createActionGroup();
-                        for (const auto entity : selectedEntities) {
-                            actionGroup->addAction(actionManager.prepareEntityDeletion(entity));
-                            app.deleteEntity(entity);
-                        }
-                        actionManager.recordAction(std::move(actionGroup));
-                    } else {
-                        auto deleteAction = actionManager.prepareEntityDeletion(selectedEntities[0]);
-                        app.deleteEntity(selectedEntities[0]);
-                        actionManager.recordAction(std::move(deleteAction));
-                    }
-                    selector.clearSelection();
-                    this->m_windowState = m_globalState;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+            Command::create()
+                .description("Delete")
+                .key("Delete")
+                .onPressed([this]() { this->deleteCallback(); })
+                .build()
         );
+
+        // Hide
         m_gizmoState.registerCommand(
-            {
-                "Hide",
-                "H",
-                [this]{
-                    auto &selector = Selector::get();
-                    const auto &selectedEntities = selector.getSelectedEntities();
-                    auto &app = nexo::getApp();
-                    auto& actionManager = ActionManager::get();
-                    if (selectedEntities.size() > 1) {
-                        auto actionGroup = actionManager.createActionGroup();
-                        for (const auto entity : selectedEntities) {
-                            auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
-                            auto beforeState = renderComponent.save();
-                            renderComponent.isRendered = !renderComponent.isRendered;
-                            auto afterState = renderComponent.save();
-                            actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
-                                entity, beforeState, afterState));
-                        }
-                        actionManager.recordAction(std::move(actionGroup));
-                    } else {
-                        auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(selectedEntities[0]);
-                        auto beforeState = renderComponent.save();
-                        renderComponent.isRendered = !renderComponent.isRendered;
-                        auto afterState = renderComponent.save();
-                        actionManager.recordAction(std::move(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
-                            selectedEntities[0], beforeState, afterState)));
-                    }
-                    selector.clearSelection();
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+            Command::create()
+                .description("Hide")
+                .key("H")
+                .onPressed(&hideCallback)
+                .build()
         );
+
+        // Translate
         m_gizmoState.registerCommand(
-            {
-                "Translate",
-                "G",
-                [this]{
+            Command::create()
+                .description("Translate")
+                .key("G")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Rotate
         m_gizmoState.registerCommand(
-            {
-                "Rotate",
-                "R",
-                [this]{
+            Command::create()
+                .description("Rotate")
+                .key("R")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Scale
         m_gizmoState.registerCommand(
-            {
-                "Scale",
-                "S",
-                [this]{
+            Command::create()
+                .description("Scale")
+                .key("S")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Shift context
         m_gizmoState.registerCommand(
-            {
-                "Shift context",
-                "Shift",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Toggle snapping",
-                        "S",
-                        [this]{
+            Command::create()
+                .description("Shift context")
+                .key("Shift")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Toggle snapping")
+                        .key("S")
+                        .onPressed([this]{
                             m_snapTranslateOn = true;
                             m_snapRotateOn = true;
-                        },
-                        [this]{
+                        })
+                        .onReleased([this]{
                             m_snapTranslateOn = false;
                             m_snapRotateOn = false;
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Hide all but selection",
-                        "H",
-                        [this]{
-                            auto &app = getApp();
-                            const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
-                            auto &selector = Selector::get();
-                            for (const auto entity : entities) {
-                                if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity) && !selector.isEntitySelected(entity)) {
-                                    auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
-                                    renderComponent.isRendered = false;
-                                }
-                            }
-                        },
-                        nullptr,
-                        nullptr,
-                        false,
-                    }
-                }
-            }
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Hide all but selection")
+                        .key("H")
+                        .onPressed([this]{ this->hideAllButSelectionCallback(); })
+                        .build()
+                )
+                .build()
         );
     }
 
     void EditorScene::setupGizmoTranslateState()
     {
-
         // ================= TRANSLATE STATE =============================
         m_gizmoTranslateState = {static_cast<unsigned int>(EditorState::GIZMO_TRANSLATE)};
+
+        // Universal
         m_gizmoTranslateState.registerCommand(
-            {
-                "Universal",
-                "U",
-                [this]{
+            Command::create()
+                .description("Universal")
+                .key("U")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Translate
         m_gizmoTranslateState.registerCommand(
-            {
-                "Translate",
-                "G",
-                [this]{
+            Command::create()
+                .description("Translate")
+                .key("G")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                [this]{
+                })
+                .onRepeat([this]{
                     if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
                         this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
                     else
                         this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
-                },
-                false,
-            }
+                })
+                .build()
         );
+
+        // Rotate
         m_gizmoTranslateState.registerCommand(
-            {
-                "Rotate",
-                "R",
-                [this]{
+            Command::create()
+                .description("Rotate")
+                .key("R")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Scale
         m_gizmoTranslateState.registerCommand(
-            {
-                "Scale",
-                "S",
-                [this]{
+            Command::create()
+                .description("Scale")
+                .key("S")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Shift context
         m_gizmoTranslateState.registerCommand(
-            {
-                "Shift context",
-                "Shift",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Exclude X",
-                        "X",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_X);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_X);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Y",
-                        "Y",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Y);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Y);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Z",
-                        "Z",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Z);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Z);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Toggle snapping",
-                        "S",
-                        [this]{
+            Command::create()
+                .description("Shift context")
+                .key("Shift")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Exclude X")
+                        .key("X")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_X);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_X);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Y")
+                        .key("Y")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Y);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Y);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Z")
+                        .key("Z")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::TRANSLATE_Z);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE_Z);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Toggle snapping")
+                        .key("S")
+                        .onPressed([this]{
                             m_snapTranslateOn = true;
-                        },
-                        [this]{
+                        })
+                        .onReleased([this]{
                             m_snapTranslateOn = false;
-                        },
-                        nullptr,
-                        false,
-                    }
-                }
-            }
+                        })
+                        .build()
+                )
+                .build()
         );
+
+        // Lock X
         m_gizmoTranslateState.registerCommand(
-            {
-                "Lock X",
-                "X",
-                [this]{
+            Command::create()
+                .description("Lock X")
+                .key("X")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_X;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Y
         m_gizmoTranslateState.registerCommand(
-            {
-                "Lock Y",
-                "Y",
-                [this]{
+            Command::create()
+                .description("Lock Y")
+                .key("Y")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Y;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Z
         m_gizmoTranslateState.registerCommand(
-            {
-                "Lock Z",
-                "Z",
-                [this]{
+            Command::create()
+                .description("Lock Z")
+                .key("Z")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE_Z;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
     }
 
@@ -424,164 +427,164 @@ namespace nexo::editor {
     {
         // ================= ROTATE STATE =============================
         m_gizmoRotateState = {static_cast<unsigned int>(EditorState::GIZMO_ROTATE)};
+
+        // Universal
         m_gizmoRotateState.registerCommand(
-            {
-                "Universal",
-                "U",
-                [this]{
+            Command::create()
+                .description("Universal")
+                .key("U")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Rotate
         m_gizmoRotateState.registerCommand(
-            {
-                "Rotate",
-                "R",
-                [this]{
+            Command::create()
+                .description("Rotate")
+                .key("R")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                }, // << Key pressed
-                nullptr, // << Key released
-                [this]{
+                })
+                .onRepeat([this]{
                     if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
                         this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
                     else
                         this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
-                }, // << Key repeat
-                false,
-            }
+                })
+                .build()
         );
+
+        // Translate
         m_gizmoRotateState.registerCommand(
-            {
-                "Translate",
-                "G",
-                [this]{
+            Command::create()
+                .description("Translate")
+                .key("G")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Scale
         m_gizmoRotateState.registerCommand(
-            {
-                "Scale",
-                "S",
-                [this]{
+            Command::create()
+                .description("Scale")
+                .key("S")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Shift context
         m_gizmoRotateState.registerCommand(
-            {
-                "Shift context",
-                "Shift",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Exclude X",
-                        "X",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_X);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_X);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Y",
-                        "Y",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Y);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_Y);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Z",
-                        "Z",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Z);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_Z);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Toggle snapping",
-                        "S",
-                        [this]{
+            Command::create()
+                .description("Shift context")
+                .key("Shift")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Exclude X")
+                        .key("X")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_X);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_X);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Y")
+                        .key("Y")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Y);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE_Y);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Z")
+                        .key("Z")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Z);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation | ImGuizmo::OPERATION::ROTATE_Z);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Toggle snapping")
+                        .key("S")
+                        .onPressed([this]{
                             m_snapRotateOn = true;
-                        },
-                        [this]{
+                        })
+                        .onReleased([this]{
                             m_snapRotateOn = false;
-                        },
-                        nullptr,
-                        false,
-                    },
-                }
-            }
+                        })
+                        .build()
+                )
+                .build()
         );
+
+        // Lock X
         m_gizmoRotateState.registerCommand(
-            {
-                "Lock X",
-                "X",
-                [this]{
+            Command::create()
+                .description("Lock X")
+                .key("X")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_X;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Y
         m_gizmoRotateState.registerCommand(
-            {
-                "Lock Y",
-                "Y",
-                [this]{
+            Command::create()
+                .description("Lock Y")
+                .key("Y")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Y;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Z
         m_gizmoRotateState.registerCommand(
-            {
-                "Lock Z",
-                "Z",
-                [this]{
+            Command::create()
+                .description("Lock Z")
+                .key("Z")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE_Z;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
     }
 
@@ -589,152 +592,152 @@ namespace nexo::editor {
     {
         // ================= SCALE STATE =============================
         m_gizmoScaleState = {static_cast<unsigned int>(EditorState::GIZMO_SCALE)};
+
+        // Universal
         m_gizmoScaleState.registerCommand(
-            {
-                "Universal",
-                "U",
-                [this]{
+            Command::create()
+                .description("Universal")
+                .key("U")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Scale
         m_gizmoScaleState.registerCommand(
-            {
-                "Scale",
-                "S",
-                [this]{
+            Command::create()
+                .description("Scale")
+                .key("S")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoScaleState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                [this]{
+                })
+                .onRepeat([this]{
                     if (this->m_currentGizmoMode == ImGuizmo::MODE::LOCAL)
                         this->m_currentGizmoMode = ImGuizmo::MODE::WORLD;
                     else
                         this->m_currentGizmoMode = ImGuizmo::MODE::LOCAL;
-                },
-                false,
-            }
+                })
+                .build()
         );
+
+        // Translate
         m_gizmoScaleState.registerCommand(
-            {
-                "Translate",
-                "G",
-                [this]{
+            Command::create()
+                .description("Translate")
+                .key("G")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoTranslateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Rotate
         m_gizmoScaleState.registerCommand(
-            {
-                "Rotate",
-                "R",
-                [this]{
+            Command::create()
+                .description("Rotate")
+                .key("R")
+                .onPressed([this]{
                     this->m_windowState = m_gizmoRotateState;
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-                },
-                nullptr,
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Shift context
         m_gizmoScaleState.registerCommand(
-            {
-                "Shift context",
-                "Shift",
-                nullptr,
-                nullptr,
-                nullptr,
-                true,
-                {
-                    {
-                        "Exclude X",
-                        "X",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_X);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_X);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Y",
-                        "Y",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Y);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Y);
-                        },
-                        nullptr,
-                        false,
-                    },
-                    {
-                        "Exclude Z",
-                        "Z",
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Z);
-                        },
-                        [this]{
-                            m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Z);
-                        },
-                        nullptr,
-                        false,
-                    }
-                }
-            }
+            Command::create()
+                .description("Shift context")
+                .key("Shift")
+                .modifier(true)
+                .addChild(
+                    Command::create()
+                        .description("Exclude X")
+                        .key("X")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_X);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_X);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Y")
+                        .key("Y")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Y);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Y);
+                        })
+                        .build()
+                )
+                .addChild(
+                    Command::create()
+                        .description("Exclude Z")
+                        .key("Z")
+                        .onPressed([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ~ImGuizmo::OPERATION::SCALE_Z);
+                        })
+                        .onReleased([this]{
+                            m_currentGizmoOperation =
+                                static_cast<ImGuizmo::OPERATION>(m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE_Z);
+                        })
+                        .build()
+                )
+                .build()
         );
+
+        // Lock X
         m_gizmoScaleState.registerCommand(
-            {
-                "Lock X",
-                "X",
-                [this]{
+            Command::create()
+                .description("Lock X")
+                .key("X")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_X;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Y
         m_gizmoScaleState.registerCommand(
-            {
-                "Lock Y",
-                "Y",
-                [this]{
+            Command::create()
+                .description("Lock Y")
+                .key("Y")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Y;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
+
+        // Lock Z
         m_gizmoScaleState.registerCommand(
-            {
-                "Lock Z",
-                "Z",
-                [this]{
+            Command::create()
+                .description("Lock Z")
+                .key("Z")
+                .onPressed([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE_Z;
-                },
-                [this]{
+                })
+                .onReleased([this]{
                     this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;
-                },
-                nullptr,
-                false,
-            }
+                })
+                .build()
         );
     }
 

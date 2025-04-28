@@ -44,6 +44,32 @@ namespace nexo::editor {
             const std::string &getDescription() const;
             const bool isModifier() const;
 
+            class Builder {
+                public:
+                    Builder& description(std::string val) { desc = std::move(val); return *this; }
+                    Builder& key(std::string val) { k = std::move(val); return *this; }
+                    Builder& onPressed(std::function<void()> cb) { pressed = cb; return *this; }
+                    Builder& onReleased(std::function<void()> cb) { released = cb; return *this; }
+                    Builder& onRepeat(std::function<void()> cb) { repeat = cb; return *this; }
+                    Builder& modifier(bool val) { mod = val; return *this; }
+                    Builder& addChild(Command child) { children.push_back(std::move(child)); return *this; }
+
+                    Command build() const {
+                        return Command(desc, k, pressed, released, repeat, mod, children);
+                    }
+
+                private:
+                    std::string desc;
+                    std::string k;
+                    std::function<void()> pressed = nullptr;
+                    std::function<void()> released = nullptr;
+                    std::function<void()> repeat = nullptr;
+                    bool mod = false;
+                    std::vector<Command> children;
+            };
+
+            static Builder create() { return Builder(); }
+
         private:
             std::bitset<ImGuiKey_NamedKey_COUNT> m_signature;
             std::string m_description;
