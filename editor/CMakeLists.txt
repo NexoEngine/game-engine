@@ -37,7 +37,13 @@ set(SRCS
         editor/src/WindowRegistry.cpp
         editor/src/DockingRegistry.cpp
         editor/src/DocumentWindows/ConsoleWindow.cpp
-        editor/src/DocumentWindows/EditorScene.cpp
+        editor/src/DocumentWindows/EditorScene/Gizmo.cpp
+        editor/src/DocumentWindows/EditorScene/Init.cpp
+        editor/src/DocumentWindows/EditorScene/Shortcuts.cpp
+        editor/src/DocumentWindows/EditorScene/Show.cpp
+        editor/src/DocumentWindows/EditorScene/Shutdown.cpp
+        editor/src/DocumentWindows/EditorScene/Toolbar.cpp
+        editor/src/DocumentWindows/EditorScene/Update.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/InspectorWindow.cpp
