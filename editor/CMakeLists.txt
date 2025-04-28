@@ -15,6 +15,9 @@ set(SRCS
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/context/Selector.cpp
+        editor/src/context/ActionManager.cpp
+        editor/src/context/ActionHistory.cpp
+        editor/src/context/ActionGroup.cpp
         editor/src/ImNexo/EntityProperties.cpp
         editor/src/ImNexo/Components.cpp
         editor/src/ImNexo/Elements.cpp
