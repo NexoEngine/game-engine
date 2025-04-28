@@ -53,10 +53,16 @@ set(SRCS
         editor/src/DocumentWindows/ConsoleWindow/Shutdown.cpp
         editor/src/DocumentWindows/ConsoleWindow/Update.cpp
         editor/src/DocumentWindows/ConsoleWindow/Utils.cpp
+        editor/src/DocumentWindows/InspectorWindow/Init.cpp
+        editor/src/DocumentWindows/InspectorWindow/Show.cpp
+        editor/src/DocumentWindows/InspectorWindow/Shutdown.cpp
+        editor/src/DocumentWindows/InspectorWindow/Update.cpp
+        editor/src/DocumentWindows/MaterialInspector/Init.cpp
+        editor/src/DocumentWindows/MaterialInspector/Show.cpp
+        editor/src/DocumentWindows/MaterialInspector/Shutdown.cpp
+        editor/src/DocumentWindows/MaterialInspector/Update.cpp
         editor/src/DocumentWindows/SceneTreeWindow.cpp
         editor/src/DocumentWindows/PopupManager.cpp
-        editor/src/DocumentWindows/InspectorWindow.cpp
-        editor/src/DocumentWindows/MaterialInspector.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
         editor/src/DocumentWindows/EntityProperties/AmbientLightProperty.cpp
