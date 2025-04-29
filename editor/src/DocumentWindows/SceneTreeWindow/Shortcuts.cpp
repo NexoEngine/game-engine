@@ -17,15 +17,15 @@
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
-    void SceneTreeWindow::setupShortcuts() {
+    void SceneTreeWindow::setupShortcuts()
+    {
         setupDefaultState();
-
-        // Start with the default state
         m_windowState = m_defaultState;
     }
 
-    void SceneTreeWindow::setupDefaultState() {
-        m_defaultState = {static_cast<unsigned int>(SceneTreeState::GLOBAL)}; // Use a unique ID for this state
+    void SceneTreeWindow::setupDefaultState()
+    {
+        m_defaultState = {static_cast<unsigned int>(SceneTreeState::GLOBAL)};
 
         // CTRL context
         m_defaultState.registerCommand(
@@ -55,13 +55,29 @@ namespace nexo::editor {
                         .onPressed([this](){ this->showAllCallback(); })
                         .build()
                 )
+                .addChild(
+                    Command::create()
+                        .description("Create Scene")
+                        .key("N")
+                        .onPressed([this](){ this->m_popupManager.openPopup("Create New Scene"); })
+                        .build()
+                )
                 .build()
         );
 
         // Delete selected
         m_defaultState.registerCommand(
             Command::create()
-                .description("Delete selected")
+                .description("Add Entity")
+                .key("A")
+                .onPressed([this](){ this->addEntityCallback(); })
+                .build()
+        );
+
+        // Delete selected
+        m_defaultState.registerCommand(
+            Command::create()
+                .description("Delete")
                 .key("Delete")
                 .onPressed([this](){ this->deleteSelectedCallback(); })
                 .build()
@@ -70,7 +86,7 @@ namespace nexo::editor {
         // Rename selected
         m_defaultState.registerCommand(
             Command::create()
-                .description("Rename selected")
+                .description("Rename")
                 .key("F2")
                 .onPressed([this](){ this->renameSelectedCallback(); })
                 .build()
@@ -80,7 +96,7 @@ namespace nexo::editor {
         m_defaultState.registerCommand(
             Command::create()
                 .description("Expand all")
-                .key("K")
+                .key("Down")
                 .onPressed([this](){ this->expandAllCallback(); })
                 .build()
         );
@@ -89,7 +105,7 @@ namespace nexo::editor {
         m_defaultState.registerCommand(
             Command::create()
                 .description("Collapse all")
-                .key("B")
+                .key("Up")
                 .onPressed([this](){ this->collapseAllCallback(); })
                 .build()
         );
@@ -104,8 +120,21 @@ namespace nexo::editor {
         );
     }
 
-    void SceneTreeWindow::selectAllCallback() {
-        // Get current scene ID
+    void SceneTreeWindow::addEntityCallback()
+    {
+        const auto &selector = Selector::get();
+        int currentSceneId = selector.getSelectedScene();
+        if (currentSceneId == -1)
+            return;
+
+        m_popupManager.openPopupWithCallback(
+            "Scene selection context menu",
+            [this, currentSceneId]() {this->showSceneSelectionContextMenu(currentSceneId);}
+        );
+    }
+
+    void SceneTreeWindow::selectAllCallback()
+    {
         auto& selector = Selector::get();
         int currentSceneId = selector.getSelectedScene();
 
@@ -115,7 +144,6 @@ namespace nexo::editor {
 
             selector.clearSelection();
 
-            // Add all entities in the scene to selection
             for (const auto entity : scene.getEntities()) {
                 const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
                 if (uuidComponent) {
@@ -151,14 +179,10 @@ namespace nexo::editor {
         m_windowState = m_defaultState;
     }
 
-    void SceneTreeWindow::expandAllCallback() {
-        // Implementation would depend on your tree structure
-        // This could be implemented by setting a flag that forces
-        // all TreeNodeEx calls to return true (opened)
-        // For now, we'll just log it
+    void SceneTreeWindow::expandAllCallback()
+    {
         m_forceCollapseAll = false;
         m_forceExpandAll = true;
-        LOG(NEXO_INFO, "Expand all nodes in scene tree");
     }
 
     void SceneTreeWindow::collapseAllCallback() {
