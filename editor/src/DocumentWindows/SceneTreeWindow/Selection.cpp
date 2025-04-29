@@ -49,7 +49,6 @@ namespace nexo::editor {
         }
     }
 
-
     void SceneTreeWindow::cameraSelected(const SceneObject &obj) const
     {
         auto &app = Application::getInstance();
