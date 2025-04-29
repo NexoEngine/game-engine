@@ -86,5 +86,7 @@ namespace nexo::editor {
         oldCameraComponent.active = false;
         oldCameraComponent.render = false;
         m_activeCamera = cameraId;
+        auto &newCameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        newCameraComponent.resize(m_viewSize.x, m_viewSize.y);
     }
 }
