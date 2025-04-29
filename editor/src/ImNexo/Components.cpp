@@ -108,7 +108,7 @@ namespace ImNexo {
         const ImTextureID textureId = texture ? static_cast<ImTextureID>(static_cast<intptr_t>(texture->getId())) : 0;
         const std::string textureButton = std::string("##TextureButton") + label;
 
-        if (ImGui::ImageButton(textureButton.c_str(), textureId, previewSize)) {
+        if (ImNexo::ImageButton(textureButton.c_str(), textureId, previewSize)) {
             const char* filePath = tinyfd_openFileDialog(
                 "Open Texture",
                 "",

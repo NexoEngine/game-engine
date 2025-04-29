@@ -206,10 +206,9 @@ namespace nexo::editor {
             cameraComponent.render = true;
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
-            ImGui::Image(
+            ImNexo::Image(
                 static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                ImVec2(previewSize, previewSize),
-                ImVec2(0, 1), ImVec2(1, 0) // Flip Y coordinates for OpenGL texture
+                ImVec2(previewSize, previewSize)
             );
 
             ImGui::EndTooltip();

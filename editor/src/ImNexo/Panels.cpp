@@ -325,8 +325,8 @@ namespace ImNexo {
             const float displayWidth = displayHeight;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
-            ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                        ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
+            ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
+                        ImVec2(displayWidth, displayHeight));
 
             ImGui::EndChild();
         }

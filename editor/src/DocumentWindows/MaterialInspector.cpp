@@ -21,6 +21,7 @@
 #include "components/Camera.hpp"
 #include "context/Selector.hpp"
 #include "exceptions/Exceptions.hpp"
+#include "ImNexo/Elements.hpp"
 #include "ImNexo/Panels.hpp"
 
 namespace nexo::editor {
@@ -72,7 +73,7 @@ namespace nexo::editor {
 			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failed to initialize framebuffer in Material Inspector window");
 		// --- Material preview ---
 		if (m_framebuffer->getColorAttachmentId(0) != 0)
-			ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
+			ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64});
 		ImGui::SameLine();
 
 		auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
