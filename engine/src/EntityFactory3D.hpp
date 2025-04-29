@@ -18,6 +18,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "assets/Assets/Model/Model.hpp"
 #include "ecs/ECSExceptions.hpp"
 #include "components/Components.hpp"
 #include "renderer/Framebuffer.hpp"
@@ -60,7 +61,7 @@ namespace nexo
 			*/
 	        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material);
 
-	        static ecs::Entity createModel(const std::string& path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
+	        static ecs::Entity createModel(assets::AssetRef<assets::Model> modelAsset, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
 
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color);
 			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
