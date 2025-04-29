@@ -374,5 +374,34 @@ namespace nexo::editor {
              * @return true if the docking setup was successful, false otherwise.
              */
             bool setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName);
+
+            enum class SceneTreeState {
+                GLOBAL,
+                NB_STATE
+            };
+            WindowState m_defaultState;
+            bool m_forceExpandAll = false;
+            bool m_forceCollapseAll = false;
+            bool m_resetExpandState = false;
+
+            // Add these method declarations
+            void setupShortcuts();
+            void setupDefaultState();
+
+            // Add these callback methods
+            void deleteSelectedCallback();
+            void expandAllCallback();
+            void collapseAllCallback();
+            void renameSelectedCallback();
+            void duplicateSelectedCallback();
+            void focusOnSelectedCallback();
+            void selectAllCallback();
+            void deselectAllCallback();
+            void groupEntitiesCallback();
+            void ungroupEntitiesCallback();
+            void invertSelectionCallback();
+            void hideSelectedCallback();
+            void showSelectedCallback();
+            void showAllCallback();
     };
 }
