@@ -342,6 +342,8 @@ namespace nexo::editor {
              */
             void sceneContextMenu();
 
+            void showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid = "", const std::string &uiName = "");
+
             /**
              * @brief Displays a modal popup for creating a new scene.
              *
@@ -390,6 +392,7 @@ namespace nexo::editor {
 
             // Add these callback methods
             void deleteSelectedCallback();
+            void addEntityCallback();
             void expandAllCallback();
             void collapseAllCallback();
             void renameSelectedCallback();
