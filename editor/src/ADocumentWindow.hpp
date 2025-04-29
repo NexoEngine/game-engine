@@ -106,6 +106,7 @@ namespace nexo::editor {
             bool m_opened = true;
             bool m_focused = false;
             bool m_hovered = false; // TODO: make these update without user intervention
+            bool m_isVisibleInDock = true;
 
             bool m_firstOpened = true;
 
