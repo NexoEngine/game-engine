@@ -14,8 +14,79 @@
 
 #include "SceneTreeWindow.hpp"
 #include "components/Uuid.hpp"
+#include "EntityFactory3D.hpp"
+#include "LightFactory.hpp"
+#include "utils/EditorProps.hpp"
+#include "ImNexo/Panels.hpp"
 
 namespace nexo::editor {
+
+    void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
+    {
+        if (uuid != "" && uiName != "" &&ImGui::MenuItem("Delete Scene")) {
+            auto &app = Application::getInstance();
+            auto &selector = Selector::get();
+            selector.clearSelection();
+            const std::string &sceneName = selector.getUiHandle(uuid, uiName);
+            m_windowRegistry.unregisterWindow<EditorScene>(sceneName);
+            app.getSceneManager().deleteScene(sceneId);
+        }
+
+        // ---- Add Entity submenu ----
+        if (ImGui::BeginMenu("Add Entity")) {
+            auto &app = Application::getInstance();
+            auto &sceneManager = app.getSceneManager();
+
+            // --- Primitives submenu ---
+            if (ImGui::BeginMenu("Primitives")) {
+                if (ImGui::MenuItem("Cube")) {
+                    const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                           {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+                    sceneManager.getScene(sceneId).addEntity(newCube);
+                }
+                ImGui::EndMenu();
+            }
+
+            // --- Model item (with file‑dialog) ---
+            if (ImGui::MenuItem("Model")) {
+                //TODO: import model
+            }
+
+            // --- Lights submenu ---
+            if (ImGui::BeginMenu("Lights")) {
+                if (ImGui::MenuItem("Directional")) {
+                    const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
+                    sceneManager.getScene(sceneId).addEntity(directionalLight);
+                }
+                if (ImGui::MenuItem("Point")) {
+                    const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
+                    utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
+                    sceneManager.getScene(sceneId).addEntity(pointLight);
+                }
+                if (ImGui::MenuItem("Spot")) {
+                    const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
+                    utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
+                    sceneManager.getScene(sceneId).addEntity(spotLight);
+                }
+                ImGui::EndMenu();
+            }
+
+            // --- Camera item ---
+            if (ImGui::MenuItem("Camera")) {
+                m_popupManager.openPopupWithCallback("Popup camera inspector", [this, sceneId]() {
+                    const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
+                    for (const auto &scene : editorScenes) {
+                        if (scene->getSceneId() == sceneId) {
+                            ImNexo::CameraInspector(sceneId, scene->getViewportSize());
+                            break;
+                        }
+                    }
+                }, ImVec2(1440,900));
+            }
+
+            ImGui::EndMenu();
+        }
+    }
 
     void SceneTreeWindow::sceneContextMenu()
     {
@@ -23,6 +94,12 @@ namespace nexo::editor {
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
+            m_popupManager.closePopup();
+        }
+
+        if (m_popupManager.showPopup("Scene selection context menu"))
+        {
+            m_popupManager.runPopupCallback("Scene selection context menu");
             m_popupManager.closePopup();
         }
 
