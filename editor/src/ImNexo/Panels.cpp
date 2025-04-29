@@ -67,7 +67,7 @@ namespace ImNexo {
             static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerAlbedo = false;
 		    const auto asset = material->albedoTexture.lock();
-		    auto albedoTexture = asset && asset->isLoaded() ? asset->data->texture : nullptr;
+		    auto albedoTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
 		    if (TextureButton("Albedo texture", albedoTexture, newTexturePath)
@@ -89,7 +89,7 @@ namespace ImNexo {
             static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerSpecular = false;
 		    const auto asset = material->metallicMap.lock();
-		    auto metallicTexture = asset && asset->isLoaded() ? asset->data->texture : nullptr;
+		    auto metallicTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
 		    if (TextureButton("Specular texture", metallicTexture, newTexturePath)

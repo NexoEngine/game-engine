@@ -54,10 +54,10 @@ namespace nexo::assets {
             explicit Texture(const std::filesystem::path &path)
                 : Asset()
             {
-                auto texture = renderer::NxTexture2D::create(path.string());
-                auto textureData = new TextureData();
+                const auto texture = renderer::NxTexture2D::create(path.string());
+                auto textureData = std::make_unique<TextureData>();
                 textureData->texture = texture;
-                setData(textureData);
+                setData(std::move(textureData));
             }
 
             /**
@@ -76,10 +76,10 @@ namespace nexo::assets {
             Texture(unsigned int width, unsigned int height)
                 : Asset()
             {
-                auto texture = renderer::NxTexture2D::create(width, height);
-                auto textureData = new TextureData();
+                const auto texture = renderer::NxTexture2D::create(width, height);
+                auto textureData = std::make_unique<TextureData>();
                 textureData->texture = texture;
-                setData(textureData);
+                setData(std::move(textureData));
             }
 
             /**
@@ -106,10 +106,10 @@ namespace nexo::assets {
             Texture(const uint8_t *buffer, const unsigned int width, const unsigned int height, const renderer::NxTextureFormat format)
                 : Asset()
             {
-                auto texture = renderer::NxTexture2D::create(buffer, width, height, format);
-                auto textureData = new TextureData();
+                const auto texture = renderer::NxTexture2D::create(buffer, width, height, format);
+                auto textureData = std::make_unique<TextureData>();
                 textureData->texture = texture;
-                setData(textureData);
+                setData(std::move(textureData));
             }
 
             /**
@@ -128,10 +128,10 @@ namespace nexo::assets {
             Texture(const uint8_t* buffer, const unsigned int size)
                 : Asset()
             {
-                auto texture = renderer::NxTexture2D::create(buffer, size);
-                auto textureData = new TextureData();
+                const auto texture = renderer::NxTexture2D::create(buffer, size);
+                auto textureData = std::unique_ptr<TextureData>();
                 textureData->texture = texture;
-                setData(textureData);
+                setData(std::move(textureData));
             }
 
             ~Texture() override = default;

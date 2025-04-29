@@ -58,12 +58,12 @@ namespace nexo::assets {
         return assets;
     }
 
-    GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, IAsset* asset)
+    GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, std::unique_ptr<IAsset> asset)
     {
         if (!asset)
             return GenericAssetRef::null();
         // TODO: implement error handling if already exists (once we have the folder tree)
-        auto shared_ptr = std::shared_ptr<IAsset>(asset);
+        std::shared_ptr<IAsset> shared_ptr = std::move(asset);
         shared_ptr->m_metadata.location = location;
         if (shared_ptr->m_metadata.id.is_nil())
             shared_ptr->m_metadata.id = boost::uuids::random_generator()();

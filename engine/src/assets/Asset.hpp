@@ -155,19 +155,7 @@ namespace nexo::assets {
     
             [[nodiscard]] virtual bool isLoaded() const = 0;
             [[nodiscard]] virtual bool isErrored() const = 0;
-    
-            /**
-             * @brief Get the asset data pointer
-             * @return Raw pointer to the asset data
-             */
-            [[nodiscard]] virtual void* getRawData() const = 0;
-    
-            /**
-             * @brief Set the asset data pointer
-             * @param rawData Raw pointer to the asset data
-             * @note This transfers ownership of the data to the asset, which will delete it in its destructor
-             */
-            virtual IAsset& setRawData(void* rawData) = 0;
+
         protected:
             explicit IAsset()
                 : m_metadata({
@@ -193,21 +181,13 @@ namespace nexo::assets {
     class Asset : public IAsset {
         friend class AssetCatalog;
         friend class AssetRef<TAssetData>;
+
         public:
+            // SFINAE definitions
             using AssetDataType = TAssetData;
             static constexpr AssetType TYPE = TAssetType;
-    
-            /**
-             * @brief Destructor that releases the allocated asset data.
-             *
-             * Deletes the dynamically allocated asset data to ensure proper memory cleanup when the asset is destroyed.
-             */
-            virtual ~Asset() override
-            {
-                delete data;
-            }
-    
-            TAssetData *data;
+
+            ~Asset() override = default;
 
             [[nodiscard]] const AssetMetadata& getMetadata() const override { return m_metadata; }
             [[nodiscard]] AssetType getType() const override { return getMetadata().type; }
@@ -216,38 +196,10 @@ namespace nexo::assets {
 
             [[nodiscard]] bool isLoaded() const override { return getStatus() == AssetStatus::LOADED; }
             [[nodiscard]] bool isErrored() const override { return getStatus() == AssetStatus::ERROR; }
-    
-            // Implementation of IAsset virtual methods
-            [[nodiscard]] void* getRawData() const override {
-                return data;
-            }
-    
-            IAsset& setRawData(void* rawData) override {
-                delete data;  // Clean up existing data
-                if (rawData == nullptr) {
-                    m_metadata.status = AssetStatus::UNLOADED;
-                } else {
-                    m_metadata.status = AssetStatus::LOADED;
-                }
-                data = static_cast<TAssetData*>(rawData);
-                return *this;
-            }
-    
-            [[nodiscard]] TAssetData* getData() const {
-                return data;
-            }
 
-            Asset& setData(TAssetData* newData) {
-                delete data;
-                if (newData == nullptr) {
-                    m_metadata.status = AssetStatus::UNLOADED;
-                } else {
-                    m_metadata.status = AssetStatus::LOADED;
-                }
-                data = newData;
-                return *this;
-            }
-    
+            [[nodiscard]] const std::unique_ptr<TAssetData>& getData() const { return data; }
+            Asset& setData(std::unique_ptr<TAssetData> newData);
+
         protected:
             explicit Asset() : data(nullptr)
             {
@@ -259,10 +211,35 @@ namespace nexo::assets {
                 m_metadata.type = TAssetType;
                 m_metadata.status = AssetStatus::LOADED;
             }
+
+            std::unique_ptr<TAssetData> data;
     
         private:
             /*virtual AssetStatus load() = 0;
             virtual AssetStatus unload() = 0;*/
     };
 
+
+    template<typename T>
+    concept IsAsset =
+        requires {
+            typename T::AssetDataType;
+            { T::TYPE } -> std::convertible_to<AssetType>;
+        } && std::derived_from<T, Asset<typename T::AssetDataType, T::TYPE>>
+          && std::is_base_of_v<Asset<typename T::AssetDataType, T::TYPE>, T>
+          && std::is_base_of_v<IAsset, T>;
+
+
+    template<typename TAssetData, AssetType TAssetType>
+    Asset<TAssetData, TAssetType>& Asset<TAssetData, TAssetType>::setData(std::unique_ptr<TAssetData> newData)
+    {
+        data.reset();  // Clean up existing data
+        if (newData == nullptr) {
+            m_metadata.status = AssetStatus::UNLOADED;
+        } else {
+            m_metadata.status = AssetStatus::LOADED;
+        }
+        data = std::move(newData);
+        return *this;
+    }
 } // namespace nexo::editor
