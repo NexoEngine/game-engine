@@ -15,14 +15,11 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
+#include "Asset.hpp"
 #include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
-#include "Asset.hpp"
-
-#include <unordered_map>
-#include <memory>
-
 #include "Assets/Texture/Texture.hpp"
 
 namespace nexo::assets {
@@ -126,8 +123,7 @@ namespace nexo::assets {
              * @tparam AssetType The type of asset to get. (e.g. Model, Texture)
              * @return A vector of all assets of the specified type in the catalog.
              */
-            template <typename AssetType>
-                requires std::derived_from<AssetType, IAsset>
+            template <IsAsset AssetType>
             [[nodiscard]] std::vector<AssetRef<AssetType>> getAssetsOfType() const;
 
             /**
@@ -135,8 +131,7 @@ namespace nexo::assets {
              * @tparam AssetType The type of asset to get. (e.g. Model, Texture)
              * @return A view of all assets of the specified type in the catalog.
              */
-            template <typename AssetType>
-                requires std::derived_from<AssetType, IAsset>
+            template <IsAsset AssetType>
             [[nodiscard]] decltype(auto) getAssetsOfTypeView() const;
 
             /**
@@ -153,7 +148,7 @@ namespace nexo::assets {
              * @param asset Pointer to the asset to be registered.
              * @return GenericAssetRef A reference to the registered asset, or a null reference if the asset pointer was null.
              */
-            GenericAssetRef registerAsset(const AssetLocation& location, IAsset *asset);
+            GenericAssetRef registerAsset(const AssetLocation& location, std::unique_ptr<IAsset> asset);
 
             /**
              * @brief Creates and registers a new asset in the catalog.
@@ -165,22 +160,20 @@ namespace nexo::assets {
              * @param args Constructor arguments for the asset.
              * @return AssetRef<AssetType> A reference to the created and registered asset.
              */
-            template <typename AssetType, typename... Args>
-                requires std::derived_from<AssetType, IAsset>
+            template <IsAsset AssetType, typename... Args>
             AssetRef<AssetType> createAsset(const AssetLocation& location, Args&& ...args)
             {
-                auto asset = new AssetType(std::forward<Args>(args)...);
-                auto assetRef = registerAsset(location, asset);
+                auto asset = std::make_unique<AssetType>(std::forward<Args>(args)...);
+                auto assetRef = registerAsset(location, std::move(asset));
                 return assetRef.template as<AssetType>();
             }
 
-            template <typename AssetType>
-                requires std::derived_from<AssetType, IAsset>
-            AssetRef<AssetType> createAsset(const AssetLocation& location, typename AssetType::AssetDataType* assetData)
+            template <IsAsset AssetType>
+            AssetRef<AssetType> createAsset(const AssetLocation& location, std::unique_ptr<typename AssetType::AssetDataType> assetData)
             {
-                auto asset = new AssetType();
-                asset->setData(assetData);
-                auto assetRef = registerAsset(location, asset);
+                auto asset = std::make_unique<AssetType>();
+                asset->setData(std::move(assetData));
+                auto assetRef = registerAsset(location, std::move(asset));
                 return assetRef.template as<AssetType>();
             }
 
@@ -188,8 +181,7 @@ namespace nexo::assets {
             std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
     };
 
-    template<typename AssetType>
-        requires std::derived_from<AssetType, IAsset>
+    template<IsAsset AssetType>
     std::vector<AssetRef<AssetType>> AssetCatalog::getAssetsOfType() const
     {
         // TODO: AssetType::TYPE is not a thing, need to find a way to get the type of the asset
@@ -202,7 +194,7 @@ namespace nexo::assets {
         return assets;
     }
 
-    template<typename AssetType> requires std::derived_from<AssetType, IAsset>
+    template<IsAsset AssetType>
     decltype(auto) AssetCatalog::getAssetsOfTypeView() const
     {
         // TODO: AssetType::TYPE is not a thing, need to find a way to get the type of the asset

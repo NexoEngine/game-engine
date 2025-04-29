@@ -52,11 +52,11 @@ namespace nexo::components {
                 .roughness = material.roughness,
                 .metallic = material.metallic,
                 .opacity = material.opacity,
-                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr,
-                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->data->texture : nullptr,
-                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->data->texture : nullptr,
-                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->data->texture : nullptr,
-                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->data->texture : nullptr,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->getData()->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->getData()->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->getData()->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->getData()->texture : nullptr,
                 .shader = material.shader
             };
 
@@ -92,9 +92,9 @@ namespace nexo::components {
 
                 {
                     const auto meshMaterialAsset = mesh.material.lock();
-                    const auto albedoTextureAsset = meshMaterialAsset && meshMaterialAsset->isLoaded() ? meshMaterialAsset->data->albedoTexture.lock() : nullptr;
+                    const auto albedoTextureAsset = meshMaterialAsset && meshMaterialAsset->isLoaded() ? meshMaterialAsset->getData()->albedoTexture.lock() : nullptr;
 
-                    const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr;
+                    const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
                     renderer3D.drawMesh(transformedVertices, mesh.indices, albedoTexture, entityID);
                 }
             }
@@ -164,11 +164,11 @@ namespace nexo::components {
                 .roughness = material.roughness,
                 .metallic = material.metallic,
                 .opacity = material.opacity,
-                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->data->texture : nullptr,
-                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->data->texture : nullptr,
-                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->data->texture : nullptr,
-                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->data->texture : nullptr,
-                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->data->texture : nullptr,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->getData()->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->getData()->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->getData()->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->getData()->texture : nullptr,
                 .shader = material.shader
             };
 

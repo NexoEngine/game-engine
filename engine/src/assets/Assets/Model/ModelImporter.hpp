@@ -34,7 +34,7 @@ namespace nexo::assets {
             void importImpl(AssetImporterContext& ctx) override;
 
         protected:
-            Model* loadModel(AssetImporterContext& ctx);
+            std::unique_ptr<Model> loadModel(AssetImporterContext& ctx);
             void loadSceneEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene);
             AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture *texture);
             void loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene);
@@ -45,7 +45,6 @@ namespace nexo::assets {
             static renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
             static glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
 
-            Model *m_model = nullptr; //< Model being imported
             Assimp::Importer m_importer;              //< Assimp importer instance
             std::unordered_map<const char *, AssetRef<Texture>> m_textures; //< Map of textures used in the model, std::string is the texture name (path, or *0, *1, etc. for embedded textures, see assimp)
             std::vector<AssetRef<Material>> m_materials; //< Map of materials used in the model, index is the assimp material index
