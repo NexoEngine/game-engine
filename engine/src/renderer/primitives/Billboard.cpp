@@ -37,10 +37,10 @@ namespace nexo::renderer {
     };
 
     constexpr glm::vec2 billboardTexCoords[4] = {
-        {0.0f, 1.0f},  // Bottom left (flipped Y)
-        {1.0f, 1.0f},  // Bottom right (flipped Y)
-        {1.0f, 0.0f},  // Top right (flipped Y)
-        {0.0f, 0.0f}   // Top left (flipped Y)
+        {0.0f, 0.0f},  // Bottom left
+        {1.0f, 0.0f},  // Bottom right
+        {1.0f, 1.0f},  // Top right
+        {0.0f, 1.0f},  // Top left
     };
 
     /**
