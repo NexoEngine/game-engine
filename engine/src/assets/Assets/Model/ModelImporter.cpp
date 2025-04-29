@@ -31,7 +31,7 @@
 #include "core/exceptions/Exceptions.hpp"
 
 namespace nexo::assets {
-    
+
     bool ModelImporter::canRead(const ImporterInputVariant& inputVariant)
     {
         std::string extension;
@@ -47,15 +47,14 @@ namespace nexo::assets {
 
     void ModelImporter::importImpl(AssetImporterContext& ctx)
     {
-        m_model = loadModel(ctx);
-        ctx.setMainAsset(m_model);
+        std::unique_ptr<IAsset> model = loadModel(ctx);
+        ctx.setMainAsset(std::move(model));
     }
 
-    Model* ModelImporter::loadModel(AssetImporterContext& ctx)
+    std::unique_ptr<Model> ModelImporter::loadModel(AssetImporterContext& ctx)
     {
-        Model* model = new Model();
+        auto model = std::make_unique<Model>();
 
-        //m_model->setData(new components::Model());
         const auto param = ctx.getParameters<ModelImportParameters>();
         int flags = aiProcess_Triangulate
                     | aiProcess_GenNormals;
@@ -68,7 +67,6 @@ namespace nexo::assets {
         }
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
             //log error TODO: improve error handling in importers
-            delete model;
             if (scene)
                 m_importer.FreeScene();
             throw core::LoadModelException(ctx.location.getFullLocation(), m_importer.GetErrorString());
@@ -79,10 +77,9 @@ namespace nexo::assets {
 
         auto meshNode = processNode(ctx, scene->mRootNode, scene);
         if (!meshNode) {
-            delete model;
             throw core::LoadModelException(ctx.location.getFullLocation(), "Failed to process model node");
         }
-        model->setData(new components::Model(meshNode));
+        model->setData(std::make_unique<components::Model>(meshNode));
         return model;
     }
 
@@ -223,7 +220,7 @@ namespace nexo::assets {
         for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
             aiMaterial const *material = scene->mMaterials[matIdx];
 
-            const auto materialComponent = new components::Material();
+            auto materialComponent = std::make_unique<components::Material>();
 
             aiColor4D color;
             if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
@@ -300,7 +297,7 @@ namespace nexo::assets {
 
             auto materialRef = AssetCatalog::getInstance().createAsset<Material>(
                 ctx.genUniqueDependencyLocation<Material>(),
-                materialComponent
+                std::move(materialComponent)
             );
             m_materials[matIdx] = materialRef;
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)

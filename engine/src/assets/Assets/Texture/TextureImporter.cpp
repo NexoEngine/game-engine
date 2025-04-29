@@ -35,7 +35,7 @@ namespace nexo::assets {
     void TextureImporter::importImpl(AssetImporterContext& ctx)
     {
         // TODO: we need to import textures independently from graphics API back end renderer::NxTexture2D::create implementation
-        auto asset = new Texture();
+        auto asset = std::make_unique<Texture>();
         std::shared_ptr<renderer::NxTexture2D> rendererTexture;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
             rendererTexture = renderer::NxTexture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
@@ -43,12 +43,13 @@ namespace nexo::assets {
             auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
             rendererTexture = renderer::NxTexture2D::create(data.data(), data.size());
         }
-        auto assetData = new TextureData();
+        auto assetData = std::make_unique<TextureData>();
         assetData->texture = rendererTexture;
-        asset->setData(assetData);
+
         asset->m_metadata.id = boost::uuids::random_generator()();
 
-        ctx.setMainAsset(asset);
+        asset->setData(std::move(assetData));
+        ctx.setMainAsset(std::move(asset));
     }
 
     bool TextureImporter::canReadMemory(const ImporterMemoryInput& input)

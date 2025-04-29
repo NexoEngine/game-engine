@@ -27,9 +27,9 @@ namespace nexo::editor {
     void AssetManagerWindow::setup() {
         auto& catalog = assets::AssetCatalog::getInstance();
 
-        const auto asset = new assets::Model();
+        auto asset = std::make_unique<assets::Model>();
 
-        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), asset);
+        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), std::move(asset));
 
 
 

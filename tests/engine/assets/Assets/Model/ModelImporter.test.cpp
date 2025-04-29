@@ -184,7 +184,7 @@ TEST_F(ModelImporterTestFixture, ImportCubeModel) {
     const auto allAssets = catalog.getAssets();
     EXPECT_EQ(allAssets.size(), 3); // 2 materials + 1 texture
 
-    auto model = static_cast<Model*>(ctx.getMainAsset());
+    auto model = static_cast<Model*>(ctx.getMainAsset().get());
     // Now verify the model data
     const auto& modelData = model->getData();
     ASSERT_NE(modelData, nullptr);
@@ -210,7 +210,7 @@ TEST_F(ModelImporterTestFixture, ImportCubeModel) {
     const auto material = childMesh.material.lock();
     EXPECT_NE(material, nullptr);
 
-    const auto materialData = material->getData();
+    const auto materialData = material->getData().get();
     EXPECT_NE(materialData, nullptr);
 
     EXPECT_NE(materialData->albedoTexture, nullptr);
@@ -218,7 +218,7 @@ TEST_F(ModelImporterTestFixture, ImportCubeModel) {
     EXPECT_NE(albedoTextureAsset, nullptr);
     EXPECT_EQ(albedoTextureAsset->getType(), Texture::TYPE);
 
-    const auto albedoTexture = albedoTextureAsset->getData();
+    const auto albedoTexture = albedoTextureAsset->getData().get();
     EXPECT_NE(albedoTexture->texture, nullptr);
     EXPECT_EQ(albedoTexture->texture->getWidth(), 64);
     EXPECT_EQ(albedoTexture->texture->getHeight(), 64);

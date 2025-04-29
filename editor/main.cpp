@@ -56,6 +56,5 @@ try {
     return 0;
 } catch (const nexo::Exception &e) {
     LOG_EXCEPTION(e);
-    tinyfd_messageBox("NEXO had a fatal error", e.what(), "ok", "error", 1);
     return 1;
 }
