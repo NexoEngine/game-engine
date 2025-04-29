@@ -75,6 +75,14 @@ namespace nexo::editor {
         bool nodeOpen = false;
         const std::string uniqueLabel = object.uiName;
 
+        if (m_forceExpandAll && !leaf) {
+            ImGui::SetNextItemOpen(true);
+            m_resetExpandState = true;
+        } else if (m_forceCollapseAll) {
+            ImGui::SetNextItemOpen(false);
+            m_resetExpandState = true;
+        }
+
         // If the user wishes to rename handle the rename, else handle the selection
         if (m_renameTarget && m_renameTarget->first == object.type && m_renameTarget->second == object.uuid)
             handleRename(object);
@@ -124,29 +132,10 @@ namespace nexo::editor {
         if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
         {
             firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
+            m_focused = ImGui::IsWindowFocused();
+            m_hovered = ImGui::IsWindowHovered();
 
             auto &selector = Selector::get();
-            bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
-
-            // Ctrl+A to select all entities in current scene
-            if (isCtrlPressed && ImGui::IsKeyPressed(ImGuiKey_A) && ImGui::IsWindowFocused()) {
-                // Get current scene ID
-                int currentSceneId = selector.getSelectedScene();
-                if (currentSceneId != -1) {
-                    auto &app = nexo::getApp();
-                    auto &scene = app.getSceneManager().getScene(currentSceneId);
-
-                    selector.clearSelection();
-
-                    // Add all entities in the scene to selection
-                    for (const auto entity : scene.getEntities()) {
-                        const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
-                        if (uuidComponent) {
-                            selector.addToSelection(uuidComponent->get().uuid, entity);
-                        }
-                    }
-                }
-            }
 
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(

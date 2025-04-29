@@ -70,6 +70,7 @@ set(SRCS
         editor/src/DocumentWindows/SceneTreeWindow/Show.cpp
         editor/src/DocumentWindows/SceneTreeWindow/Shutdown.cpp
         editor/src/DocumentWindows/SceneTreeWindow/Update.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Shortcuts.cpp
         editor/src/DocumentWindows/PopupManager.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp

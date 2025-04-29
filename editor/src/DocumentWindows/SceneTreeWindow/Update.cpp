@@ -25,6 +25,12 @@ namespace nexo::editor {
         m_nbDirLights = 0;
         m_nbSpotLights = 0;
 
+        if (m_resetExpandState) {
+            m_forceExpandAll = false;
+            m_forceCollapseAll = false;
+            m_resetExpandState = false;
+        }
+
         // Retrieves the scenes that are displayed on the GUI
         const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
         std::map<scene::SceneId, SceneObject> sceneNodes;
