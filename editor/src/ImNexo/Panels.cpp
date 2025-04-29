@@ -128,6 +128,23 @@ namespace ImNexo {
 
         static char cameraName[128] = "";
         static bool nameIsEmpty = false;
+        static bool closingPopup = false;
+        static bool result = false;
+
+        // We do this since imgui seems to render once more the popup, so we need to wait one frame before deleting
+        // the render target
+        if (closingPopup) {
+            // Now it's safe to delete the entity
+            auto &app = nexo::getApp();
+            app.deleteEntity(camera);
+
+            camera = nexo::ecs::MAX_ENTITIES;
+            cameraName[0] = '\0';
+            nameIsEmpty = false;
+            closingPopup = false;
+
+            return true;
+        }
         ImGui::Columns(2, "CameraCreatorColumns", false);
 
         ImGui::SetColumnWidth(0, inspectorWidth);
@@ -325,12 +342,9 @@ namespace ImNexo {
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
-            nameIsEmpty = false;
-            app.deleteEntity(camera);
-            camera = nexo::ecs::MAX_ENTITIES;
-            cameraName[0] = '\0';
             ImGui::CloseCurrentPopup();
-            return true;
+            closingPopup = true;
+            return false;
         }
         return false;
 	}
