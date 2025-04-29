@@ -58,7 +58,6 @@ namespace nexo::assets {
         //m_model->setData(new components::Model());
         const auto param = ctx.getParameters<ModelImportParameters>();
         int flags = aiProcess_Triangulate
-                    | aiProcess_FlipUVs
                     | aiProcess_GenNormals;
         const aiScene* scene = nullptr;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
