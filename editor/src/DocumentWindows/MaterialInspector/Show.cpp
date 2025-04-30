@@ -15,6 +15,7 @@
 #include "MaterialInspector.hpp"
 #include "utils/ScenePreview.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+#include "ImNexo/Elements.hpp"
 #include "ImNexo/Panels.hpp"
 #include "context/Selector.hpp"
 
