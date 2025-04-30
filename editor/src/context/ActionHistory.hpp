@@ -15,7 +15,7 @@
 
 #include "actions/Action.hpp"
 #include <memory>
-#include <vector>
+#include <deque>
 #include <string>
 
 namespace nexo::editor {
@@ -35,11 +35,11 @@ namespace nexo::editor {
 
             void setMaxUndoLevels(size_t levels);
 
-            void clear();
+            void clear(unsigned int count = 0);
 
         private:
-            std::vector<std::unique_ptr<Action>> undoStack;
-            std::vector<std::unique_ptr<Action>> redoStack;
+            std::deque<std::unique_ptr<Action>> undoStack;
+            std::deque<std::unique_ptr<Action>> redoStack;
             size_t maxUndoLevels = 50;
     };
 

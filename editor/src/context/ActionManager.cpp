@@ -56,7 +56,7 @@ namespace nexo::editor {
         return history.canRedo();
     }
 
-    void ActionManager::clearHistory()
+    void ActionManager::clearHistory(unsigned int count)
     {
         history.clear();
     }
