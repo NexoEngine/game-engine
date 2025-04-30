@@ -26,7 +26,7 @@ namespace nexo::editor {
     {
         // No active camera, render the text at the center of the screen
         ImVec2 textSize = ImGui::CalcTextSize("No active camera");
-        auto textPos = ImVec2((m_viewSize.x - textSize.x) / 2, (m_viewSize.y - textSize.y) / 2);
+        auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
 
         ImGui::SetCursorScreenPos(textPos);
         ImGui::Text("No active camera");
@@ -75,7 +75,7 @@ namespace nexo::editor {
         // --- Camera item ---
         if (ImGui::MenuItem("Camera")) {
             m_popupManager.openPopupWithCallback("Popup camera inspector", [this]() {
-                ImNexo::CameraInspector(this->m_sceneId, this->m_viewSize);
+                ImNexo::CameraInspector(this->m_sceneId, this->m_contentSize);
             }, ImVec2(1440,900));
         }
         m_popupManager.closePopup();
@@ -85,21 +85,21 @@ namespace nexo::editor {
     {
         const auto viewPortOffset = ImGui::GetCursorPos();
        	auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
-        const ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+        if (!cameraComponent.m_renderTarget)
+            return;
+        const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
 
         // Resize handling
-        if ((viewportPanelSize.x > 0 && viewportPanelSize.y > 0) && (m_viewSize.x != viewportPanelSize.x || m_viewSize.y != viewportPanelSize.y))
+        if ((m_contentSize.x > 0 && m_contentSize.y > 0) && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
         {
-        	cameraComponent.resize(static_cast<unsigned int>(viewportPanelSize.x),
-        							static_cast<unsigned int>(viewportPanelSize.y));
+        	cameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
+        							static_cast<unsigned int>(m_contentSize.y));
 
-            m_viewSize.x = viewportPanelSize.x;
-            m_viewSize.y = viewportPanelSize.y;
         }
 
         // Render framebuffer
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
-        ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_viewSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize, ImVec2(0, 1), ImVec2(1, 0));
 
         const auto windowSize = ImGui::GetWindowSize();
         auto minBounds = ImGui::GetWindowPos();
@@ -121,16 +121,11 @@ namespace nexo::editor {
         const std::string &sceneWindowName = m_windowName + std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId);
         m_wasVisibleLastFrame = m_isVisibleInDock;
         m_isVisibleInDock = false;
-        if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse))
         {
-            firstDockSetup(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
+            beginRender(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
             auto &app = getApp();
 
-            // Add some spacing after the toolbar
-            ImGui::Dummy(ImVec2(0, 5));
-            m_viewPosition = ImGui::GetCursorScreenPos();
-
-            visibilityCheck();
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
 
             if (m_focused && selector.getSelectedScene() != m_sceneId) {

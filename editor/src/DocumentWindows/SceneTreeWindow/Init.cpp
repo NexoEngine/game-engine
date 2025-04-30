@@ -19,7 +19,6 @@ namespace nexo::editor {
     void SceneTreeWindow::setup()
     {
         setupShortcuts();
-        // Nothing to setup
     }
 
 }
