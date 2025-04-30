@@ -117,7 +117,7 @@ namespace nexo::components {
             bool render;
             bool main;
             bool resizing;
-            std::shared_ptr<renderer::Framebuffer> renderTarget;
+            std::shared_ptr<renderer::NxFramebuffer> renderTarget;
 
             CameraComponent restore() const
             {
