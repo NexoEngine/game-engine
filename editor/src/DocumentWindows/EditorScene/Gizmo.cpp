@@ -54,7 +54,7 @@ namespace nexo::editor {
     {
         ImGuizmo::SetOrthographic(camera.type == components::CameraType::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(m_viewPosition.x, m_viewPosition.y, m_viewSize.x, m_viewSize.y);
+        ImGuizmo::SetRect(m_windowPos.x, m_windowPos.y, m_contentSize.x, m_contentSize.y);
         ImGuizmo::Enable(true);
     }
 

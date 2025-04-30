@@ -34,6 +34,7 @@ namespace nexo::editor {
         [[nodiscard]] virtual bool isFocused() const = 0;
         [[nodiscard]] virtual bool isOpened() const = 0;
         [[nodiscard]] virtual bool isHovered() const = 0;
+        [[nodiscard]] virtual const ImVec2 &getContentSize() const = 0;
         [[nodiscard]] virtual bool &getOpened() = 0;
         [[nodiscard]] virtual const std::string &getWindowName() const = 0;
         [[nodiscard]] virtual const WindowState &getWindowState() const = 0;

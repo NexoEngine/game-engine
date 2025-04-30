@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EditorScene.hpp"
+#include "Types.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
 
@@ -91,10 +92,10 @@ namespace nexo::editor {
         my -= m_viewportBounds[0].y;
 
         // Flip the y-coordinate to match opengl texture format
-        my = m_viewSize.y - my;
+        my = m_contentSize.y - my;
 
         // Check if mouse is inside viewport
-        if (!(mx >= 0 && my >= 0 && mx < m_viewSize.x && my < m_viewSize.y))
+        if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
             return;
         int entityId = sampleEntityTexture(mx, my);
 
@@ -123,7 +124,8 @@ namespace nexo::editor {
         if (!m_opened || m_activeCamera == -1 || !is_currently_visible)
             return;
         SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
-        runEngine(m_sceneId, RenderingType::FRAMEBUFFER, sceneType);
+        Application::SceneInfo sceneInfo{static_cast<scene::SceneId>(m_sceneId), RenderingType::FRAMEBUFFER, sceneType};
+        runEngine(sceneInfo);
 
 
         // Handle mouse clicks for selection
