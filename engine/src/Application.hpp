@@ -76,6 +76,15 @@ namespace nexo {
              */
             void beginFrame();
 
+            struct SceneInfo {
+                scene::SceneId id;
+                RenderingType renderingType = RenderingType::WINDOW;
+                SceneType sceneType = SceneType::GAME;
+                bool isChildWindow = false;
+                glm::vec2 childWindowPos{};
+                glm::vec2 childWindowSize{};
+            };
+
             /**
              * @brief Runs the application for the specified scene and rendering type.
              *
@@ -93,7 +102,7 @@ namespace nexo {
              * @param renderingType The rendering mode (e.g., WINDOW or other types).
              * @param sceneType The type of scene to render.
              */
-            void run(scene::SceneId sceneId, RenderingType renderingType, SceneType sceneType = SceneType::GAME);
+            void run(const SceneInfo &sceneInfo);
 
             /**
              * @brief Ends the current frame by clearing processed events.
