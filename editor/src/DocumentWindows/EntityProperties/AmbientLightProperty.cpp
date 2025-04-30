@@ -17,6 +17,7 @@
 #include "ImNexo/Widgets.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
+#include "ImNexo/EntityProperties.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -24,34 +25,15 @@ namespace nexo::editor {
     void AmbientLightProperty::show(const ecs::Entity entity)
     {
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
+        static components::AmbientLightComponent::Memento beforeState;
 
         if (ImNexo::Header("##AmbientNode", "Ambient light"))
         {
-            ImGui::Spacing();
-            static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-            static bool showColorPicker = false;
-            static bool wasUsingLastFrame = false;
-            static components::AmbientLightComponent::Memento beforeState;
-
-            ImGui::Text("Color");
-            ImGui::SameLine();
-            glm::vec4 color = {ambientComponent.color, 1.0f};
-            ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
-
-            // The user first clicked on the color picker
-            if (!wasUsingLastFrame && ImGui::IsItemActive()) {
-                beforeState = ambientComponent.save();
-                wasUsingLastFrame = true;
-            }
-            ambientComponent.color = color;
-
-            // The user released the color picker
-            if (wasUsingLastFrame && !ImGui::IsItemActive()) {
+            ImNexo::InteractionState state = ImNexo::Ambient(ambientComponent, beforeState);
+            if (state == ImNexo::InteractionState::RELEASED) {
                 auto afterState = ambientComponent.save();
-                auto action = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(
-                    entity, beforeState, afterState);
+                auto action = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
-                wasUsingLastFrame = false;
                 beforeState = components::AmbientLightComponent::Memento{};
             }
 
