@@ -149,7 +149,9 @@ namespace nexo::system {
         gridShader->setUniformFloat4("uGridColorThin", {0.5f, 0.55f, 0.7f, 0.6f});   // Soft blue-purple
         gridShader->setUniformFloat4("uGridColorThick", {0.7f, 0.75f, 0.9f, 0.8f});  // Lighter blue-purple
         const glm::vec2 &mousePos = event::getMousePosition();
+        std::cout << "mouse pos " << mousePos.x << " " << mousePos.y << std::endl;
         const glm::vec2 &screenSize = camera.renderTarget->getSize();
+        std::cout << "screen size " << screenSize.x << " " << screenSize.y << std::endl;
         const glm::vec3 &rayDir = math::projectRayToWorld(mousePos.x, mousePos.y, camera.viewProjectionMatrix, camera.cameraPosition, screenSize.x, screenSize.y);
 
         glm::vec3 mouseWorldPos = camera.cameraPosition;
