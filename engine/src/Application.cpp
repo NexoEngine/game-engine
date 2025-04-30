@@ -243,28 +243,28 @@ namespace nexo {
 	    m_lastFrameTime = time;
     }
 
-    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType, const SceneType sceneType)
+    void Application::run(const SceneInfo &sceneInfo)
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
-         	renderContext.sceneRendered = sceneId;
-            renderContext.sceneType = sceneType;
-        	if (m_SceneManager.getScene(sceneId).isRendered())
+         	renderContext.sceneRendered = sceneInfo.id;
+            renderContext.sceneType = sceneInfo.sceneType;
+        	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
 			}
-			if (m_SceneManager.getScene(sceneId).isActive())
+			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
 
         // Update (swap buffers and poll events)
-        if (renderingType == RenderingType::WINDOW)
+        if (sceneInfo.renderingType == RenderingType::WINDOW)
             m_window->onUpdate();
         m_eventManager->dispatchEvents();
         renderContext.reset();

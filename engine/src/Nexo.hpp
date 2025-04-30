@@ -45,5 +45,5 @@ namespace nexo {
 
     Application &getApp();
 
-    void runEngine(scene::SceneId id, RenderingType renderingType = RenderingType::WINDOW, SceneType sceneType = SceneType::GAME);
+    void runEngine(const Application::SceneInfo &sceneInfo);
 }
