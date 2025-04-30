@@ -8,6 +8,31 @@
 namespace nexo::editor {
 
     template<typename ComponentType>
+    class ComponentRestoreAction : public Action {
+        public:
+            ComponentRestoreAction(ecs::Entity entity) : m_entity(entity)
+            {
+                auto &app = getApp();
+                ComponentType &target = app.m_coordinator->getComponent<ComponentType>(m_entity);
+                m_memento = target.save();
+            };
+
+            void undo() override
+            {
+                auto &app = getApp();
+                ComponentType target;
+                target.restore(m_memento);
+                app.m_coordinator->addComponent(m_entity, target);
+            }
+
+            void redo() override {}
+
+        private:
+            ecs::Entity m_entity;
+            typename ComponentType::Memento m_memento;
+    };
+
+    template<typename ComponentType>
     class ComponentChangeAction : public Action {
         public:
             ComponentChangeAction(
@@ -20,14 +45,14 @@ namespace nexo::editor {
             {
                 auto &app = getApp();
                 ComponentType &target = app.m_coordinator->getComponent<ComponentType>(m_entity);
-                target = m_afterState.restore();
+                target.restore(m_afterState);
             }
 
             void undo() override
             {
                 auto &app = getApp();
                 ComponentType &target = app.m_coordinator->getComponent<ComponentType>(m_entity);
-                target = m_beforeState.restore();
+                target.restore(m_beforeState);
             }
 
         private:
@@ -36,9 +61,6 @@ namespace nexo::editor {
             typename ComponentType::Memento m_afterState;
     };
 
-    std::vector<std::pair<std::type_index, std::any>> captureEntityState(ecs::Entity entity);
-    void restoreComponents(ecs::Entity entity, const std::vector<std::pair<std::type_index, std::any>>& mementos);
-
     /**
     * Stores information needed to undo/redo entity creation
     * Relies on engine systems for actual creation/deletion logic
@@ -46,14 +68,16 @@ namespace nexo::editor {
     class EntityCreationAction : public Action {
         public:
             EntityCreationAction(ecs::Entity entityId)
-                : m_entityId(entityId) {}
+                : m_entityId(entityId) {
+                    std::cout << "Crée" << std::endl;
+                }
 
             void redo() override;
             void undo() override;
 
         private:
             ecs::Entity m_entityId;
-            std::vector<std::pair<std::type_index, std::any>> m_mementos;
+            std::vector<std::unique_ptr<Action>> m_componentRestoreActions;
     };
 
     /**
@@ -68,8 +92,7 @@ namespace nexo::editor {
             void undo() override;
         private:
             ecs::Entity m_entityId;
-            // Store component mementos for those that support the pattern
-            std::vector<std::pair<std::type_index, std::any>> m_mementos;
+            std::vector<std::unique_ptr<Action>> m_componentRestoreActions;
     };
 
 }
