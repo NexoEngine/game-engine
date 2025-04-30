@@ -163,6 +163,8 @@ namespace nexo::components {
         float yaw = 0.0f;             ///< Yaw angle in degrees.
         float pitch = 0.0f;           ///< Pitch angle in degrees.
         float translationSpeed = 5.0f; ///< Camera speed
+        bool wasMouseReleased = true;
+        bool wasActiveLastFrame = true;
 
         struct Memento {
             float mouseSensitivity;
