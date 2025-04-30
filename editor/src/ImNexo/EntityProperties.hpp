@@ -17,10 +17,41 @@
 #include <string>
 #include <vector>
 
+#include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
 
 namespace ImNexo {
+
+    enum class InteractionState {
+        NONE,
+        FIRST_INTERACTION,
+        USING,
+        RELEASED
+    };
+
+    template<typename Component>
+    InteractionState trackEditingLifecylce(Component &component, typename Component::Memento &beforeState)
+    {
+        InteractionState state = InteractionState::NONE;
+        static bool wasUsingLastFrame = false;
+        if (!wasUsingLastFrame && ImGui::IsItemActive()) {
+            beforeState = component.save();
+            wasUsingLastFrame = true;
+            state = InteractionState::FIRST_INTERACTION;
+        } else if (ImGui::IsItemActive())
+            state = InteractionState::USING;
+        if (wasUsingLastFrame && !ImGui::IsItemActive()) {
+            wasUsingLastFrame = false;
+            state = InteractionState::RELEASED;
+        }
+        return state;
+    }
+
+    InteractionState Ambient(
+        nexo::components::AmbientLightComponent &ambientComponent,
+        nexo::components::AmbientLightComponent::Memento &beforeState
+    );
 
     /**
      * @brief Renders and handles the transform component editor UI.
@@ -34,6 +65,7 @@ namespace ImNexo {
      * @param lastDisplayedEuler Reference to vector storing the last displayed euler angles for computing deltas
      */
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler);
+
 
     /**
      * @brief Renders and handles the camera component editor UI.

@@ -18,6 +18,7 @@
 #include "EntityProperties.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
+#include "components/Camera.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
 #include "components/Light.hpp"
@@ -25,6 +26,26 @@
 #include "math/Vector.hpp"
 
 namespace ImNexo {
+
+    InteractionState Ambient(
+        nexo::components::AmbientLightComponent &ambientComponent,
+        nexo::components::AmbientLightComponent::Memento &beforeState
+    ) {
+        ImGui::Spacing();
+        InteractionState state = InteractionState::NONE;
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {ambientComponent.color, 1.0f};
+        ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
+
+        state = trackEditingLifecylce(ambientComponent, beforeState);
+        ambientComponent.color = color;
+        return state;
+    }
+
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler)
 	{
 	    // Increase cell padding so rows have more space:
