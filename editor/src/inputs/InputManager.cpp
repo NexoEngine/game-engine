@@ -61,7 +61,6 @@ namespace nexo::editor {
             if (keyDown) {
                 currentlyHeldKeys.set(idx);
 
-                // Handle key press detection
                 if (!lastFrameHeldKeys[idx]) {  // Key was just pressed this frame
                     pressedSignature.set(idx);
 
@@ -77,7 +76,6 @@ namespace nexo::editor {
                     keyLastPressTime[idx] = currentTime;
                 }
             } else {
-                // Key is not down
                 if (lastFrameHeldKeys[idx]) {
                     // Key was just released
                     releasedSignature.set(idx);
@@ -96,19 +94,15 @@ namespace nexo::editor {
 
         for (const auto& command : commands) {
             if (command.isModifier()) {
-                // Check if modifier is pressed
                 std::bitset<ImGuiKey_NamedKey_COUNT> modifierSignature = command.getSignature();
                 if ((modifierSignature & currentlyHeldKeys) == modifierSignature) {
                     // This modifier is held down, now check its children
                     for (const auto& childCmd : command.getChildren()) {
-                        // Find a key that was just pressed while the modifier is held
                         std::bitset<ImGuiKey_NamedKey_COUNT> childSignature = childCmd.getSignature();
                         if ((childSignature & pressedSignature).any()) {
                             // We found a modifier+key combination! Execute it
                             childCmd.executePressedCallback();
                             modifierCombinationProcessed = true;
-                            std::cout << "Executed modifier combination! Mod: " << command.getKey()
-                                      << " + Key: " << childCmd.getKey() << std::endl;
                             break; // Process only one modifier combination at a time
                         }
 
@@ -119,7 +113,7 @@ namespace nexo::editor {
                     }
 
                     if (modifierCombinationProcessed) {
-                        break; // Stop checking other modifiers once we've processed one
+                        break;
                     }
                 }
             }
@@ -131,86 +125,22 @@ namespace nexo::editor {
                 // Skip modifiers, we already handled them
                 if (command.isModifier()) continue;
 
-                // Handle pressed callbacks
                 if (command.exactMatch(pressedSignature)) {
                     command.executePressedCallback();
                 }
 
-                // Handle released callbacks
                 if (command.exactMatch(releasedSignature)) {
                     command.executeReleasedCallback();
                 }
             }
         }
 
-        // Process repeat commands
         if (repeatSignature.any()) {
             processRepeatCommands(windowState.getCommands(), repeatSignature, currentlyHeldKeys);
         }
 
         // Store current key state for next frame
         lastFrameHeldKeys = currentlyHeldKeys;
-    }
-
-    void InputManager::processCommands(
-        const std::span<const Command>& commands,
-        const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
-        const std::bitset<ImGuiKey_NamedKey_COUNT>& releasedSignature
-    ) {
-        // First pass: Check for modifier keys and their children
-        for (const auto& command : commands) {
-            // Only process modifiers in the first pass
-            if (!command.isModifier()) continue;
-
-            // Check if this modifier is currently pressed
-            if ((command.getSignature() & pressedSignature) == command.getSignature()) {
-                // Calculate remaining pressed keys after removing the modifier
-                auto remainingPressedBits = pressedSignature;
-                remainingPressedBits ^= command.getSignature();
-
-                // Process child commands with this modifier
-                bool childCommandExecuted = false;
-
-                for (const auto& child : command.getChildren()) {
-                    // Check if child exactly matches remaining bits (modifier+key combination)
-                    if (child.exactMatch(remainingPressedBits)) {
-                        // We found an exact match for a modifier+key combination
-                        child.executePressedCallback();
-                        childCommandExecuted = true;
-
-                        // Debugging
-                        std::cout << "Executed modifier child: " << child.getKey()
-                                  << " with modifier: " << command.getKey() << std::endl;
-                    }
-
-                    // Check for child key releases while modifier is held
-                    if (child.exactMatch(releasedSignature)) {
-                        child.executeReleasedCallback();
-                    }
-                }
-
-                // If we executed a child command, return early to prevent regular commands from executing
-                if (childCommandExecuted) {
-                    return;
-                }
-            }
-        }
-
-        // Second pass: Process regular commands if no modifier combinations were executed
-        for (const auto& command : commands) {
-            // Skip modifiers in the second pass
-            if (command.isModifier()) continue;
-
-            // Handle pressed callbacks for non-modifiers
-            if (command.exactMatch(pressedSignature)) {
-                command.executePressedCallback();
-            }
-
-            // Handle released callbacks for non-modifiers
-            if (command.exactMatch(releasedSignature)) {
-                command.executeReleasedCallback();
-            }
-        }
     }
 
     void InputManager::processRepeatCommands(
@@ -310,9 +240,7 @@ namespace nexo::editor {
 
             // If this command matches the pressed signature exactly or partially
             if (command.partialMatch(pressedSignature)) {
-                // If it's a modifier and matches exactly
                 if (command.isModifier() && (command.getSignature() & pressedSignature) == command.getSignature()) {
-                    // Check if any child modifiers are pressed
                     bool hasActivatedChildModifier = false;
 
                     for (const auto& child : command.getChildren()) {
@@ -324,7 +252,6 @@ namespace nexo::editor {
 
                     // For each child command, add the appropriate representation
                     for (const auto& child : command.getChildren()) {
-                        // If we have an activated child modifier, only process those
                         if (hasActivatedChildModifier) {
                             // Skip non-modifier children or modifiers that aren't pressed
                             if (!child.isModifier() || !((child.getSignature() & pressedSignature) == child.getSignature())) {
