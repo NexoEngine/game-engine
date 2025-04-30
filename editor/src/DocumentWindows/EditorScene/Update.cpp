@@ -125,6 +125,9 @@ namespace nexo::editor {
             return;
         SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
         Application::SceneInfo sceneInfo{static_cast<scene::SceneId>(m_sceneId), RenderingType::FRAMEBUFFER, sceneType};
+        sceneInfo.isChildWindow = true;
+        sceneInfo.viewportBounds[0] = glm::vec2{m_viewportBounds[0].x, m_viewportBounds[0].y};
+        sceneInfo.viewportBounds[1] = glm::vec2{m_viewportBounds[1].x, m_viewportBounds[1].y};
         runEngine(sceneInfo);
 
 
