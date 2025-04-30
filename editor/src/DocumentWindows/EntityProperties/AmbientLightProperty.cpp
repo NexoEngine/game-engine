@@ -36,16 +36,17 @@ namespace nexo::editor {
             ImGui::Text("Color");
             ImGui::SameLine();
             glm::vec4 color = {ambientComponent.color, 1.0f};
-            if (ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker)) {
-                if (!wasUsingLastFrame) {
-                    beforeState = ambientComponent.save();
-                    wasUsingLastFrame = true;
-                }
-                ambientComponent.color = color;
-            }
+            ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
 
-            // Only record the action when the user is done with the color picker
-            if (wasUsingLastFrame && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+            // The user first clicked on the color picker
+            if (!wasUsingLastFrame && ImGui::IsItemActive()) {
+                beforeState = ambientComponent.save();
+                wasUsingLastFrame = true;
+            }
+            ambientComponent.color = color;
+
+            // The user released the color picker
+            if (wasUsingLastFrame && !ImGui::IsItemActive()) {
                 auto afterState = ambientComponent.save();
                 auto action = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(
                     entity, beforeState, afterState);
