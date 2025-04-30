@@ -251,6 +251,11 @@ namespace nexo {
         {
          	renderContext.sceneRendered = sceneInfo.id;
             renderContext.sceneType = sceneInfo.sceneType;
+            if (sceneInfo.isChildWindow) {
+                renderContext.isChildWindow = true;
+                renderContext.viewportBounds[0] = sceneInfo.viewportBounds[0];
+                renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
+            }
         	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
 				m_cameraContextSystem->update();
