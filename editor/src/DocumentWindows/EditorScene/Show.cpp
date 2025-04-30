@@ -89,6 +89,7 @@ namespace nexo::editor {
             return;
         const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
 
+
         // Resize handling
         if ((m_contentSize.x > 0 && m_contentSize.y > 0) && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
         {
@@ -101,15 +102,10 @@ namespace nexo::editor {
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize, ImVec2(0, 1), ImVec2(1, 0));
 
-        const auto windowSize = ImGui::GetWindowSize();
-        auto minBounds = ImGui::GetWindowPos();
-
-        minBounds.x += viewPortOffset.x;
-        minBounds.y += viewPortOffset.y;
-
-        const ImVec2 maxBounds = {minBounds.x + windowSize.x, minBounds.y + windowSize.y};
-        m_viewportBounds[0] = minBounds;
-        m_viewportBounds[1] = maxBounds;
+        ImVec2 viewportMin = ImGui::GetItemRectMin();
+        ImVec2 viewportMax = ImGui::GetItemRectMax();
+        m_viewportBounds[0] = viewportMin;
+        m_viewportBounds[1] = viewportMax;
     }
 
     void EditorScene::show()
