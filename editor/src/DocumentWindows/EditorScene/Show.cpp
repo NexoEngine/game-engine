@@ -119,21 +119,20 @@ namespace nexo::editor {
         auto &selector = Selector::get();
         m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
         const std::string &sceneWindowName = m_windowName + std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId);
-
+        m_wasVisibleLastFrame = m_isVisibleInDock;
+        m_isVisibleInDock = false;
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
         {
             firstDockSetup(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
-        	auto &app = getApp();
+            auto &app = getApp();
 
             // Add some spacing after the toolbar
             ImGui::Dummy(ImVec2(0, 5));
             m_viewPosition = ImGui::GetCursorScreenPos();
 
-
-            m_focused = ImGui::IsWindowFocused();
-            m_isVisibleInDock = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
-            m_hovered = ImGui::IsWindowHovered();
+            visibilityCheck();
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
+
             if (m_focused && selector.getSelectedScene() != m_sceneId) {
                 selector.setSelectedScene(m_sceneId);
                 selector.clearSelection();
@@ -142,9 +141,9 @@ namespace nexo::editor {
             if (m_activeCamera == -1)
                 renderNoActiveCamera();
             else {
-	            renderView();
-	            renderGizmo();
-	            renderToolbar();
+                renderView();
+                renderGizmo();
+                renderToolbar();
             }
 
             if (m_popupManager.showPopup("Add new entity popup"))
