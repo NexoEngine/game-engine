@@ -68,9 +68,7 @@ namespace nexo::editor {
     class EntityCreationAction : public Action {
         public:
             EntityCreationAction(ecs::Entity entityId)
-                : m_entityId(entityId) {
-                    std::cout << "Crée" << std::endl;
-                }
+                : m_entityId(entityId) {}
 
             void redo() override;
             void undo() override;
