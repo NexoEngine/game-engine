@@ -160,8 +160,6 @@ namespace nexo::components {
 
         glm::vec2 lastMousePosition{};  ///< Last recorded mouse position.
         float mouseSensitivity = 0.1f;///< Sensitivity factor for mouse movement.
-        float yaw = 0.0f;             ///< Yaw angle in degrees.
-        float pitch = 0.0f;           ///< Pitch angle in degrees.
         float translationSpeed = 5.0f; ///< Camera speed
         bool wasMouseReleased = true;
         bool wasActiveLastFrame = true;
@@ -176,8 +174,6 @@ namespace nexo::components {
             {
                 PerspectiveCameraController controller;
                 controller.mouseSensitivity = mouseSensitivity;
-                controller.yaw = yaw;
-                controller.pitch = pitch;
                 controller.translationSpeed = translationSpeed;
                 return controller;
             }
@@ -187,8 +183,6 @@ namespace nexo::components {
         {
             return {
                 mouseSensitivity,
-                yaw,
-                pitch,
                 translationSpeed
             };
         }
