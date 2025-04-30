@@ -42,11 +42,6 @@ namespace nexo::editor {
         std::bitset<ImGuiKey_NamedKey_COUNT> m_currentKeyState;
         std::bitset<ImGuiKey_NamedKey_COUNT> m_keyWasDownLastFrame;
 
-        // Recursive command matching
-        void processCommands(const std::span<const Command>& commands,
-                            const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
-                            const std::bitset<ImGuiKey_NamedKey_COUNT>& releasedSignature
-        );
         void processRepeatCommands(
             const std::span<const Command>& commands,
             const std::bitset<ImGuiKey_NamedKey_COUNT>& repeatSignature,
