@@ -72,7 +72,8 @@ namespace nexo::editor {
             ImGui::BeginChild("MaterialPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
             auto &app = getApp();
-            app.run(scenePreviewInfo.sceneId, RenderingType::FRAMEBUFFER);
+            Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(scenePreviewInfo.sceneId), nexo::RenderingType::FRAMEBUFFER};
+            app.run(sceneInfo);
             auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
@@ -167,7 +168,8 @@ namespace nexo::editor {
 					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
 					auto &app = nexo::getApp();
 					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-					app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
+					Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(previewParams.sceneId), nexo::RenderingType::FRAMEBUFFER};
+					app.run(sceneInfo);
 					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 					framebuffer = cameraComponent.m_renderTarget;
 					app.getSceneManager().deleteScene(previewParams.sceneId);

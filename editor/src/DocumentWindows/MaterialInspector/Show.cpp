@@ -46,7 +46,8 @@ namespace nexo::editor {
 		{
 			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
 			auto &app = nexo::getApp();
-			app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
+			Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(previewParams.sceneId), nexo::RenderingType::FRAMEBUFFER};
+			app.run(sceneInfo);
 			const auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 			m_framebuffer = cameraComponent.m_renderTarget;
 			materialModified = false;
@@ -83,8 +84,8 @@ namespace nexo::editor {
 
                if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
                {
-               	firstDockSetup(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
-                   renderMaterialInspector(selectedEntity);
+                    beginRender(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
+                    renderMaterialInspector(selectedEntity);
                }
                ImGui::End();
            }

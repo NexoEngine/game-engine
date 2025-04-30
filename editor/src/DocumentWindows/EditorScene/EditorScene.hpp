@@ -73,13 +73,6 @@ namespace nexo::editor {
 			 */
 			[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
 
-            /**
-            * @brief Gets the current viewport size.
-            *
-            * @return ImVec2 The width and height of the viewport in pixels.
-            */
-			[[nodiscard]] ImVec2 getViewportSize() const {return m_viewSize;};
-
 			/**
 			 * @brief Sets the active camera for this scene.
 			 *
@@ -100,8 +93,6 @@ namespace nexo::editor {
 
         private:
             bool m_defaultScene = false;
-            ImVec2 m_viewSize = {0, 0};
-            ImVec2 m_viewPosition = {0, 0};
             ImVec2 m_viewportBounds[2];
             ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;
             ImGuizmo::MODE m_currentGizmoMode = ImGuizmo::WORLD;
