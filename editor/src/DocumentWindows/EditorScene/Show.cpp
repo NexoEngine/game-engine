@@ -19,6 +19,8 @@
 #include "IconsFontAwesome.h"
 #include "ImNexo/Panels.hpp"
 #include "utils/EditorProps.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
@@ -44,6 +46,8 @@ namespace nexo::editor {
                 const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                 sceneManager.getScene(sceneId).addEntity(newCube);
+                auto createAction = std::make_unique<EntityCreationAction>(newCube);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             ImGui::EndMenu();
         }
@@ -58,16 +62,22 @@ namespace nexo::editor {
             if (ImGui::MenuItem("Directional")) {
                 const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
                 sceneManager.getScene(sceneId).addEntity(directionalLight);
+                auto createAction = std::make_unique<EntityCreationAction>(directionalLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             if (ImGui::MenuItem("Point")) {
                 const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
                 utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                 sceneManager.getScene(sceneId).addEntity(pointLight);
+                auto createAction = std::make_unique<EntityCreationAction>(pointLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             if (ImGui::MenuItem("Spot")) {
                 const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
                 utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                 sceneManager.getScene(sceneId).addEntity(spotLight);
+                auto createAction = std::make_unique<EntityCreationAction>(spotLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             ImGui::EndMenu();
         }
@@ -89,13 +99,12 @@ namespace nexo::editor {
             return;
         const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
 
-
         // Resize handling
-        if ((m_contentSize.x > 0 && m_contentSize.y > 0) && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
+        if ((m_contentSize.x > 0 && m_contentSize.y > 0)
+            && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
         {
         	cameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
         							static_cast<unsigned int>(m_contentSize.y));
-
         }
 
         // Render framebuffer
