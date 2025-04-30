@@ -16,7 +16,14 @@
 
 namespace nexo::editor {
 
-    void ADocumentWindow::firstDockSetup(const std::string &windowName)
+    void ADocumentWindow::beginRender(const std::string &windowName)
+    {
+        dockingUpdate(windowName);
+        visibilityUpdate();
+        sizeUpdate();
+    }
+
+    void ADocumentWindow::dockingUpdate(const std::string &windowName)
     {
         if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
         {
@@ -42,7 +49,7 @@ namespace nexo::editor {
         }
     }
 
-    void ADocumentWindow::visibilityCheck()
+    void ADocumentWindow::visibilityUpdate()
     {
         m_focused = ImGui::IsWindowFocused();
         bool isDocked = ImGui::IsWindowDocked();
@@ -62,5 +69,15 @@ namespace nexo::editor {
         }
 
         m_hovered = ImGui::IsWindowHovered();
+    }
+
+    void ADocumentWindow::sizeUpdate()
+    {
+        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        m_windowPos = window->Pos;
+        m_windowSize = window->Size;
+        m_contentSizeMin = ImGui::GetWindowContentRegionMin();
+        m_contentSizeMax = ImGui::GetWindowContentRegionMax();
+        m_contentSize = ImGui::GetContentRegionAvail();
     }
 }

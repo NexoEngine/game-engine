@@ -22,12 +22,13 @@ namespace nexo::editor {
 
     void EditorScene::initialToolbarSetup(const float buttonWidth, const float buttonHeight)
     {
-        ImVec2 toolbarPos = m_viewPosition;
+        ImVec2 toolbarPos = m_windowPos;
         toolbarPos.x += 10.0f;
+        toolbarPos.y += 20.0f;
 
         ImGui::SetCursorScreenPos(toolbarPos);
 
-        ImVec2 toolbarSize = ImVec2(m_viewSize.x - buttonWidth, 50.0f);
+        ImVec2 toolbarSize = ImVec2(m_contentSize.x - buttonWidth, 50.0f);
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
         ImGui::BeginChild("##ToolbarOverlay", toolbarSize, 0,

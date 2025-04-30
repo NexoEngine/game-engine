@@ -36,10 +36,10 @@ namespace nexo::editor {
         framebufferSpecs.attachments = {
             renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
         };
-        framebufferSpecs.width = static_cast<unsigned int>(m_viewSize.x);
-        framebufferSpecs.height = static_cast<unsigned int>(m_viewSize.y);
+        framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
+        framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
-        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_viewSize.x), static_cast<unsigned int>(m_viewSize.y), renderTarget);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
@@ -75,8 +75,7 @@ namespace nexo::editor {
 
     void EditorScene::setupWindow()
     {
-        constexpr auto size = ImVec2(1280, 720);
-        m_viewSize = size;
+        m_contentSize = ImVec2(1280, 720);
     }
 
     void EditorScene::setCamera(ecs::Entity cameraId)
@@ -87,6 +86,6 @@ namespace nexo::editor {
         oldCameraComponent.render = false;
         m_activeCamera = cameraId;
         auto &newCameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(cameraId);
-        newCameraComponent.resize(m_viewSize.x, m_viewSize.y);
+        newCameraComponent.resize(m_contentSize.x, m_contentSize.y);
     }
 }

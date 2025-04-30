@@ -49,6 +49,8 @@ namespace nexo::editor {
             [[nodiscard]] bool isOpened() const override { return m_opened; }
             [[nodiscard]] bool isHovered() const override { return m_hovered; }
 
+            [[nodiscard]] const ImVec2 &getContentSize() const override { return m_contentSize; }
+
             /**
              * @brief Retrieves the open state of the document window.
              *
@@ -64,19 +66,7 @@ namespace nexo::editor {
 
             [[nodiscard]] const WindowState &getWindowState() const override { return m_windowState; };
 
-            /**
-             * @brief Initializes the docking configuration for the document window on its first display.
-             *
-             * This function retrieves the current ImGui window and checks its docking state to ensure it aligns with the expected
-             * configuration from the WindowRegistry. On the first open (when m_firstOpened is true), if the window is not actively
-             * docked or its current dock ID does not match the expected ID obtained via the provided window name, the function assigns
-             * the expected dock ID to the window. If the window is already docked but the dock IDs still differ, the current dock ID is
-             * saved to the WindowRegistry. The m_firstOpened flag is then set to false so that the docking configuration is applied only once.
-             *
-             * @param windowName The name used to look up the expected dock identifier in the WindowRegistry.
-             */
-            void firstDockSetup(const std::string &windowName);
-            void visibilityCheck();
+
 
             WindowId windowId;
         protected:
@@ -86,11 +76,34 @@ namespace nexo::editor {
             bool m_wasVisibleLastFrame;
             bool m_isVisibleInDock = true;
 
+            ImVec2 m_windowPos;
+            ImVec2 m_windowSize;
+            ImVec2 m_contentSizeMin;
+            ImVec2 m_contentSizeMax;
+            ImVec2 m_contentSize;
+
             bool m_firstOpened = true;
 
             std::string m_windowName;
             WindowState m_windowState;
 
             WindowRegistry &m_windowRegistry;
+
+            void beginRender(const std::string &windowName);
+        private:
+            /**
+            * @brief Initializes the docking configuration for the document window on its first display.
+            *
+            * This function retrieves the current ImGui window and checks its docking state to ensure it aligns with the expected
+            * configuration from the WindowRegistry. On the first open (when m_firstOpened is true), if the window is not actively
+            * docked or its current dock ID does not match the expected ID obtained via the provided window name, the function assigns
+            * the expected dock ID to the window. If the window is already docked but the dock IDs still differ, the current dock ID is
+            * saved to the WindowRegistry. The m_firstOpened flag is then set to false so that the docking configuration is applied only once.
+            *
+            * @param windowName The name used to look up the expected dock identifier in the WindowRegistry.
+            */
+            void dockingUpdate(const std::string &windowName);
+            void visibilityUpdate();
+            void sizeUpdate();
     };
 }

@@ -77,7 +77,7 @@ namespace nexo::editor {
                     const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
                     for (const auto &scene : editorScenes) {
                         if (scene->getSceneId() == sceneId) {
-                            ImNexo::CameraInspector(sceneId, scene->getViewportSize());
+                            ImNexo::CameraInspector(sceneId, scene->getContentSize());
                             break;
                         }
                     }
@@ -208,7 +208,7 @@ namespace nexo::editor {
 
         if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
         {
-            firstDockSetup(NEXO_WND_USTRID_SCENE_TREE);
+            beginRender(NEXO_WND_USTRID_SCENE_TREE);
             m_focused = ImGui::IsWindowFocused();
             m_hovered = ImGui::IsWindowHovered();
 

@@ -302,7 +302,8 @@ namespace ImNexo {
             ImGui::BeginChild("CameraPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
             auto &app = nexo::getApp();
-            app.run(sceneId, nexo::RenderingType::FRAMEBUFFER);
+            nexo::Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(sceneId), nexo::RenderingType::FRAMEBUFFER};
+            app.run(sceneInfo);
             auto const &cameraComponent = nexo::Application::m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
