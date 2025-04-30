@@ -23,6 +23,7 @@
 #include "components/Render.hpp"
 #include "core/event/Input.hpp"
 #include "math/Projection.hpp"
+#include "math/Vector.hpp"
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/exceptions/Exceptions.hpp"
@@ -133,38 +134,88 @@ namespace nexo::system {
 
     void RenderSystem::renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext)
     {
-        //TODO: Implement a way to do this without relying on camera render target when none is bound
         if (!camera.renderTarget)
             return;
+
         renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Grid shader");
         auto gridShader = renderContext.renderer3D.getShader();
         gridShader->bind();
 
         // Grid appearance
         const components::RenderContext::GridParams &gridParams = renderContext.gridParams;
-        gridShader->setUniformFloat("uGridSize", gridParams.gridSize);  // Size of grid from center to edge
-        gridShader->setUniformFloat("uGridCellSize", gridParams.cellSize); // Base size of each cell
-        gridShader->setUniformFloat("uGridMinPixelsBetweenCells", gridParams.minPixelsBetweenCells); // For LOD calculation
+        gridShader->setUniformFloat("uGridSize", gridParams.gridSize);
+        gridShader->setUniformFloat("uGridCellSize", gridParams.cellSize);
+        gridShader->setUniformFloat("uGridMinPixelsBetweenCells", gridParams.minPixelsBetweenCells);
 
-        gridShader->setUniformFloat4("uGridColorThin", {0.5f, 0.55f, 0.7f, 0.6f});   // Soft blue-purple
-        gridShader->setUniformFloat4("uGridColorThick", {0.7f, 0.75f, 0.9f, 0.8f});  // Lighter blue-purple
-        const glm::vec2 &mousePos = event::getMousePosition();
-        std::cout << "mouse pos " << mousePos.x << " " << mousePos.y << std::endl;
-        const glm::vec2 &screenSize = camera.renderTarget->getSize();
-        std::cout << "screen size " << screenSize.x << " " << screenSize.y << std::endl;
-        const glm::vec3 &rayDir = math::projectRayToWorld(mousePos.x, mousePos.y, camera.viewProjectionMatrix, camera.cameraPosition, screenSize.x, screenSize.y);
+        gridShader->setUniformFloat4("uGridColorThin", {0.5f, 0.55f, 0.7f, 0.6f});
+        gridShader->setUniformFloat4("uGridColorThick", {0.7f, 0.75f, 0.9f, 0.8f});
 
-        glm::vec3 mouseWorldPos = camera.cameraPosition;
-        if (rayDir.y != 0.0f) {
-            float t = -camera.cameraPosition.y / rayDir.y;
-            if (t > 0.0f) {
-                mouseWorldPos = camera.cameraPosition + rayDir * t;
+        const glm::vec2 globalMousePos = event::getMousePosition();
+        glm::vec3 mouseWorldPos = camera.cameraPosition;  // Default position (camera position)
+        const glm::vec2 renderTargetSize = camera.renderTarget->getSize();
+
+        if (renderContext.isChildWindow) {
+            // viewportBounds[0] is min (top-left), viewportBounds[1] is max (bottom-right)
+            const glm::vec2& viewportMin = renderContext.viewportBounds[0];
+            const glm::vec2& viewportMax = renderContext.viewportBounds[1];
+            const glm::vec2 viewportSize(viewportMax.x - viewportMin.x, viewportMax.y - viewportMin.y);
+
+            // Check if mouse is within the viewport bounds
+            if (math::isPosInBounds(globalMousePos, viewportMin, viewportMax)) {
+
+                // Calculate relative mouse position within the viewport
+                glm::vec2 relativeMousePos(
+                    globalMousePos.x - viewportMin.x,
+                    globalMousePos.y - viewportMin.y
+                );
+
+                // Convert to normalized coordinates [0,1]
+                glm::vec2 normalizedPos(
+                    relativeMousePos.x / viewportSize.x,
+                    relativeMousePos.y / viewportSize.y
+                );
+
+                // Convert to framebuffer coordinates
+                glm::vec2 framebufferPos(
+                    normalizedPos.x * renderTargetSize.x,
+                    normalizedPos.y * renderTargetSize.y
+                );
+
+                // Project ray
+                const glm::vec3 rayDir = math::projectRayToWorld(
+                    framebufferPos.x, framebufferPos.y,
+                    camera.viewProjectionMatrix, camera.cameraPosition,
+                    renderTargetSize.x, renderTargetSize.y
+                );
+
+                // Calculate intersection with y=0 plane (grid plane)
+                if (rayDir.y != 0.0f) {
+                    float t = -camera.cameraPosition.y / rayDir.y;
+                    if (t > 0.0f) {
+                        mouseWorldPos = camera.cameraPosition + rayDir * t;
+                    }
+                }
+            }
+        } else {
+            const glm::vec3 rayDir = math::projectRayToWorld(
+                globalMousePos.x, globalMousePos.y,
+                camera.viewProjectionMatrix, camera.cameraPosition,
+                renderTargetSize.x, renderTargetSize.y
+            );
+
+            if (rayDir.y != 0.0f) {
+                float t = -camera.cameraPosition.y / rayDir.y;
+                if (t > 0.0f) {
+                    mouseWorldPos = camera.cameraPosition + rayDir * t;
+                }
             }
         }
-        // For glowing effect
+
+        // Set uniforms for grid highlighting
         gridShader->setUniformFloat3("uMouseWorldPos", mouseWorldPos);
         gridShader->setUniformFloat("uTime", static_cast<float>(glfwGetTime()));
 
+        // Render the grid
         renderer::RenderCommand::setDepthMask(false);
         glDisable(GL_CULL_FACE);
         renderer::RenderCommand::drawUnIndexed(6);
