@@ -24,12 +24,14 @@ namespace nexo::components {
             glm::vec3 position;
             glm::quat rotation;
             glm::vec3 scale;
-
-            TransformComponent restore() const
-            {
-                return {position, scale, rotation};
-            }
         };
+
+        void restore(const Memento &memento)
+        {
+            pos = memento.position;
+            quat = memento.rotation;
+            size = memento.scale;
+        }
 
         Memento save() const
         {
