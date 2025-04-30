@@ -80,9 +80,8 @@ namespace nexo {
                 scene::SceneId id;
                 RenderingType renderingType = RenderingType::WINDOW;
                 SceneType sceneType = SceneType::GAME;
-                bool isChildWindow = false;
-                glm::vec2 childWindowPos{};
-                glm::vec2 childWindowSize{};
+                bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
+                glm::vec2 viewportBounds[2]; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
             };
 
             /**
