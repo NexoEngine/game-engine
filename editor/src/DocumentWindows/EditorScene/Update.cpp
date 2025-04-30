@@ -118,7 +118,9 @@ namespace nexo::editor {
     void EditorScene::update()
     {
         auto &selector = Selector::get();
-        if (!m_opened || m_activeCamera == -1 || !m_isVisibleInDock)
+        bool is_currently_visible = m_isVisibleInDock || m_wasVisibleLastFrame;
+
+        if (!m_opened || m_activeCamera == -1 || !is_currently_visible)
             return;
         SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
         runEngine(m_sceneId, RenderingType::FRAMEBUFFER, sceneType);

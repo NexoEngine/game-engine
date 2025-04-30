@@ -75,37 +75,15 @@ namespace nexo::editor {
              *
              * @param windowName The name used to look up the expected dock identifier in the WindowRegistry.
              */
-            void firstDockSetup(const std::string &windowName)
-            {
-                if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
-                {
-                    const bool isDocked = currentWindow->DockIsActive;
-                    const ImGuiID currentDockID = currentWindow->DockId;
-                    auto dockId = m_windowRegistry.getDockId(windowName);
-
-                    // If it's the first time opening the window and we have a dock id saved in the registry, then we force set it
-                    if (m_firstOpened && ((dockId && currentDockID != *dockId)))
-                        ImGui::DockBuilderDockWindow(windowName.c_str(), *dockId);
-                    // If the docks ids differ, it means the window got rearranged in the global layout
-                    // If we are docked but we dont have a dock id saved in the registry, it means the user moved the window
-                    // In both cases, we update our docking registry with the new dock id
-                    else if ((dockId && currentDockID != *dockId) || (isDocked && !dockId))
-                        m_windowRegistry.setDockId(windowName, currentDockID);
-
-
-                    // If it is not docked anymore, we have a floating window without docking node,
-                    // So we erase it from the docking registry
-                    if (!m_firstOpened && !isDocked)
-                        m_windowRegistry.resetDockId(windowName);
-                    m_firstOpened = false;
-                }
-            }
+            void firstDockSetup(const std::string &windowName);
+            void visibilityCheck();
 
             WindowId windowId;
         protected:
             bool m_opened = true;
             bool m_focused = false;
             bool m_hovered = false; // TODO: make these update without user intervention
+            bool m_wasVisibleLastFrame;
             bool m_isVisibleInDock = true;
 
             bool m_firstOpened = true;
