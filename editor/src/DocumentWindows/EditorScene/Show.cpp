@@ -100,7 +100,7 @@ namespace nexo::editor {
 
         // Render framebuffer
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
-        ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);
 
         ImVec2 viewportMin = ImGui::GetItemRectMin();
         ImVec2 viewportMax = ImGui::GetItemRectMax();
