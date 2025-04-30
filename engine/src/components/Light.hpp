@@ -29,12 +29,12 @@ namespace nexo::components {
 
         struct Memento {
             glm::vec3 color;
-
-            AmbientLightComponent restore(const Memento& memento) const
-            {
-                return {color};
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            color = memento.color;
+        }
 
         Memento save() const
         {
@@ -56,13 +56,13 @@ namespace nexo::components {
         struct Memento {
             glm::vec3 direction;
             glm::vec3 color;
-
-            DirectionalLightComponent restore() const
-            {
-                DirectionalLightComponent dirLight(direction, color);
-                return dirLight;
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            direction = memento.direction;
+            color = memento.color;
+        }
 
         Memento save() const
         {
@@ -83,19 +83,21 @@ namespace nexo::components {
             float quadratic{};
             float maxDistance;
             float constant;
-
-            PointLightComponent restore() const
-            {
-                return {color, linear, quadratic, maxDistance, constant};
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            color = memento.color;
+            linear = memento.linear;
+            quadratic = memento.quadratic;
+            maxDistance = memento.maxDistance;
+            constant = memento.constant;
+        }
 
         Memento save() const
         {
             return {color, linear, quadratic, maxDistance, constant};
         }
-
-
     };
 
     struct SpotLightComponent {
@@ -117,19 +119,24 @@ namespace nexo::components {
             float quadratic{};
             float maxDistance;
             float constant;
-
-            SpotLightComponent restore() const
-            {
-                return {direction, color, cutOff, outerCutoff, linear, quadratic, maxDistance, constant};
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            direction = memento.direction;
+            color = memento.color;
+            cutOff = memento.cutOff;
+            outerCutoff = memento.outerCutoff;
+            linear = memento.linear;
+            quadratic = memento.quadratic;
+            maxDistance = memento.maxDistance;
+            constant = memento.constant;
+        }
 
         Memento save() const
         {
             return {direction, color, cutOff, outerCutoff, linear, quadratic, maxDistance, constant};
         }
-
-
     };
 
     struct LightContext {
