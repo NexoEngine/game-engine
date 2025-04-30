@@ -173,7 +173,6 @@ namespace nexo::system {
 
             // Always update lastMousePosition if this is the active scene, even if not moving the camera
             // This ensures the position is current when we start dragging
-            // If mouse isn't down or we're just starting to track, just update position without movement
             if (!mouseDown || controller.wasMouseReleased) {
                 controller.lastMousePosition = currentMousePosition;
                 controller.wasMouseReleased = false;
@@ -185,20 +184,26 @@ namespace nexo::system {
                 continue;
             }
 
-            const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
-            controller.yaw += -mouseDelta.x;
-            controller.pitch += -mouseDelta.y;
-
-            // Clamp pitch to avoid flipping
-            if (controller.pitch > 89.0f) controller.pitch = 89.0f;
-            if (controller.pitch < -89.0f) controller.pitch = -89.0f;
-
-            // Rebuild quaternion and update transform
-            glm::quat qPitch = glm::angleAxis(glm::radians(controller.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-            glm::quat qYaw = glm::angleAxis(glm::radians(controller.yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-
             auto &transform = getComponent<components::TransformComponent>(entity);
-            transform.quat = glm::normalize(qYaw * qPitch);
+            const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
+
+            // Extract camera orientation vectors from current quaternion
+            glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f, 0.0f);
+            glm::vec3 up = transform.quat * glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            // Create rotation quaternions based on mouse movement
+            glm::quat pitchRotation = glm::angleAxis(glm::radians(-mouseDelta.y), right);
+            glm::quat yawRotation = glm::angleAxis(glm::radians(-mouseDelta.x), glm::vec3(0.0f, 1.0f, 0.0f)); // World up for yaw
+            glm::quat newQuat = glm::normalize(yawRotation * pitchRotation * transform.quat);
+            glm::vec3 newFront = newQuat * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            // Check if the resulting orientation would flip the camera (pitch constraint)
+            float pitchAngle = glm::degrees(std::asin(newFront.y));
+            if (pitchAngle < -85.0f || pitchAngle > 85.0f)
+                transform.quat = glm::normalize(yawRotation * transform.quat);
+            else
+                transform.quat = newQuat;
 
             // Update last position after processing
             controller.lastMousePosition = currentMousePosition;
