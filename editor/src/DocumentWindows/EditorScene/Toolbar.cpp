@@ -17,6 +17,8 @@
 #include "IconsFontAwesome.h"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
@@ -66,6 +68,8 @@ namespace nexo::editor {
                         const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                                {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                         app.getSceneManager().getScene(this->m_sceneId).addEntity(newCube);
+                        auto createAction = std::make_unique<EntityCreationAction>(newCube);
+                        ActionManager::get().recordAction(std::move(createAction));
                     },
                 .tooltip = "Create Cube"
             }
