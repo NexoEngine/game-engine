@@ -31,12 +31,14 @@ namespace nexo::components {
        	unsigned int id;
        	bool isActive;
        	bool isRendered;
-
-          SceneTag restore() const
-          {
-              return {id, isActive, isRendered};
-          }
       };
+
+      void restore(const Memento &memento)
+      {
+          id = memento.id;
+          isActive = memento.isActive;
+          isRendered = memento.isRendered;
+      }
 
       Memento save() const
       {
