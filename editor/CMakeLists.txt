@@ -36,6 +36,7 @@ set(SRCS
         editor/src/Editor.cpp
         editor/src/WindowRegistry.cpp
         editor/src/DockingRegistry.cpp
+        editor/src/ADocumentWindow.cpp
         editor/src/DocumentWindows/EditorScene/Gizmo.cpp
         editor/src/DocumentWindows/EditorScene/Init.cpp
         editor/src/DocumentWindows/EditorScene/Shortcuts.cpp
