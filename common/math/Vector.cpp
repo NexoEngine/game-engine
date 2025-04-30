@@ -46,4 +46,9 @@ namespace nexo::math {
 
         return glm::degrees(euler);
    	}
+
+    bool isPosInBounds(const glm::vec2 pos, const glm::vec2 &min, const glm::vec2 &max)
+    {
+        return pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y;
+    }
 }
