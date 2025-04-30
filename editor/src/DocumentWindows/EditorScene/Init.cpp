@@ -32,13 +32,13 @@ namespace nexo::editor {
         auto &app = getApp();
 
         m_sceneId = static_cast<int>(app.getSceneManager().createScene(m_windowName));
-        renderer::FramebufferSpecs framebufferSpecs;
+        renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            renderer::FrameBufferTextureFormats::RGBA8, renderer::FrameBufferTextureFormats::RED_INTEGER, renderer::FrameBufferTextureFormats::Depth
+            renderer::NxFrameBufferTextureFormats::RGBA8, renderer::NxFrameBufferTextureFormats::RED_INTEGER, renderer::NxFrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
-        const auto renderTarget = renderer::Framebuffer::create(framebufferSpecs);
+        const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
         m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
