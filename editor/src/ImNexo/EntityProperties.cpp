@@ -178,9 +178,13 @@ namespace ImNexo {
         ImGui::PopStyleVar();
 	}
 
-	void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent)
-	{
+	InteractionState CameraController(
+	    nexo::components::PerspectiveCameraController &cameraControllerComponent,
+		nexo::components::PerspectiveCameraController::Memento &beforeState
+	) {
         ImGui::Spacing();
+        InteractionState state = InteractionState::NONE;
+
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
         if (ImGui::BeginTable("InspectorControllerTable", 2,
@@ -189,11 +193,15 @@ namespace ImNexo {
             ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            RowDragFloat1("Mouse sensitivity", "", &cameraControllerComponent.mouseSensitivity);
+            float mouseSensitivity = cameraControllerComponent.mouseSensitivity;
+            RowDragFloat1("Mouse sensitivity", "", &mouseSensitivity);
+            state = trackEditingLifecylce(cameraControllerComponent, beforeState);
+            cameraControllerComponent.mouseSensitivity = mouseSensitivity;
 
             ImGui::EndTable();
         }
         ImGui::PopStyleVar();
+        return state;
 	}
 
 }

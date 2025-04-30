@@ -107,6 +107,9 @@ namespace ImNexo {
      *
      * @param cameraControllerComponent Reference to the camera controller component being edited
      */
-    void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent);
+    InteractionState CameraController(
+        nexo::components::PerspectiveCameraController &cameraControllerComponent,
+        nexo::components::PerspectiveCameraController::Memento &beforeState
+    );
 
 }

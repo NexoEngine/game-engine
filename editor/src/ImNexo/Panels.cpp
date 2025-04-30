@@ -21,6 +21,7 @@
 #include "Path.hpp"
 #include "IconsFontAwesome.h"
 #include "assets/AssetCatalog.hpp"
+#include "components/Camera.hpp"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
 #include "utils/EditorProps.hpp"
@@ -237,8 +238,9 @@ namespace ImNexo {
             if (app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
                 Header("##PerspectiveCameraController", "Camera Controller Component"))
             {
+                static nexo::components::PerspectiveCameraController::Memento beforeState{};
                 auto &cameraControllerComponent = app.m_coordinator->getComponent<nexo::components::PerspectiveCameraController>(camera);
-                CameraController(cameraControllerComponent);
+                CameraController(cameraControllerComponent, beforeState);
                 ImGui::TreePop();
             }
 
