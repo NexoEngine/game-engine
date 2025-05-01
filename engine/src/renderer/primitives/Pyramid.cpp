@@ -19,6 +19,7 @@
 #include <array>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <Logger.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -36,13 +37,12 @@ namespace nexo::renderer
 
     constexpr unsigned int pyramidIndices[18] = {
         // Base face
-        1, 2, 3,
-        1, 3, 4,
+        1, 2, 3, 1, 3, 4,
         // Side faces
-        0, 1, 2,
-        0, 2, 3,
-        0, 3, 4,
-        0, 4, 1
+        0, 2, 1,
+        0, 3, 2,
+        0, 4, 3,
+        0, 1, 4
     };
 
     constexpr glm::vec2 textureCoords[18] = {
@@ -54,24 +54,37 @@ namespace nexo::renderer
         {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f} // Side face
     };
 
+    /**
+    * @brief Generates the vertex, texture coordinate, and normal data for a pyramid mesh.
+    *
+    * Fills the provided arrays with 36 vertices, texture coordinates, and normals for a pyramid.
+    *
+    * @param vertices Array to store generated vertex positions.
+    * @param texCoords Array to store generated texture coordinates.
+    * @param normals Array to store generated normals.
+    */
     static void genPyramidMesh(std::array<glm::vec3, 18>& vertices,
                                std::array<glm::vec2, 18>& texCoords,
                                std::array<glm::vec3, 18>& normals)
     {
         // Define the five vertices of the pyramid
-        constexpr glm::vec3 v0 = {0.0f, 0.5f, 0.0f}; // Top vertex
-        constexpr glm::vec3 v1 = {-0.5f, -0.5f, -0.5f}; // Bottom-left-back
-        constexpr glm::vec3 v2 = {0.5f, -0.5f, -0.5f}; // Bottom-right-back
-        constexpr glm::vec3 v3 = {0.5f, -0.5f, 0.5f}; // Bottom-right-front
-        constexpr glm::vec3 v4 = {-0.5f, -0.5f, 0.5f}; // Bottom-left-front
+        constexpr glm::vec3 v0 = {0.0f, 1.0f, 0.0f}; // Top vertex
+        constexpr glm::vec3 v1 = {-1.0f, -1.0f, -1.0f}; // Bottom-left-back
+        constexpr glm::vec3 v2 = {1.0f, -1.0f, -1.0f}; // Bottom-right-back
+        constexpr glm::vec3 v3 = {1.0f, -1.0f, 1.0f}; // Bottom-right-front
+        constexpr glm::vec3 v4 = {-1.0f, -1.0f, 1.0f}; // Bottom-left-front
 
-        // Define the 6 triangular faces (each has 3 vertices)
+        // Define the 4 triangular faces + the base (2 triangles)
         glm::vec3 verts[] = {
             v1, v2, v3, v1, v3, v4, // Base face
-            v0, v1, v2, v0, v2, v3, v0, v3, v4, v0, v4, v1 // Side faces
+            // Side faces
+            v0, v2, v1,
+            v0, v3, v2,
+            v0, v4, v3,
+            v0, v1, v4
         };
 
-        std::copy(std::begin(verts), std::end(verts), vertices.begin());
+        std::ranges::copy(verts, vertices.begin());
 
         // Basic UV mapping for each face
         glm::vec2 texc[] = {
@@ -83,23 +96,24 @@ namespace nexo::renderer
             {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f} // Side face
         };
 
-        std::copy(std::begin(texc), std::end(texc), texCoords.begin());
+        std::ranges::copy(texc, texCoords.begin());
 
         // Compute normals for each face
         glm::vec3 norm[18];
-        for (int i = 0; i < 18; i += 3)
-        {
-            glm::vec3 normal = glm::normalize(
+        int i = 0;
+        int n = 0;
+        for (; i < 18; i += 3) {
+            const glm::vec3 normal = glm::normalize(
                 glm::cross(
                     verts[i + 1] - verts[i],
                     verts[i + 2] - verts[i]));
 
-            norm[i] = normal;
-            norm[i + 1] = normal;
-            norm[i + 2] = normal;
+            norm[n++] = normal;
+            norm[n++] = normal;
+            norm[n++] = normal;
         }
 
-        std::copy(std::begin(norm), std::end(norm), normals.begin());
+		std::ranges::copy(norm, normals.begin());
     }
 
     void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
