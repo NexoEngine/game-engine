@@ -19,7 +19,6 @@
 #include <utility>
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace nexo::renderer {
 
     static constexpr unsigned int sMaxFramebufferSize = 8192;

@@ -74,7 +74,7 @@ namespace nexo::renderer {
 
         try {
             ingestDataFromStb(data, width, height, channels, path);
-        } catch (const Exception& e) {
+        } catch (const Exception&) {
             stbi_image_free(data);
             throw;
         }
@@ -86,20 +86,20 @@ namespace nexo::renderer {
         glDeleteTextures(1, &m_id);
     }
 
-    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t* buffer, unsigned int len)
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t* buffer, const unsigned int len)
     {
         int width = 0;
         int height = 0;
         int channels = 0;
         //TODO: Set this conditionnaly based on the type of texture
         //stbi_set_flip_vertically_on_load(1);
-        stbi_uc *data = stbi_load_from_memory(buffer, len, &width, &height, &channels, 0);
+        stbi_uc *data = stbi_load_from_memory(buffer, static_cast<int>(len), &width, &height, &channels, 0);
         if (!data)
             THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, "(buffer)");
 
         try {
             ingestDataFromStb(data, width, height, channels, "(buffer)");
-        } catch (const Exception& e) {
+        } catch (const Exception&) {
             stbi_image_free(data);
             throw;
         }
@@ -123,7 +123,7 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void NxOpenGlTexture2D::ingestDataFromStb(uint8_t* data, int width, int height, int channels,
+    void NxOpenGlTexture2D::ingestDataFromStb(uint8_t* data, const int width, const int height, const int channels,
         const std::string& debugPath)
     {
         GLint internalFormat = 0;

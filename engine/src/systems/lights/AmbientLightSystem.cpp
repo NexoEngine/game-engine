@@ -40,12 +40,12 @@ namespace nexo::system {
             LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneName));
+        Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneName));
 
         if (partition->count != 1)
             LOG_ONCE(NEXO_WARN, "For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count);
         else
-            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count));
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count));
 
         renderContext.sceneLights.ambientLight = get<components::AmbientLightComponent>()[0].color;
 	}

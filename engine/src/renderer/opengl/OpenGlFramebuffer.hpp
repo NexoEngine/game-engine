@@ -138,7 +138,7 @@ namespace nexo::renderer {
              */
             void resize(unsigned int width, unsigned int height) override;
 
-            const glm::vec2 getSize() const override;
+            [[nodiscard]] const glm::vec2 getSize() const override;
 
 
             /**

@@ -18,7 +18,6 @@
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
-#include "core/exceptions/Exceptions.hpp"
 #include "Application.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL

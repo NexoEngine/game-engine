@@ -356,7 +356,6 @@ namespace nexo::ecs {
 				const Signature oldSignature,
 				const Signature newSignature
 			) {
-			    const ComponentType typeID = getComponentTypeID<T>();
 				const auto &componentArray = getComponentArray<T>();
 				const auto sourceComponent = componentArray->get(sourceEntity);
 				addComponent(destEntity, sourceComponent, oldSignature, newSignature);
