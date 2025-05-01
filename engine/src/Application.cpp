@@ -250,7 +250,6 @@ namespace nexo {
         const auto time = static_cast<float>(glfwGetTime());
         const Timestep timestep = time - m_lastFrameTime;
         m_lastFrameTime = time;
-        physicsSystem.Update(timestep.getSeconds(), *m_coordinator);
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
