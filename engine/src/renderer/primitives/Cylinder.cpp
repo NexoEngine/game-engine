@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -26,67 +27,110 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <gmock/gmock-matchers.h>
 
 namespace nexo::renderer
 {
     constexpr int CYLINDER_SEGMENTS = 16; // Number of segments for the cylinder
+    constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder
 
     static std::vector<glm::vec3> generateCylinderVertices()
     {
         std::vector<glm::vec3> vertices{};
 
-        // Generate vertices for the top and bottom circles
-        // Set vertex top circle
-        for (int i = 0; i < CYLINDER_SEGMENTS; ++i) {
-            const float angle = static_cast<float>(i) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
+        int i = 0;
+        for (int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS; ++i, --k) {
+            const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
             const float x = std::cos(angle);
             const float z = std::sin(angle);
 
-            vertices.emplace_back(x, 0.5f, z);
+            vertices.emplace_back(x, CYLINDER_HEIGHT, z);
         }
-        // Set vertex bottom circle
-        for (int i = 0; i < CYLINDER_SEGMENTS; ++i) {
-            const float angle = static_cast<float>(i) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
+        for (int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS*2; ++i, --k) {
+            const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
             const float x = std::cos(angle);
             const float z = std::sin(angle);
 
-            vertices.emplace_back(x, -0.5f, z);
+            vertices.emplace_back(x, -CYLINDER_HEIGHT, z);
         }
+        for (int k = 0; i < CYLINDER_SEGMENTS*3; ++i, ++k) {
+            const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
+            const float x = std::cos(angle);
+            const float z = std::sin(angle);
 
-        // Center points for top and bottom circles
-        vertices.emplace_back(0.0f, 0.5f, 0.0f);
-        vertices.emplace_back(0.0f, -0.5f, 0.0f);
+            vertices.emplace_back(x, CYLINDER_HEIGHT, z);
+        }
+        for (int k = 0; i < CYLINDER_SEGMENTS*4; ++i, ++k) {
+            const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
+            const float x = std::cos(angle);
+            const float z = std::sin(angle);
 
+            vertices.emplace_back(x, -CYLINDER_HEIGHT, z);
+        }
         return vertices;
     }
 
     // unique vertices for a cylinder
     const std::vector<glm::vec3> cylinderPositions = generateCylinderVertices();
 
+    static void capIndices(std::vector<unsigned int> &indices, const int transformer)
+    {
+        std::function<bool(int)> recurFun;
+        std::function<void(const int, const int)> capIndicesRec;
+
+        capIndicesRec = [&indices, &transformer, &capIndicesRec](const int start, const int nbSegment) {
+            if (const int step = ceil(static_cast<double>(nbSegment) / 3.0); step == 1) {
+                const int tmp = (start + 2 < CYLINDER_SEGMENTS) ? (start + 2) : 0;
+                indices.push_back(start + transformer); indices.push_back(start + 1 + transformer); indices.push_back(tmp + transformer);
+            } else {
+                capIndicesRec(start, step + 1);
+                if (start + 2 * step < start + nbSegment - 1) {
+                    int tmp = 0;
+                    if (start + 2 * step < start + nbSegment - 1) {
+                        tmp = start + nbSegment - 1;
+                        capIndicesRec(start + step, tmp - (start + step) + 1);
+                    } else if (start + 2 * step < CYLINDER_SEGMENTS) {
+                        tmp = start + 2 * step;
+                        capIndicesRec(start + step, step + 1);
+                    }
+                    tmp = tmp > CYLINDER_SEGMENTS-1 ? 0 : tmp;
+                    indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(tmp + transformer);
+                } else {
+                    const int tmp = (start + nbSegment - 1 < CYLINDER_SEGMENTS) ? (start + nbSegment - 1) : 0;
+                    indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(tmp + transformer);
+                    if ((start + nbSegment - 1) - (start + step) > 1) {
+                        capIndicesRec(start + step, step + 1);
+                    }
+                }
+            }
+        };
+
+        constexpr int start = 0;
+        const int step = ceil(static_cast<double>(CYLINDER_SEGMENTS) / 3.0); //3
+        indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(start + 2 * step + transformer);
+        if constexpr (CYLINDER_SEGMENTS > 3) {
+            capIndicesRec(start, step + 1);
+            capIndicesRec(start + step, step + 1);
+        }
+        if constexpr (CYLINDER_SEGMENTS > 5)
+            capIndicesRec(start + 2 * step, CYLINDER_SEGMENTS - 2 * step + 1);
+    }
+
     static std::vector<unsigned int> generateCylinderIndices()
     {
         std::vector<unsigned int> indices{};
-        for (int i = 0; i < CYLINDER_SEGMENTS; ++i)
-        {
-            // top faces
-            indices.push_back(i);
-            indices.push_back( CYLINDER_SEGMENTS*2);
-            indices.push_back((i + 1) % CYLINDER_SEGMENTS);
 
-            // bottom faces
-            indices.push_back(i + CYLINDER_SEGMENTS);
-            indices.push_back( CYLINDER_SEGMENTS*2+1);
-            indices.push_back((i + 1) % CYLINDER_SEGMENTS + CYLINDER_SEGMENTS);
-
-            // sides faces first triangle
-            indices.push_back(i);
-            indices.push_back(i + CYLINDER_SEGMENTS);
-            indices.push_back((i + 1) % CYLINDER_SEGMENTS);
-            // sides faces second triangle
-            indices.push_back((i + 1) % CYLINDER_SEGMENTS);
-            indices.push_back((i + 1) % CYLINDER_SEGMENTS + CYLINDER_SEGMENTS);
-            indices.push_back(i + CYLINDER_SEGMENTS);
+        int i = 0;
+        for (; i < CYLINDER_SEGMENTS-1; ++i) {
+            indices.push_back(i); indices.push_back(i + 1); indices.push_back(i + CYLINDER_SEGMENTS);
+            indices.push_back(i + 1); indices.push_back(i + CYLINDER_SEGMENTS + 1); indices.push_back(i + CYLINDER_SEGMENTS);
         }
+        indices.push_back(i); indices.push_back(0); indices.push_back(i + CYLINDER_SEGMENTS);
+        indices.push_back(0); indices.push_back(CYLINDER_SEGMENTS); indices.push_back(i + CYLINDER_SEGMENTS);
+
+        capIndices(indices, CYLINDER_SEGMENTS*2);
+        capIndices(indices, CYLINDER_SEGMENTS*3);
+
         return indices;
     }
 
@@ -95,15 +139,14 @@ namespace nexo::renderer
     static std::vector<glm::vec2> generateTextureCoords()
     {
         std::vector<glm::vec2> texCoords{};
-        for (int i = 0; i < CYLINDER_SEGMENTS; ++i) {
-            const float u = static_cast<float>(i) / CYLINDER_SEGMENTS;
-            texCoords.emplace_back(u, 1.0f);
-            texCoords.emplace_back(u, 0.0f);
-        }
-        // Center points for top and bottom circles
-        texCoords.emplace_back(0.5f, 0.5f);
-        texCoords.emplace_back(0.5f, 0.5f);
+        for (int i = 0; i < CYLINDER_SEGMENTS*4; ++i) {
+            texCoords.emplace_back(0,0);
+            // const float angle = static_cast<float>(i) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
+            //
+            // const float s = angle / static_cast<float>(M_PI);
+            // const float t = CYLINDER_HEIGHT
 
+        }
         return texCoords;
     }
 
@@ -112,7 +155,7 @@ namespace nexo::renderer
     /**
     * @brief Generates the vertex, texture coordinate, and normal data for a cylinder mesh.
     *
-    * Fills the provided arrays with CYLINDER_SEGMENTS*2+2 vertices, texture coordinates, and normals for a cylinder.
+    * Fills the provided arrays with CYLINDER_SEGMENTS*2 vertices, texture coordinates, and normals for a cylinder.
     *
     * @param vertices Array to store generated vertex positions.
     * @param texCoords Array to store generated texture coordinates.
@@ -123,25 +166,22 @@ namespace nexo::renderer
         vertices = generateCylinderVertices();
         texCoords = generateTextureCoords();
 
-        // Side + caps
-        for (int i = 0; i < CYLINDER_SEGMENTS; ++i) {
-            const unsigned int idx0 = i * 2;
-            const unsigned int idx1 = idx0 + 1;
-            const unsigned int idx2 = ((i + 1) % (CYLINDER_SEGMENTS + 1)) * 2;
-            const unsigned int idx3 = idx2 + 1;
-
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx0].x, 0.0f, vertices[idx0].z)));
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx1].x, 0.0f, vertices[idx1].z)));
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx2].x, 0.0f, vertices[idx2].z)));
-
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx2].x, 0.0f, vertices[idx2].z)));
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx1].x, 0.0f, vertices[idx1].z)));
-            normals.push_back(glm::normalize(glm::vec3(vertices[idx3].x, 0.0f, vertices[idx3].z)));
+        int i = 0;
+        for (; i < CYLINDER_SEGMENTS*1; ++i) {
+            const glm::vec3 vector1 = vertices[i] - glm::vec3(0, 1, 0);
+            normals.emplace_back(vector1);
         }
-        for (int i = 0; i <= CYLINDER_SEGMENTS; ++i) {
-            normals.emplace_back(0.0f, 1.0f, 0.0f);
-            normals.emplace_back(0.0f, -1.0f, 0.0f);
+        for (; i < CYLINDER_SEGMENTS*2; ++i) {
+            const glm::vec3 vector2 = vertices[i] - glm::vec3(0, -1, 0);
+            normals.emplace_back(vector2);
         }
+        for (; i < CYLINDER_SEGMENTS*3; ++i) {
+            normals.emplace_back(0,1,0);
+        }
+        for (; i < CYLINDER_SEGMENTS*4; ++i) {
+            normals.emplace_back(0,-1,0);
+        }
+        std::ranges::copy(normals, normals.begin());
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
@@ -170,7 +210,7 @@ namespace nexo::renderer
 
         // Vertex data
         auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -227,7 +267,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -270,7 +310,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -321,7 +361,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -376,7 +416,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -429,7 +469,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
@@ -476,7 +516,7 @@ namespace nexo::renderer
         genCylinderMesh(verts, texCoords, normals);
 
         // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*2+2; ++i)
+        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
             m_storage->vertexBufferPtr->texCoord = texCoords[i];
