@@ -397,14 +397,8 @@ namespace nexo::editor {
             void collapseAllCallback();
             void renameSelectedCallback();
             void duplicateSelectedCallback();
-            void focusOnSelectedCallback();
             void selectAllCallback();
-            void deselectAllCallback();
-            void groupEntitiesCallback();
-            void ungroupEntitiesCallback();
-            void invertSelectionCallback();
             void hideSelectedCallback();
-            void showSelectedCallback();
             void showAllCallback();
     };
 }
