@@ -238,9 +238,8 @@ namespace ImNexo {
             if (app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
                 Header("##PerspectiveCameraController", "Camera Controller Component"))
             {
-                static nexo::components::PerspectiveCameraController::Memento beforeState{};
                 auto &cameraControllerComponent = app.m_coordinator->getComponent<nexo::components::PerspectiveCameraController>(camera);
-                CameraController(cameraControllerComponent, beforeState);
+                CameraController(cameraControllerComponent);
                 ImGui::TreePop();
             }
 
