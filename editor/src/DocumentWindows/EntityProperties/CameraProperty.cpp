@@ -35,7 +35,6 @@ namespace nexo::editor {
             if (ImNexo::isItemActivated()) {
                 beforeState = cameraComponentCopy.save();
             } else if (ImNexo::isItemDeactivated()) {
-                cameraComponent = cameraComponentCopy;
                 auto afterState = cameraComponent.save();
                 auto action = std::make_unique<ComponentChangeAction<components::CameraComponent>>(entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
