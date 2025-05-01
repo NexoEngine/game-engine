@@ -18,10 +18,7 @@
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
 #include "ImNexo/EntityProperties.hpp"
-<<<<<<< HEAD
 #include "ImNexo/ImNexo.hpp"
-=======
->>>>>>> 5fe7c064 (refactor(undo-redo): moved the ambient property to ImNexo entity properties for better handling)
 #include <imgui.h>
 
 namespace nexo::editor {
