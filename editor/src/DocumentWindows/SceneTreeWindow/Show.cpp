@@ -16,8 +16,10 @@
 #include "components/Uuid.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Panels.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
@@ -43,6 +45,8 @@ namespace nexo::editor {
                     const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                            {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                     sceneManager.getScene(sceneId).addEntity(newCube);
+                    auto action = std::make_unique<EntityCreationAction>(newCube);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 ImGui::EndMenu();
             }
@@ -57,16 +61,22 @@ namespace nexo::editor {
                 if (ImGui::MenuItem("Directional")) {
                     const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
                     sceneManager.getScene(sceneId).addEntity(directionalLight);
+                    auto action = std::make_unique<EntityCreationAction>(directionalLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 if (ImGui::MenuItem("Point")) {
                     const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
                     utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(pointLight);
+                    auto action = std::make_unique<EntityCreationAction>(pointLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 if (ImGui::MenuItem("Spot")) {
                     const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
                     utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(spotLight);
+                    auto action = std::make_unique<EntityCreationAction>(spotLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 ImGui::EndMenu();
             }
