@@ -349,6 +349,38 @@ namespace nexo::ecs {
 		        return getComponentArray<T>()->get(entity);
 		    }
 
+			template<typename T>
+			void duplicateComponent(
+			    Entity sourceEntity,
+				Entity destEntity,
+				const Signature oldSignature,
+				const Signature newSignature
+			) {
+			    const ComponentType typeID = getComponentTypeID<T>();
+				const auto &componentArray = getComponentArray<T>();
+				const auto sourceComponent = componentArray->get(sourceEntity);
+				addComponent(destEntity, sourceComponent, oldSignature, newSignature);
+			}
+
+			void duplicateComponent(
+			    ComponentType componentType,
+			    Entity sourceEntity,
+				Entity destEntity,
+				const Signature oldSignature,
+				const Signature newSignature
+			) {
+			    auto& componentArray = m_componentArrays[componentType];
+				componentArray->duplicateComponent(sourceEntity, destEntity);
+
+				for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
+				    // Check if entity qualifies now but did not qualify before.
+                    if (((oldSignature & group->allSignature()) != group->allSignature()) &&
+                            ((newSignature & group->allSignature()) == group->allSignature())) {
+		    			group->addToGroup(destEntity);
+					}
+				}
+			}
+
 		    /**
 		     * @brief Gets the component array for a specific component type
 		     *
