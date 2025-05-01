@@ -76,6 +76,22 @@ namespace nexo::ecs {
 
         return components;
     }
+    Entity Coordinator::duplicateEntity(Entity sourceEntity)
+    {
+        Entity newEntity = createEntity();
+        Signature signature = m_entityManager->getSignature(sourceEntity);
+        Signature destSignature = m_entityManager->getSignature(newEntity);
+        for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
+            if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
+                Signature previousSignature = destSignature;
+                destSignature.set(type, true);
+                m_componentManager->duplicateComponent(type, sourceEntity, newEntity, previousSignature, destSignature);
+            }
+        }
+         m_entityManager->setSignature(newEntity, destSignature);
+         m_systemManager->entitySignatureChanged(newEntity, Signature{}, destSignature);
+        return newEntity;
+    }
 
     bool Coordinator::supportsMementoPattern(const std::type_index typeIndex) const
     {
