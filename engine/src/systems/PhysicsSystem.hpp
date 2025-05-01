@@ -33,6 +33,8 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Coordinator.hpp>
 #include <Entity.hpp>
+#include <GroupSystem.hpp>
+#include <QuerySystem.hpp>
 #include <components/PhysicsBodyComponent.hpp>
 #include <components/Transform.hpp>
 #include <vector>
@@ -155,7 +157,11 @@ namespace nexo::system {
 
     enum class ShapeType { Box, Sphere, Capsule };
 
-    class PhysicsSystem {
+    class PhysicsSystem : public ecs::QuerySystem<
+                ecs::Write<components::TransformComponent>,
+                ecs::Write<components::PhysicsBodyComponent>
+        >
+    {
     public:
         PhysicsSystem();
         ~PhysicsSystem();
@@ -163,19 +169,26 @@ namespace nexo::system {
         PhysicsSystem(const PhysicsSystem&) = delete;
         PhysicsSystem& operator=(const PhysicsSystem&) = delete;
 
-        void Update(float deltaTime);
+        void init();
+        void update(float dt);
 
-        JPH::BodyID CreateBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
+        JPH::BodyID createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform);
+        JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
 
-        void SyncTransformsToBodies(const std::vector<ecs::Entity> &entities, ecs::Coordinator &coordinator) const;
+        JPH::BodyID createBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
 
-        void ApplyForce(JPH::BodyID bodyID, const JPH::Vec3& force);
-        void SetGravity(const JPH::Vec3& gravity);
-        void ActivateBody(JPH::BodyID bodyID);
-        void DeactivateBody(JPH::BodyID bodyID);
+        void syncTransformsToBodies(
+            const std::vector<ecs::Entity>& entities,
+            ecs::Coordinator& coordinator
+        ) const;
+
+        void applyForce(JPH::BodyID bodyID, const JPH::Vec3& force);
+        void setGravity(const JPH::Vec3& gravity);
+        void activateBody(JPH::BodyID bodyID);
+        void deactivateBody(JPH::BodyID bodyID);
+
         JPH::BodyInterface* getBodyInterface() const { return bodyInterface; }
-        const JPH::BodyLockInterface *getBodyLockInterface() const { return bodyLockInterface; }
-
+        const JPH::BodyLockInterface* getBodyLockInterface() const { return bodyLockInterface; }
 
     private:
         JPH::TempAllocatorImpl* tempAllocator;

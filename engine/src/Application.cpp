@@ -209,6 +209,11 @@ namespace nexo {
         m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
 
+        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
+
+        m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
+        m_physicsSystem->init();
+
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
         auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
@@ -327,6 +332,7 @@ namespace nexo {
 				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
         	    physicsSystem.Update(timestep, *m_coordinator);
+        	    m_physicsSystem->update(timestep);
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
