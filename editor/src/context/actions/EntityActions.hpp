@@ -33,6 +33,60 @@ namespace nexo::editor {
     };
 
     template<typename ComponentType>
+    class ComponentAddAction : public Action {
+        public:
+            ComponentAddAction(ecs::Entity entity)
+                : m_entity(entity) {}
+
+            void undo() override
+            {
+                auto &app = getApp();
+                m_memento = app.m_coordinator->getComponent<ComponentType>(m_entity).save();
+                app.m_coordinator->removeComponent<ComponentType>(m_entity);
+            }
+
+            void redo() override
+            {
+                auto &app = getApp();
+                ComponentType target;
+                target.restore(m_memento);
+                app.m_coordinator->addComponent(m_entity, target);
+            }
+
+        private:
+            ecs::Entity m_entity;
+            typename ComponentType::Memento m_memento;
+    };
+
+    template<typename ComponentType>
+    class ComponentRemoveAction : public Action {
+        public:
+            ComponentRemoveAction(ecs::Entity entity) : m_entity(entity)
+            {
+                auto &app = getApp();
+                m_memento = app.m_coordinator->getComponent<ComponentType>(m_entity).save();
+            }
+
+            void undo() override
+            {
+                auto &app = getApp();
+                ComponentType target;
+                target.restore(m_memento);
+                app.m_coordinator->addComponent(m_entity, target);
+            }
+
+            void redo() override
+            {
+                auto &app = getApp();
+                app.m_coordinator->removeComponent<ComponentType>(m_entity);
+            }
+
+        private:
+            ecs::Entity m_entity;
+            typename ComponentType::Memento m_memento;
+    };
+
+    template<typename ComponentType>
     class ComponentChangeAction : public Action {
         public:
             ComponentChangeAction(
