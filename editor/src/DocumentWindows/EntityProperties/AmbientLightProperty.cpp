@@ -29,8 +29,12 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##AmbientNode", "Ambient light"))
         {
-            ImNexo::InteractionState state = ImNexo::Ambient(ambientComponent, beforeState);
-            if (state == ImNexo::InteractionState::RELEASED) {
+            auto ambientComponentCopy = ambientComponent;
+            ImNexo::resetItemStates();
+            ImNexo::Ambient(ambientComponent);
+            if (ImNexo::isItemActivated()) {
+                beforeState = ambientComponentCopy.save();
+            } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = ambientComponent.save();
                 auto action = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
