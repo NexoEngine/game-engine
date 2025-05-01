@@ -41,6 +41,33 @@ namespace ImNexo {
         ambientComponent.color = color;
     }
 
+    void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent)
+    {
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {directionalComponent.color, 1.0f};
+        ImNexo::ColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
+        directionalComponent.color = color;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorDirectionTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            ImNexo::RowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar();
+    }
+
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler)
 	{
 	    // Increase cell padding so rows have more space:
