@@ -17,7 +17,6 @@
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
-#include <systems/PhysicsSystemWrapper.hpp>
 
 #include "Types.hpp"
 #include "renderer/Window.hpp"
@@ -191,7 +190,10 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
-            system::PhysicsSystemWrapper& getPhysicsSystem() { return physicsSystem; }
+            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() {
+                return m_physicsSystem;
+            }
+
             /**
              * @brief Deletes an existing entity.
              *
@@ -274,10 +276,9 @@ namespace nexo {
             std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
             std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
             std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
+            std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
 
             std::vector<ProfileResult> m_profilesResults;
-
-            system::PhysicsSystemWrapper physicsSystem;
 
     };
 }
