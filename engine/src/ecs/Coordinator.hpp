@@ -451,6 +451,8 @@ namespace nexo::ecs {
 
             Entity duplicateEntity(Entity sourceEntity) const;
 
+            Entity duplicateEntity(Entity sourceEntity);
+
         private:
             template<typename Component>
             void processComponentSignature(Signature& required, Signature& excluded) const {
