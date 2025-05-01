@@ -20,7 +20,7 @@ namespace ImNexo {
         return g_isItemActive;
     }
 
-    void resetItemActiveState()
+    static void resetItemActiveState()
     {
         g_isItemActive = false;
     }
@@ -35,7 +35,7 @@ namespace ImNexo {
         return g_isItemActivated;
     }
 
-    void resetItemActivatedState()
+    static void resetItemActivatedState()
     {
         g_isItemActivated = false;
     }
@@ -50,7 +50,7 @@ namespace ImNexo {
         return g_isItemDeactivated;
     }
 
-    void resetItemDeactivatedState()
+    static void resetItemDeactivatedState()
     {
         g_isItemDeactivated = false;
     }
