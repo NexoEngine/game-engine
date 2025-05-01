@@ -21,6 +21,8 @@
 #include "../EntityProperties/SpotLightProperty.hpp"
 #include "../EntityProperties/CameraProperty.hpp"
 #include "../EntityProperties/CameraController.hpp"
+#include "../EntityProperties/CameraTarget.hpp"
+#include "components/Camera.hpp"
 
 namespace nexo::editor {
 
@@ -34,5 +36,6 @@ namespace nexo::editor {
         registerProperty<components::SpotLightComponent, SpotLightProperty>();
         registerProperty<components::CameraComponent, CameraProperty>();
         registerProperty<components::PerspectiveCameraController, CameraController>();
+        registerProperty<components::PerspectiveCameraTarget, CameraTarget>();
     }
 }
