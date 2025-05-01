@@ -292,13 +292,9 @@ namespace ImNexo {
         ImGui::PopStyleVar();
 	}
 
-	InteractionState CameraController(
-	    nexo::components::PerspectiveCameraController &cameraControllerComponent,
-		nexo::components::PerspectiveCameraController::Memento &beforeState
-	) {
+	void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent)
+	{
         ImGui::Spacing();
-        InteractionState state = InteractionState::NONE;
-
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
         if (ImGui::BeginTable("InspectorControllerTable", 2,
@@ -314,7 +310,6 @@ namespace ImNexo {
             ImGui::EndTable();
         }
         ImGui::PopStyleVar();
-        return state;
 	}
 
 }
