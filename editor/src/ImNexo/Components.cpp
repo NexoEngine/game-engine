@@ -250,6 +250,12 @@ namespace ImNexo {
             }
             ImGui::EndCombo();
         }
+        if (ImGui::IsItemActive())
+            itemIsActive();
+        if (ImGui::IsItemActivated())
+            itemIsActivated();
+        if (ImGui::IsItemDeactivated())
+            itemIsDeactivated();
 
         return changed;
     }
@@ -290,9 +296,8 @@ namespace ImNexo {
                 itemIsActive();
             if (ImGui::IsItemActivated())
                 itemIsActivated();
-            if (ImGui::IsItemDeactivated()) {
+            if (ImGui::IsItemDeactivated())
                 itemIsDeactivated();
-            }
         }
 
         return modified;
