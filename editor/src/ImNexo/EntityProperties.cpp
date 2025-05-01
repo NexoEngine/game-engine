@@ -25,6 +25,7 @@
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "math/Vector.hpp"
+#include "math/Light.hpp"
 
 namespace ImNexo {
 
@@ -65,6 +66,51 @@ namespace ImNexo {
 
             ImGui::EndTable();
         }
+        ImGui::PopStyleVar();
+    }
+
+    void PointLight(
+        nexo::components::PointLightComponent &pointComponent,
+        nexo::components::TransformComponent &pointTransform
+    ) {
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {pointComponent.color, 1.0f};
+        ImNexo::ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
+        pointComponent.color = color;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorPointTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            RowDragFloat3("Position", "X", "Y", "Z", &pointTransform.pos.x);
+            ImGui::EndTable();
+        }
+
+        ImGui::Spacing();
+        ImGui::Text("Distance");
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##DistanceSlider", &pointComponent.maxDistance, 1.0f, 1.0f, 3250.0f)) {
+            // Recompute the attenuation from the distance
+            auto [lin, quad] = nexo::math::computeAttenuationFromDistance(pointComponent.maxDistance);
+            pointComponent.constant = 1.0f;
+            pointComponent.linear = lin;
+            pointComponent.quadratic = quad;
+        }
+        if (ImGui::IsItemActive())
+            itemIsActive();
+        if (ImGui::IsItemActivated())
+            itemIsActivated();
+        if (ImGui::IsItemDeactivated())
+            itemIsDeactivated();
         ImGui::PopStyleVar();
     }
 
