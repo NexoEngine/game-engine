@@ -13,13 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-<<<<<<< HEAD
-=======
 #include <imgui.h>
 #include <string>
 #include <vector>
 
->>>>>>> 5fe7c064 (refactor(undo-redo): moved the ambient property to ImNexo entity properties for better handling)
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
