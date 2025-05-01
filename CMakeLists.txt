@@ -22,6 +22,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(NEXO_COMPILER_FLAGS_ALL /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor)
     set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor)
+    #set(NEXO_COMPILER_FLAGS_DEBUG /MDd /DEBUG /Wall /Zi /Zo /Od /Zc:preprocessor)
     set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor)
     set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
 else()

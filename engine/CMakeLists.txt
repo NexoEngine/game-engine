@@ -61,6 +61,7 @@ set(COMMON_SOURCES
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
         engine/src/assets/Assets/Texture/TextureImporter.cpp
+        engine/src/scripting/Scripting.cpp
 )
 
 # Add API-specific sources
@@ -112,6 +113,14 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+
+###########################################
+# Scripting
+###########################################
+
+# nethost
+find_package(unofficial-nethost CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)

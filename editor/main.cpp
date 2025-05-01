@@ -24,6 +24,9 @@
 #include <tinyfiledialogs.h>
 #include <core/exceptions/Exceptions.hpp>
 
+#include "Path.hpp"
+#include "scripting/Scripting.hpp"
+
 int main(int argc, char **argv)
 try {
     loguru::init(argc, argv);
@@ -42,6 +45,15 @@ try {
 
     editor.init();
 
+    /*if (int rc = nexo::scripting::load_hostfxr() != 0) {
+        LOG(NEXO_ERROR, "Failed to load hostfxr error code {}", rc);
+    }*/
+    const auto rootPath = nexo::Path::getExecutablePath().parent_path() / "../examples/DotNetLib/bin/Release/net9.0/publish/";
+
+    if (int rc = nexo::scripting::run_component_example(rootPath.wstring()) != 0) {
+        LOG(NEXO_ERROR, "Failed to run app example error code {}", rc);
+    }
+
     while (editor.isOpen())
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -56,5 +68,11 @@ try {
     return 0;
 } catch (const nexo::Exception &e) {
     LOG_EXCEPTION(e);
+    return 1;
+} catch (const std::exception &e) {
+    LOG(NEXO_ERROR, "Unhandled exception: {}", e.what());
+    return 1;
+} catch (...) {
+    LOG(NEXO_ERROR, "Unhandled unknown exception");
     return 1;
 }
