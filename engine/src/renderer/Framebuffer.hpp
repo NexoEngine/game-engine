@@ -194,7 +194,7 @@ namespace nexo::renderer {
              */
             virtual void resize(unsigned int width, unsigned int height) = 0;
 
-            virtual const glm::vec2 getSize() const = 0;
+            [[nodiscard]] virtual const glm::vec2 getSize() const = 0;
 
             virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const = 0;
 
@@ -269,7 +269,7 @@ namespace nexo::renderer {
              */
             [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
 
-            virtual unsigned int getDepthAttachmentId() const = 0;
+            [[nodiscard]] virtual unsigned int getDepthAttachmentId() const = 0;
 
             /**
              * @brief Creates a framebuffer based on the provided specifications.

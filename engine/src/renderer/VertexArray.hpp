@@ -46,7 +46,7 @@ namespace nexo::renderer {
             [[nodiscard]] virtual const std::vector<std::shared_ptr<NxVertexBuffer>> &getVertexBuffers() const = 0;
             [[nodiscard]] virtual const std::shared_ptr<NxIndexBuffer> &getIndexBuffer() const = 0;
 
-            virtual unsigned int getId() const = 0;
+            [[nodiscard]] virtual unsigned int getId() const = 0;
     };
 
     /**

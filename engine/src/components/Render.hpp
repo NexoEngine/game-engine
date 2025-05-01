@@ -117,7 +117,7 @@ namespace nexo::components
             renderable = memento.renderable;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {
                 isRendered,

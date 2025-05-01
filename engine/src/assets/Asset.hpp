@@ -20,7 +20,6 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
-#include <boost/uuid/random_generator.hpp>
 
 #include "AssetLocation.hpp"
 #include "AssetRef.hpp"

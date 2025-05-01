@@ -16,7 +16,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-
 namespace nexo::components {
 
     struct TransformComponent final {
@@ -33,7 +32,7 @@ namespace nexo::components {
             size = memento.scale;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {pos, quat, size};
         }

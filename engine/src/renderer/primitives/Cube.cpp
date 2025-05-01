@@ -130,7 +130,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -156,7 +156,7 @@ namespace nexo::renderer {
         }
 
         // Index data
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
@@ -164,7 +164,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -181,7 +181,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -215,7 +215,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID) const
+    void NxRenderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -226,7 +226,7 @@ namespace nexo::renderer {
 
 		m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -260,7 +260,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -274,7 +274,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -312,7 +312,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const NxMaterial& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const NxMaterial& material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -329,7 +329,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;
@@ -367,7 +367,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const NxMaterial& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const NxMaterial& material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -384,7 +384,7 @@ namespace nexo::renderer {
 
        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-       renderer::NxIndexedMaterial mat;
+       NxIndexedMaterial mat;
        mat.albedoColor = material.albedoColor;
        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
        mat.specularColor = material.specularColor;
@@ -422,7 +422,7 @@ namespace nexo::renderer {
        m_storage->stats.cubeCount++;
     }
 
-    void NxRenderer3D::drawCube(const glm::mat4& transform, const NxMaterial& material, int entityID) const
+    void NxRenderer3D::drawCube(const glm::mat4& transform, const NxMaterial& material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -432,7 +432,7 @@ namespace nexo::renderer {
 
 	    m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
         mat.specularColor = material.specularColor;

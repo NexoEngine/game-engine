@@ -76,20 +76,20 @@ namespace nexo::ecs {
 
         return components;
     }
-    Entity Coordinator::duplicateEntity(Entity sourceEntity)
+    Entity Coordinator::duplicateEntity(const Entity sourceEntity) const
     {
-        Entity newEntity = createEntity();
-        Signature signature = m_entityManager->getSignature(sourceEntity);
+        const Entity newEntity = createEntity();
+        const Signature signature = m_entityManager->getSignature(sourceEntity);
         Signature destSignature = m_entityManager->getSignature(newEntity);
         for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
             if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
-                Signature previousSignature = destSignature;
+                const Signature previousSignature = destSignature;
                 destSignature.set(type, true);
                 m_componentManager->duplicateComponent(type, sourceEntity, newEntity, previousSignature, destSignature);
             }
         }
-         m_entityManager->setSignature(newEntity, destSignature);
-         m_systemManager->entitySignatureChanged(newEntity, Signature{}, destSignature);
+        m_entityManager->setSignature(newEntity, destSignature);
+        m_systemManager->entitySignatureChanged(newEntity, Signature{}, destSignature);
         return newEntity;
     }
 

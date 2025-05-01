@@ -16,6 +16,8 @@
 
 #include <Path.hpp>
 
+#include <boost/uuid/random_generator.hpp>
+
 namespace nexo::assets {
 
     void AssetCatalog::deleteAsset(AssetID id)
