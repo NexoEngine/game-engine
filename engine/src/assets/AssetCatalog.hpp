@@ -20,7 +20,6 @@
 #include "Asset.hpp"
 #include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
-#include "Assets/Texture/Texture.hpp"
 
 #include "Assets/Texture/Texture.hpp"
 

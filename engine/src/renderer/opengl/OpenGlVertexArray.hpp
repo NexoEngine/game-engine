@@ -83,7 +83,7 @@ namespace nexo::renderer {
             [[nodiscard]] const std::vector<std::shared_ptr<NxVertexBuffer>> &getVertexBuffers() const override;
             [[nodiscard]] const std::shared_ptr<NxIndexBuffer> &getIndexBuffer() const override;
 
-            unsigned int getId() const override;
+            [[nodiscard]] unsigned int getId() const override;
         private:
             std::vector<std::shared_ptr<NxVertexBuffer>> _vertexBuffers;
             std::shared_ptr<NxIndexBuffer> _indexBuffer;

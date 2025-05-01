@@ -17,7 +17,6 @@
 #include "assets/Asset.hpp"
 
 #include "components/Shapes3D.hpp"
-#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::assets {
 

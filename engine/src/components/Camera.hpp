@@ -17,11 +17,9 @@
 #include "math/Vector.hpp"
 #include "core/event/Input.hpp"
 #include "renderer/Framebuffer.hpp"
-#include "ecs/Entity.hpp"
+#include "ecs/Definitions.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
-
 
 namespace nexo::components {
 

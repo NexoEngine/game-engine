@@ -11,6 +11,7 @@
 //  Description: Source file for renderer api class
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #include <Exception.hpp>
 #include <RendererExceptions.hpp>
 
@@ -81,7 +82,7 @@ namespace nexo::renderer {
         glClearDepth(depth);
     }
 
-    void NxOpenGlRendererApi::setDepthTest(bool enable)
+    void NxOpenGlRendererApi::setDepthTest(const bool enable)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
@@ -91,14 +92,14 @@ namespace nexo::renderer {
             glDisable(GL_DEPTH_TEST);
     }
 
-    void NxOpenGlRendererApi::setDepthFunc(unsigned int func)
+    void NxOpenGlRendererApi::setDepthFunc(const unsigned int func)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glDepthFunc(func);
     }
 
-    void NxOpenGlRendererApi::setDepthMask(bool enable)
+    void NxOpenGlRendererApi::setDepthMask(const bool enable)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
@@ -118,14 +119,14 @@ namespace nexo::renderer {
         glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 
-    void NxOpenGlRendererApi::drawUnIndexed(unsigned int verticesCount)
+    void NxOpenGlRendererApi::drawUnIndexed(const unsigned int verticesCount)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
-        glDrawArrays(GL_TRIANGLES, 0, verticesCount);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<int>(verticesCount));
     }
 
-    void NxOpenGlRendererApi::setStencilTest(bool enable)
+    void NxOpenGlRendererApi::setStencilTest(const bool enable)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
@@ -135,21 +136,21 @@ namespace nexo::renderer {
             glDisable(GL_STENCIL_TEST);
     }
 
-    void NxOpenGlRendererApi::setStencilMask(unsigned int mask)
+    void NxOpenGlRendererApi::setStencilMask(const unsigned int mask)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glStencilMask(mask);
     }
 
-    void NxOpenGlRendererApi::setStencilFunc(unsigned int func, int ref, unsigned int mask)
+    void NxOpenGlRendererApi::setStencilFunc(const unsigned int func, const int ref, const unsigned int mask)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glStencilFunc(func, ref, mask);
     }
 
-    void NxOpenGlRendererApi::setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass)
+    void NxOpenGlRendererApi::setStencilOp(const unsigned int sfail, const unsigned int dpfail, const unsigned int dppass)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");

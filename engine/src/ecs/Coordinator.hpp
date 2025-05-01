@@ -447,9 +447,9 @@ namespace nexo::ecs {
                 return signature.test(componentType);
             }
 
-            bool supportsMementoPattern(const std::type_index typeIndex) const;
+            bool supportsMementoPattern(std::type_index typeIndex) const;
 
-            Entity duplicateEntity(Entity sourceEntity);
+            Entity duplicateEntity(Entity sourceEntity) const;
 
         private:
             template<typename Component>
