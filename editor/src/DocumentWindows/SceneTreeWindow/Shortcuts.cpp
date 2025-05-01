@@ -13,8 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "components/SceneComponents.hpp"
 #include "context/ActionManager.hpp"
 #include "components/Uuid.hpp"
+#include "context/actions/EntityActions.hpp"
 
 namespace nexo::editor {
     void SceneTreeWindow::setupShortcuts()
@@ -186,15 +188,13 @@ namespace nexo::editor {
     }
 
     void SceneTreeWindow::collapseAllCallback() {
-        // Implementation would depend on your tree structure
-        // This could reset the expanded state of all nodes
-        // For now, we'll just log it
         m_forceCollapseAll = true;
         m_forceExpandAll = false;
-        LOG(NEXO_INFO, "Collapse all nodes in scene tree");
     }
 
-    void SceneTreeWindow::renameSelectedCallback() {
+    void SceneTreeWindow::renameSelectedCallback()
+    {
+        //TODO: Implement rename callback
     }
 
     void SceneTreeWindow::duplicateSelectedCallback() {
@@ -209,17 +209,23 @@ namespace nexo::editor {
 
         if (currentSceneId == -1) return;
 
-        // Clear current selection to prepare for selecting the new duplicates
+        std::vector<ecs::Entity> newEntities;
+        newEntities.reserve(selectedEntities.size());
+        auto actionGroup = actionManager.createActionGroup();
         selector.clearSelection();
 
-        std::vector<ecs::Entity> newEntities;
-        auto actionGroup = actionManager.createActionGroup();
-
         for (const auto entity : selectedEntities) {
-            LOG(NEXO_INFO, "Duplicating entity {}", entity);
+            ecs::Entity newEntity = app.m_coordinator->duplicateEntity(entity);
+            components::UuidComponent uuidComponent;
+            app.m_coordinator->getComponent<components::UuidComponent>(newEntity) = uuidComponent;
+            app.m_coordinator->removeComponent<components::SceneTag>(newEntity);
+            app.getSceneManager().getScene(currentSceneId).addEntity(newEntity);
+            auto action = std::make_unique<EntityCreationAction>(newEntity);
+            actionGroup->addAction(std::move(action));
+            newEntities.push_back(newEntity);
         }
 
-        //actionManager.recordAction(std::move(actionGroup));
+        actionManager.recordAction(std::move(actionGroup));
 
         // Select all the newly created entities
         for (const auto newEntity : newEntities) {
