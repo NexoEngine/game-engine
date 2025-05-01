@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CameraController.hpp"
+#include "ImNexo/ImNexo.hpp"
 #include "components/Camera.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/EntityProperties.hpp"
@@ -29,9 +30,12 @@ namespace nexo::editor {
         if (ImNexo::Header("##ControllerNode", "Camera Controller"))
         {
             ImGui::Spacing();
-
-            ImNexo::InteractionState state = ImNexo::CameraController(controllerComponent, beforeState);
-            if (state == ImNexo::InteractionState::RELEASED) {
+            auto controllerComponentCopy = controllerComponent;
+            ImNexo::resetItemStates();
+            ImNexo::CameraController(controllerComponent);
+            if (ImNexo::isItemActivated()) {
+                beforeState = controllerComponentCopy.save();
+            } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = controllerComponent.save();
                 auto action = std::make_unique<ComponentChangeAction<components::PerspectiveCameraController>>(entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
