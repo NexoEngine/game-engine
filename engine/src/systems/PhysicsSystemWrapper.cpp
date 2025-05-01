@@ -31,7 +31,7 @@ namespace nexo::system {
 
     void PhysicsSystemWrapper::AddPhysicsBody(ecs::Entity entity, const components::TransformComponent& transform) {
         JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
-        JPH::BodyID id = physicsSystem.CreateBody(position, JPH::EMotionType::Dynamic, ShapeType::Box);
+        JPH::BodyID id = physicsSystem.CreateBody(transform, JPH::EMotionType::Dynamic);
 
         m_coordinator->addComponent<components::PhysicsBodyComponent>(entity, components::PhysicsBodyComponent{});
         auto& bodyComp = m_coordinator->getComponent<components::PhysicsBodyComponent>(entity);
@@ -40,24 +40,34 @@ namespace nexo::system {
 
     void PhysicsSystemWrapper::AddStaticBody(ecs::Entity entity, const components::TransformComponent& transform)
     {
-        // Crée la forme de la plaque
-        JPH::BoxShapeSettings shapeSettings(JPH::Vec3(transform.size.x / 2.0f, transform.size.y / 2.0f, transform.size.z / 2.0f));
-        JPH::ShapeRefC shape = shapeSettings.Create().Get();
+        JPH::BoxShapeSettings baseShapeSettings(
+            JPH::Vec3(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f)
+        );
+        JPH::ShapeRefC baseShape = baseShapeSettings.Create().Get();
 
-        // Création du body statique
+        JPH::RotatedTranslatedShapeSettings compoundSettings(
+            JPH::Vec3::sZero(),
+            JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
+            baseShape
+        );
+        JPH::ShapeRefC rotatedShape = compoundSettings.Create().Get();
+
         JPH::BodyCreationSettings bodySettings(
-            shape,
+            rotatedShape,
             JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
-            JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w), // <- ici
+            JPH::Quat::sIdentity(),
             JPH::EMotionType::Static,
             Layers::NON_MOVING
         );
 
-
         auto* bodyInterface = physicsSystem.getBodyInterface();
         JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         bodyInterface->AddBody(body->GetID(), JPH::EActivation::DontActivate);
-    }
 
+        m_coordinator->addComponent<components::PhysicsBodyComponent>(entity, components::PhysicsBodyComponent{});
+        auto& bodyComp = m_coordinator->getComponent<components::PhysicsBodyComponent>(entity);
+        bodyComp.bodyID = body->GetID();
+
+    }
 
 }

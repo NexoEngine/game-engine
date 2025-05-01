@@ -28,6 +28,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Coordinator.hpp>
@@ -164,7 +165,7 @@ namespace nexo::system {
 
         void Update(float deltaTime);
 
-        JPH::BodyID CreateBody(const JPH::Vec3& position, JPH::EMotionType motionType, ShapeType shapeType);
+        JPH::BodyID CreateBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
 
         void SyncTransformsToBodies(const std::vector<ecs::Entity> &entities, ecs::Coordinator &coordinator) const;
 
@@ -173,12 +174,15 @@ namespace nexo::system {
         void ActivateBody(JPH::BodyID bodyID);
         void DeactivateBody(JPH::BodyID bodyID);
         JPH::BodyInterface* getBodyInterface() const { return bodyInterface; }
+        const JPH::BodyLockInterface *getBodyLockInterface() const { return bodyLockInterface; }
+
 
     private:
         JPH::TempAllocatorImpl* tempAllocator;
         JPH::JobSystemThreadPool* jobSystem;
         JPH::PhysicsSystem* physicsSystem;
         JPH::BodyInterface* bodyInterface;
+        const JPH::BodyLockInterface* bodyLockInterface;
 
         BPLayerInterfaceImpl broadPhaseLayerInterface;
         ObjectVsBroadPhaseLayerFilterImpl objectVsBroadPhaseLayerFilter;

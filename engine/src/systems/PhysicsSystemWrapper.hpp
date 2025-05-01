@@ -26,6 +26,8 @@ namespace nexo::system {
         void Update(float dt, ecs::Coordinator& coordinator);
         void AddPhysicsBody(ecs::Entity entity, const components::TransformComponent& transform);
         void AddStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
+        JPH::BodyInterface* getBodyInterface() { return physicsSystem.getBodyInterface(); }
+        const JPH::BodyLockInterface *getBodyLockInterface() { return physicsSystem.getBodyLockInterface(); }
 
     private:
         ecs::Coordinator* m_coordinator = nullptr;
