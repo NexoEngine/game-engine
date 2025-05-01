@@ -60,7 +60,6 @@ namespace nexo::system {
             Layers::NON_MOVING
         );
 
-
         auto* bodyInterface = physicsSystem.getBodyInterface();
         JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         bodyInterface->AddBody(body->GetID(), JPH::EActivation::DontActivate);
