@@ -31,7 +31,7 @@ namespace nexo::editor {
         {
             auto targetComponentCopy = targetComponent;
             ImGui::Spacing();
-            ImNexo::resetItemActiveState();
+            ImNexo::resetItemStates();
             ImNexo::CameraTarget(targetComponent);
             if (ImNexo::isItemActivated()) {
                 beforeState = targetComponentCopy.save();
