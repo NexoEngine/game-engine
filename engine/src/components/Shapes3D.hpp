@@ -98,7 +98,7 @@ namespace nexo::components {
         void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            //TODO: Find a way to handle materials for pyramid
+            //TODO: Find a way to handle materials for cylinder
             renderer3D.drawCylinder(transf.pos, transf.size, material.albedoColor, entityID);
         }
 
