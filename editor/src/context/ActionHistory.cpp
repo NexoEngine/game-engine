@@ -68,13 +68,13 @@ namespace nexo::editor {
             redoStack.clear();
             return;
         }
-        unsigned int elementsToRemove = std::min(static_cast<unsigned int>(undoStack.size()), count);
+        const unsigned int elementsToRemove = std::min(static_cast<unsigned int>(undoStack.size()), count);
         for (unsigned int i = 0; i < elementsToRemove; ++i)
             undoStack.pop_back();
     }
 
     unsigned int ActionHistory::getUndoStackSize() const
     {
-        return undoStack.size();
+        return static_cast<unsigned int>(undoStack.size());
     }
 }

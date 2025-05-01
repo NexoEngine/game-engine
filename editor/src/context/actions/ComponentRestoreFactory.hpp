@@ -21,6 +21,6 @@
 namespace nexo::editor {
     class ComponentRestoreFactory {
         public:
-            static std::unique_ptr<Action> createRestoreComponent(ecs::Entity entity, const std::type_index typeIndex);
+            static std::unique_ptr<Action> createRestoreComponent(ecs::Entity entity, std::type_index typeIndex);
     };
 }

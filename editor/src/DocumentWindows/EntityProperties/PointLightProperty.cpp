@@ -18,7 +18,6 @@
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "context/actions/EntityActions.hpp"
-#include "math/Light.hpp"
 #include "ImNexo/Widgets.hpp"
 #include "context/ActionManager.hpp"
 
@@ -26,7 +25,7 @@ namespace nexo::editor {
 
 	void PointLightProperty::show(const ecs::Entity entity)
 	{
-        auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
+        auto& pointComponent = Application::getEntityComponent<components::PointLightComponent>(entity);
         auto &transform = Application::getEntityComponent<components::TransformComponent>(entity);
 
         static components::PointLightComponent::Memento beforeStatePoint;

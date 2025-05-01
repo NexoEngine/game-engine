@@ -17,11 +17,10 @@
 #include <iostream>
 #include <set>
 
-// Implementation sketch for InputManager
-
 namespace nexo::editor {
 
-    void InputManager::processInputs(const WindowState& windowState) {
+    void InputManager::processInputs(const WindowState& windowState)
+    {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
         std::bitset<ImGuiKey_NamedKey_COUNT> releasedSignature;
         std::bitset<ImGuiKey_NamedKey_COUNT> repeatSignature;
@@ -43,19 +42,18 @@ namespace nexo::editor {
         // Track multiple-press detection
         static std::vector<float> keyLastPressTime(ImGuiKey_NamedKey_COUNT, -1.0f);
         static std::vector<int> keyPressCount(ImGuiKey_NamedKey_COUNT, 0);
-        const float multiPressThreshold = 0.3f; // Time threshold for multiple press detection (seconds)
 
-        float currentTime = ImGui::GetTime();
+        const double currentTime = ImGui::GetTime();
 
         for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_COUNT + ImGuiKey_NamedKey_BEGIN - 5; key++) {
+            constexpr float multiPressThreshold = 0.3f;
             if (excludedKeys.contains(static_cast<ImGuiKey>(key)))
                 continue;
 
-            ImGuiKey imKey = static_cast<ImGuiKey>(key);
-            size_t idx = static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN);
+            const auto imKey = static_cast<ImGuiKey>(key);
+            const auto idx = static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN);
 
-            bool keyDown = ImGui::IsKeyDown(imKey);
-            bool keyPressed = ImGui::IsKeyPressed(imKey, false);
+            const bool keyDown = ImGui::IsKeyDown(imKey);
 
             // Update currently held keys
             if (keyDown) {
@@ -73,7 +71,7 @@ namespace nexo::editor {
                     } else {
                         keyPressCount[idx] = 1;
                     }
-                    keyLastPressTime[idx] = currentTime;
+                    keyLastPressTime[idx] = static_cast<float>(currentTime);
                 }
             } else {
                 if (lastFrameHeldKeys[idx]) {
@@ -183,15 +181,17 @@ namespace nexo::editor {
     }
 
     // Add this method implementation
-    std::vector<CommandInfo> InputManager::getAllPossibleCommands(const WindowState& windowState) const {
+    std::vector<CommandInfo> InputManager::getAllPossibleCommands(const WindowState& windowState) const
+    {
         std::vector<CommandInfo> allCommands;
         // Use an empty signature to get all commands
-        std::bitset<ImGuiKey_NamedKey_COUNT> emptySignature;
+        const std::bitset<ImGuiKey_NamedKey_COUNT> emptySignature;
         collectPossibleCommands(windowState.getCommands(), emptySignature, allCommands);
         return allCommands;
     }
 
-    std::vector<CommandInfo> InputManager::getPossibleCommands(const WindowState& windowState) const {
+    std::vector<CommandInfo> InputManager::getPossibleCommands(const WindowState& windowState) const
+    {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
 
         static const std::set<ImGuiKey> excludedKeys = {
@@ -222,13 +222,13 @@ namespace nexo::editor {
     void InputManager::collectPossibleCommands(
         const std::span<const Command>& commands,
         const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
-        std::vector<CommandInfo>& possibleCommands) const {
-
+        std::vector<CommandInfo>& possibleCommands) const
+    {
         for (const auto& command : commands) {
             // If no keys are pressed, show all possible command chains
             if (pressedSignature.none()) {
                 if (command.getChildren().empty() || !command.isModifier()) {
-                    possibleCommands.push_back({command.getKey(), command.getDescription()});
+                    possibleCommands.emplace_back(command.getKey(), command.getDescription());
                 } else {
                     // For modifiers with children, build combinations recursively
                     std::vector<CommandInfo> childCombinations;
@@ -254,27 +254,27 @@ namespace nexo::editor {
                     for (const auto& child : command.getChildren()) {
                         if (hasActivatedChildModifier) {
                             // Skip non-modifier children or modifiers that aren't pressed
-                            if (!child.isModifier() || !((child.getSignature() & pressedSignature) == child.getSignature())) {
+                            if (!child.isModifier() || (child.getSignature() & pressedSignature) != child.getSignature()) {
                                 continue;
                             }
 
                             // Child modifier is pressed, show only its children's keys
                             for (const auto& grandchild : child.getChildren()) {
-                                possibleCommands.push_back({grandchild.getKey(), grandchild.getDescription()});
+                                possibleCommands.emplace_back(grandchild.getKey(), grandchild.getDescription());
                             }
                         } else {
                             // No child modifiers are pressed, show all children
                             if (child.isModifier() && !child.getChildren().empty()) {
                                 // Build combinations for this child modifier
                                 for (const auto& grandchild : child.getChildren()) {
-                                    possibleCommands.push_back({
+                                    possibleCommands.emplace_back(
                                         child.getKey() + "+" + grandchild.getKey(),
                                         grandchild.getDescription()
-                                    });
+                                    );
                                 }
                             } else {
                                 // Child is not a modifier
-                                possibleCommands.push_back({child.getKey(), child.getDescription()});
+                                possibleCommands.emplace_back(child.getKey(), child.getDescription());
                             }
                         }
                     }
@@ -298,13 +298,14 @@ namespace nexo::editor {
     void InputManager::buildCommandCombinations(
         const Command& command,
         const std::string& prefix,
-        std::vector<CommandInfo>& combinations) const {
+        std::vector<CommandInfo>& combinations) const
+    {
 
         std::string currentPrefix = prefix.empty() ? command.getKey() : prefix + "+" + command.getKey();
 
         // If this is a leaf command or not a modifier, add the combination
         if (command.getChildren().empty() || !command.isModifier()) {
-            combinations.push_back({currentPrefix, command.getDescription()});
+            combinations.emplace_back(currentPrefix, command.getDescription());
             return;
         }
 

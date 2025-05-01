@@ -18,6 +18,7 @@
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
 #include "ImNexo/EntityProperties.hpp"
+#include "ImNexo/ImNexo.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {

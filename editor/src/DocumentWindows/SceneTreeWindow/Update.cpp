@@ -42,7 +42,7 @@ namespace nexo::editor {
         generateNodes<components::AmbientLightComponent, components::SceneTag>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newAmbientLightNode(sceneId, uiId, entity);
+              return newAmbientLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::DirectionalLightComponent, components::SceneTag>(
             sceneNodes,
@@ -63,7 +63,7 @@ namespace nexo::editor {
         generateNodes<components::CameraComponent, components::SceneTag, ecs::Exclude<components::EditorCameraTag>>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newCameraNode(sceneId, uiId, entity);
+              return newCameraNode(sceneId, uiId, entity);
          });
 
         generateNodes<
@@ -75,10 +75,10 @@ namespace nexo::editor {
         ecs::Exclude<components::PointLightComponent>>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newEntityNode(sceneId, uiId, entity);
+              return newEntityNode(sceneId, uiId, entity);
          });
 
-        for (const auto &[_, sceneNode] : sceneNodes)
+        for (const auto &sceneNode: sceneNodes | std::views::values)
         {
             root_.children.push_back(sceneNode);
         }

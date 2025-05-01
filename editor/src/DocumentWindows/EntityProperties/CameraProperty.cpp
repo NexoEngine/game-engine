@@ -29,7 +29,7 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##CameraNode", "Camera"))
         {
-            auto cameraComponentCopy = cameraComponent;
+            const auto cameraComponentCopy = cameraComponent;
             ImNexo::resetItemStates();
             ImNexo::Camera(cameraComponent);
             if (ImNexo::isItemActivated()) {

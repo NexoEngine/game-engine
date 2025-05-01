@@ -18,10 +18,12 @@
 
 #include <imgui.h>
 
+#include <utility>
+
 namespace nexo::editor {
     void PopupManager::openPopup(const std::string &popupName, const ImVec2 &popupSize)
     {
-        PopupProps props{
+        const PopupProps props{
             .open = true,
             .callback = nullptr,
             .size = popupSize
@@ -31,20 +33,20 @@ namespace nexo::editor {
 
     void PopupManager::openPopupWithCallback(const std::string &popupName, PopupCallback callback, const ImVec2 &popupSize)
     {
-        PopupProps props{
+        const PopupProps props{
             .open = true,
-            .callback = callback,
+            .callback = std::move(callback),
             .size = popupSize
         };
         m_popups[popupName] = props;
     }
 
-    void PopupManager::closePopup() const
+    void PopupManager::closePopup()
     {
         ImGui::EndPopup();
     }
 
-    void PopupManager::closePopupInContext() const
+    void PopupManager::closePopupInContext()
     {
         ImGui::CloseCurrentPopup();
     }
@@ -87,9 +89,9 @@ namespace nexo::editor {
                                | ImGuiWindowFlags_NoTitleBar;
         if (!ImGui::BeginPopupModal(popupModalName.c_str(), nullptr, flags))
             return false;
-        ImVec2 pMin = ImGui::GetWindowPos();
-        ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 pMax = ImVec2(pMin.x + size.x, pMin.y + size.y);
+        const ImVec2 pMin = ImGui::GetWindowPos();
+        const ImVec2 size = ImGui::GetWindowSize();
+        const auto pMax = ImVec2(pMin.x + size.x, pMin.y + size.y);
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
         const std::vector<ImNexo::GradientStop> stops = {
@@ -98,14 +100,14 @@ namespace nexo::editor {
             { 0.50f, IM_COL32(88 / 3,  87 / 3, 154 / 3, 255) },
             { 0.73f, IM_COL32(58 / 3, 124 / 3, 161 / 3, 255) },
         };
-        float angle = 148.0f;
+        constexpr float angle = 148.0f;
 
         ImNexo::RectFilledLinearGradient(pMin, pMax, angle, stops, drawList);
 
         return true;
     }
 
-    void PopupManager::runPopupCallback(const std::string &popupName)
+    void PopupManager::runPopupCallback(const std::string &popupName) const
     {
         if (m_popups.contains(popupName) && m_popups.at(popupName).callback != nullptr)
         {

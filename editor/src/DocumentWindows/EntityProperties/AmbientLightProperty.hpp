@@ -16,7 +16,7 @@
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
-	class AmbientLightProperty : public AEntityProperty {
+	class AmbientLightProperty final : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
 

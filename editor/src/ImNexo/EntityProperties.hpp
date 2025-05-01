@@ -13,14 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <imgui.h>
-#include <string>
-#include <vector>
-
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
-#include "ImNexo.hpp"
 
 namespace ImNexo {
 

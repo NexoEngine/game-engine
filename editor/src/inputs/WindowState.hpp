@@ -21,14 +21,15 @@ namespace nexo::editor {
     class WindowState {
         public:
             WindowState() = default;
-            WindowState(unsigned int id) : m_id(id) {}
+
+            WindowState(const unsigned int id) : m_id(id) {}
             ~WindowState() = default;
 
-            unsigned int getId() const;
+            [[nodiscard]] unsigned int getId() const;
             void registerCommand(const Command &command);
-            const std::span<const Command> getCommands() const;
+            [[nodiscard]] const std::span<const Command> getCommands() const;
         private:
-            unsigned int m_id;
+            unsigned int m_id{};
             std::vector<Command> m_commands;
     };
 }

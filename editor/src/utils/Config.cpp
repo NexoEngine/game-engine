@@ -80,7 +80,7 @@ namespace nexo::editor {
         }
 
         std::string line;
-        std::regex windowRegex("\\[Window\\]\\[(###Default Scene\\d+)\\]");
+        std::regex windowRegex(R"(\[Window\]\[(###Default Scene\d+)\])");
 
         while (std::getline(configFile, line)) {
             std::smatch match;
@@ -110,7 +110,7 @@ namespace nexo::editor {
         bool inWindowSection = false;
         bool isHashedWindow = false;
 
-        std::regex windowHeaderRegex("\\[Window\\]\\[(.+)\\]");
+        std::regex windowHeaderRegex(R"(\[Window\]\[(.+)\])");
         std::regex dockIdRegex("DockId=(0x[0-9a-fA-F]+)");
 
         while (std::getline(configFile, line)) {

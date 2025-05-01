@@ -40,21 +40,21 @@ namespace nexo::editor {
                         .description("Select all")
                         .key("A")
                         .onPressed([this](){
-                            this->selectAllCallback(); })
+                            selectAllCallback(); })
                         .build()
                 )
                 .addChild(
                     Command::create()
                         .description("Duplicate")
                         .key("D")
-                        .onPressed([this](){ this->duplicateSelectedCallback(); })
+                        .onPressed([this](){ duplicateSelectedCallback(); })
                         .build()
                 )
                 .addChild(
                     Command::create()
                         .description("Unhide all")
                         .key("H")
-                        .onPressed([this](){ this->showAllCallback(); })
+                        .onPressed([this](){ showAllCallback(); })
                         .build()
                 )
                 .addChild(
@@ -117,7 +117,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Hide")
                 .key("H")
-                .onPressed([this](){ this->hideSelectedCallback(); })
+                .onPressed([this](){ hideSelectedCallback(); })
                 .build()
         );
     }
@@ -147,9 +147,9 @@ namespace nexo::editor {
             selector.clearSelection();
 
             for (const auto entity : scene.getEntities()) {
-                const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+                const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
                 if (uuidComponent) {
-                    selector.addToSelection(uuidComponent->get().uuid, entity);
+                    selector.addToSelection(uuidComponent->get().uuid, static_cast<int>(entity));
                 }
             }
         }
@@ -162,18 +162,18 @@ namespace nexo::editor {
 
         if (selectedEntities.empty()) return;
 
-        auto& app = nexo::getApp();
+        auto& app = getApp();
         auto& actionManager = ActionManager::get();
 
         if (selectedEntities.size() > 1) {
-            auto actionGroup = actionManager.createActionGroup();
+            auto actionGroup = ActionManager::createActionGroup();
             for (const auto entity : selectedEntities) {
-                actionGroup->addAction(actionManager.prepareEntityDeletion(entity));
+                actionGroup->addAction(ActionManager::prepareEntityDeletion(entity));
                 app.deleteEntity(entity);
             }
             actionManager.recordAction(std::move(actionGroup));
         } else {
-            auto deleteAction = actionManager.prepareEntityDeletion(selectedEntities[0]);
+            auto deleteAction = ActionManager::prepareEntityDeletion(selectedEntities[0]);
             app.deleteEntity(selectedEntities[0]);
             actionManager.recordAction(std::move(deleteAction));
         }
@@ -214,14 +214,14 @@ namespace nexo::editor {
 
         std::vector<ecs::Entity> newEntities;
         newEntities.reserve(selectedEntities.size());
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
         selector.clearSelection();
 
         for (const auto entity : selectedEntities) {
-            ecs::Entity newEntity = app.m_coordinator->duplicateEntity(entity);
-            components::UuidComponent uuidComponent;
-            app.m_coordinator->getComponent<components::UuidComponent>(newEntity) = uuidComponent;
-            app.m_coordinator->removeComponent<components::SceneTag>(newEntity);
+            ecs::Entity newEntity = Application::m_coordinator->duplicateEntity(entity);
+            const components::UuidComponent uuidComponent;
+            Application::m_coordinator->getComponent<components::UuidComponent>(newEntity) = uuidComponent;
+            Application::m_coordinator->removeComponent<components::SceneTag>(newEntity);
             app.getSceneManager().getScene(currentSceneId).addEntity(newEntity);
             auto action = std::make_unique<EntityCreationAction>(newEntity);
             actionGroup->addAction(std::move(action));
@@ -232,27 +232,26 @@ namespace nexo::editor {
 
         // Select all the newly created entities
         for (const auto newEntity : newEntities) {
-            const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(newEntity);
+            const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(newEntity);
             if (uuidComponent) {
-                selector.addToSelection(uuidComponent->get().uuid, newEntity);
+                selector.addToSelection(uuidComponent->get().uuid, static_cast<int>(newEntity));
             }
         }
     }
 
     void SceneTreeWindow::hideSelectedCallback()
     {
-        auto& selector = Selector::get();
+        const auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
         if (selectedEntities.empty()) return;
 
-        auto& app = nexo::getApp();
         auto& actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
 
         for (const auto entity : selectedEntities) {
-            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
-                auto& renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                auto& renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (renderComponent.isRendered) {
                     auto beforeState = renderComponent.save();
                     renderComponent.isRendered = !renderComponent.isRendered;
@@ -268,19 +267,19 @@ namespace nexo::editor {
 
     void SceneTreeWindow::showAllCallback()
     {
-        auto& selector = Selector::get();
+        const auto& selector = Selector::get();
         int currentSceneId = selector.getSelectedScene();
 
         if (currentSceneId == -1) return;
 
-        auto& app = nexo::getApp();
+        auto& app = getApp();
         auto& scene = app.getSceneManager().getScene(currentSceneId);
         auto& actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
 
         for (const auto entity : scene.getEntities()) {
-            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
-                auto& renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                auto& renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (!renderComponent.isRendered) {
                     auto beforeState = renderComponent.save();
                     renderComponent.isRendered = true;

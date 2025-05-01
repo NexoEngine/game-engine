@@ -17,7 +17,7 @@
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
-    class TransformProperty : public nexo::editor::AEntityProperty {
+    class TransformProperty final : public AEntityProperty {
         public:
         	using AEntityProperty::AEntityProperty;
 

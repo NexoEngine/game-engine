@@ -16,7 +16,6 @@
 #include "actions/Action.hpp"
 #include <memory>
 #include <deque>
-#include <string>
 
 namespace nexo::editor {
 
@@ -28,15 +27,15 @@ namespace nexo::editor {
             // Add a action to history after it was already executed
             void addAction(std::unique_ptr<Action> action);
 
-            bool canUndo() const;
-            bool canRedo() const;
+            [[nodiscard]] bool canUndo() const;
+            [[nodiscard]] bool canRedo() const;
             void undo();
             void redo();
 
             void setMaxUndoLevels(size_t levels);
 
             void clear(unsigned int count = 0);
-            unsigned int getUndoStackSize() const;
+            [[nodiscard]] unsigned int getUndoStackSize() const;
 
         private:
             std::deque<std::unique_ptr<Action>> undoStack;

@@ -24,11 +24,11 @@
 
 namespace nexo::editor {
 
-    void EditorScene::renderNoActiveCamera()
+    void EditorScene::renderNoActiveCamera() const
     {
         // No active camera, render the text at the center of the screen
-        ImVec2 textSize = ImGui::CalcTextSize("No active camera");
-        auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
+        const ImVec2 textSize = ImGui::CalcTextSize("No active camera");
+        const auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
 
         ImGui::SetCursorScreenPos(textPos);
         ImGui::Text("No active camera");
@@ -85,7 +85,7 @@ namespace nexo::editor {
         // --- Camera item ---
         if (ImGui::MenuItem("Camera")) {
             m_popupManager.openPopupWithCallback("Popup camera inspector", [this]() {
-                ImNexo::CameraInspector(this->m_sceneId, this->m_contentSize);
+                ImNexo::CameraInspector(this->m_sceneId);
             }, ImVec2(1440,900));
         }
         m_popupManager.closePopup();
@@ -93,7 +93,6 @@ namespace nexo::editor {
 
     void EditorScene::renderView()
     {
-        const auto viewPortOffset = ImGui::GetCursorPos();
        	auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
         if (!cameraComponent.m_renderTarget)
             return;
@@ -111,8 +110,8 @@ namespace nexo::editor {
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);
 
-        ImVec2 viewportMin = ImGui::GetItemRectMin();
-        ImVec2 viewportMax = ImGui::GetItemRectMax();
+        const ImVec2 viewportMin = ImGui::GetItemRectMin();
+        const ImVec2 viewportMax = ImGui::GetItemRectMax();
         m_viewportBounds[0] = viewportMin;
         m_viewportBounds[1] = viewportMax;
     }

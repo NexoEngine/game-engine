@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <imgui.h>
 namespace ImNexo {
 
     inline bool g_isItemActive = false;

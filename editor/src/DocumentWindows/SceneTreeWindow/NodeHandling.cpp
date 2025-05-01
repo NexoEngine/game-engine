@@ -18,7 +18,7 @@
 namespace nexo::editor {
 
     // Node creation methods
-    SceneObject SceneTreeWindow::newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const
+    SceneObject SceneTreeWindow::newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId)
     {
         SceneObject sceneNode;
         const std::string uiName = ObjectTypeToIcon.at(SelectionType::SCENE) + sceneName;
@@ -32,7 +32,7 @@ namespace nexo::editor {
         return sceneNode;
     }
 
-    void SceneTreeWindow::newLightNode(SceneObject &lightNode, const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity, const std::string &uiName) const
+    void SceneTreeWindow::newLightNode(SceneObject &lightNode, const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity, const std::string &uiName)
     {
         const SceneProperties sceneProperties{sceneId, uiId};
         lightNode.data.sceneProperties = sceneProperties;
@@ -47,7 +47,7 @@ namespace nexo::editor {
             lightNode.uiName = uiName;
     }
 
-    SceneObject SceneTreeWindow::newAmbientLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity) const
+    SceneObject SceneTreeWindow::newAmbientLightNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity lightEntity)
     {
         SceneObject lightNode;
         lightNode.type = SelectionType::AMBIENT_LIGHT;
@@ -84,7 +84,7 @@ namespace nexo::editor {
     }
 
     SceneObject SceneTreeWindow::newCameraNode(const scene::SceneId sceneId, const WindowId uiId,
-                                               const ecs::Entity cameraEntity) const
+                                               const ecs::Entity cameraEntity)
     {
         SceneObject cameraNode;
         const std::string uiName = ObjectTypeToIcon.at(SelectionType::CAMERA) + std::string("Camera");
@@ -104,7 +104,7 @@ namespace nexo::editor {
     }
 
     SceneObject SceneTreeWindow::newEntityNode(const scene::SceneId sceneId, const WindowId uiId,
-                                               const ecs::Entity entity) const
+                                               const ecs::Entity entity)
     {
         auto &selector = Selector::get();
         SceneObject entityNode;
