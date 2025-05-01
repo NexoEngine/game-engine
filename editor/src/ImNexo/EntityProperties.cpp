@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "ImNexo/ImNexo.hpp"
 #include "Widgets.hpp"
 #include "Guard.hpp"
 #include "Utils.hpp"
@@ -27,12 +28,9 @@
 
 namespace ImNexo {
 
-    InteractionState Ambient(
-        nexo::components::AmbientLightComponent &ambientComponent,
-        nexo::components::AmbientLightComponent::Memento &beforeState
-    ) {
+    void Ambient(nexo::components::AmbientLightComponent &ambientComponent)
+    {
         ImGui::Spacing();
-        InteractionState state = InteractionState::NONE;
         static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
         static bool showColorPicker = false;
 
@@ -40,10 +38,7 @@ namespace ImNexo {
         ImGui::SameLine();
         glm::vec4 color = {ambientComponent.color, 1.0f};
         ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
-
-        state = trackEditingLifecylce(ambientComponent, beforeState);
         ambientComponent.color = color;
-        return state;
     }
 
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler)
@@ -99,21 +94,19 @@ namespace ImNexo {
             std::vector<ImU32> badgeColors;
             std::vector<ImU32> textBadgeColors;
 
-            const bool disabled = cameraComponent.viewportLocked;
+            const bool disabled = !cameraComponent.viewportLocked;
             if (disabled)
                 ImGui::BeginDisabled();
-            if (RowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled))
-            {
-                if (!cameraComponent.viewportLocked)
+            bool toResize = RowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled);
+            if (toResize && cameraComponent.viewportLocked)
                 cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
-            }
             if (disabled)
                 ImGui::EndDisabled();
 
             ImGui::TableSetColumnIndex(3);
 
             // Lock button
-            const std::string lockBtnLabel = cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
+            const std::string lockBtnLabel = !cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
             if (Button(lockBtnLabel)) {
                 cameraComponent.viewportLocked = !cameraComponent.viewportLocked;
             }
@@ -178,13 +171,9 @@ namespace ImNexo {
         ImGui::PopStyleVar();
 	}
 
-	InteractionState CameraController(
-	    nexo::components::PerspectiveCameraController &cameraControllerComponent,
-		nexo::components::PerspectiveCameraController::Memento &beforeState
-	) {
+	void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent)
+	{
         ImGui::Spacing();
-        InteractionState state = InteractionState::NONE;
-
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
         if (ImGui::BeginTable("InspectorControllerTable", 2,
@@ -195,13 +184,11 @@ namespace ImNexo {
 
             float mouseSensitivity = cameraControllerComponent.mouseSensitivity;
             RowDragFloat1("Mouse sensitivity", "", &mouseSensitivity);
-            state = trackEditingLifecylce(cameraControllerComponent, beforeState);
             cameraControllerComponent.mouseSensitivity = mouseSensitivity;
 
             ImGui::EndTable();
         }
         ImGui::PopStyleVar();
-        return state;
 	}
 
 }
