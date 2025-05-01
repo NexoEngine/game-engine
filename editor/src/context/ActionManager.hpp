@@ -52,6 +52,7 @@ namespace nexo::editor {
             bool canUndo() const;
             bool canRedo() const;
             void clearHistory(unsigned int count = 0);
+            unsigned int getUndoStackSize() const;
 
             static ActionManager& get() {
                 static ActionManager instance;

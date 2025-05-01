@@ -36,6 +36,7 @@ namespace nexo::editor {
             void setMaxUndoLevels(size_t levels);
 
             void clear(unsigned int count = 0);
+            unsigned int getUndoStackSize() const;
 
         private:
             std::deque<std::unique_ptr<Action>> undoStack;
