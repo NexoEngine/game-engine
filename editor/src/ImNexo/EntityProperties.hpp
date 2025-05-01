@@ -26,6 +26,8 @@ namespace ImNexo {
 
     void Ambient(nexo::components::AmbientLightComponent &ambientComponent);
 
+    void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent);
+
     /**
      * @brief Renders and handles the transform component editor UI.
      *
