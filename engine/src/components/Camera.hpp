@@ -20,6 +20,7 @@
 #include "ecs/Entity.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 
 namespace nexo::components {
@@ -119,8 +120,11 @@ namespace nexo::components {
 
         void restore(const Memento& memento)
         {
-            width = memento.width;
-            height = memento.height;
+            if (width != memento.width || height != memento.height) {
+                width = memento.width;
+                height = memento.height;
+                resize(width, height);
+            }
             viewportLocked = memento.viewportLocked;
             fov = memento.fov;
             nearPlane = memento.nearPlane;
