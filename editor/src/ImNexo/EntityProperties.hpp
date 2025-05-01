@@ -20,6 +20,7 @@
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
+#include "ImNexo.hpp"
 
 namespace ImNexo {
 
@@ -86,9 +87,6 @@ namespace ImNexo {
      *
      * @param cameraControllerComponent Reference to the camera controller component being edited
      */
-    InteractionState CameraController(
-        nexo::components::PerspectiveCameraController &cameraControllerComponent,
-        nexo::components::PerspectiveCameraController::Memento &beforeState
-    );
+    void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent);
 
 }
