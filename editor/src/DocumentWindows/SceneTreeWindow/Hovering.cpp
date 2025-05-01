@@ -16,10 +16,9 @@
 
 namespace nexo::editor {
 
-    void SceneTreeWindow::cameraHovered(const SceneObject &obj) const
+    void SceneTreeWindow::cameraHovered(const SceneObject &obj)
     {
-        auto &app = Application::getInstance();
-        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
+        auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
 
         if (cameraComponent.m_renderTarget)
         {
@@ -37,7 +36,7 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::handleHovering(const SceneObject &obj) const
+    void SceneTreeWindow::handleHovering(const SceneObject &obj)
     {
         if (obj.type == SelectionType::CAMERA) {
             static bool cameraHoveredLastFrame = false;
@@ -46,7 +45,7 @@ namespace nexo::editor {
                 cameraHoveredLastFrame = true;
             } else if (cameraHoveredLastFrame) {
                 cameraHoveredLastFrame = false;
-                auto &cameraComponent = Application::getInstance().m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
+                auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
                 cameraComponent.render = false;
             }
         }

@@ -15,18 +15,15 @@
 
 #include "ADocumentWindow.hpp"
 #include "inputs/WindowState.hpp"
-#include "IDocumentWindow.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "inputs/WindowState.hpp"
 #include "../PopupManager.hpp"
 #include <imgui.h>
 #include <ImGuizmo.h>
 #include "ImNexo/Widgets.hpp"
-#include "inputs/InputManager.hpp"
 
 namespace nexo::editor {
 
-    class EditorScene : public ADocumentWindow {
+    class EditorScene final : public ADocumentWindow {
         public:
         	using ADocumentWindow::ADocumentWindow;
 
@@ -66,22 +63,22 @@ namespace nexo::editor {
              */
             void update() override;
 
-            /**
-			 * @brief Retrieves the unique identifier of the scene.
-			 *
-			 * @return scene::SceneId The identifier of this scene.
-			 */
-			[[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
+                  /**
+            * @brief Retrieves the unique identifier of the scene.
+            *
+            * @return scene::SceneId The identifier of this scene.
+            */
+            [[nodiscard]] scene::SceneId getSceneId() const {return m_sceneId;};
 
-			/**
-			 * @brief Sets the active camera for this scene.
-			 *
-			 * Deactivates the current camera and switches to the specified camera entity.
-			 * The previously active camera will have its render and active flags set to false.
-			 *
-			 * @param cameraId Entity ID of the camera to set as active.
-			 */
-			void setCamera(ecs::Entity cameraId);
+            /**
+            * @brief Sets the active camera for this scene.
+            *
+            * Deactivates the current camera and switches to the specified camera entity.
+            * The previously active camera will have its render and active flags set to false.
+            *
+            * @param cameraId Entity ID of the camera to set as active.
+            */
+            void setCamera(ecs::Entity cameraId);
 
             /**
              * @brief Marks this scene as the default scene.
@@ -136,9 +133,9 @@ namespace nexo::editor {
              */
             void setupScene();
 
-            void hideAllButSelectionCallback();
+            void hideAllButSelectionCallback() const;
             void selectAllCallback();
-            void unhideAllCallback();
+            void unhideAllCallback() const;
             void deleteCallback();
 
             void setupGlobalState();
@@ -174,7 +171,7 @@ namespace nexo::editor {
              * @param buttonWidth Standard width for toolbar buttons
              * @param buttonHeight Standard height for toolbar buttons
              */
-            void initialToolbarSetup(const float buttonWidth, const float buttonHeight);
+            void initialToolbarSetup(float buttonWidth) const;
 
             /**
              * @brief Renders the editor camera button in the toolbar.
@@ -196,7 +193,7 @@ namespace nexo::editor {
              * @return true if the button was clicked
              */
             bool renderGizmoModeToolbarButton(
-                const bool showGizmoModeMenu,
+            bool showGizmoModeMenu,
                 ImNexo::ButtonProps &activeGizmoMode,
                 ImNexo::ButtonProps &inactiveGizmoMode
             );
@@ -211,7 +208,7 @@ namespace nexo::editor {
              * @param buttonSize Size of buttons in the dropdown
              * @param showPrimitiveMenu Reference to the flag controlling menu visibility
              */
-            void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu);
+            void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu) const;
 
             /**
              * @brief Renders the snap settings dropdown menu.
@@ -246,7 +243,7 @@ namespace nexo::editor {
              * @param gradientStop Color gradient for the button background
              * @return true if the button was clicked
              */
-            bool renderToolbarButton(
+            static bool renderToolbarButton(
                 const std::string &uniqueId,
                 const std::string &icon,
                 const std::string &tooltip,
@@ -268,16 +265,15 @@ namespace nexo::editor {
              * If the gizmo is actively manipulated, the entity's transform component is updated with the new values.
              */
             void renderGizmo();
-            void setupGizmoContext(const components::TransformComponent& cameraTransform,
-                                   const components::CameraComponent& camera);
+            void setupGizmoContext(const components::CameraComponent& camera) const;
             float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
-            void captureInitialTransformStates(const std::vector<int>& entities);
+            static void captureInitialTransformStates(const std::vector<int>& entities);
             void applyTransformToEntities(
                 ecs::Entity sourceEntity,
                 const components::TransformComponent& sourceTransform,
                 const components::TransformComponent& newTransform,
-                const std::vector<int>& targetEntities);
-            void createTransformUndoActions(const std::vector<int>& entities);
+                const std::vector<int>& targetEntities) const;
+            static void createTransformUndoActions(const std::vector<int>& entities);
             static bool s_wasUsingGizmo;
             static ImGuizmo::OPERATION s_lastOperation;
             static std::unordered_map<ecs::Entity, components::TransformComponent::Memento> s_initialTransformStates;
@@ -289,11 +285,11 @@ namespace nexo::editor {
              * rendered scene, and updates viewport bounds for input handling.
              */
             void renderView();
-            void renderNoActiveCamera();
+            void renderNoActiveCamera() const;
             void renderNewEntityPopup();
 
             void handleSelection();
-            int sampleEntityTexture(float mx, float my);
+            int sampleEntityTexture(float mx, float my) const;
             void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
             void updateWindowState();
 

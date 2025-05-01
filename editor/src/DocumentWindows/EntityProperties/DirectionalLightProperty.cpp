@@ -28,7 +28,7 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##DirectionalNode", "Directional light"))
         {
-            auto directionalComponentCopy = directionalComponent;
+            const auto directionalComponentCopy = directionalComponent;
             ImNexo::resetItemStates();
             ImNexo::DirectionalLight(directionalComponent);
             if (ImNexo::isItemActivated()) {

@@ -21,7 +21,7 @@
 #include "src/DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 
 #include <thread>
-#include <tinyfiledialogs.h>
+#include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
 
 int main(int argc, char **argv)
@@ -37,7 +37,7 @@ try {
     editor.registerWindow<nexo::editor::MaterialInspector>(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
     editor.registerWindow<nexo::editor::AssetManagerWindow>(NEXO_WND_USTRID_ASSET_MANAGER);
 
-    if (auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0)).lock())
+    if (const auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0)).lock())
         defaultScene->setDefault();
 
     editor.init();

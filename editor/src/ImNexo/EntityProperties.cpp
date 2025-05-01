@@ -15,7 +15,6 @@
 #include "ImNexo/ImNexo.hpp"
 #include "Widgets.hpp"
 #include "Guard.hpp"
-#include "Utils.hpp"
 #include "EntityProperties.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
@@ -38,7 +37,7 @@ namespace ImNexo {
         ImGui::Text("Color");
         ImGui::SameLine();
         glm::vec4 color = {ambientComponent.color, 1.0f};
-        ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
+        ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
         ambientComponent.color = color;
     }
 
@@ -50,7 +49,7 @@ namespace ImNexo {
         ImGui::Text("Color");
         ImGui::SameLine();
         glm::vec4 color = {directionalComponent.color, 1.0f};
-        ImNexo::ColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
+        ColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
         directionalComponent.color = color;
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
@@ -62,7 +61,7 @@ namespace ImNexo {
             ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            ImNexo::RowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
+            RowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
 
             ImGui::EndTable();
         }
@@ -79,7 +78,7 @@ namespace ImNexo {
         ImGui::Text("Color");
         ImGui::SameLine();
         glm::vec4 color = {pointComponent.color, 1.0f};
-        ImNexo::ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
+        ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
         pointComponent.color = color;
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
@@ -195,7 +194,6 @@ namespace ImNexo {
                    const glm::quat deltaQuat = glm::radians(deltaEuler);
                    quat = glm::normalize(deltaQuat * quat);
                    lastDisplayedEuler = nexo::math::customQuatToEuler(quat);
-                   rotation = lastDisplayedEuler;
                }
                RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 
@@ -265,12 +263,11 @@ namespace ImNexo {
         if (ImGui::BeginTable("InspectorControllerTable", 2,
                             ImGuiTableFlags_SizingStretchProp))
         {
-            auto &app = nexo::getApp();
             auto &selector = nexo::editor::Selector::get();
             ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            const std::vector<nexo::ecs::Entity> &entities = app.m_coordinator->getAllEntitiesWith<
+            const std::vector<nexo::ecs::Entity> &entities = nexo::Application::m_coordinator->getAllEntitiesWith<
                                                             nexo::components::TransformComponent,
                                                             nexo::ecs::Exclude<nexo::components::CameraComponent>,
                                                             nexo::ecs::Exclude<nexo::components::DirectionalLightComponent>,
@@ -283,9 +280,9 @@ namespace ImNexo {
             RowEntityDropdown(
                 "Target Entity",
                 cameraTargetComponent.targetEntity, entities,
-                [&app, &selector](nexo::ecs::Entity e) {
+                [&selector](const nexo::ecs::Entity e) {
                     return selector.getUiHandle(
-                        app.m_coordinator->getComponent<nexo::components::UuidComponent>(e).uuid,
+                        nexo::Application::m_coordinator->getComponent<nexo::components::UuidComponent>(e).uuid,
                         std::to_string(e)
                     );
                 }

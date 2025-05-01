@@ -14,9 +14,7 @@
 
 #include "SceneTreeWindow.hpp"
 #include "EntityFactory3D.hpp"
-#include "LightFactory.hpp"
 #include "utils/EditorProps.hpp"
-#include "ImNexo/Panels.hpp"
 #include "context/ActionManager.hpp"
 #include "context/actions/EntityActions.hpp"
 
@@ -24,16 +22,16 @@
 
 namespace nexo::editor {
 
-    void SceneTreeWindow::entitySelected(const SceneObject &obj) const
+    void SceneTreeWindow::entitySelected(const SceneObject &obj)
     {
         auto &selector = Selector::get();
         auto &app = nexo::getApp();
 
         // Check if we're operating on a single item or multiple items
         const auto& selectedEntities = selector.getSelectedEntities();
-        bool multipleSelected = selectedEntities.size() > 1;
+        const bool multipleSelected = selectedEntities.size() > 1;
 
-        std::string menuText = multipleSelected ?
+        const std::string menuText = multipleSelected ?
             "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
             "Delete Entity";
 
@@ -41,7 +39,7 @@ namespace nexo::editor {
         {
             if (multipleSelected) {
                 // Delete all selected entities
-                auto actionGroup = ActionManager::get().createActionGroup();
+                auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
                     auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
@@ -66,9 +64,9 @@ namespace nexo::editor {
 
         // Check if we're operating on a single item or multiple items
         const auto& selectedEntities = selector.getSelectedEntities();
-        bool multipleSelected = selectedEntities.size() > 1;
+        const bool multipleSelected = selectedEntities.size() > 1;
 
-        std::string deleteMenuText = multipleSelected ?
+        const std::string deleteMenuText = multipleSelected ?
             "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
             "Delete Camera";
 
@@ -76,7 +74,7 @@ namespace nexo::editor {
         {
             if (multipleSelected) {
                 // Delete all selected entities
-                auto actionGroup = ActionManager::get().createActionGroup();
+                auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
                     auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
@@ -96,7 +94,7 @@ namespace nexo::editor {
         // Switch to camera only makes sense for a single camera
         if (!multipleSelected && ImGui::MenuItem("Switch to"))
         {
-            auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
+            auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
             cameraComponent.render = true;
             cameraComponent.active = true;
             const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
@@ -109,16 +107,16 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::lightSelected(const SceneObject &obj) const
+    void SceneTreeWindow::lightSelected(const SceneObject &obj)
     {
         auto &app = Application::getInstance();
         auto &selector = Selector::get();
 
         // Check if we're operating on a single item or multiple items
         const auto& selectedEntities = selector.getSelectedEntities();
-        bool multipleSelected = selectedEntities.size() > 1;
+        const bool multipleSelected = selectedEntities.size() > 1;
 
-        std::string menuText = multipleSelected ?
+        const std::string menuText = multipleSelected ?
             "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
             "Delete Light";
 
@@ -126,7 +124,7 @@ namespace nexo::editor {
         {
             if (multipleSelected) {
                 // Delete all selected entities
-                auto actionGroup = ActionManager::get().createActionGroup();
+                auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
                     auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
@@ -153,7 +151,7 @@ namespace nexo::editor {
     }
 
     bool SceneTreeWindow::handleSelection(const SceneObject &obj, const std::string &uniqueLabel,
-                                          const ImGuiTreeNodeFlags baseFlags) const
+                                          const ImGuiTreeNodeFlags baseFlags)
     {
         const bool nodeOpen = ImGui::TreeNodeEx(uniqueLabel.c_str(), baseFlags);
         if (!nodeOpen)
@@ -162,16 +160,16 @@ namespace nexo::editor {
         if (ImGui::IsItemClicked())
         {
             auto &selector = Selector::get();
-            bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
-            bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+            const bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
+            const bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
 
             if (isCtrlPressed)
-                selector.toggleSelection(obj.uuid, obj.data.entity, obj.type);
+                selector.toggleSelection(obj.uuid, static_cast<int>(obj.data.entity), obj.type);
             else if (isShiftPressed)
-                selector.addToSelection(obj.uuid, obj.data.entity, obj.type);
+                selector.addToSelection(obj.uuid, static_cast<int>(obj.data.entity), obj.type);
             else
-                selector.selectEntity(obj.uuid, obj.data.entity, obj.type);
-            selector.setSelectedScene(obj.data.sceneProperties.sceneId);
+                selector.selectEntity(obj.uuid, static_cast<int>(obj.data.entity), obj.type);
+            selector.setSelectedScene(static_cast<int>(obj.data.sceneProperties.sceneId));
         }
         return nodeOpen;
     }

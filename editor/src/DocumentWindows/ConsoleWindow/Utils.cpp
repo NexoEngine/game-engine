@@ -63,7 +63,6 @@ namespace nexo::editor {
             case LogLevel::DEV: return loguru::Verbosity_3;
             default: return loguru::Verbosity_INVALID;
         }
-        return loguru::Verbosity_INVALID;
     }
 
     /**
@@ -79,7 +78,7 @@ namespace nexo::editor {
      * @param level The verbosity level for which the corresponding color is computed.
      * @return ImVec4 The color associated with the specified verbosity level.
      */
-    const ImVec4 getVerbosityColor(loguru::Verbosity level)
+    const ImVec4 getVerbosityColor(const loguru::Verbosity level)
     {
         ImVec4 color;
 

@@ -18,21 +18,21 @@
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
-    int EditorScene::sampleEntityTexture(float mx, float my)
+    int EditorScene::sampleEntityTexture(const float mx, const float my) const
     {
-        const auto &coord = getApp().m_coordinator;
+        const auto &coord = Application::m_coordinator;
         const auto &cameraComponent = coord->getComponent<components::CameraComponent>(static_cast<ecs::Entity>(m_activeCamera));
 
         cameraComponent.m_renderTarget->bind();
-        int entityId = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
+        const int entityId = cameraComponent.m_renderTarget->getPixel<int>(1, static_cast<int>(mx), static_cast<int>(my));
         cameraComponent.m_renderTarget->unbind();
         return entityId;
     }
 
-    static SelectionType getSelectionType(int entityId)
+    static SelectionType getSelectionType(const int entityId)
     {
-        const auto &coord = getApp().m_coordinator;
-        SelectionType selType = SelectionType::ENTITY;
+        const auto &coord = Application::m_coordinator;
+        auto selType = SelectionType::ENTITY;
         if (coord->entityHasComponent<components::CameraComponent>(entityId)) {
             selType = SelectionType::CAMERA;
         } else if (coord->entityHasComponent<components::DirectionalLightComponent>(entityId)) {
@@ -62,15 +62,15 @@ namespace nexo::editor {
         }
     }
 
-    void EditorScene::updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed)
+    void EditorScene::updateSelection(const int entityId, const bool isShiftPressed, const bool isCtrlPressed)
     {
-        const auto &coord = getApp().m_coordinator;
+        const auto &coord = Application::m_coordinator;
         const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
         if (!uuid)
             return;
 
         // Determine selection type
-        SelectionType selType = getSelectionType(entityId);
+        const SelectionType selType = getSelectionType(entityId);
         auto &selector = Selector::get();
 
         // Handle different selection modes
@@ -97,11 +97,11 @@ namespace nexo::editor {
         // Check if mouse is inside viewport
         if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
             return;
-        int entityId = sampleEntityTexture(mx, my);
+        const int entityId = sampleEntityTexture(mx, my);
 
         // Check for multi-selection key modifiers
-        bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
-        bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+        const bool isShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
+        const bool isCtrlPressed = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
         auto &selector = Selector::get();
 
         if (entityId == -1) {
@@ -118,12 +118,11 @@ namespace nexo::editor {
 
     void EditorScene::update()
     {
-        auto &selector = Selector::get();
-        bool is_currently_visible = m_isVisibleInDock || m_wasVisibleLastFrame;
+        const bool isCurrentlyVisible = m_isVisibleInDock || m_wasVisibleLastFrame;
 
-        if (!m_opened || m_activeCamera == -1 || !is_currently_visible)
+        if (!m_opened || m_activeCamera == -1 || !isCurrentlyVisible)
             return;
-        SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
+        const SceneType sceneType = m_activeCamera == m_editorCamera ? SceneType::EDITOR : SceneType::GAME;
         Application::SceneInfo sceneInfo{static_cast<scene::SceneId>(m_sceneId), RenderingType::FRAMEBUFFER, sceneType};
         sceneInfo.isChildWindow = true;
         sceneInfo.viewportBounds[0] = glm::vec2{m_viewportBounds[0].x, m_viewportBounds[0].y};

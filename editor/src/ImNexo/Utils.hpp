@@ -27,7 +27,7 @@ namespace ImNexo::utils {
     * @param[in] t The interpolation factor (0.0 to 1.0).
     * @return The interpolated color (ARGB format).
     */
-    ImU32 imLerpColor(const ImU32 colA, const ImU32 colB, const float t);
+    ImU32 imLerpColor(ImU32 colA, ImU32 colB, float t);
 
     /**
     * @brief Clip a convex polygon against a half-plane defined by: (dot(normal, v) >= offset)

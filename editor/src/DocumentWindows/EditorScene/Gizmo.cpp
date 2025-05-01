@@ -29,7 +29,7 @@ namespace nexo::editor {
     {
         for (int bitPos = 0; bitPos <= 13; bitPos++)
         {
-            ImGuizmo::OPERATION op = static_cast<ImGuizmo::OPERATION>(1u << bitPos);
+            auto op = static_cast<ImGuizmo::OPERATION>(1u << bitPos);
             if (ImGuizmo::IsOver(op))
                 return op;
         }
@@ -49,8 +49,7 @@ namespace nexo::editor {
         return std::nullopt;
     }
 
-    void EditorScene::setupGizmoContext(const components::TransformComponent& cameraTransform,
-                                       const components::CameraComponent& camera)
+    void EditorScene::setupGizmoContext(const components::CameraComponent& camera) const
     {
         ImGuizmo::SetOrthographic(camera.type == components::CameraType::ORTHOGRAPHIC);
         ImGuizmo::SetDrawlist();
@@ -66,11 +65,11 @@ namespace nexo::editor {
                glm::scale(glm::mat4(1.0f), transform.size);
     }
 
-    float* EditorScene::getSnapSettingsForOperation(ImGuizmo::OPERATION operation)
+    float* EditorScene::getSnapSettingsForOperation(const ImGuizmo::OPERATION operation)
     {
-        if (m_snapTranslateOn && operation & ImGuizmo::OPERATION::TRANSLATE) {
+        if (m_snapTranslateOn && operation & ImGuizmo::OPERATION::TRANSLATE)
             return &m_snapTranslate.x;
-        } else if (m_snapRotateOn && operation & ImGuizmo::OPERATION::ROTATE) {
+        if (m_snapRotateOn && operation & ImGuizmo::OPERATION::ROTATE) {
             return &m_angleSnap;
         }
         return nullptr;
@@ -90,17 +89,17 @@ namespace nexo::editor {
     }
 
     void EditorScene::applyTransformToEntities(
-        ecs::Entity sourceEntity,
+        const ecs::Entity sourceEntity,
         const components::TransformComponent& sourceTransform,
         const components::TransformComponent& newTransform,
-        const std::vector<int>& targetEntities)
+        const std::vector<int>& targetEntities) const
     {
         const auto& coord = nexo::Application::m_coordinator;
 
         // Calculate transformation deltas
-        glm::vec3 positionDelta = newTransform.pos - sourceTransform.pos;
-        glm::vec3 scaleFactor = newTransform.size / sourceTransform.size;
-        glm::quat rotationDelta = newTransform.quat * glm::inverse(sourceTransform.quat);
+        const glm::vec3 positionDelta = newTransform.pos - sourceTransform.pos;
+        const glm::vec3 scaleFactor = newTransform.size / sourceTransform.size;
+        const glm::quat rotationDelta = newTransform.quat * glm::inverse(sourceTransform.quat);
 
         // Apply transforms to all selected entities except the source
         for (const auto& entity : targetEntities) {
@@ -142,7 +141,7 @@ namespace nexo::editor {
 
         // If multiple entities selected, create a group action
         if (entities.size() > 1) {
-            auto groupAction = actionManager.createActionGroup();
+            auto groupAction = ActionManager::createActionGroup();
             bool anyChanges = false;
 
             for (const auto& entity : entities) {
@@ -173,7 +172,7 @@ namespace nexo::editor {
             auto entity = entities[0];
             auto transform = coord->tryGetComponent<components::TransformComponent>(entity);
 
-            if (transform && s_initialTransformStates.count(entity)) {
+            if (s_initialTransformStates.contains(entity)) {
                 auto beforeState = s_initialTransformStates[entity];
                 auto afterState = transform->get().save();
 
@@ -206,7 +205,7 @@ namespace nexo::editor {
 
         auto primaryTransform = coord->tryGetComponent<components::TransformComponent>(primaryEntity);
         if (!primaryTransform) {
-            auto entityWithTransform = findEntityWithTransform(selectedEntities);
+            const auto entityWithTransform = findEntityWithTransform(selectedEntities);
             if (!entityWithTransform) return; // No entity with transform found
 
             primaryEntity = *entityWithTransform;
@@ -218,7 +217,7 @@ namespace nexo::editor {
         auto& camera = coord->getComponent<components::CameraComponent>(m_activeCamera);
 
         // Configure ImGuizmo
-        setupGizmoContext(cameraTransform, camera);
+        setupGizmoContext(camera);
         ImGuizmo::SetID(static_cast<int>(primaryEntity));
 
         // Prepare matrices
@@ -232,10 +231,7 @@ namespace nexo::editor {
         }
 
         // Get snap settings if applicable
-        float* snap = getSnapSettingsForOperation(s_lastOperation);
-
-        // Track ImGuizmo usage state
-        bool isUsingGizmo = ImGuizmo::IsUsing();
+        const float* snap = getSnapSettingsForOperation(s_lastOperation);
 
         // Capture initial state when starting to use gizmo
         if (!s_wasUsingGizmo && ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGuizmo::IsOver()) {
@@ -254,14 +250,14 @@ namespace nexo::editor {
         );
 
         // Update isUsingGizmo after manipulation
-        isUsingGizmo = ImGuizmo::IsUsing();
+        bool isUsingGizmo = ImGuizmo::IsUsing();
 
         if (isUsingGizmo) {
             // Disable camera movement during manipulation
             camera.active = false;
 
             // Extract the original transform values
-            components::TransformComponent originalTransform = primaryTransform->get();
+            const components::TransformComponent originalTransform = primaryTransform->get();
 
             // Extract the new transform values from the matrix
             glm::vec3 newPos;

@@ -17,7 +17,6 @@
 #include "DocumentWindows/EntityProperties/AEntityProperty.hpp"
 #include "core/scene/SceneManager.hpp"
 
-#include <variant>
 #include <unordered_map>
 
 namespace nexo::editor {
@@ -63,7 +62,7 @@ namespace nexo::editor {
 			 * @param visible The desired visibility state (true for visible, false for hidden).
 			 */
 			template<typename T>
-			void setSubInspectorVisibility(bool visible)
+			void setSubInspectorVisibility(const bool visible)
 			{
 			    m_subInspectorVisibility[std::type_index(typeid(T))] = visible;
 			}
@@ -155,7 +154,7 @@ namespace nexo::editor {
 			*
 			* @param sceneId The identifier of the scene whose properties are to be displayed.
 			*/
-			void showSceneProperties(scene::SceneId sceneId) const;
+			static void showSceneProperties(scene::SceneId sceneId);
 
 			/**
 			* @brief Renders the UI for the properties of an entity's components.

@@ -15,20 +15,12 @@
 #include "Widgets.hpp"
 
 #include <imgui.h>
-#include <imgui_internal.h>
-#include <Logger.hpp>
-#include "Path.hpp"
 
-#include "Definitions.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
 #include "Texture.hpp"
 #include "components/Camera.hpp"
-#include "CameraFactory.hpp"
-#include "components/Render3D.hpp"
-#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "context/Selector.hpp"
 #include "ImNexo.hpp"
 
 namespace ImNexo {
@@ -99,12 +91,11 @@ namespace ImNexo {
 	{
 	    constexpr float buttonSpacing = 5.0f;
         constexpr float padding = 10.0f;
-        const auto &app = nexo::getApp();
 
         // Calculate menu dimensions
         const float menuWidth = buttonSize.x + padding;  // Add padding
-        const float menuHeight = buttonProps.size() * buttonSize.y +
-                                (buttonProps.size() - 1) * buttonSpacing + 2 * buttonSpacing;
+        const float menuHeight =static_cast<float>(buttonProps.size()) * buttonSize.y +
+                                (static_cast<float>(buttonProps.size()) - 1.0f) * buttonSpacing + 2 * buttonSpacing;
 
         // Calculate menu position based on orientation
         ImVec2 menuPos;

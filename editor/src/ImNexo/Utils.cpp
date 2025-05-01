@@ -27,7 +27,7 @@ namespace ImNexo::utils {
         return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
     }
 
-    void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, float offset, std::vector<ImVec2>& outPoly)
+    void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, const float offset, std::vector<ImVec2>& outPoly)
     {
         outPoly.clear();
         const auto count = poly.size();
@@ -89,10 +89,10 @@ namespace ImNexo::utils {
     */
     ImVec2 calculateCenteredTextPosition(const std::string& text, const ImVec2& p_min, const ImVec2& p_max)
     {
-        ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
-        return ImVec2(
+        const ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+        return {
             p_min.x + (p_max.x - p_min.x - textSize.x) * 0.5f,
             p_min.y + (p_max.y - p_min.y - textSize.y) * 0.5f
-        );
+        };
     }
 }

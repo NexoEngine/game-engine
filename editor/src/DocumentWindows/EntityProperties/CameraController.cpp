@@ -30,7 +30,7 @@ namespace nexo::editor {
         if (ImNexo::Header("##ControllerNode", "Camera Controller"))
         {
             ImGui::Spacing();
-            auto controllerComponentCopy = controllerComponent;
+            const auto controllerComponentCopy = controllerComponent;
             ImNexo::resetItemStates();
             ImNexo::CameraController(controllerComponent);
             if (ImNexo::isItemActivated()) {

@@ -18,11 +18,8 @@
 #include <string>
 
 #include "Components.hpp"
-#include "components/Camera.hpp"
 #include "components/Render3D.hpp"
-#include "components/Transform.hpp"
 #include "renderer/Texture.hpp"
-#include "core/scene/SceneManager.hpp"
 
 namespace ImNexo {
 
@@ -59,7 +56,7 @@ namespace ImNexo {
         std::string icon;           ///< Icon to display on the button (typically FontAwesome)
         std::function<void()> onClick = nullptr;      ///< Callback executed when button is left-clicked
         std::function<void()> onRightClick = nullptr; ///< Callback executed when button is right-clicked
-        std::string tooltip = "";   ///< Tooltip text displayed when hovering
+        std::string tooltip;   ///< Tooltip text displayed when hovering
 
         /**
         * @brief Gradient colors for button styling
@@ -95,9 +92,9 @@ namespace ImNexo {
      */
 	void ButtonDropDown(
 		const ImVec2& buttonPos,
-		const ImVec2 buttonSize,
+		ImVec2 buttonSize,
 		const std::vector<ButtonProps> &buttonProps,
 		bool &closure,
-		const DropdownOrientation orientation = DropdownOrientation::DOWN
+		DropdownOrientation orientation = DropdownOrientation::DOWN
 	);
 }

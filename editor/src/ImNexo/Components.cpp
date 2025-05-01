@@ -21,8 +21,6 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <numbers>
-#include <limits>
 
 namespace ImNexo {
 
@@ -109,7 +107,7 @@ namespace ImNexo {
         const ImTextureID textureId = texture ? static_cast<ImTextureID>(static_cast<intptr_t>(texture->getId())) : 0;
         const std::string textureButton = std::string("##TextureButton") + label;
 
-        if (ImNexo::ImageButton(textureButton.c_str(), textureId, previewSize)) {
+        if (ImageButton(textureButton.c_str(), textureId, previewSize)) {
             const char* filePath = tinyfd_openFileDialog(
                 "Open Texture",
                 "",
@@ -136,7 +134,7 @@ namespace ImNexo {
         const std::string& icon,
         const ImVec2& size,
         const std::vector<GradientStop>& gradientStops,
-        float gradientAngle,
+        const float gradientAngle,
         const ImU32 borderColor,
         const ImU32 borderColorHovered,
         const ImU32 borderColorActive,
@@ -146,7 +144,7 @@ namespace ImNexo {
         IdGuard idGuard(uniqueId);
 
         // Create invisible button for interaction
-        bool clicked = ImGui::InvisibleButton(("##" + uniqueId).c_str(), size);
+        const bool clicked = ImGui::InvisibleButton(("##" + uniqueId).c_str(), size);
 
         // Get button rectangle coordinates
         auto [p_min, p_max] = utils::getItemRect();
@@ -224,7 +222,7 @@ namespace ImNexo {
         }
 
         // Add a "None" option if we want to allow null selection
-        std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
+        const std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
 
         // Draw the combo box
         ImGui::SetNextItemWidth(-FLT_MIN); // Use all available width
@@ -279,7 +277,7 @@ namespace ImNexo {
 
             // Draw the drag float control
             const auto &slider = channels.sliders[i];
-            bool changed = DragFloat(
+            const bool changed = DragFloat(
                 slider.label,
                 slider.value,
                 slider.speed,
@@ -319,8 +317,8 @@ namespace ImNexo {
         RowLabel(chanLabel);
 
         // Create channels structure for a single value
-        std::string labelId = "##X" + std::string(uniqueLabel);
-        std::string badgeId = badgeLabel.empty() ? "" : badgeLabel + "##" + uniqueLabel;
+        const std::string labelId = "##X" + std::string(uniqueLabel);
+        const std::string badgeId = badgeLabel.empty() ? "" : badgeLabel + "##" + uniqueLabel;
 
         // Setup single badge and control
         Channels channels;
@@ -376,7 +374,7 @@ namespace ImNexo {
         }
 
         // Base ID for controls
-        std::string baseId = uniqueLabel;
+        const std::string baseId = uniqueLabel;
 
         // Set up channels structure
         Channels channels;
@@ -490,7 +488,7 @@ namespace ImNexo {
 
         // Get button bounds and draw the arrow
         auto [p_min, p_max] = utils::getItemRect();
-        ImVec2 center((p_min.x + p_max.x) * 0.5f, (p_min.y + p_max.y) * 0.5f);
+        const ImVec2 center((p_min.x + p_max.x) * 0.5f, (p_min.y + p_max.y) * 0.5f);
 
         constexpr float arrowSize = 5.0f;
         const ImU32 arrowColor = ImGui::GetColorU32(ImGuiCol_TextTab);
