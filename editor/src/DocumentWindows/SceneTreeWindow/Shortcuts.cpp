@@ -155,7 +155,8 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::deleteSelectedCallback() {
+    void SceneTreeWindow::deleteSelectedCallback()
+    {
         auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
@@ -187,7 +188,8 @@ namespace nexo::editor {
         m_forceExpandAll = true;
     }
 
-    void SceneTreeWindow::collapseAllCallback() {
+    void SceneTreeWindow::collapseAllCallback()
+    {
         m_forceCollapseAll = true;
         m_forceExpandAll = false;
     }
@@ -197,7 +199,8 @@ namespace nexo::editor {
         //TODO: Implement rename callback
     }
 
-    void SceneTreeWindow::duplicateSelectedCallback() {
+    void SceneTreeWindow::duplicateSelectedCallback()
+    {
         auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
@@ -236,79 +239,8 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::focusOnSelectedCallback() {
-        auto& selector = Selector::get();
-        const auto& selectedEntities = selector.getSelectedEntities();
-
-        if (selectedEntities.empty()) return;
-
-        // Implementation would focus the editor camera on the selected entity/entities
-        // This depends on your camera system
-        // For now, just log it
-        LOG(NEXO_INFO, "Focusing on {} selected entities", selectedEntities.size());
-    }
-
-    void SceneTreeWindow::deselectAllCallback() {
-        auto& selector = Selector::get();
-        selector.clearSelection();
-        m_windowState = m_defaultState;
-    }
-
-    void SceneTreeWindow::groupEntitiesCallback() {
-        auto& selector = Selector::get();
-        const auto& selectedEntities = selector.getSelectedEntities();
-
-        if (selectedEntities.size() <= 1) return; // Need at least 2 entities to group
-
-        // Implementation would create a parent entity and reparent all selected entities to it
-        // This depends on your scene hierarchy system
-        // For now, just log it
-        LOG(NEXO_INFO, "Grouping {} entities", selectedEntities.size());
-    }
-
-    void SceneTreeWindow::ungroupEntitiesCallback() {
-        auto& selector = Selector::get();
-        const auto& selectedEntities = selector.getSelectedEntities();
-
-        if (selectedEntities.empty()) return;
-
-        // Implementation would unparent all children of the selected groups
-        // This depends on your scene hierarchy system
-        // For now, just log it
-        LOG(NEXO_INFO, "Ungrouping {} entities", selectedEntities.size());
-    }
-
-    void SceneTreeWindow::invertSelectionCallback() {
-        auto& selector = Selector::get();
-        int currentSceneId = selector.getSelectedScene();
-
-        if (currentSceneId == -1) return;
-
-        auto& app = nexo::getApp();
-        auto& scene = app.getSceneManager().getScene(currentSceneId);
-
-        // Get all entities in the scene
-        const std::set<ecs::Entity> &allEntities = scene.getEntities();
-
-        // Get currently selected entities
-        const auto& selectedEntities = selector.getSelectedEntities();
-        std::unordered_set<ecs::Entity> selectedSet(selectedEntities.begin(), selectedEntities.end());
-
-        // Clear current selection
-        selector.clearSelection();
-
-        // Select entities that weren't selected before
-        for (const auto entity : allEntities) {
-            if (selectedSet.find(entity) == selectedSet.end()) {
-                const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
-                if (uuidComponent) {
-                    selector.addToSelection(uuidComponent->get().uuid, entity);
-                }
-            }
-        }
-    }
-
-    void SceneTreeWindow::hideSelectedCallback() {
+    void SceneTreeWindow::hideSelectedCallback()
+    {
         auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
@@ -334,33 +266,8 @@ namespace nexo::editor {
         actionManager.recordAction(std::move(actionGroup));
     }
 
-    void SceneTreeWindow::showSelectedCallback() {
-        auto& selector = Selector::get();
-        const auto& selectedEntities = selector.getSelectedEntities();
-
-        if (selectedEntities.empty()) return;
-
-        auto& app = nexo::getApp();
-        auto& actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
-
-        for (const auto entity : selectedEntities) {
-            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
-                auto& renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
-                if (!renderComponent.isRendered) {
-                    auto beforeState = renderComponent.save();
-                    renderComponent.isRendered = true;
-                    auto afterState = renderComponent.save();
-                    actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
-                        entity, beforeState, afterState));
-                }
-            }
-        }
-
-        actionManager.recordAction(std::move(actionGroup));
-    }
-
-    void SceneTreeWindow::showAllCallback() {
+    void SceneTreeWindow::showAllCallback()
+    {
         auto& selector = Selector::get();
         int currentSceneId = selector.getSelectedScene();
 
