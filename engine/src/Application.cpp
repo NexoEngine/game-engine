@@ -173,6 +173,9 @@ namespace nexo {
 
         m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
 
+        m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
+        m_physicsSystem->init();
+
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
         auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
@@ -231,7 +234,6 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
-        physicsSystem.Init(*m_coordinator);
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
@@ -266,7 +268,7 @@ namespace nexo {
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
-        	    physicsSystem.Update(timestep, *m_coordinator);
+        	    m_physicsSystem->update(timestep);
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
