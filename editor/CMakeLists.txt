@@ -26,6 +26,7 @@ set(SRCS
         editor/src/ImNexo/Panels.cpp
         editor/src/ImNexo/Utils.cpp
         editor/src/ImNexo/Widgets.cpp
+        editor/src/ImNexo/ImNexo.cpp
         editor/src/utils/ScenePreview.cpp
         editor/src/utils/Config.cpp
         editor/src/utils/String.cpp
