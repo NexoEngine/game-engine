@@ -19,7 +19,7 @@
 
 namespace nexo::editor {
 
-    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId) const
+    void InspectorWindow::showSceneProperties(const scene::SceneId sceneId)
     {
         auto &app = getApp();
         auto &selector = Selector::get();
@@ -58,7 +58,7 @@ namespace nexo::editor {
 
     void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
-        const std::vector<std::type_index> componentsType = nexo::Application::getAllEntityComponentTypes(entity);
+        const std::vector<std::type_index> componentsType = Application::getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
         {
             if (m_entityProperties.contains(type))

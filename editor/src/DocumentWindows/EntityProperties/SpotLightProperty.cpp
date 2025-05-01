@@ -18,7 +18,6 @@
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "context/actions/EntityActions.hpp"
-#include "math/Light.hpp"
 #include "ImNexo/Widgets.hpp"
 #include "context/ActionManager.hpp"
 
@@ -44,7 +43,7 @@ namespace nexo::editor {
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterStateSpot = spotComponent.save();
                 auto afterStateTransform = transformComponent.save();
-                auto actionGroup = ActionManager::get().createActionGroup();
+                auto actionGroup = ActionManager::createActionGroup();
                 auto spotAction = std::make_unique<ComponentChangeAction<components::SpotLightComponent>>(entity, beforeStateSpot, afterStateSpot);
                 auto transformAction = std::make_unique<ComponentChangeAction<components::TransformComponent>>(entity, beforeStateTransform, afterStateTransform);
                 actionGroup->addAction(std::move(spotAction));

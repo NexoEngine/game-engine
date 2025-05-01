@@ -27,7 +27,7 @@ namespace nexo::editor {
             // Record entity creation
             void recordEntityCreation(ecs::Entity entityId);
             // Record entity deletion (call before actually deleting)
-            std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
+            static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
 
             // For component changes using memento pattern
             template<typename MementoComponent>
@@ -35,8 +35,7 @@ namespace nexo::editor {
                                     const typename MementoComponent::Memento& beforeState,
                                     const typename MementoComponent::Memento& afterState)
             {
-                auto& app = nexo::getApp();
-                auto& component = app.m_coordinator->getComponent<MementoComponent>(entityId);
+                auto& component = Application::m_coordinator->getComponent<MementoComponent>(entityId);
 
                 auto action = std::make_unique<ComponentChangeAction<MementoComponent>>(entityId, beforeState, afterState);
 
@@ -44,15 +43,15 @@ namespace nexo::editor {
             }
 
             // Action group for multiple operations
-            std::unique_ptr<ActionGroup> createActionGroup();
+            static std::unique_ptr<ActionGroup> createActionGroup();
 
             // Basic undo/redo operations
             void undo();
             void redo();
-            bool canUndo() const;
-            bool canRedo() const;
+            [[nodiscard]] bool canUndo() const;
+            [[nodiscard]] bool canRedo() const;
             void clearHistory(unsigned int count = 0);
-            unsigned int getUndoStackSize() const;
+            [[nodiscard]] unsigned int getUndoStackSize() const;
 
             static ActionManager& get() {
                 static ActionManager instance;

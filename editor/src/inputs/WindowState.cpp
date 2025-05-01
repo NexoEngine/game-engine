@@ -15,6 +15,7 @@
 #include "WindowState.hpp"
 
 namespace nexo::editor {
+
     unsigned int WindowState::getId() const
     {
         return m_id;

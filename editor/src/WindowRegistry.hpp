@@ -38,7 +38,8 @@ namespace nexo::editor {
      * @return std::shared_ptr<T> The same pointer cast to the derived type
      */
 	template<typename T>
-	std::shared_ptr<T> castWindow(const std::shared_ptr<IDocumentWindow>& ptr) {
+	std::shared_ptr<T> castWindow(const std::shared_ptr<IDocumentWindow>& ptr)
+	{
 	    return std::static_pointer_cast<T>(ptr);
 	}
 
@@ -53,7 +54,8 @@ namespace nexo::editor {
      * @return std::shared_ptr<T> The same pointer cast to the derived type
      */
 	template<typename T>
-	std::shared_ptr<T> castWindow(std::shared_ptr<IDocumentWindow>& ptr) {
+	std::shared_ptr<T> castWindow(std::shared_ptr<IDocumentWindow>& ptr)
+	{
 	    return std::static_pointer_cast<T>(ptr);
 	}
 

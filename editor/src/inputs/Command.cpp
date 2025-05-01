@@ -19,19 +19,18 @@
 #include <unordered_map>
 #include <cctype>
 #include <iostream>
-
-#include "String.hpp"
+#include <utility>
 
 namespace nexo::editor {
     Command::Command(
-        const std::string &description,
+        std::string description,
         const std::string &key,
         const std::function<void()> &pressedCallback,
         const std::function<void()> &releaseCallback,
         const std::function<void()> &repeatCallback,
         bool isModifier,
-        const std::vector<Command> &children)
-    : m_description(description), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(children)
+        const std::vector<Command> &childrens)
+    : m_description(std::move(description)), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(childrens)
     {
         // Create a mapping of key names to ImGuiKey values
         static const std::unordered_map<std::string, ImGuiKey> keyMap = {
@@ -114,8 +113,8 @@ namespace nexo::editor {
             segment.erase(segment.find_last_not_of(" \t") + 1);
 
             // Convert to lowercase for case-insensitive comparison
-            std::transform(segment.begin(), segment.end(), segment.begin(),
-                          [](unsigned char c){ return std::tolower(c); });
+            std::ranges::transform(segment, segment.begin(),
+                                   [](const unsigned char c){ return std::tolower(c); });
 
             // Look up in the map and set the bit in the signature
             auto it = keyMap.find(segment);

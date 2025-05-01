@@ -25,7 +25,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
     {
-        if (uuid != "" && uiName != "" &&ImGui::MenuItem("Delete Scene")) {
+        if (!uuid.empty() && !uiName.empty() &&ImGui::MenuItem("Delete Scene")) {
             auto &app = Application::getInstance();
             auto &selector = Selector::get();
             selector.clearSelection();
@@ -87,7 +87,7 @@ namespace nexo::editor {
                     const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
                     for (const auto &scene : editorScenes) {
                         if (scene->getSceneId() == sceneId) {
-                            ImNexo::CameraInspector(sceneId, scene->getContentSize());
+                            ImNexo::CameraInspector(sceneId);
                             break;
                         }
                     }
@@ -154,7 +154,7 @@ namespace nexo::editor {
 
         // Check if this object is selected
         auto const &selector = Selector::get();
-        bool isSelected = selector.isEntitySelected(object.data.entity);
+        const bool isSelected = selector.isEntitySelected(static_cast<int>(object.data.entity));
 
         if (isSelected)
             baseFlags |= ImGuiTreeNodeFlags_Selected;
@@ -222,7 +222,7 @@ namespace nexo::editor {
             m_focused = ImGui::IsWindowFocused();
             m_hovered = ImGui::IsWindowHovered();
 
-            auto &selector = Selector::get();
+            const auto &selector = Selector::get();
 
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(

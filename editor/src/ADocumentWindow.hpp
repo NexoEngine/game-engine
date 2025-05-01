@@ -14,12 +14,12 @@
 
 #pragma once
 
+#include <utility>
+
 #include "IDocumentWindow.hpp"
 #include "Nexo.hpp"
 #include "WindowRegistry.hpp"
 #include "inputs/WindowState.hpp"
-
-#include <imgui_internal.h>
 
 namespace nexo::editor {
 
@@ -39,7 +39,7 @@ namespace nexo::editor {
              * Initializes the document window by storing a reference to the provided WindowRegistry and assigning a unique window
              * identifier. This setup is essential for integrating the window with the docking management system.
              */
-            explicit ADocumentWindow(const std::string &windowName, WindowRegistry &windowRegistry) : m_windowName(windowName), m_windowRegistry(windowRegistry)
+            explicit ADocumentWindow(std::string windowName, WindowRegistry &windowRegistry) : m_windowName(std::move(windowName)), m_windowRegistry(windowRegistry)
             {
                 windowId = nextWindowId++;
             };
@@ -73,7 +73,7 @@ namespace nexo::editor {
             bool m_opened = true;
             bool m_focused = false;
             bool m_hovered = false; // TODO: make these update without user intervention
-            bool m_wasVisibleLastFrame;
+            bool m_wasVisibleLastFrame = false;
             bool m_isVisibleInDock = true;
 
             ImVec2 m_windowPos;

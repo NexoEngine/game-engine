@@ -23,11 +23,10 @@ namespace nexo::editor {
     {
         auto &selector = Selector::get();
         const auto &selectedEntities = selector.getSelectedEntities();
-        auto &app = nexo::getApp();
         auto& actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
         for (const auto entity : selectedEntities) {
-            auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            auto &renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
             auto beforeState = renderComponent.save();
             renderComponent.isRendered = !renderComponent.isRendered;
             auto afterState = renderComponent.save();
@@ -49,23 +48,23 @@ namespace nexo::editor {
         for (const auto entity : scene.getEntities()) {
             if (entity == m_editorCamera) continue; // Skip editor camera
 
-            const auto uuidComponent = app.m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+            const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
             if (uuidComponent)
-                selector.addToSelection(uuidComponent->get().uuid, entity);
+                selector.addToSelection(uuidComponent->get().uuid, static_cast<int>(entity));
         }
         m_windowState = m_gizmoState;
     }
 
-    void EditorScene::hideAllButSelectionCallback()
+    void EditorScene::hideAllButSelectionCallback() const
     {
         auto &app = getApp();
         const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
-        auto &selector = Selector::get();
+        const auto &selector = Selector::get();
         auto &actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
         for (const auto entity : entities) {
-            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity) && !selector.isEntitySelected(entity)) {
-                auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity) && !selector.isEntitySelected(static_cast<int>(entity))) {
+                auto &renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (renderComponent.isRendered) {
                     auto beforeState = renderComponent.save();
                     renderComponent.isRendered = false;
@@ -85,14 +84,14 @@ namespace nexo::editor {
         auto &app = nexo::getApp();
         auto& actionManager = ActionManager::get();
         if (selectedEntities.size() > 1) {
-            auto actionGroup = actionManager.createActionGroup();
+            auto actionGroup = ActionManager::createActionGroup();
             for (const auto entity : selectedEntities) {
-                actionGroup->addAction(actionManager.prepareEntityDeletion(entity));
+                actionGroup->addAction(ActionManager::prepareEntityDeletion(entity));
                 app.deleteEntity(entity);
             }
             actionManager.recordAction(std::move(actionGroup));
         } else {
-            auto deleteAction = actionManager.prepareEntityDeletion(selectedEntities[0]);
+            auto deleteAction = ActionManager::prepareEntityDeletion(selectedEntities[0]);
             app.deleteEntity(selectedEntities[0]);
             actionManager.recordAction(std::move(deleteAction));
         }
@@ -100,15 +99,15 @@ namespace nexo::editor {
         this->m_windowState = m_globalState;
     }
 
-    void EditorScene::unhideAllCallback()
+    void EditorScene::unhideAllCallback() const
     {
         auto &app = getApp();
         const auto &entities = app.getSceneManager().getScene(m_sceneId).getEntities();
         auto &actionManager = ActionManager::get();
-        auto actionGroup = actionManager.createActionGroup();
+        auto actionGroup = ActionManager::createActionGroup();
         for (const auto entity : entities) {
-            if (app.m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
-                auto &renderComponent = app.m_coordinator->getComponent<components::RenderComponent>(entity);
+            if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
+                auto &renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (!renderComponent.isRendered) {
                     auto beforeState = renderComponent.save();
                     renderComponent.isRendered = true;

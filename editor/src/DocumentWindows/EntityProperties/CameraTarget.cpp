@@ -29,7 +29,7 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##TargetNode", "Camera Target"))
         {
-            auto targetComponentCopy = targetComponent;
+            const auto targetComponentCopy = targetComponent;
             ImGui::Spacing();
             ImNexo::resetItemStates();
             ImNexo::CameraTarget(targetComponent);
