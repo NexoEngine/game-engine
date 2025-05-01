@@ -19,11 +19,13 @@
 #include "Application.hpp"
 #include "Framebuffer.hpp"
 #include "components/Light.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
+#include "context/ActionManager.hpp"
 #include "ImNexo/Panels.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Components.hpp"
@@ -153,8 +155,13 @@ namespace nexo::editor {
             ImGui::Text("Hide");
             ImGui::SameLine(0, 12);
             bool hidden = !renderComponent.isRendered;
-            ImGui::Checkbox("##HideCheckBox", &hidden);
-            renderComponent.isRendered = !hidden;
+            if (ImGui::Checkbox("##HideCheckBox", &hidden)) {
+                auto beforeState = renderComponent.save();
+                renderComponent.isRendered = !hidden;
+                auto afterState = renderComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::RenderComponent>>(entity, beforeState, afterState);
+                ActionManager::get().recordAction(std::move(action));
+            }
 
             ImNexo::ToggleButtonWithSeparator("Material", &sectionOpen);
             static std::shared_ptr<renderer::NxFramebuffer> framebuffer = nullptr;
