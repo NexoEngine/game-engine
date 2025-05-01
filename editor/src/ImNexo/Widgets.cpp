@@ -29,6 +29,7 @@
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
+#include "ImNexo.hpp"
 
 namespace ImNexo {
 
@@ -84,6 +85,12 @@ namespace ImNexo {
             ImGui::Spacing();
             colorModified = ImGui::ColorPicker4(colorPickerInline.c_str(),
                                 reinterpret_cast<float*>(selectedEntityColor), *colorPickerMode);
+            if (ImGui::IsItemActive())
+                itemIsActive();
+            if (ImGui::IsItemActivated())
+                itemIsActivated();
+            if (ImGui::IsItemDeactivated())
+                itemIsDeactivated();
         }
         return colorModified;
 	}
