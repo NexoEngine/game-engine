@@ -17,6 +17,10 @@
 #include "LightFactory.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Panels.hpp"
+#include "context/ActionManager.hpp"
+#include "context/actions/EntityActions.hpp"
+
+#include <memory>
 
 namespace nexo::editor {
 
@@ -37,13 +41,19 @@ namespace nexo::editor {
         {
             if (multipleSelected) {
                 // Delete all selected entities
+                auto actionGroup = ActionManager::get().createActionGroup();
                 for (const auto& entityId : selectedEntities) {
+                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
+                ActionManager::get().recordAction(std::move(actionGroup));
                 selector.clearSelection();
             } else {
                 // Delete just this entity
                 selector.clearSelection();
+                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }
         }
@@ -59,20 +69,26 @@ namespace nexo::editor {
         bool multipleSelected = selectedEntities.size() > 1;
 
         std::string deleteMenuText = multipleSelected ?
-            "Delete Selected Cameras (" + std::to_string(selectedEntities.size()) + ")" :
+            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
             "Delete Camera";
 
         if (ImGui::MenuItem(deleteMenuText.c_str()))
         {
             if (multipleSelected) {
-                // Delete all selected cameras
+                // Delete all selected entities
+                auto actionGroup = ActionManager::get().createActionGroup();
                 for (const auto& entityId : selectedEntities) {
+                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
+                ActionManager::get().recordAction(std::move(actionGroup));
                 selector.clearSelection();
             } else {
-                // Delete just this camera
+                // Delete just this entity
                 selector.clearSelection();
+                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }
         }
@@ -103,20 +119,26 @@ namespace nexo::editor {
         bool multipleSelected = selectedEntities.size() > 1;
 
         std::string menuText = multipleSelected ?
-            "Delete Selected Lights (" + std::to_string(selectedEntities.size()) + ")" :
+            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
             "Delete Light";
 
         if (ImGui::MenuItem(menuText.c_str()))
         {
             if (multipleSelected) {
-                // Delete all selected lights
+                // Delete all selected entities
+                auto actionGroup = ActionManager::get().createActionGroup();
                 for (const auto& entityId : selectedEntities) {
+                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
+                ActionManager::get().recordAction(std::move(actionGroup));
                 selector.clearSelection();
             } else {
-                // Delete just this light
+                // Delete just this entity
                 selector.clearSelection();
+                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }
         }
