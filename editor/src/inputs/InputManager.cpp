@@ -166,7 +166,7 @@ namespace nexo::editor {
                     }
 
                     // Also check deeper in the hierarchy
-                    auto remainingBits = repeatSignature;
+                    const auto &remainingBits = repeatSignature;
                     processRepeatCommands(command.getChildren(), remainingBits, currentlyHeldKeys);
                 }
                 // Standard partial match handling

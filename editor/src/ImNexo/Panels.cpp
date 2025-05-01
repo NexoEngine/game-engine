@@ -406,7 +406,7 @@ namespace ImNexo {
             }
             nameIsEmpty = false;
             auto &selector = nexo::editor::Selector::get();
-            auto &uuid = nexo::Application::m_coordinator->getComponent<nexo::components::UuidComponent>(camera);
+            const auto &uuid = nexo::Application::m_coordinator->getComponent<nexo::components::UuidComponent>(camera);
             auto &cameraComponent = nexo::Application::m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
             cameraComponent.active = false;
             selector.setUiHandle(uuid.uuid, std::string(ICON_FA_CAMERA "  ") + cameraName);

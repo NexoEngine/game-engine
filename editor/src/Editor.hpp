@@ -157,11 +157,11 @@ namespace nexo::editor {
              * sets a flag to signal that the editor should quit.
              */
             void drawMenuBar();
-            void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands);
-            void drawBackground();
+            void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const;
+            void drawBackground() const;
 
-            void handleGlobalCommands();
-            std::vector<CommandInfo> handleFocusedWindowCommands();
+            void handleGlobalCommands() const;
+    		std::vector<CommandInfo> handleFocusedWindowCommands();
 
             bool m_quit = false;
             bool m_showDemoWindow = false;

@@ -93,7 +93,7 @@ namespace nexo::editor {
                         this->m_popupManager.openPopup("Snap settings popup", ImVec2(400, 140));
                     },
                 .tooltip = "Toggle Translate Snap",
-                .buttonGradient = (m_snapTranslateOn) ? m_selectedGradient : m_buttonGradient
+                .buttonGradient = m_snapTranslateOn ? m_selectedGradient : m_buttonGradient
             },
             {
                 .uniqueId = "toggle_rotate_snap",
@@ -107,7 +107,7 @@ namespace nexo::editor {
                         this->m_popupManager.openPopup("Snap settings popup", ImVec2(400, 140));
                     },
                 .tooltip = "Toggle Rotate Snap",
-                .buttonGradient = (m_snapRotateOn) ? m_selectedGradient : m_buttonGradient
+                .buttonGradient = m_snapRotateOn ? m_selectedGradient : m_buttonGradient
             }
             // Snap on scale is kinda strange, the IsOver is not able to detect it, so for now we disable it
             // {
@@ -161,17 +161,17 @@ namespace nexo::editor {
             ImGui::Spacing();
             ImGui::Spacing();
 
-            const float buttonWidth = 120.0f;
+            constexpr float buttonWidth = 120.0f;
             const float windowWidth = ImGui::GetWindowSize().x;
             ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                m_popupManager.closePopupInContext();
+                PopupManager::closePopupInContext();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
@@ -205,17 +205,17 @@ namespace nexo::editor {
             ImGui::Spacing();
             ImGui::Spacing();
 
-            const float buttonWidth = 120.0f;
+            constexpr float buttonWidth = 120.0f;
             const float windowWidth = ImGui::GetWindowSize().x;
             ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                m_popupManager.closePopupInContext();
+                PopupManager::closePopupInContext();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
@@ -257,7 +257,6 @@ namespace nexo::editor {
 
     void EditorScene::renderToolbar()
     {
-        auto &app = getApp();
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
         constexpr ImVec2 buttonSize{buttonWidth, buttonHeight};
@@ -351,7 +350,7 @@ namespace nexo::editor {
 
         // -------- Grid enabled button --------
         bool rightClicked = false;
-        components::RenderContext::GridParams &gridParams = app.m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
+        components::RenderContext::GridParams &gridParams = Application::m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
         if (renderToolbarButton("grid_enabled", ICON_FA_TH_LARGE, "Enable / Disable grid", gridParams.enabled ? m_selectedGradient : m_buttonGradient, &rightClicked))
         {
             gridParams.enabled = !gridParams.enabled;
