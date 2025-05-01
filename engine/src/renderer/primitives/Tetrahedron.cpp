@@ -95,7 +95,6 @@ namespace nexo::renderer
         // Compute normals for each face
         glm::vec3 norm[12];
 
-        std::cout << "PRINTING NORMALS" << std::endl;
         for (int i = 0; i < 12; i += 3)
         {
             glm::vec3 normal = glm::normalize(
@@ -106,10 +105,6 @@ namespace nexo::renderer
             norm[i] = normal;
             norm[i + 1] = normal;
             norm[i + 2] = normal;
-
-            std::cout << "Normal for face " << i / 3 << " { "
-                << norm[i].x << ", " << norm[i].y << ", " << norm[i].z
-                << " }" << std::endl;
         }
 
         std::copy(std::begin(norm), std::end(norm), normals.begin());
