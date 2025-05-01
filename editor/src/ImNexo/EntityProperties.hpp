@@ -28,6 +28,8 @@ namespace ImNexo {
 
     void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent);
 
+    void PointLight(nexo::components::PointLightComponent &pointComponent, nexo::components::TransformComponent &pointTransform);
+
     /**
      * @brief Renders and handles the transform component editor UI.
      *
