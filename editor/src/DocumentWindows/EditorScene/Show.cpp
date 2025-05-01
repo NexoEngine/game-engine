@@ -100,7 +100,7 @@ namespace nexo::editor {
         const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
 
         // Resize handling
-        if ((m_contentSize.x > 0 && m_contentSize.y > 0)
+        if (!cameraComponent.viewportLocked && (m_contentSize.x > 0 && m_contentSize.y > 0)
             && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
         {
         	cameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
