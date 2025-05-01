@@ -148,8 +148,8 @@ namespace nexo::assets {
         std::vector<ChannelInfo> active_channels;
 
         for (int i = 0; i < 4; ++i) {
-            const char ch = static_cast<char>(std::tolower(channels[i]));
-            if (not (ch == 'r' || ch == 'g' || ch == 'b' || ch == 'a')) {
+            const auto ch = static_cast<char>(std::tolower(channels[i]));
+            if (!(ch == 'r' || ch == 'g' || ch == 'b' || ch == 'a')) {
                 return renderer::NxTextureFormat::INVALID;
             }
             if (!std::isdigit(bits_str[i])) {
