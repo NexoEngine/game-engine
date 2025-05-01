@@ -169,7 +169,6 @@ namespace nexo::editor {
              * positions it at the top of the viewport, and configures spacing.
              *
              * @param buttonWidth Standard width for toolbar buttons
-             * @param buttonHeight Standard height for toolbar buttons
              */
             void initialToolbarSetup(float buttonWidth) const;
 

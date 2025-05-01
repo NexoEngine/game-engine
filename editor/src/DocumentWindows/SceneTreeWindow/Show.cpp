@@ -104,18 +104,18 @@ namespace nexo::editor {
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
 
         if (m_popupManager.showPopup("Scene selection context menu"))
         {
             m_popupManager.runPopupCallback("Scene selection context menu");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
 
         if (m_popupManager.showPopupModal("Popup camera inspector")) {
             m_popupManager.runPopupCallback("Popup camera inspector");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
@@ -129,18 +129,16 @@ namespace nexo::editor {
         ImGui::Text("Enter Scene Name:");
         ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
 
-        if (ImNexo::Button("Create")) {
-            if (handleSceneCreation(sceneNameBuffer)) {
-                memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
-                m_popupManager.closePopupInContext();
-            }
+        if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer)) {
+            memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+            PopupManager::closePopupInContext();
         }
 
         ImGui::SameLine();
         if (ImNexo::Button("Cancel"))
-            m_popupManager.closePopupInContext();
+            PopupManager::closePopupInContext();
 
-        m_popupManager.closePopup();
+        PopupManager::closePopup();
     }
 
     void SceneTreeWindow::showNode(SceneObject &object)
@@ -182,7 +180,7 @@ namespace nexo::editor {
         if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
         {
             // Only show rename option for the primary selected entity or for non-selected entities
-            if ((!isSelected || (isSelected && selector.getPrimaryEntity() == object.data.entity)) &&
+            if ((!isSelected || selector.getPrimaryEntity() == object.data.entity) &&
                 ImGui::MenuItem("Rename"))
             {
                 m_renameTarget = {object.type, object.uuid};
