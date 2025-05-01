@@ -26,6 +26,8 @@ namespace nexo::editor {
         const std::string editableName = obj.uiName.substr(ObjectTypeToIcon.at(obj.type).size());
         buffer[sizeof(buffer) - 1] = '\0';
         strncpy(buffer, editableName.c_str(), sizeof(buffer));
+        if (buffer[sizeof buffer - 1] != 0)
+            return;
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Remove border
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f); // No rounding
