@@ -316,6 +316,7 @@ namespace nexo {
                 m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
+        	    m_physicsSystem->update(timestep);
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
 				for (auto &camera : renderContext.cameras)
