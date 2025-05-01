@@ -20,6 +20,7 @@
 #include "ecs/Definitions.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 namespace nexo::components {
 
