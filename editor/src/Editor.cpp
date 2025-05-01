@@ -158,7 +158,7 @@ namespace nexo::editor {
         colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
         colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
         colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
-        colors[ImGuiCol_PopupBg]                = ImVec4(0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f);
+        colors[ImGuiCol_PopupBg]                = ImVec4(0.05f * 1.5f, 0.09f * 1.15f, 0.13f * 1.25, 1.0f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
@@ -286,7 +286,7 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            const std::string defaultSceneUniqueStrId = std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(0); // for the default scene
+            const std::string defaultSceneUniqueStrId = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0); // for the default scene
             ImGui::DockBuilderDockWindow(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
@@ -314,7 +314,7 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-    void Editor::handleGlobalCommands()
+    void Editor::handleGlobalCommands() const
     {
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
         {
@@ -371,7 +371,7 @@ namespace nexo::editor {
         return possibleCommands;
     }
 
-    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands)
+    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const
     {
         constexpr float bottomBarHeight = 38.0f;
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
@@ -472,7 +472,7 @@ namespace nexo::editor {
         ImGui::PopStyleColor(2); // Pop both text and bg colors
     }
 
-    void Editor::drawBackground()
+    void Editor::drawBackground() const
     {
         const auto viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
@@ -515,7 +515,6 @@ namespace nexo::editor {
         buildDockspace();
 
         drawMenuBar();
-        // ImGui::ShowDemoWindow();
         m_windowRegistry.render();
 
         handleGlobalCommands();

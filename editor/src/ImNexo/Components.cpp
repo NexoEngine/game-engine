@@ -332,15 +332,13 @@ namespace ImNexo {
             IM_COL32(255, 180, 180, 255)
         });
 
-        channels.sliders.push_back({
-            labelId,
-            value,
-            speed,
-            minValue,
-            maxValue,
-            0, 0, 0, 0,
-            "%.2f"
-        });
+        channels.sliders.emplace_back(labelId,
+                                      value,
+                                      speed,
+                                      minValue,
+                                      maxValue,
+                                      0, 0, 0, 0,
+                                      "%.2f");
 
         return RowDragFloat(channels);
     }
