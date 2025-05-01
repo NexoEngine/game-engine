@@ -100,7 +100,7 @@ namespace nexo::assets {
     getImportersForType(const std::type_index& typeIdx) const
     {
         if (const auto it = m_importers.find(typeIdx) ; it == m_importers.end()) {
-            static constexpr std::vector<AssetImporterBase *> empty;
+            static std::vector<AssetImporterBase *> empty;
             return empty;
         }
         return m_importers.at(typeIdx);
