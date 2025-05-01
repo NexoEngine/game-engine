@@ -17,6 +17,7 @@
 #include "Guard.hpp"
 #include "Utils.hpp"
 #include "tinyfiledialogs.h"
+#include "ImNexo.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -285,6 +286,13 @@ namespace ImNexo {
                 slider.textColor);
 
             modified |= changed;
+            if (ImGui::IsItemActive())
+                itemIsActive();
+            if (ImGui::IsItemActivated())
+                itemIsActivated();
+            if (ImGui::IsItemDeactivated()) {
+                itemIsDeactivated();
+            }
         }
 
         return modified;
