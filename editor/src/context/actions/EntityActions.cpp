@@ -19,7 +19,7 @@ namespace nexo::editor {
 
     void EntityCreationAction::redo()
     {
-        auto& coordinator = Application::getInstance().m_coordinator;
+        const auto &coordinator = Application::m_coordinator;
         m_entityId = coordinator->createEntity();
 
         for (const auto &action : m_componentRestoreActions)
@@ -28,7 +28,7 @@ namespace nexo::editor {
 
     void EntityCreationAction::undo()
     {
-        auto &coordinator = Application::getInstance().m_coordinator;
+        const auto &coordinator = Application::m_coordinator;
         std::vector<std::type_index> componentsTypeIndex = coordinator->getAllComponentTypes(m_entityId);
         for (const auto typeIndex : componentsTypeIndex) {
             if (!coordinator->supportsMementoPattern(typeIndex))
@@ -38,9 +38,9 @@ namespace nexo::editor {
         coordinator->destroyEntity(m_entityId);
     }
 
-    EntityDeletionAction::EntityDeletionAction(ecs::Entity entityId) : m_entityId(entityId)
+    EntityDeletionAction::EntityDeletionAction(const ecs::Entity entityId) : m_entityId(entityId)
     {
-        auto &coordinator = Application::getInstance().m_coordinator;
+        const auto &coordinator = Application::m_coordinator;
         std::vector<std::type_index> componentsTypeIndex = coordinator->getAllComponentTypes(entityId);
         for (const auto typeIndex : componentsTypeIndex) {
              if (!coordinator->supportsMementoPattern(typeIndex))
@@ -52,13 +52,13 @@ namespace nexo::editor {
     void EntityDeletionAction::redo()
     {
         // Simply destroy the entity
-        auto& coordinator = Application::getInstance().m_coordinator;
+        const auto& coordinator = Application::m_coordinator;
         coordinator->destroyEntity(m_entityId);
     }
 
     void EntityDeletionAction::undo()
     {
-        auto& coordinator = Application::getInstance().m_coordinator;
+        const auto& coordinator = Application::m_coordinator;
         // This can cause problem is the entity is not the same, maybe in the future we would need another method
         m_entityId = coordinator->createEntity();
         for (const auto &action : m_componentRestoreActions)

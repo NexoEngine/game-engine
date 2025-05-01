@@ -26,25 +26,25 @@ namespace nexo::editor {
     {
         if (typeIndex == typeid(components::TransformComponent))
             return std::make_unique<ComponentRestoreAction<components::TransformComponent>>(entity);
-        else if (typeIndex == typeid(components::RenderComponent))
+        if (typeIndex == typeid(components::RenderComponent))
             return std::make_unique<ComponentRestoreAction<components::RenderComponent>>(entity);
-        else if (typeIndex == typeid(components::SceneTag))
+        if (typeIndex == typeid(components::SceneTag))
             return std::make_unique<ComponentRestoreAction<components::SceneTag>>(entity);
-        else if (typeIndex == typeid(components::CameraComponent))
+        if (typeIndex == typeid(components::CameraComponent))
             return std::make_unique<ComponentRestoreAction<components::CameraComponent>>(entity);
-        else if (typeIndex == typeid(components::AmbientLightComponent))
+        if (typeIndex == typeid(components::AmbientLightComponent))
             return std::make_unique<ComponentRestoreAction<components::AmbientLightComponent>>(entity);
-        else if (typeIndex == typeid(components::DirectionalLightComponent))
+        if (typeIndex == typeid(components::DirectionalLightComponent))
             return std::make_unique<ComponentRestoreAction<components::DirectionalLightComponent>>(entity);
-        else if (typeIndex == typeid(components::PointLightComponent))
+        if (typeIndex == typeid(components::PointLightComponent))
             return std::make_unique<ComponentRestoreAction<components::PointLightComponent>>(entity);
-        else if (typeIndex == typeid(components::SpotLightComponent))
+        if (typeIndex == typeid(components::SpotLightComponent))
             return std::make_unique<ComponentRestoreAction<components::SpotLightComponent>>(entity);
-        else if (typeIndex == typeid(components::UuidComponent))
+        if (typeIndex == typeid(components::UuidComponent))
             return std::make_unique<ComponentRestoreAction<components::UuidComponent>>(entity);
-        else if (typeIndex == typeid(components::PerspectiveCameraController))
+        if (typeIndex == typeid(components::PerspectiveCameraController))
             return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraController>>(entity);
-        else if (typeIndex == typeid(components::PerspectiveCameraTarget))
+        if (typeIndex == typeid(components::PerspectiveCameraTarget))
             return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(entity);
         return nullptr;
     }

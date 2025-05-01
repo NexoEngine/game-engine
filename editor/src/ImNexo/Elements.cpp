@@ -36,10 +36,10 @@ namespace ImNexo {
         const std::string& icon,
         const ImVec2& p_min,
         const ImVec2& p_max,
-        ImU32 color,
-        float scale,
-        float verticalPosition,
-        float horizontalPosition,
+        const ImU32 color,
+        const float scale,
+        const float verticalPosition,
+        const float horizontalPosition,
         ImFont* font
     ) {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -51,11 +51,11 @@ namespace ImNexo {
 
         // Calculate icon size with scale
         ImGui::SetWindowFontScale(scale);
-        ImVec2 iconSize = ImGui::CalcTextSize(icon.c_str());
+        const ImVec2 iconSize = ImGui::CalcTextSize(icon.c_str());
         ImGui::SetWindowFontScale(1.0f);
 
         // Calculate position
-        ImVec2 iconPos = ImVec2(
+        const auto iconPos = ImVec2(
             p_min.x + (p_max.x - p_min.x - iconSize.x) * horizontalPosition,
             p_min.y + (p_max.y - p_min.y) * verticalPosition - iconSize.y * 0.5f
         );
@@ -85,33 +85,33 @@ namespace ImNexo {
         const std::string& text,
         const ImVec2& p_min,
         const ImVec2& p_max,
-        ImU32 color,
-        float verticalPosition
+        const ImU32 color,
+        const float verticalPosition
     ) {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
-        float textHeight = ImGui::GetFontSize();
-        float wrapWidth = p_max.x - p_min.x - 10.0f; // 5px padding on each side
-        float textY = p_min.y + (p_max.y - p_min.y) * verticalPosition;
+        const float textHeight = ImGui::GetFontSize();
+        const float wrapWidth = p_max.x - p_min.x - 10.0f; // 5px padding on each side
+        const float textY = p_min.y + (p_max.y - p_min.y) * verticalPosition;
 
         // Calculate text size to determine if wrapping is needed
-        ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+        const ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
 
         if (textSize.x > wrapWidth) {
             // Try to find a space to split the text
-            size_t splitPos = text.find(" ");
+            size_t splitPos = text.find(' ');
 
             if (splitPos != std::string::npos) {
                 // Split text into two lines
-                std::string line1 = text.substr(0, splitPos);
-                std::string line2 = text.substr(splitPos + 1);
+                const std::string line1 = text.substr(0, splitPos);
+                const std::string line2 = text.substr(splitPos + 1);
 
                 // Calculate positions for both lines
-                ImVec2 line1Pos = ImVec2(
+                const auto line1Pos = ImVec2(
                     p_min.x + (p_max.x - p_min.x - ImGui::CalcTextSize(line1.c_str()).x) * 0.5f,
                     textY - textHeight * 0.5f
                 );
 
-                ImVec2 line2Pos = ImVec2(
+                const auto line2Pos = ImVec2(
                     p_min.x + (p_max.x - p_min.x - ImGui::CalcTextSize(line2.c_str()).x) * 0.5f,
                     textY + textHeight * 0.5f
                 );
@@ -121,7 +121,7 @@ namespace ImNexo {
                 drawList->AddText(line2Pos, color, line2.c_str());
             } else {
                 // No space to split, draw single line (might be clipped)
-                ImVec2 textPos = ImVec2(
+                const auto textPos = ImVec2(
                     p_min.x + (p_max.x - p_min.x - textSize.x) * 0.5f,
                     textY - textHeight * 0.5f
                 );
@@ -129,7 +129,7 @@ namespace ImNexo {
             }
         } else {
             // No wrapping needed, draw centered
-            ImVec2 textPos = ImVec2(
+            const auto textPos = ImVec2(
                 p_min.x + (p_max.x - p_min.x - textSize.x) * 0.5f,
                 textY - textHeight * 0.5f
             );
@@ -201,10 +201,10 @@ namespace ImNexo {
             return;
 
         // Sort stops by position if needed
-        std::sort(stops.begin(), stops.end(),
-            [](const GradientStop& a, const GradientStop& b) {
-                return a.pos < b.pos;
-            });
+        std::ranges::sort(stops,
+                          [](const GradientStop& a, const GradientStop& b) {
+                              return a.pos < b.pos;
+                          });
 
         // Clamp positions to valid range
         float stop_max = 0.0f;
@@ -306,7 +306,7 @@ namespace ImNexo {
         }
     }
 
-    bool Header(const std::string &label, std::string_view headerText)
+    bool Header(const std::string &label, const std::string_view headerText)
     {
         StyleVarGuard styleGuard(ImGuiStyleVar_FramePadding,
             ImVec2(ImGui::GetStyle().FramePadding.x, 3.0f));
@@ -321,7 +321,7 @@ namespace ImNexo {
 
         // Get the bounding box and draw centered text
         auto [p_min, p_max] = utils::getItemRect();
-        ImVec2 textPos = utils::calculateCenteredTextPosition(headerText.data(), p_min, p_max);
+        const ImVec2 textPos = utils::calculateCenteredTextPosition(headerText.data(), p_min, p_max);
 
         ImGui::GetWindowDrawList()->AddText(
             ImGui::GetFont(),
@@ -342,7 +342,7 @@ namespace ImNexo {
     }
 
     // Helper method to draw arrow indicators
-    void Arrow(const ImVec2& center, bool isExpanded, ImU32 color, float size)
+    void Arrow(const ImVec2& center, const bool isExpanded, const ImU32 color, const float size)
     {
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -368,8 +368,8 @@ namespace ImNexo {
         const float textPadding,
         const float leftSpacing,
         const float thickness,
-        ImU32 lineColor,
-        ImU32 textColor
+        const ImU32 lineColor,
+        const ImU32 textColor
     )
     {
         const ImVec2 pos = ImGui::GetCursorScreenPos();

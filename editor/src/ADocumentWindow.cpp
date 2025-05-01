@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ADocumentWindow.hpp"
+#include <imgui_internal.h>
 
 namespace nexo::editor {
 
@@ -25,7 +26,7 @@ namespace nexo::editor {
 
     void ADocumentWindow::dockingUpdate(const std::string &windowName)
     {
-        if (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
+        if (const ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)
         {
             const bool isDocked = currentWindow->DockIsActive;
             const ImGuiID currentDockID = currentWindow->DockId;
@@ -52,13 +53,10 @@ namespace nexo::editor {
     void ADocumentWindow::visibilityUpdate()
     {
         m_focused = ImGui::IsWindowFocused();
-        bool isDocked = ImGui::IsWindowDocked();
-        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        const bool isDocked = ImGui::IsWindowDocked();
+        const ImGuiWindow* window = ImGui::GetCurrentWindow();
 
         if (isDocked) {
-            ImGuiID dock_id = ImGui::GetWindowDockID();
-            ImGuiDockNode* node = ImGui::DockBuilderGetNode(dock_id);
-
             // If the window is currently being rendered with normal content,
             // and not hidden or set to skip items, then it is visible
             m_isVisibleInDock = !window->Hidden && !window->SkipItems && window->Active;
@@ -67,13 +65,12 @@ namespace nexo::editor {
             // Not docked windows are visible if we've reached this point
             m_isVisibleInDock = true;
         }
-
         m_hovered = ImGui::IsWindowHovered();
     }
 
     void ADocumentWindow::sizeUpdate()
     {
-        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        const ImGuiWindow* window = ImGui::GetCurrentWindow();
         m_windowPos = window->Pos;
         m_windowSize = window->Size;
         m_contentSizeMin = ImGui::GetWindowContentRegionMin();

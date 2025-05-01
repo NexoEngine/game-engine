@@ -217,7 +217,7 @@ namespace nexo::editor {
 
         std::unordered_map<std::string, std::string, TransparentHasher, std::equal_to<>> m_uiHandles;
 
-        void addSelectedTag(int entity);
-        void removeSelectedTag(int entity);
+        static void addSelectedTag(int entity);
+        static void removeSelectedTag(int entity);
     };
 }

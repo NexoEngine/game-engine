@@ -16,11 +16,12 @@
 
 #include "ADocumentWindow.hpp"
 #include "Editor.hpp"
+#include <loguru.hpp>
 
 namespace nexo::editor {
 
-    std::string verbosityToString(const loguru::Verbosity level);
-    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level);
+    std::string verbosityToString(loguru::Verbosity level);
+    loguru::Verbosity nexoLevelToLoguruLevel(LogLevel level);
     const ImVec4 getVerbosityColor(loguru::Verbosity level);
     std::string generateLogFilePath();
 
@@ -112,7 +113,7 @@ namespace nexo::editor {
             char m_inputBuf[512] = {};
             std::vector<std::string> m_commands; // History of executed commands.
 
-            std::string m_logFilePath = "";
+            std::string m_logFilePath;
             bool m_exportLog = true;
 
             bool m_scrollToBottom = true;

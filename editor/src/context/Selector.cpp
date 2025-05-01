@@ -59,15 +59,15 @@ namespace nexo::editor {
         return uuids;
     }
 
-    void Selector::selectEntity(std::string_view uuid, int entity, SelectionType type)
+    void Selector::selectEntity(const std::string_view uuid, const int entity, const SelectionType type)
     {
         clearSelection();
         addToSelection(uuid, entity, type);
     }
 
-    bool Selector::addToSelection(std::string_view uuid, int entity, SelectionType type)
+    bool Selector::addToSelection(const std::string_view uuid, const int entity, const SelectionType type)
     {
-        if (m_selectedEntityIds.find(entity) != m_selectedEntityIds.end())
+        if (m_selectedEntityIds.contains(entity))
             return false;
 
         SelectionData data = {
@@ -82,19 +82,18 @@ namespace nexo::editor {
         return true;
     }
 
-    bool Selector::toggleSelection(std::string_view uuid, int entity, SelectionType type)
+    bool Selector::toggleSelection(const std::string_view uuid, const int entity, const SelectionType type)
     {
         if (isEntitySelected(entity)) {
             removeFromSelection(entity);
             return false;
-        } else {
-            addToSelection(uuid, entity, type);
-            return true;
         }
+        addToSelection(uuid, entity, type);
+        return true;
     }
 
-    bool Selector::removeFromSelection(int entity) {
-        if (m_selectedEntityIds.find(entity) == m_selectedEntityIds.end())
+    bool Selector::removeFromSelection(const int entity) {
+        if (!m_selectedEntityIds.contains(entity))
             return false;
 
         m_selectedEntityIds.erase(entity);
@@ -109,7 +108,7 @@ namespace nexo::editor {
         return true;
     }
 
-    void Selector::setSelectedScene(int scene)
+    void Selector::setSelectedScene(const int scene)
     {
         m_selectedScene = scene;
     }
@@ -128,9 +127,9 @@ namespace nexo::editor {
         m_selectedEntityIds.clear();
     }
 
-    bool Selector::isEntitySelected(int entity) const
+    bool Selector::isEntitySelected(const int entity) const
     {
-        return m_selectedEntityIds.find(entity) != m_selectedEntityIds.end();
+        return m_selectedEntityIds.contains(entity);
     }
 
     bool Selector::hasSelection() const
@@ -146,7 +145,7 @@ namespace nexo::editor {
         return m_selectedEntities.front().type;
     }
 
-    void Selector::setSelectionType(SelectionType type)
+    void Selector::setSelectionType(const SelectionType type)
     {
         m_defaultSelectionType = type;
     }
@@ -161,18 +160,18 @@ namespace nexo::editor {
         return it->second;
     }
 
-    void Selector::setUiHandle(const std::string& uuid, std::string_view handle)
+    void Selector::setUiHandle(const std::string& uuid, const std::string_view handle)
     {
         m_uiHandles[uuid] = handle;
     }
 
-    void Selector::addSelectedTag(int entity)
+    void Selector::addSelectedTag(const int entity)
     {
-        components::SelectedTag selectTag{};
+        constexpr components::SelectedTag selectTag{};
         Application::m_coordinator->addComponent(entity, selectTag);
     }
 
-    void Selector::removeSelectedTag(int entity)
+    void Selector::removeSelectedTag(const int entity)
     {
         if (Application::m_coordinator->entityHasComponent<components::SelectedTag>(entity))
             Application::m_coordinator->removeComponent<components::SelectedTag>(entity);

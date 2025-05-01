@@ -35,7 +35,7 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##TransformNode", "Transform Component"))
         {
-            auto transformComponentCopy = transformComponent;
+            const auto transformComponentCopy = transformComponent;
             ImNexo::resetItemStates();
             ImNexo::Transform(transformComponent, lastDisplayedEuler);
             if (ImNexo::isItemActivated()) {
