@@ -60,4 +60,9 @@ namespace nexo::editor {
     {
         history.clear();
     }
+
+    unsigned int ActionManager::getUndoStackSize() const
+    {
+        return history.getUndoStackSize();
+    }
 }
