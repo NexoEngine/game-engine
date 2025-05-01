@@ -65,4 +65,9 @@ namespace nexo::editor {
     {
         return history.getUndoStackSize();
     }
+
+    unsigned int ActionManager::getUndoStackSize() const
+    {
+        return history.getUndoStackSize();
+    }
 }
