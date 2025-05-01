@@ -30,6 +30,9 @@ namespace ImNexo {
 
     void PointLight(nexo::components::PointLightComponent &pointComponent, nexo::components::TransformComponent &pointTransform);
 
+    void SpotLight(nexo::components::SpotLightComponent &spotComponent, nexo::components::TransformComponent &spotTransform);
+
+
     /**
      * @brief Renders and handles the transform component editor UI.
      *
