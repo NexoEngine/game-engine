@@ -72,4 +72,9 @@ namespace nexo::editor {
         for (unsigned int i = 0; i < elementsToRemove; ++i)
             undoStack.pop_back();
     }
+
+    unsigned int ActionHistory::getUndoStackSize() const
+    {
+        return undoStack.size();
+    }
 }
