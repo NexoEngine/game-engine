@@ -121,7 +121,7 @@ namespace nexo::assets {
              */
             static AssetName formatUniqueName(const std::string& name, const AssetType type, unsigned int id)
             {
-                return AssetName(std::format("{}_{}{}", name, getAssetTypeName(type), id));
+                return {std::format("{}_{}{}", name, getAssetTypeName(type), id)};
             }
 
         private:

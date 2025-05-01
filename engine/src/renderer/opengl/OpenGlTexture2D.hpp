@@ -135,7 +135,7 @@ namespace nexo::renderer {
             *
             * @return The maximum texture size in pixels.
             */
-            unsigned int getMaxTextureSize() const override;
+            [[nodiscard]] unsigned int getMaxTextureSize() const override;
 
             [[nodiscard]] unsigned int getId() const override {return m_id;};
 
@@ -223,10 +223,10 @@ namespace nexo::renderer {
             void createOpenGLTexture(const uint8_t* buffer, unsigned int width, unsigned int height, GLint internalFormat, GLenum dataFormat);
 
             std::string m_path;
-            unsigned int m_width;
-            unsigned int m_height;
+            unsigned int m_width{};
+            unsigned int m_height{};
             unsigned int m_id{};
-            GLint m_internalFormat;
-            GLenum m_dataFormat;
+            GLint m_internalFormat{};
+            GLenum m_dataFormat{};
     };
 }

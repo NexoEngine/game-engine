@@ -45,7 +45,7 @@ namespace nexo::renderer {
             * - `NxFileNotFoundException` if the file cannot be found.
             * - `NxShaderCreationFailed` if shader compilation fails.
             */
-            NxOpenGlShader(const std::string &path);
+            explicit NxOpenGlShader(const std::string &path);
             NxOpenGlShader(std::string name, const std::string_view &vertexSource, const std::string_view &fragmentSource);
             ~NxOpenGlShader() override;
 
@@ -57,7 +57,7 @@ namespace nexo::renderer {
             void bind() const override;
             void unbind() const override;
 
-            bool setUniformFloat(const std::string &name, const float value) const override;
+            bool setUniformFloat(const std::string &name, float value) const override;
             bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const override;
             bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
             bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
@@ -66,12 +66,12 @@ namespace nexo::renderer {
             bool setUniformInt(const std::string &name, int value) const override;
             bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
 
-            bool setUniformFloat(const NxShaderUniforms uniform, const float value) const override;
-            bool setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const override;
-            bool setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const override;
-            bool setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const override;
-            bool setUniformInt(const NxShaderUniforms uniform, int value) const override;
-            bool setUniformIntArray(const NxShaderUniforms uniform, const int *values, unsigned int count) const override;
+            bool setUniformFloat(NxShaderUniforms uniform, float value) const override;
+            bool setUniformFloat3(NxShaderUniforms uniform, const glm::vec3 &values) const override;
+            bool setUniformFloat4(NxShaderUniforms uniform, const glm::vec4 &values) const override;
+            bool setUniformMatrix(NxShaderUniforms uniform, const glm::mat4 &matrix) const override;
+            bool setUniformInt(NxShaderUniforms uniform, int value) const override;
+            bool setUniformIntArray(NxShaderUniforms uniform, const int *values, unsigned int count) const override;
 
             void bindStorageBuffer(unsigned int index) const override;
             void bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const override;

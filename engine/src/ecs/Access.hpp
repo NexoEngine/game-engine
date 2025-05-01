@@ -14,7 +14,6 @@
 #pragma once
 
 #include <tuple>
-#include <typeindex>
 #include <type_traits>
 
 namespace nexo::ecs {

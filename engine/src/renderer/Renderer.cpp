@@ -11,19 +11,20 @@
 //  Description: Source file for renderer class
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #include "Renderer.hpp"
-#include "Renderer2D.hpp"
+#include "RenderCommand.hpp"
 
 namespace nexo::renderer {
 
-    NxRenderer::NxSceneData *NxRenderer::_sceneData = new NxRenderer::NxSceneData;
+    NxRenderer::NxSceneData *NxRenderer::_sceneData = new NxSceneData;
 
     void NxRenderer::init()
     {
         NxRenderCommand::init();
     }
 
-    void NxRenderer::onWindowResize(unsigned int width, unsigned int height)
+    void NxRenderer::onWindowResize(const unsigned int width, const unsigned int height)
     {
         NxRenderCommand::setViewport(0, 0, width, height);
     }
