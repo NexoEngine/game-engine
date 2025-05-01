@@ -45,8 +45,8 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
-        m_editorCamera = static_cast<int>(CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget));
-        auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 4.0f, 10.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
+        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
         auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
@@ -94,18 +94,36 @@ namespace nexo::editor {
         const ecs::Entity spotLight = LightFactory::createSpotLight({-2.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
         utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(spotLight);
-        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
-        //                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
-        // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
+        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
+                                                               {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
+        app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
 
-        assets::AssetImporter importer;
-        std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-        assets::ImporterFileInput fileInput{path};
-        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
+        const ecs::Entity ground = EntityFactory3D::createCube(
+            {0.0f, 0.25f, 0.0f}, // position
+            {20.0f, 0.5f, 20.0f}, // size
+            {0.0f, 0.0f, 0.0f},
+            {0.2f, 0.2f, 0.2f, 1.0f} // color
+        );
+        app.getPhysicsSystem()->createStaticBody(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground));
+        scene.addEntity(ground);
 
-        const ecs::Entity gunModel = EntityFactory3D::createModel(assetRef9mn, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f},
-                                                               {0.0f, 0.0f, 0.0f});
-        app.getSceneManager().getScene(m_sceneId).addEntity(gunModel);
+        const ecs::Entity fallingCube = EntityFactory3D::createCube(
+            {0.0f, 5.0f, 0.0f},
+            {1.0f, 1.0f, 1.0f},
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 0.2f, 0.2f, 1.0f}
+        );
+        app.getPhysicsSystem()->createDynamicBody(fallingCube, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube));
+        scene.addEntity(fallingCube);
+
+        const ecs::Entity fallingCube2 = EntityFactory3D::createCube(
+            {0.5f, 7.0f, 0.0f},
+            {1.0f, 1.0f, 1.0f},
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 0.2f, 0.2f, 1.0f}
+        );
+        app.getPhysicsSystem()->createDynamicBody(fallingCube2, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube2));
+        scene.addEntity(fallingCube2);
     }
 
     void EditorScene::setupWindow()
