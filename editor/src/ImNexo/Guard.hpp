@@ -186,7 +186,7 @@ namespace ImNexo {
              *
              * @param scale The scaling factor to apply to the current window's font
              */
-            explicit FontScaleGuard(const float scale) : m_scale(scale)
+            explicit FontScaleGuard(const float scale)
             {
                 ImGui::SetWindowFontScale(scale);
             }
@@ -198,7 +198,5 @@ namespace ImNexo {
             {
                 ImGui::SetWindowFontScale(1.0f);
             }
-        private:
-            float m_scale; ///< Stores the applied scale factor
     };
 }
