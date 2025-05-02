@@ -32,7 +32,7 @@
 namespace nexo::renderer
 {
     constexpr int CYLINDER_SEGMENTS = 16; // Number of segments for the cylinder
-    constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder
+    constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices()
     {
@@ -140,12 +140,12 @@ namespace nexo::renderer
     {
         std::vector<glm::vec2> texCoords{};
         for (int i = 0; i < CYLINDER_SEGMENTS*4; ++i) {
-            texCoords.emplace_back(0,0);
-            // const float angle = static_cast<float>(i) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
-            //
-            // const float s = angle / static_cast<float>(M_PI);
-            // const float t = CYLINDER_HEIGHT
+            const float angle = static_cast<float>(i) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
 
+            const float u = angle / (2.0f * static_cast<float>(M_PI));
+            constexpr float v = CYLINDER_HEIGHT;
+
+            texCoords.emplace_back(u, v);
         }
         return texCoords;
     }
