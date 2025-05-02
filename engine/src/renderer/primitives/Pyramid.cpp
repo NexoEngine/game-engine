@@ -88,12 +88,14 @@ namespace nexo::renderer
 
         // Basic UV mapping for each face
         glm::vec2 texc[] = {
-            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Base face
-            {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Base face
-            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Side face
-            {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Side face
-            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Side face
-            {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f} // Side face
+            // Base face
+            {0.5f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f},
+            {0.5f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
+            // Side faces
+            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+            {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}
         };
 
         std::ranges::copy(texc, texCoords.begin());
