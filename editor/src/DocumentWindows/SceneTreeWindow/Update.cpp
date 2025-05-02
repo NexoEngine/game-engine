@@ -41,28 +41,28 @@ namespace nexo::editor {
 
         generateNodes<components::AmbientLightComponent, components::SceneTag>(
             sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return newAmbientLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::DirectionalLightComponent, components::SceneTag>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newDirectionalLightNode(sceneId, uiId, entity);
+              return newDirectionalLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::PointLightComponent, components::SceneTag>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newPointLightNode(sceneId, uiId, entity);
+              return newPointLightNode(sceneId, uiId, entity);
          });
         generateNodes<components::SpotLightComponent, components::SceneTag>(
             sceneNodes,
             [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
-              return this->newSpotLightNode(sceneId, uiId, entity);
+              return newSpotLightNode(sceneId, uiId, entity);
          });
 
         generateNodes<components::CameraComponent, components::SceneTag, ecs::Exclude<components::EditorCameraTag>>(
             sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return newCameraNode(sceneId, uiId, entity);
          });
 
@@ -74,7 +74,7 @@ namespace nexo::editor {
         ecs::Exclude<components::SpotLightComponent>,
         ecs::Exclude<components::PointLightComponent>>(
             sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
               return newEntityNode(sceneId, uiId, entity);
          });
 
