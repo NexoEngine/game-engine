@@ -39,7 +39,7 @@ namespace nexo::editor {
                     Command::create()
                         .description("Select all")
                         .key("A")
-                        .onPressed([this](){
+                        .onPressed([](){
                             selectAllCallback(); })
                         .build()
                 )
@@ -47,14 +47,14 @@ namespace nexo::editor {
                     Command::create()
                         .description("Duplicate")
                         .key("D")
-                        .onPressed([this](){ duplicateSelectedCallback(); })
+                        .onPressed([](){ duplicateSelectedCallback(); })
                         .build()
                 )
                 .addChild(
                     Command::create()
                         .description("Unhide all")
                         .key("H")
-                        .onPressed([this](){ showAllCallback(); })
+                        .onPressed([](){ showAllCallback(); })
                         .build()
                 )
                 .addChild(
@@ -72,7 +72,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Add Entity")
                 .key("A")
-                .onPressed([this](){ this->addEntityCallback(); })
+                .onPressed([this](){ addEntityCallback(); })
                 .build()
         );
 
@@ -81,7 +81,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Delete")
                 .key("Delete")
-                .onPressed([this](){ this->deleteSelectedCallback(); })
+                .onPressed([this](){ deleteSelectedCallback(); })
                 .build()
         );
 
@@ -90,7 +90,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Rename")
                 .key("F2")
-                .onPressed([this](){ this->renameSelectedCallback(); })
+                .onPressed([this](){ renameSelectedCallback(); })
                 .build()
         );
 
@@ -99,7 +99,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Expand all")
                 .key("Down")
-                .onPressed([this](){ this->expandAllCallback(); })
+                .onPressed([this](){ expandAllCallback(); })
                 .build()
         );
 
@@ -108,7 +108,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Collapse all")
                 .key("Up")
-                .onPressed([this](){ this->collapseAllCallback(); })
+                .onPressed([this](){ collapseAllCallback(); })
                 .build()
         );
 
@@ -117,7 +117,7 @@ namespace nexo::editor {
             Command::create()
                 .description("Hide")
                 .key("H")
-                .onPressed([this](){ hideSelectedCallback(); })
+                .onPressed([](){ hideSelectedCallback(); })
                 .build()
         );
     }
@@ -131,7 +131,7 @@ namespace nexo::editor {
 
         m_popupManager.openPopupWithCallback(
             "Scene selection context menu",
-            [this, currentSceneId]() {this->showSceneSelectionContextMenu(currentSceneId);}
+            [this, currentSceneId]() {showSceneSelectionContextMenu(currentSceneId);}
         );
     }
 

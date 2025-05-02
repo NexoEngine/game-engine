@@ -66,7 +66,7 @@ namespace nexo::editor {
     void ConsoleWindow::executeCommand(const char *commandLine)
     {
         m_commands.emplace_back(commandLine);
-        addLog("%s", commandLine);
+        addLog("{}", commandLine);
     }
 
     void ConsoleWindow::calcLogPadding()
