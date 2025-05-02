@@ -1,4 +1,4 @@
-//// Selection.cpp ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -19,6 +19,7 @@
 #include "context/actions/EntityActions.hpp"
 
 #include <memory>
+#include <format>
 
 namespace nexo::editor {
 
@@ -32,7 +33,7 @@ namespace nexo::editor {
         const bool multipleSelected = selectedEntities.size() > 1;
 
         const std::string menuText = multipleSelected ?
-            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
+            std::format("Delete Selected Entities ({})", selectedEntities.size()) :
             "Delete Entity";
 
         if (ImGui::MenuItem(menuText.c_str()))
@@ -67,7 +68,7 @@ namespace nexo::editor {
         const bool multipleSelected = selectedEntities.size() > 1;
 
         const std::string deleteMenuText = multipleSelected ?
-            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
+            std::format("Delete Selected Entities ({})", selectedEntities.size()) :
             "Delete Camera";
 
         if (ImGui::MenuItem(deleteMenuText.c_str()))
@@ -117,7 +118,7 @@ namespace nexo::editor {
         const bool multipleSelected = selectedEntities.size() > 1;
 
         const std::string menuText = multipleSelected ?
-            "Delete Selected Entities (" + std::to_string(selectedEntities.size()) + ")" :
+            std::format("Delete Selected Entities ({})", selectedEntities.size()) :
             "Delete Light";
 
         if (ImGui::MenuItem(menuText.c_str()))
