@@ -92,8 +92,9 @@ namespace nexo::components
 
         RenderComponent() = default;
 
-        explicit RenderComponent(const std::shared_ptr<Renderable>& renderable, const RenderType type)
-            : type(type), renderable(renderable)
+        explicit RenderComponent(const std::shared_ptr<Renderable>& renderable,
+                                 const RenderType type)
+            : renderable(renderable), type(type)
         {
         }
 
