@@ -41,7 +41,7 @@ namespace nexo::editor {
     {
         auto &selector = Selector::get();
         auto &app = nexo::getApp();
-        auto &scene = app.getSceneManager().getScene(m_sceneId);
+        const auto &scene = app.getSceneManager().getScene(m_sceneId);
 
         selector.clearSelection();
 

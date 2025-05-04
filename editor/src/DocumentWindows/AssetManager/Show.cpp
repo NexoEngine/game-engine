@@ -169,7 +169,7 @@ namespace nexo::editor {
                 float stepY  = m_layout.size.itemStep.y;
 
                 for (int i = startIdx; i < endIdx; ++i) {
-                    float idx     = static_cast<float>(i);
+                    auto idx     = static_cast<float>(i);
                     float col     = std::fmod(idx, static_cast<float>(columns));
                     float row     = std::floor(idx / static_cast<float>(columns));
                     ImVec2 itemPos{

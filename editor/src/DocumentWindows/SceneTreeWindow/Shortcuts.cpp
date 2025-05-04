@@ -142,7 +142,7 @@ namespace nexo::editor {
 
         if (currentSceneId != -1) {
             auto& app = nexo::getApp();
-            auto& scene = app.getSceneManager().getScene(currentSceneId);
+            const auto& scene = app.getSceneManager().getScene(currentSceneId);
 
             selector.clearSelection();
 
@@ -273,7 +273,7 @@ namespace nexo::editor {
         if (currentSceneId == -1) return;
 
         auto& app = getApp();
-        auto& scene = app.getSceneManager().getScene(currentSceneId);
+        const auto& scene = app.getSceneManager().getScene(currentSceneId);
         auto& actionManager = ActionManager::get();
         auto actionGroup = ActionManager::createActionGroup();
 
