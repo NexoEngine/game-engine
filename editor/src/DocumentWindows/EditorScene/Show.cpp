@@ -88,7 +88,7 @@ namespace nexo::editor {
                 ImNexo::CameraInspector(this->m_sceneId);
             }, ImVec2(1440,900));
         }
-        m_popupManager.closePopup();
+        PopupManager::closePopup();
     }
 
     void EditorScene::renderView()
@@ -122,12 +122,20 @@ namespace nexo::editor {
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto &selector = Selector::get();
         m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
-        const std::string &sceneWindowName = m_windowName + std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId);
+        const std::string &sceneWindowName = std::format("{}{}{}",
+            m_windowName,
+            NEXO_WND_USTRID_DEFAULT_SCENE,
+            m_sceneId
+        );
         m_wasVisibleLastFrame = m_isVisibleInDock;
         m_isVisibleInDock = false;
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse))
         {
-            beginRender(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
+            std::string renderName = std::format("{}{}",
+                NEXO_WND_USTRID_DEFAULT_SCENE,
+                m_sceneId
+            );
+            beginRender(renderName);
             auto &app = getApp();
 
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);

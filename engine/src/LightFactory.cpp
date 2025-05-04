@@ -43,9 +43,9 @@ namespace nexo {
 	ecs::Entity LightFactory::createPointLight(const glm::vec3 position, const glm::vec3 color, const float linear, const float quadratic)
 	{
 		const ecs::Entity newPointLight = Application::m_coordinator->createEntity();
-		const components::TransformComponent transformComponent(position);
+		const components::TransformComponent transformComponent{position};
 		Application::m_coordinator->addComponent<components::TransformComponent>(newPointLight, transformComponent);
-		const components::PointLightComponent newPointLightComponent(color, linear, quadratic);
+		const components::PointLightComponent newPointLightComponent{color, linear, quadratic};
 		Application::m_coordinator->addComponent<components::PointLightComponent>(newPointLight, newPointLightComponent);
 		const components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newPointLight, uuid);
@@ -58,9 +58,9 @@ namespace nexo {
 											  float outerCutOff)
 	{
 		ecs::Entity newSpotLight = Application::m_coordinator->createEntity();
-		components::TransformComponent transformComponent(position);
+		components::TransformComponent transformComponent{position};
 		Application::m_coordinator->addComponent<components::TransformComponent>(newSpotLight, transformComponent);
-		components::SpotLightComponent newSpotLightComponent(direction, color, cutOff, outerCutOff, linear, quadratic);
+		components::SpotLightComponent newSpotLightComponent{direction, color, cutOff, outerCutOff, linear, quadratic};
 		Application::m_coordinator->addComponent<components::SpotLightComponent>(newSpotLight, newSpotLightComponent);
 		components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newSpotLight, uuid);

@@ -239,7 +239,7 @@ namespace nexo::editor {
 			 */
 			std::optional<ImGuiID> getDockId(const std::string& name) const;
 
-			const std::shared_ptr<IDocumentWindow> getFocusedWindow() const;
+			std::shared_ptr<IDocumentWindow> getFocusedWindow() const;
 
             /**
              * @brief Removes a window's docking identifier.

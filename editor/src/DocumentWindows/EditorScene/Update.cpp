@@ -49,7 +49,7 @@ namespace nexo::editor {
 
     void EditorScene::updateWindowState()
     {
-        auto &selector = Selector::get();
+        const auto &selector = Selector::get();
         if (selector.hasSelection()) {
             if (m_currentGizmoOperation == ImGuizmo::OPERATION::TRANSLATE)
                 m_windowState = m_gizmoTranslateState;
