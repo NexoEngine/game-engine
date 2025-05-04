@@ -28,9 +28,13 @@ namespace nexo::renderer {
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
-        // glFrontFace(GL_CCW);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_STENCIL_TEST);
+        glStencilFunc(GL_ALWAYS, 0, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        glStencilMask(0xFF);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         int maxViewportSize[] = {0, 0};
         glGetIntegerv(GL_MAX_VIEWPORT_DIMS, maxViewportSize);
         m_maxWidth = static_cast<unsigned int>(maxViewportSize[0]);
@@ -60,7 +64,7 @@ namespace nexo::renderer {
     {
         if (!m_initialized)
             THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     void OpenGlRendererApi::setClearColor(const glm::vec4 &color)
@@ -77,6 +81,33 @@ namespace nexo::renderer {
         glClearDepth(depth);
     }
 
+    void OpenGlRendererApi::setDepthTest(bool enable)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        if (enable)
+            glEnable(GL_DEPTH_TEST);
+        else
+            glDisable(GL_DEPTH_TEST);
+    }
+
+    void OpenGlRendererApi::setDepthFunc(unsigned int func)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glDepthFunc(func);
+    }
+
+    void OpenGlRendererApi::setDepthMask(bool enable)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        if (enable)
+            glDepthMask(GL_TRUE);
+        else
+            glDepthMask(GL_FALSE);
+    }
+
     void OpenGlRendererApi::drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, const unsigned int indexCount)
     {
         if (!m_initialized)
@@ -85,5 +116,43 @@ namespace nexo::renderer {
             THROW_EXCEPTION(InvalidValue, "OPENGL", "Vertex array cannot be null");
         const unsigned int count = indexCount ? vertexArray->getIndexBuffer()->getCount() : indexCount;
         glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
+    }
+
+    void OpenGlRendererApi::drawUnIndexed(unsigned int verticesCount)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glDrawArrays(GL_TRIANGLES, 0, verticesCount);
+    }
+
+    void OpenGlRendererApi::setStencilTest(bool enable)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        if (enable)
+            glEnable(GL_STENCIL_TEST);
+        else
+            glDisable(GL_STENCIL_TEST);
+    }
+
+    void OpenGlRendererApi::setStencilMask(unsigned int mask)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glStencilMask(mask);
+    }
+
+    void OpenGlRendererApi::setStencilFunc(unsigned int func, int ref, unsigned int mask)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glStencilFunc(func, ref, mask);
+    }
+
+    void OpenGlRendererApi::setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(GraphicsApiNotInitialized, "OPENGL");
+        glStencilOp(sfail, dpfail, dppass);
     }
 }

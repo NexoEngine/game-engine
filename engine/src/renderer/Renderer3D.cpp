@@ -15,6 +15,7 @@
 #include "Renderer3D.hpp"
 #include "RenderCommand.hpp"
 #include "Logger.hpp"
+#include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -57,10 +58,27 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(Renderer3DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        m_storage->textureShader = Shader::create(Path::resolvePathRelativeToExe(
-            "../resources/shaders/texture.glsl").string());
-        m_storage->textureShader->bind();
-        m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer3DStorage::maxTextureSlots);
+        auto phong = m_storage->shaderLibrary.load("Phong", Path::resolvePathRelativeToExe(
+            "../resources/shaders/phong.glsl").string());
+        m_storage->shaderLibrary.load("Outline pulse flat", Path::resolvePathRelativeToExe(
+            "../resources/shaders/outline_pulse_flat.glsl").string());
+        auto outlinePulseTransparentFlat = m_storage->shaderLibrary.load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
+            "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
+        auto albedoUnshadedTransparent = m_storage->shaderLibrary.load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
+            "../resources/shaders/albedo_unshaded_transparent.glsl").string());
+        m_storage->shaderLibrary.load("Grid shader", Path::resolvePathRelativeToExe(
+            "../resources/shaders/grid_shader.glsl").string());
+        m_storage->shaderLibrary.load("Flat color", Path::resolvePathRelativeToExe(
+            "../resources/shaders/flat_color.glsl").string());
+        phong->bind();
+        phong->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        phong->unbind();
+        outlinePulseTransparentFlat->bind();
+        outlinePulseTransparentFlat->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        outlinePulseTransparentFlat->unbind();
+        albedoUnshadedTransparent->bind();
+        albedoUnshadedTransparent->setUniformIntArray(ShaderUniforms::TEXTURE_SAMPLER, samplers.data(), Renderer3DStorage::maxTextureSlots);
+        albedoUnshadedTransparent->unbind();
 
         m_storage->textureSlots[0] = m_storage->whiteTexture;
 
@@ -74,15 +92,20 @@ namespace nexo::renderer {
         m_storage.reset();
     }
 
-    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos)
+    void Renderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos, const std::string &shader)
     {
         if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
-        m_storage->textureShader->bind();
+        if (shader.empty())
+            m_storage->currentSceneShader = m_storage->shaderLibrary.get("Phong");
+        else
+            m_storage->currentSceneShader = m_storage->shaderLibrary.get(shader);
+        m_storage->currentSceneShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
-        m_storage->textureShader->setUniformMatrix("viewProjection", viewProjection);
-        m_storage->textureShader->setUniformFloat3("camPos", cameraPos);
+        m_storage->currentSceneShader->setUniformMatrix("uViewProjection", viewProjection);
+        m_storage->cameraPosition = cameraPos;
+        m_storage->currentSceneShader->setUniformFloat3("uCamPos", cameraPos);
         m_storage->indexCount = 0;
         m_storage->vertexBufferPtr = m_storage->vertexBufferBase.data();
         m_storage->indexBufferPtr = m_storage->indexBufferBase.data();
@@ -112,7 +135,7 @@ namespace nexo::renderer {
 
     void Renderer3D::flush() const
     {
-        m_storage->textureShader->bind();
+        m_storage->currentSceneShader->bind();
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             m_storage->textureSlots[i]->bind(i);
@@ -121,7 +144,7 @@ namespace nexo::renderer {
         m_storage->stats.drawCalls++;
         m_storage->vertexArray->unbind();
         m_storage->vertexBuffer->unbind();
-        m_storage->textureShader->unbind();
+        m_storage->currentSceneShader->unbind();
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             m_storage->textureSlots[i]->unbind(i);
@@ -168,18 +191,18 @@ namespace nexo::renderer {
         if (!m_storage)
             THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_3D);
 
-        m_storage->textureShader->setUniformFloat4("material.albedoColor", material.albedoColor);
-        m_storage->textureShader->setUniformInt("material.albedoTexIndex", material.albedoTexIndex);
-        m_storage->textureShader->setUniformFloat4("material.specularColor", material.specularColor);
-        m_storage->textureShader->setUniformInt("material.specularTexIndex", material.specularTexIndex);
-        m_storage->textureShader->setUniformFloat3("material.emissiveColor", material.emissiveColor);
-        m_storage->textureShader->setUniformInt("material.emissiveTexIndex", material.emissiveTexIndex);
-        m_storage->textureShader->setUniformFloat("material.roughness", material.roughness);
-        m_storage->textureShader->setUniformInt("material.roughnessTexIndex", material.roughnessTexIndex);
-        m_storage->textureShader->setUniformFloat("material.metallic", material.metallic);
-        m_storage->textureShader->setUniformInt("material.metallicTexIndex", material.metallicTexIndex);
-        m_storage->textureShader->setUniformFloat("material.opacity", material.opacity);
-        m_storage->textureShader->setUniformInt("material.opacityTexIndex", material.opacityTexIndex);
+        m_storage->currentSceneShader->setUniformFloat4("uMaterial.albedoColor", material.albedoColor);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.albedoTexIndex", material.albedoTexIndex);
+        m_storage->currentSceneShader->setUniformFloat4("uMaterial.specularColor", material.specularColor);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.specularTexIndex", material.specularTexIndex);
+        m_storage->currentSceneShader->setUniformFloat3("uMaterial.emissiveColor", material.emissiveColor);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.emissiveTexIndex", material.emissiveTexIndex);
+        m_storage->currentSceneShader->setUniformFloat("uMaterial.roughness", material.roughness);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.roughnessTexIndex", material.roughnessTexIndex);
+        m_storage->currentSceneShader->setUniformFloat("uMaterial.metallic", material.metallic);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.metallicTexIndex", material.metallicTexIndex);
+        m_storage->currentSceneShader->setUniformFloat("uMaterial.opacity", material.opacity);
+        m_storage->currentSceneShader->setUniformInt("uMaterial.opacityTexIndex", material.opacityTexIndex);
     }
 
     void Renderer3D::resetStats() const

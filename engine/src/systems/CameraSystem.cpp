@@ -1,4 +1,3 @@
-//// CameraSystem.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -40,11 +39,13 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+		auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneName));
 
 		const auto cameraSpan = get<components::CameraComponent>();
 		const auto transformComponentArray = get<components::TransformComponent>();
@@ -53,6 +54,8 @@ namespace nexo::system {
 		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
 			const auto &cameraComponent = cameraSpan[i];
+			if (!cameraComponent.render)
+				continue;
 			const auto &transformComponent = transformComponentArray->get(entitySpan[i]);
 			glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
 			glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
@@ -79,31 +82,38 @@ namespace nexo::system {
 
 	    for (const ecs::Entity entity : entities)
 		{
-			constexpr float translationSpeed = 5.0f;
 			auto &sceneTag = getComponent<components::SceneTag>(entity);
 			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
 				continue;
 			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			if (!cameraComponent.active)
+				continue;
 			auto &transform = getComponent<components::TransformComponent>(entity);
+			auto &cameraController = getComponent<components::PerspectiveCameraController>(entity);
 
 			cameraComponent.resizing = false;
+
+            if (event::isKeyPressed(NEXO_KEY_SHIFT))
+                cameraController.translationSpeed = 10.0f;
+            if (event::isKeyReleased(NEXO_KEY_SHIFT))
+                cameraController.translationSpeed = 5.0f;
 
 			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 up    = transform.quat * glm::vec3(0.0f, 1.0f,  0.0f);
 			glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f,  0.0f);
 
 			if (event::isKeyPressed(NEXO_KEY_Z))
-				transform.pos += front * translationSpeed * deltaTime; // Forward
+				transform.pos += front * cameraController.translationSpeed * deltaTime; // Forward
 			if (event::isKeyPressed(NEXO_KEY_S))
-				transform.pos -= front * translationSpeed * deltaTime; // Backward
+				transform.pos -= front * cameraController.translationSpeed * deltaTime; // Backward
 			if (event::isKeyPressed(NEXO_KEY_Q))
-				transform.pos -= right * translationSpeed * deltaTime; // Left
+				transform.pos -= right * cameraController.translationSpeed * deltaTime; // Left
 			if (event::isKeyPressed(NEXO_KEY_D))
-				transform.pos += right * translationSpeed * deltaTime; // Right
+				transform.pos += right * cameraController.translationSpeed * deltaTime; // Right
 			if (event::isKeyPressed(NEXO_KEY_SPACE))
-				transform.pos += up * translationSpeed * deltaTime;    // Up
+				transform.pos += up * cameraController.translationSpeed * deltaTime;    // Up
 			if (event::isKeyPressed(NEXO_KEY_TAB))
-				transform.pos -= up * translationSpeed * deltaTime;    // Down
+				transform.pos -= up * cameraController.translationSpeed * deltaTime;    // Down
 		}
 	}
 
@@ -119,7 +129,8 @@ namespace nexo::system {
 		{
 			constexpr float zoomSpeed = 0.5f;
 			auto &sceneTag = getComponent<components::SceneTag>(entity);
-			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered || !cameraComponent.active)
 				continue;
 			auto &transform = getComponent<components::TransformComponent>(entity);
 			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
@@ -130,43 +141,75 @@ namespace nexo::system {
 
 	void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseMove &event)
 	{
-		auto const &renderContext = getSingleton<components::RenderContext>();
-		if (renderContext.sceneRendered == -1)
-			return;
+        auto const &renderContext = getSingleton<components::RenderContext>();
+        if (renderContext.sceneRendered == -1)
+            return;
 
-		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+        const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+        const glm::vec2 currentMousePosition(event.x, event.y);
 
-		const glm::vec2 currentMousePosition(event.x, event.y);
-		for (const ecs::Entity entity : entities)
-		{
-			auto &controller = getComponent<components::PerspectiveCameraController>(entity);
-			const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
-			controller.lastMousePosition = currentMousePosition;
-			const auto &sceneTag = getComponent<components::SceneTag>(entity);
-			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
-				continue;
-			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
-			if (cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_LEFT))
-				continue;
+        for (const ecs::Entity entity : entities)
+        {
+            auto &controller = getComponent<components::PerspectiveCameraController>(entity);
+            const auto &sceneTag = getComponent<components::SceneTag>(entity);
+            const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+            bool isActiveScene = sceneTag.isActive && sceneTag.id == sceneRendered;
+            bool isActiveCamera = isActiveScene && cameraComponent.active;
+            bool mouseDown = event::isMouseDown(NEXO_MOUSE_LEFT);
 
-			controller.yaw   += -mouseDelta.x;
-			controller.pitch += -mouseDelta.y;
+            // Check for scene transition - if the camera wasn't active before but is now
+            bool sceneTransition = isActiveCamera && !controller.wasActiveLastFrame;
+            controller.wasActiveLastFrame = isActiveCamera;
 
-			// Clamp pitch to avoid flipping
-			if (controller.pitch > 89.0f)
-				controller.pitch = 89.0f;
-			if (controller.pitch < -89.0f)
-				controller.pitch = -89.0f;
+            // Reset position on scene transition to prevent abrupt rotation
+            if (sceneTransition) {
+                controller.lastMousePosition = currentMousePosition;
+                controller.wasMouseReleased = true;
+                continue;
+            }
 
-			// Rebuild the quaternion from yaw and pitch.
-			glm::quat qPitch = glm::angleAxis(glm::radians(controller.pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-			glm::quat qYaw   = glm::angleAxis(glm::radians(controller.yaw),   glm::vec3(0.0f, 1.0f, 0.0f));
+            if (!isActiveCamera)
+                continue;
 
-			auto &transform = getComponent<components::TransformComponent>(entity);
-			transform.quat = glm::normalize(qYaw * qPitch);
-			event.consumed = true;
+            // Always update lastMousePosition if this is the active scene, even if not moving the camera
+            // This ensures the position is current when we start dragging
+            if (!mouseDown || controller.wasMouseReleased) {
+                controller.lastMousePosition = currentMousePosition;
+                controller.wasMouseReleased = false;
+                continue;
+            }
+
+            if (cameraComponent.resizing) {
+                controller.lastMousePosition = currentMousePosition;
+                continue;
+            }
+
+            auto &transform = getComponent<components::TransformComponent>(entity);
+            const glm::vec2 mouseDelta = (currentMousePosition - controller.lastMousePosition) * controller.mouseSensitivity;
+
+            // Extract camera orientation vectors from current quaternion
+            glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f, 0.0f);
+            glm::vec3 up = transform.quat * glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            // Create rotation quaternions based on mouse movement
+            glm::quat pitchRotation = glm::angleAxis(glm::radians(-mouseDelta.y), right);
+            glm::quat yawRotation = glm::angleAxis(glm::radians(-mouseDelta.x), glm::vec3(0.0f, 1.0f, 0.0f)); // World up for yaw
+            glm::quat newQuat = glm::normalize(yawRotation * pitchRotation * transform.quat);
+            glm::vec3 newFront = newQuat * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            // Check if the resulting orientation would flip the camera (pitch constraint)
+            float pitchAngle = glm::degrees(std::asin(newFront.y));
+            if (pitchAngle < -85.0f || pitchAngle > 85.0f)
+                transform.quat = glm::normalize(yawRotation * transform.quat);
+            else
+                transform.quat = newQuat;
+
+            // Update last position after processing
+            controller.lastMousePosition = currentMousePosition;
+            event.consumed = true;
         }
-    }
+	}
 
 	PerspectiveCameraTargetSystem::PerspectiveCameraTargetSystem()
 	{
@@ -186,7 +229,8 @@ namespace nexo::system {
 		{
 			constexpr float zoomSpeed = 0.5f;
 			auto &tag = getComponent<components::SceneTag>(entity);
-			if (!tag.isActive || sceneRendered != tag.id)
+			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			if (!tag.isActive || sceneRendered != tag.id || !cameraComponent.active)
 				continue;
 			auto &target = getComponent<components::PerspectiveCameraTarget>(entity);
 			target.distance -= event.y * zoomSpeed;
@@ -227,7 +271,7 @@ namespace nexo::system {
 			const auto &sceneTag = getComponent<components::SceneTag>(entity);
 			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
 			auto &targetComponent = getComponent<components::PerspectiveCameraTarget>(entity);
-			if (!sceneTag.isActive || sceneTag.id != sceneRendered || cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_RIGHT))
+			if (!sceneTag.isActive || sceneTag.id != sceneRendered || cameraComponent.resizing || !event::isMouseDown(NEXO_MOUSE_RIGHT) || !cameraComponent.active)
 			{
 				targetComponent.lastMousePosition = currentMousePosition;
 				continue;

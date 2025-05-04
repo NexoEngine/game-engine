@@ -66,47 +66,4 @@ namespace nexo::renderer {
             THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
         m_storageBuffers[index]->setData(data, size);
     }
-
-    void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
-    {
-        const std::string &name = shader->getName();
-        m_shaders[name] = shader;
-    }
-
-    void ShaderLibrary::add(const std::string &name, const std::shared_ptr<Shader> &shader)
-    {
-        m_shaders[name] = shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(name, shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
-    {
-        auto shader = Shader::create(name, vertexSource, fragmentSource);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::get(const std::string &name) const
-    {
-        if (!m_shaders.contains(name))
-        {
-            LOG(NEXO_WARN, "ShaderLibrary::get: shader {} not found", name);
-            return nullptr;
-        }
-        return m_shaders.at(name);
-    }
-
 }

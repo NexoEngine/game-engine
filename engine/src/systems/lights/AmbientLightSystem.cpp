@@ -15,6 +15,7 @@
 #include "AmbientLightSystem.hpp"
 
 #include "Logger.hpp"
+#include "Application.hpp"
 #include "components/Light.hpp"
 #include "ecs/Coordinator.hpp"
 
@@ -33,16 +34,19 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+        auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneName));
 
+        if (partition->count != 1)
+            LOG_ONCE(NEXO_WARN, "For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count);
+        else
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} ambient lights, only one is supported, picking the first one", sceneName, partition->count));
 
-		const auto ambientSpan = get<components::AmbientLightComponent>();
-		if (ambientSpan.size())
-			renderContext.sceneLights.ambientLight = ambientSpan[0].color;
-
+        renderContext.sceneLights.ambientLight = get<components::AmbientLightComponent>()[0].color;
 	}
 }

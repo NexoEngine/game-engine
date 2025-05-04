@@ -24,6 +24,7 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
+#include "components/Editor.hpp"
 #include "components/Uuid.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
@@ -70,6 +71,8 @@ namespace nexo {
         m_coordinator->registerComponent<components::UuidComponent>();
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
+        m_coordinator->registerComponent<components::EditorCameraTag>();
+        m_coordinator->registerComponent<components::SelectedTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
@@ -240,27 +243,33 @@ namespace nexo {
 	    m_lastFrameTime = time;
     }
 
-    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
+    void Application::run(const SceneInfo &sceneInfo)
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
-         	renderContext.sceneRendered = sceneId;
-        	if (m_SceneManager.getScene(sceneId).isRendered())
+         	renderContext.sceneRendered = sceneInfo.id;
+            renderContext.sceneType = sceneInfo.sceneType;
+            if (sceneInfo.isChildWindow) {
+                renderContext.isChildWindow = true;
+                renderContext.viewportBounds[0] = sceneInfo.viewportBounds[0];
+                renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
+            }
+        	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
 			}
-			if (m_SceneManager.getScene(sceneId).isActive())
+			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
 
         // Update (swap buffers and poll events)
-        if (renderingType == RenderingType::WINDOW)
+        if (sceneInfo.renderingType == RenderingType::WINDOW)
             m_window->onUpdate();
         m_eventManager->dispatchEvents();
         renderContext.reset();

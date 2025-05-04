@@ -17,14 +17,16 @@
 #include "RenderProperty.hpp"
 #include "AEntityProperty.hpp"
 #include "Application.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
 #include "Framebuffer.hpp"
+#include "components/Light.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
-#include "DocumentWindows/InspectorWindow.hpp"
-#include "DocumentWindows/MaterialInspector.hpp"
+#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+#include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
+#include "ImNexo/Panels.hpp"
+#include "ImNexo/Elements.hpp"
+#include "ImNexo/Components.hpp"
 
 namespace nexo::editor {
 
@@ -37,7 +39,7 @@ namespace nexo::editor {
         const float totalWidth = availSize.x;
         float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
 
-        // Define layout: 60% for inspector, 40% for preview
+        // Define layout: 40% for inspector, 60% for preview
         const float inspectorWidth = totalWidth * 0.4f;
         const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
 
@@ -47,6 +49,7 @@ namespace nexo::editor {
             utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
             auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
+            cameraComponent.render = true;
         }
         auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
@@ -60,7 +63,7 @@ namespace nexo::editor {
             ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
             ImGui::Spacing();
 
-            Widgets::drawMaterialInspector(&renderable3D->material);
+            ImNexo::MaterialInspector(&renderable3D->material);
             ImGui::EndChild();
         }
         ImGui::NextColumn();
@@ -69,7 +72,8 @@ namespace nexo::editor {
             ImGui::BeginChild("MaterialPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
             auto &app = getApp();
-            app.run(scenePreviewInfo.sceneId, RenderingType::FRAMEBUFFER);
+            Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(scenePreviewInfo.sceneId), nexo::RenderingType::FRAMEBUFFER};
+            app.run(sceneInfo);
             auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
@@ -92,7 +96,7 @@ namespace nexo::editor {
         // Bottom buttons - centered
         constexpr float buttonWidth = 120.0f;
 
-        if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
+        if (ImNexo::Button("OK", ImVec2(buttonWidth, 0)))
         {
             // TODO: Insert logic to create the new material
 
@@ -109,7 +113,7 @@ namespace nexo::editor {
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+        if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
             if (scenePreviewInfo.sceneGenerated)
             {
@@ -124,6 +128,10 @@ namespace nexo::editor {
 
     void RenderProperty::show(ecs::Entity entity)
     {
+        if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
+            return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
         if (renderComponent.type == components::RenderType::RENDER_3D)
@@ -140,16 +148,15 @@ namespace nexo::editor {
         }
         static bool sectionOpen = true;
 
-        if (EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component"))
+        if (ImNexo::Header("##RenderNode", "Render Component"))
         {
-            //ImGui::SetWindowFontScale(1.15f);
             ImGui::Text("Hide");
             ImGui::SameLine(0, 12);
             bool hidden = !renderComponent.isRendered;
             ImGui::Checkbox("##HideCheckBox", &hidden);
             renderComponent.isRendered = !hidden;
 
-            EntityPropertiesComponents::drawToggleButtonWithSeparator("Material", &sectionOpen);
+            ImNexo::ToggleButtonWithSeparator("Material", &sectionOpen);
             static std::shared_ptr<renderer::Framebuffer> framebuffer = nullptr;
             static int entityBase = -1;
             if (sectionOpen)
@@ -161,7 +168,8 @@ namespace nexo::editor {
 					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
 					auto &app = nexo::getApp();
 					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-					app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
+					Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(previewParams.sceneId), nexo::RenderingType::FRAMEBUFFER};
+					app.run(sceneInfo);
 					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 					framebuffer = cameraComponent.m_renderTarget;
 					app.getSceneManager().deleteScene(previewParams.sceneId);
@@ -181,12 +189,12 @@ namespace nexo::editor {
                     ImGui::Combo("##MaterialType", &selectedMaterialIndex, materialTypes, IM_ARRAYSIZE(materialTypes));
 
                     // --- Material Action Buttons ---
-                    if (ImGui::Button("Create new material"))
+                    if (ImNexo::Button("Create new material"))
                     {
-                        m_popupManager.openPopup("Create new material");
+                        m_popupManager.openPopup("Create new material", ImVec2(1440,900));
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button("Modify Material"))
+                    if (ImNexo::Button("Modify Material"))
                     {
                         m_inspector.setSubInspectorVisibility<MaterialInspector>(true);
                     }
@@ -199,7 +207,6 @@ namespace nexo::editor {
             ImGui::TreePop();
         }
 
-        ImGui::SetNextWindowSize(ImVec2(1440,900));
         if (m_popupManager.showPopupModal("Create new material"))
         {
             createMaterialPopup(entity);

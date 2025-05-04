@@ -55,11 +55,4 @@ namespace nexo::core {
                                            const std::source_location loc = std::source_location::current())
        : Exception(std::format("Too many spot lights ({} > {}) in scene [{}]", nbSpotLights, MAX_SPOT_LIGHTS, sceneRendered), loc) {}
     };
-
-    class TooManyDirectionalLightsException : public Exception {
-    	public:
-     		explicit TooManyDirectionalLightsException(unsigned int sceneRendered, size_t nbDirectionalLights,
-                                           const std::source_location loc = std::source_location::current())
-       : Exception(std::format("Too many directional lights ({} > {}) in scene [{}]", nbDirectionalLights, MAX_DIRECTIONAL_LIGHTS, sceneRendered), loc) {}
-    };
 }

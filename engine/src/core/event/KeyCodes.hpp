@@ -38,6 +38,8 @@ namespace nexo::event {
     #define NEXO_KEY_DOWN 264
     #define NEXO_KEY_UP 265
 
+    #define NEXO_KEY_SHIFT 340
+
     #define NEXO_MOUSE_LEFT 0
     #define NEXO_MOUSE_RIGHT 1
 }

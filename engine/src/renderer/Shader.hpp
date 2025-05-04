@@ -23,6 +23,37 @@
 
 namespace nexo::renderer {
 
+    enum class ShaderUniforms {
+        VIEW_PROJECTION,
+        MODEL_MATRIX,
+        CAMERA_POSITION,
+
+        TEXTURE_SAMPLER,
+
+        DIR_LIGHT,
+        AMBIENT_LIGHT,
+        POINT_LIGHT_ARRAY,
+        NB_POINT_LIGHT,
+        SPOT_LIGHT_ARRAY,
+        NB_SPOT_LIGHT,
+
+        MATERIAL
+    };
+
+    inline const std::unordered_map<ShaderUniforms, std::string> ShaderUniformsName = {
+        {ShaderUniforms::VIEW_PROJECTION, "uViewProjection"},
+        {ShaderUniforms::MODEL_MATRIX, "uMatModel"},
+        {ShaderUniforms::CAMERA_POSITION, "uCamPos"},
+        {ShaderUniforms::TEXTURE_SAMPLER, "uTexture"},
+        {ShaderUniforms::DIR_LIGHT, "uDirLight"},
+        {ShaderUniforms::AMBIENT_LIGHT, "uAmbientLight"},
+        {ShaderUniforms::POINT_LIGHT_ARRAY, "uPointLights"},
+        {ShaderUniforms::NB_POINT_LIGHT, "uNbPointLights"},
+        {ShaderUniforms::SPOT_LIGHT_ARRAY, "uSpotLights"},
+        {ShaderUniforms::NB_SPOT_LIGHT, "uNbSpotLights"},
+        {ShaderUniforms::MATERIAL, "uMaterial"}
+    };
+
     /**
     * @class Shader
     * @brief Abstract class representing a shader program in the rendering pipeline.
@@ -99,11 +130,20 @@ namespace nexo::renderer {
             virtual void unbind() const = 0;
 
             virtual bool setUniformFloat(const std::string &name, float value) const = 0;
+            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const = 0;
             virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
             virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
             virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformBool(const std::string &name, bool value) const = 0;
             virtual bool setUniformInt(const std::string &name, int value) const = 0;
             virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
+
+            virtual bool setUniformFloat(const ShaderUniforms uniform, const float value) const = 0;
+            virtual bool setUniformFloat3(const ShaderUniforms uniform, const glm::vec3 &values) const = 0;
+            virtual bool setUniformFloat4(const ShaderUniforms uniform, const glm::vec4 &values) const = 0;
+            virtual bool setUniformMatrix(const ShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformInt(const ShaderUniforms uniform, int value) const = 0;
+            virtual bool setUniformIntArray(const ShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
             void addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
@@ -116,17 +156,8 @@ namespace nexo::renderer {
         protected:
             static std::string readFile(const std::string &filepath);
         	std::vector<std::shared_ptr<ShaderStorageBuffer>> m_storageBuffers;
+            std::unordered_map<ShaderUniforms, int> m_uniformLocations;
     };
 
-    class ShaderLibrary {
-        public:
-            void add(const std::shared_ptr<Shader> &shader);
-            void add(const std::string &name, const std::shared_ptr<Shader> &shader);
-            std::shared_ptr<Shader> load(const std::string &path);
-            std::shared_ptr<Shader> load(const std::string &name, const std::string &path);
-            std::shared_ptr<Shader> load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource);
-            std::shared_ptr<Shader> get(const std::string &name) const;
-        private:
-            std::unordered_map<std::string , std::shared_ptr<Shader>> m_shaders;
-    };
+
 }

@@ -15,21 +15,64 @@ set(SRCS
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
         editor/src/context/Selector.cpp
-        editor/src/Components/Components.cpp
-        editor/src/Components/EntityPropertiesComponents.cpp
-        editor/src/Components/Widgets.cpp
+        editor/src/context/ActionManager.cpp
+        editor/src/context/ActionHistory.cpp
+        editor/src/context/ActionGroup.cpp
+        editor/src/context/actions/EntityActions.cpp
+        editor/src/ImNexo/EntityProperties.cpp
+        editor/src/ImNexo/Components.cpp
+        editor/src/ImNexo/Elements.cpp
+        editor/src/ImNexo/Panels.cpp
+        editor/src/ImNexo/Utils.cpp
+        editor/src/ImNexo/Widgets.cpp
         editor/src/utils/ScenePreview.cpp
         editor/src/utils/Config.cpp
         editor/src/utils/String.cpp
+        editor/src/utils/FileSystem.cpp
+        editor/src/utils/EditorProps.cpp
+        editor/src/inputs/Command.cpp
+        editor/src/inputs/InputManager.cpp
+        editor/src/inputs/WindowState.cpp
         editor/src/Editor.cpp
         editor/src/WindowRegistry.cpp
         editor/src/DockingRegistry.cpp
-        editor/src/DocumentWindows/ConsoleWindow.cpp
-        editor/src/DocumentWindows/EditorScene.cpp
-        editor/src/DocumentWindows/SceneTreeWindow.cpp
+        editor/src/ADocumentWindow.cpp
+        editor/src/DocumentWindows/EditorScene/Gizmo.cpp
+        editor/src/DocumentWindows/EditorScene/Init.cpp
+        editor/src/DocumentWindows/EditorScene/Shortcuts.cpp
+        editor/src/DocumentWindows/EditorScene/Show.cpp
+        editor/src/DocumentWindows/EditorScene/Shutdown.cpp
+        editor/src/DocumentWindows/EditorScene/Toolbar.cpp
+        editor/src/DocumentWindows/EditorScene/Update.cpp
+        editor/src/DocumentWindows/AssetManager/Init.cpp
+        editor/src/DocumentWindows/AssetManager/Show.cpp
+        editor/src/DocumentWindows/AssetManager/Shutdown.cpp
+        editor/src/DocumentWindows/AssetManager/Update.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Init.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Log.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Show.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Shutdown.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Update.cpp
+        editor/src/DocumentWindows/ConsoleWindow/Utils.cpp
+        editor/src/DocumentWindows/InspectorWindow/Init.cpp
+        editor/src/DocumentWindows/InspectorWindow/Show.cpp
+        editor/src/DocumentWindows/InspectorWindow/Shutdown.cpp
+        editor/src/DocumentWindows/InspectorWindow/Update.cpp
+        editor/src/DocumentWindows/MaterialInspector/Init.cpp
+        editor/src/DocumentWindows/MaterialInspector/Show.cpp
+        editor/src/DocumentWindows/MaterialInspector/Shutdown.cpp
+        editor/src/DocumentWindows/MaterialInspector/Update.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Hovering.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Init.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/NodeHandling.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Rename.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/SceneCreation.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Selection.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Show.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Shutdown.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Update.cpp
+        editor/src/DocumentWindows/SceneTreeWindow/Shortcuts.cpp
         editor/src/DocumentWindows/PopupManager.cpp
-        editor/src/DocumentWindows/InspectorWindow.cpp
-        editor/src/DocumentWindows/MaterialInspector.cpp
         editor/src/DocumentWindows/EntityProperties/TransformProperty.cpp
         editor/src/DocumentWindows/EntityProperties/RenderProperty.cpp
         editor/src/DocumentWindows/EntityProperties/AmbientLightProperty.cpp
@@ -38,7 +81,7 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/SpotLightProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraController.cpp
-        editor/src/DocumentWindows/AssetManagerWindow.cpp
+        editor/src/DocumentWindows/EntityProperties/CameraTarget.cpp
 )
 
 # Windows App Icon

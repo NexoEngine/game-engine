@@ -58,11 +58,20 @@ namespace nexo::renderer {
             void unbind() const override;
 
             bool setUniformFloat(const std::string &name, const float value) const override;
+            bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const override;
             bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const override;
             bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const override;
             bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const override;
+            bool setUniformBool(const std::string &name, bool value) const override;
             bool setUniformInt(const std::string &name, int value) const override;
             bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const override;
+
+            bool setUniformFloat(const ShaderUniforms uniform, const float value) const override;
+            bool setUniformFloat3(const ShaderUniforms uniform, const glm::vec3 &values) const override;
+            bool setUniformFloat4(const ShaderUniforms uniform, const glm::vec4 &values) const override;
+            bool setUniformMatrix(const ShaderUniforms uniform, const glm::mat4 &matrix) const override;
+            bool setUniformInt(const ShaderUniforms uniform, int value) const override;
+            bool setUniformIntArray(const ShaderUniforms uniform, const int *values, unsigned int count) const override;
 
             void bindStorageBuffer(unsigned int index) const override;
             void bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const override;
@@ -75,6 +84,7 @@ namespace nexo::renderer {
             unsigned int m_id = 0;
             static std::unordered_map<GLenum, std::string> preProcess(const std::string_view &src, const std::string &filePath);
             void compile(const std::unordered_map<GLenum, std::string> &shaderSources);
+            void setupUniformLocations();
     };
 
 }

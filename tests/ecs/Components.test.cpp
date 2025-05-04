@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include <gtest/gtest.h>
 #include "Components.hpp"
+#include "Definitions.hpp"
 #include "ECSExceptions.hpp"
 #include <string>
 
@@ -130,9 +131,11 @@ namespace nexo::ecs {
 	    const Entity entity = 1;
 	    const TestComponentA component(42);
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add component to entity
-	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+	    componentManager.addComponent<TestComponentA>(entity, component, oldSignature, signature);
 
 	    // Check that the component was added
 	    auto& retrievedComponent = componentManager.getComponent<TestComponentA>(entity);
@@ -148,15 +151,19 @@ namespace nexo::ecs {
 	    const Entity entity = 1;
 	    const TestComponentA component(42);
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add component to entity
-	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+	    componentManager.addComponent<TestComponentA>(entity, component, oldSignature, signature);
 
 	    // Verify component exists
 	    EXPECT_TRUE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
 
 	    // Remove component
-	    componentManager.removeComponent<TestComponentA>(entity, signature);
+		Signature newSignature = signature;
+		newSignature.set(componentManager.getComponentType<TestComponentA>(), false);
+	    componentManager.removeComponent<TestComponentA>(entity, signature, newSignature);
 
 	    // Check that the component was removed
 	    EXPECT_FALSE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
@@ -167,12 +174,16 @@ namespace nexo::ecs {
 	    const Entity entity = 1;
 	    const TestComponentA component(42);
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add component to entity
-	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+	    componentManager.addComponent<TestComponentA>(entity, component, oldSignature, signature);
 
 	    // Try to remove component
-	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, signature);
+		Signature newSignature = signature;
+		newSignature.set(componentManager.getComponentType<TestComponentA>(), false);
+	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, signature, newSignature);
 
 	    // Check that the component was removed and function returned true
 	    EXPECT_TRUE(removed);
@@ -182,9 +193,11 @@ namespace nexo::ecs {
 	TEST_F(ComponentManagerTest, TryRemoveComponentReturnsFalseIfNotExist) {
 	    const Entity entity = 1;
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Try to remove a component that doesn't exist
-	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, signature);
+	    bool removed = componentManager.tryRemoveComponent<TestComponentA>(entity, oldSignature, signature);
 
 	    // Check that the function returned false
 	    EXPECT_FALSE(removed);
@@ -194,9 +207,11 @@ namespace nexo::ecs {
 	    const Entity entity = 1;
 	    const TestComponentA component(42);
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add component to entity
-	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+	    componentManager.addComponent<TestComponentA>(entity, component, oldSignature, signature);
 
 	    // Get component
 	    auto& retrievedComponent = componentManager.getComponent<TestComponentA>(entity);
@@ -214,9 +229,11 @@ namespace nexo::ecs {
 	    const Entity entity = 1;
 	    const TestComponentA component(42);
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add component to entity
-	    componentManager.addComponent<TestComponentA>(entity, component, signature);
+	    componentManager.addComponent<TestComponentA>(entity, component, oldSignature, signature);
 
 	    // Try to get component
 	    auto optComponent = componentManager.tryGetComponent<TestComponentA>(entity);
@@ -239,13 +256,16 @@ namespace nexo::ecs {
 	TEST_F(ComponentManagerTest, EntityDestroyedRemovesAllComponents) {
 	    const Entity entity = 1;
 	    Signature signature;
+		Signature oldSignature = signature;
+		signature.set(componentManager.getComponentType<TestComponentA>(), true);
 
 	    // Add multiple components to the entity
 		signature.set(getComponentTypeID<TestComponentA>());
-	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), oldSignature, signature);
 
-	    signature.set(getComponentTypeID<TestComponentB>());
-	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+		Signature newSignature = signature;
+	    newSignature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature, newSignature);
 
 	    // Verify the components exist
 	    EXPECT_TRUE(componentManager.getComponentArray<TestComponentA>()->hasComponent(entity));
@@ -395,12 +415,14 @@ namespace nexo::ecs {
 	    // Create required entity components
 	    const Entity entity = 1;
 	    Signature signature;
+		Signature oldSignature = signature;
 
 	    signature.set(getComponentTypeID<TestComponentA>());
-	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), oldSignature, signature);
 
-	    signature.set(getComponentTypeID<TestComponentB>());
-	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+		Signature newSignature = signature;
+	    newSignature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature, newSignature);
 
 	    // Entity should be automatically added to the group
 	    EXPECT_EQ(group->size(), 1);
@@ -415,12 +437,15 @@ namespace nexo::ecs {
 	    // Create entity with required components first
 	    const Entity entity = 1;
 	    Signature signature;
+		Signature oldSignature = signature;
 	    signature.set(getComponentTypeID<TestComponentA>());
 
-	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), oldSignature, signature);
 
-	    signature.set(getComponentTypeID<TestComponentB>());
-	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
+		Signature newSignature = signature;
+	    newSignature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature, newSignature);
+		signature = newSignature;
 
 	    // Register group
 	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
@@ -428,8 +453,10 @@ namespace nexo::ecs {
 	    // Verify entity is in the group
 	    EXPECT_EQ(group->size(), 1);
 
+
 	    // Remove a required component
-	    componentManager.removeComponent<TestComponentB>(entity, signature);
+		newSignature.set(getComponentTypeID<TestComponentB>(), false);
+	    componentManager.removeComponent<TestComponentB>(entity, signature, newSignature);
 
 	    // Entity should be automatically removed from the group
 	    EXPECT_EQ(group->size(), 0);
@@ -441,11 +468,13 @@ namespace nexo::ecs {
 
 	    for (Entity e = 1; e <= 5; ++e) {
 			Signature signature;
+			Signature oldSignature = signature;
       		signature.set(getComponentTypeID<TestComponentA>());
-	        componentManager.addComponent<TestComponentA>(e, TestComponentA(e * 10), signature);
+	        componentManager.addComponent<TestComponentA>(e, TestComponentA(e * 10), oldSignature, signature);
 
+			oldSignature = signature;
 	        signature.set(getComponentTypeID<TestComponentB>());
-	        componentManager.addComponent<TestComponentB>(e, TestComponentB(e * 1.0f, e * 2.0f), signature);
+	        componentManager.addComponent<TestComponentB>(e, TestComponentB(e * 1.0f, e * 2.0f), oldSignature, signature);
 	    }
 
 	    // All entities should be in the group
@@ -454,9 +483,12 @@ namespace nexo::ecs {
 		signature.set(getComponentTypeID<TestComponentA>());
 		signature.set(getComponentTypeID<TestComponentB>());
 
+		Signature newSignature = signature;
+		signature.set(getComponentTypeID<TestComponentA>(), false);
+
 	    // Remove some entities
 	    for (Entity e = 1; e <= 5; e += 2) {
-	        componentManager.removeComponent<TestComponentA>(e, signature);
+	        componentManager.removeComponent<TestComponentA>(e, signature, newSignature);
 	    }
 
 	    // Only remaining entities should be in the group
@@ -473,12 +505,14 @@ namespace nexo::ecs {
 	    // Create entity with required components
 	    const Entity entity = 1;
 	    Signature signature;
+		Signature oldSignature = signature;
 
-	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), signature);
-	    signature.set(getComponentTypeID<TestComponentA>());
+		signature.set(getComponentTypeID<TestComponentA>());
+	    componentManager.addComponent<TestComponentA>(entity, TestComponentA(42), oldSignature, signature);
 
-	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), signature);
-	    signature.set(getComponentTypeID<TestComponentB>());
+		oldSignature = signature;
+		signature.set(getComponentTypeID<TestComponentB>());
+	    componentManager.addComponent<TestComponentB>(entity, TestComponentB(1.0f, 2.0f), oldSignature, signature);
 
 	    // Register group
 	    auto group = componentManager.registerGroup<TestComponentA>(get<TestComponentB>());
@@ -507,44 +541,56 @@ namespace nexo::ecs {
 
 	    // Create entities with various component combinations
 	    Signature signature1, signature2, signature3;
+		Signature oldSignature1, oldSignature2, oldSignature3;
 
 	    // Entity 1: A + B + C
+		oldSignature1 = signature1;
 	    signature1.set(getComponentTypeID<TestComponentA>());
-	    componentManager.addComponent<TestComponentA>(1, TestComponentA(10), signature1);
+	    componentManager.addComponent<TestComponentA>(1, TestComponentA(10), oldSignature1, signature1);
 
+		oldSignature1 = signature1;
 	    signature1.set(getComponentTypeID<TestComponentB>());
-	    componentManager.addComponent<TestComponentB>(1, TestComponentB(1.0f, 2.0f), signature1);
+	    componentManager.addComponent<TestComponentB>(1, TestComponentB(1.0f, 2.0f), oldSignature1, signature1);
 
+		oldSignature1 = signature1;
 	    signature1.set(getComponentTypeID<TestComponentC>());
-	    componentManager.addComponent<TestComponentC>(1, TestComponentC("Entity1"), signature1);
+	    componentManager.addComponent<TestComponentC>(1, TestComponentC("Entity1"), oldSignature1, signature1);
 
 	    // Entity 2: A + B + D
+		oldSignature2 = signature2;
 	    signature2.set(getComponentTypeID<TestComponentA>());
-	    componentManager.addComponent<TestComponentA>(2, TestComponentA(20), signature2);
+	    componentManager.addComponent<TestComponentA>(2, TestComponentA(20), oldSignature2, signature2);
 
+		oldSignature2 = signature2;
 	    signature2.set(getComponentTypeID<TestComponentB>());
-	    componentManager.addComponent<TestComponentB>(2, TestComponentB(3.0f, 4.0f), signature2);
+	    componentManager.addComponent<TestComponentB>(2, TestComponentB(3.0f, 4.0f), oldSignature2, signature2);
 
+	    oldSignature2 = signature2;
 	    signature2.set(getComponentTypeID<TestComponentD>());
-	    componentManager.addComponent<TestComponentD>(2, TestComponentD(true), signature2);
+	    componentManager.addComponent<TestComponentD>(2, TestComponentD(true), oldSignature2, signature2);
 
 	    // Entity 3: C + D
+		oldSignature3 = signature3;
 	    signature3.set(getComponentTypeID<TestComponentC>());
-	    componentManager.addComponent<TestComponentC>(3, TestComponentC("Entity3"), signature3);
+	    componentManager.addComponent<TestComponentC>(3, TestComponentC("Entity3"), oldSignature3, signature3);
 
+		oldSignature3 = signature3;
 	    signature3.set(getComponentTypeID<TestComponentD>());
-	    componentManager.addComponent<TestComponentD>(3, TestComponentD(false), signature3);
+	    componentManager.addComponent<TestComponentD>(3, TestComponentD(false), oldSignature3, signature3);
 
 	    // Verify group membership
 	    EXPECT_EQ(groupAB->size(), 2); // Entities 1 and 2
 	    EXPECT_EQ(groupCD->size(), 1); // Entity 3
 
 	    // Remove components to change group membership
-	    componentManager.removeComponent<TestComponentB>(1, signature1);
+		Signature newSignature1 = signature1;
+		newSignature1.set(getComponentTypeID<TestComponentB>(), false);
+	    componentManager.removeComponent<TestComponentB>(1, signature1, newSignature1);
 	    signature1.reset(getComponentTypeID<TestComponentB>());
 
+		oldSignature1 = signature1;
 	    signature1.set(getComponentTypeID<TestComponentD>());
-	    componentManager.addComponent<TestComponentD>(1, TestComponentD(true), signature1);
+	    componentManager.addComponent<TestComponentD>(1, TestComponentD(true), oldSignature1, signature1);
 
 	    // Check updated group membership
 	    EXPECT_EQ(groupAB->size(), 1); // Only Entity 2 now

@@ -313,6 +313,11 @@ namespace nexo::renderer {
         toResize = true;
     }
 
+    const glm::vec2 OpenGlFramebuffer::getSize() const
+    {
+        return glm::vec2(m_specs.width, m_specs.height);
+    }
+
     void OpenGlFramebuffer::getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const
     {
         // Add more types here when necessary

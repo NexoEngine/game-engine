@@ -138,6 +138,8 @@ namespace nexo::renderer {
              */
             void resize(unsigned int width, unsigned int height) override;
 
+            const glm::vec2 getSize() const override;
+
 
             /**
              * @brief Reads a pixel value from a specified attachment.

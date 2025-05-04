@@ -18,6 +18,7 @@
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
+#include "Application.hpp"
 
 namespace nexo::system {
 	void SpotLightsSystem::update()
@@ -34,20 +35,22 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+		auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No spot light found in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "No spot light found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No spot light found in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No spot light found in scene {}, skipping", sceneName));
 
 		if (partition->count > MAX_SPOT_LIGHTS)
 		    THROW_EXCEPTION(core::TooManySpotLightsException, sceneRendered, partition->count);
 
-		const auto spotLightSpan = get<components::SpotLightComponent>();
+		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
 		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = spotLightSpan[i];
+			renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = entitySpan[i];
 			renderContext.sceneLights.spotLightCount++;
 		}
 	}

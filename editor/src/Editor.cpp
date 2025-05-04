@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "ADocumentWindow.hpp"
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "utils/Config.hpp"
@@ -21,12 +22,13 @@
 #include "Path.hpp"
 #include "backends/ImGuiBackend.hpp"
 #include "IconsFontAwesome.h"
+#include "ImNexo/Elements.hpp"
+#include "context/ActionManager.hpp"
 
 #include "imgui.h"
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include <algorithm>
-#include <Components/Components.hpp>
 
 ImGuiID g_materialInspectorDockID = 0;
 
@@ -158,6 +160,7 @@ namespace nexo::editor {
         colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
         colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
         colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_PopupBg]                = ImVec4(0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
@@ -247,8 +250,7 @@ namespace nexo::editor {
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
-        if (!ImGui::DockBuilderGetNode(dockspaceID))
-        {
+        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
@@ -286,14 +288,15 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            const std::string defaultSceneUniqueStrId = std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(0); // for the default scene
+            ImGui::DockBuilderDockWindow(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_MATERIAL_INSPECTOR, materialInspectorNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_ASSET_MANAGER, consoleNode);
 
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, mainSceneTop);
+            m_windowRegistry.setDockId(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, consoleNode);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
             m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, inspectorNode);
@@ -306,14 +309,8 @@ namespace nexo::editor {
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
         }
-        else if (!dockingRegistryFilled)
-        {
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_DEFAULT_SCENE, findWindowDockIDFromConfig(NEXO_WND_USTRID_DEFAULT_SCENE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_CONSOLE, findWindowDockIDFromConfig(NEXO_WND_USTRID_CONSOLE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_SCENE_TREE, findWindowDockIDFromConfig(NEXO_WND_USTRID_SCENE_TREE));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_INSPECTOR));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_MATERIAL_INSPECTOR, findWindowDockIDFromConfig(NEXO_WND_USTRID_MATERIAL_INSPECTOR));
-            m_windowRegistry.setDockId(NEXO_WND_USTRID_ASSET_MANAGER, findWindowDockIDFromConfig(NEXO_WND_USTRID_ASSET_MANAGER));
+        else if (!dockingRegistryFilled) {
+            setAllWindowDockIDsFromConfig(m_windowRegistry);
          	dockingRegistryFilled = true;
         }
 
@@ -321,23 +318,166 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-    void Editor::render()
+    void Editor::handleGlobalCommands()
     {
-    	getApp().beginFrame();
+        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
+        {
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
+            {
+                ActionManager::get().redo();
+            }
+            else
+            {
+                ActionManager::get().undo();
+            }
+        }
+    }
 
-        ImGuiBackend::begin();
+    std::vector<CommandInfo> Editor::handleFocusedWindowCommands()
+    {
+        std::vector<CommandInfo> possibleCommands;
+        static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
+        static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
+        const float commandPersistTime = 2.0f;             // Show last commands for 2 seconds
 
-        ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
-        ImGuizmo::BeginFrame();
-        buildDockspace();
+        auto focusedWindow = m_windowRegistry.getFocusedWindow();
+        if (focusedWindow)
+        {
+            WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
+            m_inputManager.processInputs(currentState);
+            possibleCommands = m_inputManager.getPossibleCommands(currentState);
 
-        drawMenuBar();
-        ImGui::ShowDemoWindow();
+            // Update the last valid commands if we have any
+            if (!possibleCommands.empty())
+            {
+                lastValidCommands = possibleCommands;
+                commandDisplayTimer = commandPersistTime; // Reset timer
+            }
+            else if (commandDisplayTimer > 0.0f)
+            {
+                // Use the last valid commands if timer is still active
+                possibleCommands = lastValidCommands;
+                commandDisplayTimer -= ImGui::GetIO().DeltaTime;
+            }
+            else if (lastValidCommands.empty())
+            {
+                // Fallback: If we've never had commands, grab all possible commands from the window
+                // This is a more complex operation but ensures we always have something to show
+                possibleCommands = m_inputManager.getAllPossibleCommands(currentState);
+                lastValidCommands = possibleCommands;
+            }
+            else
+            {
+                // Use the last valid set of commands
+                possibleCommands = lastValidCommands;
+            }
+        }
+        return possibleCommands;
+    }
 
+    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands)
+    {
+        const float bottomBarHeight = 38.0f;
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
+        auto viewport = ImGui::GetMainViewport();
 
+        ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - bottomBarHeight));
+        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, bottomBarHeight));
+        ImGui::SetNextWindowViewport(viewport->ID);
 
-        m_windowRegistry.render();
+        ImGuiWindowFlags bottomBarFlags =
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoNav |
+            ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoFocusOnAppearing |
+            ImGuiWindowFlags_NoInputs |
+            ImGuiWindowFlags_NoBackground;
 
+        if (ImGui::Begin(NEXO_WND_USTRID_BOTTOM_BAR, nullptr, bottomBarFlags))
+        {
+            const float textScaleFactor = 0.90f; // 15% larger text
+            ImGui::SetWindowFontScale(textScaleFactor);
+            // Vertically center the content
+            float windowHeight = ImGui::GetWindowHeight();
+            float textHeight = ImGui::GetTextLineHeight();
+            float paddingY = (windowHeight - textHeight) * 0.5f;
+
+            // Apply the vertical padding
+            ImGui::SetCursorPosY(paddingY);
+
+            // Start with a small horizontal padding
+            ImGui::SetCursorPosX(10.0f);
+
+            if (!possibleCommands.empty())
+            {
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                // Use horizontal layout for commands, left-aligned
+                for (const auto& cmd : possibleCommands)
+                {
+                    // Calculate text sizes for proper positioning and border sizing
+                    ImVec2 keySize = ImGui::CalcTextSize(cmd.key.c_str());
+                    ImVec2 colonSize = ImGui::CalcTextSize(":");
+                    ImVec2 descSize = ImGui::CalcTextSize(cmd.description.c_str());
+
+                    // Position of the start of this command
+                    ImVec2 commandStart = ImGui::GetCursorScreenPos();
+
+                    // Total size of command group with padding
+                    float commandWidth = keySize.x + colonSize.x + 5.0f + descSize.x;
+                    float commandHeight = std::max(keySize.y, std::max(colonSize.y, descSize.y));
+
+                    // Add padding around the entire command
+                    float borderPadding = 6.0f;
+                    float borderCornerRadius = 3.0f;
+
+                    // Draw the gradient border rectangle
+                    ImVec2 rectMin = ImVec2(commandStart.x - borderPadding, commandStart.y - borderPadding);
+                    ImVec2 rectMax = ImVec2(commandStart.x + commandWidth + borderPadding,
+                                           commandStart.y + commandHeight + borderPadding);
+
+                    // Draw gradient border rectangle
+                    drawList->AddRect(
+                        rectMin,
+                        rectMax,
+                        IM_COL32(58, 124, 161, 200),  // Gradient start color
+                        borderCornerRadius,
+                        0,
+                        1.5f  // Border thickness
+                    );
+
+                    // Dark inner background
+                    drawList->AddRectFilled(
+                        ImVec2(rectMin.x + 1, rectMin.y + 1),
+                        ImVec2(rectMax.x - 1, rectMax.y - 1),
+                        IM_COL32(10, 11, 25, 200),  // Dark inner background
+                        borderCornerRadius - 0.5f
+                    );
+
+                    // Draw the command components
+                    const std::string &key = cmd.key + ":";
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", key.c_str());
+                    ImGui::SameLine(0.0f, 5.0f);
+                    ImGui::Text("%s", cmd.description.c_str());
+
+                    // Add space between commands
+                    ImGui::SameLine(0.0f, 20.0f);
+
+                    // Update cursor position to account for the border we added
+                    ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, commandStart.y));
+                }
+            }
+        }
+        ImGui::End();
+        ImGui::PopStyleColor(2); // Pop both text and bg colors
+    }
+
+    void Editor::drawBackground()
+    {
         auto viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
@@ -353,19 +493,41 @@ namespace nexo::editor {
                         ImGuiWindowFlags_NoScrollbar |
                         ImGuiWindowFlags_NoBackground);
 
-        const std::vector<Components::GradientStop> stops = {
+        const std::vector<ImNexo::GradientStop> stops = {
             { 0.06f, IM_COL32(58, 124, 161, 255) },
             {0.26f, IM_COL32(88, 87, 154, 255) },
             { 0.50f, IM_COL32(88, 87, 154, 255) },
             {0.73f, IM_COL32(58, 124, 161, 255) },
         };
 
-        float angle = 148;
+        constexpr float angle = 148;
 
-        Components::drawRectFilledLinearGradient(viewport->Pos,
+        ImNexo::RectFilledLinearGradient(viewport->Pos,
                 ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
 
         ImGui::End();
+    }
+
+    void Editor::render()
+    {
+    	getApp().beginFrame();
+
+        ImGuiBackend::begin();
+
+        ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+        ImGuizmo::BeginFrame();
+        buildDockspace();
+
+        drawMenuBar();
+        // ImGui::ShowDemoWindow();
+        m_windowRegistry.render();
+
+        handleGlobalCommands();
+
+        // Get the commands to display in the bottom bar
+        std::vector<CommandInfo> possibleCommands = handleFocusedWindowCommands();
+        drawShortcutBar(possibleCommands);
+        drawBackground();
 
         ImGui::Render();
 

@@ -15,15 +15,27 @@
 
 #include <queue>
 #include "Camera.hpp"
+#include "Types.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "Light.hpp"
 
 namespace nexo::components {
-	struct RenderContext {
-		int sceneRendered = -1;
-		renderer::Renderer3D renderer3D;
-		std::queue<CameraContext> cameras;
-		LightContext sceneLights;
+        struct RenderContext {
+            int sceneRendered = -1;
+            SceneType sceneType;
+            bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
+            glm::vec2 viewportBounds[2]; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
+            struct GridParams {
+                bool enabled = true;
+                float gridSize = 100.0f;
+                float minPixelsBetweenCells = 2.0f;
+                float cellSize = 0.025f;
+            };
+            GridParams gridParams;
+            renderer::Renderer3D renderer3D;
+            std::queue<CameraContext> cameras;
+            LightContext sceneLights;
+
 
 		RenderContext()
 		{
@@ -53,12 +65,15 @@ namespace nexo::components {
 		void reset()
 		{
 			sceneRendered = -1;
+			isChildWindow = false;
+			viewportBounds[0] = glm::vec2{};
+			viewportBounds[1] = glm::vec2{};
 			std::queue<CameraContext> empty;
 			std::swap(cameras, empty);
 			sceneLights.ambientLight = glm::vec3(0.0f);
 			sceneLights.pointLightCount = 0;
 			sceneLights.spotLightCount = 0;
-			sceneLights.directionalLightCount = 0;
+			sceneLights.dirLight = DirectionalLightComponent{};
 		}
 	};
 }

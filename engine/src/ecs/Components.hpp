@@ -262,15 +262,18 @@ namespace nexo::ecs {
 		     * @tparam T The component type
 		     * @param entity The entity to add the component to
 		     * @param component The component instance to add
-		     * @param signature The entity's current component signature
+		     * @param oldSignature The entity's current component signature
+		     * @param newSignature The entity's new component signature
 		     */
 		    template<typename T>
-		    void addComponent(Entity entity, T component, const Signature signature)
+		    void addComponent(Entity entity, T component, const Signature oldSignature, const Signature newSignature)
 			{
 		        getComponentArray<T>()->insert(entity, std::move(component));
 
 				for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-				    if ((signature & group->allSignature()) == group->allSignature()) {
+				    // Check if entity qualifies now but did not qualify before.
+                    if (((oldSignature & group->allSignature()) != group->allSignature()) &&
+                            ((newSignature & group->allSignature()) == group->allSignature())) {
 		    			group->addToGroup(entity);
 					}
 				}
@@ -285,17 +288,21 @@ namespace nexo::ecs {
 		     * @tparam T The component type
 		     * @param entity The entity to remove the component from
 		     * @param previousSignature The entity's signature before removal
+		     * @param newSignature The entity's signature after removal
 		     */
-		    template<typename T>
-		    void removeComponent(Entity entity, const Signature previousSignature)
-			{
-				for (const auto& group : std::ranges::views::values(m_groupRegistry))
-				{
-					if ((previousSignature & group->allSignature()) == group->allSignature())
-						group->removeFromGroup(entity);
-				}
-		        getComponentArray<T>()->remove(entity);
-		    }
+            template<typename T>
+            void removeComponent(Entity entity, const Signature previousSignature, const Signature newSignature)
+            {
+                for (const auto& group : std::ranges::views::values(m_groupRegistry))
+                {
+                    // If the entity no longer qualifies but did before, remove it.
+                    if (((previousSignature & group->allSignature()) == group->allSignature()) &&
+                    ((newSignature & group->allSignature()) != group->allSignature())) {
+                        group->removeFromGroup(entity);
+                    }
+                }
+                getComponentArray<T>()->remove(entity);
+            }
 
 		    /**
 		     * @brief Attempts to remove a component from an entity
@@ -306,10 +313,11 @@ namespace nexo::ecs {
 		     * @tparam T The component type
 		     * @param entity The entity to remove the component from
 		     * @param previousSignature The entity's signature before the attempted removal
+		     * @param newSignature The entity's signature after the attempted removal
 		     * @return true if the component was removed, false if it didn't exist
 		     */
 		    template<typename T>
-		    bool tryRemoveComponent(Entity entity, const Signature previousSignature)
+		    bool tryRemoveComponent(Entity entity, const Signature previousSignature, const Signature newSignature)
 			{
 		        auto componentArray = getComponentArray<T>();
 		        if (!componentArray->hasComponent(entity))
@@ -317,8 +325,11 @@ namespace nexo::ecs {
 
 				for (const auto& group : std::ranges::views::values(m_groupRegistry))
 				{
-					if ((previousSignature & group->allSignature()) == group->allSignature())
-						group->removeFromGroup(entity);
+				    // If the entity no longer qualifies but did before, remove it.
+                    if (((previousSignature & group->allSignature()) == group->allSignature()) &&
+                    ((newSignature & group->allSignature()) != group->allSignature())) {
+                        group->removeFromGroup(entity);
+                    }
 				}
 		        componentArray->remove(entity);
 		        return true;

@@ -18,6 +18,7 @@
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
+#include "Application.hpp"
 
 namespace nexo::system {
 	void DirectionalLightsSystem::update()
@@ -34,21 +35,20 @@ namespace nexo::system {
 
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 
+        auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
 		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No directional light found in scene {}, skipping", sceneRendered);
+            LOG_ONCE(NEXO_WARN, "No directional light found in scene {}, skipping", sceneName);
             return;
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No directional light found in scene {}, skipping", sceneRendered));
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No directional light found in scene {}, skipping", sceneName));
 
-		if (partition->count > MAX_DIRECTIONAL_LIGHTS)
-		    THROW_EXCEPTION(core::TooManyDirectionalLightsException, sceneRendered, partition->count);
+        if (partition->count != 1)
+            LOG_ONCE(NEXO_WARN, "For scene {}, found {} directional lights, only one is supported, picking the first one", sceneName, partition->count);
+        else
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} directional lights, only one is supported, picking the first one", sceneName, partition->count));
 
-		const auto directionalLightSpan = get<components::DirectionalLightComponent>();
-
-		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
-		{
-			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount] = directionalLightSpan[i];
-			renderContext.sceneLights.directionalLightCount++;
-		}
+		const auto &dirLight = get<components::DirectionalLightComponent>()[0];
+		renderContext.sceneLights.dirLight = dirLight;
 	}
 }

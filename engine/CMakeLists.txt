@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Vector.cpp
+        common/math/Projection.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
@@ -25,6 +26,7 @@ set(COMMON_SOURCES
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderLibrary.cpp
         engine/src/renderer/ShaderStorageBuffer.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
@@ -37,6 +39,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/primitives/Mesh.cpp
         engine/src/renderer/primitives/Cube.cpp
+        engine/src/renderer/primitives/Billboard.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp

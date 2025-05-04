@@ -28,10 +28,10 @@ namespace nexo {
         return Application::getInstance();
     }
 
-    void runEngine(const scene::SceneId id, const RenderingType renderingType)
+    void runEngine(const Application::SceneInfo &sceneInfo)
     {
         Application &app = Application::getInstance();
-        app.run(id, renderingType);
+        app.run(sceneInfo);
     }
 
 }

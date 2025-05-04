@@ -48,6 +48,7 @@ namespace nexo::components {
         glm::vec4 clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f};  ///< Background clear color.
 
         bool active = true;                 ///< Indicates if the camera is active.
+        bool render = false;                ///< Indicates if the camera has to be rendered.
         bool main = true;                   ///< Indicates if the camera is the main camera.
         bool resizing = false;              ///< Internal flag indicating if the camera is resizing.
 
@@ -102,7 +103,51 @@ namespace nexo::components {
                 m_renderTarget->resize(newWidth, newHeight);
             }
         }
+
+        struct Memento {
+            unsigned int width;
+            unsigned int height;
+            bool viewportLocked;
+            float fov;
+            float nearPlane;
+            float farPlane;
+            CameraType type;
+            glm::vec4 clearColor;
+            bool active;
+            bool render;
+            bool main;
+            bool resizing;
+            std::shared_ptr<renderer::Framebuffer> renderTarget;
+
+            CameraComponent restore() const
+            {
+                return {width, height, viewportLocked, fov, nearPlane, farPlane, type, clearColor, active, render, main, resizing, renderTarget};
+            }
+        };
+
+        [[nodiscard]] Memento save() const
+        {
+            return {
+                width,
+                height,
+                viewportLocked,
+                fov,
+                nearPlane,
+                farPlane,
+                type,
+                clearColor,
+                active,
+                render,
+                main,
+                resizing,
+                m_renderTarget
+            };
+        }
+
+
     };
+
+    struct EditorCameraTag {};
 
     /**
      * @brief Component used to control a perspective camera using mouse input.
@@ -115,8 +160,34 @@ namespace nexo::components {
 
         glm::vec2 lastMousePosition{};  ///< Last recorded mouse position.
         float mouseSensitivity = 0.1f;///< Sensitivity factor for mouse movement.
-        float yaw = 0.0f;             ///< Yaw angle in degrees.
-        float pitch = 0.0f;           ///< Pitch angle in degrees.
+        float translationSpeed = 5.0f; ///< Camera speed
+        bool wasMouseReleased = true;
+        bool wasActiveLastFrame = true;
+
+        struct Memento {
+            float mouseSensitivity;
+            float yaw;
+            float pitch;
+            float translationSpeed;
+
+            PerspectiveCameraController restore() const
+            {
+                PerspectiveCameraController controller;
+                controller.mouseSensitivity = mouseSensitivity;
+                controller.translationSpeed = translationSpeed;
+                return controller;
+            }
+        };
+
+        [[nodiscard]] Memento save() const
+        {
+            return {
+                mouseSensitivity,
+                translationSpeed
+            };
+        }
+
+
     };
 
     /**
@@ -129,6 +200,32 @@ namespace nexo::components {
         float mouseSensitivity = 0.1f;                            ///< Sensitivity factor for mouse movement.
         float distance = 5.0f;                                    ///< Distance from the camera to the target entity.
         ecs::Entity targetEntity;                                 ///< The target entity the camera is focusing on.
+
+        struct Memento {
+            float mouseSensitivity;
+            float distance;
+            ecs::Entity targetEntity;
+
+            PerspectiveCameraTarget restore() const
+            {
+                PerspectiveCameraTarget target;
+                target.mouseSensitivity = mouseSensitivity;
+                target.distance = distance;
+                target.targetEntity = targetEntity;
+                return target;
+            }
+        };
+
+        [[nodiscard]] Memento save() const
+        {
+            return {
+                mouseSensitivity,
+                distance,
+                targetEntity
+            };
+        }
+
+
     };
 
     /**

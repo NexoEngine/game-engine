@@ -16,6 +16,7 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
+#include "ShaderLibrary.hpp"
 #include "components/Render3D.hpp"
 
 #include <array>
@@ -78,7 +79,11 @@ namespace nexo::renderer {
         static constexpr unsigned int maxTextureSlots = 32;
         static constexpr unsigned int maxTransforms = 1024;
 
-        std::shared_ptr<Shader> textureShader;
+        glm::vec3 cameraPosition;
+
+        ShaderLibrary shaderLibrary;
+
+        std::shared_ptr<Shader> currentSceneShader = nullptr;
         std::shared_ptr<VertexArray> vertexArray;
         std::shared_ptr<VertexBuffer> vertexBuffer;
         std::shared_ptr<IndexBuffer> indexBuffer;
@@ -167,7 +172,7 @@ namespace nexo::renderer {
          * - RendererNotInitialized if the renderer is not initialized.
          * - RendererSceneLifeCycleFailure if called without proper initialization.
          */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos);
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos, const std::string &shader = "");
 
         /**
          * @brief Ends the current 3D rendering scene.
@@ -305,6 +310,9 @@ namespace nexo::renderer {
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const components::Material& material, int entityID = -1) const;
         void drawMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
+        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
+        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const components::Material& material, int entityID) const;
+
         /**
          * @brief Resets rendering statistics.
          *
@@ -325,7 +333,7 @@ namespace nexo::renderer {
          */
         [[nodiscard]] Renderer3DStats getStats() const;
 
-        std::shared_ptr<Shader> &getShader() const {return m_storage->textureShader;};
+        std::shared_ptr<Shader> &getShader() const {return m_storage->currentSceneShader;};
 
         std::shared_ptr<Renderer3DStorage> getInternalStorage() const { return m_storage; };
     private:

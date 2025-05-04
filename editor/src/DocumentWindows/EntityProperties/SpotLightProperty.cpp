@@ -13,26 +13,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SpotLightProperty.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
 #include "components/Light.hpp"
 #include "math/Light.hpp"
+#include "ImNexo/Widgets.hpp"
 
 namespace nexo::editor {
 
 	void SpotLightProperty::show(ecs::Entity entity)
 	{
         auto& spotComponent = Application::getEntityComponent<components::SpotLightComponent>(entity);
+        auto &transformComponent = Application::getEntityComponent<components::TransformComponent>(entity);
 
-        if (EntityPropertiesComponents::drawHeader("##SpotNode", "Spot light"))
+        if (ImNexo::Header("##SpotNode", "Spot light"))
         {
-       		ImGui::Spacing();
+            ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
 			static bool showColorPicker = false;
 			ImGui::Text("Color");
 			ImGui::SameLine();
 			glm::vec4 color = {spotComponent.color, 1.0f};
-			Widgets::drawColorEditor("##ColorEditor Spot light", &color, &colorPickerMode, &showColorPicker);
+			ImNexo::ColorEditor("##ColorEditor Spot light", &color, &colorPickerMode, &showColorPicker);
 			spotComponent.color = color;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
@@ -44,8 +44,8 @@ namespace nexo::editor {
                 ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
                 ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                EntityPropertiesComponents::drawRowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x, -FLT_MAX, FLT_MAX, 0.1f);
-                EntityPropertiesComponents::drawRowDragFloat3("Position", "X", "Y", "Z", &spotComponent.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
+                ImNexo::RowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x, -FLT_MAX, FLT_MAX, 0.1f);
+                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &transformComponent.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
 
 
                 ImGui::EndTable();
@@ -56,7 +56,7 @@ namespace nexo::editor {
 	            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 	            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-                if (EntityPropertiesComponents::drawRowDragFloat1("Distance", "", &spotComponent.maxDistance, 1.0f, 3250.0f, 1.0f))
+                if (ImNexo::RowDragFloat1("Distance", "", &spotComponent.maxDistance, 1.0f, 3250.0f, 1.0f))
                 {
 					auto [lin, quad] = math::computeAttenuationFromDistance(spotComponent.maxDistance);
 					spotComponent.linear = lin;
@@ -64,9 +64,9 @@ namespace nexo::editor {
                 }
                 float innerCutOffDegrees = glm::degrees(glm::acos(spotComponent.cutOff));
                 float outerCutOffDegrees = glm::degrees(glm::acos(spotComponent.outerCutoff));
-                if (EntityPropertiesComponents::drawRowDragFloat1("Inner cut off", "", &innerCutOffDegrees, 0.0f, outerCutOffDegrees, 0.5f))
+                if (ImNexo::RowDragFloat1("Inner cut off", "", &innerCutOffDegrees, 0.0f, outerCutOffDegrees, 0.5f))
                 	spotComponent.cutOff = glm::cos(glm::radians(innerCutOffDegrees));
-                if (EntityPropertiesComponents::drawRowDragFloat1("Outer cut off", "", &outerCutOffDegrees, innerCutOffDegrees, 90.0f, 0.5f))
+                if (ImNexo::RowDragFloat1("Outer cut off", "", &outerCutOffDegrees, innerCutOffDegrees, 90.0f, 0.5f))
                 	spotComponent.outerCutoff = glm::cos(glm::radians(outerCutOffDegrees));
 
                 ImGui::EndTable();
