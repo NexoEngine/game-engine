@@ -23,6 +23,7 @@
 #include "IconsFontAwesome.h"
 #include "ImNexo/Elements.hpp"
 #include "context/ActionManager.hpp"
+#include "DocumentWindows/TestWindow/TestWindow.hpp"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
@@ -314,7 +315,7 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-    void Editor::handleGlobalCommands() const
+    void Editor::handleGlobalCommands()
     {
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
         {
@@ -326,6 +327,11 @@ namespace nexo::editor {
             {
                 ActionManager::get().undo();
             }
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyDown(ImGuiKey_LeftShift) && ImGui::IsKeyPressed(ImGuiKey_T))
+        {
+            registerWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST);
+            getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
         }
     }
 
