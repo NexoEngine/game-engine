@@ -23,6 +23,28 @@
 #include "HostString.hpp"
 #include "Path.hpp"
 
+#ifdef WIN32
+    #include <Windows.h>
+
+    #define STR(s) L ## s
+    #define CH(c) L ## c
+    #define DIR_SEPARATOR L'\\'
+
+    #define string_compare wcscmp
+
+#else
+    #include <dlfcn.h>
+    #include <limits.h>
+
+    #define STR(s) s
+    #define CH(c) c
+    #define DIR_SEPARATOR '/'
+    #define MAX_PATH PATH_MAX
+
+    #define string_compare strcmp
+
+#endif
+
 namespace nexo::scripting {
 
     using string_t = std::basic_string<char_t>;
@@ -53,6 +75,7 @@ namespace nexo::scripting {
 
     struct CoreclrDelegate {
         load_assembly_fn load_assembly;
+        load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer;
         get_function_pointer_fn get_function_pointer;
     };
 
@@ -65,8 +88,9 @@ namespace nexo::scripting {
             // Globals
             static inline const std::filesystem::path DEFAULT_NEXO_MANAGED_PATH =
                 Path::resolvePathRelativeToExe("../engine/src/scripting/managed/bin/Debug/net9.0/"); // TODO: Change it later for packing
-            static inline const std::string     NEXO_RUNTIMECONFIG_FILENAME = "Nexo.runtimeconfig.json";
-            static inline const ErrorCallBackFn DEFAULT_ERROR_CALLBACK      = HostHandler::defaultErrorCallback;
+            static inline const std::string     NEXO_RUNTIMECONFIG_FILENAME  = "Nexo.runtimeconfig.json";
+            static inline const std::string     NEXO_ASSEMBLY_FILENAME       = "Nexo.dll";
+            static inline const ErrorCallBackFn DEFAULT_ERROR_CALLBACK       = HostHandler::defaultErrorCallback;
 
         protected:
             // Singleton: protected constructor and destructor
@@ -88,11 +112,17 @@ namespace nexo::scripting {
             enum Status {
                 SUCCESS,
                 UNINITIALIZED,
+
                 HOSTFXR_NOT_FOUND,
                 HOSTFXR_LOAD_ERROR,
+
                 RUNTIME_CONFIG_NOT_FOUND,
                 INIT_DOTNET_RUNTIME_ERROR,
+
                 GET_DELEGATES_ERROR,
+
+                ASSEMBLY_NOT_FOUND,
+                LOAD_ASSEMBLY_ERROR,
 
             };
 
@@ -103,19 +133,42 @@ namespace nexo::scripting {
                 std::filesystem::path dotnetRoot;
 
                 // Nexo
-                std::filesystem::path nexoManagedPath;
+                std::filesystem::path nexoManagedPath = DEFAULT_NEXO_MANAGED_PATH;
 
-                ErrorCallBackFn errorCallback;
+                ErrorCallBackFn errorCallback = DEFAULT_ERROR_CALLBACK;
             };
             static inline ErrorCallBackFn currentErrorCallback = nullptr;
 
             Status initialize(Parameters parameters);
+
+            template <typename T>
+            T getManagedFptr(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName)
+            {
+                if (m_status != SUCCESS) {
+                    m_params.errorCallback("getManagedFptr: HostHandler not initialized");
+                    return nullptr;
+                }
+                void *fptr = nullptr;
+                unsigned int rc = m_delegates.get_function_pointer(typeName, methodName, delegateTypeName, m_host_ctx, nullptr, &fptr);
+                if (rc != 0 || fptr == nullptr) {
+                    m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
+                        typeName ? HostString(typeName).to_utf8() : "",
+                        methodName ? HostString(methodName).to_utf8() : "",
+                        rc)
+                    );
+                    return nullptr;
+                }
+                return reinterpret_cast<T>(fptr);
+            }
 
         protected:
 
             Status loadHostfxr();
             Status initRuntime();
             Status getRuntimeDelegates();
+            Status loadManagedAssembly();
+
+
 
         protected:
             Status m_status = UNINITIALIZED;
