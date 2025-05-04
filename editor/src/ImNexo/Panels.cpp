@@ -20,6 +20,7 @@
 #include "CameraFactory.hpp"
 #include "Path.hpp"
 #include "IconsFontAwesome.h"
+#include "assets/AssetCatalog.hpp"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
 #include "utils/EditorProps.hpp"
@@ -60,20 +61,51 @@ namespace ImNexo {
 			//TODO: implement rendering mode
 		}
 
+    	auto& catalog = nexo::assets::AssetCatalog::getInstance();
 	    // --- Albedo texture ---
-	    static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
-	    static bool showColorPickerAlbedo = false;
-		modified = TextureButton("Albedo texture", material->albedoTexture) || modified;
-		ImGui::SameLine();
-		modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
+        {
+            static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
+		    static bool showColorPickerAlbedo = false;
+		    const auto asset = material->albedoTexture.lock();
+		    auto albedoTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
+
+			std::filesystem::path newTexturePath;
+		    if (TextureButton("Albedo texture", albedoTexture, newTexturePath)
+		    	&& !newTexturePath.empty()) {
+		    	// TODO: /!\ This is not futureproof, this would modify the texture for every asset that use this material
+		    	const auto newTexture = catalog.createAsset<nexo::assets::Texture>(
+					nexo::assets::AssetLocation(newTexturePath.filename().string()),
+					newTexturePath
+				);
+		    	if (newTexture)
+		    		material->albedoTexture = newTexture;
+		    }
+		    ImGui::SameLine();
+		    modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
+        }
 
 		// --- Specular texture ---
-		static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
-		static bool showColorPickerSpecular = false;
-		modified = TextureButton("Specular texture", material->metallicMap) || modified;
-		ImGui::SameLine();
-		modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
-		return modified;
+        {
+            static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
+		    static bool showColorPickerSpecular = false;
+		    const auto asset = material->metallicMap.lock();
+		    auto metallicTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
+
+			std::filesystem::path newTexturePath;
+		    if (TextureButton("Specular texture", metallicTexture, newTexturePath)
+		    	&& !newTexturePath.empty()) {
+		    	// TODO: /!\ This is not futureproof, this would modify the texture for every asset that use this material
+				const auto newTexture = catalog.createAsset<nexo::assets::Texture>(
+					nexo::assets::AssetLocation(newTexturePath.filename().string()),
+					newTexturePath
+				);
+		    	if (newTexture)
+		    		material->metallicMap = newTexture;
+		    }
+		    ImGui::SameLine();
+		    modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
+		}
+        return modified;
 	}
 
     /**
@@ -89,9 +121,9 @@ namespace ImNexo {
 	static nexo::ecs::Entity createDefaultPerspectiveCamera(const nexo::scene::SceneId sceneId, ImVec2 sceneViewportSize)
 	{
         auto &app = nexo::getApp();
-        nexo::renderer::FramebufferSpecs framebufferSpecs;
+        nexo::renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            nexo::renderer::FrameBufferTextureFormats::RGBA8, nexo::renderer::FrameBufferTextureFormats::RED_INTEGER, nexo::renderer::FrameBufferTextureFormats::Depth
+            nexo::renderer::NxFrameBufferTextureFormats::RGBA8, nexo::renderer::NxFrameBufferTextureFormats::RED_INTEGER, nexo::renderer::NxFrameBufferTextureFormats::Depth
         };
         const ImVec2 availSize = ImGui::GetContentRegionAvail();
         const float totalWidth = availSize.x;
@@ -102,7 +134,7 @@ namespace ImNexo {
         const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panel
         framebufferSpecs.width = static_cast<unsigned int>(sceneViewportSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(sceneViewportSize.y);
-        const auto renderTarget = nexo::renderer::Framebuffer::create(framebufferSpecs);
+        const auto renderTarget = nexo::renderer::NxFramebuffer::create(framebufferSpecs);
         nexo::ecs::Entity defaultCamera = nexo::CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
         app.getSceneManager().getScene(sceneId).addEntity(static_cast<nexo::ecs::Entity>(defaultCamera));
         nexo::editor::utils::addPropsTo(defaultCamera, nexo::editor::utils::PropsType::CAMERA);
@@ -311,8 +343,8 @@ namespace ImNexo {
             const float displayWidth = displayHeight;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
-            ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                        ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
+            ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
+                        ImVec2(displayWidth, displayHeight));
 
             ImGui::EndChild();
         }

@@ -17,10 +17,10 @@
 
 namespace nexo::renderer {
     /**
-     * @class RenderCommand
+     * @class NxRenderCommand
      * @brief Provides a high-level interface for issuing rendering commands.
      *
-     * The `RenderCommand` class serves as an abstraction layer over the graphics API
+     * The `NxRenderCommand` class serves as an abstraction layer over the graphics API
      * (e.g., OpenGL, DirectX, Vulkan), allowing the application to issue rendering
      * commands without being tightly coupled to a specific API.
      *
@@ -30,30 +30,30 @@ namespace nexo::renderer {
      *   and drawing indexed primitives.
      *
      * Responsibilities:
-     * - Delegates rendering operations to the underlying `RendererApi` implementation.
+     * - Delegates rendering operations to the underlying `NxRendererApi` implementation.
      * - Provides static methods for commonly used rendering commands.
      *
      * Usage:
      * - Before issuing any rendering commands, call `init()` to initialize the underlying
-     *   `RendererApi`.
+     *   `NxRendererApi`.
      * - Use static methods like `setViewport`, `setClearColor`, `clear`, and `drawIndexed`
      *   for rendering operations.
      *
      * Notes:
-     * - The specific implementation of `RendererApi` (e.g., `OpenGlRendererApi`) is
-     *   determined by the preprocessor directive `GRAPHICS_API_OPENGL` or similar.
+     * - The specific implementation of `RendererApi` (e.g., `NxOpenGlRendererApi`) is
+     *   determined by the preprocessor directive `NX_GRAPHICS_API_OPENGL` or similar.
      */
-    class RenderCommand {
+    class NxRenderCommand {
         public:
             /**
              * @brief Initializes the rendering API.
              *
-             * This method initializes the underlying `RendererApi` instance, ensuring that the
+             * This method initializes the underlying `NxRendererApi` instance, ensuring that the
              * graphics API is ready to accept rendering commands. It must be called before issuing
              * any other render commands.
              *
              * Throws:
-             * - UnknownGraphicsApi exception if the `_rendererApi` instance is null.
+             * - NxUnknownGraphicsApi exception if the `_rendererApi` instance is null.
              *
              * Usage:
              * - Typically called once during application initialization.
@@ -64,7 +64,7 @@ namespace nexo::renderer {
              * @brief Sets the viewport dimensions and position.
              *
              * The viewport defines the rectangular region of the window where rendering will
-             * take place. This command is delegated to the `RendererApi` implementation.
+             * take place. This command is delegated to the `NxRendererApi` implementation.
              *
              * @param x The x-coordinate of the lower-left corner of the viewport.
              * @param y The y-coordinate of the lower-left corner of the viewport.
@@ -80,7 +80,7 @@ namespace nexo::renderer {
             * @brief Sets the clear color for the rendering context.
             *
             * The clear color is used when clearing the color buffer (e.g., during a call to
-            * `clear`). This command is delegated to the `RendererApi` implementation.
+            * `clear`). This command is delegated to the `NxRendererApi` implementation.
             *
             * @param color The color to set as the clear color, represented as a `glm::vec4`
             *              (RGBA format with components in the range [0, 1]).
@@ -95,7 +95,7 @@ namespace nexo::renderer {
              * @brief Clears the screen using the current clear color.
              *
              * This method clears the color and/or depth buffers, preparing the screen for
-             * rendering the next frame. This command is delegated to the `RendererApi`
+             * rendering the next frame. This command is delegated to the `NxRendererApi`
              * implementation.
              *
              * Usage:
@@ -108,7 +108,7 @@ namespace nexo::renderer {
              *
              * This method issues a draw call for rendering indexed geometry. The indices
              * are provided by the index buffer bound to the vertex array. This command is
-             * delegated to the `RendererApi` implementation.
+             * delegated to the `NxRendererApi` implementation.
              *
              * @param vertexArray A shared pointer to the vertex array containing the geometry data.
              * @param indexCount The number of indices to draw. If set to 0, the method will use
@@ -117,7 +117,7 @@ namespace nexo::renderer {
              * Usage:
              * - Use this method to draw meshes or primitives with indexed geometry.
              */
-            static void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount = 0)
+            static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, unsigned int indexCount = 0)
             {
                 _rendererApi->drawIndexed(vertexArray, indexCount);
             }
@@ -210,18 +210,18 @@ namespace nexo::renderer {
 
         private:
             /**
-            * @brief Static pointer to the active `RendererApi` implementation.
+            * @brief Static pointer to the active `NxRendererApi` implementation.
             *
-            * This member holds a pointer to the concrete `RendererApi` instance (e.g.,
-            * `OpenGlRendererApi`). It is initialized based on the active graphics API,
-            * as determined by preprocessor directives (e.g., `GRAPHICS_API_OPENGL`).
+            * This member holds a pointer to the concrete `NxRendererApi` instance (e.g.,
+            * `NxOpenGlRendererApi`). It is initialized based on the active graphics API,
+            * as determined by preprocessor directives (e.g., `NX_GRAPHICS_API_OPENGL`).
             *
             * Notes:
             * - The `_rendererApi` instance is statically allocated and shared across all
-            *   `RenderCommand` methods.
+            *   `NxRenderCommand` methods.
             * - The application must ensure that `_rendererApi` is initialized via `init()`
             *   before issuing any render commands.
             */
-            static RendererApi *_rendererApi;
+            static NxRendererApi *_rendererApi;
     };
 }

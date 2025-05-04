@@ -20,8 +20,8 @@ namespace nexo::components {
 
     struct SpriteComponent {
         glm::vec4 color;
-        std::shared_ptr<renderer::Texture2D> texture = nullptr;
-        std::shared_ptr<renderer::SubTexture2D> sprite = nullptr;
+        std::shared_ptr<renderer::NxTexture2D> texture = nullptr;
+        std::shared_ptr<renderer::NxSubTexture2D> sprite = nullptr;
     };
 
 }

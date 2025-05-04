@@ -22,14 +22,14 @@ namespace nexo::editor {
     void AssetManagerWindow::setup()
     {
         auto& catalog = assets::AssetCatalog::getInstance();
-        const auto asset = new assets::Model();
-        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), asset);
+        auto asset = std::make_unique<assets::Model>();
+        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), std::move(asset));
 
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
             assets::ImporterFileInput fileInput{path};
-            auto assetRef9mn = importer.importAssetAuto(assets::AssetLocation("my_package::9mn@foo/bar/"), fileInput);
+            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@foo/bar/"), fileInput);
         }
         {
             assets::AssetImporter importer;

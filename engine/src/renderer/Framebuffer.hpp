@@ -20,7 +20,7 @@
 namespace nexo::renderer {
 
     /**
-     * @enum FrameBufferTextureFormats
+     * @enum NxFrameBufferTextureFormats
      * @brief Enum representing the various texture formats supported for framebuffer attachments.
      *
      * Texture formats define how data is stored in framebuffer attachments. These include color,
@@ -34,7 +34,7 @@ namespace nexo::renderer {
      * - Depth: Alias for DEPTH24STENCIL8.
      * - NB_TEXTURE_FORMATS: Tracks the number of texture formats (for internal use).
      */
-    enum class FrameBufferTextureFormats {
+    enum class NxFrameBufferTextureFormats {
         NONE = 0,
 
         RGBA8,
@@ -49,7 +49,7 @@ namespace nexo::renderer {
     };
 
     /**
-     * @struct FrameBufferTextureSpecifications
+     * @struct NxFrameBufferTextureSpecifications
      * @brief Defines the format for a single framebuffer texture attachment.
      *
      * This struct specifies the properties of a single texture attachment, such as its format.
@@ -59,17 +59,17 @@ namespace nexo::renderer {
      *
      * Constructors:
      * - FrameBufferTextureSpecifications(): Default constructor with no format.
-     * - FrameBufferTextureSpecifications(const FrameBufferTextureFormats format): Initializes with a specified texture format.
+     * - FrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format): Initializes with a specified texture format.
      */
-    struct FrameBufferTextureSpecifications {
-        FrameBufferTextureSpecifications() = default;
-        FrameBufferTextureSpecifications(const FrameBufferTextureFormats format) : textureFormat(format) {};
+    struct NxFrameBufferTextureSpecifications {
+        NxFrameBufferTextureSpecifications() = default;
+        NxFrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format) : textureFormat(format) {};
 
-        FrameBufferTextureFormats textureFormat = FrameBufferTextureFormats::NONE;
+        NxFrameBufferTextureFormats textureFormat = NxFrameBufferTextureFormats::NONE;
     };
 
     /**
-     * @struct FrameBufferAttachmentsSpecifications
+     * @struct NxFrameBufferAttachmentsSpecifications
      * @brief Defines the list of texture attachments for a framebuffer.
      *
      * A framebuffer can have multiple attachments (e.g., color and depth textures). This struct
@@ -83,18 +83,18 @@ namespace nexo::renderer {
      * - FrameBufferAttachmentsSpecifications(std::initializer_list<FrameBufferTextureSpecifications> attachments):
      *   Initializes the list with a set of predefined texture specifications.
      */
-    struct FrameBufferAttachmentsSpecifications {
-        FrameBufferAttachmentsSpecifications() = default;
-        FrameBufferAttachmentsSpecifications(std::initializer_list<FrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
+    struct NxFrameBufferAttachmentsSpecifications {
+        NxFrameBufferAttachmentsSpecifications() = default;
+        NxFrameBufferAttachmentsSpecifications(std::initializer_list<NxFrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
 
-        std::vector<FrameBufferTextureSpecifications> attachments;
+        std::vector<NxFrameBufferTextureSpecifications> attachments;
     };
 
     /**
-     * @struct FramebufferSpecs
+     * @struct NxFramebufferSpecs
      * @brief Represents the specifications for creating a framebuffer.
      *
-     * FramebufferSpecs encapsulates all the necessary properties for initializing a framebuffer,
+     * NxFramebufferSpecs encapsulates all the necessary properties for initializing a framebuffer,
      * including dimensions, attachments, sampling, and swap chain behavior.
      *
      * Members:
@@ -104,10 +104,10 @@ namespace nexo::renderer {
      * - @param samples The number of samples for multisampling (default is 1).
      * - @param swapChainTarget Indicates whether the framebuffer is part of the swap chain (default is false).
      */
-    struct FramebufferSpecs {
+    struct NxFramebufferSpecs {
         unsigned int width{};
         unsigned int height{};
-        FrameBufferAttachmentsSpecifications attachments;
+        NxFrameBufferAttachmentsSpecifications attachments;
 
         unsigned int samples = 1;
 
@@ -115,12 +115,12 @@ namespace nexo::renderer {
     };
 
     /**
-     * @class Framebuffer
+     * @class NxFramebuffer
      * @brief Abstract class representing a framebuffer in the rendering pipeline.
      *
      * A framebuffer is an off-screen rendering target that stores the results of
      * rendering operations. It can have multiple texture attachments, such as color,
-     * depth, and stencil buffers. The `Framebuffer` class provides an abstraction layer
+     * depth, and stencil buffers. The `NxFramebuffer` class provides an abstraction layer
      * for creating and managing framebuffers across different graphics APIs (e.g., OpenGL, Vulkan).
      *
      * Key Features:
@@ -131,8 +131,8 @@ namespace nexo::renderer {
      * - Resizable: The framebuffer can be resized dynamically to match the viewport dimensions.
      *
      * Usage:
-     * - The `Framebuffer` class is an abstract base class. Platform or API-specific
-     *   implementations (e.g., OpenGLFramebuffer) must inherit and implement the
+     * - The `NxFramebuffer` class is an abstract base class. Platform or API-specific
+     *   implementations (e.g., NxOpenGLFramebuffer) must inherit and implement the
      *   pure virtual methods.
      *
      * Responsibilities:
@@ -146,7 +146,7 @@ namespace nexo::renderer {
      * 3. Access texture attachments (e.g., for post-processing) using `getColorAttachmentId`.
      * 4. Unbind the framebuffer to render to the default framebuffer (screen).
      */
-    class Framebuffer {
+    class NxFramebuffer {
         public:
             /**
             * @brief Destroys the framebuffer and releases associated resources.
@@ -154,7 +154,7 @@ namespace nexo::renderer {
             * This virtual destructor ensures that derived classes properly clean up
             * framebuffer resources (e.g., OpenGL framebuffers).
             */
-            virtual ~Framebuffer() = default;
+            virtual ~NxFramebuffer() = default;
 
             /**
              * @brief Binds the framebuffer as the active rendering target.
@@ -242,18 +242,18 @@ namespace nexo::renderer {
              * This method provides access to the framebuffer's specifications, including
              * dimensions, attachments, and sampling options.
              *
-             * @return A reference to the FramebufferSpecs struct.
+             * @return A reference to the NxFramebufferSpecs struct.
              */
-            [[nodiscard]] virtual FramebufferSpecs &getSpecs() = 0;
+            [[nodiscard]] virtual NxFramebufferSpecs &getSpecs() = 0;
 
             /**
             * @brief Retrieves the specifications of the framebuffer (const version).
             *
             * This method provides read-only access to the framebuffer's specifications.
             *
-            * @return A constant reference to the FramebufferSpecs struct.
+            * @return A constant reference to the NxFramebufferSpecs struct.
             */
-            [[nodiscard]] virtual const FramebufferSpecs &getSpecs() const = 0;
+            [[nodiscard]] virtual const NxFramebufferSpecs &getSpecs() const = 0;
             /**
              * @brief Retrieves the OpenGL ID of a specific color attachment.
              *
@@ -279,7 +279,7 @@ namespace nexo::renderer {
              *
              * @param specs The specifications for creating the framebuffer, including dimensions,
              *              attachments, and sampling options.
-             * @return A shared pointer to the created Framebuffer instance.
+             * @return A shared pointer to the created NxFramebuffer instance.
              *
              * Throws:
              * - Implementation-specific exceptions if framebuffer creation fails.
@@ -287,7 +287,7 @@ namespace nexo::renderer {
              * Notes:
              * - This function is typically implemented in a platform-specific or API-specific source file.
              */
-            static std::shared_ptr<Framebuffer> create(const FramebufferSpecs& specs);
+            static std::shared_ptr<NxFramebuffer> create(const NxFramebufferSpecs& specs);
     };
 
 

@@ -52,7 +52,7 @@ namespace nexo::components {
         bool main = true;                   ///< Indicates if the camera is the main camera.
         bool resizing = false;              ///< Internal flag indicating if the camera is resizing.
 
-        std::shared_ptr<renderer::Framebuffer> m_renderTarget = nullptr; ///< The render target framebuffer.
+        std::shared_ptr<renderer::NxFramebuffer> m_renderTarget = nullptr; ///< The render target framebuffer.
 
         /**
          * @brief Retrieves the projection matrix for this camera.
@@ -117,7 +117,7 @@ namespace nexo::components {
             bool render;
             bool main;
             bool resizing;
-            std::shared_ptr<renderer::Framebuffer> renderTarget;
+            std::shared_ptr<renderer::NxFramebuffer> renderTarget;
 
             CameraComponent restore() const
             {
@@ -238,6 +238,6 @@ namespace nexo::components {
         glm::mat4 viewProjectionMatrix;                      ///< Combined view and projection matrix.
         glm::vec3 cameraPosition;                            ///< The position of the camera.
         glm::vec4 clearColor;                                ///< Clear color used for rendering.
-        std::shared_ptr<renderer::Framebuffer> renderTarget; ///< The render target framebuffer.
+        std::shared_ptr<renderer::NxFramebuffer> renderTarget; ///< The render target framebuffer.
     };
 }

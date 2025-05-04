@@ -74,7 +74,7 @@ find_package(Stb REQUIRED)
 target_include_directories(renderer_tests PRIVATE ${Stb_INCLUDE_DIR})
 target_sources(renderer_tests PRIVATE ${CMAKE_SOURCE_DIR}/engine/external/stb_image.cpp)
 
-target_compile_definitions(renderer_tests PRIVATE GRAPHICS_API_OPENGL)
+target_compile_definitions(renderer_tests PRIVATE NX_GRAPHICS_API_OPENGL)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glad CONFIG REQUIRED)

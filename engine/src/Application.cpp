@@ -181,7 +181,7 @@ namespace nexo {
 
     Application::Application()
     {
-        m_window = renderer::Window::create();
+        m_window = renderer::NxWindow::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
         registerSignalListeners();
@@ -217,16 +217,16 @@ namespace nexo {
         registerWindowCallbacks();
         m_window->setVsync(false);
 
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
         {
-            THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
+            THROW_EXCEPTION(renderer::NxGraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
         }
         LOG(NEXO_INFO, "OpenGL context initialized with glad");
         glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
 #endif
 
-        renderer::Renderer::init();
+        renderer::NxRenderer::init();
 
         m_coordinator->init();
         registerEcsComponents();

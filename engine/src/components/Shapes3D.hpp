@@ -13,29 +13,54 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Render3D.hpp"
-#include "Transform.hpp"
-#include "renderer/RendererContext.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <optional>
+
+#include "Render3D.hpp"
+#include "Transform.hpp"
+#include "renderer/RendererContext.hpp"
+#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::components {
 
     struct Shape3D {
         virtual ~Shape3D() = default;
 
-        virtual void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
+        virtual void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, int entityID) = 0;
         [[nodiscard]] virtual std::shared_ptr<Shape3D> clone() const = 0;
     };
 
     struct Cube final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            renderer3D.drawCube(transf.pos, transf.size, transf.quat, material, entityID);
+
+            // lock all textures
+            auto albedoTextureAsset = material.albedoTexture.lock();
+            auto normalMapAsset = material.normalMap.lock();
+            auto metallicMapAsset = material.metallicMap.lock();
+            auto roughnessMapAsset = material.roughnessMap.lock();
+            auto emissiveMapAsset = material.emissiveMap.lock();
+
+
+            renderer::NxMaterial inputMaterial = {
+                .albedoColor = material.albedoColor,
+                .specularColor = material.specularColor,
+                .emissiveColor = material.emissiveColor,
+                .roughness = material.roughness,
+                .metallic = material.metallic,
+                .opacity = material.opacity,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->getData()->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->getData()->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->getData()->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->getData()->texture : nullptr,
+                .shader = material.shader
+            };
+
+            renderer3D.drawCube(transf.pos, transf.size, transf.quat, inputMaterial, entityID);
         }
 
         [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
@@ -45,9 +70,9 @@ namespace nexo::components {
 
     struct Mesh {
         std::string name;
-        std::vector<renderer::Vertex> vertices;
+        std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
-        std::optional<Material> material;
+        assets::AssetRef<assets::Material> material;
     };
 
     struct MeshNode {
@@ -55,16 +80,23 @@ namespace nexo::components {
         std::vector<Mesh> meshes;
         std::vector<std::shared_ptr<MeshNode>> children;
 
-        void draw(renderer::Renderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
+        void draw(renderer::NxRenderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
         {
             const glm::mat4 localTransform = parentTransform * transform;
             for (const auto &mesh: meshes)
             {
                 //TODO: Implement a way to pass the transform directly to the shader
-                std::vector<renderer::Vertex> transformedVertices = mesh.vertices;
+                std::vector<renderer::NxVertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
-                renderer3D.drawMesh(transformedVertices, mesh.indices, mesh.material->albedoTexture, entityID);
+
+                {
+                    const auto meshMaterialAsset = mesh.material.lock();
+                    const auto albedoTextureAsset = meshMaterialAsset && meshMaterialAsset->isLoaded() ? meshMaterialAsset->getData()->albedoTexture.lock() : nullptr;
+
+                    const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
+                    renderer3D.drawMesh(transformedVertices, mesh.indices, albedoTexture, entityID);
+                }
             }
 
             for (const auto &child: children)
@@ -88,7 +120,7 @@ namespace nexo::components {
         explicit Model(const std::shared_ptr<MeshNode> &rootNode) : root(rootNode) {};
 
         // NOT WORKING ANYMORE
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, [[maybe_unused]] const Material &material, const int entityID) override
         {
             auto renderer3D = context->renderer3D;
             //TODO: Pass the material to the draw mesh function
@@ -113,10 +145,34 @@ namespace nexo::components {
     };
 
     struct BillBoard final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
-            renderer3D.drawBillboard(transf.pos, transf.size, material, entityID);
+
+            // lock all textures
+            auto albedoTextureAsset = material.albedoTexture.lock();
+            auto normalMapAsset = material.normalMap.lock();
+            auto metallicMapAsset = material.metallicMap.lock();
+            auto roughnessMapAsset = material.roughnessMap.lock();
+            auto emissiveMapAsset = material.emissiveMap.lock();
+
+
+            renderer::NxMaterial inputMaterial = {
+                .albedoColor = material.albedoColor,
+                .specularColor = material.specularColor,
+                .emissiveColor = material.emissiveColor,
+                .roughness = material.roughness,
+                .metallic = material.metallic,
+                .opacity = material.opacity,
+                .albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr,
+                .normalMap = normalMapAsset && normalMapAsset->isLoaded() ? normalMapAsset->getData()->texture : nullptr,
+                .metallicMap = metallicMapAsset && metallicMapAsset->isLoaded() ? metallicMapAsset->getData()->texture : nullptr,
+                .roughnessMap = roughnessMapAsset && roughnessMapAsset->isLoaded() ? roughnessMapAsset->getData()->texture : nullptr,
+                .emissiveMap = emissiveMapAsset && emissiveMapAsset->isLoaded() ? emissiveMapAsset->getData()->texture : nullptr,
+                .shader = material.shader
+            };
+
+            renderer3D.drawBillboard(transf.pos, transf.size, inputMaterial, entityID);
         }
 
         [[nodiscard]] std::shared_ptr<Shape3D> clone() const override

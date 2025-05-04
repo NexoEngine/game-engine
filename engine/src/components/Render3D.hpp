@@ -18,6 +18,9 @@
 #include <glm/glm.hpp>
 #include <optional>
 
+#include "assets/AssetRef.hpp"
+#include "assets/Assets/Texture/Texture.hpp"
+
 namespace nexo::components {
 
     struct Material {
@@ -31,11 +34,11 @@ namespace nexo::components {
         float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
         float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
 
-        std::shared_ptr<renderer::Texture2D> albedoTexture = nullptr;
-        std::shared_ptr<renderer::Texture2D> normalMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> metallicMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> roughnessMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> emissiveMap = nullptr;
+        assets::AssetRef<assets::Texture> albedoTexture = nullptr;
+        assets::AssetRef<assets::Texture> normalMap = nullptr;
+        assets::AssetRef<assets::Texture> metallicMap = nullptr;
+        assets::AssetRef<assets::Texture> roughnessMap = nullptr;
+        assets::AssetRef<assets::Texture> emissiveMap = nullptr;
 
         std::string shader = "";
     };

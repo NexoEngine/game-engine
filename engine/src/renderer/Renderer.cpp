@@ -16,15 +16,15 @@
 
 namespace nexo::renderer {
 
-    Renderer::SceneData *Renderer::_sceneData = new Renderer::SceneData;
+    NxRenderer::NxSceneData *NxRenderer::_sceneData = new NxRenderer::NxSceneData;
 
-    void Renderer::init()
+    void NxRenderer::init()
     {
-        RenderCommand::init();
+        NxRenderCommand::init();
     }
 
-    void Renderer::onWindowResize(unsigned int width, unsigned int height)
+    void NxRenderer::onWindowResize(unsigned int width, unsigned int height)
     {
-        RenderCommand::setViewport(0, 0, width, height);
+        NxRenderCommand::setViewport(0, 0, width, height);
     }
 }

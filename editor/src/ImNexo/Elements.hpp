@@ -284,4 +284,53 @@ namespace ImNexo {
     * @param textColor The color of the text.
     */
 	void CustomSeparatorText(const std::string &text, float textPadding, float leftSpacing, float thickness, ImU32 lineColor, ImU32 textColor);
+
+    /**
+    * @brief ImGui::Image wrapper with different default UV coordinates (to flip the Y-axis).
+    *
+    * This function behaves exactly like ImGui::Image, except that the default UV coordinates are
+    * flipped to invert the image vertically. If you provide custom UV coordinates, the flipping
+    * behavior is effectively disabled.
+    *
+    * @param[in] user_texture_id  The texture identifier for ImGui to render.
+    * @param[in] image_size       The size of the image on the screen (in pixels).
+    * @param[in] uv0              The normalized UV coordinate for the top-left corner of the texture.
+    * @param[in] uv1              The normalized UV coordinate for the bottom-right corner of the texture.
+    * @param[in] tint_col         The tint color applied to the image.
+    * @param[in] border_col       The border color drawn around the image, if any.
+    */
+    void Image(
+        ImTextureID user_texture_id,
+        const ImVec2& image_size,
+        const ImVec2& uv0 = ImVec2(0, 1), // Flipped Y
+        const ImVec2& uv1 = ImVec2(1, 0), // Flipped Y
+        const ImVec4& tint_col = ImVec4(1, 1, 1, 1),
+        const ImVec4& border_col = ImVec4(0, 0, 0, 0)
+    );
+
+    /**
+    * @brief ImGui::ImageButton wrapper with different default UV coordinates (to flip the Y-axis).
+    *
+    * This function behaves exactly like ImGui::ImageButton, except that the default UV coordinates are
+    * flipped to invert the image vertically. If you provide custom UV coordinates, the flipping
+    * behavior is effectively disabled.
+    *
+    * @param[in] str_id           The unique label for the image button.
+    * @param[in] user_texture_id  The texture identifier for ImGui to render.
+    * @param[in] image_size       The size of the image on the screen (in pixels).
+    * @param[in] uv0              The normalized UV coordinate for the top-left corner of the texture.
+    * @param[in] uv1              The normalized UV coordinate for the bottom-right corner of the texture.
+    * @param[in] bg_col           The background color of the button.
+    * @param[in] tint_col         The tint color applied to the image.
+    */
+    bool ImageButton(
+        const char* str_id,
+        ImTextureID user_texture_id,
+        const ImVec2& image_size,
+        const ImVec2& uv0 = ImVec2(0, 1), // Flipped Y
+        const ImVec2& uv1 = ImVec2(1, 0), // Flipped Y
+        const ImVec4& bg_col = ImVec4(0, 0, 0, 0),
+        const ImVec4& tint_col = ImVec4(1, 1, 1, 1)
+    );
+
 }

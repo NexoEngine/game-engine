@@ -16,39 +16,39 @@
 #include "Logger.hpp"
 
 namespace nexo::renderer {
-    void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
+    void ShaderLibrary::add(const std::shared_ptr<NxShader> &shader)
     {
         const std::string &name = shader->getName();
         m_shaders[name] = shader;
     }
 
-    void ShaderLibrary::add(const std::string &name, const std::shared_ptr<Shader> &shader)
+    void ShaderLibrary::add(const std::string &name, const std::shared_ptr<NxShader> &shader)
     {
         m_shaders[name] = shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &path)
+    std::shared_ptr<NxShader> ShaderLibrary::load(const std::string &name, const std::string &path)
     {
-        auto shader = Shader::create(path);
+        auto shader = NxShader::create(path);
         add(name, shader);
         return shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &path)
+    std::shared_ptr<NxShader> ShaderLibrary::load(const std::string &path)
     {
-        auto shader = Shader::create(path);
+        auto shader = NxShader::create(path);
         add(shader);
         return shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<NxShader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
     {
-        auto shader = Shader::create(name, vertexSource, fragmentSource);
+        auto shader = NxShader::create(name, vertexSource, fragmentSource);
         add(shader);
         return shader;
     }
 
-    std::shared_ptr<Shader> ShaderLibrary::get(const std::string &name) const
+    std::shared_ptr<NxShader> ShaderLibrary::get(const std::string &name) const
     {
         if (!m_shaders.contains(name))
         {
