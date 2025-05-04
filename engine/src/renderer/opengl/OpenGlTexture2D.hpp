@@ -204,7 +204,7 @@ namespace nexo::renderer {
              * ingestDataFromStb(data, width, height, channels, path);
              * ```
              */
-            void ingestDataFromStb(uint8_t *data, int width, int height, int channels, const std::string& debugPath = "(buffer)");
+            void ingestDataFromStb(const uint8_t *data, int width, int height, int channels, const std::string& debugPath = "(buffer)");
 
             /**
              * @brief Creates an OpenGL texture with the specified parameters.

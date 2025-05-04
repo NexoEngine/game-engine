@@ -123,7 +123,7 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void NxOpenGlTexture2D::ingestDataFromStb(uint8_t* data, const int width, const int height, const int channels,
+    void NxOpenGlTexture2D::ingestDataFromStb(const uint8_t* data, const int width, const int height, const int channels,
         const std::string& debugPath)
     {
         GLint internalFormat = 0;

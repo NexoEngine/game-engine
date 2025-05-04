@@ -35,10 +35,7 @@ namespace nexo::editor {
                                     const typename MementoComponent::Memento& beforeState,
                                     const typename MementoComponent::Memento& afterState)
             {
-                auto& component = Application::m_coordinator->getComponent<MementoComponent>(entityId);
-
                 auto action = std::make_unique<ComponentChangeAction<MementoComponent>>(entityId, beforeState, afterState);
-
                 recordAction(std::move(action));
             }
 

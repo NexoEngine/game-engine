@@ -33,7 +33,7 @@ namespace nexo::editor {
             auto dockId = m_windowRegistry.getDockId(windowName);
 
             // If it's the first time opening the window and we have a dock id saved in the registry, then we force set it
-            if (m_firstOpened && ((dockId && currentDockID != *dockId)))
+            if (m_firstOpened && (dockId && currentDockID != *dockId))
                 ImGui::DockBuilderDockWindow(windowName.c_str(), *dockId);
             // If the docks ids differ, it means the window got rearranged in the global layout
             // If we are docked but we dont have a dock id saved in the registry, it means the user moved the window

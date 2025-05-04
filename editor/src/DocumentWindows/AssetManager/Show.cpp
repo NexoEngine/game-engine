@@ -158,15 +158,24 @@ namespace nexo::editor {
 
         ImGuiListClipper clipper;
         const auto assets = assets::AssetCatalog::getInstance().getAssets();
-        clipper.Begin(assets.size(), m_layout.size.itemStep.y);
+        clipper.Begin(static_cast<int>(assets.size()), m_layout.size.itemStep.y);
         while (clipper.Step()) {
             for (int lineIdx = clipper.DisplayStart; lineIdx < clipper.DisplayEnd; ++lineIdx) {
                 int startIdx = lineIdx * m_layout.size.columnCount;
                 int endIdx = std::min(startIdx + m_layout.size.columnCount, static_cast<int>(assets.size()));
 
+                int columns = m_layout.size.columnCount;
+                float stepX  = m_layout.size.itemStep.x;
+                float stepY  = m_layout.size.itemStep.y;
+
                 for (int i = startIdx; i < endIdx; ++i) {
-                    ImVec2 itemPos = ImVec2(startPos.x + (i % m_layout.size.columnCount) * m_layout.size.itemStep.x,
-                        startPos.y + (i / m_layout.size.columnCount) * m_layout.size.itemStep.y);
+                    float idx     = static_cast<float>(i);
+                    float col     = std::fmod(idx, static_cast<float>(columns));
+                    float row     = std::floor(idx / static_cast<float>(columns));
+                    ImVec2 itemPos{
+                        startPos.x + col * stepX,
+                        startPos.y + row * stepY
+                    };
                     drawAsset(assets[i], i, itemPos, m_layout.size.itemSize);
                 }
             }

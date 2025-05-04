@@ -22,6 +22,28 @@
 #include <utility>
 
 namespace nexo::editor {
+
+    struct StringHash {
+        using is_transparent = void;                   // enable heterogeneous lookup
+        size_t operator()(std::string_view sv) const noexcept {
+            return std::hash<std::string_view>{}(sv);
+        }
+        size_t operator()(const std::string &s) const noexcept {
+            return operator()(std::string_view(s));
+        }
+    };
+
+    // 2) Transparent equal
+    struct StringEqual {
+        using is_transparent = void;                   // enable heterogeneous lookup
+        bool operator()(std::string_view a, std::string_view b) const noexcept {
+            return a == b;
+        }
+        bool operator()(const std::string &a, const std::string &b) const noexcept {
+            return a == b;
+        }
+    };
+
     Command::Command(
         std::string description,
         const std::string &key,
@@ -33,7 +55,7 @@ namespace nexo::editor {
     : m_description(std::move(description)), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(childrens)
     {
         // Create a mapping of key names to ImGuiKey values
-        static const std::unordered_map<std::string, ImGuiKey> keyMap = {
+        static const std::unordered_map<std::string, ImGuiKey, StringHash, StringEqual> keyMap = {
             // Common modifiers
             {"ctrl", ImGuiKey_LeftCtrl},
             {"control", ImGuiKey_LeftCtrl},
@@ -152,7 +174,7 @@ namespace nexo::editor {
             m_repeatCallback();
     }
 
-    const std::span<const Command> Command::getChildren() const
+    std::span<const Command> Command::getChildren() const
     {
         return std::span<const Command>(m_childrens);
     }

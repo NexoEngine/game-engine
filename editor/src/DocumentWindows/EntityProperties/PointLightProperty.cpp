@@ -43,7 +43,7 @@ namespace nexo::editor {
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterStatePoint = pointComponent.save();
                 auto afterStateTransform = transform.save();
-                auto actionGroup = ActionManager::get().createActionGroup();
+                auto actionGroup = ActionManager::createActionGroup();
                 auto pointAction = std::make_unique<ComponentChangeAction<components::PointLightComponent>>(entity, beforeStatePoint, afterStatePoint);
                 auto transformAction = std::make_unique<ComponentChangeAction<components::TransformComponent>>(entity, beforeStateTransform, afterStateTransform);
                 actionGroup->addAction(std::move(pointAction));

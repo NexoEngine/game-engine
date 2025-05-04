@@ -22,7 +22,7 @@
 namespace nexo::components {
     struct RenderContext {
         int sceneRendered = -1;
-        SceneType sceneType;
+        SceneType sceneType = SceneType::GAME;
         bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
         glm::vec2 viewportBounds[2]{}; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
         struct GridParams {
@@ -34,10 +34,10 @@ namespace nexo::components {
         GridParams gridParams;
         renderer::NxRenderer3D renderer3D;
         std::queue<CameraContext> cameras;
-        LightContext sceneLights;
+        LightContext sceneLights{};
 
 
-        RenderContext(): sceneType(), sceneLights()
+        RenderContext()
         {
             renderer3D.init();
         }

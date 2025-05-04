@@ -38,7 +38,7 @@ namespace nexo::editor {
             void executePressedCallback() const;
             void executeReleasedCallback() const;
             void executeRepeatCallback() const;
-            [[nodiscard]] const std::span<const Command> getChildren() const;
+            [[nodiscard]] std::span<const Command> getChildren() const;
             [[nodiscard]] const std::bitset<ImGuiKey_NamedKey_COUNT> &getSignature() const;
             [[nodiscard]] const std::string &getKey() const;
             [[nodiscard]] const std::string &getDescription() const;
