@@ -17,6 +17,7 @@
 #include "Utils.hpp"
 
 #include <algorithm>
+#include <numbers>
 
 namespace ImNexo {
 
