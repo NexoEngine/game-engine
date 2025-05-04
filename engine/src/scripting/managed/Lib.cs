@@ -27,6 +27,24 @@ namespace Nexo
             return 0;
         }
 
+        [UnmanagedCallersOnly]
+        public static int Add(int a, int b)
+        {
+            return a + b;
+        }
+        
+        [UnmanagedCallersOnly]
+        public static int AddToPtr(int a, int b, IntPtr result)
+        {
+            if (result == IntPtr.Zero)
+            {
+                return 1;
+            }
+
+            Marshal.WriteInt32(result, a + b);
+            return 0;
+        }
+
         public delegate void CustomEntryPointDelegate(LibArgs libArgs);
         public static void CustomEntryPoint(LibArgs libArgs)
         {
