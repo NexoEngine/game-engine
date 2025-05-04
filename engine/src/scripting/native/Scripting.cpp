@@ -248,6 +248,36 @@ namespace nexo::scripting {
         // Call custom delegate type method
         custom(args_unmanaged);
 
+        typedef int32_t (CORECLR_DELEGATE_CALLTYPE *add_fn)(int32_t a, int32_t b);
+        add_fn add = host.getManagedFptr<add_fn>(
+            STR("Nexo.Lib, Nexo"),
+            STR("Add"),
+            UNMANAGEDCALLERSONLY_METHOD
+        );
+        if (add == nullptr) {
+            return EXIT_FAILURE;
+        }
+
+        std::cout << "Testing Add(30, -10) = " << add(30, -10) << std::endl;
+
+        typedef int32_t (CORECLR_DELEGATE_CALLTYPE *add_to_ptr_fn)(int32_t a, int32_t b, int32_t *result);
+        add_to_ptr_fn addToPtr = host.getManagedFptr<add_to_ptr_fn>(
+            STR("Nexo.Lib, Nexo"),
+            STR("AddToPtr"),
+            UNMANAGEDCALLERSONLY_METHOD
+        );
+        if (addToPtr == nullptr) {
+            return EXIT_FAILURE;
+        }
+
+        int32_t result = 0;
+        if (addToPtr(1000, 234, &result)) {
+            std::cout << "addToPtr returned an error" << std::endl;
+        } else {
+            std::cout << "Testing AddToPtr(1000, 234, ptr), *ptr = " << result << std::endl;
+        }
+
+
         return EXIT_SUCCESS;
     }
 
