@@ -24,6 +24,84 @@
 #include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
 
+#include "Path.hpp"
+#include "scripting/native/Scripting.hpp"
+
+int runScriptExample(const nexo::scripting::HostHandler::Parameters& params)
+{
+    // Get the instance of the HostHandler singleton
+    nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
+
+    // Initialize the host
+    nexo::scripting::HostHandler::Status status = host.initialize(params);
+    if (status != nexo::scripting::HostHandler::SUCCESS) {
+        return EXIT_FAILURE;
+    }
+
+    // Get function pointers to managed methods
+    // Regular method
+    component_entry_point_fn hello = host.getManagedFptr<component_entry_point_fn>(
+        STR("Nexo.Lib, Nexo"),
+        STR("Hello"),
+        nullptr
+    );
+
+    if (hello == nullptr) {
+        return EXIT_FAILURE;
+    }
+
+    // Run managed code
+    struct lib_args {
+        const char_t* message;
+        int number;
+    };
+
+    // Call the Hello method multiple times
+    for (int i = 0; i < 3; ++i) {
+        lib_args args {
+            STR("from host!"),
+            i
+        };
+
+        hello(&args, sizeof(args));
+    }
+
+    // Get function pointer for UnmanagedCallersOnly method
+    typedef void (CORECLR_DELEGATE_CALLTYPE *custom_entry_point_fn)(lib_args args);
+    custom_entry_point_fn custom_unmanaged = host.getManagedFptr<custom_entry_point_fn>(
+        STR("Nexo.Lib, Nexo"),
+        STR("CustomEntryPointUnmanagedCallersOnly"),
+        UNMANAGEDCALLERSONLY_METHOD
+    );
+
+    if (custom_unmanaged == nullptr) {
+        return EXIT_FAILURE;
+    }
+
+    // Call UnmanagedCallersOnly method
+    lib_args args_unmanaged {
+        STR("from host!"),
+        -1
+    };
+    custom_unmanaged(args_unmanaged);
+
+    // Get function pointer for custom delegate type method
+    custom_entry_point_fn custom = host.getManagedFptr<custom_entry_point_fn>(
+        STR("Nexo.Lib, Nexo"),
+        STR("CustomEntryPoint"),
+        STR("Nexo.Lib+CustomEntryPointDelegate, Nexo")
+    );
+
+    if (custom == nullptr) {
+        return EXIT_FAILURE;
+    }
+
+    // Call custom delegate type method
+    custom(args_unmanaged);
+
+    return EXIT_SUCCESS;
+}
+
 int main(int argc, char **argv)
 try {
     loguru::init(argc, argv);
@@ -43,6 +121,16 @@ try {
         defaultScene->setDefault();
 
     editor.init();
+
+    /*if (int rc = nexo::scripting::load_hostfxr() != 0) {
+        LOG(NEXO_ERROR, "Failed to load hostfxr error code {}", rc);
+    }*/
+    const nexo::scripting::HostHandler::Parameters params = {
+        .errorCallback = [](const nexo::scripting::HostString& message) {
+            LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
+        },
+    };
+    runScriptExample(params);
 
     while (editor.isOpen())
     {
