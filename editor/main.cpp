@@ -55,7 +55,11 @@ try {
             LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
         },
     };
-    nexo::scripting::runScriptExample(params);
+    if (nexo::scripting::runScriptExample(params) == EXIT_FAILURE) {
+        LOG(NEXO_ERROR, "Error in runScriptExample");
+    } else {
+        LOG(NEXO_INFO, "Successfully ran runScriptExample");
+    }
 
     while (editor.isOpen())
     {
