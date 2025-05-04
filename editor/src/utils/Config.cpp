@@ -66,7 +66,7 @@ namespace nexo::editor {
         return dockId;
     }
 
-    const std::vector<std::string> findAllEditorScenes()
+    std::vector<std::string> findAllEditorScenes()
     {
         std::string configPath = Path::resolvePathRelativeToExe(
             "../config/default-layout.ini").string();
@@ -80,7 +80,7 @@ namespace nexo::editor {
         }
 
         std::string line;
-        std::regex windowRegex("\\[Window\\]\\[(###Default Scene\\d+)\\]");
+        std::regex windowRegex(R"(\[Window\]\[(###Default Scene\d+)\])");
 
         while (std::getline(configFile, line)) {
             std::smatch match;
@@ -110,7 +110,7 @@ namespace nexo::editor {
         bool inWindowSection = false;
         bool isHashedWindow = false;
 
-        std::regex windowHeaderRegex("\\[Window\\]\\[(.+)\\]");
+        std::regex windowHeaderRegex(R"(\[Window\]\[(.+)\])");
         std::regex dockIdRegex("DockId=(0x[0-9a-fA-F]+)");
 
         while (std::getline(configFile, line)) {
@@ -121,8 +121,7 @@ namespace nexo::editor {
                 inWindowSection = true;
 
                 // Check if the window name starts with ###
-                isHashedWindow = (currentWindowName.size() >= 3 &&
-                                 currentWindowName.substr(0, 3) == "###");
+                isHashedWindow = currentWindowName.starts_with("###");
 
                 continue;
             }

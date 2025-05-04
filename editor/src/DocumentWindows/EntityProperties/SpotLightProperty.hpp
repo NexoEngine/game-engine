@@ -16,7 +16,7 @@
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
-	class SpotLightProperty : public AEntityProperty {
+	class SpotLightProperty final : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
 

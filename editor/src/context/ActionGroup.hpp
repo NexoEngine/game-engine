@@ -22,12 +22,12 @@ namespace nexo::editor {
     /**
     * Groups multiple actions into a single undoable action
     */
-    class ActionGroup : public Action {
+    class ActionGroup final : public Action {
         public:
             ActionGroup() = default;
 
             void addAction(std::unique_ptr<Action> action);
-            bool hasActions() const;
+            [[nodiscard]] bool hasActions() const;
             void redo() override;
             void undo() override;
 

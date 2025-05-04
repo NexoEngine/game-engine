@@ -89,7 +89,7 @@ namespace nexo::assets {
              * @param importers A list of asset importers to attempt the import operation with.
              * @return GenericAssetRef A reference to the successfully imported asset, or a null reference if the import fails.
              */
-            GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase *>&
+            [[nodiscard]] GenericAssetRef importAssetTryImporters(const AssetLocation& location, const ImporterInputVariant& inputVariant, const std::vector<AssetImporterBase *>&
                 importers) const;
 
             /**

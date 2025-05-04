@@ -21,7 +21,7 @@
 
 namespace nexo::editor {
 
-    void MaterialInspector::renderMaterialInspector(int selectedEntity)
+    void MaterialInspector::renderMaterialInspector(const int selectedEntity)
 	{
 		bool &materialModified = m_materialModified;
 		static utils::ScenePreviewOut previewParams;
@@ -38,7 +38,7 @@ namespace nexo::editor {
 			{
 				m_ecsEntity = -1;
 			}
-      		}
+		}
 
 		if (m_ecsEntity == -1)
 			return;
@@ -46,10 +46,10 @@ namespace nexo::editor {
 		if (materialModified)
 		{
 			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
-			auto &app = nexo::getApp();
-			Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(previewParams.sceneId), nexo::RenderingType::FRAMEBUFFER};
+			auto &app = getApp();
+			const Application::SceneInfo sceneInfo{previewParams.sceneId, RenderingType::FRAMEBUFFER};
 			app.run(sceneInfo);
-			const auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
+			const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 			m_framebuffer = cameraComponent.m_renderTarget;
 			materialModified = false;
 			app.getSceneManager().deleteScene(previewParams.sceneId);
@@ -62,7 +62,7 @@ namespace nexo::editor {
 			ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64});
 		ImGui::SameLine();
 
-		auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
+		const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
 		if (!inspectorWindow)
 			return;
 		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector, components::Material>();
@@ -72,23 +72,23 @@ namespace nexo::editor {
 
 	void MaterialInspector::show()
 	{
-     		auto const &selector = Selector::get();
-           const int selectedEntity = selector.getPrimaryEntity();
-           auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
-           if (!inspectorWindow)
-               return;
+		auto const &selector = Selector::get();
+		const int selectedEntity = selector.getPrimaryEntity();
+		const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
+		if (!inspectorWindow)
+			return;
 		if (inspectorWindow->getSubInspectorVisibility<MaterialInspector>())
-           {
-               ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
-               if (m_firstOpened)
-               	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+		{
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
+			if (m_firstOpened)
+				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-               if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
-               {
-                    beginRender(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
-                    renderMaterialInspector(selectedEntity);
-               }
-               ImGui::End();
-           }
+			if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
+			{
+				beginRender(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
+				renderMaterialInspector(selectedEntity);
+			}
+			ImGui::End();
+		}
 	}
 }

@@ -14,6 +14,8 @@
 
 #include "ActionGroup.hpp"
 
+#include <ranges>
+
 namespace nexo::editor {
 
     void ActionGroup::addAction(std::unique_ptr<Action> action)
@@ -28,13 +30,13 @@ namespace nexo::editor {
 
     void ActionGroup::redo()
     {
-        for (auto& action : actions)
+        for (const auto &action : actions)
             action->redo();
     }
 
     void ActionGroup::undo()
     {
-        for (auto it = actions.rbegin(); it != actions.rend(); ++it)
-            (*it)->undo();
+        for (const auto &action : std::ranges::reverse_view(actions))
+            action->undo();
     }
 }

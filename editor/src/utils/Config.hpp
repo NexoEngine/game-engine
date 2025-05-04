@@ -42,7 +42,7 @@ namespace nexo::editor {
 	* @return A vector of strings containing the window names of all editor scenes found in the config file.
 	*         Returns an empty vector if no scene windows are found or if the config file cannot be opened.
 	*/
-	const std::vector<std::string> findAllEditorScenes();
+	std::vector<std::string> findAllEditorScenes();
 
 	/**
 	* @brief Sets dock IDs for all windows in the registry based on the configuration file.

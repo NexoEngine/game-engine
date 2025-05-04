@@ -16,7 +16,7 @@
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
-	class CameraController : public AEntityProperty {
+	class CameraController final : public AEntityProperty {
 		public:
 			using AEntityProperty::AEntityProperty;
 

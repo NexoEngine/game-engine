@@ -23,7 +23,6 @@
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
 #include "renderer/Buffer.hpp"
-#include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
@@ -37,8 +36,6 @@
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
 namespace nexo {
-
-
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,

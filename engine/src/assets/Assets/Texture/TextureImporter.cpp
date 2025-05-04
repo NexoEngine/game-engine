@@ -18,7 +18,7 @@
 #include <stb_image.h>
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
-#include "TextureParameters.hpp"
+#include <boost/uuid/random_generator.hpp>
 
 namespace nexo::assets {
 
@@ -57,7 +57,7 @@ namespace nexo::assets {
         if (input.formatHint == "ARGB8888") { // Special case for ARGB8888 format (from assimp model textures)
             return true;
         }
-        const int ok = stbi_info_from_memory(input.memoryData.data(), input.memoryData.size(), nullptr, nullptr, nullptr);
+        const int ok = stbi_info_from_memory(input.memoryData.data(), static_cast<int>(input.memoryData.size()), nullptr, nullptr, nullptr);
         return ok;
     }
 

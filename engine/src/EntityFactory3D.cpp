@@ -18,7 +18,6 @@
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
-#include "core/exceptions/Exceptions.hpp"
 #include "Application.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -66,26 +65,6 @@ namespace nexo {
         Application::m_coordinator->addComponent<components::UuidComponent>(newCube, uuid);
         return newCube;
     }
-
-    /*ecs::Entity EntityFactory3D::createModel(const std::string &path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)
-    {
-        components::TransformComponent transform{};
-        transform.pos = pos;
-        transform.size = size;
-        transform.quat = glm::quat(rotation);
-        components::Material material{};
-        std::shared_ptr<components::MeshNode> rootNode = utils::loadModel(path);
-        auto model = std::make_shared<components::Model>(rootNode);
-        auto renderable = std::make_shared<components::Renderable3D>(material, model);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
-
-        ecs::Entity newModel = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newModel, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newModel, renderComponent);
-        components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newModel, uuid);
-        return newModel;
-    }*/
 
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color)
     {

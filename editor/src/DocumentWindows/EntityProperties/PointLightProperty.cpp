@@ -13,55 +13,43 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PointLightProperty.hpp"
+#include "ImNexo/EntityProperties.hpp"
+#include "ImNexo/ImNexo.hpp"
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
-#include "math/Light.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "ImNexo/Widgets.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
 	void PointLightProperty::show(const ecs::Entity entity)
 	{
-        auto& pointComponent = nexo::Application::getEntityComponent<components::PointLightComponent>(entity);
+        auto& pointComponent = Application::getEntityComponent<components::PointLightComponent>(entity);
         auto &transform = Application::getEntityComponent<components::TransformComponent>(entity);
+
+        static components::PointLightComponent::Memento beforeStatePoint;
+        static components::TransformComponent::Memento beforeStateTransform;
 
         if (ImNexo::Header("##PointNode", "Point light"))
         {
-       		ImGui::Spacing();
-        	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-			static bool showColorPicker = false;
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			glm::vec4 color = {pointComponent.color, 1.0f};
-			ImNexo::ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
-			pointComponent.color = color;
-
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-   			if (ImGui::BeginTable("InspectorPointTable", 4,
-                ImGuiTableFlags_SizingStretchProp))
-            {
-                ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-
-                ImNexo::RowDragFloat3("Position", "X", "Y", "Z", &transform.pos.x);
-
-                ImGui::EndTable();
+            auto pointComponentCopy = pointComponent;
+            auto transformComponentCopy = transform;
+            ImNexo::resetItemStates();
+            ImNexo::PointLight(pointComponent, transform);
+            if (ImNexo::isItemActivated()) {
+                beforeStatePoint = pointComponentCopy.save();
+                beforeStateTransform = transformComponentCopy.save();
+            } else if (ImNexo::isItemDeactivated()) {
+                auto afterStatePoint = pointComponent.save();
+                auto afterStateTransform = transform.save();
+                auto actionGroup = ActionManager::createActionGroup();
+                auto pointAction = std::make_unique<ComponentChangeAction<components::PointLightComponent>>(entity, beforeStatePoint, afterStatePoint);
+                auto transformAction = std::make_unique<ComponentChangeAction<components::TransformComponent>>(entity, beforeStateTransform, afterStateTransform);
+                actionGroup->addAction(std::move(pointAction));
+                actionGroup->addAction(std::move(transformAction));
+                ActionManager::get().recordAction(std::move(actionGroup));
             }
-
-            ImGui::Spacing();
-            ImGui::Text("Distance");
-            ImGui::SameLine();
-            if (ImGui::DragFloat("##DistanceSlider", &pointComponent.maxDistance, 1.0f, 1.0f, 3250.0f))
-            {
-                // Recompute the attenuation from the distance
-                auto [lin, quad] = math::computeAttenuationFromDistance(pointComponent.maxDistance);
-                pointComponent.constant = 1.0f;
-                pointComponent.linear = lin;
-                pointComponent.quadratic = quad;
-            }
-            ImGui::PopStyleVar();
         	ImGui::TreePop();
         }
 	}

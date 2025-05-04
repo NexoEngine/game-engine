@@ -14,10 +14,8 @@
 #pragma once
 
 #include "Access.hpp"
-#include "Definitions.hpp"
 #include "SingletonComponent.hpp"
 #include <unordered_map>
-#include <typeindex>
 #include <memory>
 
 namespace nexo::ecs {

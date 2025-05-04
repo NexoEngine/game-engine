@@ -58,13 +58,13 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(NxRenderer3DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        auto phong = m_storage->shaderLibrary.load("Phong", Path::resolvePathRelativeToExe(
+        const auto phong = m_storage->shaderLibrary.load("Phong", Path::resolvePathRelativeToExe(
             "../resources/shaders/phong.glsl").string());
         m_storage->shaderLibrary.load("Outline pulse flat", Path::resolvePathRelativeToExe(
             "../resources/shaders/outline_pulse_flat.glsl").string());
-        auto outlinePulseTransparentFlat = m_storage->shaderLibrary.load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
+        const auto outlinePulseTransparentFlat = m_storage->shaderLibrary.load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
             "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
-        auto albedoUnshadedTransparent = m_storage->shaderLibrary.load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
+        const auto albedoUnshadedTransparent = m_storage->shaderLibrary.load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
             "../resources/shaders/albedo_unshaded_transparent.glsl").string());
         m_storage->shaderLibrary.load("Grid shader", Path::resolvePathRelativeToExe(
             "../resources/shaders/grid_shader.glsl").string());
@@ -171,14 +171,14 @@ namespace nexo::renderer {
         {
             if (*m_storage->textureSlots[i].get() == *texture)
             {
-                textureIndex = i;
+                textureIndex = static_cast<int>(i);
                 break;
             }
         }
 
         if (textureIndex == 0)
         {
-            textureIndex = m_storage->textureSlotIndex;
+            textureIndex = static_cast<int>(m_storage->textureSlotIndex);
             m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
             m_storage->textureSlotIndex++;
         }
@@ -186,7 +186,7 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void NxRenderer3D::setMaterialUniforms(const renderer::NxIndexedMaterial& material) const
+    void NxRenderer3D::setMaterialUniforms(const NxIndexedMaterial& material) const
     {
         if (!m_storage)
             THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);

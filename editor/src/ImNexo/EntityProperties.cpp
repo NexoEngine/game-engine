@@ -12,19 +12,158 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "ImNexo/ImNexo.hpp"
 #include "Widgets.hpp"
 #include "Guard.hpp"
-#include "Utils.hpp"
 #include "EntityProperties.hpp"
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
+#include "components/Camera.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "math/Vector.hpp"
+#include "math/Light.hpp"
 
 namespace ImNexo {
+
+    void Ambient(nexo::components::AmbientLightComponent &ambientComponent)
+    {
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {ambientComponent.color, 1.0f};
+        ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
+        ambientComponent.color = color;
+    }
+
+    void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent)
+    {
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {directionalComponent.color, 1.0f};
+        ColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
+        directionalComponent.color = color;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorDirectionTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            RowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
+
+            ImGui::EndTable();
+        }
+        ImGui::PopStyleVar();
+    }
+
+    void PointLight(
+        nexo::components::PointLightComponent &pointComponent,
+        nexo::components::TransformComponent &pointTransform
+    ) {
+        ImGui::Spacing();
+        static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+        static bool showColorPicker = false;
+        ImGui::Text("Color");
+        ImGui::SameLine();
+        glm::vec4 color = {pointComponent.color, 1.0f};
+        ColorEditor("##ColorEditor Point light", &color, &colorPickerMode, &showColorPicker);
+        pointComponent.color = color;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+        if (ImGui::BeginTable("InspectorPointTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            RowDragFloat3("Position", "X", "Y", "Z", &pointTransform.pos.x);
+            ImGui::EndTable();
+        }
+
+        ImGui::Spacing();
+        ImGui::Text("Distance");
+        ImGui::SameLine();
+        if (ImGui::DragFloat("##DistanceSlider", &pointComponent.maxDistance, 1.0f, 1.0f, 3250.0f)) {
+            // Recompute the attenuation from the distance
+            auto [lin, quad] = nexo::math::computeAttenuationFromDistance(pointComponent.maxDistance);
+            pointComponent.constant = 1.0f;
+            pointComponent.linear = lin;
+            pointComponent.quadratic = quad;
+        }
+        if (ImGui::IsItemActive())
+            itemIsActive();
+        if (ImGui::IsItemActivated())
+            itemIsActivated();
+        if (ImGui::IsItemDeactivated())
+            itemIsDeactivated();
+        ImGui::PopStyleVar();
+    }
+
+    void SpotLight(nexo::components::SpotLightComponent &spotComponent, nexo::components::TransformComponent &spotTransform)
+    {
+        ImGui::Spacing();
+    	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
+		static bool showColorPicker = false;
+		ImGui::Text("Color");
+		ImGui::SameLine();
+		glm::vec4 color = {spotComponent.color, 1.0f};
+		ColorEditor("##ColorEditor Spot light", &color, &colorPickerMode, &showColorPicker);
+		spotComponent.color = color;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
+		if (ImGui::BeginTable("InspectorSpotTable", 4,
+            ImGuiTableFlags_SizingStretchProp))
+        {
+            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+            ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            RowDragFloat3("Direction", "X", "Y", "Z", &spotComponent.direction.x, -FLT_MAX, FLT_MAX, 0.1f);
+            RowDragFloat3("Position", "X", "Y", "Z", &spotTransform.pos.x, -FLT_MAX, FLT_MAX, 0.1f);
+
+
+            ImGui::EndTable();
+        }
+
+        if (ImGui::BeginTable("InspectorCutOffSpotTable", 2, ImGuiTableFlags_SizingStretchProp))
+        {
+	            ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+	            ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+
+            if (RowDragFloat1("Distance", "", &spotComponent.maxDistance, 1.0f, 3250.0f, 1.0f))
+            {
+					auto [lin, quad] = nexo::math::computeAttenuationFromDistance(spotComponent.maxDistance);
+					spotComponent.linear = lin;
+					spotComponent.quadratic = quad;
+            }
+            float innerCutOffDegrees = glm::degrees(glm::acos(spotComponent.cutOff));
+            float outerCutOffDegrees = glm::degrees(glm::acos(spotComponent.outerCutoff));
+            if (RowDragFloat1("Inner cut off", "", &innerCutOffDegrees, 0.0f, outerCutOffDegrees, 0.5f))
+            	spotComponent.cutOff = glm::cos(glm::radians(innerCutOffDegrees));
+            if (RowDragFloat1("Outer cut off", "", &outerCutOffDegrees, innerCutOffDegrees, 90.0f, 0.5f))
+            	spotComponent.outerCutoff = glm::cos(glm::radians(outerCutOffDegrees));
+
+            ImGui::EndTable();
+        }
+
+        ImGui::PopStyleVar();
+    }
+
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler)
 	{
 	    // Increase cell padding so rows have more space:
@@ -55,7 +194,6 @@ namespace ImNexo {
                    const glm::quat deltaQuat = glm::radians(deltaEuler);
                    quat = glm::normalize(deltaQuat * quat);
                    lastDisplayedEuler = nexo::math::customQuatToEuler(quat);
-                   rotation = lastDisplayedEuler;
                }
                RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 
@@ -78,21 +216,19 @@ namespace ImNexo {
             std::vector<ImU32> badgeColors;
             std::vector<ImU32> textBadgeColors;
 
-            const bool disabled = cameraComponent.viewportLocked;
+            const bool disabled = !cameraComponent.viewportLocked;
             if (disabled)
                 ImGui::BeginDisabled();
-            if (RowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled))
-            {
-                if (!cameraComponent.viewportLocked)
+            bool toResize = RowDragFloat2("Viewport size", "W", "H", &viewPort.x, -FLT_MAX, FLT_MAX, 1.0f, badgeColors, textBadgeColors, disabled);
+            if (toResize && cameraComponent.viewportLocked)
                 cameraComponent.resize(static_cast<unsigned int>(viewPort.x), static_cast<unsigned int>(viewPort.y));
-            }
             if (disabled)
                 ImGui::EndDisabled();
 
             ImGui::TableSetColumnIndex(3);
 
             // Lock button
-            const std::string lockBtnLabel = cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
+            const std::string lockBtnLabel = !cameraComponent.viewportLocked ? ICON_FA_LOCK "##ViewPortSettings" : ICON_FA_UNLOCK "##ViewPortSettings";
             if (Button(lockBtnLabel)) {
                 cameraComponent.viewportLocked = !cameraComponent.viewportLocked;
             }
@@ -127,12 +263,11 @@ namespace ImNexo {
         if (ImGui::BeginTable("InspectorControllerTable", 2,
                             ImGuiTableFlags_SizingStretchProp))
         {
-            auto &app = nexo::getApp();
             auto &selector = nexo::editor::Selector::get();
             ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            const std::vector<nexo::ecs::Entity> &entities = app.m_coordinator->getAllEntitiesWith<
+            const std::vector<nexo::ecs::Entity> &entities = nexo::Application::m_coordinator->getAllEntitiesWith<
                                                             nexo::components::TransformComponent,
                                                             nexo::ecs::Exclude<nexo::components::CameraComponent>,
                                                             nexo::ecs::Exclude<nexo::components::DirectionalLightComponent>,
@@ -145,9 +280,9 @@ namespace ImNexo {
             RowEntityDropdown(
                 "Target Entity",
                 cameraTargetComponent.targetEntity, entities,
-                [&app, &selector](nexo::ecs::Entity e) {
+                [&selector](const nexo::ecs::Entity e) {
                     return selector.getUiHandle(
-                        app.m_coordinator->getComponent<nexo::components::UuidComponent>(e).uuid,
+                        nexo::Application::m_coordinator->getComponent<nexo::components::UuidComponent>(e).uuid,
                         std::to_string(e)
                     );
                 }
@@ -168,7 +303,9 @@ namespace ImNexo {
             ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            RowDragFloat1("Mouse sensitivity", "", &cameraControllerComponent.mouseSensitivity);
+            float mouseSensitivity = cameraControllerComponent.mouseSensitivity;
+            RowDragFloat1("Mouse sensitivity", "", &mouseSensitivity);
+            cameraControllerComponent.mouseSensitivity = mouseSensitivity;
 
             ImGui::EndTable();
         }

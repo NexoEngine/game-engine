@@ -22,10 +22,11 @@ namespace nexo::editor {
         ImGui::TextUnformatted(ObjectTypeToIcon.at(obj.type).c_str());
         ImGui::SameLine();
 
-        char buffer[256];
         const std::string editableName = obj.uiName.substr(ObjectTypeToIcon.at(obj.type).size());
-        buffer[sizeof(buffer) - 1] = '\0';
-        strncpy(buffer, editableName.c_str(), sizeof(buffer));
+        char buffer[256];
+        auto result = std::format_to_n(buffer, sizeof(buffer) - 1, "{}", editableName);
+        // Null-terminate at the position where format_to_n stopped writing
+        *(result.out) = '\0';
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Remove border
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f); // No rounding

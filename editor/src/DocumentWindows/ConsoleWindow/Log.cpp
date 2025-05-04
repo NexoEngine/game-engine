@@ -46,7 +46,7 @@ namespace nexo::editor {
     	m_logs.clear();
     }
 
-    void ConsoleWindow::exportLogsBuffered()
+    void ConsoleWindow::exportLogsBuffered() const
     {
         if (!m_exportLog)
             return;

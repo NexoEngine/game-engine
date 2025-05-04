@@ -14,11 +14,8 @@
 
 #pragma once
 #include <ADocumentWindow.hpp>
-#include <vector>
 #include <set>
-#include <string>
 #include <imgui.h>
-#include <assets/Asset.hpp>
 #include <assets/AssetRef.hpp>
 
 namespace nexo::editor {

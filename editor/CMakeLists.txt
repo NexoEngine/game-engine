@@ -19,12 +19,14 @@ set(SRCS
         editor/src/context/ActionHistory.cpp
         editor/src/context/ActionGroup.cpp
         editor/src/context/actions/EntityActions.cpp
+        editor/src/context/actions/ComponentRestoreFactory.cpp
         editor/src/ImNexo/EntityProperties.cpp
         editor/src/ImNexo/Components.cpp
         editor/src/ImNexo/Elements.cpp
         editor/src/ImNexo/Panels.cpp
         editor/src/ImNexo/Utils.cpp
         editor/src/ImNexo/Widgets.cpp
+        editor/src/ImNexo/ImNexo.cpp
         editor/src/utils/ScenePreview.cpp
         editor/src/utils/Config.cpp
         editor/src/utils/String.cpp

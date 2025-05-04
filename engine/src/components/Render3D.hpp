@@ -13,10 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "renderer/Texture.hpp"
-#include "renderer/Shader.hpp"
 #include <glm/glm.hpp>
-#include <optional>
 
 #include "assets/AssetRef.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
