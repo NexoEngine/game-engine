@@ -14,9 +14,11 @@
 
 #pragma once
 
+#include <filesystem>
+#include <format>
+
 #include <nethost.h>
 #include <coreclr_delegates.h>
-#include <filesystem>
 #include <hostfxr.h>
 #include <boost/dll.hpp>
 
