@@ -51,7 +51,7 @@ namespace nexo::editor::utils {
         return entityCopy;
 	}
 
-	static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy, const glm::vec2 &previewSize)
+	static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy, const glm::vec2 &previewSize, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
   		renderer::FramebufferSpecs framebufferSpecs;
@@ -108,7 +108,7 @@ namespace nexo::editor::utils {
 
         // Create the perspective camera using the computed position.
         ecs::Entity cameraId = CameraFactory::createPerspectiveCamera(cameraPos,
-            framebufferSpecs.width, framebufferSpecs.height, framebuffer);
+            framebufferSpecs.width, framebufferSpecs.height, framebuffer, clearColor);
 
         // Update the camera's transform.
         auto &cameraTransform = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
@@ -142,7 +142,7 @@ namespace nexo::editor::utils {
         app.getSceneManager().getScene(sceneId).addEntity(spotLight);
 	}
 
-	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out)
+	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
 
@@ -150,7 +150,7 @@ namespace nexo::editor::utils {
 
         out.entityCopy = copyEntity(entity);
 
-        out.cameraId = createPreviewCamera(out.sceneId, entity, out.entityCopy, previewSize);
+        out.cameraId = createPreviewCamera(out.sceneId, entity, out.entityCopy, previewSize, clearColor);
 
         setupPreviewLights(out.sceneId, out.entityCopy);
         out.sceneGenerated = true;

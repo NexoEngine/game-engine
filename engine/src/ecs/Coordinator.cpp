@@ -37,9 +37,10 @@ namespace nexo::ecs {
 
     void Coordinator::destroyEntity(const Entity entity) const
     {
+        const Signature signature = m_entityManager->getSignature(entity);
         m_entityManager->destroyEntity(entity);
-        m_componentManager->entityDestroyed(entity);
-        m_systemManager->entityDestroyed(entity);
+        m_componentManager->entityDestroyed(entity, signature);
+        m_systemManager->entityDestroyed(entity, signature);
     }
 
     std::vector<std::type_index> Coordinator::getAllComponentTypes(const Entity entity) const

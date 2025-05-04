@@ -24,6 +24,7 @@
 #include "Logger.hpp"
 
 namespace nexo::ecs {
+
     /**
      * @class Coordinator
      *
@@ -60,7 +61,8 @@ namespace nexo::ecs {
             * @brief Registers a new component type within the ComponentManager.
             */
             template <typename T>
-            void registerComponent() {
+            void registerComponent()
+            {
                 m_componentManager->registerComponent<T>();
                 m_hasComponentFunctions[typeid(T)] = [this](Entity entity) -> bool {
                     return this->entityHasComponent<T>(entity);
@@ -75,12 +77,13 @@ namespace nexo::ecs {
              * @brief Registers a new singleton component
              *
              * @tparam T Class that should inherit from SingletonComponent class
-             * @param component
+             * @param args Optional argument to forward to the singleton component constructor
              */
-             template <typename T, typename... Args>
-             void registerSingletonComponent(Args&&... args) {
-                 m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
-             }
+            template <typename T, typename... Args>
+            void registerSingletonComponent(Args&&... args)
+            {
+                m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
+            }
 
             /**
             * @brief Adds a component to an entity, updates its signature, and notifies systems.
@@ -89,14 +92,16 @@ namespace nexo::ecs {
             * @param component - The component to add to the entity.
             */
             template <typename T>
-            void addComponent(const Entity entity, T component) {
-                m_componentManager->addComponent<T>(entity, component);
-
-                auto signature = m_entityManager->getSignature(entity);
+            void addComponent(const Entity entity, T component)
+            {
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), true);
+                m_componentManager->addComponent<T>(entity, component, signature);
+
                 m_entityManager->setSignature(entity, signature);
 
-                m_systemManager->entitySignatureChanged(entity, signature);
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
             }
 
             /**
@@ -107,13 +112,15 @@ namespace nexo::ecs {
             template<typename T>
             void removeComponent(const Entity entity) const
             {
-                m_componentManager->removeComponent<T>(entity);
-
-                auto signature = m_entityManager->getSignature(entity);
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), false);
+                m_componentManager->removeComponent<T>(entity, oldSignature);
+
+
                 m_entityManager->setSignature(entity, signature);
 
-                m_systemManager->entitySignatureChanged(entity, signature);
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
             }
 
             /**
@@ -127,13 +134,14 @@ namespace nexo::ecs {
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
-                if (m_componentManager->tryRemoveComponent<T>(entity))
+                Signature signature = m_entityManager->getSignature(entity);
+                if (m_componentManager->tryRemoveComponent<T>(entity, signature))
                 {
-                    auto signature = m_entityManager->getSignature(entity);
+                    Signature oldSignature = signature;
                     signature.set(m_componentManager->getComponentType<T>(), false);
                     m_entityManager->setSignature(entity, signature);
 
-                    m_systemManager->entitySignatureChanged(entity, signature);
+                    m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
                 }
             }
 
@@ -155,8 +163,21 @@ namespace nexo::ecs {
             * @return T& - Reference to the requested component.
             */
             template <typename T>
-            T &getComponent(const Entity entity) {
+            T &getComponent(const Entity entity)
+            {
                 return m_componentManager->getComponent<T>(entity);
+            }
+
+            /**
+             * @brief Retrieves the component array for a specific component type
+             *
+             * @tparam T The component type
+             * @return std::shared_ptr<ComponentArray<T>> Shared pointer to the component array
+             */
+            template <typename T>
+            std::shared_ptr<ComponentArray<T>> getComponentArray()
+            {
+                return m_componentManager->getComponentArray<T>();
             }
 
             /**
@@ -179,8 +200,21 @@ namespace nexo::ecs {
              * @return T& The instance of the desired singleton component
              */
             template <typename T>
-            T &getSingletonComponent() {
+            T &getSingletonComponent()
+            {
                 return m_singletonComponentManager->getSingletonComponent<T>();
+            }
+
+            /**
+             * @brief Get the Raw Singleton Component object
+             *
+             * @tparam T Class that should inherit from the SingletonComponent class
+             * @return std::shared_ptr<ISingletonComponent> The pointer to the desired singleton component
+             */
+            template <typename T>
+            std::shared_ptr<ISingletonComponent> getRawSingletonComponent() const
+            {
+                return m_singletonComponentManager->getRawSingletonComponent<T>();
             }
 
             /**
@@ -206,26 +240,21 @@ namespace nexo::ecs {
              * @return std::set<Entity> A set of entities that contain all the specified components.
              */
             template<typename... Components>
-            std::set<Entity> getAllEntitiesWith() const
+            std::vector<Entity> getAllEntitiesWith() const
             {
-	            Signature requiredSignature;
-	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+                Signature requiredSignature;
+                (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
 
-				std::uint32_t checkedEntities = 0;
-				std::uint32_t livingEntities = m_entityManager->getLivingEntityCount();
-    			std::set<Entity> result;
-				for (Entity i = 0; i < MAX_ENTITIES; ++i)
-				{
-					Signature entitySignature = m_entityManager->getSignature(i);
-					if (entitySignature.none())
-						continue;
-					if ((entitySignature & requiredSignature) == requiredSignature)
-						result.insert(i);
-					checkedEntities++;
-					if (checkedEntities > livingEntities)
-						break;
-				}
-				return result;
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                std::vector<Entity> result;
+                result.reserve(livingEntities.size());
+                for (Entity entity : livingEntities)
+                {
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
+                    if ((entitySignature & requiredSignature) == requiredSignature)
+                        result.push_back(entity);
+                }
+                return result;
             }
 
             /**
@@ -240,14 +269,63 @@ namespace nexo::ecs {
             }
 
             /**
-            * @brief Registers a new system within the SystemManager.
+            * @brief Registers a new query system
             *
-            * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
             */
-            template <typename T>
-            std::shared_ptr<T> registerSystem() {
-                return m_systemManager->registerSystem<T>();
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerQuerySystem(Args&&... args) {
+                auto newQuerySystem =  m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                const Signature querySystemSignature = newQuerySystem->getSignature();
+                for (Entity entity : livingEntities) {
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
+                    if ((entitySignature & querySystemSignature) == querySystemSignature) {
+                        newQuerySystem->entities.insert(entity);
+                    }
+                }
+                return newQuerySystem;
             }
+
+            /**
+            * @brief Registers a new group system
+            *
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
+            */
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerGroupSystem(Args&&... args) {
+                return m_systemManager->registerGroupSystem<T>(std::forward<Args>(args)...);
+            }
+
+            /**
+             * @brief Creates or retrieves a group for specific component combinations
+             *
+             * @tparam Owned Component types that are owned by the group
+             * @param nonOwned A get_t<...> tag specifying non-owned component types
+             * @return A shared pointer to the group (either existing or newly created)
+             */
+            template<typename... Owned>
+		    auto registerGroup(const auto & nonOwned)
+			{
+				return m_componentManager->registerGroup<Owned...>(nonOwned);
+			}
+
+			/**
+			* @brief Retrieves an existing group for specific component combinations
+			*
+			* @tparam Owned Component types that are owned by the group
+			* @param nonOwned A get_t<...> tag specifying non-owned component types
+			* @return A shared pointer to the existing group
+			*/
+			template<typename... Owned>
+			auto getGroup(const auto& nonOwned)
+			{
+				return m_componentManager->getGroup<Owned...>(nonOwned);
+			}
 
             /**
             * @brief Sets the signature for a system, defining which entities it will process.
@@ -271,13 +349,11 @@ namespace nexo::ecs {
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {
-                const auto signature = m_entityManager->getSignature(entity);
+                const Signature signature = m_entityManager->getSignature(entity);
                 const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }
-            void updateSystemEntities() const;
         private:
-
 
             std::shared_ptr<ComponentManager> m_componentManager;
             std::shared_ptr<EntityManager> m_entityManager;

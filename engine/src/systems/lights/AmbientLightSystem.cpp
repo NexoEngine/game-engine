@@ -13,27 +13,36 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AmbientLightSystem.hpp"
-#include "components/RenderContext.hpp"
-#include "components/SceneComponents.hpp"
+
+#include "Logger.hpp"
+#include "components/Light.hpp"
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void AmbientLightSystem::update() const
+	void AmbientLightSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &ambientLights : entities)
-		{
-			auto tag = coord->getComponent<components::SceneTag>(ambientLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &ambientComponent = coord->getComponent<components::AmbientLightComponent>(ambientLights);
-			renderContext.sceneLights.ambientLight = ambientComponent.color;
-			break;
-		}
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(sceneRendered);
+
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneRendered));
+
+
+		const auto ambientSpan = get<components::AmbientLightComponent>();
+		if (ambientSpan.size())
+			renderContext.sceneLights.ambientLight = ambientSpan[0].color;
+
 	}
 }

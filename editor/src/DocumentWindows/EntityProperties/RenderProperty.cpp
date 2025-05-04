@@ -154,25 +154,23 @@ namespace nexo::editor {
             static int entityBase = -1;
             if (sectionOpen)
             {
-                if (entityBase != static_cast<int>(entity))
-                {
-                    //TODO: I guess all of this should be centralized in the assets
-                    utils::ScenePreviewOut previewParams;
-                    utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
-                    auto &app = nexo::getApp();
-                    app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-                    auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-                    cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
-                    app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
-                    framebuffer = cameraComponent.m_renderTarget;
-                    app.getSceneManager().deleteScene(previewParams.sceneId);
-                    entityBase = static_cast<int>(entity);
-                }
+            	if (entityBase != static_cast<int>(entity))
+				{
+					//TODO: I guess all of this should be centralized in the assets
+					utils::ScenePreviewOut previewParams;
+					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
+					auto &app = nexo::getApp();
+					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
+					app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
+					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
+					framebuffer = cameraComponent.m_renderTarget;
+					app.getSceneManager().deleteScene(previewParams.sceneId);
+					entityBase = static_cast<int>(entity);
+				}
 
                 // --- Material Preview ---
-                if (framebuffer->getColorAttachmentId(0) != 0)
-                    ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(framebuffer->getColorAttachmentId(0))), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-
+                if (framebuffer && framebuffer->getColorAttachmentId(0) != 0)
+                	ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(framebuffer->getColorAttachmentId(0))), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
                 ImGui::SameLine();
 
                 ImGui::BeginGroup();

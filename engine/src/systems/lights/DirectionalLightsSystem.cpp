@@ -16,24 +16,39 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
-	void DirectionalLightsSystem::update() const
+	void DirectionalLightsSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &directionalLights : entities)
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(sceneRendered);
+
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No directional light found in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No directional light found in scene {}, skipping", sceneRendered));
+
+		if (partition->count > MAX_DIRECTIONAL_LIGHTS)
+		    THROW_EXCEPTION(core::TooManyDirectionalLightsException, sceneRendered, partition->count);
+
+		const auto directionalLightSpan = get<components::DirectionalLightComponent>();
+
+		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
-			auto tag = coord->getComponent<components::SceneTag>(directionalLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &directionalComponent = coord->getComponent<components::DirectionalLightComponent>(directionalLights);
-			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalComponent;
+			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount] = directionalLightSpan[i];
+			renderContext.sceneLights.directionalLightCount++;
 		}
 	}
 }

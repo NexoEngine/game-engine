@@ -21,8 +21,8 @@
 #include "components/Render.hpp"
 #include "renderer/RenderCommand.hpp"
 #include "ecs/Coordinator.hpp"
+#include "core/exceptions/Exceptions.hpp"
 
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -43,7 +43,7 @@ namespace nexo::system {
      *  - pointLights (and pointLightCount)
      *  - spotLights (and spotLightCount)
      */
-	static void setupLights(std::shared_ptr<renderer::Shader> shader, const components::LightContext& lightContext)
+	static void setupLights(const std::shared_ptr<renderer::Shader>& shader, const components::LightContext& lightContext)
 	{
         shader->bind();
         shader->setUniformFloat3("ambientLight", lightContext.ambientLight);
@@ -83,9 +83,9 @@ namespace nexo::system {
         shader->unbind();
 	}
 
-	void RenderSystem::update() const
+	void RenderSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
@@ -93,9 +93,25 @@ namespace nexo::system {
 
 		setupLights(renderContext.renderer3D.getShader(), renderContext.sceneLights);
 
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(sceneRendered);
+
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneRendered);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneRendered));
+
+		const auto transformSpan = get<components::TransformComponent>();
+		const auto renderSpan = get<components::RenderComponent>();
+		const std::span<const ecs::Entity> entitySpan = m_group->entities();
+
 		while (!renderContext.cameras.empty())
 		{
-			const auto &camera = renderContext.cameras.front();
+			const components::CameraContext &camera = renderContext.cameras.front();
 			if (camera.renderTarget != nullptr)
 			{
 				camera.renderTarget->bind();
@@ -103,25 +119,23 @@ namespace nexo::system {
 				renderer::RenderCommand::setClearColor(camera.clearColor);
 				renderer::RenderCommand::clear();
 				camera.renderTarget->clearAttachment<int>(1, -1);
-
             }
-			for (const auto entity : entities)
-			{
-				auto tag = coord->getComponent<components::SceneTag>(entity);
-				if (!tag.isRendered || sceneRendered != tag.id)
-					continue;
-	    		const auto transform = coord->getComponent<components::TransformComponent>(entity);
-	            const auto renderComponent = coord->getComponent<components::RenderComponent>(entity);
-	            if (renderComponent.isRendered)
-	            {
-					//TODO: Pass to a single renderer
+
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+            {
+				const auto &transform = transformSpan[i];
+				const auto &render = renderSpan[i];
+				const ecs::Entity entity = entitySpan[i];
+				if (render.isRendered)
+				{
 					renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition);
 					auto context = std::make_shared<renderer::RendererContext>();
 					context->renderer3D = renderContext.renderer3D;
-					renderComponent.draw(context, transform, entity);
+					render.draw(context, transform, static_cast<int>(entity));
 					renderContext.renderer3D.endScene();
-	            }
-			}
+               }
+            }
+
 			if (camera.renderTarget != nullptr)
 			{
 				camera.renderTarget->unbind();
@@ -129,6 +143,5 @@ namespace nexo::system {
 			}
 			renderContext.cameras.pop();
 		}
-
 	}
 }
