@@ -229,7 +229,7 @@ namespace nexo::system {
 		{
 			constexpr float zoomSpeed = 0.5f;
 			auto &tag = getComponent<components::SceneTag>(entity);
-			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
 			if (!tag.isActive || sceneRendered != tag.id || !cameraComponent.active)
 				continue;
 			auto &target = getComponent<components::PerspectiveCameraTarget>(entity);
