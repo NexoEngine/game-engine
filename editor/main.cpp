@@ -30,14 +30,16 @@ try {
     loguru::g_stderr_verbosity = loguru::Verbosity_3;
     nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
 
-    editor.registerWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0));
+    editor.registerWindow<nexo::editor::EditorScene>(
+        std::format("Default Scene{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0)
+    );
     editor.registerWindow<nexo::editor::SceneTreeWindow>(NEXO_WND_USTRID_SCENE_TREE);
     editor.registerWindow<nexo::editor::InspectorWindow>(NEXO_WND_USTRID_INSPECTOR);
     editor.registerWindow<nexo::editor::ConsoleWindow>(NEXO_WND_USTRID_CONSOLE);
     editor.registerWindow<nexo::editor::MaterialInspector>(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
     editor.registerWindow<nexo::editor::AssetManagerWindow>(NEXO_WND_USTRID_ASSET_MANAGER);
 
-    if (const auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0)).lock())
+    if (const auto defaultScene = editor.getWindow<nexo::editor::EditorScene>(std::format("Default Scene{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0)).lock())
         defaultScene->setDefault();
 
     editor.init();

@@ -27,7 +27,7 @@ namespace nexo::editor {
 
             [[nodiscard]] unsigned int getId() const;
             void registerCommand(const Command &command);
-            [[nodiscard]] const std::span<const Command> getCommands() const;
+            [[nodiscard]] std::span<const Command> getCommands() const;
         private:
             unsigned int m_id{};
             std::vector<Command> m_commands;

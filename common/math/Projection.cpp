@@ -16,7 +16,7 @@
 
 namespace nexo::math {
 
-    const glm::vec3 projectRayToWorld(const float x, const float y,
+    glm::vec3 projectRayToWorld(const float x, const float y,
                                     const glm::mat4 &viewProjectionMatrix,
                                     const glm::vec3 &cameraPosition,
                                     const unsigned int width, const unsigned int height

@@ -17,6 +17,18 @@
 #include "Shader.hpp"
 
 namespace nexo::renderer {
+
+    struct TransparentStringHasher {
+        using is_transparent = void;  // enable heterogeneous lookup
+
+        size_t operator()(std::string_view sv) const noexcept {
+            return std::hash<std::string_view>{}(sv);
+        }
+        size_t operator()(const std::string &s) const noexcept {
+            return operator()(std::string_view(s));
+        }
+    };
+
     class ShaderLibrary {
         public:
             void add(const std::shared_ptr<NxShader> &shader);
@@ -26,6 +38,11 @@ namespace nexo::renderer {
             std::shared_ptr<NxShader> load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource);
             std::shared_ptr<NxShader> get(const std::string &name) const;
         private:
-            std::unordered_map<std::string , std::shared_ptr<NxShader>> m_shaders;
+            std::unordered_map<
+                std::string,
+                std::shared_ptr<NxShader>,
+                TransparentStringHasher,
+                std::equal_to<>
+            > m_shaders;
     };
 }

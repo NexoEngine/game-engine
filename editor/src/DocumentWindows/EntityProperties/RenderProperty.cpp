@@ -17,6 +17,7 @@
 #include "RenderProperty.hpp"
 #include "AEntityProperty.hpp"
 #include "Application.hpp"
+#include "DocumentWindows/PopupManager.hpp"
 #include "Framebuffer.hpp"
 #include "components/Light.hpp"
 #include "context/actions/EntityActions.hpp"
@@ -217,7 +218,7 @@ namespace nexo::editor {
         if (m_popupManager.showPopupModal("Create new material"))
         {
             createMaterialPopup(entity);
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 }

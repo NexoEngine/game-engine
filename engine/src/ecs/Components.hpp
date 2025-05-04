@@ -368,7 +368,7 @@ namespace nexo::ecs {
 				const Signature oldSignature,
 				const Signature newSignature
 			) {
-			    auto& componentArray = m_componentArrays[componentType];
+			    const auto& componentArray = m_componentArrays[componentType];
 				componentArray->duplicateComponent(sourceEntity, destEntity);
 
 				for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
