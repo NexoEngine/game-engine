@@ -1,0 +1,12 @@
+# Material Inspector
+## Modify Material
+- Should be able to modify albedo color
+- Should be able to modify specular color
+- Should be able to set albedo texture
+- Should be able to set specular texture
+## New Material
+- Should be able to modify albedo color
+- Should be able to modify specular color
+- Should be able to set albedo texture
+- Should be able to set specular texture
+- Material preview should display a preview of the material with a camera target
