@@ -312,7 +312,7 @@ namespace nexo::renderer {
         toResize = true;
     }
 
-    const glm::vec2 NxOpenGlFramebuffer::getSize() const
+    glm::vec2 NxOpenGlFramebuffer::getSize() const
     {
         return glm::vec2(m_specs.width, m_specs.height);
     }

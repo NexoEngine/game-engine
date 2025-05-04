@@ -66,7 +66,7 @@ namespace nexo::editor {
         return dockId;
     }
 
-    const std::vector<std::string> findAllEditorScenes()
+    std::vector<std::string> findAllEditorScenes()
     {
         std::string configPath = Path::resolvePathRelativeToExe(
             "../config/default-layout.ini").string();
@@ -121,8 +121,7 @@ namespace nexo::editor {
                 inWindowSection = true;
 
                 // Check if the window name starts with ###
-                isHashedWindow = (currentWindowName.size() >= 3 &&
-                                 currentWindowName.substr(0, 3) == "###");
+                isHashedWindow = currentWindowName.starts_with("###");
 
                 continue;
             }

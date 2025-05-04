@@ -22,7 +22,10 @@ namespace nexo::editor {
                 Application::m_coordinator->addComponent(m_entity, target);
             }
 
-            void redo() override {}
+            void redo() override
+            {
+                //We have nothing to do here since we are simply redeleting the entity and its components
+            }
 
         private:
             ecs::Entity m_entity;
