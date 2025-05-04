@@ -42,30 +42,6 @@
 #include <filesystem>
 #include <hostfxr.h>
 
-#ifdef WIN32
-#include <Windows.h>
-
-#define STR(s) L ## s
-#define CH(c) L ## c
-#define DIR_SEPARATOR L'\\'
-
-#define string_compare wcscmp
-
-#else
-#include <dlfcn.h>
-#include <limits.h>
-
-#define STR(s) s
-#define CH(c) c
-#define DIR_SEPARATOR '/'
-#define MAX_PATH PATH_MAX
-
-#define string_compare strcmp
-
-#endif
-
-using string_t = std::basic_string<char_t>;
-
 namespace nexo::scripting {
     std::shared_ptr<boost::dll::shared_library> shared_library_handle = nullptr;
 
@@ -170,9 +146,9 @@ namespace nexo::scripting {
 
     HostHandler::~HostHandler()
     {
-        if (shared_library_handle) {
+        if (m_dll_handle) {
             if (m_hostfxr_fn.close) {
-                close_fptr(nullptr);
+                m_hostfxr_fn.close(nullptr);
             }
         }
     }
@@ -184,11 +160,6 @@ namespace nexo::scripting {
 
         m_params = std::move(parameters);
 
-        if (!m_params.errorCallback)
-            m_params.errorCallback = DEFAULT_ERROR_CALLBACK;
-        if (m_params.nexoManagedPath.empty())
-            m_params.nexoManagedPath = DEFAULT_NEXO_MANAGED_PATH;
-
         if (loadHostfxr() != SUCCESS)
             return m_status;
 
@@ -198,6 +169,12 @@ namespace nexo::scripting {
         });
 
         if (initRuntime() != SUCCESS)
+            return m_status;
+
+        if (getRuntimeDelegates() != SUCCESS)
+            return m_status;
+
+        if (loadManagedAssembly() != SUCCESS)
             return m_status;
 
         return m_status = SUCCESS;
@@ -221,7 +198,7 @@ namespace nexo::scripting {
         // Pre-allocate a large buffer for the path to hostfxr
         char_t buffer[MAX_PATH];
         size_t buffer_size = sizeof(buffer) / sizeof(char_t);
-        if (int rc = get_hostfxr_path(buffer, &buffer_size, &params)) {
+        if (unsigned int rc = get_hostfxr_path(buffer, &buffer_size, &params)) {
             m_params.errorCallback(std::format("Failed to get hostfxr path. Error code 0x{:X}.", rc));
             return m_status = HOSTFXR_NOT_FOUND;
         }
@@ -263,11 +240,10 @@ namespace nexo::scripting {
         const HostString configPath = runtimeConfigPath.c_str();
 
         // Load .NET Core
-        int rc = init_for_config_fptr(configPath.c_str(), nullptr, &m_host_ctx);
-        if (rc != 0 || m_host_ctx == nullptr)
-        {
+        unsigned int rc = m_hostfxr_fn.init_for_config(configPath.c_str(), nullptr, &m_host_ctx);
+        if (rc != 0 || m_host_ctx == nullptr) {
             m_params.errorCallback(std::format("Init failed: 0x{:X}", rc));
-            close_fptr(m_host_ctx);
+            m_hostfxr_fn.close(m_host_ctx);
             return m_status = INIT_DOTNET_RUNTIME_ERROR;
         }
         return m_status = SUCCESS;
@@ -275,18 +251,48 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::getRuntimeDelegates()
     {
-        int rc = 0;
+        unsigned int rc = 0;
 
-        rc = get_delegate_fptr(m_host_ctx, hdt_load_assembly, reinterpret_cast<void **>(&m_delegates.load_assembly));
+        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly, reinterpret_cast<void **>(&m_delegates.load_assembly));
         if (rc != 0 || m_delegates.load_assembly == nullptr) {
             m_params.errorCallback(std::format("Failed to get 'load_assembly' delegate: 0x{:X}", rc));
             return m_status = GET_DELEGATES_ERROR;
         }
 
-        rc = get_delegate_fptr(m_host_ctx, hdt_get_function_pointer, reinterpret_cast<void **>(&m_delegates.get_function_pointer));
+        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly_and_get_function_pointer,
+            reinterpret_cast<void **>(&m_delegates.load_assembly_and_get_function_pointer));
+        if (rc != 0 || m_delegates.load_assembly_and_get_function_pointer == nullptr) {
+            m_params.errorCallback(std::format("Failed to get 'load_assembly_and_get_function_pointer' delegate: 0x{:X}", rc));
+            return m_status = GET_DELEGATES_ERROR;
+        }
+
+        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_get_function_pointer,
+            reinterpret_cast<void **>(&m_delegates.get_function_pointer));
         if (rc != 0 || m_delegates.get_function_pointer == nullptr) {
             m_params.errorCallback(std::format("Failed to get 'get_function_pointer' delegate: 0x{:X}", rc));
             return m_status = GET_DELEGATES_ERROR;
+        }
+        return m_status = SUCCESS;
+    }
+
+    HostHandler::Status HostHandler::loadManagedAssembly()
+    {
+        unsigned int rc = 0;
+
+        const std::filesystem::path assemblyPath =
+            m_params.nexoManagedPath / NEXO_ASSEMBLY_FILENAME;
+
+        if (!std::filesystem::exists(assemblyPath)) {
+            m_params.errorCallback(std::format("Nexo assembly file not found: {}", assemblyPath.string()));
+            return m_status = ASSEMBLY_NOT_FOUND;
+        }
+
+        const HostString assemblyPathStr = assemblyPath.c_str();
+
+        rc = m_delegates.load_assembly(assemblyPathStr.c_str(), nullptr, nullptr);
+        if (rc != 0) {
+            m_params.errorCallback(std::format("Failed to load assembly at {}: 0x{:X}", assemblyPathStr.to_utf8(), static_cast<unsigned int>(rc)));
+            return m_status = LOAD_ASSEMBLY_ERROR;
         }
         return m_status = SUCCESS;
     }
