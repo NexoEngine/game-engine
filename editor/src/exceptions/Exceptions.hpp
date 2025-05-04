@@ -38,6 +38,13 @@ namespace nexo::editor {
             	: Exception("File not found: " + filePath, loc) {}
     };
 
+    class FileReadException final : public Exception {
+        public:
+            explicit FileReadException(const std::string &filePath, const std::string &message,
+                                    const std::source_location loc = std::source_location::current())
+            	: Exception(std::format("Error reading file {}: {}", filePath, message), loc) {}
+    };
+
     class WindowNotRegistered final : public Exception {
     	public:
      		/**
@@ -102,6 +109,13 @@ namespace nexo::editor {
             explicit BackendRendererApiFatalFailure(const std::string &backendApiName, const std::string &message,
                                                     const std::source_location loc = std::source_location::current())
                 : Exception("[" + backendApiName + " FATAL ERROR]" + message, loc) {}
+    };
+
+    class InvalidTestFileFormat final : public Exception {
+        public:
+            explicit InvalidTestFileFormat(const std::string &filePath, const std::string &message,
+                                           const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Invalid test file protocol format {}: {}", filePath, message), loc) {}
     };
 
 }
