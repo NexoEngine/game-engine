@@ -12,137 +12,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <codecvt>
+#include <nethost.h>
+#include <filesystem>
+#include <hostfxr.h>
 
 #include "Scripting.hpp"
 #include "HostString.hpp"
 #include "Logger.hpp"
 
-
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-// Standard headers
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <chrono>
-#include <iostream>
-#include <thread>
-#include <vector>
-
-// Provided by the AppHost NuGet package and installed as an SDK pack
-#include <nethost.h>
-
-// Header files copied from https://github.com/dotnet/core-setup
-#include <coreclr_delegates.h>
-#include <filesystem>
-#include <hostfxr.h>
-
 namespace nexo::scripting {
-    std::shared_ptr<boost::dll::shared_library> shared_library_handle = nullptr;
-
-    hostfxr_initialize_for_dotnet_command_line_fn init_for_cmd_line_fptr = nullptr;
-    hostfxr_initialize_for_runtime_config_fn init_for_config_fptr = nullptr;
-    hostfxr_get_runtime_delegate_fn get_delegate_fptr = nullptr;
-    hostfxr_run_app_fn run_app_fptr = nullptr;
-    hostfxr_close_fn close_fptr = nullptr;
-
-    int run_component_example(const HostString& root_path)
-    {
-        //
-        // STEP 1: Load HostFxr and get exported hosting functions
-        //
-        if (!load_hostfxr())
-        {
-            assert(false && "Failure: load_hostfxr()");
-            return EXIT_FAILURE;
-        }
-
-        //
-        // STEP 2: Initialize and start the .NET Core runtime
-        //
-        const HostString config_path = root_path + STR("Nexo.runtimeconfig.json");
-        load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer = nullptr;
-        load_assembly_and_get_function_pointer = get_dotnet_load_assembly(config_path.c_str());
-        assert(load_assembly_and_get_function_pointer != nullptr && "Failure: get_dotnet_load_assembly()");
-
-        //
-        // STEP 3: Load managed assembly and get function pointer to a managed method
-        //
-        const HostString dotnetlib_path = root_path + STR("Nexo.dll");
-        const char_t *dotnet_type = STR("Nexo.Lib, Nexo");
-        const char_t *dotnet_type_method = STR("Hello");
-        // <SnippetLoadAndGet>
-        // Function pointer to managed delegate
-        component_entry_point_fn hello = nullptr;
-        int rc = load_assembly_and_get_function_pointer(
-            dotnetlib_path.c_str(),
-            dotnet_type,
-            dotnet_type_method,
-            nullptr /*delegate_type_name*/,
-            nullptr,
-            (void**)&hello);
-        // </SnippetLoadAndGet>
-        assert(rc == 0 && hello != nullptr && "Failure: load_assembly_and_get_function_pointer()");
-
-        //
-        // STEP 4: Run managed code
-        //
-        struct lib_args
-        {
-            const char_t *message;
-            int number;
-        };
-        for (int i = 0; i < 3; ++i)
-        {
-            // <SnippetCallManaged>
-            lib_args args
-            {
-                STR("from host!"),
-                i
-            };
-
-            hello(&args, sizeof(args));
-            // </SnippetCallManaged>
-        }
-
-        // Function pointer to managed delegate with non-default signature
-        typedef void (CORECLR_DELEGATE_CALLTYPE *custom_entry_point_fn)(lib_args args);
-        custom_entry_point_fn custom = nullptr;
-        lib_args args
-        {
-            STR("from host!"),
-            -1
-        };
-
-        // UnmanagedCallersOnly
-        rc = load_assembly_and_get_function_pointer(
-            dotnetlib_path.c_str(),
-            dotnet_type,
-            STR("CustomEntryPointUnmanagedCallersOnly") /*method_name*/,
-            UNMANAGEDCALLERSONLY_METHOD,
-            nullptr,
-            (void**)&custom);
-        assert(rc == 0 && custom != nullptr && "Failure: load_assembly_and_get_function_pointer()");
-        custom(args);
-
-        // Custom delegate type
-        rc = load_assembly_and_get_function_pointer(
-            dotnetlib_path.c_str(),
-            dotnet_type,
-            STR("CustomEntryPoint") /*method_name*/,
-            STR("Nexo.Lib+CustomEntryPointDelegate, Nexo") /*delegate_type_name*/,
-            nullptr,
-            (void**)&custom);
-        assert(rc == 0 && custom != nullptr && "Failure: load_assembly_and_get_function_pointer()");
-        custom(args);
-
-        return EXIT_SUCCESS;
-    }
 
     HostHandler::~HostHandler()
     {
@@ -291,75 +169,86 @@ namespace nexo::scripting {
 
         rc = m_delegates.load_assembly(assemblyPathStr.c_str(), nullptr, nullptr);
         if (rc != 0) {
-            m_params.errorCallback(std::format("Failed to load assembly at {}: 0x{:X}", assemblyPathStr.to_utf8(), static_cast<unsigned int>(rc)));
+            m_params.errorCallback(std::format("Failed to load assembly at {}: 0x{:X}", assemblyPathStr.to_utf8(), rc));
             return m_status = LOAD_ASSEMBLY_ERROR;
         }
+        m_assembly_path = assemblyPathStr;
         return m_status = SUCCESS;
     }
 
-/********************************************************************************************
- * Function used to load and activate .NET Core
- ********************************************************************************************/
-    // <SnippetLoadHostFxr>
-    // Using the nethost library, discover the location of hostfxr and get exports
-    bool load_hostfxr(const HostString& assembly_path /* = "" */)
+    int runScriptExample(const HostHandler::Parameters& params)
     {
-        get_hostfxr_parameters params {
-            sizeof(get_hostfxr_parameters),
-            assembly_path.empty() ? nullptr : assembly_path.c_str(),
-            nullptr };
-        // Pre-allocate a large buffer for the path to hostfxr
-        char_t buffer[MAX_PATH];
-        size_t buffer_size = sizeof(buffer) / sizeof(char_t);
-        int rc = get_hostfxr_path(buffer, &buffer_size, &params);
-        if (rc != 0)
-            return false;
+        // Get the instance of the HostHandler singleton
+        HostHandler& host = HostHandler::getInstance();
 
-        // Load hostfxr and get desired exports
-        // NOTE: The .NET Runtime does not support unloading any of its native libraries. Running
-        // dlclose/FreeLibrary on any .NET libraries produces undefined behavior.
-        shared_library_handle = std::make_shared<boost::dll::shared_library>(buffer);
-        if (shared_library_handle == nullptr)
-        {
-            std::cerr << "Failed to load hostfxr library." << std::endl;
-            return false;
+        // Initialize the host
+        HostHandler::Status status = host.initialize(params);
+        if (status != HostHandler::SUCCESS) {
+            return EXIT_FAILURE;
         }
 
-        init_for_cmd_line_fptr = shared_library_handle->get<std::remove_pointer_t<hostfxr_initialize_for_dotnet_command_line_fn>>("hostfxr_initialize_for_dotnet_command_line");
-        init_for_config_fptr = shared_library_handle->get<std::remove_pointer_t<hostfxr_initialize_for_runtime_config_fn>>("hostfxr_initialize_for_runtime_config");
-        get_delegate_fptr = shared_library_handle->get<std::remove_pointer_t<hostfxr_get_runtime_delegate_fn>>("hostfxr_get_runtime_delegate");
-        run_app_fptr = shared_library_handle->get<std::remove_pointer_t<hostfxr_run_app_fn>>("hostfxr_run_app");
-        close_fptr = shared_library_handle->get<std::remove_pointer_t<hostfxr_close_fn>>("hostfxr_close");
+        // Get function pointers to managed methods
+        // Regular method
+        component_entry_point_fn hello = host.getManagedFptr<component_entry_point_fn>(
+            STR("Nexo.Lib, Nexo"),
+            STR("Hello"),
+            nullptr
+        );
 
-        return (init_for_cmd_line_fptr && init_for_config_fptr && get_delegate_fptr && run_app_fptr && close_fptr);
-    }
-    // </SnippetLoadHostFxr>
-
-    // <SnippetInitialize>
-    // Load and initialize .NET Core and get desired function pointer for scenario
-    load_assembly_and_get_function_pointer_fn get_dotnet_load_assembly(const HostString& config_path)
-    {
-        // Load .NET Core
-        void *load_assembly_and_get_function_pointer = nullptr;
-        hostfxr_handle cxt = nullptr;
-        int rc = init_for_config_fptr(config_path.c_str(), nullptr, &cxt);
-        if (rc != 0 || cxt == nullptr)
-        {
-            std::cerr << "Init failed: " << std::hex << std::showbase << rc << std::endl;
-            close_fptr(cxt);
-            return nullptr;
+        if (hello == nullptr) {
+            return EXIT_FAILURE;
         }
 
-        // Get the load assembly function pointer
-        rc = get_delegate_fptr(
-            cxt,
-            hdt_load_assembly_and_get_function_pointer,
-            &load_assembly_and_get_function_pointer);
-        if (rc != 0 || load_assembly_and_get_function_pointer == nullptr)
-            std::cerr << "Get delegate failed: " << std::hex << std::showbase << rc << std::endl;
+        // Run managed code
+        struct lib_args {
+            const char_t* message;
+            int number;
+        };
 
-        close_fptr(cxt);
-        return (load_assembly_and_get_function_pointer_fn)load_assembly_and_get_function_pointer;
+        // Call the Hello method multiple times
+        for (int i = 0; i < 3; ++i) {
+            lib_args args {
+                STR("from host!"),
+                i
+            };
+
+            hello(&args, sizeof(args));
+        }
+
+        // Get function pointer for UnmanagedCallersOnly method
+        typedef void (CORECLR_DELEGATE_CALLTYPE *custom_entry_point_fn)(lib_args args);
+        custom_entry_point_fn custom_unmanaged = host.getManagedFptr<custom_entry_point_fn>(
+            STR("Nexo.Lib, Nexo"),
+            STR("CustomEntryPointUnmanagedCallersOnly"),
+            UNMANAGEDCALLERSONLY_METHOD
+        );
+
+        if (custom_unmanaged == nullptr) {
+            return EXIT_FAILURE;
+        }
+
+        // Call UnmanagedCallersOnly method
+        lib_args args_unmanaged {
+            STR("from host!"),
+            -1
+        };
+        custom_unmanaged(args_unmanaged);
+
+        // Get function pointer for custom delegate type method
+        custom_entry_point_fn custom = host.getManagedFptr<custom_entry_point_fn>(
+            STR("Nexo.Lib, Nexo"),
+            STR("CustomEntryPoint"),
+            STR("Nexo.Lib+CustomEntryPointDelegate, Nexo")
+        );
+
+        if (custom == nullptr) {
+            return EXIT_FAILURE;
+        }
+
+        // Call custom delegate type method
+        custom(args_unmanaged);
+
+        return EXIT_SUCCESS;
     }
-    // </SnippetInitialize>
+
 }
