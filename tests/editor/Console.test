@@ -1,0 +1,5 @@
+# Console Window
+- Should see logs
+- Should be able to filter the logs
+- Should be able to write in it
+- Log file should be generated when program closes
