@@ -84,6 +84,11 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/CameraProperty.cpp
         editor/src/DocumentWindows/EntityProperties/CameraController.cpp
         editor/src/DocumentWindows/EntityProperties/CameraTarget.cpp
+        editor/src/DocumentWindows/TestWindow/Init.cpp
+        editor/src/DocumentWindows/TestWindow/Parser.cpp
+        editor/src/DocumentWindows/TestWindow/Show.cpp
+        editor/src/DocumentWindows/TestWindow/Shutdown.cpp
+        editor/src/DocumentWindows/TestWindow/Update.cpp
 )
 
 # Windows App Icon
