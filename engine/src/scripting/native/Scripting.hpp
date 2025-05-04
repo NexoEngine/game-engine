@@ -47,23 +47,6 @@
 
 namespace nexo::scripting {
 
-    using string_t = std::basic_string<char_t>;
-
-    extern std::shared_ptr<boost::dll::shared_library> shared_library_handle;
-
-    // Function pointers for hostfxr functions
-    extern hostfxr_initialize_for_dotnet_command_line_fn init_for_cmd_line_fptr;
-    extern hostfxr_initialize_for_runtime_config_fn init_for_config_fptr;
-    extern hostfxr_get_runtime_delegate_fn get_delegate_fptr;
-    extern hostfxr_run_app_fn run_app_fptr;
-    extern hostfxr_close_fn close_fptr;
-
-    // Function to load the hostfxr library and retrieve function pointers
-    bool load_hostfxr(const HostString& assembly_path = "");
-    load_assembly_and_get_function_pointer_fn get_dotnet_load_assembly(const HostString& assembly);
-
-    int run_component_example(const HostString& root_path);
-
     struct HostfxrFn {
         hostfxr_set_error_writer_fn set_error_writer;
         hostfxr_initialize_for_dotnet_command_line_fn init_for_cmd_line;
@@ -148,8 +131,10 @@ namespace nexo::scripting {
                     m_params.errorCallback("getManagedFptr: HostHandler not initialized");
                     return nullptr;
                 }
+
                 void *fptr = nullptr;
-                unsigned int rc = m_delegates.get_function_pointer(typeName, methodName, delegateTypeName, m_host_ctx, nullptr, &fptr);
+                unsigned int rc = m_delegates.load_assembly_and_get_function_pointer(
+                    m_assembly_path.c_str(), typeName, methodName, delegateTypeName, nullptr, &fptr);
                 if (rc != 0 || fptr == nullptr) {
                     m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
                         typeName ? HostString(typeName).to_utf8() : "",
@@ -173,6 +158,7 @@ namespace nexo::scripting {
         protected:
             Status m_status = UNINITIALIZED;
             Parameters m_params;
+            HostString m_assembly_path;
 
             HostfxrFn m_hostfxr_fn = {};
             CoreclrDelegate m_delegates = {};
@@ -180,5 +166,8 @@ namespace nexo::scripting {
             std::shared_ptr<boost::dll::shared_library> m_dll_handle = nullptr;
             hostfxr_handle m_host_ctx = nullptr;
     };
+
+
+    int runScriptExample(const HostHandler::Parameters& params);
 
 } // namespace nexo::scripting
