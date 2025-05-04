@@ -1,0 +1,40 @@
+# Scene Tree Window
+- Should be able to expand tree nodes
+- Should be able to create new scene when right clicking outside a scene
+## Scene Creation
+- Should open a popup when creating a new scene
+- New scene should get docked to existing scene if one exists
+- New scene should get docked to last position of a scene if none exists
+## Scene context
+- Should be able to add a cube
+- Should be able to add a directional light
+- Should be able to add a point light
+- Should be able to add a spot light
+- Should be able to add a camera
+- When adding camera, should open a camera inspector popup
+- Should be able to view ambient light
+- Should be able to view directional light
+- Should be able to view point light
+- Should be able to view spot light
+- Should be able to view camera
+- Should be able to view camera preview when hovering
+- Should be able to rename entities
+- Should be able to delete entity
+- Should be able to delete multiple entity
+## Selection
+- Should be able to select multiple entities with CTRL + LEFT CLICK
+- Should be able to deselect entity with CTRL + LEFT CLICK
+- Should be able to select multiple entities with SHIFT + LEFT CLICK
+## Shortcuts
+- Should be able to expand all with down arrow
+- Should be able to collapse all with up arrow
+- Should be able to select all with CTRL + A
+- Should be able to create scene with CTRL + N
+- Should be able to duplicate entity with CTRL + D
+- Should be able to duplicate multiple entities with CTRL + D
+- Should be able to add entity with A
+- Should be able to hide entity with H
+- Should be able to hide multiple entities with H
+- Should be able to unhide all with CTRL + H
+- Should be able to delete entity with DELETE
+- Should be able to delete multiple entities with DELETE
