@@ -116,7 +116,7 @@ namespace nexo::assets {
         if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
             renderer::NxTextureFormatConvertArgb8ToRgba8(
                 reinterpret_cast<uint8_t*>(texture->pcData),
-            texture->mWidth * texture->mHeight * sizeof(aiTexel)
+            static_cast<unsigned long>(texture->mWidth) * static_cast<unsigned long>(texture->mHeight) * sizeof(aiTexel)
             );
             format = renderer::NxTextureFormat::RGBA8;
         } else {
