@@ -31,26 +31,43 @@ namespace nexo::editor {
 
     static void renderTestCases(TestSection &section)
     {
-        for (unsigned int i = 0; i < section.testCases.size(); ++i) {
-            auto &tc = section.testCases[i];
-            ImGui::PushID(static_cast<int>(i));
-            ImGui::Text("%s", tc.name.c_str());
-            ImGui::SameLine();
+        if (ImGui::BeginTable("TestCasesTable", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV))
+        {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthStretch);
 
-            renderRadioButtons(tc.result);
+            for (unsigned int i = 0; i < section.testCases.size(); ++i) {
+                auto &tc = section.testCases[i];
+                ImGui::PushID(static_cast<int>(i));
 
-            if (tc.result == TestResult::SKIPPED) {
-                ImGui::Indent(20.0f);
-                ImGui::InputTextWithHint(
-                    "##skip_reason",
-                    "Reason for skip...",
-                    tc.skippedMessage,
-                    sizeof(tc.skippedMessage)
-                );
-                ImGui::Unindent(20.0f);
+                ImGui::TableNextRow();
+
+                ImGui::TableSetColumnIndex(0);
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextWrapped("%s", tc.name.c_str());
+
+                ImGui::TableSetColumnIndex(1);
+                renderRadioButtons(tc.result);
+
+                // Skip reason (below the table row)
+                if (tc.result == TestResult::SKIPPED) {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Indent(20.0f);
+                    ImGui::InputTextWithHint(
+                        "##skip_reason",
+                        "Reason for skip...",
+                        tc.skippedMessage,
+                        sizeof(tc.skippedMessage)
+                    );
+                    ImGui::Unindent(20.0f);
+
+                    ImGui::TableSetColumnIndex(1);
+                }
+
+                ImGui::PopID();
             }
-
-            ImGui::PopID();
+            ImGui::EndTable();
         }
     }
 
