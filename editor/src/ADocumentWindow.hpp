@@ -48,6 +48,7 @@ namespace nexo::editor {
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
             [[nodiscard]] bool isOpened() const override { return m_opened; }
+            void setOpened(bool opened) override { m_opened = opened; }
             [[nodiscard]] bool isHovered() const override { return m_hovered; }
 
             [[nodiscard]] const ImVec2 &getContentSize() const override { return m_contentSize; }
