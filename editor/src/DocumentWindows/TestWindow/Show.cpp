@@ -88,6 +88,19 @@ namespace nexo::editor {
             ImGui::PopID();
         }
 
+        // Action buttons
+        ImGui::Separator();
+        if (ImGui::Button("Cancel")) {
+            resetTestCases();
+            m_opened = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Confirm")) {
+            writeTestReport();
+            resetTestCases();
+            m_opened = false;
+        }
+
         ImGui::End();
     }
 }
