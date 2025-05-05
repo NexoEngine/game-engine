@@ -21,7 +21,7 @@ namespace nexo::editor::utils {
         #ifdef _WIN32
             ShellExecuteA(nullptr, "open", folderPath.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
         #else
-            const std::string command = "xdg-open " + std::quoted(folderPath)._M_string;
+            const std::string command = "xdg-open " + std::quoted(folderPath);
             std::system(command.c_str());
         #endif
     }
