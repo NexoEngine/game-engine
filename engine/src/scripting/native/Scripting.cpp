@@ -276,6 +276,26 @@ namespace nexo::scripting {
             std::cout << "Testing AddToPtr(1000, 234, ptr), *ptr = " << result << std::endl;
         }
 
+        // Demonstrate C# calling C++ (managed to native)
+        // First, register our native functions
+        //registerNativeFunctions();
+
+        // Get function pointer for DemonstrateNativeCalls method
+        typedef void (CORECLR_DELEGATE_CALLTYPE *demonstrate_native_calls_fn)();
+        demonstrate_native_calls_fn demonstrateNativeCalls = host.getManagedFptr<demonstrate_native_calls_fn>(
+            STR("Nexo.NativeInterop, Nexo"),
+            STR("DemonstrateNativeCalls"),
+            UNMANAGEDCALLERSONLY_METHOD
+        );
+
+        if (demonstrateNativeCalls == nullptr) {
+            std::cout << "Failed to get function pointer for DemonstrateNativeCalls" << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        // Call the method to demonstrate calling C++ from C#
+        std::cout << "\nDemonstrating calling C++ functions from C#:" << std::endl;
+        demonstrateNativeCalls();
 
         return EXIT_SUCCESS;
     }

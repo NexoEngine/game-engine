@@ -12,6 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+using System.Runtime.InteropServices;
+
 namespace Nexo
 {
     public static class ObjectFactory
@@ -24,11 +26,13 @@ namespace Nexo
         {
             try 
             {
-                Type type = Type.GetType(typeName);
+                Type? type = Type.GetType(typeName);
                 if (type == null)
                     return -1;
                     
-                object instance = Activator.CreateInstance(type);
+                object? instance = Activator.CreateInstance(type);
+                if (instance == null)
+                    return -1;
                 int id = _nextId++;
                 _instances[id] = instance;
                 return id;
@@ -44,11 +48,13 @@ namespace Nexo
         {
             try 
             {
-                Type type = Type.GetType(typeName);
+                Type? type = Type.GetType(typeName);
                 if (type == null)
                     return -1;
                     
-                object instance = Activator.CreateInstance(type, parameters);
+                object? instance = Activator.CreateInstance(type, parameters);
+                if (instance == null)
+                    return -1;
                 int id = _nextId++;
                 _instances[id] = instance;
                 return id;
@@ -68,12 +74,14 @@ namespace Nexo
         // Helper to invoke methods on instances
         public static bool InvokeMethod(int id, string methodName, object[] parameters)
         {
-            if (!_instances.TryGetValue(id, out object instance))
+            if (!_instances.TryGetValue(id, out object? instance))
                 return false;
-                
+            
             try
             {
-                instance.GetType().GetMethod(methodName).Invoke(instance, parameters);
+                if (instance == null)
+                    return false;
+                instance?.GetType().GetMethod(methodName)?.Invoke(instance, parameters);
                 return true;
             }
             catch
