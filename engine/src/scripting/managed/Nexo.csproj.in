@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>@NEXO_FRAMEWORK@</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>@NEXO_PLATFORM@</Platforms>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<Compile Include="@SOURCES@" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR@/Debug-x64/</OutputPath>
+    <PlatformTarget>@NEXO_PLATFORM@</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR@/Release-x64/</OutputPath>
+    <PlatformTarget>@NEXO_PLATFORM@</PlatformTarget>
+  </PropertyGroup>
+
+</Project>
