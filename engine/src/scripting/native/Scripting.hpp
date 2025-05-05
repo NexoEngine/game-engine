@@ -72,7 +72,7 @@ namespace nexo::scripting {
 
             // Globals
             static inline const std::filesystem::path DEFAULT_NEXO_MANAGED_PATH =
-                Path::resolvePathRelativeToExe("../engine/src/scripting/managed/bin/Debug/net9.0/"); // TODO: Change it later for packing
+                Path::resolvePathRelativeToExe("."); // TODO: Change it later for packing
             static inline const std::string     NEXO_RUNTIMECONFIG_FILENAME  = "Nexo.runtimeconfig.json";
             static inline const std::string     NEXO_ASSEMBLY_FILENAME       = "Nexo.dll";
             static inline const ErrorCallBackFn DEFAULT_ERROR_CALLBACK       = HostHandler::defaultErrorCallback;
@@ -172,4 +172,7 @@ namespace nexo::scripting {
 
     int runScriptExample(const HostHandler::Parameters& params);
 
+    // Function to register native callback functions
+    void registerNativeFunctions();
+    
 } // namespace nexo::scripting
