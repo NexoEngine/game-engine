@@ -31,7 +31,7 @@
 
 namespace nexo::renderer
 {
-    constexpr int CYLINDER_SEGMENTS = 16; // Number of segments for the cylinder
+    constexpr int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder
     constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices()
@@ -182,6 +182,18 @@ namespace nexo::renderer
             normals.emplace_back(0,-1,0);
         }
         std::ranges::copy(normals, normals.begin());
+
+        LOG(NEXO_INFO, "{}", cylinderPositions.size());
+        LOG(NEXO_INFO, "========================================================");
+
+        for (auto cylinder_position : cylinderPositions)
+        {
+            LOG(NEXO_INFO, "{}f, {}f, {}f", cylinder_position.x, cylinder_position.y, cylinder_position.z);
+        }
+        // for (int i = 0; i < cylinderIndices.size(); i+=3)
+        // {
+        //     LOG(NEXO_INFO, "{} {} {}", cylinderIndices[i], cylinderIndices[i+1], cylinderIndices[i+2]);
+        // }
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,

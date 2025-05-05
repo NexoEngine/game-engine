@@ -343,7 +343,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                             const glm::vec4& color, int entityID) const;
+                             const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a tetrahedron using a specified transformation and color.
@@ -357,7 +357,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID) const;
+        void drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a tetrahedron using a specified transformation and material.
@@ -390,7 +390,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                             const components::Material& material, int entityID) const;
+                             const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a tetrahedron using a specified transformation and material.
@@ -407,7 +407,8 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                             const components::Material& material, int entityID) const;
+                             const components::Material& material, int entityID = -1) const;
+
         /**
          * @brief Draws a tetrahedron using a specified transformation and color.
          *
@@ -420,7 +421,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawTetrahedron(const glm::mat4& transform, const components::Material& material, int entityID) const;
+        void drawTetrahedron(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
 
         /**
@@ -431,6 +432,7 @@ namespace nexo::renderer {
          * @param vertices A vector of vertices defining the geometry of the mesh.
          * @param indices A vector of indices defining the connectivity of the mesh.
          * @param texture Optional texture to apply to the mesh.
+         * @param entityID The ID of the entity.
          *
          * Throws:
          * - NxRendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
@@ -478,7 +480,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                         const glm::vec4& color, int entityID) const;
+                         const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a pyramid using a specified transformation and color.
@@ -492,7 +494,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawPyramid(const glm::mat4& transform, const glm::vec4& color, int entityID) const;
+        void drawPyramid(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a pyramid using a specified transformation and material.
@@ -525,7 +527,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                         const components::Material& material, int entityID) const;
+                         const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a pyramid using a specified transformation and material.
@@ -542,7 +544,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                         const components::Material& material, int entityID) const;
+                         const components::Material& material, int entityID = -1) const;
         /**
          * @brief Draws a pyramid using a specified transformation and color.
          *
@@ -555,7 +557,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawPyramid(const glm::mat4& transform, const components::Material& material, int entityID) const;
+        void drawPyramid(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
 
         /**
@@ -589,7 +591,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const glm::vec4& color, int entityID) const;
+                          const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a cylinder using a specified transformation and color.
@@ -603,7 +605,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, int entityID) const;
+        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
 
         /**
          * @brief Draws a cylinder using a specified transformation and material.
@@ -636,7 +638,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const components::Material& material, int entityID) const;
+                          const components::Material& material, int entityID = -1) const;
 
         /**
          * @brief Draws a cylinder using a specified transformation and material.
@@ -653,7 +655,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                          const components::Material& material, int entityID) const;
+                          const components::Material& material, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and color.
          *
@@ -666,7 +668,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const components::Material& material, int entityID) const;
+        void drawCylinder(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
 
 
         /**
