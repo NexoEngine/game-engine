@@ -113,7 +113,7 @@ target_include_directories(nexoRenderer PUBLIC
 
 # loguru
 find_package(loguru CONFIG REQUIRED)
-target_link_libraries(nexoEditor PRIVATE loguru::loguru)
+target_link_libraries(nexoRenderer PRIVATE loguru::loguru)
 
 # Stb
 find_package(Stb REQUIRED)
