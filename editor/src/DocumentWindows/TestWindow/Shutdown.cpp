@@ -149,7 +149,7 @@ namespace nexo::editor {
         auto now_tp = floor<std::chrono::seconds>(std::chrono::system_clock::now());
         std::chrono::zoned_time local_zoned{std::chrono::current_zone(), now_tp};
         std::string ts = std::format("{:%Y%m%d}", local_zoned);
-        std::string filename = std::format("EditorTestResults_{}.test", ts);
+        std::string filename = std::format("EditorTestResults_{}.report", ts);
 
         auto testDir = std::filesystem::path(Path::resolvePathRelativeToExe("../tests/editor"));
         std::filesystem::create_directories(testDir);
