@@ -1,0 +1,45 @@
+# Inspector Window
+- Should be able to view selected entity components
+- When multiple entity selected, only the first one should display
+## Transform property
+- Should be able to modify position values
+- Should be able to manually write a position
+- Should be able to modify rotation values
+- Should be able to manually write a rotation
+- Should be able to modify scale values
+- Should be able to manually write a scale
+## Render Component
+- Should be able to hide a an entity
+- Material preview should display
+- Create new material should open a popup
+- Modify material should open the material inspector on its last docked position
+## Camera component
+- Viewport should not be modifiable if locked
+- If viewport unlocked, should be able to modify values
+- If viewport unlocked, should be able to write values
+- Should be able to modify FOV
+- Should be able to modify near plane
+- Should be able to modify far plane
+- Should be able to modify clear color
+## Camera controller
+- Should be able to modify mouse sensitivity
+## Camera target
+- Should be able to modify mouse sensitivity
+- Should be able to modify distance from targeted entity
+- Should be able to modify targeted entity
+## Ambient light
+- Should be able to modify color
+## Directional light
+- Should be able to modify color
+- Should be able to modify direction
+## Point light
+- Should be able to modify color
+- Should be able to modify position
+- Should be able to modify distance (intensity)
+## Spot light
+- Should be able to modify color
+- Should be able to modify position
+- Should be able to modify direction
+- Should be able to modify distance (intensity)
+- Should be able to modify inner cut off
+- Should be able to modify outer cut off

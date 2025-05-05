@@ -30,7 +30,7 @@ namespace nexo::assets {
 
         NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportParameters,
             textureParameters
-        );
+        )
     };
 
     /**
@@ -71,7 +71,7 @@ namespace nexo::assets {
             globalScale,
             textureQuality,
             convertToUncompressed
-        );
+        )
     };
 
     NLOHMANN_JSON_SERIALIZE_ENUM(ModelImportPostProcessParameters::TextureQuality,

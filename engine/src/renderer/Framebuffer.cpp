@@ -25,7 +25,6 @@ namespace nexo::renderer {
             return std::make_shared<NxOpenGlFramebuffer>(specs);
         #endif
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-
     }
 
 }

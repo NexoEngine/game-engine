@@ -15,7 +15,6 @@
 #pragma once
 
 #include <unordered_map>
-#include <typeindex>
 #include <memory>
 
 #include "Definitions.hpp"

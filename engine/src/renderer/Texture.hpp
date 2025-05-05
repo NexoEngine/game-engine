@@ -41,7 +41,7 @@ namespace nexo::renderer {
 
             [[nodiscard]] virtual unsigned int getWidth() const = 0;
             [[nodiscard]] virtual unsigned int getHeight() const = 0;
-            virtual unsigned int getMaxTextureSize() const = 0;
+            [[nodiscard]] virtual unsigned int getMaxTextureSize() const = 0;
 
             [[nodiscard]] virtual unsigned int getId() const = 0;
 

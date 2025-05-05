@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ConsoleWindow.hpp"
+#include <time.h>
 
 namespace nexo::editor {
     /**
@@ -63,7 +64,6 @@ namespace nexo::editor {
             case LogLevel::DEV: return loguru::Verbosity_3;
             default: return loguru::Verbosity_INVALID;
         }
-        return loguru::Verbosity_INVALID;
     }
 
     /**
@@ -79,7 +79,7 @@ namespace nexo::editor {
      * @param level The verbosity level for which the corresponding color is computed.
      * @return ImVec4 The color associated with the specified verbosity level.
      */
-    const ImVec4 getVerbosityColor(loguru::Verbosity level)
+    const ImVec4 getVerbosityColor(const loguru::Verbosity level)
     {
         ImVec4 color;
 
@@ -105,14 +105,13 @@ namespace nexo::editor {
 
     std::string generateLogFilePath()
     {
-        auto now = std::time(nullptr);
-        auto tm = *std::localtime(&now);
+        using namespace std::chrono;
 
-        std::ostringstream ss;
-        ss << "../logs/NEXO-";
-        ss << std::put_time(&tm, "%Y-%m-%d-%H%M%S");
-        ss << ".log";
+        // Truncate to seconds precision
+        auto now = floor<seconds>(system_clock::now());
+        zoned_time local_zoned{ current_zone(), now };
 
-        return ss.str();
+        std::string ts = std::format("{:%Y%m%d_%H%M%S}", local_zoned);
+        return std::format("../logs/NEXO-{}.log", ts);
     }
 }

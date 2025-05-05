@@ -13,9 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "RenderCommand.hpp"
-#include "Shader.hpp"
-
 #include <glm/glm.hpp>
 
 namespace nexo::renderer {

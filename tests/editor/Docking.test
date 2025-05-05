@@ -1,0 +1,5 @@
+# Docking
+- When no config file, layout should be set by default
+- When config file, layout should persist
+- Should be able to move windows
+- Should be able to resize windows

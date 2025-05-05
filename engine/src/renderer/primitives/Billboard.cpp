@@ -21,7 +21,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 namespace nexo::renderer {
     // Quad vertices for a 1x1 billboard centered at origin
@@ -100,30 +99,27 @@ namespace nexo::renderer {
             glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
             glm::vec3 up = glm::cross(look, right);
 
-            return glm::mat4(
-            glm::vec4(right, 0.0f),
-            glm::vec4(up, 0.0f),
-            glm::vec4(-look, 0.0f), // Negative look preserves winding
-            glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-            );
-        } else {
-            glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
-            glm::vec3 up = glm::cross(look, right);
+            return {glm::vec4(right, 0.0f),
+                    glm::vec4(up, 0.0f),
+                    glm::vec4(-look, 0.0f), // Negative look preserves winding
+                    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+                };
+        }
+        const glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
+        const glm::vec3 up = glm::cross(look, right);
 
-            return glm::mat4(
-                glm::vec4(right, 0.0f),
+        return {glm::vec4(right, 0.0f),
                 glm::vec4(up, 0.0f),
                 glm::vec4(-look, 0.0f), // Negative look preserves winding
                 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-            );
-        }
+            };
     }
 
     void NxRenderer3D::drawBillboard(
         const glm::vec3& position,
         const glm::vec2& size,
         const glm::vec4& color,
-        int entityID) const
+        const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -131,9 +127,9 @@ namespace nexo::renderer {
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
-        glm::vec3 cameraPos = m_storage->cameraPosition;
+        const glm::vec3 cameraPos = m_storage->cameraPosition;
 
-        glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
+        const glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
 
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     billboardRotation *
@@ -141,7 +137,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
@@ -163,7 +159,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr++;
         }
 
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
     }
@@ -172,7 +168,7 @@ namespace nexo::renderer {
         const glm::vec3& position,
         const glm::vec2& size,
         const NxMaterial& material,
-        int entityID) const
+        const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -180,9 +176,9 @@ namespace nexo::renderer {
                         "Renderer not rendering a scene, make sure to call beginScene first");
         }
 
-        glm::vec3 cameraPos = m_storage->cameraPosition;
+        const glm::vec3 cameraPos = m_storage->cameraPosition;
 
-        glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
+        const glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
 
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
                                     billboardRotation *
@@ -190,7 +186,7 @@ namespace nexo::renderer {
 
         m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
 
-        renderer::NxIndexedMaterial mat;
+        NxIndexedMaterial mat;
         mat.albedoColor = material.albedoColor;
         mat.albedoTexIndex = getTextureIndex(material.albedoTexture);
         mat.specularColor = material.specularColor;
@@ -215,7 +211,7 @@ namespace nexo::renderer {
             m_storage->vertexBufferPtr++;
         }
 
-        std::ranges::for_each(indices, [this](unsigned int index) {
+        std::ranges::for_each(indices, [this](const unsigned int index) {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
     }

@@ -50,5 +50,5 @@ namespace ImNexo {
      * @param sceneViewportSize The size of the scene viewport for proper camera aspect ratio
      * @return true if the dialog was closed (either by confirming or canceling), false if still open
      */
-    bool CameraInspector(const nexo::scene::SceneId sceneId, ImVec2 sceneViewportSize);
+    bool CameraInspector(nexo::scene::SceneId sceneId);
 }

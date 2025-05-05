@@ -20,7 +20,6 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include <optional>
 
 namespace nexo::renderer {
 
@@ -64,7 +63,7 @@ namespace nexo::renderer {
         std::shared_ptr<NxTexture2D> roughnessMap = nullptr;
         std::shared_ptr<NxTexture2D> emissiveMap = nullptr;
 
-        std::string shader = "";
+        std::string shader;
     };
 
     //TODO: Add stats for the meshes
@@ -324,9 +323,9 @@ namespace nexo::renderer {
          */
         void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<NxTexture2D>& texture, int entityID = -1) const;
 
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const renderer::NxMaterial& material, int entityID = -1) const;
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const renderer::NxMaterial& material, int entityID = -1) const;
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const renderer::NxMaterial& material, int entityID = -1) const;
+        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
+        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
+        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
 
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
         void drawBillboard(const glm::vec3& position, const glm::vec2& size, const NxMaterial& material, int entityID) const;
@@ -351,9 +350,9 @@ namespace nexo::renderer {
          */
         [[nodiscard]] NxRenderer3DStats getStats() const;
 
-        std::shared_ptr<NxShader> &getShader() const {return m_storage->currentSceneShader;};
+        [[nodiscard]] std::shared_ptr<NxShader> &getShader() const {return m_storage->currentSceneShader;};
 
-        std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
+        [[nodiscard]] std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
     private:
         std::shared_ptr<NxRenderer3DStorage> m_storage;
         bool m_renderingScene = false;
@@ -389,7 +388,7 @@ namespace nexo::renderer {
          *
          * @throws NxRendererNotInitialized if the renderer is not initialized.
          */
-        void setMaterialUniforms(const renderer::NxIndexedMaterial& material) const;
+        void setMaterialUniforms(const NxIndexedMaterial& material) const;
     };
 
 }

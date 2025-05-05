@@ -29,6 +29,7 @@
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include "renderer/Renderer.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
@@ -249,7 +250,7 @@ namespace nexo {
 
         if (!m_isMinimized)
         {
-         	renderContext.sceneRendered = sceneInfo.id;
+         	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
             renderContext.sceneType = sceneInfo.sceneType;
             if (sceneInfo.isChildWindow) {
                 renderContext.isChildWindow = true;
@@ -287,12 +288,12 @@ namespace nexo {
         return m_coordinator->createEntity();
     }
 
-    void Application::deleteEntity(ecs::Entity entity)
+    void Application::deleteEntity(const ecs::Entity entity)
     {
     	const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
      	if (tag)
 		{
-			unsigned int sceneId = tag->get().id;
+			const unsigned int sceneId = tag->get().id;
 			m_SceneManager.getScene(sceneId).removeEntity(entity);
 		}
 		m_coordinator->destroyEntity(entity);

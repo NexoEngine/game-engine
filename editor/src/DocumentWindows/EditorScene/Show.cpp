@@ -19,14 +19,16 @@
 #include "IconsFontAwesome.h"
 #include "ImNexo/Panels.hpp"
 #include "utils/EditorProps.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
-    void EditorScene::renderNoActiveCamera()
+    void EditorScene::renderNoActiveCamera() const
     {
         // No active camera, render the text at the center of the screen
-        ImVec2 textSize = ImGui::CalcTextSize("No active camera");
-        auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
+        const ImVec2 textSize = ImGui::CalcTextSize("No active camera");
+        const auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
 
         ImGui::SetCursorScreenPos(textPos);
         ImGui::Text("No active camera");
@@ -44,6 +46,8 @@ namespace nexo::editor {
                 const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                 sceneManager.getScene(sceneId).addEntity(newCube);
+                auto createAction = std::make_unique<EntityCreationAction>(newCube);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             ImGui::EndMenu();
         }
@@ -58,16 +62,22 @@ namespace nexo::editor {
             if (ImGui::MenuItem("Directional")) {
                 const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
                 sceneManager.getScene(sceneId).addEntity(directionalLight);
+                auto createAction = std::make_unique<EntityCreationAction>(directionalLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             if (ImGui::MenuItem("Point")) {
                 const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
                 utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                 sceneManager.getScene(sceneId).addEntity(pointLight);
+                auto createAction = std::make_unique<EntityCreationAction>(pointLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             if (ImGui::MenuItem("Spot")) {
                 const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
                 utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                 sceneManager.getScene(sceneId).addEntity(spotLight);
+                auto createAction = std::make_unique<EntityCreationAction>(spotLight);
+                ActionManager::get().recordAction(std::move(createAction));
             }
             ImGui::EndMenu();
         }
@@ -75,35 +85,33 @@ namespace nexo::editor {
         // --- Camera item ---
         if (ImGui::MenuItem("Camera")) {
             m_popupManager.openPopupWithCallback("Popup camera inspector", [this]() {
-                ImNexo::CameraInspector(this->m_sceneId, this->m_contentSize);
+                ImNexo::CameraInspector(this->m_sceneId);
             }, ImVec2(1440,900));
         }
-        m_popupManager.closePopup();
+        PopupManager::closePopup();
     }
 
     void EditorScene::renderView()
     {
-        const auto viewPortOffset = ImGui::GetCursorPos();
        	auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
         if (!cameraComponent.m_renderTarget)
             return;
         const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
 
-
         // Resize handling
-        if ((m_contentSize.x > 0 && m_contentSize.y > 0) && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
+        if (!cameraComponent.viewportLocked && (m_contentSize.x > 0 && m_contentSize.y > 0)
+            && (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y))
         {
         	cameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
         							static_cast<unsigned int>(m_contentSize.y));
-
         }
 
         // Render framebuffer
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);
 
-        ImVec2 viewportMin = ImGui::GetItemRectMin();
-        ImVec2 viewportMax = ImGui::GetItemRectMax();
+        const ImVec2 viewportMin = ImGui::GetItemRectMin();
+        const ImVec2 viewportMax = ImGui::GetItemRectMax();
         m_viewportBounds[0] = viewportMin;
         m_viewportBounds[1] = viewportMax;
     }
@@ -114,12 +122,20 @@ namespace nexo::editor {
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto &selector = Selector::get();
         m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
-        const std::string &sceneWindowName = m_windowName + std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId);
+        const std::string &sceneWindowName = std::format("{}{}{}",
+            m_windowName,
+            NEXO_WND_USTRID_DEFAULT_SCENE,
+            m_sceneId
+        );
         m_wasVisibleLastFrame = m_isVisibleInDock;
         m_isVisibleInDock = false;
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse))
         {
-            beginRender(std::string(NEXO_WND_USTRID_DEFAULT_SCENE) + std::to_string(m_sceneId));
+            std::string renderName = std::format("{}{}",
+                NEXO_WND_USTRID_DEFAULT_SCENE,
+                m_sceneId
+            );
+            beginRender(renderName);
             auto &app = getApp();
 
             app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);

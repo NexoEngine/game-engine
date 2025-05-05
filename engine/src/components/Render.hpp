@@ -108,16 +108,16 @@ namespace nexo::components
             RenderType type = RenderType::RENDER_2D;
 
             std::shared_ptr<Renderable> renderable;
-
-            RenderComponent restore() const
-            {
-                RenderComponent restored(renderable, type);
-                restored.isRendered = isRendered;
-                return restored;
-            }
         };
 
-        Memento save() const
+        void restore(const Memento &memento)
+        {
+            isRendered = memento.isRendered;
+            type = memento.type;
+            renderable = memento.renderable;
+        }
+
+        [[nodiscard]] Memento save() const
         {
             return {
                 isRendered,

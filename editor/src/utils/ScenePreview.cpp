@@ -19,6 +19,7 @@
 #include "components/Camera.hpp"
 
 namespace nexo::editor::utils {
+
 	float computeBoundingSphereRadius(const components::TransformComponent &objectTransform)
 	{
 	    const float halfX = objectTransform.size.x * 0.5f;
@@ -37,17 +38,17 @@ namespace nexo::editor::utils {
 	    return atanf(radius / distance);
 	}
 
-	static ecs::Entity copyEntity(ecs::Entity entity)
+	static ecs::Entity copyEntity(const ecs::Entity entity)
 	{
-		const ecs::Entity entityCopy = nexo::Application::m_coordinator->createEntity();
-        const auto renderComponentCopy = nexo::Application::m_coordinator->getComponent<components::RenderComponent>(entity).clone();
-        const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
+		const ecs::Entity entityCopy = Application::m_coordinator->createEntity();
+        const auto renderComponentCopy = Application::m_coordinator->getComponent<components::RenderComponent>(entity).clone();
+        const auto &transformComponentBase = Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         components::TransformComponent transformComponent;
         transformComponent.pos = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};
         transformComponent.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
         transformComponent.size = transformComponentBase.size;
-        nexo::Application::m_coordinator->addComponent<components::RenderComponent>(entityCopy, renderComponentCopy);
-        nexo::Application::m_coordinator->addComponent<components::TransformComponent>(entityCopy, transformComponent);
+        Application::m_coordinator->addComponent<components::RenderComponent>(entityCopy, renderComponentCopy);
+        Application::m_coordinator->addComponent<components::TransformComponent>(entityCopy, transformComponent);
         return entityCopy;
 	}
 
@@ -62,8 +63,8 @@ namespace nexo::editor::utils {
         };
         framebufferSpecs.width = static_cast<unsigned int>(previewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(previewSize.y);
-        const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
-        const auto &transformComponent = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
+        const auto &transformComponentBase = Application::m_coordinator->getComponent<components::TransformComponent>(entity);
+        const auto &transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
         auto framebuffer = renderer::NxFramebuffer::create(framebufferSpecs);
 
@@ -96,9 +97,9 @@ namespace nexo::editor::utils {
         ecs::Entity cameraId = CameraFactory::createPerspectiveCamera(cameraPos,
             framebufferSpecs.width, framebufferSpecs.height, framebuffer, clearColor);
 
-        auto &cameraTransform = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
+        auto &cameraTransform = Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
         cameraTransform.pos = cameraPos;
-        auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
         cameraComponent.render = true;
 
         glm::vec3 newFront = glm::normalize(targetPos - cameraPos);
@@ -107,28 +108,28 @@ namespace nexo::editor::utils {
         components::PerspectiveCameraTarget cameraTarget;
         cameraTarget.targetEntity = entityCopy;
         cameraTarget.distance = transformComponentBase.size.z * 2.0f;
-        nexo::Application::m_coordinator->addComponent<components::PerspectiveCameraTarget>(cameraId, cameraTarget);
+        Application::m_coordinator->addComponent<components::PerspectiveCameraTarget>(cameraId, cameraTarget);
         app.getSceneManager().getScene(sceneId).addEntity(cameraId);
         return cameraId;
 	}
 
-	static void setupPreviewLights(scene::SceneId sceneId, ecs::Entity entityCopy)
+	static void setupPreviewLights(const scene::SceneId sceneId, const ecs::Entity entityCopy)
 	{
 		auto &app = getApp();
 		const auto &transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
 		app.getSceneManager().getScene(sceneId).addEntity(entityCopy);
-        ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
+        const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
         app.getSceneManager().getScene(sceneId).addEntity(ambientLight);
-        ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
+        const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
         app.getSceneManager().getScene(sceneId).addEntity(directionalLight);
-        float spotLightHalfAngle = utils::computeSpotlightHalfAngle(transformComponent, {0.0, 2.0f, -5.0f});
-        float margin = glm::radians(2.5f);
-        ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 2.0f, -5.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, 0.0900000035F, 0.0320000015F, glm::cos(spotLightHalfAngle), glm::cos(spotLightHalfAngle + margin));
+        const float spotLightHalfAngle = utils::computeSpotlightHalfAngle(transformComponent, {0.0, 2.0f, -5.0f});
+		constexpr float margin = glm::radians(2.5f);
+        const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 2.0f, -5.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, 0.0900000035F, 0.0320000015F, glm::cos(spotLightHalfAngle), glm::cos(spotLightHalfAngle + margin));
         app.getSceneManager().getScene(sceneId).addEntity(spotLight);
 	}
 
-	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor)
+	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, const ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
 

@@ -20,7 +20,6 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
-#include <boost/uuid/random_generator.hpp>
 
 #include "AssetLocation.hpp"
 #include "AssetRef.hpp"
@@ -86,7 +85,7 @@ namespace nexo::assets {
     /**
      * @brief Serializes an AssetType value to JSON.
      *
-     * Converts the provided AssetType enum into its string representation using getAssetTypeName 
+     * Converts the provided AssetType enum into its string representation using getAssetTypeName
      * and assigns this string to the JSON object.
      *
      * @param j JSON object to receive the serialized asset type.
@@ -147,12 +146,12 @@ namespace nexo::assets {
         friend class AssetImporter;
         public:
             virtual ~IAsset() = default;
-    
+
             [[nodiscard]] virtual const AssetMetadata& getMetadata() const = 0;
             [[nodiscard]] virtual AssetType getType() const = 0;
             [[nodiscard]] virtual AssetID getID() const = 0;
             [[nodiscard]] virtual AssetStatus getStatus() const = 0;
-    
+
             [[nodiscard]] virtual bool isLoaded() const = 0;
             [[nodiscard]] virtual bool isErrored() const = 0;
 
@@ -167,16 +166,16 @@ namespace nexo::assets {
                 })
             {
             }
-    
+
         public:
             AssetMetadata m_metadata;
-    
+
             /**
              * @brief Get the metadata of the asset (for modification)
              */
             //[[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
     };
-    
+
     template<typename TAssetData, AssetType TAssetType>
     class Asset : public IAsset {
         friend class AssetCatalog;
@@ -213,7 +212,7 @@ namespace nexo::assets {
             }
 
             std::unique_ptr<TAssetData> data;
-    
+
         private:
             /*virtual AssetStatus load() = 0;
             virtual AssetStatus unload() = 0;*/

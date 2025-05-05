@@ -23,7 +23,6 @@
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
 #include "renderer/Buffer.hpp"
-#include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
@@ -37,8 +36,6 @@
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
 namespace nexo {
-
-
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -81,7 +78,7 @@ namespace nexo {
                 RenderingType renderingType = RenderingType::WINDOW;
                 SceneType sceneType = SceneType::GAME;
                 bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
-                glm::vec2 viewportBounds[2]; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
+                glm::vec2 viewportBounds[2]{}; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
             };
 
             /**

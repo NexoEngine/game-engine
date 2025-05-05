@@ -14,14 +14,9 @@
 
 #pragma once
 
-#include "ADocumentWindow.hpp"
-#include "Exception.hpp"
 #include "IDocumentWindow.hpp"
-#include "exceptions/Exceptions.hpp"
 #define L_DEBUG 1
-#include <loguru/loguru.hpp>
 #include <memory>
-#include <type_traits>
 
 #include "WindowRegistry.hpp"
 #include "inputs/InputManager.hpp"
@@ -29,11 +24,6 @@
 namespace nexo::editor {
 
     class Editor {
-        private:
-            // Singleton: private constructor and destructor
-        	Editor() = default;
-         	~Editor() = default;
-
         public:
             // Singleton: Meyers' Singleton Pattern
             static Editor& getInstance()
@@ -120,6 +110,9 @@ namespace nexo::editor {
             	return m_windowRegistry.getWindow<T>(windowName);
             }
         private:
+    		// Singleton: private constructor and destructor
+    		Editor() = default;
+    		~Editor() = default;
 
 	        /**
 	         * @brief Initializes the core engine and configures ImGui components.
@@ -164,11 +157,11 @@ namespace nexo::editor {
              * sets a flag to signal that the editor should quit.
              */
             void drawMenuBar();
-            void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands);
-            void drawBackground();
+            void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const;
+            void drawBackground() const;
 
             void handleGlobalCommands();
-            std::vector<CommandInfo> handleFocusedWindowCommands();
+    		std::vector<CommandInfo> handleFocusedWindowCommands();
 
             bool m_quit = false;
             bool m_showDemoWindow = false;
