@@ -46,13 +46,6 @@ namespace nexo::renderer
         1, 3, 2
     };
 
-    static const glm::vec3 vertexNormals[4] = {
-        glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)), // Vertex 0
-        glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), // Vertex 1
-        glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)), // Vertex 2
-        glm::normalize(glm::vec3(0.0f, -1.0f, 1.0f)), // Vertex 3
-    };
-
     constexpr glm::vec2 textureCoords[12] = {
         {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
         {0.5f, 1.0f}, {1.0f, 0.0f}, {0.5f, 0.5f}, // Right face
@@ -80,14 +73,14 @@ namespace nexo::renderer
             v1, v3, v2 // Bottom face
         };
 
-        std::copy(std::begin(verts), std::end(verts), vertices.begin());
+        std::ranges::copy(verts, vertices.begin());
 
         // Basic UV mapping for each face
         glm::vec2 texc[] = {
             {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
-            {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Right face
-            {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Left face
-            {0.0f, 0.0f}, {1.0f, 0.0f}, {0.5f, 1.0f} // Bottom face
+            {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
+            {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
+            {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
         };
 
         std::copy(std::begin(texc), std::end(texc), texCoords.begin());
@@ -97,7 +90,7 @@ namespace nexo::renderer
 
         for (int i = 0; i < 12; i += 3)
         {
-            glm::vec3 normal = glm::normalize(
+            const glm::vec3 normal = glm::normalize(
                 glm::cross(
                     verts[i + 1] - verts[i],
                     verts[i + 2] - verts[i]));
@@ -107,10 +100,10 @@ namespace nexo::renderer
             norm[i + 2] = normal;
         }
 
-        std::copy(std::begin(norm), std::end(norm), normals.begin());
+        std::ranges::copy(norm, normals.begin());
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, const int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
@@ -126,10 +119,10 @@ namespace nexo::renderer
         mat.albedoColor = color;
         setMaterialUniforms(mat);
 
-        std::array<glm::vec3, 12> verts;
-        std::array<glm::vec2, 12> texCoords;
-        std::array<glm::vec3, 12> normals;
-        std::array<unsigned int, 12> indices;
+        std::array<glm::vec3, 12> verts{};
+        std::array<glm::vec2, 12> texCoords{};
+        std::array<glm::vec3, 12> normals{};
+        std::array<unsigned int, 12> indices{};
 
         genTetrahedronMesh(verts, texCoords, normals);
         for (unsigned int i = 0; i < 12; ++i)
@@ -158,7 +151,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -209,7 +202,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -253,7 +246,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material& material, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -306,7 +299,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material& material, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -361,7 +354,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation, const components::Material& material, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation, const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -415,7 +408,7 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const components::Material& material, int entityID) const
+    void Renderer3D::drawTetrahedron(const glm::mat4& transform, const components::Material& material, const int entityID) const
     {
         if (!m_renderingScene)
         {
