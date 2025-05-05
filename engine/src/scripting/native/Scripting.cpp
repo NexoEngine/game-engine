@@ -65,8 +65,8 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::loadHostfxr()
     {
-        auto assemblyPath = HostString(m_params.assemblyPath.c_str());
-        auto dotnetRoot = HostString(m_params.dotnetRoot.c_str());
+        const auto assemblyPath = HostString(m_params.assemblyPath.c_str());
+        const auto dotnetRoot = HostString(m_params.dotnetRoot.c_str());
 
         get_hostfxr_parameters params {
             sizeof(get_hostfxr_parameters),
@@ -74,16 +74,15 @@ namespace nexo::scripting {
             dotnetRoot.empty() ? nullptr : dotnetRoot.c_str()
         };
         // Pre-allocate a large buffer for the path to hostfxr
-        char_t buffer[MAX_PATH];
+        char_t buffer[MAX_PATH] = {0};
         size_t buffer_size = sizeof(buffer) / sizeof(char_t);
         if (unsigned int rc = get_hostfxr_path(buffer, &buffer_size, &params)) {
             m_params.errorCallback(std::format("Failed to get hostfxr path. Error code 0x{:X}.", rc));
             return m_status = HOSTFXR_NOT_FOUND;
         }
 
-        m_dll_handle = std::make_shared<boost::dll::shared_library>(buffer);
-        if (m_dll_handle == nullptr)
-        {
+        m_dll_handle = std::make_shared<boost::dll::shared_library>(buffer, boost::dll::load_mode::default_mode);
+        if (m_dll_handle == nullptr || !m_dll_handle->is_loaded()) {
             m_params.errorCallback(std::format("Failed to load hostfxr library from path: {}", HostString(buffer).to_utf8()));
             return m_status = HOSTFXR_LOAD_ERROR;
         }
