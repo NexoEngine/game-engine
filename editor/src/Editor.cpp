@@ -330,8 +330,12 @@ namespace nexo::editor {
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyDown(ImGuiKey_LeftShift) && ImGui::IsKeyPressed(ImGuiKey_T))
         {
-            registerWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST);
-            getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
+            if (auto testWindow = getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()) {
+                testWindow->setOpened(true);
+            } else {
+                registerWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST);
+                getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
+            }
         }
     }
 
