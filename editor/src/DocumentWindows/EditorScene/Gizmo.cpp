@@ -103,7 +103,7 @@ namespace nexo::editor {
 
         // Apply transforms to all selected entities except the source
         for (const auto& entity : targetEntities) {
-            if (entity == sourceEntity) continue;
+            if (entity == static_cast<int>(sourceEntity)) continue;
 
             auto entityTransform = coord->tryGetComponent<components::TransformComponent>(entity);
             if (!entityTransform) continue;

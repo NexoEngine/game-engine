@@ -180,7 +180,7 @@ namespace nexo::editor {
         if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
         {
             // Only show rename option for the primary selected entity or for non-selected entities
-            if ((!isSelected || selector.getPrimaryEntity() == object.data.entity) &&
+            if ((!isSelected || selector.getPrimaryEntity() == static_cast<int>(object.data.entity)) &&
                 ImGui::MenuItem("Rename"))
             {
                 m_renameTarget = {object.type, object.uuid};

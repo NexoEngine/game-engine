@@ -48,7 +48,8 @@ namespace nexo::system {
         else
             nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} directional lights, only one is supported, picking the first one", sceneName, partition->count));
 
-		const auto &dirLight = get<components::DirectionalLightComponent>()[0];
+        const auto &lights = get<components::DirectionalLightComponent>();  // now 'lights' names the container
+        const auto &dirLight = lights[0];
 		renderContext.sceneLights.dirLight = dirLight;
 	}
 }

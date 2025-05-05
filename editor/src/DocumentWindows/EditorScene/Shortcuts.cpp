@@ -46,7 +46,7 @@ namespace nexo::editor {
         selector.clearSelection();
 
         for (const auto entity : scene.getEntities()) {
-            if (entity == m_editorCamera) continue; // Skip editor camera
+            if (static_cast<int>(entity) == m_editorCamera) continue; // Skip editor camera
 
             const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
             if (uuidComponent)
