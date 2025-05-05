@@ -96,6 +96,12 @@ message(STATUS "VCPKG done.")
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
+# SETUP ENGINE API
+include("${CMAKE_CURRENT_SOURCE_DIR}/engine/src/scripting/CMakeLists.txt")
+add_dependencies(nexoEditor nexoApi)
+# SETUP MANAGED CSHARP LIB
+include("${CMAKE_CURRENT_SOURCE_DIR}/engine/src/scripting/managed/CMakeLists.txt")
+add_dependencies(nexoEditor nexoManaged)
 # SETUP EXAMPLE
 include("${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt")
 # SETUP TESTS
