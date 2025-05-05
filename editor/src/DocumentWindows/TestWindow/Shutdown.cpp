@@ -76,7 +76,10 @@ namespace nexo::editor {
                 if (pos != std::string::npos) {
                     std::string model = line.substr(pos + 1);
                     // trim leading spaces
-                    model.erase(model.begin(), std::find_if(model.begin(), model.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+                    model.erase(
+                        model.begin(),
+                        std::ranges::find_if(model, [](unsigned char ch) { return !std::isspace(ch); })
+                    );
                     return model;
                 }
             }
@@ -107,9 +110,9 @@ namespace nexo::editor {
     static std::string getGraphicsInfo()
     {
 #ifdef NX_GRAPHICS_API_OPENGL
-        const char* vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        const char* version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+        auto vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        auto renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+        auto version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
         return std::string("OpenGL: ") + vendor + " - " + renderer + " (" + version + ")";
 #else
         return "Graphics info not available";
@@ -169,9 +172,9 @@ namespace nexo::editor {
 
         for (auto &section : m_testSections) {
             out << std::format("# {}\n", section.name);
-            for (auto &tc : section.testCases)
+            for (const auto &tc : section.testCases)
                 writeTestCaseReport(out, tc);
-            for (auto &sub : section.subSections) {
+            for (const auto &sub : section.subSections) {
                 out << std::format("## {}\n", sub.name);
                 for (auto &tc : sub.testCases)
                     writeTestCaseReport(out, tc);

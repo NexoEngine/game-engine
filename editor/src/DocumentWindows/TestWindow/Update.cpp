@@ -18,7 +18,7 @@ namespace nexo::editor {
 
     void TestWindow::update()
     {
-
+        // Nothing to do in the update
     }
 
 }
