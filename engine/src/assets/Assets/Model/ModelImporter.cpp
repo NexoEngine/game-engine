@@ -214,7 +214,7 @@ namespace nexo::assets {
         }
         std::filesystem::path modelDirectory = modelPath.parent_path();
 
-        for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
+        for (unsigned int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
             aiMaterial const *material = scene->mMaterials[matIdx];
 
             auto materialComponent = std::make_unique<components::Material>();
@@ -325,7 +325,7 @@ namespace nexo::assets {
         return meshNode;
     }
 
-    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene)
+    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
         std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;

@@ -46,7 +46,7 @@ namespace nexo::assets {
             format,
             maxSize,
             compressionQuality
-        );
+        )
     };
 
     /**
