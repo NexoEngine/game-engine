@@ -116,7 +116,7 @@ namespace nexo::renderer {
 		std::ranges::copy(norm, normals.begin());
     }
 
-	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::vec4 &color, const int entityID) const
+	void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3& size, const glm::vec4 &color, const int entityID) const
     {
         if (!m_renderingScene)
         {
@@ -164,7 +164,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -215,7 +215,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID) const
+    void Renderer3D::drawCube(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -260,7 +260,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const components::Material &material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -312,7 +312,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const components::Material &material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -367,7 +367,7 @@ namespace nexo::renderer {
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::vec3 &position, const glm::vec3& size, const glm::quat &rotation, const components::Material &material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
@@ -422,7 +422,7 @@ namespace nexo::renderer {
        m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCube(const glm::mat4& transform, const components::Material &material, int entityID) const
+    void Renderer3D::drawCube(const glm::mat4& transform, const components::Material &material, const int entityID) const
     {
 	    if (!m_renderingScene)
 	    {
