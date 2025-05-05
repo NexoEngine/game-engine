@@ -45,6 +45,13 @@ namespace nexo::editor {
             	: Exception(std::format("Error reading file {}: {}", filePath, message), loc) {}
     };
 
+    class FileWriteException final : public Exception {
+        public:
+            explicit FileWriteException(const std::string &filePath, const std::string &message,
+                                    const std::source_location loc = std::source_location::current())
+            	: Exception(std::format("Error writing to file {}: {}", filePath, message), loc) {}
+    };
+
     class WindowNotRegistered final : public Exception {
     	public:
      		/**
