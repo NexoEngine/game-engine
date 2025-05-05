@@ -53,5 +53,7 @@ namespace nexo::editor {
 
             void parseTestFolder();
             void parseFile(const std::filesystem::directory_entry &entry);
+            void resetTestCases();
+            void writeTestReport();
     };
 }
