@@ -28,11 +28,11 @@ namespace nexo::renderer
 {
     // 5 unique vertices for a pyramid (one per corner)
     constexpr glm::vec3 pyramidPositions[5] = {
-        {0.0f, 0.5f, 0.0f}, // Top vertex 0
-        {-0.5f, -0.5f, -0.5f}, // Bottom-left-back vertex 1
-        {0.5f, -0.5f, -0.5f}, // Bottom-right-back vertex 2
-        {0.5f, -0.5f, 0.5f}, // Bottom-right-front vertex 3
-        {-0.5f, -0.5f, 0.5f} // Bottom-left-front vertex 4
+        {0.0f, 1.0f, 0.0f}, // Top vertex 0
+        {-1.0f, -1.0f, -1.0f}, // Bottom-left-back vertex 1
+        {1.0f, -1.0f, -1.0f}, // Bottom-right-back vertex 2
+        {1.0f, -1.0f, 1.0f}, // Bottom-right-front vertex 3
+        {-1.0f, -1.0f, 1.0f}, // Bottom-left-front vertex 4
     };
 
     constexpr unsigned int pyramidIndices[18] = {
@@ -46,12 +46,14 @@ namespace nexo::renderer
     };
 
     constexpr glm::vec2 textureCoords[18] = {
-        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Base face
-        {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Base face
-        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Side face
-        {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, // Side face
-        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Side face
-        {0.5f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f} // Side face
+        // Base face
+        {0.5f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f},
+        {0.5f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
+        // Side faces
+        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}
     };
 
     /**
@@ -100,19 +102,17 @@ namespace nexo::renderer
 
         std::ranges::copy(texc, texCoords.begin());
 
-        // Compute normals for each face
+        // Compute normals for each face of the pyramid
         glm::vec3 norm[18];
-        int i = 0;
-        int n = 0;
-        for (; i < 18; i += 3) {
+        for (int i = 0; i < 18; i += 3) {
             const glm::vec3 normal = glm::normalize(
                 glm::cross(
                     verts[i + 1] - verts[i],
                     verts[i + 2] - verts[i]));
 
-            norm[n++] = normal;
-            norm[n++] = normal;
-            norm[n++] = normal;
+            norm[i] = normal;
+            norm[i + 1] = normal;
+            norm[i + 2] = normal;
         }
 
 		std::ranges::copy(norm, normals.begin());
@@ -156,21 +156,13 @@ namespace nexo::renderer
         }
 
         // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index)
+        std::ranges::for_each(indices, [this, vertexOffset](const unsigned int index)
         {
             m_storage->indexBufferBase[m_storage->indexCount++] = index;
         });
 
         // Update stats
         m_storage->stats.cubeCount++;
-        const auto vertexDataSize = static_cast<unsigned int>(
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
-        );
-
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
-        flushAndReset();
     }
 
     void Renderer3D::drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
