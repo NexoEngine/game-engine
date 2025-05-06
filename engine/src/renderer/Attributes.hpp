@@ -15,10 +15,11 @@
 
 #include <cstdint>
 
+
 namespace nexo::renderer {
 
    	struct RequiredAttributes {
-		union bits {
+		union BitFields {
 			struct Flags {
 				bool position : 1;
 				bool normal : 1;
