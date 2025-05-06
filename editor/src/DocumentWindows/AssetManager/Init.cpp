@@ -23,19 +23,19 @@ namespace nexo::editor {
     {
         auto& catalog = assets::AssetCatalog::getInstance();
         auto asset = std::make_unique<assets::Model>();
-        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@foo/bar/"), std::move(asset));
+        catalog.registerAsset(assets::AssetLocation("my_package::My_Model@Random/"), std::move(asset));
 
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
             assets::ImporterFileInput fileInput{path};
-            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@foo/bar/"), fileInput);
+            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
         }
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
             assets::ImporterFileInput fileInput{path};
-            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@foo/bar/"), fileInput);
+            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random/"), fileInput);
         }
     }
 }
