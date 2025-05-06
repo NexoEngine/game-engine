@@ -70,6 +70,36 @@ namespace nexo::editor {
         void drawAssetsGrid();
         void drawAsset(const assets::GenericAssetRef& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize);
         void handleSelection(int index, bool isSelected);
+
+        private:
+            assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
+            std::string m_currentFolder;  // Currently selected folder
+            std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
+            char m_searchBuffer[256] = "";  // Buffer for search input
+
+            // Add these member functions
+        private:
+            void buildFolderStructure();
+            void drawFolderTree();
+            void drawFolderTreeItem(const std::string& name, const std::string& path);
+
+            struct FolderCreationState {
+                bool isCreatingFolder = false;
+                char folderName[14] = "";
+                std::string parentPath;
+                bool showError = false;
+                std::string errorMessage;
+                float errorTimer = 3.0f;
+            };
+
+            FolderCreationState m_folderCreationState;
+            ImTextureID m_folderIconTexture = 0; // Store the texture ID
+
+            ImTextureID getFolderIconTexture();
+
+            // Add this method declaration
+            void handleNewFolderCreation();
+                void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos, const ImVec2& itemSize);
     };
 
 } // namespace nexo::editor
