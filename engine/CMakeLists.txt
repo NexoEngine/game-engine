@@ -37,6 +37,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
+        engine/src/renderer/UniformCache.cpp
         engine/src/renderer/primitives/Mesh.cpp
         engine/src/renderer/primitives/Cube.cpp
         engine/src/renderer/primitives/Billboard.cpp
@@ -74,6 +75,7 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlShaderStorageBuffer.cpp
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+            engine/src/renderer/opengl/OpenGlShaderReflection.cpp
     )
 endif()
 
