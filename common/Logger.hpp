@@ -38,7 +38,7 @@ namespace nexo {
         }
     }
 
-    enum class LogLevel {
+    enum class LogLevel : uint32_t {
         FATAL,
         ERR,
         WARN,
