@@ -8,19 +8,17 @@
     <Platforms>@NEXO_PLATFORM@</Platforms>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
 	<Compile Include="@SOURCES@" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR@/Debug-x64/</OutputPath>
-    <PlatformTarget>@NEXO_PLATFORM@</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR@/Release-x64/</OutputPath>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR@</OutputPath>
     <PlatformTarget>@NEXO_PLATFORM@</PlatformTarget>
   </PropertyGroup>
 
