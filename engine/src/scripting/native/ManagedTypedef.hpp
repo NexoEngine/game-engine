@@ -16,6 +16,8 @@
 
 #include <cstdint>
 
+#include <glm/glm.hpp>
+
 namespace nexo::scripting {
 
     extern "C" {
@@ -43,8 +45,8 @@ namespace nexo::scripting {
         //    Decimal             A decimal (128-bit) value. Unsupported in C++
         using IntPtr = void*;  // A pointer to an unspecified type.
 
-
-
+        using Vector3 = glm::vec3;
+        using Vector4 = glm::vec4;
 
     }
 
