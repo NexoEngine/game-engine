@@ -27,6 +27,7 @@ set(SOURCES
     ObjectFactory.cs
     NativeInterop.cs
     Logger.cs
+    Components/Transform.cs
 )
 
 # Locate the dotnet executable
