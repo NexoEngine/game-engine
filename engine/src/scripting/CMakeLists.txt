@@ -21,5 +21,5 @@ target_include_directories(nexoApi PUBLIC
                            ${CMAKE_SOURCE_DIR}/engine/src
                            ${CMAKE_SOURCE_DIR}/common)
 
-target_link_libraries(nexoApi PRIVATE nexoRenderer)
 target_compile_definitions(nexoApi PRIVATE NEXO_EXPORT)
+set_target_properties(nexoApi PROPERTIES ENABLE_EXPORTS ON)

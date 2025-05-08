@@ -19,6 +19,8 @@
 #include "Scripting.hpp"
 #include "HostString.hpp"
 #include "Logger.hpp"
+#include "NativeApi.hpp"
+#include "ManagedTypedef.hpp"
 
 namespace nexo::scripting {
 
@@ -185,6 +187,19 @@ namespace nexo::scripting {
         if (status != HostHandler::SUCCESS) {
             return EXIT_FAILURE;
         }
+
+        // Initialize callbacks
+        typedef void (CORECLR_DELEGATE_CALLTYPE *initialize_callbacks_fn)(NativeApiCallbacks *callbacks, Int32 callbackSize);
+        auto initializeCallbacks = host.getManagedFptr<initialize_callbacks_fn>(
+            STR("Nexo.NativeInterop, Nexo"),
+            STR("Initialize"),
+            UNMANAGEDCALLERSONLY_METHOD
+        );
+        if (initializeCallbacks == nullptr) {
+            return EXIT_FAILURE;
+        }
+        initializeCallbacks(&nativeApiCallbacks, sizeof(nativeApiCallbacks));
+
 
         // Get function pointers to managed methods
         // Regular method
