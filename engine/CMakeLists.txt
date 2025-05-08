@@ -63,6 +63,7 @@ set(COMMON_SOURCES
         engine/src/assets/Assets/Texture/TextureImporter.cpp
         engine/src/scripting/native/Scripting.cpp
         engine/src/scripting/native/HostString.cpp
+        engine/src/scripting/native/NativeApi.cpp
 )
 
 # Add API-specific sources
@@ -122,3 +123,6 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
 endif()
+
+target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)
+set_target_properties(nexoRenderer PROPERTIES ENABLE_EXPORTS ON)
