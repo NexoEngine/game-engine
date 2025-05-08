@@ -25,6 +25,8 @@
 #include "AssetRef.hpp"
 #include "json.hpp"
 
+#undef ERROR // Avoid conflict with Windows.h
+
 namespace nexo::assets {
 
     constexpr unsigned short ASSET_MAX_DEPENDENCIES = 10000;
