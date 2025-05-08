@@ -24,6 +24,7 @@
 #include <core/exceptions/Exceptions.hpp>
 
 #include "Path.hpp"
+#include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
 
 int main(int argc, char **argv)
@@ -58,6 +59,15 @@ try {
         LOG(NEXO_INFO, "Successfully ran runScriptExample");
     }
 
+    nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
+
+    typedef void (CORECLR_DELEGATE_CALLTYPE *update_fn)(nexo::scripting::Double deltaTime);
+    update_fn updateScript = host.getManagedFptr<update_fn>(STR("Nexo.NativeInterop, Nexo"), STR("Update"), UNMANAGEDCALLERSONLY_METHOD);
+
+
+    auto clock = std::chrono::high_resolution_clock::now();
+    auto scriptDetlaStart = clock;
+    std::chrono::duration<double, std::milli> scriptDeltaElapsed = clock - scriptDetlaStart;
     while (editor.isOpen())
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -66,7 +76,14 @@ try {
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
+
+        scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDetlaStart;
+        updateScript(scriptDeltaElapsed.count() / 1000.0);
+        scriptDetlaStart = std::chrono::high_resolution_clock::now();
+
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+
+
     }
     editor.shutdown();
     return 0;
