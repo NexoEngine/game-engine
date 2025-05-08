@@ -36,10 +36,9 @@
 
 #define NEXO_RET(type) NEXO_API type NEXO_CALL
 
-#include <cstdint>
-#include <type_traits>
-
+#include "Entity.hpp"
 #include "ManagedTypedef.hpp"
+#include "components/Transform.hpp"
 
 namespace nexo::scripting {
 
@@ -67,8 +66,8 @@ namespace nexo::scripting {
         NEXO_RET(const char*) GetNativeMessage(void);
         NEXO_RET(void) NxLog(UInt32 level, const char *message);
 
-        NEXO_RET(void) CreateCube(void);
-
+        NEXO_RET(ecs::Entity) CreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
 
 
     }
@@ -79,7 +78,8 @@ namespace nexo::scripting {
         ApiCallback<const char*()> GetNativeMessage{&scripting::GetNativeMessage};
         ApiCallback<void(UInt32, const char*)> NxLog{&scripting::NxLog};
 
-        ApiCallback<void()> CreateCube{&scripting::CreateCube};
+        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> CreateCube{&scripting::CreateCube};
+        ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
     };
 
     inline NativeApiCallbacks nativeApiCallbacks;
