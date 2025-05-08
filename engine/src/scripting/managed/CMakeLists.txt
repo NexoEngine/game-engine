@@ -12,6 +12,7 @@ set(SOURCES
     Lib.cs
     ObjectFactory.cs
     NativeInterop.cs
+    Logger.cs
 )
 
 # Locate the dotnet executable
@@ -34,7 +35,6 @@ configure_file(
 add_custom_target(nexoManaged ALL
                   COMMAND ${DOTNET_EXECUTABLE} build Nexo.csproj
                   -c $<CONFIG>                        # Matches Debug/Release configuration
-                  --output ${NEXO_MANAGED_OUTPUT_DIR} # Custom output directory
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}      # Working directory for the build
                   COMMENT "Building .NET managed project (Nexo.csproj)..."
 )
