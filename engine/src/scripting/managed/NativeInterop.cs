@@ -4,43 +4,58 @@ using System.Runtime.InteropServices;
 namespace Nexo
 {
     /// <summary>
-    /// Provides P/Invoke declarations for calling native C++ functions from C#
+    /// Provides interop functionality for calling native C++ functions from C# using function pointers.
     /// </summary>
     public static class NativeInterop
     {
-        // The name of the native library that contains our exported functions
-        // On Windows, this would typically be "engine.dll"
-        // On macOS, it would be "libengine.dylib"
-        // On Linux, it would be "libengine.so"
-        // Since we're using dynamic loading, we'll set this at runtime
-        private static string s_nativeLibraryName;
-
         /// <summary>
-        /// Sets the native library name to use for P/Invoke calls
+        /// Native API struct that matches the C++ struct
         /// </summary>
-        public static void SetNativeLibraryName(string libraryName)
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NativeApiCallbacks
         {
-            s_nativeLibraryName = libraryName;
-            Console.WriteLine($"Native library name set to: {libraryName}");
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void HelloFromNativeDelegate();
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate Int32 AddNumbersDelegate(Int32 a, Int32 b);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate IntPtr GetNativeMessageDelegate();
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxLogDelegate(UInt32 level, String message);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void CreateCubeDelegate();
+
+            // Function pointers
+            public HelloFromNativeDelegate HelloFromNative;
+            public AddNumbersDelegate AddNumbers;
+            public GetNativeMessageDelegate GetNativeMessage;
+            public NxLogDelegate NxLog;
+            public CreateCubeDelegate CreateCube;
         }
 
-        /// <summary>
-        /// Import of the HelloFromNative function from the native library
-        /// </summary>
-        [DllImport("nexoApi", EntryPoint = "HelloFromNative")]
-        private static extern void HelloFromNativeInternal();
+        private static NativeApiCallbacks s_callbacks;
 
         /// <summary>
-        /// Import of the AddNumbers function from the native library
+        /// Initialize the native API with the provided struct pointer and size.
         /// </summary>
-        [DllImport("nexoApi", EntryPoint = "AddNumbers")]
-        private static extern int AddNumbersInternal(int a, int b);
+        /// <param name="structPtr">Pointer to the struct</param>
+        /// <param name="structSize">Size of the struct</param>
+        [UnmanagedCallersOnly]
+        public static void Initialize(IntPtr structPtr, Int32 structSize)
+        {
+            if (structSize != Marshal.SizeOf<NativeApiCallbacks>())
+            {
+                throw new ArgumentException($"Struct size mismatch between C++ and C# for {nameof(NativeApiCallbacks)}, expected {Marshal.SizeOf<NativeApiCallbacks>()}, got {structSize}");
+            }
 
-        /// <summary>
-        /// Import of the GetNativeMessage function from the native library
-        /// </summary>
-        [DllImport("nexoApi", EntryPoint = "GetNativeMessage")]
-        private static extern IntPtr GetNativeMessageInternal();
+            // Marshal the struct from the IntPtr to the managed struct
+            s_callbacks = Marshal.PtrToStructure<NativeApiCallbacks>(structPtr);
+            Console.WriteLine("Native API initialized.");
+        }
 
         /// <summary>
         /// Calls the HelloFromNative function in the native library
@@ -49,7 +64,7 @@ namespace Nexo
         {
             try
             {
-                HelloFromNativeInternal();
+                s_callbacks.HelloFromNative?.Invoke();
             }
             catch (Exception ex)
             {
@@ -60,11 +75,11 @@ namespace Nexo
         /// <summary>
         /// Calls the AddNumbers function in the native library
         /// </summary>
-        public static int AddNumbers(int a, int b)
+        public static Int32 AddNumbers(Int32 a, Int32 b)
         {
             try
             {
-                return AddNumbersInternal(a, b);
+                return s_callbacks.AddNumbers?.Invoke(a, b) ?? 0;
             }
             catch (Exception ex)
             {
@@ -76,20 +91,46 @@ namespace Nexo
         /// <summary>
         /// Calls the GetNativeMessage function in the native library
         /// </summary>
-        public static string GetNativeMessage()
+        public static String GetNativeMessage()
         {
             try
             {
-                IntPtr messagePtr = GetNativeMessageInternal();
-                if (messagePtr == IntPtr.Zero)
-                    return string.Empty;
-                
-                return Marshal.PtrToStringAnsi(messagePtr);
+                IntPtr messagePtr = s_callbacks.GetNativeMessage?.Invoke() ?? IntPtr.Zero;
+                return messagePtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(messagePtr) ?? string.Empty : string.Empty;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling GetNativeMessage: {ex.Message}");
                 return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Logs a message using the native NxLog function
+        /// </summary>
+        /// <param name="level">The level of the log message</param>
+        /// <param name="message">The message to log</param>
+        public static void NxLog(UInt32 level, String message)
+        {
+            try
+            {
+                s_callbacks.NxLog?.Invoke(level, message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling NxLog: {ex.Message}");
+            }
+        }
+        
+        public static void CreateCube()
+        {
+            try
+            {
+                s_callbacks.CreateCube?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateCube: {ex.Message}");
             }
         }
 
@@ -106,18 +147,23 @@ namespace Nexo
             HelloFromNative();
             
             // Call the function that returns an int
-            int a = 42;
-            int b = 123;
+            const Int32 a = 42;
+            const Int32 b = 123;
             Console.WriteLine($"Calling AddNumbers({a}, {b}):");
-            int result = AddNumbers(a, b);
+            Int32 result = AddNumbers(a, b);
             Console.WriteLine($"Result: {result}");
             
             // Call the function that returns a string
             Console.WriteLine("Calling GetNativeMessage:");
-            string message = GetNativeMessage();
-            Console.WriteLine($"Received message: {message}");
+            String message = GetNativeMessage();
+            Logger.Log(LogLevel.Info, $"Logging from C# :) got native message: {message}");
+            
+            // Call the function that creates a cube
+            Console.WriteLine("Calling CreateCube:");
+            CreateCube();
             
             Console.WriteLine("=== Native Call Demonstration Complete ===");
         }
+        
     }
 }
