@@ -21,6 +21,8 @@
 #include <sstream>
 #include "FileSystem.hpp"
 
+
+
 namespace nexo::editor::utils {
     void openFolder(const std::string &folderPath)
     {
