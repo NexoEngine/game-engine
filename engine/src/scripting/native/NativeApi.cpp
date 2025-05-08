@@ -12,9 +12,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "NativeApi.hpp"
 #include <iostream>
 
+#include "NativeApi.hpp"
 #include "EntityFactory3D.hpp"
 #include "Logger.hpp"
 #include "Nexo.hpp"
@@ -45,12 +45,23 @@ namespace nexo::scripting {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
-        void CreateCube() {
+        ecs::Entity CreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color) {
 
             auto &app = getApp();
-            const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 1.25f, 0.0f}, {5.0f, 0.5f, 5.0f},
-                                                                   {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
+            const ecs::Entity basicCube = EntityFactory3D::createCube(std::move(pos), std::move(size), std::move(rotation), std::move(color));
             app.getSceneManager().getScene(0).addEntity(basicCube);
+            return basicCube;
+        }
+
+        components::TransformComponent *GetTransformComponent(ecs::Entity entity)
+        {
+            const auto &app = getApp();
+            const auto opt = app.m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            if (!opt.has_value()) {
+                LOG(NEXO_WARN, "GetTransformComponent: Entity {} does not have a TransformComponent", entity);
+                return nullptr;
+            }
+            return &opt.value().get();
         }
 
     }
