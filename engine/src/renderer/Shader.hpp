@@ -161,6 +161,8 @@ namespace nexo::renderer {
             virtual bool setUniformInt(NxShaderUniforms uniform, int value) const = 0;
             virtual bool setUniformIntArray(NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
+            bool setUniform(const std::string &name, UniformValue value);
+
             void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
             virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
