@@ -12,8 +12,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef WIN32
+    #define NOMINMAX
+    #include <windows.h>
+#endif
+
 #include "FileSystem.hpp"
 #include <iomanip>
+
+
 
 namespace nexo::editor::utils {
     void openFolder(const std::string &folderPath)
