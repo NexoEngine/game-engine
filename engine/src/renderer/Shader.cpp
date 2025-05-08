@@ -15,6 +15,7 @@
 #include "Attributes.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
+#include <variant>
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
@@ -168,6 +169,25 @@ namespace nexo::renderer {
     ) const {
         // Arrays are more complex for caching, so we'll always update them
         // In a real implementation, you might want to cache arrays too
+        return false;
+    }
+
+    bool NxShader::setUniform(const std::string &name, UniformValue value)
+    {
+        if (std::holds_alternative<float>(value))
+            return setUniformFloat(name, std::get<float>(value));
+        if (std::holds_alternative<glm::vec2>(value))
+            return setUniformFloat2(name, std::get<glm::vec2>(value));
+        if (std::holds_alternative<glm::vec3>(value))
+            return setUniformFloat3(name, std::get<glm::vec3>(value));
+        if (std::holds_alternative<glm::vec4>(value))
+            return setUniformFloat4(name, std::get<glm::vec4>(value));
+        if (std::holds_alternative<int>(value))
+            return setUniformInt(name, std::get<int>(value));
+        if (std::holds_alternative<bool>(value))
+            return setUniformBool(name, std::get<bool>(value));
+        if (std::holds_alternative<glm::mat4>(value))
+            return setUniformMatrix(name, std::get<glm::mat4>(value));
         return false;
     }
 
