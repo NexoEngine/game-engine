@@ -16,6 +16,12 @@
 #include <filesystem>
 #include <hostfxr.h>
 
+#ifdef WIN32
+    #define NOMINMAX
+    #include <windows.h>
+#endif
+
+
 #include "Scripting.hpp"
 #include "HostString.hpp"
 #include "Logger.hpp"

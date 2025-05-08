@@ -26,14 +26,9 @@
 #include "Path.hpp"
 
 #ifdef WIN32
-    #include <Windows.h>
-
     #define STR(s) L ## s
     #define CH(c) L ## c
     #define DIR_SEPARATOR L'\\'
-
-    #define string_compare wcscmp
-
 #else
     #include <dlfcn.h>
     #include <limits.h>
@@ -42,9 +37,6 @@
     #define CH(c) c
     #define DIR_SEPARATOR '/'
     #define MAX_PATH PATH_MAX
-
-    #define string_compare strcmp
-
 #endif
 
 namespace nexo::scripting {
