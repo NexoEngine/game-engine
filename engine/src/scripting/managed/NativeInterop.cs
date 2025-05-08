@@ -1,5 +1,23 @@
+//// NativeInterop.cs /////////////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Guillaume HEIN
+//  Date:        09/05/2025
+//  Description: Source file for the NativeInterop class in C#.
+//               This class provides interop functionality for calling native
+//               C++ functions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
+using Nexo.Components;
 
 namespace Nexo
 {
@@ -27,7 +45,10 @@ namespace Nexo
             public delegate void NxLogDelegate(UInt32 level, String message);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate void CreateCubeDelegate();
+            public delegate UInt32 CreateCubeDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate ref Transform GetTransformDelegate(UInt32 entityId);
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -35,6 +56,7 @@ namespace Nexo
             public GetNativeMessageDelegate GetNativeMessage;
             public NxLogDelegate NxLog;
             public CreateCubeDelegate CreateCube;
+            public GetTransformDelegate GetTransform;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -54,7 +76,7 @@ namespace Nexo
 
             // Marshal the struct from the IntPtr to the managed struct
             s_callbacks = Marshal.PtrToStructure<NativeApiCallbacks>(structPtr);
-            Console.WriteLine("Native API initialized.");
+            Logger.Log(LogLevel.Info, "Native API initialized.");
         }
 
         /// <summary>
@@ -64,7 +86,7 @@ namespace Nexo
         {
             try
             {
-                s_callbacks.HelloFromNative?.Invoke();
+                s_callbacks.HelloFromNative.Invoke();
             }
             catch (Exception ex)
             {
@@ -79,7 +101,7 @@ namespace Nexo
         {
             try
             {
-                return s_callbacks.AddNumbers?.Invoke(a, b) ?? 0;
+                return s_callbacks.AddNumbers.Invoke(a, b);
             }
             catch (Exception ex)
             {
@@ -95,7 +117,7 @@ namespace Nexo
         {
             try
             {
-                IntPtr messagePtr = s_callbacks.GetNativeMessage?.Invoke() ?? IntPtr.Zero;
+                IntPtr messagePtr = s_callbacks.GetNativeMessage.Invoke();
                 return messagePtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(messagePtr) ?? string.Empty : string.Empty;
             }
             catch (Exception ex)
@@ -114,7 +136,7 @@ namespace Nexo
         {
             try
             {
-                s_callbacks.NxLog?.Invoke(level, message);
+                s_callbacks.NxLog.Invoke(level, message);
             }
             catch (Exception ex)
             {
@@ -122,17 +144,33 @@ namespace Nexo
             }
         }
         
-        public static void CreateCube()
+        public static UInt32 CreateCube(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
         {
             try
             {
-                s_callbacks.CreateCube?.Invoke();
+                return s_callbacks.CreateCube.Invoke(position, size, rotation, color);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateCube: {ex.Message}");
+                return UInt32.MaxValue;
             }
         }
+        
+        public static ref Transform GetTransform(UInt32 entityId)
+        {
+            try
+            {
+                return ref s_callbacks.GetTransform.Invoke(entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling GetTransform: {ex.Message}");
+                throw new InvalidOperationException($"Failed to get transform for entity {entityId}", ex);
+            }
+        }
+        
+        private static UInt32 _cubeId = 0;
 
         /// <summary>
         /// Demonstrates calling native functions from C#
@@ -160,10 +198,28 @@ namespace Nexo
             
             // Call the function that creates a cube
             Console.WriteLine("Calling CreateCube:");
-            CreateCube();
+            UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(4, 5, 6), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+            _cubeId = cubeId;
+            Console.WriteLine($"Created cube with ID: {cubeId}");
+            
+            // Call the function that gets a transform
+            Console.WriteLine($"Calling GetTransform({cubeId}):");
+            ref Transform transform = ref GetTransform(cubeId);
+            Console.WriteLine($"Transform for cube {cubeId}: Position: {transform.pos}, Scale: {transform.size}, Rotation Quat: {transform.quat}");
+            
             
             Console.WriteLine("=== Native Call Demonstration Complete ===");
         }
-        
+
+        [UnmanagedCallersOnly]
+        public static void Update(Double deltaTime)
+        {
+            // Get the transform of the cube
+            ref Transform transform = ref GetTransform(_cubeId);
+            
+            // Make the cube rotate on the Y axis
+            transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (float)deltaTime) * transform.quat;
+        }
+
     }
 }
