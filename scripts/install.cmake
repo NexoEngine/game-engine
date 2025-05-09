@@ -87,6 +87,22 @@ install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/copyright.cmake"
         COMPONENT generate-copyright EXCLUDE_FROM_ALL
 )
 
+# Install for scripting
+install(CODE "
+        execute_process(
+            COMMAND dotnet publish
+            -c $<CONFIG>
+            --no-build
+            --output \"${CMAKE_BINARY_DIR}/publish\"
+            --no-self-contained
+            WORKING_DIRECTORY \"${CMAKE_SOURCE_DIR}/engine/src/scripting/managed\"
+        )"
+)
 
-
-# Install for scripting can be found in engine/src/scripting/managed/CMakeLists.txt
+install(DIRECTORY "${CMAKE_BINARY_DIR}/publish/" # source directory
+        DESTINATION "bin"
+        FILES_MATCHING # install only matched files
+        PATTERN "*.dll" # select dll files
+        PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
+        PATTERN "*.deps.json" # select deps.json files
+)
