@@ -53,3 +53,5 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src" # source directory
         FILES_MATCHING # install only matched files
             PATTERN "*.hpp" # select header files
 )
+
+# Install for scripting can be found in engine/src/scripting/managed/CMakeLists.txt
