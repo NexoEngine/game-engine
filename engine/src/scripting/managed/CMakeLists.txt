@@ -66,13 +66,14 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
 install(CODE "
         execute_process(
             COMMAND ${DOTNET_EXECUTABLE} publish
-            -c ${CMAKE_BUILD_TYPE}
-            --output \"${NEXO_MANAGED_OUTPUT_DIR}/publish-managed\"
+            -c $<CONFIG>
+            --no-build
+            --output \"${NEXO_MANAGED_OUTPUT_DIR}/publish\"
             WORKING_DIRECTORY \"${CMAKE_CURRENT_LIST_DIR}\"
         )"
 )
 
-install(DIRECTORY "${NEXO_MANAGED_OUTPUT_DIR}/publish-managed/" # source directory
+install(DIRECTORY "${NEXO_MANAGED_OUTPUT_DIR}/publish/" # source directory
         DESTINATION "bin"
         FILES_MATCHING # install only matched files
             PATTERN "*.dll" # select dll files
