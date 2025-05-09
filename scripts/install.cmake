@@ -54,4 +54,22 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src" # source directory
             PATTERN "*.hpp" # select header files
 )
 
-# Install for scripting can be found in engine/src/scripting/managed/CMakeLists.txt
+# Install for scripting
+install(CODE "
+        execute_process(
+            COMMAND dotnet publish
+            -c $<CONFIG>
+            --no-build
+            --output \"${CMAKE_BINARY_DIR}/publish\"
+            --no-self-contained
+            WORKING_DIRECTORY \"${CMAKE_SOURCE_DIR}/engine/src/scripting/managed\"
+        )"
+)
+
+install(DIRECTORY "${CMAKE_BINARY_DIR}/publish/" # source directory
+        DESTINATION "bin"
+        FILES_MATCHING # install only matched files
+        PATTERN "*.dll" # select dll files
+        PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
+        PATTERN "*.deps.json" # select deps.json files
+)
