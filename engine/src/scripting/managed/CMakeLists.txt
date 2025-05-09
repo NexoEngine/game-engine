@@ -61,22 +61,3 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
     ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.runtimeconfig.json
     ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.deps.json
 )
-
-# Install step
-install(CODE "
-        execute_process(
-            COMMAND ${DOTNET_EXECUTABLE} publish
-            -c $<CONFIG>
-            --no-build
-            --output \"${NEXO_MANAGED_OUTPUT_DIR}/publish\"
-            WORKING_DIRECTORY \"${CMAKE_CURRENT_LIST_DIR}\"
-        )"
-)
-
-install(DIRECTORY "${NEXO_MANAGED_OUTPUT_DIR}/publish/" # source directory
-        DESTINATION "bin"
-        FILES_MATCHING # install only matched files
-            PATTERN "*.dll" # select dll files
-            PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
-            PATTERN "*.deps.json" # select deps.json files
-)
