@@ -88,3 +88,5 @@ install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/copyright.cmake"
 )
 
 
+
+# Install for scripting can be found in engine/src/scripting/managed/CMakeLists.txt
