@@ -27,6 +27,7 @@
 #include "Logger.hpp"
 #include "NativeApi.hpp"
 #include "ManagedTypedef.hpp"
+#include "core/event/SignalEvent.hpp"
 
 namespace nexo::scripting {
 
@@ -62,6 +63,9 @@ namespace nexo::scripting {
 
         if (loadManagedAssembly() != SUCCESS)
             return m_status;
+
+        // Take over signal handling because the CoreCLR library overrides them??
+        event::SignalHandler::getInstance()->initSignals();
 
         return m_status = SUCCESS;
     }
