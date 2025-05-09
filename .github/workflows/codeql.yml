@@ -61,9 +61,15 @@ jobs:
             libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
             libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
             libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
-            libegl1-mesa-dev mono-complete
+            libegl1-mesa-dev mono-complete dotnet-sdk-9.0 # Pre-install .NET SDK 9.0 for caching
           version: 1.0
           execute_install_scripts: true
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+          cache: true
 
       - name: Set up GCC
         if: ${{ matrix.compiler == 'gcc' }}
