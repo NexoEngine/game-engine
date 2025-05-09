@@ -19,7 +19,7 @@ project(nexoManaged LANGUAGES NONE)
 
 # Define variables for configuration
 set(NEXO_MANAGED_OUTPUT_DIR ${CMAKE_BINARY_DIR})
-file(RELATIVE_PATH NEXO_MANAGED_OUTPUT_DIR_REL "${NEXO_MANAGED_OUTPUT_DIR}" "${CMAKE_CURRENT_LIST_DIR}")
+file(RELATIVE_PATH NEXO_MANAGED_OUTPUT_DIR_REL "${CMAKE_CURRENT_LIST_DIR}" "${NEXO_MANAGED_OUTPUT_DIR}")
 set(NEXO_FRAMEWORK "net9.0")
 
 set(SOURCES
@@ -70,14 +70,12 @@ install(CODE "
             --output \"${NEXO_MANAGED_OUTPUT_DIR}/publish-managed\"
             WORKING_DIRECTORY \"${CMAKE_CURRENT_LIST_DIR}\"
         )"
-        COMPONENT scripting
 )
 
 install(DIRECTORY "${NEXO_MANAGED_OUTPUT_DIR}/publish-managed/" # source directory
-        COMPONENT scripting
-        DESTINATION "bin/"
+        DESTINATION "bin"
         FILES_MATCHING # install only matched files
-        PATTERN "*.dll" # select dll files
-        PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
-        PATTERN "*.deps.json" # select deps.json files
+            PATTERN "*.dll" # select dll files
+            PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
+            PATTERN "*.deps.json" # select deps.json files
 )
