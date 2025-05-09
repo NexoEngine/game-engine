@@ -17,8 +17,10 @@
 #ifdef NEXO_EXPORT
     #ifdef WIN32
         #define NEXO_API __declspec(dllexport)
-    #else
+    #elif defined(__GNUC__) || defined(__clang__)
         #define NEXO_API __attribute__((visibility("default")))
+    #else
+        #define NEXO_API
     #endif
 #else
     #ifdef WIN32
@@ -30,6 +32,8 @@
 
 #ifdef WIN32 // Set calling convention according to .NET https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute.callingconvention?view=net-9.0#remarks
     #define NEXO_CALL  __stdcall
+#elif defined(__GNUC__) || defined(__clang__)
+    #define NEXO_CALL __attribute__((cdecl))
 #else
     #define NEXO_CALL __cdecl
 #endif
@@ -47,7 +51,7 @@ namespace nexo::scripting {
 
     template<typename Ret, typename... Args>
     struct ApiCallback<Ret(Args...)> {
-        using Type = Ret(NEXO_CALL *)(Args...);
+        using Type = Ret (NEXO_CALL *)(Args...);
 
         // Constructor explicitly accepting function pointers
         explicit ApiCallback(Type f) : func(f) {}
