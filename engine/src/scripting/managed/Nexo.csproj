@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>@NEXO_FRAMEWORK@</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -11,13 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<Compile Include="@SOURCES@" />
+	<Compile Include="Lib.cs;ObjectFactory.cs;NativeInterop.cs;Logger.cs;Components/Transform.cs" />
   </ItemGroup>
 
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR_REL@</OutputPath>
+    <OutputPath>../engine/src/scripting/managed</OutputPath>
   </PropertyGroup>
 
 </Project>
