@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
+        os: [windows-latest, windows-11-arm, ubuntu-latest, ubuntu-24.04-arm] # TODO: Add macos-latest later
         compiler: [gcc, msvc] # TODO: add clang later
         include:
           - os: ubuntu-latest
