@@ -19,8 +19,8 @@ project(nexoManaged LANGUAGES NONE)
 
 # Define variables for configuration
 set(NEXO_MANAGED_OUTPUT_DIR ${CMAKE_BINARY_DIR})
+file(RELATIVE_PATH NEXO_MANAGED_OUTPUT_DIR_REL "${NEXO_MANAGED_OUTPUT_DIR}" "${CMAKE_CURRENT_LIST_DIR}")
 set(NEXO_FRAMEWORK "net9.0")
-set(NEXO_PLATFORM "x64")
 
 set(SOURCES
     Lib.cs
