@@ -62,6 +62,7 @@ https://github.com/user-attachments/assets/ea92807b-da51-4fb6-bd1d-d3c9fadf0c13
 To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source.
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
+- **.NET SDK 9.0**: Required for the C# scripting support.
 
 ## Build the project
 

@@ -271,6 +271,11 @@ jobs:
         with:
           pattern: 'nexo-engine-installer-msvc14-windows-latest'
 
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
       - name: Run NSIS installer
         shell: pwsh
         run: |
@@ -335,6 +340,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
 
       - name: Install DEB package
         shell: bash
