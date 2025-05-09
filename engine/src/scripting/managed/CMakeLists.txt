@@ -70,11 +70,11 @@ install(CODE "
             --output \"${NEXO_MANAGED_OUTPUT_DIR}/publish-managed\"
             WORKING_DIRECTORY \"${CMAKE_CURRENT_LIST_DIR}\"
         )"
-        COMPONENT scripts
+        COMPONENT scripting
 )
 
 install(DIRECTORY "${NEXO_MANAGED_OUTPUT_DIR}/publish-managed/" # source directory
-        COMPONENT scripts
+        COMPONENT scripting
         DESTINATION "bin/"
         FILES_MATCHING # install only matched files
         PATTERN "*.dll" # select dll files
