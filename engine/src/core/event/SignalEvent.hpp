@@ -71,6 +71,8 @@ namespace nexo::event {
 
             static std::shared_ptr<SignalHandler> getInstance();
 
+            void initSignals() const;
+
         private:
             static void signalHandler(int signal);
 
@@ -79,7 +81,7 @@ namespace nexo::event {
             template<typename EventType, typename... Args>
             static void emitEventToAll(Args &&... args);
 
-            void initSignals() const;
+
 
             std::vector<std::shared_ptr<EventManager> > m_eventManagers;
 
