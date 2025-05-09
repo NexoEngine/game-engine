@@ -36,7 +36,11 @@ jobs:
         exclude:
           - os: ubuntu-latest
             compiler: msvc
+          - os: ubuntu-24.04-arm
+            compiler: msvc
           - os: windows-latest
+            compiler: gcc
+          - os: windows-11-arm
             compiler: gcc
           - os: macos-latest
             compiler: gcc
@@ -59,13 +63,13 @@ jobs:
           detached: true # Run in the background and wait for connection
 
       - name: Add Ubuntu toolchain repository
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: |
           sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update
 
       - name: Pre-install GCC with cache
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
@@ -90,7 +94,7 @@ jobs:
         with:
           version: ${{ matrix.version }}
           platform: x64
-          cygwin: ${{ matrix.os == 'windows-latest' && 1 || 0 }}
+          cygwin: ${{ startsWith(matrix.os, 'windows') && 1 || 0 }}
 
       - name: Set up MSVC
         if: ${{ matrix.compiler == 'msvc' }}
@@ -99,7 +103,7 @@ jobs:
           toolset: ${{ matrix.version }}
 
       - name: Install required system dependencies for Ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libxrandr-dev libx11-dev \
@@ -120,7 +124,7 @@ jobs:
             git submodule update --init --recursive
 
       - name: Install sonar-scanner
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: sonarsource/sonarcloud-github-c-cpp@v3
 
       - name: Install latest CMake and Ninja
@@ -144,7 +148,7 @@ jobs:
 
       - name: Install Mesa for Windows
         shell: cmd
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
           "C:\Program Files\7-Zip\7z.exe" x mesa.7z
@@ -159,14 +163,14 @@ jobs:
           working-directory: 'build'
 
       - name: Collect coverage into XML report for SonarCloud
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: |
           pip install gcovr
           gcovr build --verbose --sonarqube -o coverage.xml --gcov-executable gcov-${{ matrix.version }}
           cat coverage.xml
 
       - name: Run sonar-scanner
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
@@ -200,7 +204,7 @@ jobs:
           CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
       - name: Generate NSIS installer
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         shell: bash
         run: |
           choco install -y nsis
@@ -208,7 +212,7 @@ jobs:
           cpack -G NSIS --verbose
 
       - name: Generate DEB installer
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         shell: bash
         run: |
           cd build
