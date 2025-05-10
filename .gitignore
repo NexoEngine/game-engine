@@ -1,6 +1,9 @@
 # Prevent pushing window layouts
 ./config/default-layout.ini
 
+# Do not push auto generated COPYRIGHT
+COPYRIGHT_generated
+
 # Prerequisites
 *.d
 

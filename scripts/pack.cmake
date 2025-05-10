@@ -72,6 +72,7 @@ cpack_add_component(headers
                     DISABLED
                     GROUP optional
 )
+
 cpack_add_component_group(optional
                           DISPLAY_NAME "Optional Components"
                           DESCRIPTION "Optional components of the NEXO Engine."

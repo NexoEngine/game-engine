@@ -1,0 +1,217 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Comment:
+ NEXO Engine Exhaustive list of all licenses used in the project
+ ---------------------------------------------------------------
+ This file is a template that is processed by CMake to generate the
+ final copyright file. See scripts/copyright.cmake for more information.
+ When generated some information might be missing and should be
+ verified and updated manually.
+ .
+ This file lists copyright holders and licenses for the NEXO project, its
+ source code, dependencies and libraries.
+ .
+ The format is based on the Debian copyright format 1.0, which is a
+ human and machine readable format for copyright information.
+ For more information, see:
+ https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Upstream-Name: NEXO Engine
+Upstream-Contact: NEXO Engine Team <nexo.engine@gmail.com>
+Source: https://github.com/NexoEngine/game-engine
+
+Files: *
+Comment: NEXO Engine
+Copyright: 2025 NEXO Engine contributors
+License: MIT
+
+Files:
+ resources/nexo.ico
+ resources/nexo.png
+ resources/nexo.rc
+ resources/nexo_header.bmp
+Comment: NEXO Engine Logo
+Copyright: 2025 NEXO Engine contributors
+License: CC-BY-SA-4.0
+
+Files: *
+Copyright: 2006-2021, assimp team
+License: BSD-3-clause
+Comment:
+ assimp full license in /external/licenses/assimp
+
+Files:
+ engine/*
+ editor/*
+ common/*
+Copyright: Boost Software License - Version 1.0 - August 17th, 2003
+License: BSL-1.0
+Comment:
+ boost full license in /external/licenses/boost
+
+Files: *
+Copyright: Google Inc. and other contributors
+License: Apache-2.0
+Comment:
+ draco full license in /external/licenses/draco
+
+Files: *
+Copyright: 2008-2018 The Khronos Group Inc.
+License: Apache-2.0
+Comment:
+ egl-registry full license in /external/licenses/egl-registry
+
+Files:
+ engine/*
+Copyright: 2013-2021 David Herberth
+License: MIT
+Comment:
+ glad full license in /external/licenses/glad
+
+Files:
+ engine/*
+Copyright: 2002-2006 Marcus Geelnard
+           2006-2019 Camilla Löwy
+License: zlib/libpng
+Comment:
+ glfw3 full license in /external/licenses/glfw3
+
+Files:
+ engine/*
+ editor/*
+ common/*
+Copyright: 2005 - G-Truc Creation
+License: MIT
+Comment:
+ glm full license in /external/licenses/glm
+
+Files:
+ tests/*
+Copyright: 2008, Google Inc.
+License: BSD-3-clause
+Comment:
+ gtest full license in /external/licenses/gtest
+
+Files:
+ editor/*
+Copyright: 2014-2025 Omar Cornut
+License: MIT
+Comment:
+ imgui full license in /external/licenses/imgui
+
+Files:
+ editor/*
+Copyright: 2016 Cedric Guillemet
+License: MIT
+Comment:
+ imguizmo full license in /external/licenses/imguizmo
+
+Files: *
+Copyright: 2009-2018, Poly2Tri Contributors
+License: BSD-3-clause
+Comment:
+ jhasse-poly2tri full license in /external/licenses/jhasse-poly2tri
+
+Files:
+ engine/*
+Copyright: 2021 Jorrit Rouwe
+License: MIT
+Comment:
+ joltphysics full license in /external/licenses/joltphysics
+
+Files: *
+Copyright: Kuba Podgórski
+License: public-domain
+Comment:
+ kubazip full license in /external/licenses/kubazip
+
+Files:
+ engine/*
+ editor/*
+ common/*
+Copyright: Emil Ernerfeldt
+License: public-domain
+Comment:
+ loguru full license in /external/licenses/loguru
+
+Files: *
+Copyright: 1998-2010 - by Gilles Vollant - version 1.1 64 bits from Mathias Svensson
+License: zlib
+Comment:
+ minizip full license in /external/licenses/minizip
+
+Files:
+ engine/*
+ editor/*
+ common/*
+Copyright: 2013-2022 Niels Lohmann
+License: MIT
+Comment:
+ nlohmann-json full license in /external/licenses/nlohmann-json
+
+Files: *
+Copyright: 2008-2018 The Khronos Group Inc.
+License: MIT
+Comment:
+ opengl-registry full license in /external/licenses/opengl-registry
+
+Files: *
+Copyright: Angus Johnson and other contributors
+License: BSL-1.0
+Comment:
+ polyclipping full license in /external/licenses/polyclipping
+
+Files: *
+Copyright: 2006-2023 Arseny Kapoulkine
+License: MIT
+Comment:
+ pugixml full license in /external/licenses/pugixml
+
+Files: *
+Copyright: 2015 THL A29 Limited, a Tencent company, and Milo Yip.  All rights reserved.
+License: MIT
+Comment:
+ rapidjson full license in /external/licenses/rapidjson
+
+Files:
+ engine/*
+Copyright: 2017 Sean Barrett
+License: MIT or public-domain
+Comment:
+ stb full license in /external/licenses/stb
+
+Files:
+ editor/*
+Copyright: Pascal Costanza
+License: zlib/libpng
+Comment:
+ tinyfiledialogs full license in /external/licenses/tinyfiledialogs
+
+Files: *
+Copyright: Nemanja Trifunovic
+License: BSL-1.0
+Comment:
+ utfcpp full license in /external/licenses/utfcpp
+
+Files: vcpkg
+Copyright: Microsoft Corporation
+License: MIT
+Comment:
+ vcpkg-cmake full license in /external/licenses/vcpkg-cmake
+
+Files: vcpkg
+Copyright: Microsoft Corporation
+License: MIT
+Comment:
+ vcpkg-cmake-config full license in /external/licenses/vcpkg-cmake-config
+
+Files: vcpkg
+Copyright: Microsoft Corporation
+License: MIT
+Comment:
+ vcpkg-cmake-get-vars full license in /external/licenses/vcpkg-cmake-get-vars
+
+Files: *
+Copyright: 1995-2022 Jean-loup Gailly and Mark Adler
+License: zlib
+Comment:
+ zlib full license in /external/licenses/zlib
