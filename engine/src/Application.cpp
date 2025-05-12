@@ -234,7 +234,6 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
-        physicsSystem.Init(*m_coordinator);
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
