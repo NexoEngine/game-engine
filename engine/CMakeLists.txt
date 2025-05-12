@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Vector.cpp
+        common/math/Projection.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
@@ -25,6 +26,7 @@ set(COMMON_SOURCES
         engine/src/core/event/WindowEvent.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderLibrary.cpp
         engine/src/renderer/ShaderStorageBuffer.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
@@ -37,6 +39,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/primitives/Mesh.cpp
         engine/src/renderer/primitives/Cube.cpp
+        engine/src/renderer/primitives/Billboard.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp
@@ -47,7 +50,6 @@ set(COMMON_SOURCES
         engine/src/systems/RenderSystem.cpp
         engine/src/systems/LightSystem.cpp
         engine/src/systems/PhysicsSystem.cpp
-        engine/src/systems/PhysicsSystemWrapper.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
@@ -58,6 +60,8 @@ set(COMMON_SOURCES
         engine/src/assets/AssetCatalog.cpp
         engine/src/assets/AssetImporter.cpp
         engine/src/assets/AssetImporterContext.cpp
+        engine/src/assets/Assets/Model/ModelImporter.cpp
+        engine/src/assets/Assets/Texture/TextureImporter.cpp
 )
 
 # Add API-specific sources
@@ -115,7 +119,7 @@ find_package(Jolt CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
-    target_compile_definitions(nexoRenderer PRIVATE GRAPHICS_API_OPENGL)
+    target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)
     find_package(glfw3 3.4 REQUIRED)
     find_package(glad CONFIG REQUIRED)

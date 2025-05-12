@@ -1,6 +1,14 @@
 name: Build, test and Package
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable remote SSH connection. Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 jobs:
   build:
@@ -41,6 +49,14 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # Fetch all history for all tags and branches (for SonarCloud)
+
+      # DEBUGGING ONLY, to run this trigger with even
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          limit-access-to-actor: true # Only the person who triggered the workflow can access
+          detached: true # Run in the background and wait for connection
 
       - name: Add Ubuntu toolchain repository
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}

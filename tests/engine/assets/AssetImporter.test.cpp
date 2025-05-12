@@ -87,7 +87,7 @@ namespace nexo::assets {
         EXPECT_CALL(*mockImporter, canRead(testing::_)).Times(0); // Never called
         EXPECT_CALL(*mockImporter, importImpl(testing::_))
             .WillOnce(Invoke([&](AssetImporterContext& ctx) {
-                ctx.setMainAsset(expectedAsset);
+                ctx.setMainAsset(std::unique_ptr<Texture>(expectedAsset));
             }));
 
         importer.registerImporter<Texture>(mockImporter, 100);
@@ -114,7 +114,7 @@ namespace nexo::assets {
         EXPECT_CALL(*mockImporter, importImpl(testing::_))
             .After(canReadCall)
             .WillOnce(Invoke([&](AssetImporterContext& ctx) {
-                ctx.setMainAsset(expectedAsset);
+                ctx.setMainAsset(std::unique_ptr<Texture>(expectedAsset));
             }));
 
         // Register the mock importer
@@ -161,7 +161,7 @@ namespace nexo::assets {
         EXPECT_CALL(*bestImporter, importImpl(testing::_))
             .After(canReadCall)
             .WillOnce(Invoke([&](AssetImporterContext& ctx) {
-                ctx.setMainAsset(expectedAsset);
+                ctx.setMainAsset(std::unique_ptr<Texture>(expectedAsset));
             }));
 
         EXPECT_CALL(*wrongImporter, canRead(testing::_)).Times(0);
@@ -253,7 +253,7 @@ namespace nexo::assets {
         EXPECT_CALL(*validModelImporter, importImpl(testing::_))
             .After(validCanReadCall)
             .WillOnce(Invoke([](AssetImporterContext& ctx) {
-                ctx.setMainAsset(new Model());
+                ctx.setMainAsset(std::make_unique<Model>());
             }));
 
         EXPECT_CALL(*cannotReadModelImporter, importImpl(testing::_)).Times(0);
@@ -298,7 +298,7 @@ namespace nexo::assets {
         EXPECT_CALL(*bestImporter, importImpl(testing::_))
             .After(wrongCanReadCall)
             .WillOnce(Invoke([&](AssetImporterContext& ctx) {
-                ctx.setMainAsset(expectedAsset);
+                ctx.setMainAsset(std::unique_ptr<Texture>(expectedAsset));
             }));
 
         EXPECT_CALL(*wrongImporter, importImpl(testing::_)).Times(0);

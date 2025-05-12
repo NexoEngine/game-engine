@@ -63,7 +63,7 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, ShaderCreationFromSource)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
 
         // Validate that the shader is bound
         EXPECT_NO_THROW(shader.bind());
@@ -96,7 +96,7 @@ namespace nexo::renderer {
 
         createTemporaryShaderFile(shaderFileContent);
 
-        OpenGlShader shader(temporaryShaderFilePath);
+        NxOpenGlShader shader(temporaryShaderFilePath);
 
         // Validate that the shader is bound
         EXPECT_NO_THROW(shader.bind());
@@ -114,7 +114,7 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, InvalidShaderFile)
     {
-        EXPECT_THROW(OpenGlShader("non_existing_file.glsl"), FileNotFoundException);
+        EXPECT_THROW(NxOpenGlShader("non_existing_file.glsl"), NxFileNotFoundException);
     }
 
     TEST_F(ShaderTest, InvalidShaderSource)
@@ -131,7 +131,7 @@ namespace nexo::renderer {
         createTemporaryShaderFile(invalidShaderSource);
 
         // Validate shader compiling failure
-        EXPECT_THROW(OpenGlShader shader(temporaryShaderFilePath), ShaderCreationFailed);
+        EXPECT_THROW(NxOpenGlShader shader(temporaryShaderFilePath), NxShaderCreationFailed);
 
         deleteTemporaryShaderFile();
     }
@@ -166,11 +166,25 @@ namespace nexo::renderer {
 
         // Uniforms values
         constexpr unsigned int nbUniforms = 6;
-        const char *uniformsName[nbUniforms] = {"uFloat", "uVec3", "uVec4", "uInt", "uModel", "uIntArray"};
-        constexpr GLenum uniformsType[nbUniforms] = {GL_FLOAT, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT, GL_FLOAT_MAT4, GL_SAMPLER_2D};
-        constexpr int uniformsSize[nbUniforms] ={1, 1, 1, 1, 1, 3};
+        const std::unordered_map<std::string, GLenum> uniformsTypeMap = {
+            {"uFloat", GL_FLOAT},
+            {"uVec3", GL_FLOAT_VEC3},
+            {"uVec4", GL_FLOAT_VEC4},
+            {"uInt", GL_INT},
+            {"uModel", GL_FLOAT_MAT4},
+            {"uIntArray", GL_SAMPLER_2D}
+        };
 
-        OpenGlShader shader("TestShader", vertexShaderSourceTestUniforms, fragmentShaderSourceTestUniforms);
+        const std::unordered_map<std::string, int> uniformsSizeMap = {
+            {"uFloat", 1},
+            {"uVec3", 1},
+            {"uVec4", 1},
+            {"uInt", 1},
+            {"uModel", 1},
+            {"uIntArray", 3}
+        };
+
+        NxOpenGlShader shader("TestShader", vertexShaderSourceTestUniforms, fragmentShaderSourceTestUniforms);
         shader.bind();
 
         /////////////////////// BASE UNIFORM CHECKUP ///////////////////////////
@@ -190,21 +204,17 @@ namespace nexo::renderer {
 
             // The uniform is not an array
             if (std::string(name).find('[') == std::string::npos) {
-                // Validate name
-                EXPECT_EQ(std::string(name), uniformsName[i]);
                 // Validate size (should be always one)
-                EXPECT_EQ(size, uniformsSize[i]);
+                EXPECT_EQ(size, uniformsSizeMap.at(name));
                 // Validate type
-                EXPECT_EQ(type, uniformsType[i]);
+                EXPECT_EQ(type, uniformsTypeMap.at(name));
             } else {
                 // Retrieve the base name of the array
                 std::string baseName = std::string(name).substr(0, std::string(name).find('['));
-                // Validate name
-                EXPECT_EQ(baseName, uniformsName[i]);
                 // Validate size
-                EXPECT_EQ(size, uniformsSize[i]);
+                EXPECT_EQ(size, uniformsSizeMap.at(baseName.c_str()));
                 // Validate type
-                EXPECT_EQ(type, uniformsType[i]);
+                EXPECT_EQ(type, uniformsTypeMap.at(baseName.c_str()));
             }
         }
 
@@ -285,13 +295,13 @@ namespace nexo::renderer {
 
     TEST_F(ShaderTest, GetShaderName)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
         EXPECT_EQ(shader.getName(), "TestShader");
     }
 
     TEST_F(ShaderTest, InvalidUniformName)
     {
-        OpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
+        NxOpenGlShader shader("TestShader", vertexShaderSource, fragmentShaderSource);
         shader.bind();
 
         // Validate failure on invalid uniform name

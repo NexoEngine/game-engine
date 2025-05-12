@@ -37,15 +37,15 @@ namespace nexo::renderer {
         return 0;
     }
 
-    static int framebufferTextureFormatToOpenGlFormat(FrameBufferTextureFormats format)
+    static int framebufferTextureFormatToOpenGlFormat(NxFrameBufferTextureFormats format)
     {
         constexpr GLenum formats[] = {GL_NONE, GL_RGBA, GL_RGBA, GL_RED_INTEGER};
-        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::DEPTH24STENCIL8) // Maybe change that later
+        if (static_cast<unsigned int>(format) == 0 || format >= NxFrameBufferTextureFormats::DEPTH24STENCIL8) // Maybe change that later
             return -1;
         return static_cast<int>(formats[static_cast<unsigned int>(format)]);
     }
 
-    class OpenGlFramebuffer final : public Framebuffer {
+    class NxOpenGlFramebuffer final : public NxFramebuffer {
         public:
             /**
              * @brief Constructs an OpenGL framebuffer with the specified specifications.
@@ -57,12 +57,12 @@ namespace nexo::renderer {
              *              attachments, and sampling options.
              *
              * Throws:
-             * - FramebufferResizingFailed if the dimensions are invalid (e.g., zero or exceeding limits).
-             * - FramebufferUnsupportedColorFormat if the color attachment format is unsupported.
-             * - FramebufferUnsupportedDepthFormat if the depth attachment format is unsupported.
-             * - FramebufferCreationFailed if the framebuffer status is not complete.
+             * - NxFramebufferResizingFailed if the dimensions are invalid (e.g., zero or exceeding limits).
+             * - NxFramebufferUnsupportedColorFormat if the color attachment format is unsupported.
+             * - NxFramebufferUnsupportedDepthFormat if the depth attachment format is unsupported.
+             * - NxFramebufferCreationFailed if the framebuffer status is not complete.
              */
-            explicit OpenGlFramebuffer(FramebufferSpecs specs);
+            explicit NxOpenGlFramebuffer(NxFramebufferSpecs specs);
 
             /**
              * @brief Destroys the OpenGL framebuffer and releases associated resources.
@@ -74,7 +74,7 @@ namespace nexo::renderer {
              * - `glDeleteFramebuffers`: Deletes the framebuffer object.
              * - `glDeleteTextures`: Deletes the textures associated with color and depth attachments.
              */
-            ~OpenGlFramebuffer() override;
+            ~NxOpenGlFramebuffer() override;
 
             /**
              * @brief Recreates the OpenGL framebuffer and its attachments.
@@ -90,9 +90,9 @@ namespace nexo::renderer {
              * - Validates the framebuffer status.
              *
              * Throws:
-             * - FramebufferUnsupportedColorFormat if a specified color format is unsupported.
-             * - FramebufferUnsupportedDepthFormat if a specified depth format is unsupported.
-             * - FramebufferCreationFailed if the framebuffer is not complete.
+             * - NxFramebufferUnsupportedColorFormat if a specified color format is unsupported.
+             * - NxFramebufferUnsupportedDepthFormat if a specified depth format is unsupported.
+             * - NxFramebufferCreationFailed if the framebuffer is not complete.
              */
             void invalidate();
 
@@ -134,9 +134,11 @@ namespace nexo::renderer {
              * @param height The new height of the framebuffer in pixels.
              *
              * Throws:
-             * - FramebufferResizingFailed if the new dimensions are zero or exceed the maximum supported size.
+             * - NxFramebufferResizingFailed if the new dimensions are zero or exceed the maximum supported size.
              */
             void resize(unsigned int width, unsigned int height) override;
+
+            const glm::vec2 getSize() const override;
 
 
             /**
@@ -154,7 +156,7 @@ namespace nexo::renderer {
             T getPixelImpl(unsigned int attachmentIndex, int x, int y) const
             {
                 if (attachmentIndex >= m_colorAttachments.size())
-                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+                    THROW_EXCEPTION(NxFramebufferInvalidIndex, "OPENGL", attachmentIndex);
 
                 glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 
@@ -183,7 +185,7 @@ namespace nexo::renderer {
             void clearAttachmentImpl(unsigned int attachmentIndex, const void *value) const
             {
                 if (attachmentIndex >= m_colorAttachments.size())
-                    THROW_EXCEPTION(FramebufferInvalidIndex, "OPENGL", attachmentIndex);
+                    THROW_EXCEPTION(NxFramebufferInvalidIndex, "OPENGL", attachmentIndex);
                 auto &spec = m_colorAttachmentsSpecs[attachmentIndex];
                 constexpr GLenum type = getGLTypeFromTemplate<T>();
 
@@ -191,20 +193,20 @@ namespace nexo::renderer {
             }
             void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const override;
 
-            FramebufferSpecs &getSpecs() override {return m_specs;};
-            [[nodiscard]] const FramebufferSpecs &getSpecs() const override {return m_specs;};
+            NxFramebufferSpecs &getSpecs() override {return m_specs;};
+            [[nodiscard]] const NxFramebufferSpecs &getSpecs() const override {return m_specs;};
 
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
             [[nodiscard]] unsigned int getDepthAttachmentId() const override { return m_depthAttachment; }
         private:
             unsigned int m_id = 0;
             bool toResize = false;
-            FramebufferSpecs m_specs;
+            NxFramebufferSpecs m_specs;
 
             glm::vec4 m_clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-            std::vector<FrameBufferTextureSpecifications> m_colorAttachmentsSpecs;
-            FrameBufferTextureSpecifications m_depthAttachmentSpec;
+            std::vector<NxFrameBufferTextureSpecifications> m_colorAttachmentsSpecs;
+            NxFrameBufferTextureSpecifications m_depthAttachmentSpec;
 
             std::vector<unsigned int> m_colorAttachments;
             unsigned int m_depthAttachment = 0;

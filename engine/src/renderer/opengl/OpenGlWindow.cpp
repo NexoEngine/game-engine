@@ -27,17 +27,17 @@ namespace nexo::renderer {
         std::cerr << "[GLFW ERROR] Code : " << errorCode << " / Description : " << errorStr << std::endl;
     }
 
-    void OpenGlWindow::setupCallback() const
+    void NxOpenGlWindow::setupCallback() const
     {
         // Resize event
         glfwSetWindowSizeCallback(_openGlWindow, [](GLFWwindow *window, const int width, const int height)
         {
             if (width <= 0 || height <= 0)
                 return;
-            auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             props->width = width;
             props->height = height;
-            Renderer::onWindowResize(width, height);
+            NxRenderer::onWindowResize(width, height);
             if (props->resizeCallback)
                 props->resizeCallback(width, height);
         });
@@ -45,7 +45,7 @@ namespace nexo::renderer {
         // Close event
         glfwSetWindowCloseCallback(_openGlWindow, [](GLFWwindow *window)
         {
-            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->closeCallback)
                 props->closeCallback();
         });
@@ -53,7 +53,7 @@ namespace nexo::renderer {
         // Keyboard events
         glfwSetKeyCallback(_openGlWindow, [](GLFWwindow *window, const int key, [[maybe_unused]]int scancode, const int action, const int mods)
         {
-            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->keyCallback)
                 props->keyCallback(key, action, mods);
         });
@@ -61,7 +61,7 @@ namespace nexo::renderer {
         // Mouse click callback
         glfwSetMouseButtonCallback(_openGlWindow, [](GLFWwindow *window, const int button, const int action, const int mods)
         {
-            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->mouseClickCallback)
                 props->mouseClickCallback(button, action, mods);
         });
@@ -69,7 +69,7 @@ namespace nexo::renderer {
         // Mouse scroll event
         glfwSetScrollCallback(_openGlWindow, [](GLFWwindow *window, const double xOffset, const double yOffset)
         {
-            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->mouseScrollCallback)
                 props->mouseScrollCallback(xOffset, yOffset);
         });
@@ -77,16 +77,16 @@ namespace nexo::renderer {
         // Mouse move event
         glfwSetCursorPosCallback(_openGlWindow, [](GLFWwindow *window, const double xpos, const double ypos)
         {
-            const auto *props = static_cast<WindowProperty *>(glfwGetWindowUserPointer(window));
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
             if (props->mouseMoveCallback)
                 props->mouseMoveCallback(xpos, ypos);
         });
     }
 
-    void OpenGlWindow::init()
+    void NxOpenGlWindow::init()
     {
         if (!glfwInit())
-            THROW_EXCEPTION(GraphicsApiInitFailure, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiInitFailure, "OPENGL");
         LOG(NEXO_DEV, "Initializing opengl window");
         glfwSetErrorCallback(glfwErrorCallback);
 
@@ -109,7 +109,7 @@ namespace nexo::renderer {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         _openGlWindow = glfwCreateWindow(static_cast<int>(_props.width), static_cast<int>(_props.height), _props.title, nullptr, nullptr);
         if (!_openGlWindow)
-            THROW_EXCEPTION(GraphicsApiWindowInitFailure, "OPENGL");
+            THROW_EXCEPTION(NxGraphicsApiWindowInitFailure, "OPENGL");
         glfwMakeContextCurrent(_openGlWindow);
         glfwSetWindowUserPointer(_openGlWindow, &_props);
         setVsync(true);
@@ -117,19 +117,19 @@ namespace nexo::renderer {
         LOG(NEXO_DEV, "Opengl window ({}, {}) initialized", _props.width, _props.height);
     }
 
-    void OpenGlWindow::shutdown()
+    void NxOpenGlWindow::shutdown()
     {
         glfwDestroyWindow(_openGlWindow);
         glfwTerminate();
     }
 
-    void OpenGlWindow::onUpdate()
+    void NxOpenGlWindow::onUpdate()
     {
         glfwSwapBuffers(_openGlWindow);
         glfwPollEvents();
     }
 
-    void OpenGlWindow::setVsync(const bool enabled)
+    void NxOpenGlWindow::setVsync(const bool enabled)
     {
         if (enabled)
             glfwSwapInterval(1);
@@ -138,23 +138,23 @@ namespace nexo::renderer {
         _props.vsync = enabled;
     }
 
-    bool OpenGlWindow::isVsync() const
+    bool NxOpenGlWindow::isVsync() const
     {
         return _props.vsync;
     }
 
-    void OpenGlWindow::getDpiScale(float *x, float *y) const
+    void NxOpenGlWindow::getDpiScale(float *x, float *y) const
     {
         glfwGetWindowContentScale(_openGlWindow, x, y);
     }
 
-    void OpenGlWindow::setWindowIcon(const std::filesystem::path& iconPath)
+    void NxOpenGlWindow::setWindowIcon(const std::filesystem::path& iconPath)
     {
         GLFWimage icon;
         const auto iconStringPath = iconPath.string();
         icon.pixels = stbi_load(iconStringPath.c_str(), &icon.width, &icon.height, nullptr, 4);
         if (!icon.pixels) {
-            THROW_EXCEPTION(StbiLoadException,
+            THROW_EXCEPTION(NxStbiLoadException,
                 std::format("Failed to load icon '{}': {}",
                     iconStringPath, stbi_failure_reason()));
         }
@@ -166,20 +166,20 @@ namespace nexo::renderer {
         stbi_image_free(icon.pixels);
     }
 
-    void OpenGlWindow::setErrorCallback(void *fctPtr)
+    void NxOpenGlWindow::setErrorCallback(void *fctPtr)
     {
         glfwSetErrorCallback(reinterpret_cast<GLFWerrorfun>(fctPtr));
     }
 
     // Linux specific method
 #ifdef __linux__
-    void OpenGlWindow::setWaylandAppId(const char* appId)
+    void NxOpenGlWindow::setWaylandAppId(const char* appId)
     {
         _waylandAppId = appId;
         LOG(NEXO_DEV, "Wayland app id set to '{}'", appId);
     }
 
-    void OpenGlWindow::setWmClass(const char* className, const char* instanceName)
+    void NxOpenGlWindow::setWmClass(const char* className, const char* instanceName)
     {
         _x11ClassName = className;
         _x11InstanceName = instanceName;

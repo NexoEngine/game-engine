@@ -22,6 +22,17 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Manages associations between window names and their docking identifiers.
+     *
+     * The DockingRegistry maintains a mapping between window names and ImGui dock IDs,
+     * allowing the editor to track and restore docking configurations across sessions.
+     * This class is central to the editor's window layout management system, enabling
+     * persistent window arrangements and proper docking behavior.
+     *
+     * It uses a TransparentStringHash for efficient string lookups and provides methods
+     * for setting, retrieving, and removing dock ID associations.
+     */
 	class DockingRegistry {
 		public:
 
@@ -46,6 +57,20 @@ namespace nexo::editor {
 			 * @return std::optional<ImGuiID> Optional containing the dock ID if found; otherwise, std::nullopt.
 			 */
 			std::optional<ImGuiID> getDockId(const std::string& name) const;
+
+            /**
+             * @brief Removes a dock ID association for the specified name.
+             *
+             * This method removes the association between the given name and its dock ID
+             * from the registry. If the name does not exist in the registry, this method
+             * has no effect.
+             *
+             * Removing a dock ID is useful when a window is closed or when its docking
+             * configuration needs to be reset to default.
+             *
+             * @param name The name identifier of the dock association to remove.
+             */
+			void resetDockId(const std::string &name);
 
 		private:
 			std::unordered_map<std::string, ImGuiID, TransparentStringHash, std::equal_to<>> dockIds;

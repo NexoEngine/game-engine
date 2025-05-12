@@ -26,8 +26,8 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLTest, VertexArrayCreationAndBinding)
     {
-        auto vertexArray1 = std::make_shared<OpenGlVertexArray>();
-        auto vertexArray2 = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray1 = std::make_shared<NxOpenGlVertexArray>();
+        auto vertexArray2 = std::make_shared<NxOpenGlVertexArray>();
 
         EXPECT_NE(vertexArray1->getId(), vertexArray2->getId());
 
@@ -47,18 +47,18 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLTest, AddVertexBuffer)
     {
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         float vertices[] = {
             0.0f, 0.0f, 0.0f, // Position
             1.0f, 1.0f, 1.0f, 1.0f, // Color
             3, // Texture index
         };
-        auto vertexBuffer = std::make_shared<OpenGlVertexBuffer>(vertices, sizeof(vertices));
-        BufferLayout layout = {
-            {ShaderDataType::FLOAT3, "Position"},
-            {ShaderDataType::FLOAT4, "Color", true},
-            {ShaderDataType::INT, "TextureIndex"},
+        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(vertices, sizeof(vertices));
+        NxBufferLayout layout = {
+            {NxShaderDataType::FLOAT3, "Position"},
+            {NxShaderDataType::FLOAT4, "Color", true},
+            {NxShaderDataType::INT, "TextureIndex"},
         };
         vertexBuffer->setLayout(layout);
 
@@ -102,42 +102,42 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLTest, InvalidVertexBuffer)
     {
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         float vertices[] = {
             0.0f, 0.0f, 0.0f, // Position
             1.0f, 1.0f, 1.0f, 1.0f, // Color
             3, // Texture index
         };
-        auto vertexBuffer = std::make_shared<OpenGlVertexBuffer>(vertices, sizeof(vertices));
+        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(vertices, sizeof(vertices));
 
         // Empty layout
         EXPECT_THROW(
             vertexArray->addVertexBuffer(vertexBuffer),
-            BufferLayoutEmpty
+            NxBufferLayoutEmpty
         );
 
         // Null vertex buffer
         EXPECT_THROW(
             vertexArray->addVertexBuffer(nullptr),
-            InvalidValue
+            NxInvalidValue
         );
     }
 
     TEST_F(OpenGLTest, MultipleVertexBuffers)
     {
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         float positions[] = {0.0f, 1.0f, 2.0f};
-        auto positionBuffer = std::make_shared<OpenGlVertexBuffer>(positions, sizeof(positions));
+        auto positionBuffer = std::make_shared<NxOpenGlVertexBuffer>(positions, sizeof(positions));
         positionBuffer->setLayout({
-            {ShaderDataType::FLOAT3, "Position"}
+            {NxShaderDataType::FLOAT3, "Position"}
         });
 
         float colors[] = {1.0f, 0.0f, 0.0f};
-        auto colorBuffer = std::make_shared<OpenGlVertexBuffer>(colors, sizeof(colors));
+        auto colorBuffer = std::make_shared<NxOpenGlVertexBuffer>(colors, sizeof(colors));
         colorBuffer->setLayout({
-            {ShaderDataType::FLOAT3, "Color"}
+            {NxShaderDataType::FLOAT3, "Color"}
         });
 
         vertexArray->addVertexBuffer(positionBuffer);
@@ -161,10 +161,10 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLTest, SetIndexBuffer)
     {
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         unsigned int indices[] = {0, 1, 2};
-        auto indexBuffer = std::make_shared<OpenGlIndexBuffer>();
+        auto indexBuffer = std::make_shared<NxOpenGlIndexBuffer>();
         indexBuffer->setData(indices, 3);
 
         vertexArray->setIndexBuffer(indexBuffer);
@@ -183,11 +183,11 @@ namespace nexo::renderer {
 
     TEST_F(OpenGLTest, InvalidIndexBuffer)
     {
-        auto vertexArray = std::make_shared<OpenGlVertexArray>();
+        auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         EXPECT_THROW(
             vertexArray->setIndexBuffer(nullptr),
-            InvalidValue
+            NxInvalidValue
         );
     }
 }

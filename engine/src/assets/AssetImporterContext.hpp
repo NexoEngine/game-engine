@@ -48,13 +48,21 @@ namespace nexo::assets {
              * @param asset The main asset
              * @note This method must be called by the importer to set the main asset data
              */
-            void setMainAsset(IAsset* asset);
+            void setMainAsset(std::unique_ptr<IAsset> asset);
 
             /**
              * @brief Get the main asset data for this context
              * @return The main asset data
              */
-            [[nodiscard]] IAsset* getMainAsset() const;
+            [[nodiscard]] const std::unique_ptr<IAsset>& getMainAsset() const;
+
+            /**
+             * @brief Release the main asset data for this context
+             * @warning This function will take ownership of the mainAsset ptr
+             *          The mainAsset ptr will become NULL in the context
+             * @return The main asset data
+             */
+            [[nodiscard]] std::unique_ptr<IAsset> releaseMainAsset();
 
             /**
              * @brief Add dependency to main asset.
@@ -117,7 +125,7 @@ namespace nexo::assets {
             }
 
         private:
-            IAsset *m_mainAsset = nullptr;         //< Main asset being imported, resulting asset (MUST be set by importer)
+            std::unique_ptr<IAsset> m_mainAsset = nullptr;         //< Main asset being imported, resulting asset (MUST be set by importer)
             std::vector<GenericAssetRef> m_dependencies; //< Dependencies to import
             json m_jsonParameters;             //< JSON parameters for the importer
             unsigned int m_depUniqueId = 0;            //< Unique ID for the dependency name

@@ -48,6 +48,24 @@ namespace nexo::editor {
 		return m_dockingRegistry.getDockId(name);
 	}
 
+	const std::shared_ptr<IDocumentWindow> WindowRegistry::getFocusedWindow() const
+	{
+    	for (const auto &[_, windows]: m_windows)
+        {
+            for (const auto &window : windows)
+            {
+                if (window->isFocused())
+                    return window;
+            }
+        }
+        return nullptr;
+	}
+
+	void WindowRegistry::resetDockId(const std::string &name)
+	{
+	   m_dockingRegistry.resetDockId(name);
+	}
+
 	void WindowRegistry::update() const
 	{
 		for (const auto &[_, windows]: m_windows)

@@ -20,15 +20,15 @@
 
 namespace nexo::renderer {
 
-    class Renderer {
+    class NxRenderer {
         public:
             static void init();
             static void onWindowResize(unsigned int width, unsigned int height);
 
-            struct SceneData {
+            struct NxSceneData {
                 glm::mat4 projectionMatrix;
             };
-            static SceneData *_sceneData;
+            static NxSceneData *_sceneData;
 
     };
 }

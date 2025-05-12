@@ -26,6 +26,22 @@ namespace nexo::components {
     	unsigned int id;
     	bool isActive = true;
      	bool isRendered = true;
+
+      struct Memento {
+       	unsigned int id;
+       	bool isActive;
+       	bool isRendered;
+
+          SceneTag restore() const
+          {
+              return {id, isActive, isRendered};
+          }
+      };
+
+      Memento save() const
+      {
+          return {id, isActive, isRendered};
+      }
     };
 
 }

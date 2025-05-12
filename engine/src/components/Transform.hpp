@@ -20,8 +20,24 @@
 namespace nexo::components {
 
     struct TransformComponent final {
+        struct Memento {
+            glm::vec3 position;
+            glm::quat rotation;
+            glm::vec3 scale;
+
+            TransformComponent restore() const
+            {
+                return {position, scale, rotation};
+            }
+        };
+
+        Memento save() const
+        {
+            return {pos, quat, size};
+        }
+
         glm::vec3 pos;
-        glm::vec3 size;
+        glm::vec3 size = glm::vec3(1.0f);
         glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     };
 

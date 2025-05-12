@@ -56,6 +56,22 @@ namespace nexo::assets {
             return !m_weakPtr.expired();
         }
 
+        [[nodiscard]] bool operator==(const GenericAssetRef& other) const noexcept {
+            return m_weakPtr.lock() == other.m_weakPtr.lock();
+        }
+
+        [[nodiscard]] bool operator!=(const GenericAssetRef& other) const noexcept {
+            return !(*this == other);
+        }
+
+        [[nodiscard]] bool operator==(const std::nullptr_t) const noexcept {
+            return !isValid();
+        }
+
+        [[nodiscard]] bool operator!=(const std::nullptr_t) const noexcept {
+            return isValid();
+        }
+
         /**
          * @brief Get a shared_ptr to the referenced asset
          * @return A shared_ptr to the asset, or nullptr if expired
@@ -145,6 +161,8 @@ namespace nexo::assets {
          */
         explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
             : GenericAssetRef(assetPtr) {}
+
+        explicit(false) AssetRef(std::nullptr_t) : GenericAssetRef(nullptr) {}
 
         /**
          * @brief Locks the asset reference, providing safe access

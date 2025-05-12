@@ -44,4 +44,6 @@ namespace nexo::math {
 	*       when sinp approaches ±1.
 	*/
 	glm::vec3 customQuatToEuler(const glm::quat &q);
+
+	bool isPosInBounds(const glm::vec2 pos, const glm::vec2 &min, const glm::vec2 &max);
 }

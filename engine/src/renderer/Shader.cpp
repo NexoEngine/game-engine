@@ -14,7 +14,7 @@
 #include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
 
@@ -22,25 +22,25 @@
 
 namespace nexo::renderer {
 
-    std::shared_ptr<Shader> Shader::create(const std::string &path)
+    std::shared_ptr<NxShader> NxShader::create(const std::string &path)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlShader>(path);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlShader>(path);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
 
     }
 
-    std::shared_ptr<Shader> Shader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlShader>(name, vertexSource, fragmentSource);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
 
     }
 
-    std::string Shader::readFile(const std::string &filepath)
+    std::string NxShader::readFile(const std::string &filepath)
     {
         std::string result;
         if (std::ifstream in(filepath, std::ios::in | std::ios::binary); in)
@@ -52,61 +52,18 @@ namespace nexo::renderer {
             in.close();
             return result;
         }
-        THROW_EXCEPTION(FileNotFoundException, filepath);
+        THROW_EXCEPTION(NxFileNotFoundException, filepath);
     }
 
-    void Shader::addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer)
+    void NxShader::addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer)
     {
         m_storageBuffers.push_back(buffer);
     }
 
-    void Shader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
+    void NxShader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
     {
         if (index >= m_storageBuffers.size())
-            THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+            THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
         m_storageBuffers[index]->setData(data, size);
     }
-
-    void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
-    {
-        const std::string &name = shader->getName();
-        m_shaders[name] = shader;
-    }
-
-    void ShaderLibrary::add(const std::string &name, const std::shared_ptr<Shader> &shader)
-    {
-        m_shaders[name] = shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(name, shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
-    {
-        auto shader = Shader::create(name, vertexSource, fragmentSource);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::get(const std::string &name) const
-    {
-        if (!m_shaders.contains(name))
-        {
-            LOG(NEXO_WARN, "ShaderLibrary::get: shader {} not found", name);
-            return nullptr;
-        }
-        return m_shaders.at(name);
-    }
-
 }

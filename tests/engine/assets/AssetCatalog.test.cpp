@@ -48,8 +48,8 @@ namespace nexo::assets {
     TEST_F(AssetCatalogTest, RegisterAndRetrieveAssetById) {
         // Register an asset
         const AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = assetCatalog.registerAsset(location, textureAsset);
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref = assetCatalog.registerAsset(location, std::move(textureAsset));
         ASSERT_TRUE(ref.isValid());
 
         const auto id = ref.lock()->getID();
@@ -64,8 +64,8 @@ namespace nexo::assets {
     TEST_F(AssetCatalogTest, RegisterAndRetrieveAssetByLocation) {
         // Register an asset
         const AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = assetCatalog.registerAsset(location, textureAsset);
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref = assetCatalog.registerAsset(location, std::move(textureAsset));
         ASSERT_TRUE(ref.isValid());
         ASSERT_TRUE(ref);
 
@@ -79,9 +79,9 @@ namespace nexo::assets {
 
     TEST_F(AssetCatalogTest, DeleteAssetById) {
         AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = assetCatalog.registerAsset(location, textureAsset);
-        const auto id = ref.lock()->getID();
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref          = assetCatalog.registerAsset(location, std::move(textureAsset));
+        const auto id           = ref.lock()->getID();
 
         // Delete by ID
         assetCatalog.deleteAsset(id);
@@ -99,8 +99,8 @@ namespace nexo::assets {
 
     TEST_F(AssetCatalogTest, DeleteAssetByReference) {
         AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = assetCatalog.registerAsset(location, textureAsset);
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref = assetCatalog.registerAsset(location, std::move(textureAsset));
 
         // Delete by reference
         assetCatalog.deleteAsset(ref);
@@ -117,12 +117,12 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetCatalogTest, GetAssetsReturnsAllAssets) {
-        const auto textureAsset = new Texture();
-        const auto modelAsset = new Model();
+        auto textureAsset = std::make_unique<Texture>();
+        auto modelAsset = std::make_unique<Model>();
 
         // Register multiple assets
-        assetCatalog.registerAsset(AssetLocation("text@test/texture"), textureAsset);
-        assetCatalog.registerAsset(AssetLocation("model@test/model"), modelAsset);
+        assetCatalog.registerAsset(AssetLocation("text@test/texture"), std::move(textureAsset));
+        assetCatalog.registerAsset(AssetLocation("model@test/model"), std::move(modelAsset));
 
         // Get all assets
         auto assets = assetCatalog.getAssets();
@@ -137,12 +137,12 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetCatalogTest, GetAssetsReturnsAllAssetsViews) {
-        const auto textureAsset = new Texture();
-        const auto modelAsset = new Model();
+        auto textureAsset = std::make_unique<Texture>();
+        auto modelAsset = std::make_unique<Model>();
 
         // Register multiple assets
-        const auto textRef = assetCatalog.registerAsset(AssetLocation("text@test/texture"), textureAsset);
-        const auto modelRef = assetCatalog.registerAsset(AssetLocation("model@test/model"), modelAsset);
+        const auto textRef  = assetCatalog.registerAsset(AssetLocation("text@test/texture"), std::move(textureAsset));
+        const auto modelRef = assetCatalog.registerAsset(AssetLocation("model@test/model"), std::move(modelAsset));
 
         // Get all assets as a view
         auto assetsView = assetCatalog.getAssetsView();
@@ -165,13 +165,13 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetCatalogTest, MultipleAssetsDeleteOne) {
-        const auto textureAsset = new Texture();
-        const auto modelAsset = new Model();
+        auto textureAsset = std::make_unique<Texture>();
+        auto modelAsset = std::make_unique<Model>();
 
         // Register multiple assets
-        const auto textRef = assetCatalog.registerAsset(AssetLocation("text@test/texture"), textureAsset);
-        const auto modelRef = assetCatalog.registerAsset(AssetLocation("model@test/model"), modelAsset);
-        const auto modelId = modelRef.lock()->getID();
+        const auto textRef  = assetCatalog.registerAsset(AssetLocation("text@test/texture"), std::move(textureAsset));
+        const auto modelRef = assetCatalog.registerAsset(AssetLocation("model@test/model"), std::move(modelAsset));
+        const auto modelId  = modelRef.lock()->getID();
 
         // Get all assets
         auto assets = assetCatalog.getAssets();
@@ -303,8 +303,8 @@ namespace nexo::assets {
         auto& instance = AssetCatalog::getInstance();
 
         const AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = instance.registerAsset(location, textureAsset);
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref = instance.registerAsset(location, std::move(textureAsset));
         ASSERT_TRUE(ref.isValid());
 
         const auto id = ref.lock()->getID();
@@ -326,8 +326,8 @@ namespace nexo::assets {
         auto& instance = AssetCatalog::getInstance();
 
         const AssetLocation location("text@test/texture");
-        const auto textureAsset = new Texture();
-        const auto ref = instance.registerAsset(location, textureAsset);
+        auto textureAsset = std::make_unique<Texture>();
+        const auto ref = instance.registerAsset(location, std::move(textureAsset));
         ASSERT_TRUE(ref.isValid());
 
         const auto id = ref.lock()->getID();

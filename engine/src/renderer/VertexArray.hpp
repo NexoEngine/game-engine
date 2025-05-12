@@ -18,10 +18,10 @@
 namespace nexo::renderer {
 
     /**
-    * @class VertexArray
+    * @class NxVertexArray
     * @brief Abstract class representing a vertex array in the rendering system.
     *
-    * The `VertexArray` class manages the collection of vertex buffers and an optional
+    * The `NxVertexArray` class manages the collection of vertex buffers and an optional
     * index buffer. It provides the interface for binding, unbinding, and configuring
     * vertex attributes in the rendering pipeline.
     *
@@ -30,21 +30,21 @@ namespace nexo::renderer {
     * - Bind/unbind the vertex array for rendering.
     * - Provide access to underlying buffers.
     *
-    * Derived classes (e.g., `OpenGlVertexArray`) implement platform-specific behavior
+    * Derived classes (e.g., `NxOpenGlVertexArray`) implement platform-specific behavior
     * for managing vertex arrays.
     */
-    class VertexArray {
+    class NxVertexArray {
         public:
-            virtual ~VertexArray() = default;
+            virtual ~NxVertexArray() = default;
 
             virtual void bind() const = 0;
             virtual void unbind() const = 0;
 
-            virtual void addVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) = 0;
-            virtual void setIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer) = 0;
+            virtual void addVertexBuffer(const std::shared_ptr<NxVertexBuffer> &vertexBuffer) = 0;
+            virtual void setIndexBuffer(const std::shared_ptr<NxIndexBuffer> &indexBuffer) = 0;
 
-            [[nodiscard]] virtual const std::vector<std::shared_ptr<VertexBuffer>> &getVertexBuffers() const = 0;
-            [[nodiscard]] virtual const std::shared_ptr<IndexBuffer> &getIndexBuffer() const = 0;
+            [[nodiscard]] virtual const std::vector<std::shared_ptr<NxVertexBuffer>> &getVertexBuffers() const = 0;
+            [[nodiscard]] virtual const std::shared_ptr<NxIndexBuffer> &getIndexBuffer() const = 0;
 
             virtual unsigned int getId() const = 0;
     };
@@ -53,9 +53,9 @@ namespace nexo::renderer {
     * @brief Factory function to create a platform-specific vertex array object.
     *
     * Depending on the graphics API (e.g., OpenGL), this function creates an instance
-    * of the corresponding `VertexArray` implementation.
+    * of the corresponding `NxVertexArray` implementation.
     *
-    * @return A shared pointer to the created `VertexArray` instance.
+    * @return A shared pointer to the created `NxVertexArray` instance.
     */
-    std::shared_ptr<VertexArray> createVertexArray();
+    std::shared_ptr<NxVertexArray> createVertexArray();
 }

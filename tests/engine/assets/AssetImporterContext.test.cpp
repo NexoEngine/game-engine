@@ -64,9 +64,10 @@ namespace nexo::assets {
 
     TEST_F(AssetImporterContextTest, SetAndGetMainAsset)
     {
-        Texture asset;
-        context.setMainAsset(&asset);
-        EXPECT_EQ(context.getMainAsset(), &asset);
+        auto asset = std::make_unique<Texture>();
+        Texture* texturePtr = asset.get();
+        context.setMainAsset(std::move(asset));
+        EXPECT_EQ(context.getMainAsset().get(), texturePtr);
     }
 
     TEST_F(AssetImporterContextTest, GetDependenciesEmptyOnCreation)
@@ -78,8 +79,8 @@ namespace nexo::assets {
     {
         // Register an asset first to get a valid reference
         auto& catalog = AssetCatalog::getInstance();
-        auto* asset = new Texture();
-        const auto ref = catalog.registerAsset(AssetLocation("test@texture/dependency"), asset);
+        auto asset = std::make_unique<Texture>();
+        const auto ref = catalog.registerAsset(AssetLocation("test@texture/dependency"), std::move(asset));
         EXPECT_TRUE(ref);
 
         // Add as dependency
@@ -96,10 +97,10 @@ namespace nexo::assets {
         auto& catalog = AssetCatalog::getInstance();
 
         // Create and register multiple assets
-        auto* texture = new Texture();
-        auto* model = new Model();
-        const auto textureRef = catalog.registerAsset(AssetLocation("text@path"), texture);
-        const auto modelRef = catalog.registerAsset(AssetLocation("model@path"), model);
+        auto* texture         = new Texture();
+        auto* model           = new Model();
+        const auto textureRef = catalog.registerAsset(AssetLocation("text@path"), std::unique_ptr<IAsset>(texture));
+        const auto modelRef   = catalog.registerAsset(AssetLocation("model@path"), std::unique_ptr<IAsset>(model));
         EXPECT_TRUE(textureRef);
         EXPECT_TRUE(modelRef);
 
@@ -173,7 +174,7 @@ namespace nexo::assets {
         // Register an asset with that name
         auto& catalog = AssetCatalog::getInstance();
         auto* asset = new Texture();
-        EXPECT_TRUE(catalog.registerAsset(depName1, asset));
+        EXPECT_TRUE(catalog.registerAsset(depName1, std::unique_ptr<IAsset>(asset)));
 
         // Generate another name - should be different
         const auto depName2 = context.genUniqueDependencyLocation<Texture>();
@@ -193,13 +194,13 @@ namespace nexo::assets {
 
         // Register an asset with that name
         auto& catalog = AssetCatalog::getInstance();
-        auto* asset = new Model();
-        EXPECT_TRUE(catalog.registerAsset(depName1, asset));
+        auto  asset   = std::make_unique<Model>();
+        EXPECT_TRUE(catalog.registerAsset(depName1, std::move(asset)));
         EXPECT_EQ(depName1.getFullLocation(), "test_MODEL1@folder/main");
 
         // Let's register an asset with the same name as a future dependency
-        auto* asset2 = new Model();
-        EXPECT_TRUE(catalog.registerAsset(AssetLocation("test_MODEL2@folder/main"), asset2));
+        auto asset2 = std::make_unique<Model>();
+        EXPECT_TRUE(catalog.registerAsset(AssetLocation("test_MODEL2@folder/main"), std::move(asset2)));
 
         // Generate another dep name: should prevent collision
         const auto depName2 = context.genUniqueDependencyLocation<Model>();

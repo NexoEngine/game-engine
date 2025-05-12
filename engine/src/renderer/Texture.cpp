@@ -15,34 +15,64 @@
 #include "Texture.hpp"
 #include "Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#include "String.hpp"
+
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlTexture2D.hpp"
 #endif
 
 namespace nexo::renderer {
 
-    std::shared_ptr<Texture2D> Texture2D::create(unsigned int width, unsigned int height)
+    NxTextureFormat NxTextureFormatFromString(const std::string_view& format)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(width, height);
-        #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        if (iequals(format, "R8"))    return NxTextureFormat::R8;
+        if (iequals(format, "RG8"))   return NxTextureFormat::RG8;
+        if (iequals(format, "RGB8"))  return NxTextureFormat::RGB8;
+        if (iequals(format, "RGBA8")) return NxTextureFormat::RGBA8;
+        return NxTextureFormat::INVALID;
     }
 
-    std::shared_ptr<Texture2D> Texture2D::create(uint8_t* buffer, unsigned int len)
+    void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, size_t size)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(buffer, len);
-        #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        uint32_t *pixels = reinterpret_cast<uint32_t *>(bytes);
+        const size_t width = size / 4;
+
+        for (size_t i = 0; i < width; ++i) {
+            pixels[i] = (pixels[i] << 8) | (pixels[i] >> 24);
+        }
     }
 
-    std::shared_ptr<Texture2D> Texture2D::create(const std::string &path)
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(unsigned int width, unsigned int height)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlTexture2D>(path);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(width, height);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+    }
+
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const uint8_t *buffer, unsigned int width, unsigned int height,
+        NxTextureFormat format)
+    {
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(buffer, width, height, format);
+        #endif
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+    }
+
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const uint8_t* buffer, unsigned int len)
+    {
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(buffer, len);
+        #endif
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+    }
+
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const std::string &path)
+    {
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlTexture2D>(path);
+        #endif
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
 }

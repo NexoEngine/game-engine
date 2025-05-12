@@ -14,7 +14,8 @@
 
 #include "CameraController.hpp"
 #include "components/Camera.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
+#include "ImNexo/Elements.hpp"
+#include "ImNexo/EntityProperties.hpp"
 
 namespace nexo::editor {
 
@@ -22,23 +23,12 @@ namespace nexo::editor {
 	{
         auto& controllerComponent = Application::getEntityComponent<components::PerspectiveCameraController>(entity);
 
-        if (EntityPropertiesComponents::drawHeader("##ControllerNode", "Camera Controller"))
+        if (ImNexo::Header("##ControllerNode", "Camera Controller"))
         {
-       		ImGui::Spacing();
+            ImGui::Spacing();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-   			if (ImGui::BeginTable("InspectorControllerTable", 2,
-                ImGuiTableFlags_SizingStretchProp))
-            {
-                ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-
-                EntityPropertiesComponents::drawRowDragFloat1("Mouse sensitivity", "", &controllerComponent.mouseSensitivity);
-
-                ImGui::EndTable();
-            }
-            ImGui::PopStyleVar();
-        	ImGui::TreePop();
+            ImNexo::CameraController(controllerComponent);
+            ImGui::TreePop();
         }
 	}
 }

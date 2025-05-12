@@ -19,6 +19,7 @@
 #include <glad/glad.h>
 #include <systems/PhysicsSystemWrapper.hpp>
 
+#include "Types.hpp"
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
@@ -40,10 +41,7 @@
 
 namespace nexo {
 
-    enum class RenderingType {
-        WINDOW,
-        FRAMEBUFFER
-    };
+
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -81,6 +79,14 @@ namespace nexo {
              */
             void beginFrame();
 
+            struct SceneInfo {
+                scene::SceneId id;
+                RenderingType renderingType = RenderingType::WINDOW;
+                SceneType sceneType = SceneType::GAME;
+                bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
+                glm::vec2 viewportBounds[2]; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
+            };
+
             /**
              * @brief Runs the application for the specified scene and rendering type.
              *
@@ -96,8 +102,9 @@ namespace nexo {
              *
              * @param sceneId The ID of the scene to render.
              * @param renderingType The rendering mode (e.g., WINDOW or other types).
+             * @param sceneType The type of scene to render.
              */
-            void run(scene::SceneId sceneId, RenderingType renderingType);
+            void run(const SceneInfo &sceneInfo);
 
             /**
              * @brief Ends the current frame by clearing processed events.
@@ -180,7 +187,10 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
-            system::PhysicsSystemWrapper& getPhysicsSystem() { return physicsSystem; }
+            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() {
+                return m_physicsSystem;
+            }
+
             /**
              * @brief Deletes an existing entity.
              *
@@ -222,7 +232,7 @@ namespace nexo {
 
             scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
-            [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
+            [[nodiscard]] const std::shared_ptr<renderer::NxWindow> &getWindow() const { return m_window; };
             [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
 
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
@@ -235,18 +245,6 @@ namespace nexo {
             void registerSignalListeners();
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
-            template<typename System, typename... Components>
-            std::shared_ptr<System> registerSystem()
-            {
-	            auto system = m_coordinator->registerSystem<System>();
-
-	            ecs::Signature signature;
-	            (signature.set(m_coordinator->getComponentType<Components>()), ...);
-
-	            m_coordinator->setSystemSignature<System>(signature);
-
-	            return system;
-            }
             void registerSystems();
 
             void displayProfileResults() const;
@@ -258,7 +256,7 @@ namespace nexo {
             bool m_isRunning = true;
             bool m_isMinimized = false;
             bool m_displayProfileResult = true;
-            std::shared_ptr<renderer::Window> m_window;
+            std::shared_ptr<renderer::NxWindow> m_window;
 
             float m_lastFrameTime = 0.0f;
             Timestep m_currentTimestep;
@@ -270,10 +268,9 @@ namespace nexo {
             std::shared_ptr<system::LightSystem> m_lightSystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
+            std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
 
             std::vector<ProfileResult> m_profilesResults;
-
-            system::PhysicsSystemWrapper physicsSystem;
 
     };
 }

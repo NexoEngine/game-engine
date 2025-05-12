@@ -14,8 +14,7 @@
 
 #include "AmbientLightProperty.hpp"
 #include "components/Light.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
+#include "ImNexo/Widgets.hpp"
 
 namespace nexo::editor {
 
@@ -23,7 +22,7 @@ namespace nexo::editor {
 	{
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
 
-        if (EntityPropertiesComponents::drawHeader("##AmbientNode", "Ambient light"))
+        if (ImNexo::Header("##AmbientNode", "Ambient light"))
         {
         	ImGui::Spacing();
         	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
@@ -31,7 +30,7 @@ namespace nexo::editor {
 			ImGui::Text("Color");
 			ImGui::SameLine();
 			glm::vec4 color = {ambientComponent.color, 1.0f};
-			Widgets::drawColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
+			ImNexo::ColorEditor("##ColorEditor Ambient light", &color, &colorPickerMode, &showColorPicker);
 			ambientComponent.color = color;
         	ImGui::TreePop();
         }

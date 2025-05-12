@@ -28,7 +28,7 @@ namespace nexo::assets {
     // Import from memory buffer, importer should read from the buffer
     struct ImporterMemoryInput {
         std::vector<uint8_t> memoryData;          //< Memory buffer
-        std::optional<std::string> fileExtension; //< For format detection with memory sources (MUST start with a dot, e.g.: .png)
+        std::string formatHint; //< For format detection with memory sources (can be ARGB8888, .obj, etc.)
     };
 
     using ImporterInputVariant = std::variant<ImporterFileInput, ImporterMemoryInput>;

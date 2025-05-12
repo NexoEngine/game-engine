@@ -66,8 +66,8 @@ namespace nexo::renderer {
                     glfwTerminate();
                     GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
                 }
-                renderer3D = std::make_unique<Renderer3D>();
-                Renderer::init();
+                renderer3D = std::make_unique<NxRenderer3D>();
+                NxRenderer::init();
                 EXPECT_NO_THROW(renderer3D->init());
             }
 
@@ -80,7 +80,7 @@ namespace nexo::renderer {
                 }
             }
 
-            std::unique_ptr<Renderer3D> renderer3D;
+            std::unique_ptr<NxRenderer3D> renderer3D;
     };
 
     TEST_F(Renderer3DTest, BeginEndScene)
@@ -119,8 +119,8 @@ namespace nexo::renderer {
         // Validate vertex buffer data:
         GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(36); // Expecting 36 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(Vertex), vertexData.data());
+        std::vector<NxVertex> vertexData(36); // Expecting 36 vertices
+        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 36 * sizeof(NxVertex), vertexData.data());
 
         // Expected vertex positions for a unit cube
         const glm::vec3 expectedPositions[36] = {
@@ -221,9 +221,9 @@ namespace nexo::renderer {
 	    glm::vec3 position = {0.0f, 0.0f, 0.0f};
 	    glm::vec3 size = {1.0f, 1.0f, 1.0f};
 
-	    components::Material material;
+	    renderer::NxMaterial material;
 	    material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    material.albedoTexture = NxTexture2D::create(4, 4); // Example texture
 
 	    GLuint query;
 	    glGenQueries(1, &query);
@@ -241,7 +241,7 @@ namespace nexo::renderer {
 	    glDeleteQueries(1, &query);
 
 	    // Validate render stats
-	    Renderer3DStats stats = renderer3D->getStats();
+	    NxRenderer3DStats stats = renderer3D->getStats();
 	    EXPECT_EQ(stats.cubeCount, 1);
 	    EXPECT_EQ(stats.getTotalVertexCount(), 8); // 1 cube * 8 vertices per cube (as defined in struct)
 	    EXPECT_EQ(stats.getTotalIndexCount(), 36); // 1 cube * 36 indices
@@ -271,7 +271,7 @@ namespace nexo::renderer {
 	    glDeleteQueries(1, &query);
 
 	    // Validate render stats
-	    Renderer3DStats stats = renderer3D->getStats();
+	    NxRenderer3DStats stats = renderer3D->getStats();
 	    EXPECT_EQ(stats.cubeCount, 1);
 	    EXPECT_EQ(stats.getTotalVertexCount(), 8); // 1 cube * 8 vertices
 	    EXPECT_EQ(stats.getTotalIndexCount(), 36); // 1 cube * 36 indices
@@ -300,7 +300,7 @@ namespace nexo::renderer {
 	    glDeleteQueries(1, &query);
 
 	    // Validate render stats
-	    Renderer3DStats stats = renderer3D->getStats();
+	    NxRenderer3DStats stats = renderer3D->getStats();
 	    EXPECT_EQ(stats.cubeCount, 1);
 	    EXPECT_EQ(stats.getTotalVertexCount(), 8); // 1 cube * 8 vertices
 	    EXPECT_EQ(stats.getTotalIndexCount(), 36); // 1 cube * 36 indices
@@ -312,11 +312,11 @@ namespace nexo::renderer {
 	    glm::vec3 size = {2.0f, 2.0f, 2.0f};
 	    glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
 
-	    components::Material material;
+	    renderer::NxMaterial material;
 	    material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    material.albedoTexture = NxTexture2D::create(4, 4); // Example texture
 	    material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-	    material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    material.metallicMap = NxTexture2D::create(2, 2); // Example specular texture
 
 	    GLuint query;
 	    glGenQueries(1, &query);
@@ -334,7 +334,7 @@ namespace nexo::renderer {
 	    glDeleteQueries(1, &query);
 
 	    // Validate render stats
-	    Renderer3DStats stats = renderer3D->getStats();
+	    NxRenderer3DStats stats = renderer3D->getStats();
 	    EXPECT_EQ(stats.cubeCount, 1);
 	    EXPECT_EQ(stats.getTotalVertexCount(), 8); // 1 cube * 8 vertices
 	    EXPECT_EQ(stats.getTotalIndexCount(), 36); // 1 cube * 36 indices
@@ -346,9 +346,9 @@ namespace nexo::renderer {
 	                          glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
 	                          glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
 
-	    components::Material material;
+	    renderer::NxMaterial material;
 	    material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-	    material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    material.albedoTexture = NxTexture2D::create(4, 4); // Example texture
 
 	    GLuint query;
 	    glGenQueries(1, &query);
@@ -366,7 +366,7 @@ namespace nexo::renderer {
 	    glDeleteQueries(1, &query);
 
 	    // Validate render stats
-	    Renderer3DStats stats = renderer3D->getStats();
+	    NxRenderer3DStats stats = renderer3D->getStats();
 	    EXPECT_EQ(stats.cubeCount, 1);
 	    EXPECT_EQ(stats.getTotalVertexCount(), 8); // 1 cube * 8 vertices
 	    EXPECT_EQ(stats.getTotalIndexCount(), 36); // 1 cube * 36 indices
@@ -375,13 +375,13 @@ namespace nexo::renderer {
 	TEST_F(Renderer3DTest, DrawMesh)
 	{
 	    // Create a simple mesh (a triangle)
-	    std::vector<Vertex> vertices = {
+	    std::vector<NxVertex> vertices = {
 	        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, -1},
 	        {{ 0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, -1},
 	        {{ 0.0f,  0.5f, 0.0f}, {0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, -1}
 	    };
 	    std::vector<unsigned int> indices = {0, 1, 2};
-	    auto texture = Texture2D::create(4, 4);
+	    auto texture = NxTexture2D::create(4, 4);
 
 	    // Use an OpenGL query to count the number of triangles drawn
 	    GLuint query;
@@ -402,8 +402,8 @@ namespace nexo::renderer {
 	    // Validate vertex buffer data
 	    GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
 	    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-	    std::vector<Vertex> vertexData(3); // Expecting 3 vertices for a triangle
-	    glGetBufferSubData(GL_ARRAY_BUFFER, 0, 3 * sizeof(Vertex), vertexData.data());
+	    std::vector<NxVertex> vertexData(3); // Expecting 3 vertices for a triangle
+	    glGetBufferSubData(GL_ARRAY_BUFFER, 0, 3 * sizeof(NxVertex), vertexData.data());
 
 	    // Check vertex data
 	    for (unsigned int i = 0; i < 3; ++i)
@@ -440,7 +440,7 @@ namespace nexo::renderer {
 	    glm::mat4 viewProjection = glm::mat4(1.0f);
 	    glm::vec3 cameraPosition = {0.0f, 0.0f, 0.0f};
 
-	    EXPECT_THROW(renderer3D->beginScene(viewProjection, cameraPosition), RendererNotInitialized);
+	    EXPECT_THROW(renderer3D->beginScene(viewProjection, cameraPosition), NxRendererNotInitialized);
 	    // Re-init for TearDown function
 	    renderer3D->init();
 	}
@@ -451,6 +451,6 @@ namespace nexo::renderer {
 	    glm::vec3 size = {1.0f, 1.0f, 1.0f};
 	    glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f};
 
-	    EXPECT_THROW(renderer3D->drawCube(position, size, color), RendererSceneLifeCycleFailure);
+	    EXPECT_THROW(renderer3D->drawCube(position, size, color), NxRendererSceneLifeCycleFailure);
 	}
 }

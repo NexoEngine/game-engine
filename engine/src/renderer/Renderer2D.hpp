@@ -22,7 +22,7 @@
 
 namespace nexo::renderer {
 
-    struct QuadVertex {
+    struct NxQuadVertex {
         glm::vec3 position;
         glm::vec4 color;
         glm::vec2 texCoord;
@@ -32,7 +32,7 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct RendererStats {
+    struct NxRendererStats {
         unsigned int drawCalls = 0;
         unsigned int quadCount = 0;
 
@@ -40,37 +40,37 @@ namespace nexo::renderer {
         [[nodiscard]] unsigned int getTotalIndexCount() const { return quadCount * 6; }
     };
 
-    struct Renderer2DStorage {
+    struct NxRenderer2DStorage {
         const unsigned int maxQuads = 10000;
         const unsigned int maxVertices = maxQuads * 4;
         const unsigned int maxIndices = maxQuads * 6;
         static constexpr unsigned int maxTextureSlots = 32;
 
-        std::shared_ptr<Shader> textureShader;
-        std::shared_ptr<VertexArray> vertexArray;
-        std::shared_ptr<VertexBuffer> vertexBuffer;
-        std::shared_ptr<IndexBuffer> indexBuffer;
-        std::shared_ptr<Texture2D> whiteTexture;
+        std::shared_ptr<NxShader> textureShader;
+        std::shared_ptr<NxVertexArray> vertexArray;
+        std::shared_ptr<NxVertexBuffer> vertexBuffer;
+        std::shared_ptr<NxIndexBuffer> indexBuffer;
+        std::shared_ptr<NxTexture2D> whiteTexture;
 
         unsigned int indexCount = 0;
-        std::array<QuadVertex, 40000> vertexBufferBase;
+        std::array<NxQuadVertex, 40000> vertexBufferBase;
         std::array<unsigned int, 60000> indexBufferBase;
-        QuadVertex* vertexBufferPtr = nullptr;
+        NxQuadVertex* vertexBufferPtr = nullptr;
         unsigned int *indexBufferPtr = nullptr;
 
-        std::array<std::shared_ptr<Texture2D>, maxTextureSlots> textureSlots;
+        std::array<std::shared_ptr<NxTexture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
 
         glm::vec4 quadVertexPositions[4];
 
-        RendererStats stats;
+        NxRendererStats stats;
     };
 
     /**
-     * @class Renderer2D
+     * @class NxRenderer2D
      * @brief Provides a 2D rendering system for drawing quads, textures, and sprites.
      *
-     * The `Renderer2D` class is a high-performance 2D rendering engine that supports
+     * The `NxRenderer2D` class is a high-performance 2D rendering engine that supports
      * batching, texture binding, and transformation.
      *
      * Features:
@@ -91,17 +91,17 @@ namespace nexo::renderer {
      * 4. Call `endScene()` to finalize the rendering and issue draw calls.
      * 5. Call `shutdown()` to release resources when the renderer is no longer needed.
      */
-    class Renderer2D {
+    class NxRenderer2D {
         public:
             /**
-            * @brief Destroys the Renderer2D instance and releases resources.
+            * @brief Destroys the NxRenderer2D instance and releases resources.
             *
             * Ensures proper cleanup of the internal storage and associated buffers.
             */
-            ~Renderer2D() = default;
+            ~NxRenderer2D() = default;
 
             /**
-            * @brief Initializes the Renderer2D and allocates required resources.
+            * @brief Initializes the NxRenderer2D and allocates required resources.
             *
             * This method sets up the internal storage, including vertex arrays, buffers,
             * textures, and shaders. It also predefines the vertex positions for quads.
@@ -121,13 +121,13 @@ namespace nexo::renderer {
             void init();
 
             /**
-             * @brief Shuts down the Renderer2D and releases allocated resources.
+             * @brief Shuts down the NxRenderer2D and releases allocated resources.
              *
              * This method deletes internal storage, including vertex and index buffers,
              * and resets the internal storage pointer.
              *
              * Throws:
-             * - RendererNotInitialized if the renderer is not initialized.
+             * - NxRendererNotInitialized if the renderer is not initialized.
              */
             void shutdown();
 
@@ -140,8 +140,8 @@ namespace nexo::renderer {
              * @param viewProjection The combined view and projection matrix for the scene.
              *
              * Throws:
-             * - RendererNotInitialized if the renderer is not initialized.
-             * - RendererSceneLifeCycleFailure if called without proper initialization.
+             * - NxRendererNotInitialized if the renderer is not initialized.
+             * - NxRendererSceneLifeCycleFailure if called without proper initialization.
              */
             void beginScene(const glm::mat4 &viewProjection);
 
@@ -152,8 +152,8 @@ namespace nexo::renderer {
              * and resets internal buffers for the next frame.
              *
              * Throws:
-             * - RendererNotInitialized if the renderer is not initialized.
-             * - RendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
+             * - NxRendererNotInitialized if the renderer is not initialized.
+             * - NxRendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
              */
             void endScene() const;
             void flush() const;
@@ -181,11 +181,11 @@ namespace nexo::renderer {
              * Overloaded for:
              * - 2D position (`glm::vec2`) and 3D position (`glm::vec3`).
              */
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<NxTexture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<NxTexture2D> &texture, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID = -1) const;
 
 
             /**
@@ -203,43 +203,43 @@ namespace nexo::renderer {
             void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID = -1) const;
             void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<Texture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<NxTexture2D> &texture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<NxTexture2D> &texture, int entityID = -1) const;
 
-            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
-            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<SubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec2 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID = -1) const;
+            void drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID = -1) const;
 
             /**
             * @brief Resets rendering statistics.
             *
-            * Clears the draw call and quad counters in `RendererStats`.
+            * Clears the draw call and quad counters in `NxRendererStats`.
             *
             * Throws:
-            * - RendererNotInitialized if the renderer is not initialized.
+            * - NxRendererNotInitialized if the renderer is not initialized.
             */
             void resetStats() const;
 
             /**
              * @brief Retrieves the current rendering statistics.
              *
-             * @return A `RendererStats` struct containing the number of draw calls and
+             * @return A `NxRendererStats` struct containing the number of draw calls and
              *         quads rendered.
              *
              * Throws:
-             * - RendererNotInitialized if the renderer is not initialized.
+             * - NxRendererNotInitialized if the renderer is not initialized.
              */
-            [[nodiscard]] RendererStats getStats() const;
+            [[nodiscard]] NxRendererStats getStats() const;
 
-            std::shared_ptr<Renderer2DStorage> getInternalStorage() const { return m_storage; };
+            std::shared_ptr<NxRenderer2DStorage> getInternalStorage() const { return m_storage; };
         private:
-            std::shared_ptr<Renderer2DStorage> m_storage;
+            std::shared_ptr<NxRenderer2DStorage> m_storage;
             bool m_renderingScene = false;
 
             void flushAndReset() const;
 
             // Helper functions
             void generateQuadVertices(const glm::mat4 &transform, glm::vec4 color, float textureIndex, const glm::vec2 *textureCoords, int entityID) const;
-            [[nodiscard]] float getTextureIndex(const std::shared_ptr<Texture2D> &texture) const;
+            [[nodiscard]] float getTextureIndex(const std::shared_ptr<NxTexture2D> &texture) const;
     };
 
 }

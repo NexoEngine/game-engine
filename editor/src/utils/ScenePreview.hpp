@@ -67,6 +67,6 @@ namespace nexo::editor::utils {
      * @param entity The entity to generate the preview from.
      * @param out Output structure containing preview scene details.
      */
-	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out);
+	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor = {0.05f, 0.05f, 0.05f, 0.0f});
 
 }

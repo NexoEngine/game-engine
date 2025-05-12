@@ -14,18 +14,100 @@
 
 #pragma once
 
-#include <set>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
 
-#include "Signature.hpp"
+#include "Definitions.hpp"
+#include "Logger.hpp"
+#include "ECSExceptions.hpp"
 
 namespace nexo::ecs {
     class Coordinator;
 }
 
 namespace nexo::ecs {
+
+	/**
+	* @class SparseSet
+	*
+	* @brief A sparse set implementation for efficient entity storage and lookup
+	*
+	* This class provides O(1) insertion, removal, and lookup operations for entities.
+	* It uses a sparse-dense pattern where entities are stored contiguously in a dense array,
+	* while maintaining a sparse lookup map to quickly find entity positions.
+	*/
+    class SparseSet {
+        public:
+	        /**
+	         * @brief Insert an entity into the set
+	         *
+	         * @param entity The entity to insert
+	         */
+	        void insert(Entity entity);
+
+	        /**
+	         * @brief Remove an entity from the set
+	         *
+	         * @param entity The entity to remove
+	         */
+	        void erase(Entity entity);
+
+	        /**
+	         * @brief Check if the set is empty
+	         *
+	         * @return true if the set contains no entities, false otherwise
+	         */
+	        bool empty() const { return dense.empty(); }
+
+	        /**
+	         * @brief Check if an entity exists in the set
+	         *
+	         * @param entity The entity to check
+	         * @return true if the entity exists in the set, false otherwise
+	         */
+	        bool contains(const Entity entity) const { return sparse.contains(entity); }
+
+	        /**
+	         * @brief Get the number of entities in the set
+	         *
+	         * @return The number of entities
+	         */
+	        size_t size() const { return dense.size(); }
+
+	        /**
+	         * @brief Get the dense array of entities
+	         *
+	         * @return Const reference to the vector of entities
+	         */
+	        const std::vector<Entity>& getDense() const { return dense; }
+
+	        /**
+	         * @brief Get an iterator to the beginning of the entity collection
+	         *
+	         * @return Iterator to the first entity
+	         */
+	        auto begin() const { return dense.begin(); }
+
+	        /**
+	         * @brief Get an iterator to the end of the entity collection
+	         *
+	         * @return Iterator to the position after the last entity
+	         */
+	        auto end() const { return dense.end(); }
+
+        private:
+            /**
+             * @brief Dense array of entities in insertion order
+             */
+            std::vector<Entity> dense;
+
+            /**
+             * @brief Sparse lookup map from entity ID to position in dense array
+             */
+            std::unordered_map<Entity, size_t> sparse;
+    };
+
     /**
     * @class System
     *
@@ -36,8 +118,36 @@ namespace nexo::ecs {
     */
     class System {
         public:
-            std::set<Entity> entities;
+            virtual ~System() = default;
+            /**
+             * @brief Global coordinator instance shared by all systems
+             */
             static std::shared_ptr<Coordinator> coord;
+    };
+
+    /**
+     * @class AQuerySystem
+     * @brief Base abstract for all query-based systems
+     */
+    class AQuerySystem : public System {
+    public:
+        ~AQuerySystem() override = default;
+        virtual const Signature &getSignature() const = 0;
+
+        /**
+         * @brief Entities that match this system's signature
+         */
+        SparseSet entities;
+
+    };
+
+    /**
+     * @class AGroupSystem
+     * @brief Abstract base class for all group-based systems
+     */
+    class AGroupSystem : public System {
+    public:
+        ~AGroupSystem() override = default;
     };
 
     /**
@@ -56,18 +166,45 @@ namespace nexo::ecs {
             * @tparam T - The type of the system to be registered.
             * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
             */
-            template<typename T>
-            std::shared_ptr<T> registerSystem() {
+            template<typename T, typename... Args>
+            std::shared_ptr<T> registerQuerySystem(Args&&... args)
+            {
+                static_assert(std::is_base_of_v<AQuerySystem, T>, "T must derive from AQuerySystem");
                 std::type_index typeName(typeid(T));
 
-                if (m_systems.contains(typeName))
+                if (m_querySystems.contains(typeName))
                 {
                     LOG(NEXO_WARN, "ECS::SystemManager::registerSystem: trying to register a system more than once");
                     return nullptr;
                 }
 
-                auto system = std::make_shared<T>();
-                m_systems.insert({typeName, system});
+                auto system = std::make_shared<T>(std::forward<Args>(args)...);
+                m_querySystems.insert({typeName, system});
+                return system;
+            }
+
+            /**
+             * @brief Registers a new group-based system of type T in the ECS framework
+             *
+             * @tparam T The type of the system to be registered (must derive from AGroupSystem)
+             * @tparam Args Constructor argument types for the system
+             * @param args Constructor arguments for the system
+             * @return std::shared_ptr<T> Shared pointer to the newly registered system
+             */
+            template<typename T, typename... Args>
+            std::shared_ptr<T> registerGroupSystem(Args&&... args)
+            {
+            	static_assert(std::is_base_of_v<AGroupSystem, T>, "T must derive from AGroupSystem");
+                std::type_index typeName(typeid(T));
+
+                if (m_groupSystems.contains(typeName))
+                {
+                    LOG(NEXO_WARN, "ECS::SystemManager::registerSystem: trying to register a system more than once");
+                    return nullptr;
+                }
+
+                auto system = std::make_shared<T>(std::forward<Args>(args)...);
+                m_groupSystems.insert({typeName, system});
                 return system;
             }
 
@@ -79,11 +216,9 @@ namespace nexo::ecs {
             * @param signature - The signature to associate with the system.
             */
             template<typename T>
-            void setSignature(Signature signature) {
+            void setSignature(Signature signature)
+            {
                 std::type_index typeName(typeid(T));
-
-                if (!m_systems.contains(typeName))
-                    THROW_EXCEPTION(SystemNotRegistered);
 
                 m_signatures.insert({typeName, signature});
             }
@@ -92,19 +227,33 @@ namespace nexo::ecs {
             * @brief Handles the destruction of an entity by removing it from all systems.
             *
             * @param entity - The ID of the destroyed entity.
+            * @param signature - The signature of the entity.
             */
-            void entityDestroyed(Entity entity) const;
+            void entityDestroyed(Entity entity, Signature signature) const;
 
             /**
             * @brief Updates the systems with an entity when its signature changes.
             *
             * This ensures that systems process only relevant entities based on their current components.
             * @param entity - The ID of the entity whose signature has changed.
-            * @param entitySignature - The new signature of the entity.
+            * @param oldSignature - The old signature of the entity.
+            * @param newSignature - The new signature of the entity.
             */
-            void entitySignatureChanged(Entity entity, Signature entitySignature);
+            void entitySignatureChanged(Entity entity, Signature oldSignature, Signature newSignature);
         private:
-            std::unordered_map<std::type_index, Signature> m_signatures{};
-            std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems{};
+	        /**
+	         * @brief Map of system type to component signature
+	         */
+	        std::unordered_map<std::type_index, Signature> m_signatures{};
+
+	        /**
+	         * @brief Map of query system type to system instance
+	         */
+	        std::unordered_map<std::type_index, std::shared_ptr<AQuerySystem>> m_querySystems{};
+
+	        /**
+	         * @brief Map of group system type to system instance
+	         */
+	        std::unordered_map<std::type_index, std::shared_ptr<AGroupSystem>> m_groupSystems{};
     };
 }

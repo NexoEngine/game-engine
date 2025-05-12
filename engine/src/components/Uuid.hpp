@@ -37,7 +37,23 @@ namespace nexo::components {
 		return res;
 	}
 
-	struct UuidComponent {
-		std::string uuid = genUuid();
-	};
+    struct UuidComponent {
+        struct Memento {
+            std::string uuid;
+
+            UuidComponent restore() const
+            {
+                return {uuid};
+            }
+        };
+
+        Memento save() const
+        {
+            return {uuid};
+        }
+
+
+
+        std::string uuid = genUuid();
+    };
 }
