@@ -1,0 +1,38 @@
+//// RenderBillboardSystem.hpp ////////////////////////////////////////////////
+//
+//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
+//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
+//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
+//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
+//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
+//
+//  Author:      Mehdy MORVAN
+//  Date:        11/05/2025
+//  Description: Header file for rendering the billboards
+//
+///////////////////////////////////////////////////////////////////////////////
+#pragma once
+
+#include "ecs/GroupSystem.hpp"
+#include "components/Transform.hpp"
+#include "components/BillboardMesh.hpp"
+#include "components/SceneComponents.hpp"
+#include "components/Render3D.hpp"
+#include "components/RenderContext.hpp"
+
+namespace nexo::system {
+    class RenderBillboardSystem final : public ecs::GroupSystem<
+		ecs::Owned<
+	        ecs::Read<components::BillboardComponent>>,
+           ecs::NonOwned<
+           	ecs::Read<components::TransformComponent>,
+            ecs::Read<components::Material>,
+           	ecs::Read<components::SceneTag>>,
+       	ecs::WriteSingleton<components::RenderContext>> {
+			public:
+                   void update();
+
+			private:
+			    static void setupLights(renderer::DrawCommand &cmd, const components::LightContext& lightContext);
+	};
+}
