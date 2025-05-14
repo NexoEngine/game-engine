@@ -14,12 +14,12 @@
 #pragma once
 
 #include "renderer/Attributes.hpp"
+#include "renderer/VertexArray.hpp"
 
 namespace nexo::components {
 
     struct StaticMeshComponent {
-        unsigned int vbo;
-        unsigned int ibo;
+        std::shared_ptr<renderer::NxVertexArray> vao;
 
         renderer::RequiredAttributes meshAttributes;
     };
