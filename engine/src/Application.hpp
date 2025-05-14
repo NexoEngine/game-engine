@@ -22,16 +22,15 @@
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
-#include "renderer/Buffer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
-#include "components/Light.hpp"
 
 #include "systems/CameraSystem.hpp"
-#include "systems/RenderSystem.hpp"
 #include "systems/LightSystem.hpp"
+#include "systems/RenderCommandSystem.hpp"
+#include "systems/RenderBillboardSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -254,10 +253,11 @@ namespace nexo {
             int m_eventDebugFlags{};
 
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
-            std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
+            std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
+            std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
 
             std::vector<ProfileResult> m_profilesResults;
     };
