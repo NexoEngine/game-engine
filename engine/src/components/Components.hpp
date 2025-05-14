@@ -21,7 +21,4 @@
 #include "Light.hpp"
 
 #include "Render.hpp"
-#include "Render2D.hpp"
 #include "Render3D.hpp"
-#include "Shapes2D.hpp"
-#include "Shapes3D.hpp"
