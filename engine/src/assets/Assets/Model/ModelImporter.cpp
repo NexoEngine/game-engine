@@ -21,12 +21,15 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Buffer.hpp"
+#include "VertexArray.hpp"
 #include "components/Shapes3D.hpp"
 #include "Path.hpp"
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
 #include "ModelParameters.hpp"
+#include "renderer/Renderer3D.hpp"
 
 #include "core/exceptions/Exceptions.hpp"
 
@@ -76,10 +79,7 @@ namespace nexo::assets {
         loadSceneMaterials(ctx, scene);
 
         auto meshNode = processNode(ctx, scene->mRootNode, scene);
-        if (!meshNode) {
-            throw core::LoadModelException(ctx.location.getFullLocation(), "Failed to process model node");
-        }
-        model->setData(std::make_unique<components::Model>(meshNode));
+        model->setData(std::make_unique<MeshNode>(meshNode));
         return model;
     }
 
@@ -300,33 +300,43 @@ namespace nexo::assets {
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
     }
 
-    std::shared_ptr<components::MeshNode> ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node,
+    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node,
         const aiScene* scene)
     {
-        auto meshNode = std::make_shared<components::MeshNode>();
+        auto meshNode = MeshNode{};
 
         const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
 
-        meshNode->transform = nodeTransform;
+        meshNode.transform = nodeTransform;
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            meshNode->meshes.push_back(processMesh(ctx, mesh, scene));
+            meshNode.meshes.push_back(processMesh(ctx, mesh, scene));
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             auto newNode = processNode(ctx, node->mChildren[i], scene);
-            if (newNode)
-                meshNode->children.push_back(newNode);
+            meshNode.children.push_back(newNode);
         }
 
         return meshNode;
     }
 
-    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
+    Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
+        std::shared_ptr<renderer::NxVertexArray> vao = renderer::createVertexArray();
+        auto vertexBuffer = renderer::createVertexBuffer(mesh->mNumVertices * sizeof(renderer::NxVertex));
+        const renderer::NxBufferLayout cubeVertexBufferLayout = {
+            {renderer::NxShaderDataType::FLOAT3, "aPos"},
+            {renderer::NxShaderDataType::FLOAT2, "aTexCoord"},
+            {renderer::NxShaderDataType::FLOAT3, "aNormal"},
+            {renderer::NxShaderDataType::FLOAT3, "aTangent"},
+            {renderer::NxShaderDataType::FLOAT3, "aBiTangent"},
+            {renderer::NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(cubeVertexBufferLayout);
         std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
         vertices.reserve(mesh->mNumVertices);
@@ -354,6 +364,12 @@ namespace nexo::assets {
             indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
         }
 
+        vertexBuffer->setData(vertices.data(), vertices.size() * sizeof(renderer::NxVertex));
+        vao->addVertexBuffer(vertexBuffer);
+
+        std::shared_ptr<renderer::NxIndexBuffer> indexBuffer = renderer::createIndexBuffer();
+        indexBuffer->setData(indices.data(), indices.size());
+        vao->setIndexBuffer(indexBuffer);
 
         AssetRef<Material> materialComponent = nullptr;
         if (mesh->mMaterialIndex < m_materials.size()) {
@@ -366,7 +382,7 @@ namespace nexo::assets {
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-        return {mesh->mName.data, vertices, indices, materialComponent};
+        return {mesh->mName.data, vao, materialComponent};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)
