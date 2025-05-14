@@ -1,4 +1,4 @@
-//// SpotLightsSystem.cpp ///////////////////////////////////////////////////////////////
+//// SpotLightsSystem.cpp /////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -17,7 +17,6 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
-#include "ecs/Coordinator.hpp"
 #include "Application.hpp"
 
 namespace nexo::system {

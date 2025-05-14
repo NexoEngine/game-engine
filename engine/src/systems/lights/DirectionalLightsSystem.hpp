@@ -1,4 +1,4 @@
-//// DirectionalLightsSystem.hpp ///////////////////////////////////////////////////////////////
+//// DirectionalLightsSystem.hpp //////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "ecs/System.hpp"
 #include "ecs/GroupSystem.hpp"
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
