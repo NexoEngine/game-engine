@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EditorProps.hpp"
+#include "Renderer3D.hpp"
+#include "components/BillboardMesh.hpp"
 #include "renderer/Texture.hpp"
 #include "components/Render3D.hpp"
 #include "components/Shapes3D.hpp"
@@ -33,10 +35,10 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = cameraIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<components::BillBoard>();
-        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
-        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
-        Application::m_coordinator->addComponent(entity, renderComponent);
+        components::BillboardComponent billboardMesh;
+        billboardMesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+        Application::m_coordinator->addComponent(entity, billboardMesh);
+        Application::m_coordinator->addComponent(entity, billboardMat);
     }
 
     static void addPointLightProps(const ecs::Entity entity)
@@ -50,10 +52,10 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = pointLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<components::BillBoard>();
-        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
-        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
-        Application::m_coordinator->addComponent(entity, renderComponent);
+        components::BillboardComponent billboardMesh;
+        billboardMesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+        Application::m_coordinator->addComponent(entity, billboardMesh);
+        Application::m_coordinator->addComponent(entity, billboardMat);
     }
 
     static void addSpotLightProps(const ecs::Entity entity)
@@ -67,10 +69,10 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = spotLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<components::BillBoard>();
-        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
-        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
-        Application::m_coordinator->addComponent(entity, renderComponent);
+        components::BillboardComponent billboardMesh;
+        billboardMesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+        Application::m_coordinator->addComponent(entity, billboardMesh);
+        Application::m_coordinator->addComponent(entity, billboardMat);
     }
 
     void addPropsTo(const ecs::Entity entity, const PropsType type)
