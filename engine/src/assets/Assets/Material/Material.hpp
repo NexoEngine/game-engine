@@ -15,6 +15,7 @@
 #pragma once
 
 #include "assets/Asset.hpp"
+#include "components/Render3D.hpp"
 
 namespace nexo::assets {
 
