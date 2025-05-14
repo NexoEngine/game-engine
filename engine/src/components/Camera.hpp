@@ -14,10 +14,10 @@
 #pragma once
 
 #include "Transform.hpp"
-#include "math/Vector.hpp"
 #include "core/event/Input.hpp"
 #include "renderer/Framebuffer.hpp"
 #include "ecs/Definitions.hpp"
+#include "renderer/RenderPipeline.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -53,6 +53,8 @@ namespace nexo::components {
 
         std::shared_ptr<renderer::NxFramebuffer> m_renderTarget = nullptr; ///< The render target framebuffer.
 
+        renderer::RenderPipeline pipeline;
+
         /**
          * @brief Retrieves the projection matrix for this camera.
          *
@@ -61,13 +63,7 @@ namespace nexo::components {
          *
          * @return glm::mat4 The projection matrix.
          */
-        [[nodiscard]] glm::mat4 getProjectionMatrix() const
-        {
-            if (type == CameraType::PERSPECTIVE) {
-                return glm::perspective(glm::radians(fov), static_cast<float>(width) / static_cast<float>(height), nearPlane, farPlane);
-            }
-            return glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, nearPlane, farPlane);
-        }
+        [[nodiscard]] glm::mat4 getProjectionMatrix() const;
 
         /**
          * @brief Computes the view matrix for the camera.
@@ -78,12 +74,7 @@ namespace nexo::components {
          * @param transf The transform component of the camera.
          * @return glm::mat4 The view matrix.
          */
-        [[nodiscard]] glm::mat4 getViewMatrix(const TransformComponent &transf) const
-        {
-            const glm::vec3 forward = transf.quat * glm::vec3(0.0f, 0.0f, -1.0f);
-            const glm::vec3 upVec = transf.quat * glm::vec3(0.0f, 1.0f, 0.0f);
-            return glm::lookAt(transf.pos, transf.pos + forward, upVec);
-        }
+        [[nodiscard]] glm::mat4 getViewMatrix(const TransformComponent &transf) const;
 
         /**
          * @brief Resizes the camera's viewport.
@@ -93,15 +84,7 @@ namespace nexo::components {
          * @param newWidth The new width for the viewport.
          * @param newHeight The new height for the viewport.
          */
-        void resize(const unsigned int newWidth, const unsigned int newHeight)
-        {
-            width = newWidth;
-            height = newHeight;
-            resizing = true;
-            if (m_renderTarget) {
-                m_renderTarget->resize(newWidth, newHeight);
-            }
-        }
+        void resize(const unsigned int newWidth, const unsigned int newHeight);
 
         struct Memento {
             unsigned int width;
@@ -116,38 +99,8 @@ namespace nexo::components {
             std::shared_ptr<renderer::NxFramebuffer> renderTarget;
         };
 
-        void restore(const Memento& memento)
-        {
-            if (width != memento.width || height != memento.height) {
-                width = memento.width;
-                height = memento.height;
-                resize(width, height);
-            }
-            viewportLocked = memento.viewportLocked;
-            fov = memento.fov;
-            nearPlane = memento.nearPlane;
-            farPlane = memento.farPlane;
-            type = memento.type;
-            clearColor = memento.clearColor;
-            main = memento.main;
-            m_renderTarget = memento.renderTarget;
-        }
-
-        [[nodiscard]] Memento save() const
-        {
-            return {
-                width,
-                height,
-                viewportLocked,
-                fov,
-                nearPlane,
-                farPlane,
-                type,
-                clearColor,
-                main,
-                m_renderTarget
-            };
-        }
+        void restore(const Memento& memento);
+        [[nodiscard]] Memento save() const;
     };
 
     struct EditorCameraTag {};
@@ -232,5 +185,6 @@ namespace nexo::components {
         glm::vec3 cameraPosition;                            ///< The position of the camera.
         glm::vec4 clearColor;                                ///< Clear color used for rendering.
         std::shared_ptr<renderer::NxFramebuffer> renderTarget; ///< The render target framebuffer.
+        renderer::RenderPipeline pipeline;
     };
 }
