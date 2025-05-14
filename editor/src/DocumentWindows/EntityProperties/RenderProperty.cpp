@@ -54,7 +54,6 @@ namespace nexo::editor {
             cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
             cameraComponent.render = true;
         }
-        auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
         ImGui::Columns(2, "MaterialPreviewColumns", false);
 
@@ -66,7 +65,6 @@ namespace nexo::editor {
             ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
             ImGui::Spacing();
 
-            ImNexo::MaterialInspector(&renderable3D->material);
             ImGui::EndChild();
         }
         ImGui::NextColumn();
@@ -107,8 +105,6 @@ namespace nexo::editor {
             if (scenePreviewInfo.sceneGenerated)
             {
                 auto &app = getApp();
-                auto &renderComponentBase = nexo::Application::m_coordinator->getComponent<components::RenderComponent>(entity);
-                renderComponentBase.renderable = renderable3D;
                 app.getSceneManager().deleteScene(scenePreviewInfo.sceneId);
                 scenePreviewInfo.sceneGenerated = false;
             }
@@ -137,18 +133,6 @@ namespace nexo::editor {
             return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
-        if (renderComponent.type == components::RenderType::RENDER_3D)
-        {
-            auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
-            if (renderable3D)
-            {
-                m_inspector.setSubInspectorData<MaterialInspector>(&renderable3D->material);
-            }
-        }
-        else if (renderComponent.type == components::RenderType::RENDER_2D)
-        {
-            //TODO: Implement sprite stuff
-        }
         static bool sectionOpen = true;
 
         if (ImNexo::Header("##RenderNode", "Render Component"))
