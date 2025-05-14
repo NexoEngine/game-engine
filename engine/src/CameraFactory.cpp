@@ -1,4 +1,4 @@
-//// CameraFactory.cpp ///////////////////////////////////////////////////////////////
+//// CameraFactory.cpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -19,6 +19,7 @@
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
+#include "renderPasses/ForwardPass.hpp"
 
 namespace nexo {
 	ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width,
@@ -35,8 +36,15 @@ namespace nexo {
 		camera.nearPlane = nearPlane;
 		camera.farPlane = farPlane;
 		camera.type = components::CameraType::PERSPECTIVE;
-		if (renderTarget)
-			camera.m_renderTarget = std::move(renderTarget);
+
+		auto forwardPass = std::make_shared<renderer::ForwardPass>(width, height);
+		renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
+		camera.pipeline.setFinalOutputPass(forwardPassId);
+		camera.pipeline.setCameraClearColor(clearColor);
+		if (renderTarget) {
+		    camera.m_renderTarget = std::move(renderTarget);
+			camera.pipeline.setFinalRenderTarget(camera.m_renderTarget);
+		}
 		camera.clearColor = clearColor;
 
 		ecs::Entity newCamera = Application::m_coordinator->createEntity();
