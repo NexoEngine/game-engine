@@ -38,7 +38,6 @@ set(RENDERER_SOURCES
         engine/src/renderer/RenderCommand.cpp
         engine/src/renderer/Texture.cpp
         engine/src/renderer/SubTexture2D.cpp
-        engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/UniformCache.cpp
         engine/src/renderer/Framebuffer.cpp
@@ -51,7 +50,6 @@ set(RENDERER_SOURCES
         engine/src/renderer/opengl/OpenGlFramebuffer.cpp
         engine/src/renderer/opengl/OpenGlShaderReflection.cpp
         engine/src/renderer/primitives/Cube.cpp
-        engine/src/renderer/primitives/Mesh.cpp
 )
 
 add_executable(renderer_tests
