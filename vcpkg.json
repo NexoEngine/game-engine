@@ -14,10 +14,17 @@
               "opengl3-binding"
             ]
 		},
+		{
+			"name": "joltphysics",
+			"version>=": "5.3.0#1",
+			"features": [
+				"rtti",
+				"exceptions"
+			]
+		},
 		{ "name": "imguizmo", "version>=": "2024-05-29#1" },
 		{ "name": "boost-dll", "version>=": "1.86.0#0" },
 		{ "name": "boost-uuid", "version>=":  "1.86.0#0"},
-        { "name": "joltphysics", "version>=": "5.1.0#2" },
 		{ "name": "loguru", "version>=": "2.1.0#4" },
 		{ "name": "glm", "version>=": "1.0.1#3" },
 		{ "name": "glfw3", "version>=": "3.4#1" },
@@ -26,6 +33,6 @@
 		{ "name": "tinyfiledialogs", "version>=": "3.19.1#0" },
 		{ "name": "gtest", "version>=": "1.15.2#0" },
 		{ "name": "assimp", "version>=": "5.4.3#0" },
-        {"name":  "nlohmann-json", "version>=": "3.11.3#1"}
+        { "name": "nlohmann-json", "version>=": "3.11.3#1"}
   ]
 }
