@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "components/MaterialComponent.hpp"
 #include "ecs/GroupSystem.hpp"
 #include "components/Transform.hpp"
 #include "components/BillboardMesh.hpp"
@@ -26,7 +27,7 @@ namespace nexo::system {
 	        ecs::Read<components::BillboardComponent>>,
            ecs::NonOwned<
            	ecs::Read<components::TransformComponent>,
-            ecs::Read<components::Material>,
+            ecs::Read<components::MaterialComponent>,
            	ecs::Read<components::SceneTag>>,
        	ecs::WriteSingleton<components::RenderContext>> {
 			public:

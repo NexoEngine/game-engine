@@ -70,7 +70,7 @@ namespace nexo::editor {
 
         generateNodes<
         components::StaticMeshComponent,
-        components::Material,
+        components::MaterialComponent,
         components::TransformComponent,
         components::SceneTag,
         ecs::Exclude<components::CameraComponent>,
