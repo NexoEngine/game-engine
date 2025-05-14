@@ -20,7 +20,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_RELEASE -O3)
     set(NEXO_COVERAGE_FLAGS -O0 --coverage)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(NEXO_COMPILER_FLAGS_ALL /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor)
+    set(NEXO_COMPILER_FLAGS_ALL /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor /utf-8)
     set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1)
     set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor)
     set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
