@@ -13,29 +13,38 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <format>
 #include <string>
 #include <source_location>
+#include <exception>
 
 namespace nexo {
     class Exception : public std::exception {
         public:
-            explicit Exception(std::string message, const std::source_location loc)
-                : message(std::move(message)), file(loc.file_name()), line(loc.line()) {}
+            explicit Exception(const std::string& message, const std::source_location& loc)
+                :
+                m_unformattedMessage(message),
+                m_formattedMessage(std::format("Exception occurred in {} : {} - {}", loc.file_name(), loc.line(), message)),
+                m_location(loc)
+            {
+            }
 
-            const char *what() const noexcept override;
+            ~Exception() override = default;
 
-            const std::string &getMessage() const noexcept { return message; }
-            const char *getFile() const noexcept { return file; }
-            unsigned int getLine() const noexcept { return line; }
+            [[nodiscard]] const char *what() const noexcept override;
 
-            protected:
-            std::string formatMessage() const;
+            [[nodiscard]] const std::string& getMessage() const noexcept;
+            [[nodiscard]] const std::string& getFormattedMessage() const noexcept;
+
+            [[nodiscard]] const char *getFile() const noexcept;
+            [[nodiscard]] unsigned int getLine() const noexcept;
+            [[nodiscard]] const char *getFunction() const noexcept;
+            [[nodiscard]] const std::source_location& getSourceLocation() const noexcept;
 
         private:
-            std::string message;
-            const char *file;
-            unsigned int line;
-            mutable std::string formattedMessage;
+            std::string m_unformattedMessage;
+            std::string m_formattedMessage;
+            std::source_location m_location;
     };
 }
 

@@ -14,19 +14,42 @@
 
 #include "Exception.hpp"
 
-#include <sstream>
+#include <format>
+#include <iostream>
 
 namespace nexo {
-    const char * Exception::what() const noexcept
+    const char *Exception::what() const noexcept
     {
-        formattedMessage = formatMessage();
-        return formattedMessage.c_str();
+        return m_formattedMessage.c_str();
     }
 
-    std::string Exception::formatMessage() const
+    const std::string& Exception::getMessage() const noexcept
     {
-        std::ostringstream oss;
-        oss << "Exception occurred in " << file << ":" << line << " - " << message;
-        return oss.str();
+        return m_unformattedMessage;
+    }
+
+    const std::string& Exception::getFormattedMessage() const noexcept
+    {
+        return m_formattedMessage;
+    }
+
+    const char* Exception::getFile() const noexcept
+    {
+        return m_location.file_name();
+    }
+
+    unsigned int Exception::getLine() const noexcept
+    {
+        return m_location.line();
+    }
+
+    const char* Exception::getFunction() const noexcept
+    {
+        return m_location.function_name();
+    }
+
+    const std::source_location& Exception::getSourceLocation() const noexcept
+    {
+        return m_location;
     }
 }
