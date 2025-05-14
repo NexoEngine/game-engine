@@ -17,6 +17,7 @@
 #include "CameraFactory.hpp"
 #include "LightFactory.hpp"
 #include "components/Camera.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/Render3D.hpp"
 #include "components/StaticMesh.hpp"
 
@@ -44,7 +45,7 @@ namespace nexo::editor::utils {
 	{
 		const ecs::Entity entityCopy = Application::m_coordinator->createEntity();
         const auto staticMeshCopy = Application::m_coordinator->getComponent<components::StaticMeshComponent>(entity);
-        const auto materialCopy = Application::m_coordinator->getComponent<components::Material>(entity);
+        const auto materialCopy = Application::m_coordinator->getComponent<components::MaterialComponent>(entity);
         const auto &transformComponentBase = Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         components::TransformComponent transformComponent;
         transformComponent.pos = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};

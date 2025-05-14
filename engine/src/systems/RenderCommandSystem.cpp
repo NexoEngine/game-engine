@@ -208,17 +208,18 @@ namespace nexo::system {
 
     static renderer::DrawCommand createSelectedDrawCommand(
         const components::StaticMeshComponent &mesh,
-        const components::Material &material,
+        const std::shared_ptr<assets::Material> &materialAsset,
         const components::TransformComponent &transform)
     {
         renderer::DrawCommand cmd;
         cmd.vao = mesh.vao;
-        if (material.isOpaque)
+        bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
+        if (isOpaque)
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
         else {
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
-            cmd.uniforms["uMaterial.albedoColor"] = material.albedoColor;
-            auto albedoTextureAsset = material.albedoTexture.lock();
+            cmd.uniforms["uMaterial.albedoColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
+            auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
             auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
             cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
         }
@@ -232,7 +233,7 @@ namespace nexo::system {
         ecs::Entity entity,
         const std::shared_ptr<renderer::NxShader> &shader,
         const components::StaticMeshComponent &mesh,
-        const components::Material &material,
+        const std::shared_ptr<assets::Material> &materialAsset,
         const components::TransformComponent &transform)
     {
         renderer::DrawCommand cmd;
@@ -241,23 +242,23 @@ namespace nexo::system {
         cmd.uniforms["uMatModel"] = createTransformMatrix(transform);
         cmd.uniforms["uEntityId"] = static_cast<int>(entity);
 
-        cmd.uniforms["uMaterial.albedoColor"] = material.albedoColor;
-        auto albedoTextureAsset = material.albedoTexture.lock();
+        cmd.uniforms["uMaterial.albedoColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
+        auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
         auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
 
-        cmd.uniforms["uMaterial.specularColor"] = material.specularColor;
-        auto specularTextureAsset = material.metallicMap.lock();
+        cmd.uniforms["uMaterial.specularColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f);
+        auto specularTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
         auto specularTexture = specularTextureAsset && specularTextureAsset->isLoaded() ? specularTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
 
-        cmd.uniforms["uMaterial.emissiveColor"] = material.emissiveColor;
-        auto emissiveTextureAsset = material.emissiveMap.lock();
+        cmd.uniforms["uMaterial.emissiveColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
+        auto emissiveTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
         auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ? emissiveTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
 
-        cmd.uniforms["uMaterial.roughness"] = material.roughness;
-        auto roughnessTextureAsset = material.roughnessMap.lock();
+        cmd.uniforms["uMaterial.roughness"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f;
+        auto roughnessTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
         auto roughnessTexture = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ? roughnessTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.roughnessTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture);
 
@@ -287,7 +288,7 @@ namespace nexo::system {
 
 		const auto transformSpan = get<components::TransformComponent>();
 		const auto meshSpan = get<components::StaticMeshComponent>();
-		const auto materialSpan = get<components::Material>();
+		const auto materialSpan = get<components::MaterialComponent>();
 		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         std::vector<renderer::DrawCommand> drawCommands;
@@ -296,21 +297,22 @@ namespace nexo::system {
             if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
                 continue;
             const auto &transform = transformSpan[i];
-            const auto &material = materialSpan[i];
+            const auto &materialAsset = materialSpan[i].material.lock();
+            auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : nullptr;
             const auto &mesh = meshSpan[i];
-            auto shader = renderer::ShaderLibrary::getInstance().get(material.shader);
+            auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
             if (!shader)
                 continue;
             drawCommands.push_back(createDrawCommand(
                 entity,
                 shader,
                 mesh,
-                material,
+                materialAsset,
                 transform)
             );
 
             if (coord->entityHasComponent<components::SelectedTag>(entity))
-                drawCommands.push_back(createSelectedDrawCommand(mesh, material, transform));
+                drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
 		}
 
 		for (auto &camera : renderContext.cameras) {
