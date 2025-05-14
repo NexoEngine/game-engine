@@ -14,13 +14,7 @@
 
 #pragma once
 
-#include <set>
-
 namespace nexo::components {
-
-    struct InActiveScene {
-        std::set<unsigned int> sceneIds;
-    };
 
     struct SceneTag {
         unsigned int id{};
