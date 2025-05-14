@@ -130,6 +130,10 @@ namespace nexo::renderer {
             void setStencilMask(unsigned int mask) override;
             void setStencilFunc(unsigned int func, int ref, unsigned int mask) override;
             void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) override;
+
+            void setCulling(bool enable) override;
+            void setCulledFace(CulledFace face) override;
+            void setWindingOrder(WindingOrder order) override;
         private:
             bool m_initialized = false;
             unsigned int m_maxWidth = 0;

@@ -20,6 +20,17 @@
 
 namespace nexo::renderer {
 
+    enum class CulledFace {
+        BACK,
+        FRONT,
+        FRONT_AND_BACK
+    };
+
+    enum class WindingOrder {
+        CW,
+        CCW
+    };
+
     /**
     * @class NxRendererApi
     * @brief Abstract interface for low-level rendering API implementations.
@@ -134,6 +145,10 @@ namespace nexo::renderer {
             virtual void setStencilMask(unsigned int mask) = 0;
             virtual void setStencilFunc(unsigned int func, int ref, unsigned int mask) = 0;
             virtual void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) = 0;
+
+            virtual void setCulling(bool enable) = 0;
+            virtual void setCulledFace(CulledFace face) = 0;
+            virtual void setWindingOrder(WindingOrder order) = 0;
 
     };
 }
