@@ -3,9 +3,6 @@
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec2 aTexCoord;
 layout(location = 2) in vec3 aNormal;
-layout(location = 3) in vec3 aTangent;
-layout(location = 4) in vec3 aBiTangent;
-layout(location = 5) in int aEntityID;
 
 uniform mat4 uViewProjection;
 uniform mat4 uMatModel;
@@ -13,7 +10,6 @@ uniform mat4 uMatModel;
 out vec3 vFragPos;
 out vec2 vTexCoord;
 out vec3 vNormal;
-flat out int vEntityID;
 
 void main()
 {
@@ -23,8 +19,6 @@ void main()
     vTexCoord = aTexCoord;
 
     vNormal = mat3(transpose(inverse(uMatModel))) * aNormal;
-
-    vEntityID = aEntityID;
 
     gl_Position = uViewProjection * vec4(vFragPos, 1.0);
 }
@@ -66,7 +60,6 @@ struct SpotLight {
 in vec3 vFragPos;
 in vec2 vTexCoord;
 in vec3 vNormal;
-flat in int vEntityID;
 
 uniform sampler2D uTexture[32];
 
@@ -94,6 +87,8 @@ struct Material {
     int opacityTexIndex; // Default: 0 (white texture)
 };
 uniform Material uMaterial;
+
+uniform int uEntityId;
 
 vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
@@ -177,5 +172,5 @@ void main()
     }
 
     FragColor = vec4(result, 1.0);
-    EntityID = vEntityID;
+    EntityID = uEntityId;
 }
