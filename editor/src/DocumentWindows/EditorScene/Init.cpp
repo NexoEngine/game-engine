@@ -16,7 +16,11 @@
 #include "CameraFactory.hpp"
 #include "LightFactory.hpp"
 #include "EntityFactory3D.hpp"
+#include "RenderPass.hpp"
 #include "utils/EditorProps.hpp"
+#include "renderPasses/GridPass.hpp"
+#include "renderPasses/MaskPass.hpp"
+#include "renderPasses/OutlinePass.hpp"
 
 namespace nexo::editor {
 
@@ -42,6 +46,26 @@ namespace nexo::editor {
         m_editorCamera = static_cast<int>(CameraFactory::createPerspectiveCamera({0.0f, 3.0f, -2.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget));
         auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
+        auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
+        auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
+        auto gridPass = std::make_shared<renderer::GridPass>(m_contentSize.x, m_contentSize.y);
+
+        renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
+        renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
+        renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
+        renderer::PassId gridId = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
+        // Set up prerequisites
+        cameraComponent.pipeline.addPrerequisite(outlineId, maskId);
+        cameraComponent.pipeline.addPrerequisite(outlineId, forwardId);
+        cameraComponent.pipeline.addPrerequisite(gridId, outlineId);
+
+        // Set up effects
+        cameraComponent.pipeline.addEffect(forwardId, outlineId);
+        cameraComponent.pipeline.addEffect(maskId, outlineId);
+        cameraComponent.pipeline.addEffect(outlineId, gridId);
+
+        // Set the final output pass explicitly
+        cameraComponent.pipeline.setFinalOutputPass(gridId);
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
         const components::PerspectiveCameraController controller;
         Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_editorCamera), controller);
