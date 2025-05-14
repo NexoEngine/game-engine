@@ -30,6 +30,7 @@
 #include "components/Editor.hpp"
 #include "components/Uuid.hpp"
 #include "components/Render.hpp"
+#include "components/MaterialComponent.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -81,7 +82,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::SelectedTag>();
         m_coordinator->registerComponent<components::StaticMeshComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
-        m_coordinator->registerComponent<components::Material>();
+        m_coordinator->registerComponent<components::MaterialComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
     }
 

@@ -14,6 +14,7 @@
 
 #include "EntityFactory3D.hpp"
 #include "Renderer3D.hpp"
+#include "assets/AssetLocation.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Light.hpp"
 #include "components/Shapes3D.hpp"
@@ -21,6 +22,8 @@
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
 #include "components/StaticMesh.hpp"
+#include "components/MaterialComponent.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "Application.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -39,15 +42,23 @@ namespace nexo {
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
 
-        components::Material material{};
-        material.albedoColor = color;
+        std::unique_ptr<components::Material> material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+                                assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+                                std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
 
         components::UuidComponent uuid;
 
         ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
         Application::m_coordinator->addComponent(newCube, mesh);
-        Application::m_coordinator->addComponent(newCube, material);
+        std::cout << "la" << std::endl;
+        Application::m_coordinator->addComponent(newCube, matComponent);
+        std::cout << "apres" << std::endl;
+
         Application::m_coordinator->addComponent(newCube, uuid);
 
         return newCube;
@@ -63,12 +74,18 @@ namespace nexo {
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
 
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+                                assets::AssetLocation("_internal::CubeMat@_internal"),
+                                std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
         components::UuidComponent uuid;
 
         ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
         Application::m_coordinator->addComponent(newCube, mesh);
-        Application::m_coordinator->addComponent(newCube, material);
+        Application::m_coordinator->addComponent(newCube, matComponent);
         Application::m_coordinator->addComponent(newCube, uuid);
 
         return newCube;
@@ -80,8 +97,13 @@ namespace nexo {
         transform.pos = pos;
         transform.size = size;
 
-        components::Material material{};
-        material.albedoColor = color;
+        std::unique_ptr<components::Material> material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+                                assets::AssetLocation("_internal::BillboardMatFlatColor@_internal"),
+                                std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
 
         components::BillboardComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
@@ -91,7 +113,7 @@ namespace nexo {
         ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
         Application::m_coordinator->addComponent(newBillboard, mesh);
-        Application::m_coordinator->addComponent(newBillboard, material);
+        Application::m_coordinator->addComponent(newBillboard, matComponent);
         Application::m_coordinator->addComponent(newBillboard, uuid);
 
         return newBillboard;
@@ -106,12 +128,18 @@ namespace nexo {
         components::BillboardComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
 
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+                                assets::AssetLocation("_internal::BillboardMaterial@_internal"),
+                                std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
         components::UuidComponent uuid;
 
         ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
         Application::m_coordinator->addComponent(newBillboard, mesh);
-        Application::m_coordinator->addComponent(newBillboard, material);
+        Application::m_coordinator->addComponent(newBillboard, matComponent);
         Application::m_coordinator->addComponent(newBillboard, uuid);
 
         return newBillboard;

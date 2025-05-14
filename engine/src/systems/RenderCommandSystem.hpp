@@ -18,7 +18,7 @@
 #include "GroupSystem.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
-#include "components/Render3D.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 
@@ -45,7 +45,7 @@ namespace nexo::system {
 		ecs::Owned<
 			ecs::Read<components::TransformComponent>,
 	        ecs::Read<components::StaticMeshComponent>,
-			ecs::Read<components::Material>>,
+			ecs::Read<components::MaterialComponent>>,
         ecs::NonOwned<
         	ecs::Read<components::SceneTag>>,
     	ecs::WriteSingleton<components::RenderContext>> {
