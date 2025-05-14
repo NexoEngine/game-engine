@@ -18,20 +18,25 @@
 #include <glad/glad.h>
 #include <sys/types.h>
 
-#include "components/Components.hpp"
+#include "Renderer3D.hpp"
+#include "components/BillboardMesh.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Editor.hpp"
 #include "components/Uuid.hpp"
+#include "components/Render.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "systems/CameraSystem.hpp"
-#include "systems/RenderSystem.hpp"
+#include "systems/RenderBillboardSystem.hpp"
+#include "systems/RenderCommandSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -74,9 +79,10 @@ namespace nexo {
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
         m_coordinator->registerComponent<components::EditorCameraTag>();
         m_coordinator->registerComponent<components::SelectedTag>();
+        m_coordinator->registerComponent<components::StaticMeshComponent>();
+        m_coordinator->registerComponent<components::BillboardComponent>();
+        m_coordinator->registerComponent<components::Material>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
-
-        m_coordinator->registerComponent<components::InActiveScene>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -170,8 +176,8 @@ namespace nexo {
         m_cameraContextSystem = m_coordinator->registerGroupSystem<system::CameraContextSystem>();
         m_perspectiveCameraControllerSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
         m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
-
-        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
+        m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
+        m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
 
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
@@ -231,6 +237,7 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
+        renderer::NxRenderer3D::get().init();
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
@@ -261,7 +268,13 @@ namespace nexo {
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
-				m_renderSystem->update();
+				m_renderCommandSystem->update();
+				m_renderBillboardSystem->update();
+				for (auto &camera : renderContext.cameras)
+				    camera.pipeline.execute();
+				// We have to unbind after the whole pipeline since multiple passes can use the same textures
+				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
+                renderer::NxRenderer3D::get().unbindTextures();
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
