@@ -25,7 +25,10 @@
 class DummyFramebuffer : public nexo::renderer::NxFramebuffer {
 public:
     void bind() override {}
+    void bindAsTexture(unsigned int, unsigned int) override {};
+    void bindDepthAsTexture(unsigned int) override {};
     void unbind() override {}
+    void copy(const std::shared_ptr<NxFramebuffer>) override {};
     void setClearColor(const glm::vec4 &) override {}
     unsigned int getFramebufferId() const override { return 0; }
     glm::vec2 getSize() const override { return glm::vec2(0.0f); }
@@ -34,7 +37,11 @@ public:
     void clearAttachmentWrapper(unsigned int, const void *, const std::type_info &) const override {}
     [[nodiscard]] nexo::renderer::NxFramebufferSpecs &getSpecs() override { static nexo::renderer::NxFramebufferSpecs specs; return specs; }
     [[nodiscard]] const nexo::renderer::NxFramebufferSpecs &getSpecs() const override { static nexo::renderer::NxFramebufferSpecs specs; return specs; }
+    [[nodiscard]] bool hasDepthAttachment() const override { return true; };
+    [[nodiscard]] bool hasStencilAttachment() const override { return true; };
+    [[nodiscard]] bool hasDepthStencilAttachment() const override { return true; };
     [[nodiscard]] unsigned int getColorAttachmentId(unsigned int) const override { return 0; }
+    [[nodiscard]] unsigned int getNbColorAttachments() const override {return 0;}
     unsigned int getDepthAttachmentId() const override { return 0; }
 };
 
