@@ -17,6 +17,7 @@
 
 #include "OpenGlRendererAPI.hpp"
 #include "Logger.hpp"
+#include "RendererAPI.hpp"
 
 #include <glad/glad.h>
 
@@ -155,5 +156,37 @@ namespace nexo::renderer {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glStencilOp(sfail, dpfail, dppass);
+    }
+
+    void NxOpenGlRendererApi::setCulling(bool enable)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
+        if (enable)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
+    }
+
+    void NxOpenGlRendererApi::setCulledFace(CulledFace face)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
+        if (face == CulledFace::BACK)
+            glCullFace(GL_BACK);
+        else if (face == CulledFace::FRONT)
+            glCullFace(GL_FRONT);
+        else if (face == CulledFace::FRONT_AND_BACK)
+            glCullFace(GL_FRONT_AND_BACK);
+    }
+
+    void NxOpenGlRendererApi::setWindingOrder(WindingOrder order)
+    {
+        if (!m_initialized)
+            THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
+        if (order == WindingOrder::CCW)
+            glFrontFace(GL_CCW);
+        else if (order == WindingOrder::CW)
+            glFrontFace(GL_CW);
     }
 }
