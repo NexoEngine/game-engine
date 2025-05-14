@@ -13,11 +13,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EntityFactory3D.hpp"
+#include "Renderer3D.hpp"
+#include "components/BillboardMesh.hpp"
 #include "components/Light.hpp"
 #include "components/Shapes3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
+#include "components/StaticMesh.hpp"
 #include "Application.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -29,21 +32,23 @@ namespace nexo {
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
-
         transform.pos = pos;
         transform.size = size;
         transform.quat = glm::quat(rotation);
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+
         components::Material material{};
         material.albedoColor = color;
-        auto cube = std::make_shared<components::Cube>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, cube);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        components::UuidComponent uuid;
 
         ecs::Entity newCube = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newCube, renderComponent);
-        components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, transform);
+        Application::m_coordinator->addComponent(newCube, mesh);
+        Application::m_coordinator->addComponent(newCube, material);
+        Application::m_coordinator->addComponent(newCube, uuid);
 
         return newCube;
     }
@@ -54,35 +59,40 @@ namespace nexo {
         transform.pos = pos;
         transform.size = size;
         transform.quat = glm::quat(rotation);
-        auto cube = std::make_shared<components::Cube>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, cube);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+
+        components::UuidComponent uuid;
 
         ecs::Entity newCube = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newCube, renderComponent);
-        components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, transform);
+        Application::m_coordinator->addComponent(newCube, mesh);
+        Application::m_coordinator->addComponent(newCube, material);
+        Application::m_coordinator->addComponent(newCube, uuid);
+
         return newCube;
     }
 
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color)
     {
         components::TransformComponent transform{};
-
         transform.pos = pos;
         transform.size = size;
+
         components::Material material{};
         material.albedoColor = color;
-        auto billboard = std::make_shared<components::BillBoard>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, billboard);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        components::BillboardComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+
+        components::UuidComponent uuid;
 
         ecs::Entity newBillboard = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newBillboard, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newBillboard, renderComponent);
-        components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, transform);
+        Application::m_coordinator->addComponent(newBillboard, mesh);
+        Application::m_coordinator->addComponent(newBillboard, material);
+        Application::m_coordinator->addComponent(newBillboard, uuid);
 
         return newBillboard;
     }
@@ -90,18 +100,19 @@ namespace nexo {
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material)
     {
         components::TransformComponent transform{};
-
         transform.pos = pos;
         transform.size = size;
-        auto billboard = std::make_shared<components::BillBoard>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, billboard);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        components::BillboardComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+
+        components::UuidComponent uuid;
 
         ecs::Entity newBillboard = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newBillboard, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newBillboard, renderComponent);
-        components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, transform);
+        Application::m_coordinator->addComponent(newBillboard, mesh);
+        Application::m_coordinator->addComponent(newBillboard, material);
+        Application::m_coordinator->addComponent(newBillboard, uuid);
 
         return newBillboard;
     }
