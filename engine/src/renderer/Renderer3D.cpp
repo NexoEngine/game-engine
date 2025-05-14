@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "ShaderLibrary.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -22,6 +23,7 @@
 #include "Logger.hpp"
 #include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include <glad/glad.h>
 #include "Path.hpp"
 
 namespace nexo::renderer {
@@ -58,18 +60,9 @@ namespace nexo::renderer {
         for (int i = 0; i < static_cast<int>(NxRenderer3DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
-        const auto phong = m_storage->shaderLibrary.load("Phong", Path::resolvePathRelativeToExe(
-            "../resources/shaders/phong.glsl").string());
-        m_storage->shaderLibrary.load("Outline pulse flat", Path::resolvePathRelativeToExe(
-            "../resources/shaders/outline_pulse_flat.glsl").string());
-        const auto outlinePulseTransparentFlat = m_storage->shaderLibrary.load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
-            "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
-        const auto albedoUnshadedTransparent = m_storage->shaderLibrary.load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
-            "../resources/shaders/albedo_unshaded_transparent.glsl").string());
-        m_storage->shaderLibrary.load("Grid shader", Path::resolvePathRelativeToExe(
-            "../resources/shaders/grid_shader.glsl").string());
-        m_storage->shaderLibrary.load("Flat color", Path::resolvePathRelativeToExe(
-            "../resources/shaders/flat_color.glsl").string());
+        const auto phong = ShaderLibrary::getInstance().get("Phong");
+        const auto outlinePulseTransparentFlat = ShaderLibrary::getInstance().get("Outline pulse transparent flat");
+        const auto albedoUnshadedTransparent = ShaderLibrary::getInstance().get("Albedo unshaded transparent");
         phong->bind();
         phong->setUniformIntArray(NxShaderUniforms::TEXTURE_SAMPLER, samplers.data(), NxRenderer3DStorage::maxTextureSlots);
         phong->unbind();
@@ -92,14 +85,31 @@ namespace nexo::renderer {
         m_storage.reset();
     }
 
+    void NxRenderer3D::bindTextures()
+    {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
+        {
+            m_storage->textureSlots[i]->bind(i);
+        }
+    }
+
+    void NxRenderer3D::unbindTextures()
+    {
+        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
+        {
+            m_storage->textureSlots[i]->unbind(i);
+        }
+        m_storage->textureSlotIndex = 1;
+    }
+
     void NxRenderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos, const std::string &shader)
     {
         if (!m_storage)
             THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         if (shader.empty())
-            m_storage->currentSceneShader = m_storage->shaderLibrary.get("Phong");
+            m_storage->currentSceneShader = ShaderLibrary::getInstance().get("Phong");
         else
-            m_storage->currentSceneShader = m_storage->shaderLibrary.get(shader);
+            m_storage->currentSceneShader = ShaderLibrary::getInstance().get(shader);
         m_storage->currentSceneShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
