@@ -18,6 +18,8 @@
 #include "math/Matrix.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace nexo::editor {
     // Class-level variables for tracking gizmo state between frames
