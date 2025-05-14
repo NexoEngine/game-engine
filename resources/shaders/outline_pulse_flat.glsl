@@ -1,13 +1,13 @@
 #type vertex
 #version 430 core
-layout(location = 0) in vec3 aPosition;
+layout(location = 0) in vec2 aPosition;
 layout(location = 1) in vec2 aTexCoord;
 
 out vec2 vTexCoord;
 
 void main()
 {
-    gl_Position = vec4(aPosition, 1.0);
+    gl_Position = vec4(aPosition.xy, 0.0, 1.0);
     vTexCoord = aTexCoord;
 }
 
@@ -18,6 +18,8 @@ layout(location = 0) out vec4 FragColor;
 in vec2 vTexCoord;
 
 uniform sampler2D uMaskTexture;
+uniform sampler2D uDepthTexture;
+uniform sampler2D uDepthMaskTexture;
 uniform vec2 uScreenSize;
 uniform float uTime;
 uniform float uOutlineWidth = 5.0;
@@ -34,6 +36,7 @@ void main()
     float minDist = uOutlineWidth * uOutlineWidth;
     const int MAX_SAMPLES = 5;
     const float MAX_DIST = uOutlineWidth;
+    float maskDepth = 1.0;
 
     // Concentric ring sampling
     for (int i = 1; i <= MAX_SAMPLES && minDist > 1.0; i++) {
@@ -50,6 +53,7 @@ void main()
 
             if (sampleMask > 0.5) {
                 float dist = dot(vec2(x, y), vec2(x, y));
+                maskDepth = texture(uDepthMaskTexture, vTexCoord + offset).r;
                 minDist = min(minDist, dist);
                 break;
             }
@@ -61,7 +65,7 @@ void main()
     const float solid = 1.0; // Solid edge width
     const float fuzzy = uOutlineWidth - solid; // Fuzzy part, transparent part of the outline
 
-    if (minDist <= uOutlineWidth * uOutlineWidth) {
+    if (minDist <= uOutlineWidth * uOutlineWidth && maskDepth <= texture(uDepthTexture, vTexCoord).r) {
         // if sqrt(minDist) <= solid, we get a negative value clamped to 0.0 -> 1.0 - 0.0, full solid part
         // else, the alpha value gets smoothed along the fuzzy part (further = less opaque)
         alpha = 1.0 - clamp((sqrt(minDist) - solid) / fuzzy, 0.0, 1.0);
