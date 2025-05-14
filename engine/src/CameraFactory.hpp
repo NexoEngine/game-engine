@@ -1,4 +1,4 @@
-//// CameraFactory.hpp ///////////////////////////////////////////////////////////////
+//// CameraFactory.hpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -23,6 +23,6 @@ namespace nexo {
 		public:
 			static ecs::Entity createPerspectiveCamera(glm::vec3 pos, unsigned int width,
        									               unsigned int height, std::shared_ptr<renderer::NxFramebuffer> renderTarget = nullptr,
-                               				           const glm::vec4 &clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f}, float fov = 45.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+                               				           const glm::vec4 &clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f}, float fov = 45.0f, float nearPlane = 1.0f, float farPlane = 100.0f);
 	};
 }
