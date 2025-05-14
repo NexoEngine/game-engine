@@ -1,4 +1,4 @@
-//// AmbientLightSystem.cpp ///////////////////////////////////////////////////////////////
+//// AmbientLightSystem.cpp ///////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -17,7 +17,6 @@
 #include "Logger.hpp"
 #include "Application.hpp"
 #include "components/Light.hpp"
-#include "ecs/Coordinator.hpp"
 
 namespace nexo::system {
 	void AmbientLightSystem::update()
