@@ -1,6 +1,6 @@
 #type vertex
 #version 430 core
-layout(location = 0) in vec3 aPos;
+layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aTexCoord;
 
 uniform mat4 uViewProjection;
@@ -10,7 +10,7 @@ out vec2 vTexCoord;
 
 void main()
 {
-    vec4 worldPos = uMatModel * vec4(aPos, 1.0);
+    vec4 worldPos = uMatModel * vec4(aPos.xy, 1.0, 1.0);
     vTexCoord = aTexCoord;
     gl_Position = uViewProjection * worldPos;
 }
@@ -27,7 +27,7 @@ struct Material {
 };
 uniform Material uMaterial;
 
-uniform sampler2D uTexture[32];
+uniform sampler2D uTexture[31];
 uniform float uTime;
 
 void main()
