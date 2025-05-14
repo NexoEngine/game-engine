@@ -1,4 +1,4 @@
-//
+///////////////////////////////////////////////////////////////////////////////
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
 //  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
@@ -20,7 +20,6 @@
 #include "core/event/KeyCodes.hpp"
 #include "Application.hpp"
 #include "core/event/WindowEvent.hpp"
-#include "core/exceptions/Exceptions.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <numbers>
 
@@ -51,6 +50,7 @@ namespace nexo::system {
 		const auto cameraSpan = get<components::CameraComponent>();
 		const auto transformComponentArray = get<components::TransformComponent>();
 		const auto entitySpan = m_group->entities();
+		renderContext.cameras.reserve(partition->count);
 
 		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
 		{
@@ -61,8 +61,8 @@ namespace nexo::system {
 			glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
 			glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
 			const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-			components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor, cameraComponent.m_renderTarget};
-			renderContext.cameras.push(context);
+			components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor, cameraComponent.m_renderTarget, cameraComponent.pipeline};
+			renderContext.cameras.push_back(context);
 		}
 	}
 
