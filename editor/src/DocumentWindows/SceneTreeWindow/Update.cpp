@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "components/Render3D.hpp"
+#include "components/StaticMesh.hpp"
 
 namespace nexo::editor {
     void SceneTreeWindow::update()
@@ -67,7 +69,8 @@ namespace nexo::editor {
          });
 
         generateNodes<
-        components::RenderComponent,
+        components::StaticMeshComponent,
+        components::Material,
         components::TransformComponent,
         components::SceneTag,
         ecs::Exclude<components::CameraComponent>,
