@@ -31,12 +31,18 @@ namespace nexo::renderer {
 
     class ShaderLibrary {
         public:
+            ShaderLibrary();
             void add(const std::shared_ptr<NxShader> &shader);
             void add(const std::string &name, const std::shared_ptr<NxShader> &shader);
             std::shared_ptr<NxShader> load(const std::string &path);
             std::shared_ptr<NxShader> load(const std::string &name, const std::string &path);
             std::shared_ptr<NxShader> load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource);
             std::shared_ptr<NxShader> get(const std::string &name) const;
+
+            static ShaderLibrary& getInstance() {
+                static ShaderLibrary instance;
+                return instance;
+            }
         private:
             std::unordered_map<
                 std::string,
