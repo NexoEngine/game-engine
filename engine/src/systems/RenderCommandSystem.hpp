@@ -1,4 +1,4 @@
-//// RenderSystem.hpp ///////////////////////////////////////////////////////////////
+//// RenderCommandSystem.hpp //////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,18 +7,19 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        09/03/2025
-//  Description: Header file for the render system
+//  Date:        13/05/2025
+//  Description: Header file for the render command system
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include "Access.hpp"
+#include "DrawCommand.hpp"
 #include "GroupSystem.hpp"
-#include "components/Camera.hpp"
-#include "components/Render.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Render3D.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 
 namespace nexo::system {
@@ -40,27 +41,18 @@ namespace nexo::system {
 	* @note The system uses scene partitioning to only render entities belonging to the
 	* currently active scene (identified by RenderContext.sceneRendered).
 	*/
-	class RenderSystem final : public ecs::GroupSystem<
+	class RenderCommandSystem final : public ecs::GroupSystem<
 		ecs::Owned<
 			ecs::Read<components::TransformComponent>,
-	        ecs::Read<components::RenderComponent>>,
+	        ecs::Read<components::StaticMeshComponent>,
+			ecs::Read<components::Material>>,
         ecs::NonOwned<
         	ecs::Read<components::SceneTag>>,
     	ecs::WriteSingleton<components::RenderContext>> {
 			public:
-                RenderSystem();
                 void update();
 
 			private:
-			    static void setupLights(const std::shared_ptr<renderer::NxShader>& shader, const components::LightContext& lightContext);
-				static void renderGrid(const components::CameraContext &camera, components::RenderContext &renderContext);
-				void renderOutline(
-				    components::RenderContext &renderContext,
-					const components::CameraContext &camera,
-					const components::RenderComponent &renderComponent,
-					const components::TransformComponent &transformComponent
-				) const;
-                std::shared_ptr<renderer::NxVertexArray> m_fullscreenQuad;
-                std::shared_ptr<renderer::NxFramebuffer> m_maskFramebuffer;
+			    static void setupLights(renderer::DrawCommand &cmd, const components::LightContext& lightContext);
 	};
 }
