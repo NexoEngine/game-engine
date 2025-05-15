@@ -16,6 +16,7 @@
 #include "Types.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
+#include "components/Parent.hpp"
 
 namespace nexo::editor {
     int EditorScene::sampleEntityTexture(const float mx, const float my) const
@@ -62,27 +63,85 @@ namespace nexo::editor {
         }
     }
 
+    ecs::Entity EditorScene::findRootParent(ecs::Entity entityId) const
+    {
+        const auto &coord = Application::m_coordinator;
+        ecs::Entity currentEntity = entityId;
+
+        // Traverse up the hierarchy until we find an entity without a parent
+        while (coord->entityHasComponent<components::ParentComponent>(currentEntity)) {
+            const auto& parentComp = coord->getComponent<components::ParentComponent>(currentEntity);
+            currentEntity = parentComp.parent;
+        }
+
+        return currentEntity;
+    }
+
     void EditorScene::updateSelection(const int entityId, const bool isShiftPressed, const bool isCtrlPressed)
     {
         const auto &coord = Application::m_coordinator;
+
         const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
         if (!uuid)
             return;
 
-        // Determine selection type
-        const SelectionType selType = getSelectionType(entityId);
+        const bool selectDirectEntity = ImGui::IsKeyDown(ImGuiKey_V); // Hold V to select direct entity
         auto &selector = Selector::get();
 
-        // Handle different selection modes
-        if (isCtrlPressed)
-            selector.toggleSelection(uuid->get().uuid, entityId, selType);
-        else if (isShiftPressed)
-            selector.addToSelection(uuid->get().uuid, entityId, selType);
-        else
-            selector.selectEntity(uuid->get().uuid, entityId, selType);
+        if (selectDirectEntity) {
+            const SelectionType selType = getSelectionType(entityId);
+
+            if (isCtrlPressed)
+                selector.toggleSelection(uuid->get().uuid, entityId, selType);
+            else if (isShiftPressed)
+                selector.addToSelection(uuid->get().uuid, entityId, selType);
+            else
+                selector.selectEntity(uuid->get().uuid, entityId, selType);
+        } else {
+            // Find root parent
+            ecs::Entity rootEntity = findRootParent(entityId);
+
+            if (!isShiftPressed && !isCtrlPressed)
+                selector.clearSelection();
+
+            // Recursively select the entire hierarchy
+            selectEntityHierarchy(rootEntity, isCtrlPressed);
+        }
 
         updateWindowState();
         selector.setSelectedScene(m_sceneId);
+    }
+
+    void EditorScene::selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed)
+    {
+        const auto &coord = Application::m_coordinator;
+
+        const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
+        if (uuid) {
+            const SelectionType selType = getSelectionType(entityId);
+
+            auto &selector = Selector::get();
+            if (isCtrlPressed)
+                selector.toggleSelection(uuid->get().uuid, entityId, selType);
+            else
+                selector.addToSelection(uuid->get().uuid, entityId, selType);
+        }
+
+        // Check if entity has a ModelComponent and process its children
+        if (coord->entityHasComponent<components::ModelComponent>(entityId)) {
+            const auto& modelComp = coord->getComponent<components::ModelComponent>(entityId);
+            selectModelChildren(modelComp.children, isCtrlPressed);
+        }
+    }
+
+    void EditorScene::selectModelChildren(const std::vector<components::SubMeshIndex>& children, const bool isCtrlPressed)
+    {
+        for (const auto& subMesh : children) {
+            selectEntityHierarchy(subMesh.child, isCtrlPressed);
+
+            if (!subMesh.children.empty())
+                selectModelChildren(subMesh.children, isCtrlPressed);
+        }
     }
 
     void EditorScene::handleSelection()
