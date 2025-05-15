@@ -243,11 +243,40 @@ namespace nexo::assets {
 
             if (float opacity = 1.0f; material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
                 materialComponent->opacity = opacity;
+                if (opacity < 0.99f) { // Using 0.99 to account for floating point imprecision
+                    materialComponent->isOpaque = false;
+                }
+            }
+
+            int blendFunc = 0;
+            if (material->Get(AI_MATKEY_BLEND_FUNC, blendFunc) == AI_SUCCESS) {
+                materialComponent->isOpaque = false; // Any non-default blend mode suggests transparency
+            }
+
+            // Check 2: Transparency factor (inverse of opacity in some formats)
+            float transparencyFactor = 0.0f;
+            if (material->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparencyFactor) == AI_SUCCESS) {
+                if (transparencyFactor > 0.01f) { // Again with epsilon
+                    materialComponent->isOpaque = false;
+                }
+            }
+
+            aiString alphaMode;
+            //TODO: understand why we cant access it by default
+            #define AI_MATKEY_GLTF_ALPHAMODE "$mat.gltf.alphaMode"
+            #define AI_MATKEY_GLTF_ALPHACUTOFF "$mat.gltf.alphaCutoff"
+            if (material->Get(AI_MATKEY_GLTF_ALPHAMODE, 0, 0, alphaMode) == AI_SUCCESS) {
+                std::string mode = alphaMode.C_Str();
+                if (mode == "BLEND")
+                    materialComponent->isOpaque = false;
+                else if (mode == "MASK") {
+                    float alphaCutoff = 0.5f;
+                    material->Get(AI_MATKEY_GLTF_ALPHACUTOFF, 0, 0, alphaCutoff);
+                }
+                // OPAQUE mode - not transparent
             }
 
             // Load Textures
-
-
             auto loadTexture = [&](aiTextureType type) -> AssetRef<Texture> {
                 if (material->GetTextureCount(type) > 1) {
                     LOG(NEXO_WARN, "ModelImporter: Model {}: Material {} has more than one texture of type {}, only the first one will be used.", std::quoted(ctx.location.getFullLocation()), matIdx, type);
