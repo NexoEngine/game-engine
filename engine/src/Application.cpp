@@ -22,6 +22,8 @@
 #include "components/BillboardMesh.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/Model.hpp"
+#include "components/Parent.hpp"
 #include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
@@ -38,6 +40,7 @@
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
+#include "systems/TransformHierarchySystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -68,6 +71,7 @@ namespace nexo {
     void Application::registerEcsComponents() const
     {
         m_coordinator->registerComponent<components::TransformComponent>();
+        m_coordinator->registerComponent<components::LocalTransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
@@ -81,6 +85,8 @@ namespace nexo {
         m_coordinator->registerComponent<components::EditorCameraTag>();
         m_coordinator->registerComponent<components::SelectedTag>();
         m_coordinator->registerComponent<components::StaticMeshComponent>();
+        m_coordinator->registerComponent<components::ParentComponent>();
+        m_coordinator->registerComponent<components::ModelComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
         m_coordinator->registerComponent<components::MaterialComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
@@ -179,6 +185,7 @@ namespace nexo {
         m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
         m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
         m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
+        m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
 
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
@@ -279,6 +286,7 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
+			    m_transformHierarchySystem->update();
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
