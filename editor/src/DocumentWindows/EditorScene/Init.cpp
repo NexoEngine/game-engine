@@ -21,6 +21,8 @@
 #include "renderPasses/GridPass.hpp"
 #include "renderPasses/MaskPass.hpp"
 #include "renderPasses/OutlinePass.hpp"
+#include "assets/AssetImporter.hpp"
+#include "Path.hpp"
 
 namespace nexo::editor {
 
@@ -92,9 +94,18 @@ namespace nexo::editor {
         const ecs::Entity spotLight = LightFactory::createSpotLight({-2.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
         utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(spotLight);
-        const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
-                                                               {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
-        app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
+        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
+        //                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
+        // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
+
+        assets::AssetImporter importer;
+        std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
+        assets::ImporterFileInput fileInput{path};
+        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
+
+        const ecs::Entity gunModel = EntityFactory3D::createModel(assetRef9mn, {0.0f, 0.25f, 0.0f}, {0.01f, 0.01f, 0.01f},
+                                                               {0.0f, 0.0f, 0.0f});
+        app.getSceneManager().getScene(m_sceneId).addEntity(gunModel);
     }
 
     void EditorScene::setupWindow()
