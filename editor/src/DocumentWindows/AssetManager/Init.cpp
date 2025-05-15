@@ -26,10 +26,10 @@ namespace nexo::editor {
         catalog.registerAsset(assets::AssetLocation("my_package::My_Model@Random/"), std::move(asset));
 
         {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
+            // assets::AssetImporter importer;
+            // std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
+            // assets::ImporterFileInput fileInput{path};
+            // auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
         }
         {
             assets::AssetImporter importer;
