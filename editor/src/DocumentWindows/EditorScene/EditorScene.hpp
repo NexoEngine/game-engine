@@ -289,6 +289,9 @@ namespace nexo::editor {
 
             void handleSelection();
             int sampleEntityTexture(float mx, float my) const;
+            ecs::Entity findRootParent(ecs::Entity entityId) const;
+            void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
+            void selectModelChildren(const std::vector<components::SubMeshIndex>& children, const bool isCtrlPressed);
             void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
             void updateWindowState();
 
