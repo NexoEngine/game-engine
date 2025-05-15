@@ -55,6 +55,7 @@ set(COMMON_SOURCES
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
         engine/src/systems/lights/SpotLightsSystem.cpp
+        engine/src/systems/TransformHierarchySystem.cpp
         engine/src/renderPasses/ForwardPass.cpp
         engine/src/renderPasses/GridPass.cpp
         engine/src/renderPasses/MaskPass.cpp
