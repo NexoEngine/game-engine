@@ -33,11 +33,31 @@ namespace nexo::scene {
 	}
 
 	void Scene::addEntity(const ecs::Entity entity)
-	{
-		const components::SceneTag tag{m_id, true, true};
-		m_coordinator->addComponent<components::SceneTag>(entity, tag);
-		m_entities.insert(entity);
-	}
+    {
+        const components::SceneTag tag{m_id, true, true};
+        m_coordinator->addComponent<components::SceneTag>(entity, tag);
+        m_entities.insert(entity);
+
+        auto modelComponent = m_coordinator->tryGetComponent<components::ModelComponent>(entity);
+        if (modelComponent)
+            addModelChildEntities(modelComponent->get());
+    }
+
+    void Scene::addModelChildEntities(const components::ModelComponent& modelComponent)
+    {
+        for (const auto& childIndex : modelComponent.children) {
+            const components::SceneTag childTag{m_id, true, true};
+            m_coordinator->addComponent<components::SceneTag>(childIndex.child, childTag);
+            m_entities.insert(childIndex.child);
+
+            // Recursively add any nested children
+            if (!childIndex.children.empty()) {
+                components::ModelComponent tempModelComponent;
+                tempModelComponent.children = childIndex.children;
+                addModelChildEntities(tempModelComponent);
+            }
+        }
+    }
 
 	void Scene::removeEntity(const ecs::Entity entity)
 	{
