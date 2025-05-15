@@ -282,8 +282,10 @@ namespace nexo::system {
 		const auto *partition = scenePartition.getPartition(sceneRendered);
 		auto &app = Application::getInstance();
         const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
-		if (!partition)
+		if (!partition) {
             LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+            return;
+		}
         Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
 		const auto transformSpan = get<components::TransformComponent>();
