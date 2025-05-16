@@ -110,7 +110,7 @@ jobs:
             libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
             libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
             libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
-            libegl1-mesa-dev
+            libegl1-mesa-dev mono-complete
           version: 1.0
           execute_install_scripts: true
 
@@ -131,6 +131,7 @@ jobs:
         uses: lukka/run-vcpkg@v11
 
       - name: Add NuGet sources
+        if: ${{ matrix.os == 'windows-latest' }}
         shell: pwsh
         run: |
           .$(${{ env.VCPKG_EXE }} fetch nuget) `
@@ -142,6 +143,21 @@ jobs:
             -Password "${{ secrets.GITHUB_TOKEN }}"
           .$(${{ env.VCPKG_EXE }} fetch nuget) `
             setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
+
+      - name: Add NuGet sources
+        if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
+        run: |
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            sources add \
+            -Source "${{ env.FEED_URL }}" \
+            -StorePasswordInClearText \
+            -Name GitHubPackages \
+            -UserName "${{ env.USERNAME }}" \
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
             -Source "${{ env.FEED_URL }}"
 
       - name: CMake Workflow with preset 'build-coverage' for tests
