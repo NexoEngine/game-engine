@@ -38,6 +38,7 @@
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
+#include "scripting/native/Scripting.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
@@ -252,6 +253,19 @@ namespace nexo {
         renderer::NxRenderer3D::get().init();
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
+
+        nexo::scripting::HostHandler::Parameters params;
+        params.errorCallback = [](const nexo::scripting::HostString& message) {
+            LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
+        };
+
+
+        nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
+
+        // Initialize the host
+        if (host.initialize(params) != nexo::scripting::HostHandler::SUCCESS) {
+            LOG(NEXO_ERROR, "Failed to initialize host");
+        }
 
         LOG(NEXO_DEV, "Application initialized");
     }
