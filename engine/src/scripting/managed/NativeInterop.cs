@@ -67,16 +67,18 @@ namespace Nexo
         /// <param name="structPtr">Pointer to the struct</param>
         /// <param name="structSize">Size of the struct</param>
         [UnmanagedCallersOnly]
-        public static void Initialize(IntPtr structPtr, Int32 structSize)
+        public static Int32 Initialize(IntPtr structPtr, Int32 structSize)
         {
             if (structSize != Marshal.SizeOf<NativeApiCallbacks>())
             {
-                throw new ArgumentException($"Struct size mismatch between C++ and C# for {nameof(NativeApiCallbacks)}, expected {Marshal.SizeOf<NativeApiCallbacks>()}, got {structSize}");
+                Logger.Log(LogLevel.Fatal, $"Struct size mismatch between C++ and C# for {nameof(NativeApiCallbacks)}, expected {Marshal.SizeOf<NativeApiCallbacks>()}, got {structSize}");
+                return 1;
             }
 
             // Marshal the struct from the IntPtr to the managed struct
             s_callbacks = Marshal.PtrToStructure<NativeApiCallbacks>(structPtr);
             Logger.Log(LogLevel.Info, "Native API initialized.");
+            return 0;
         }
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling NxLog: {ex.Message}");
+                Console.WriteLine($"Fallback to WriteLine: Log Level: {level}, Message: {message}");
             }
         }
         
