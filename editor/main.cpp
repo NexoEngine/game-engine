@@ -45,24 +45,13 @@ try {
 
     editor.init();
 
-    /*if (int rc = nexo::scripting::load_hostfxr() != 0) {
-        LOG(NEXO_ERROR, "Failed to load hostfxr error code {}", rc);
-    }*/
-    nexo::scripting::HostHandler::Parameters params;
-    params.errorCallback = [](const nexo::scripting::HostString& message) {
-        LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
-    };
+    auto &scriptHost = nexo::scripting::HostHandler::getInstance();
 
-    if (nexo::scripting::runScriptExample(params) == EXIT_FAILURE) {
+    if (scriptHost.runScriptExample() == EXIT_FAILURE) {
         LOG(NEXO_ERROR, "Error in runScriptExample");
     } else {
         LOG(NEXO_INFO, "Successfully ran runScriptExample");
     }
-
-    nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
-
-    typedef void (CORECLR_DELEGATE_CALLTYPE *update_fn)(nexo::scripting::Double deltaTime);
-    update_fn updateScript = host.getManagedFptr<update_fn>(STR("Nexo.NativeInterop, Nexo"), STR("Update"), UNMANAGEDCALLERSONLY_METHOD);
 
     auto clock = std::chrono::high_resolution_clock::now();
     auto scriptDetlaStart = clock;
@@ -77,8 +66,7 @@ try {
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
         scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDetlaStart;
-        if (updateScript)
-            updateScript(scriptDeltaElapsed.count() / 1000.0);
+        scriptHost.update(scriptDeltaElapsed.count() / 1000.0);
         scriptDetlaStart = std::chrono::high_resolution_clock::now();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
