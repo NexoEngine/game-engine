@@ -23,6 +23,7 @@
 #include <boost/dll.hpp>
 
 #include "HostString.hpp"
+#include "ManagedApi.hpp"
 #include "Path.hpp"
 
 #ifdef WIN32
@@ -101,6 +102,10 @@ namespace nexo::scripting {
                 ASSEMBLY_NOT_FOUND,
                 LOAD_ASSEMBLY_ERROR,
 
+                INIT_MANAGED_API_ERROR,
+
+                INIT_CALLBACKS_ERROR,
+
             };
 
 
@@ -118,27 +123,19 @@ namespace nexo::scripting {
 
             Status initialize(Parameters parameters);
 
-            template <typename T>
-            T getManagedFptr(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName)
-            {
-                if (m_status != SUCCESS) {
-                    m_params.errorCallback("getManagedFptr: HostHandler not initialized");
-                    return nullptr;
-                }
+            Status update(Double deltaTime);
 
-                void *fptr = nullptr;
-                unsigned int rc = m_delegates.load_assembly_and_get_function_pointer(
-                    m_assembly_path.c_str(), typeName, methodName, delegateTypeName, nullptr, &fptr);
-                if (rc != 0 || fptr == nullptr) {
-                    m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
-                        typeName ? HostString(typeName).to_utf8() : "",
-                        methodName ? HostString(methodName).to_utf8() : "",
-                        rc)
-                    );
-                    return nullptr;
-                }
-                return reinterpret_cast<T>(fptr);
+            inline void *getManagedFptrVoid(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName) const;
+
+            // activate if you want to use the function pointer directly
+            template <typename T>
+            inline T getManagedFptr(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName)
+            {
+                return reinterpret_cast<T>(getManagedFptrVoid(typeName, methodName, delegateTypeName));
             }
+
+
+            int runScriptExample();
 
         protected:
 
@@ -146,6 +143,9 @@ namespace nexo::scripting {
             Status initRuntime();
             Status getRuntimeDelegates();
             Status loadManagedAssembly();
+            Status initManagedApi();
+            Status checkManagedApi();
+            Status initCallbacks();
 
 
 
@@ -156,6 +156,7 @@ namespace nexo::scripting {
 
             HostfxrFn m_hostfxr_fn = {};
             CoreclrDelegate m_delegates = {};
+            ManagedApi m_managedApi = {};
 
             std::shared_ptr<boost::dll::shared_library> m_dll_handle = nullptr;
             hostfxr_handle m_host_ctx = nullptr;
