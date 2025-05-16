@@ -15,10 +15,14 @@ jobs:
     name: Build, test and Package
     # env and permissions are setup to add dependencies from vcpkg to the repo's dependency graph
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VCPKG_FEATURE_FLAGS: dependencygraph
+      USERNAME: NexoEngine
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
     permissions:
       contents: write
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -125,6 +129,36 @@ jobs:
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
+
+      - name: Add NuGet sources
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          .$(${{ env.VCPKG_EXE }} fetch nuget) `
+            sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          .$(${{ env.VCPKG_EXE }} fetch nuget) `
+            setapikey "${{ secrets.GITHUB_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
+
+      - name: Add NuGet sources
+        if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
+        run: |
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            sources add \
+            -Source "${{ env.FEED_URL }}" \
+            -StorePasswordInClearText \
+            -Name GitHubPackages \
+            -UserName "${{ env.USERNAME }}" \
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -Source "${{ env.FEED_URL }}"
 
       - name: CMake Workflow with preset 'build-coverage' for tests
         uses: lukka/run-cmake@v10
