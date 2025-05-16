@@ -227,46 +227,45 @@ namespace nexo::scripting {
     try {
         m_managedApi.NativeInterop = {
             .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, Int32)>(
-                STR("Nexo.NativeInterop, Nexo"),
-                STR("Initialize"),
+                "Nexo.NativeInterop, Nexo",
+                "Initialize",
                 UNMANAGEDCALLERSONLY
             ),
             .DemonstrateNativeCalls = getManagedFptr<void(*)()>(
-                STR("Nexo.NativeInterop, Nexo"),
-                STR("DemonstrateNativeCalls"),
+                "Nexo.NativeInterop, Nexo",
+                "DemonstrateNativeCalls",
                 UNMANAGEDCALLERSONLY
             ),
             .Update = getManagedFptr<void(*)(Double)>(
-                STR("Nexo.NativeInterop, Nexo"),
-                STR("Update"),
+                "Nexo.NativeInterop, Nexo",
+                "Update",
                 UNMANAGEDCALLERSONLY
             )
         };
 
         m_managedApi.Lib = {
             .CustomEntryPoint = getManagedFptr<void(*)(lib_args)>(
-                STR("Nexo.Lib, Nexo"),
-                STR("CustomEntryPoint"),
-                STR("Nexo.Lib+CustomEntryPointDelegate, Nexo")
+                "Nexo.Lib, Nexo",
+                "CustomEntryPoint",
+                "Nexo.Lib+CustomEntryPointDelegate, Nexo"
             ),
             .CustomEntryPointUnmanagedCallersOnly = getManagedFptr<void(*)(lib_args)>(
-                STR("Nexo.Lib, Nexo"),
-                STR("CustomEntryPointUnmanagedCallersOnly"),
+                "Nexo.Lib, Nexo",
+                "CustomEntryPointUnmanagedCallersOnly",
                 UNMANAGEDCALLERSONLY
             ),
             .Hello = getManagedFptr<void(*)(lib_args*, UInt32)>(
-                STR("Nexo.Lib, Nexo"),
-                STR("Hello"),
-                nullptr
+                "Nexo.Lib, Nexo",
+                "Hello"
             ),
             .Add = getManagedFptr<Int32(*)(Int32, Int32)>(
-                STR("Nexo.Lib, Nexo"),
-                STR("Add"),
+                "Nexo.Lib, Nexo",
+                "Add",
                 UNMANAGEDCALLERSONLY
             ),
             .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
-                STR("Nexo.Lib, Nexo"),
-                STR("AddToPtr"),
+                "Nexo.Lib, Nexo",
+                "AddToPtr",
                 UNMANAGEDCALLERSONLY
             )
         };
