@@ -16,7 +16,6 @@ jobs:
     # env and permissions are setup to add dependencies from vcpkg to the repo's dependency graph
     env:
       VCPKG_FEATURE_FLAGS: dependencygraph
-      USERNAME: NexoEngine
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
       FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
@@ -133,6 +132,8 @@ jobs:
       - name: Add NuGet sources
         if: ${{ matrix.os == 'windows-latest' }}
         shell: pwsh
+        env:
+            USERNAME: NexoEngine
         run: |
           .$(${{ env.VCPKG_EXE }} fetch nuget) `
             sources add `
@@ -148,6 +149,8 @@ jobs:
       - name: Add NuGet sources
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
+        env:
+            USERNAME: NexoEngine
         run: |
           mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
             sources add \
@@ -170,6 +173,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
           CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
           CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          USERNAME: NexoEngine
 
       - name: Install Mesa for Windows
         shell: cmd

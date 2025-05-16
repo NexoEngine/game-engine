@@ -6,7 +6,6 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }}/${{ matrix.compiler }}) on ${{ matrix.os }}
     env:
-      USERNAME: NexoEngine
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
       FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
@@ -89,6 +88,8 @@ jobs:
 
       - name: Add NuGet sources
         shell: bash
+        env:
+          USERNAME: NexoEngine
         run: |
           mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
             sources add \
@@ -104,6 +105,8 @@ jobs:
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
+        env:
+          USERNAME: NexoEngine
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
