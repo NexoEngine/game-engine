@@ -5,6 +5,10 @@ on: [push]
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }}/${{ matrix.compiler }}) on ${{ matrix.os }}
+    env:
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
     runs-on: ${{ matrix.os }}
     permissions:
       # required for all workflows
@@ -57,7 +61,7 @@ jobs:
             libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
             libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
             libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
-            libegl1-mesa-dev
+            libegl1-mesa-dev mono-complete
           version: 1.0
           execute_install_scripts: true
 
@@ -82,9 +86,27 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
 
+      - name: Add NuGet sources
+        shell: bash
+        env:
+          USERNAME: NexoEngine
+        run: |
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            sources add \
+            -Source "${{ env.FEED_URL }}" \
+            -StorePasswordInClearText \
+            -Name GitHubPackages \
+            -UserName "${{ env.USERNAME }}" \
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -Source "${{ env.FEED_URL }}"
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
+        env:
+          USERNAME: NexoEngine
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
