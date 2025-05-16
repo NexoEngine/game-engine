@@ -134,6 +134,18 @@ namespace nexo::scripting {
                 return reinterpret_cast<T>(getManagedFptrVoid(typeName, methodName, delegateTypeName));
             }
 
+            enum ManagedFptrFlags {
+                NONE = 0,
+                UNMANAGEDCALLERSONLY = 1 << 0,
+            };
+
+            template <typename T>
+            inline T getManagedFptr(const char_t *typeName, const char_t *methodName, const ManagedFptrFlags flags = NONE)
+            {
+                const char_t *delegateTypeName = flags & UNMANAGEDCALLERSONLY ? UNMANAGEDCALLERSONLY_METHOD : nullptr;
+                return reinterpret_cast<T>(getManagedFptrVoid(typeName, methodName, delegateTypeName));
+            }
+
 
             int runScriptExample();
 

@@ -229,17 +229,17 @@ namespace nexo::scripting {
             .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, Int32)>(
                 STR("Nexo.NativeInterop, Nexo"),
                 STR("Initialize"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             ),
             .DemonstrateNativeCalls = getManagedFptr<void(*)()>(
                 STR("Nexo.NativeInterop, Nexo"),
                 STR("DemonstrateNativeCalls"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             ),
             .Update = getManagedFptr<void(*)(Double)>(
                 STR("Nexo.NativeInterop, Nexo"),
                 STR("Update"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             )
         };
 
@@ -252,7 +252,7 @@ namespace nexo::scripting {
             .CustomEntryPointUnmanagedCallersOnly = getManagedFptr<void(*)(lib_args)>(
                 STR("Nexo.Lib, Nexo"),
                 STR("CustomEntryPointUnmanagedCallersOnly"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             ),
             .Hello = getManagedFptr<void(*)(lib_args*, UInt32)>(
                 STR("Nexo.Lib, Nexo"),
@@ -262,12 +262,12 @@ namespace nexo::scripting {
             .Add = getManagedFptr<Int32(*)(Int32, Int32)>(
                 STR("Nexo.Lib, Nexo"),
                 STR("Add"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             ),
             .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
                 STR("Nexo.Lib, Nexo"),
                 STR("AddToPtr"),
-                UNMANAGEDCALLERSONLY_METHOD
+                UNMANAGEDCALLERSONLY
             )
         };
 
