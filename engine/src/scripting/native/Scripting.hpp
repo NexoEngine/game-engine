@@ -129,9 +129,9 @@ namespace nexo::scripting {
 
             // activate if you want to use the function pointer directly
             template <typename T>
-            inline T getManagedFptr(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName)
+            inline T getManagedFptr(const HostString& typeName, const HostString& methodName, const HostString& delegateTypeName)
             {
-                return reinterpret_cast<T>(getManagedFptrVoid(typeName, methodName, delegateTypeName));
+                return reinterpret_cast<T>(getManagedFptrVoid(typeName.c_str(), methodName.c_str(), delegateTypeName.c_str()));
             }
 
             enum ManagedFptrFlags {
@@ -140,10 +140,10 @@ namespace nexo::scripting {
             };
 
             template <typename T>
-            inline T getManagedFptr(const char_t *typeName, const char_t *methodName, const ManagedFptrFlags flags = NONE)
+            inline T getManagedFptr(const HostString& typeName, const HostString& methodName, const ManagedFptrFlags flags = NONE)
             {
                 const char_t *delegateTypeName = flags & UNMANAGEDCALLERSONLY ? UNMANAGEDCALLERSONLY_METHOD : nullptr;
-                return reinterpret_cast<T>(getManagedFptrVoid(typeName, methodName, delegateTypeName));
+                return reinterpret_cast<T>(getManagedFptrVoid(typeName.c_str(), methodName.c_str(), delegateTypeName));
             }
 
 
