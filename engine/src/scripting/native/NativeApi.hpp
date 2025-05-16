@@ -56,6 +56,8 @@ namespace nexo::scripting {
         // Constructor explicitly accepting function pointers
         explicit ApiCallback(Type f) : func(f) {}
 
+        explicit ApiCallback(nullptr_t) = delete;
+
         // Delete the default constructor to enforce initialization
         ApiCallback() = delete;
 

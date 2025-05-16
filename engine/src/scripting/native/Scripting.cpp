@@ -25,6 +25,7 @@
 #include "Scripting.hpp"
 #include "HostString.hpp"
 #include "Logger.hpp"
+#include "ManagedApi.hpp"
 #include "NativeApi.hpp"
 #include "ManagedTypedef.hpp"
 #include "core/event/SignalEvent.hpp"
@@ -67,7 +68,41 @@ namespace nexo::scripting {
         // Take over signal handling because the CoreCLR library overrides them??
         event::SignalHandler::getInstance()->initSignals();
 
+        if (initManagedApi() != SUCCESS)
+            return m_status;
+
+        if (initCallbacks() != SUCCESS)
+            return m_status;
+
         return m_status = SUCCESS;
+    }
+
+    HostHandler::Status HostHandler::update(Double deltaTime)
+    {
+        m_managedApi.NativeInterop.Update(deltaTime);
+        return m_status;
+    }
+
+    void *HostHandler::getManagedFptrVoid(const char_t* typeName, const char_t* methodName,
+        const char_t* delegateTypeName) const
+    {
+        if (m_status != SUCCESS) {
+            m_params.errorCallback("getManagedFptr: HostHandler not initialized");
+            return nullptr;
+        }
+
+        void *fptr = nullptr;
+        unsigned int rc = m_delegates.load_assembly_and_get_function_pointer(
+            m_assembly_path.c_str(), typeName, methodName, delegateTypeName, nullptr, &fptr);
+        if (rc != 0 || fptr == nullptr) {
+            m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
+                typeName ? HostString(typeName).to_utf8() : "",
+                methodName ? HostString(methodName).to_utf8() : "",
+                rc)
+            );
+            return nullptr;
+        }
+        return fptr;
     }
 
     void HostHandler::defaultErrorCallback(const HostString& message)
@@ -187,48 +222,98 @@ namespace nexo::scripting {
         return m_status = SUCCESS;
     }
 
-    int runScriptExample(const HostHandler::Parameters& params)
-    {
-        // Get the instance of the HostHandler singleton
-        HostHandler& host = HostHandler::getInstance();
 
-        // Initialize the host
-        HostHandler::Status status = host.initialize(params);
-        if (status != HostHandler::SUCCESS) {
-            return EXIT_FAILURE;
-        }
-
-        // Initialize callbacks
-        typedef void (CORECLR_DELEGATE_CALLTYPE *initialize_callbacks_fn)(NativeApiCallbacks *callbacks, Int32 callbackSize);
-        auto initializeCallbacks = host.getManagedFptr<initialize_callbacks_fn>(
-            STR("Nexo.NativeInterop, Nexo"),
-            STR("Initialize"),
-            UNMANAGEDCALLERSONLY_METHOD
-        );
-        if (initializeCallbacks == nullptr) {
-            return EXIT_FAILURE;
-        }
-        initializeCallbacks(&nativeApiCallbacks, sizeof(nativeApiCallbacks));
-
-
-        // Get function pointers to managed methods
-        // Regular method
-        component_entry_point_fn hello = host.getManagedFptr<component_entry_point_fn>(
-            STR("Nexo.Lib, Nexo"),
-            STR("Hello"),
-            nullptr
-        );
-
-        if (hello == nullptr) {
-            return EXIT_FAILURE;
-        }
-
-        // Run managed code
-        struct lib_args {
-            const char_t* message;
-            int number;
+    HostHandler::Status HostHandler::initManagedApi()
+    try {
+        m_managedApi.NativeInterop = {
+            .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, Int32)>(
+                STR("Nexo.NativeInterop, Nexo"),
+                STR("Initialize"),
+                UNMANAGEDCALLERSONLY_METHOD
+            ),
+            .DemonstrateNativeCalls = getManagedFptr<void(*)()>(
+                STR("Nexo.NativeInterop, Nexo"),
+                STR("DemonstrateNativeCalls"),
+                UNMANAGEDCALLERSONLY_METHOD
+            ),
+            .Update = getManagedFptr<void(*)(Double)>(
+                STR("Nexo.NativeInterop, Nexo"),
+                STR("Update"),
+                UNMANAGEDCALLERSONLY_METHOD
+            )
         };
 
+        m_managedApi.Lib = {
+            .CustomEntryPoint = getManagedFptr<void(*)(lib_args)>(
+                STR("Nexo.Lib, Nexo"),
+                STR("CustomEntryPoint"),
+                STR("Nexo.Lib+CustomEntryPointDelegate, Nexo")
+            ),
+            .CustomEntryPointUnmanagedCallersOnly = getManagedFptr<void(*)(lib_args)>(
+                STR("Nexo.Lib, Nexo"),
+                STR("CustomEntryPointUnmanagedCallersOnly"),
+                UNMANAGEDCALLERSONLY_METHOD
+            ),
+            .Hello = getManagedFptr<void(*)(lib_args*, UInt32)>(
+                STR("Nexo.Lib, Nexo"),
+                STR("Hello"),
+                nullptr
+            ),
+            .Add = getManagedFptr<Int32(*)(Int32, Int32)>(
+                STR("Nexo.Lib, Nexo"),
+                STR("Add"),
+                UNMANAGEDCALLERSONLY_METHOD
+            ),
+            .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
+                STR("Nexo.Lib, Nexo"),
+                STR("AddToPtr"),
+                UNMANAGEDCALLERSONLY_METHOD
+            )
+        };
+
+        return m_status = checkManagedApi();
+
+    } catch (const std::exception& e) {
+        m_params.errorCallback(std::format("Failed to initialize managed API: {}", e.what()));
+        return m_status = INIT_MANAGED_API_ERROR;
+    }
+
+    HostHandler::Status HostHandler::checkManagedApi()
+    {
+        // Assert that the ManagedApiFn struct is properly defined
+        static_assert(sizeof(ManagedApiFn<void()>) == sizeof(nullptr), "ManagedApiFn: struct size is not a pointer size");
+        // Assert that the ManagedApi struct is properly defined (check that every field is void *)
+        if constexpr (sizeof(ManagedApi) % sizeof(nullptr) != 0) {
+            m_params.errorCallback("ManagedApi: struct size is not a multiple of pointer size");
+        }
+
+        // Check all fields of ManagedApi for nullptr
+        constexpr size_t nbFields = sizeof(ManagedApi) / sizeof(void*);
+
+        for (size_t i = 0; i < nbFields; ++i) {
+            void **fieldPtr = reinterpret_cast<void**>(&m_managedApi) + i;
+            if (*fieldPtr == nullptr) {
+                m_params.errorCallback(std::format("ManagedApi: ManagedApiFn function pointer number {} is null in the struct", i));
+                return m_status = INIT_MANAGED_API_ERROR;
+            }
+        }
+
+        return m_status = SUCCESS;
+    }
+
+    HostHandler::Status HostHandler::initCallbacks()
+    {
+        // Initialize callbacks
+        if (m_managedApi.NativeInterop.Initialize(&nativeApiCallbacks, sizeof(nativeApiCallbacks))) {
+            m_params.errorCallback("Failed to initialize native API callbacks");
+            return m_status = INIT_CALLBACKS_ERROR;
+        }
+        return m_status = SUCCESS;
+    }
+
+    int HostHandler::runScriptExample()
+    {
+        // Run managed code
         // Call the Hello method multiple times
         for (int i = 0; i < 3; ++i) {
             lib_args args {
@@ -236,91 +321,34 @@ namespace nexo::scripting {
                 i
             };
 
-            hello(&args, sizeof(args));
+            m_managedApi.Lib.Hello(&args, sizeof(args));
         }
 
-        // Get function pointer for UnmanagedCallersOnly method
-        typedef void (CORECLR_DELEGATE_CALLTYPE *custom_entry_point_fn)(lib_args args);
-        custom_entry_point_fn custom_unmanaged = host.getManagedFptr<custom_entry_point_fn>(
-            STR("Nexo.Lib, Nexo"),
-            STR("CustomEntryPointUnmanagedCallersOnly"),
-            UNMANAGEDCALLERSONLY_METHOD
-        );
-
-        if (custom_unmanaged == nullptr) {
-            return EXIT_FAILURE;
-        }
 
         // Call UnmanagedCallersOnly method
         lib_args args_unmanaged {
             STR("from host!"),
             -1
         };
-        custom_unmanaged(args_unmanaged);
+        m_managedApi.Lib.CustomEntryPointUnmanagedCallersOnly(args_unmanaged);
 
-        // Get function pointer for custom delegate type method
-        custom_entry_point_fn custom = host.getManagedFptr<custom_entry_point_fn>(
-            STR("Nexo.Lib, Nexo"),
-            STR("CustomEntryPoint"),
-            STR("Nexo.Lib+CustomEntryPointDelegate, Nexo")
-        );
-
-        if (custom == nullptr) {
-            return EXIT_FAILURE;
-        }
 
         // Call custom delegate type method
-        custom(args_unmanaged);
+        m_managedApi.Lib.CustomEntryPoint(args_unmanaged);
 
-        typedef int32_t (CORECLR_DELEGATE_CALLTYPE *add_fn)(int32_t a, int32_t b);
-        add_fn add = host.getManagedFptr<add_fn>(
-            STR("Nexo.Lib, Nexo"),
-            STR("Add"),
-            UNMANAGEDCALLERSONLY_METHOD
-        );
-        if (add == nullptr) {
-            return EXIT_FAILURE;
-        }
-
-        std::cout << "Testing Add(30, -10) = " << add(30, -10) << std::endl;
-
-        typedef int32_t (CORECLR_DELEGATE_CALLTYPE *add_to_ptr_fn)(int32_t a, int32_t b, int32_t *result);
-        add_to_ptr_fn addToPtr = host.getManagedFptr<add_to_ptr_fn>(
-            STR("Nexo.Lib, Nexo"),
-            STR("AddToPtr"),
-            UNMANAGEDCALLERSONLY_METHOD
-        );
-        if (addToPtr == nullptr) {
-            return EXIT_FAILURE;
-        }
+        std::cout << "Testing Add(30, -10) = " << m_managedApi.Lib.Add(30, -10) << std::endl;
 
         int32_t result = 0;
-        if (addToPtr(1000, 234, &result)) {
+        if (m_managedApi.Lib.AddToPtr(1000, 234, &result)) {
             std::cout << "addToPtr returned an error" << std::endl;
         } else {
             std::cout << "Testing AddToPtr(1000, 234, ptr), *ptr = " << result << std::endl;
         }
 
         // Demonstrate C# calling C++ (managed to native)
-        // First, register our native functions
-        //registerNativeFunctions();
-
-        // Get function pointer for DemonstrateNativeCalls method
-        typedef void (CORECLR_DELEGATE_CALLTYPE *demonstrate_native_calls_fn)();
-        demonstrate_native_calls_fn demonstrateNativeCalls = host.getManagedFptr<demonstrate_native_calls_fn>(
-            STR("Nexo.NativeInterop, Nexo"),
-            STR("DemonstrateNativeCalls"),
-            UNMANAGEDCALLERSONLY_METHOD
-        );
-
-        if (demonstrateNativeCalls == nullptr) {
-            std::cout << "Failed to get function pointer for DemonstrateNativeCalls" << std::endl;
-            return EXIT_FAILURE;
-        }
-
         // Call the method to demonstrate calling C++ from C#
         std::cout << "\nDemonstrating calling C++ functions from C#:" << std::endl;
-        demonstrateNativeCalls();
+        m_managedApi.NativeInterop.DemonstrateNativeCalls();
 
         return EXIT_SUCCESS;
     }

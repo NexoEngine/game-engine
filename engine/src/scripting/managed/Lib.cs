@@ -19,7 +19,7 @@ namespace Nexo
 {
     public static class Lib
     {
-        private static int _sCallCount = 1;
+        private static Int32 _sCallCount = 1;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct LibArgs
@@ -42,13 +42,13 @@ namespace Nexo
         }
 
         [UnmanagedCallersOnly]
-        public static int Add(int a, int b)
+        public static Int32 Add(Int32 a, Int32 b)
         {
             return a + b;
         }
         
         [UnmanagedCallersOnly]
-        public static int AddToPtr(int a, int b, IntPtr result)
+        public static Int32 AddToPtr(Int32 a, Int32 b, IntPtr result)
         {
             if (result == IntPtr.Zero)
             {
@@ -60,7 +60,7 @@ namespace Nexo
         }
 
         [UnmanagedCallersOnly]
-        public static int AddNexoDllDirectory(IntPtr pPathString)
+        public static Int32 AddNexoDllDirectory(IntPtr pPathString)
         {
             if (pPathString == IntPtr.Zero)
             {
