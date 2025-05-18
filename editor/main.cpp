@@ -84,4 +84,10 @@ try {
 } catch (const nexo::Exception &e) {
     LOG_EXCEPTION(e);
     return 1;
+} catch (const std::exception &e) {
+    LOG(NEXO_ERROR, "Unhandled exception: {}", e.what());
+    return 1;
+} catch (...) {
+    LOG(NEXO_ERROR, "Unhandled unknown exception");
+    return 1;
 }
