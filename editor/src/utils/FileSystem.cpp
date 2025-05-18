@@ -12,7 +12,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef WIN32
+    #define NOMINMAX
+    #include <windows.h>
+#endif
+
 #include "FileSystem.hpp"
+
+
 
 namespace nexo::editor::utils {
     void openFolder(const std::string &folderPath)
@@ -21,7 +28,7 @@ namespace nexo::editor::utils {
             ShellExecuteA(nullptr, "open", folderPath.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
         #else
             std::string command = "xdg-open " + folderPath;
-            std::system(command.c_str());
+            std::system(command.c_str()); // TODO: replace this system with safer commands, this is vulnerable to user injections
         #endif
     }
 }

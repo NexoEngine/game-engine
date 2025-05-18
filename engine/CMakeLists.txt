@@ -61,6 +61,9 @@ set(COMMON_SOURCES
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
         engine/src/assets/Assets/Texture/TextureImporter.cpp
+        engine/src/scripting/native/Scripting.cpp
+        engine/src/scripting/native/HostString.cpp
+        engine/src/scripting/native/NativeApi.cpp
 )
 
 # Add API-specific sources
@@ -98,7 +101,7 @@ target_include_directories(nexoRenderer PUBLIC
 
 # loguru
 find_package(loguru CONFIG REQUIRED)
-target_link_libraries(nexoEditor PRIVATE loguru::loguru)
+target_link_libraries(nexoRenderer PRIVATE loguru::loguru)
 
 # Stb
 find_package(Stb REQUIRED)
@@ -113,6 +116,14 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 
+###########################################
+# Scripting
+###########################################
+
+# nethost
+find_package(unofficial-nethost CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
+
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)
@@ -120,3 +131,6 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
 endif()
+
+target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)
+set_target_properties(nexoRenderer PROPERTIES ENABLE_EXPORTS ON)
