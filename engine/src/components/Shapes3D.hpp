@@ -107,6 +107,19 @@ namespace nexo::components {
         }
     };
 
+    struct Sphere final : Shape3D {
+        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        {
+            const auto renderer3D = context->renderer3D;
+            //TODO: Find a way to handle materials for sphere
+            renderer3D.drawSphere(transf.pos, transf.size, material.albedoColor, entityID);
+        }
+
+        [[nodiscard]] std::shared_ptr<Shape3D> clone() const override {
+            return std::make_shared<Sphere>(*this);
+        }
+    };
+
     struct Mesh {
         std::string name;
         std::vector<renderer::NxVertex> vertices;
@@ -122,7 +135,7 @@ namespace nexo::components {
         void draw(renderer::NxRenderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
         {
             const glm::mat4 localTransform = parentTransform * transform;
-            for (const auto &mesh: meshes)
+            for (const auto &[name, vertices, indices, material]: meshes)
             {
                 //TODO: Implement a way to pass the transform directly to the shader
                 std::vector<renderer::NxVertex> transformedVertices = mesh.vertices;
