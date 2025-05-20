@@ -157,6 +157,34 @@ namespace nexo
         */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                           const components::Material& material);
+
+
+        /**
+         * @brief Creates a sphere entity with a specified material.
+         *
+         * Constructs a sphere at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the sphere.
+         * @param size The dimensions (width, height, depth) of the sphere.
+         * @param rotation The rotation of the sphere (in Euler angles).
+         * @param color The color of the sphere's material (default is red).
+         * @return ecs::Entity The newly created sphere entity.
+         */
+        static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+        /**
+        * @brief Creates a sphere entity with a specified material.
+        *
+        * Constructs a sphere at the given position, with the specified size, rotation, and material.
+        *
+        * @param pos The position of the sphere.
+        * @param size The dimensions (width, height, depth) of the sphere.
+        * @param rotation The rotation of the sphere (in Euler angles).
+        * @param material The material to apply to the sphere.
+        * @return ecs::Entity The newly created sphere entity.
+        */
+        static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                          const components::Material& material);
     };
 }
 
