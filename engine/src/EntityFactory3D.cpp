@@ -172,7 +172,7 @@ namespace nexo {
         return newPyramid;
     }
 
-        ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
 
@@ -209,6 +209,45 @@ namespace nexo {
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newCylinder, uuid);
         return newCylinder;
+    }
+
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    {
+        components::TransformComponent transform{};
+
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(rotation);
+        components::Material material{};
+        material.albedoColor = color;
+        auto cylinder = std::make_shared<components::Sphere>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, cylinder);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newSphere = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newSphere, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newSphere, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newSphere, uuid);
+        return newSphere;
+    }
+
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(rotation);
+        auto cylinder = std::make_shared<components::Sphere>();
+        auto renderable = std::make_shared<components::Renderable3D>(material, cylinder);
+        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+
+        ecs::Entity newSphere = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newSphere, transform);
+        Application::m_coordinator->addComponent<components::RenderComponent>(newSphere, renderComponent);
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent<components::UuidComponent>(newSphere, uuid);
+        return newSphere;
     }
 
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color)
