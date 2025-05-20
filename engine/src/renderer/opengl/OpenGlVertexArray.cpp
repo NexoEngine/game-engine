@@ -61,7 +61,6 @@ namespace nexo::renderer {
             case NxShaderDataType::BOOL: return true;
             default: return false;
         }
-        return false;
     }
 
     NxOpenGlVertexArray::NxOpenGlVertexArray()

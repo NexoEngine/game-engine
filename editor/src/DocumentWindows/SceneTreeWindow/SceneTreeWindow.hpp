@@ -78,7 +78,7 @@ namespace nexo::editor {
 
         explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {},
                     SelectionType type = SelectionType::NONE, EntityProperties data = {})
-            : uiName(std::move(name)), type(type), data(std::move(data)), children(std::move(children)) {}
+            : uiName(std::move(name)), type(type), data(data), children(std::move(children)) {}
     };
 
     /**
@@ -87,7 +87,7 @@ namespace nexo::editor {
      * The SceneTreeWindow class is responsible for drawing the scene tree, handling selection,
      * renaming, context menus, and scene/node creation.
      */
-    class SceneTreeWindow : public ADocumentWindow {
+    class SceneTreeWindow final : public ADocumentWindow {
         public:
        		using ADocumentWindow::ADocumentWindow;
             ~SceneTreeWindow() override = default;
@@ -141,12 +141,12 @@ namespace nexo::editor {
              * @param nodeCreator Function that creates a SceneObject given a scene ID, UI window ID, and entity.
              */
              template<typename... Components, typename NodeCreator>
-             void generateNodes(std::map<scene::SceneId, SceneObject> &scenes, NodeCreator nodeCreator)
+             static void generateNodes(std::map<scene::SceneId, SceneObject> &scenes, NodeCreator nodeCreator)
              {
-                 const std::vector<ecs::Entity> entities = nexo::Application::m_coordinator->getAllEntitiesWith<Components...>();
+                 const std::vector<ecs::Entity> entities = Application::m_coordinator->getAllEntitiesWith<Components...>();
                  for (const ecs::Entity entity : entities)
                  {
-                     const auto& sceneTag = nexo::Application::m_coordinator->getComponent<components::SceneTag>(entity);
+                     const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
                      if (auto it = scenes.find(sceneTag.id); it != scenes.end())
                      {
                          SceneObject newNode = nodeCreator(it->second.data.sceneProperties.sceneId, it->second.data.sceneProperties.windowId, entity);
@@ -168,7 +168,7 @@ namespace nexo::editor {
               * @param uiId The identifier for the scene's UI element.
               * @return SceneObject The newly created scene node with initialized properties.
               */
-            SceneObject newSceneNode(const std::string &sceneName, const scene::SceneId sceneId, const WindowId uiId) const;
+         static SceneObject newSceneNode(const std::string &sceneName, scene::SceneId sceneId, WindowId uiId);
 
             /**
              * @brief Creates a new light node and adds properties to it.
@@ -179,7 +179,7 @@ namespace nexo::editor {
              * @param lightEntity The light entity.
              * @param uiName The UI display name.
              */
-            void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName) const;
+         static void newLightNode(SceneObject &lightNode, scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity, const std::string &uiName);
 
             /**
              * @brief Creates a new ambient light node.
@@ -189,7 +189,7 @@ namespace nexo::editor {
              * @param lightEntity The ambient light entity.
              * @return A SceneObject representing the ambient light.
              */
-            SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity) const;
+         static SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
             /**
              * @brief Creates a new directional light node.
              *
@@ -228,7 +228,7 @@ namespace nexo::editor {
              * @param cameraEntity The camera entity.
              * @return A SceneObject representing the camera.
              */
-            SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity cameraEntity) const;
+            static SceneObject newCameraNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity cameraEntity) ;
 
             /**
              * @brief Creates a new entity node.
@@ -238,7 +238,7 @@ namespace nexo::editor {
              * @param entity The entity.
              * @return A SceneObject representing the entity.
              */
-            SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) const;
+            static SceneObject newEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) ;
 
             /**
              * @brief Handles the renaming of a scene object.
@@ -261,7 +261,7 @@ namespace nexo::editor {
              * @param baseFlags ImGui tree node flags to customize the node's appearance.
              * @return true if the tree node is open (expanded); false otherwise.
              */
-            bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) const;
+            static bool handleSelection(const SceneObject &obj, const std::string &uniqueLabel, ImGuiTreeNodeFlags baseFlags) ;
 
             /**
              * @brief Handles camera preview tooltips when hovering over camera nodes.
@@ -271,7 +271,7 @@ namespace nexo::editor {
              *
              * @param obj The scene object (camera) being hovered over.
              */
-            void handleHovering(const SceneObject &obj) const;
+            static void handleHovering(const SceneObject &obj) ;
 
             /**
              * @brief Displays a context menu option to delete a scene.
@@ -291,7 +291,7 @@ namespace nexo::editor {
              *
              * @param obj The scene object representing the light node to delete.
              */
-            void lightSelected(const SceneObject &obj) const;
+            static void lightSelected(const SceneObject &obj) ;
 
             /**
              * @brief Displays a context menu option for deleting a camera.
@@ -312,7 +312,7 @@ namespace nexo::editor {
              *
              * @param obj The scene object representing the camera being hovered.
              */
-            void cameraHovered(const SceneObject &obj) const;
+            static void cameraHovered(const SceneObject &obj);
 
             /**
              * @brief Displays context menu options for an entity.
@@ -322,7 +322,7 @@ namespace nexo::editor {
              *
              * @param obj The scene object representing the entity.
              */
-            void entitySelected(const SceneObject &obj) const;
+            static void entitySelected(const SceneObject &obj) ;
 
             /**
              * @brief Renders a node and its children in the scene tree.
@@ -363,7 +363,7 @@ namespace nexo::editor {
              * @param newSceneName The name for the new scene.
              * @return true if the scene was created successfully, false otherwise.
              */
-            bool handleSceneCreation(const std::string &newSceneName);
+            bool handleSceneCreation(const std::string &newSceneName) const;
 
             /**
              * @brief Sets up docking for a new scene window.
@@ -375,7 +375,7 @@ namespace nexo::editor {
              * @param newSceneName The name of the new scene window to dock.
              * @return true if the docking setup was successful, false otherwise.
              */
-            bool setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName);
+            bool setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName) const;
 
             enum class SceneTreeState {
                 GLOBAL,
@@ -396,15 +396,10 @@ namespace nexo::editor {
             void expandAllCallback();
             void collapseAllCallback();
             void renameSelectedCallback();
-            void duplicateSelectedCallback();
-            void focusOnSelectedCallback();
-            void selectAllCallback();
-            void deselectAllCallback();
-            void groupEntitiesCallback();
-            void ungroupEntitiesCallback();
-            void invertSelectionCallback();
-            void hideSelectedCallback();
-            void showSelectedCallback();
-            void showAllCallback();
+            static void duplicateSelectedCallback();
+
+            static void selectAllCallback();
+            static void hideSelectedCallback();
+            static void showAllCallback();
     };
 }

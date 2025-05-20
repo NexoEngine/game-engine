@@ -16,7 +16,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-
 namespace nexo::components {
 
     struct TransformComponent final {
@@ -24,14 +23,16 @@ namespace nexo::components {
             glm::vec3 position;
             glm::quat rotation;
             glm::vec3 scale;
-
-            TransformComponent restore() const
-            {
-                return {position, scale, rotation};
-            }
         };
 
-        Memento save() const
+        void restore(const Memento &memento)
+        {
+            pos = memento.position;
+            quat = memento.rotation;
+            size = memento.scale;
+        }
+
+        [[nodiscard]] Memento save() const
         {
             return {pos, quat, size};
         }

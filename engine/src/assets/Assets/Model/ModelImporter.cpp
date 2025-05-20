@@ -56,8 +56,8 @@ namespace nexo::assets {
         auto model = std::make_unique<Model>();
 
         const auto param = ctx.getParameters<ModelImportParameters>();
-        int flags = aiProcess_Triangulate
-                    | aiProcess_GenNormals;
+        constexpr int flags = aiProcess_Triangulate
+                              | aiProcess_GenNormals;
         const aiScene* scene = nullptr;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
             scene = m_importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
@@ -90,14 +90,13 @@ namespace nexo::assets {
         for (int i = 0; scene->mNumTextures; ++i) {
             aiTexture *texture = scene->mTextures[i];
             auto loadedTexture = loadEmbeddedTexture(ctx, texture);
-            m_textures.emplace(texture->mFilename.C_Str(), loadedTexture);
+            m_textures.try_emplace(texture->mFilename.C_Str(), loadedTexture);
         }
 
     }
 
     AssetRef<Texture> ModelImporter::loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture)
     {
-
         if (texture->mHeight == 0) { // Compressed texture
             AssetImporter assetImporter;
             const ImporterInputVariant inputVariant = ImporterMemoryInput{
@@ -109,30 +108,28 @@ namespace nexo::assets {
             return assetImporter.importAsset<Texture>(
                 ctx.genUniqueDependencyLocation<Texture>(),
                 inputVariant);
-        } else { // Uncompressed texture
-            auto& catalog = AssetCatalog::getInstance();
+        }
+        // Uncompressed texture
+        auto& catalog = AssetCatalog::getInstance();
 
-            renderer::NxTextureFormat format;
-            if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
-                renderer::NxTextureFormatConvertArgb8ToRgba8(
-                    reinterpret_cast<uint8_t*>(texture->pcData),
-                texture->mWidth * texture->mHeight * sizeof(aiTexel)
-                );
-                format = renderer::NxTextureFormat::RGBA8;
-            } else {
-                format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
-            }
-
-            if (format == renderer::NxTextureFormat::INVALID) {
-                LOG(NEXO_WARN, "ModelImporter: Model {}: Texture {} has an invalid format hint: {}", std::quoted(ctx.location.getFullLocation()), texture->mFilename.C_Str(), texture->achFormatHint);
-                return nullptr;
-            }
-
-            return catalog.createAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(),
-                reinterpret_cast<uint8_t*>(texture->pcData), texture->mWidth, texture->mHeight, format);
+        renderer::NxTextureFormat format;
+        if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
+            renderer::NxTextureFormatConvertArgb8ToRgba8(
+                reinterpret_cast<uint8_t*>(texture->pcData),
+            static_cast<unsigned long>(texture->mWidth) * static_cast<unsigned long>(texture->mHeight) * sizeof(aiTexel)
+            );
+            format = renderer::NxTextureFormat::RGBA8;
+        } else {
+            format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
         }
 
+        if (format == renderer::NxTextureFormat::INVALID) {
+            LOG(NEXO_WARN, "ModelImporter: Model {}: Texture {} has an invalid format hint: {}", std::quoted(ctx.location.getFullLocation()), texture->mFilename.C_Str(), texture->achFormatHint);
+            return nullptr;
+        }
 
+        return catalog.createAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(),
+            reinterpret_cast<uint8_t*>(texture->pcData), texture->mWidth, texture->mHeight, format);
     }
 
     renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
@@ -143,19 +140,19 @@ namespace nexo::assets {
         }
 
         // Split into channels (first 4 chars) and bit depths (next 4 chars)
-        std::string_view channels(achFormatHint, 4);
-        std::string_view bits_str(achFormatHint + 4, 4);
+        const std::string_view channels(achFormatHint, 4);
+        const std::string_view bits_str(achFormatHint + 4, 4);
 
         // Parse active channels and their bit depths
         struct ChannelInfo { char code; int bits; };
         std::vector<ChannelInfo> active_channels;
 
         for (int i = 0; i < 4; ++i) {
-            const char ch = static_cast<char>(std::tolower(channels[i]));
-            if (not (ch == 'r' || ch == 'g' || ch == 'b' || ch == 'a')) {
+            const auto ch = static_cast<char>(std::tolower(channels[i]));
+            if (!(ch == 'r' || ch == 'g' || ch == 'b' || ch == 'a')) {
                 return renderer::NxTextureFormat::INVALID;
             }
-            if (not std::isdigit(bits_str[i])) {
+            if (!std::isdigit(bits_str[i])) {
                 return renderer::NxTextureFormat::INVALID;
             }
             const int bits = bits_str[i] - '0';
@@ -217,7 +214,7 @@ namespace nexo::assets {
         }
         std::filesystem::path modelDirectory = modelPath.parent_path();
 
-        for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
+        for (unsigned int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
             aiMaterial const *material = scene->mMaterials[matIdx];
 
             auto materialComponent = std::make_unique<components::Material>();
@@ -265,19 +262,19 @@ namespace nexo::assets {
                             return it->second;
                         }
                     }
-                    std::filesystem::path texturePath = (modelDirectory / cStr).lexically_normal();
-                    auto texturePathStr = texturePath.string();
+                    const std::filesystem::path texturePath = (modelDirectory / cStr).lexically_normal();
+                    const auto texturePathStr = texturePath.string();
                     if (const auto it = m_textures.find(texturePathStr.c_str()) ; it != m_textures.end()) {
                         return it->second;
                     }
                     AssetImporter assetImporter;
-                    ImporterInputVariant inputVariant = ImporterFileInput{
+                    const ImporterInputVariant inputVariant = ImporterFileInput{
                         .filePath = texturePath
                     };
                     auto assetTexture = assetImporter.importAsset<Texture>(
                         ctx.genUniqueDependencyLocation<Texture>(),
                         inputVariant);
-                    m_textures.emplace(texturePathStr.c_str(), assetTexture);
+                    m_textures.try_emplace(texturePathStr.c_str(), assetTexture);
                     return assetTexture;
                 }
                 return nullptr;
@@ -295,7 +292,7 @@ namespace nexo::assets {
                 materialComponent->metallicMap ? "Yes" : "No",
                 materialComponent->roughnessMap ? "Yes" : "No");
 
-            auto materialRef = AssetCatalog::getInstance().createAsset<Material>(
+            const auto materialRef = AssetCatalog::getInstance().createAsset<Material>(
                 ctx.genUniqueDependencyLocation<Material>(),
                 std::move(materialComponent)
             );
@@ -308,7 +305,7 @@ namespace nexo::assets {
     {
         auto meshNode = std::make_shared<components::MeshNode>();
 
-        glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
+        const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
 
         meshNode->transform = nodeTransform;
 
@@ -328,7 +325,7 @@ namespace nexo::assets {
         return meshNode;
     }
 
-    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene)
+    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
         std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
@@ -353,7 +350,7 @@ namespace nexo::assets {
 
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
-            aiFace face = mesh->mFaces[i];
+            const aiFace face = mesh->mFaces[i];
             indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
         }
 
@@ -374,12 +371,12 @@ namespace nexo::assets {
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)
     {
-        return glm::mat4(
+        return {
             matrix.a1, matrix.b1, matrix.c1, matrix.d1,
             matrix.a2, matrix.b2, matrix.c2, matrix.d2,
             matrix.a3, matrix.b3, matrix.c3, matrix.d3,
             matrix.a4, matrix.b4, matrix.c4, matrix.d4
-        );
+        };
     }
 
 } // namespace nexo::assets

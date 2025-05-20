@@ -15,6 +15,7 @@
 #include "WindowState.hpp"
 
 namespace nexo::editor {
+
     unsigned int WindowState::getId() const
     {
         return m_id;
@@ -25,7 +26,7 @@ namespace nexo::editor {
         m_commands.push_back(command);
     }
 
-    const std::span<const Command> WindowState::getCommands() const
+    std::span<const Command> WindowState::getCommands() const
     {
         return std::span<const Command>(m_commands.data(), m_commands.size());
     }

@@ -21,7 +21,7 @@ namespace nexo::editor {
         redoStack.clear();
 
         while (undoStack.size() > maxUndoLevels)
-            undoStack.erase(undoStack.begin());
+            undoStack.pop_front();
     }
 
     bool ActionHistory::canUndo() const
@@ -58,12 +58,23 @@ namespace nexo::editor {
     {
         maxUndoLevels = levels;
         while (undoStack.size() > maxUndoLevels)
-            undoStack.erase(undoStack.begin());
+            undoStack.pop_front();
     }
 
-    void ActionHistory::clear()
+    void ActionHistory::clear(unsigned int count)
     {
-        undoStack.clear();
-        redoStack.clear();
+        if (!count) {
+            undoStack.clear();
+            redoStack.clear();
+            return;
+        }
+        const unsigned int elementsToRemove = std::min(static_cast<unsigned int>(undoStack.size()), count);
+        for (unsigned int i = 0; i < elementsToRemove; ++i)
+            undoStack.pop_back();
+    }
+
+    unsigned int ActionHistory::getUndoStackSize() const
+    {
+        return static_cast<unsigned int>(undoStack.size());
     }
 }

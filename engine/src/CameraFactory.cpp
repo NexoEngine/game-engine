@@ -13,6 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CameraFactory.hpp"
+
+#include <utility>
 #include "Application.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
@@ -33,7 +35,8 @@ namespace nexo {
 		camera.nearPlane = nearPlane;
 		camera.farPlane = farPlane;
 		camera.type = components::CameraType::PERSPECTIVE;
-		camera.m_renderTarget = renderTarget;
+		if (renderTarget)
+			camera.m_renderTarget = std::move(renderTarget);
 		camera.clearColor = clearColor;
 
 		ecs::Entity newCamera = Application::m_coordinator->createEntity();

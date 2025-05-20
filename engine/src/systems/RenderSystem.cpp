@@ -31,7 +31,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace nexo::system {
 
     RenderSystem::RenderSystem()
@@ -57,10 +56,10 @@ namespace nexo::system {
              1.0f,  1.0f, 0.0f, 1.0f, 1.0f
         };
 
-        auto quadVB = renderer::createVertexBuffer(sizeof(quadVertices));
+        const auto quadVB = renderer::createVertexBuffer(sizeof(quadVertices));
         quadVB->setData(quadVertices, sizeof(quadVertices));
 
-        renderer::NxBufferLayout quadLayout = {
+        const renderer::NxBufferLayout quadLayout = {
             {renderer::NxShaderDataType::FLOAT3, "aPosition"},
             {renderer::NxShaderDataType::FLOAT2, "aTexCoord"}
         };
@@ -93,8 +92,8 @@ namespace nexo::system {
         if (!lastShader)
             return;
         shader->setUniformFloat3("uAmbientLight", lightContext.ambientLight);
-        shader->setUniformInt("uNumPointLights", lightContext.pointLightCount);
-        shader->setUniformInt("uNumSpotLights", lightContext.spotLightCount);
+        shader->setUniformInt("uNumPointLights", static_cast<int>(lightContext.pointLightCount));
+        shader->setUniformInt("uNumSpotLights", static_cast<int>(lightContext.spotLightCount));
 
         const auto &directionalLight = lightContext.dirLight;
         shader->setUniformFloat3("uDirLight.direction", directionalLight.direction);
@@ -185,7 +184,7 @@ namespace nexo::system {
                 const glm::vec3 rayDir = math::projectRayToWorld(
                     framebufferPos.x, framebufferPos.y,
                     camera.viewProjectionMatrix, camera.cameraPosition,
-                    renderTargetSize.x, renderTargetSize.y
+                    static_cast<unsigned int>(renderTargetSize.x), static_cast<unsigned int>(renderTargetSize.y)
                 );
 
                 // Calculate intersection with y=0 plane (grid plane)
@@ -200,7 +199,7 @@ namespace nexo::system {
             const glm::vec3 rayDir = math::projectRayToWorld(
                 globalMousePos.x, globalMousePos.y,
                 camera.viewProjectionMatrix, camera.cameraPosition,
-                renderTargetSize.x, renderTargetSize.y
+                static_cast<unsigned int>(renderTargetSize.x), static_cast<unsigned int>(renderTargetSize.y)
             );
 
             if (rayDir.y != 0.0f) {
@@ -230,7 +229,8 @@ namespace nexo::system {
         const components::CameraContext &camera,
         const components::RenderComponent &renderComponent,
         const components::TransformComponent &transformComponent
-    ) {
+    ) const
+    {
         if (m_maskFramebuffer->getSize().x != camera.renderTarget->getSize().x ||
             m_maskFramebuffer->getSize().y != camera.renderTarget->getSize().y) {
                 m_maskFramebuffer->resize(
@@ -264,9 +264,9 @@ namespace nexo::system {
         // Step 3: Draw full-screen quad with outline post-process shader
         renderer::NxRenderCommand::setDepthMask(false);
         renderContext.renderer3D.beginScene(camera.viewProjectionMatrix, camera.cameraPosition, "Outline pulse flat");
-        auto outlineShader = renderContext.renderer3D.getShader();
+        const auto outlineShader = renderContext.renderer3D.getShader();
         outlineShader->bind();
-        unsigned int maskTexture = m_maskFramebuffer->getColorAttachmentId(0);
+        const unsigned int maskTexture = m_maskFramebuffer->getColorAttachmentId(0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, maskTexture);
         outlineShader->setUniformInt("uMaskTexture", 0);
@@ -321,7 +321,7 @@ namespace nexo::system {
                 renderContext.cameras.pop();
                 continue;
             }
-            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
             if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
                 renderGrid(camera, renderContext);

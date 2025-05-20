@@ -22,11 +22,10 @@
 
 namespace nexo::editor::utils {
 
-    static void addCameraProps(ecs::Entity entity)
+    static void addCameraProps(const ecs::Entity entity)
     {
-        auto& app = getApp();
         auto& catalog = assets::AssetCatalog::getInstance();
-        nexo::components::Material billboardMat{};
+        components::Material billboardMat{};
         billboardMat.isOpaque = false;
         static const assets::AssetRef<assets::Texture> cameraIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::cameraIcon@_internal"),
@@ -34,17 +33,16 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = cameraIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<nexo::components::BillBoard>();
-        auto renderable = std::make_shared<nexo::components::Renderable3D>(billboardMat, billboard);
-        nexo::components::RenderComponent renderComponent(renderable, nexo::components::RenderType::RENDER_3D);
-        app.m_coordinator->addComponent(entity, renderComponent);
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
+        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        Application::m_coordinator->addComponent(entity, renderComponent);
     }
 
-    static void addPointLightProps(ecs::Entity entity)
+    static void addPointLightProps(const ecs::Entity entity)
     {
-        auto& app = getApp();
         auto& catalog = assets::AssetCatalog::getInstance();
-        nexo::components::Material billboardMat{};
+        components::Material billboardMat{};
         billboardMat.isOpaque = false;
         static const assets::AssetRef<assets::Texture> pointLightIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::pointLightIcon@_internal"),
@@ -52,17 +50,16 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = pointLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<nexo::components::BillBoard>();
-        auto renderable = std::make_shared<nexo::components::Renderable3D>(billboardMat, billboard);
-        nexo::components::RenderComponent renderComponent(renderable, nexo::components::RenderType::RENDER_3D);
-        app.m_coordinator->addComponent(entity, renderComponent);
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
+        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        Application::m_coordinator->addComponent(entity, renderComponent);
     }
 
-    static void addSpotLightProps(ecs::Entity entity)
+    static void addSpotLightProps(const ecs::Entity entity)
     {
-        auto& app = getApp();
         auto& catalog = assets::AssetCatalog::getInstance();
-        nexo::components::Material billboardMat{};
+        components::Material billboardMat{};
         billboardMat.isOpaque = false;
         static const assets::AssetRef<assets::Texture> spotLightIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::spotLightIcon@_internal"),
@@ -70,13 +67,13 @@ namespace nexo::editor::utils {
         );
         billboardMat.albedoTexture = spotLightIconTexture;
         billboardMat.shader = "Albedo unshaded transparent";
-        auto billboard = std::make_shared<nexo::components::BillBoard>();
-        auto renderable = std::make_shared<nexo::components::Renderable3D>(billboardMat, billboard);
-        nexo::components::RenderComponent renderComponent(renderable, nexo::components::RenderType::RENDER_3D);
-        app.m_coordinator->addComponent(entity, renderComponent);
+        auto billboard = std::make_shared<components::BillBoard>();
+        auto renderable = std::make_shared<components::Renderable3D>(billboardMat, billboard);
+        const components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        Application::m_coordinator->addComponent(entity, renderComponent);
     }
 
-    void addPropsTo(ecs::Entity entity, PropsType type)
+    void addPropsTo(const ecs::Entity entity, const PropsType type)
     {
         switch (type)
         {

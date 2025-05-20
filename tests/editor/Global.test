@@ -1,0 +1,3 @@
+# Global
+- Should be able to undo action (CTRL + Z)
+- Should be able to redo ation (CTRL + SHIFT + Z)

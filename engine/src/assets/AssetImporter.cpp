@@ -21,6 +21,8 @@
 #include "Assets/Texture/Texture.hpp"
 #include "Assets/Texture/TextureImporter.hpp"
 
+#include <boost/uuid/random_generator.hpp>
+
 namespace nexo::assets {
     AssetImporter::AssetImporter()
     {
@@ -98,7 +100,7 @@ namespace nexo::assets {
     getImportersForType(const std::type_index& typeIdx) const
     {
         if (const auto it = m_importers.find(typeIdx) ; it == m_importers.end()) {
-            static const std::vector<AssetImporterBase *> empty;
+            static std::vector<AssetImporterBase *> empty;
             return empty;
         }
         return m_importers.at(typeIdx);

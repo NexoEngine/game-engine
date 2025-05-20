@@ -74,7 +74,7 @@ namespace nexo::renderer {
              * Usage:
              * - Call this method whenever the window is resized to adjust the rendering area.
              */
-            static void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) { _rendererApi->setViewport(x, y, width, height); };
+            static void setViewport(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height) { _rendererApi->setViewport(x, y, width, height); };
 
             /**
             * @brief Sets the clear color for the rendering context.
@@ -117,27 +117,27 @@ namespace nexo::renderer {
              * Usage:
              * - Use this method to draw meshes or primitives with indexed geometry.
              */
-            static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, unsigned int indexCount = 0)
+            static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const unsigned int indexCount = 0)
             {
                 _rendererApi->drawIndexed(vertexArray, indexCount);
             }
 
-            static void drawUnIndexed(unsigned int verticesCount)
+            static void drawUnIndexed(const unsigned int verticesCount)
             {
                 _rendererApi->drawUnIndexed(verticesCount);
             }
 
-            static void setDepthTest(bool enable)
+            static void setDepthTest(const bool enable)
             {
                 _rendererApi->setDepthTest(enable);
             }
 
-            static void setDepthMask(bool enable)
+            static void setDepthMask(const bool enable)
             {
                 _rendererApi->setDepthMask(enable);
             }
 
-            static void setDepthFunc(unsigned int func)
+            static void setDepthFunc(const unsigned int func)
             {
                 _rendererApi->setDepthFunc(func);
             }
@@ -155,7 +155,7 @@ namespace nexo::renderer {
              * - Enable the stencil test before performing operations that will write to or use the stencil buffer.
              * - Disable the stencil test when regular rendering should resume.
              */
-            static void setStencilTest(bool enable) { _rendererApi->setStencilTest(enable); }
+            static void setStencilTest(const bool enable) { _rendererApi->setStencilTest(enable); }
 
             /**
              * @brief Sets the stencil mask that controls which bits of the stencil buffer are updated.
@@ -169,7 +169,7 @@ namespace nexo::renderer {
              * Usage:
              * - Set a specific mask before performing stencil operations to control which bits are affected.
              */
-            static void setStencilMask(unsigned int mask) { _rendererApi->setStencilMask(mask); }
+            static void setStencilMask(const unsigned int mask) { _rendererApi->setStencilMask(mask); }
 
             /**
              * @brief Configures the stencil function used for stencil testing.
@@ -185,7 +185,8 @@ namespace nexo::renderer {
              * Usage:
              * - Configure before performing operations that rely on specific stencil buffer values.
              */
-            static void setStencilFunc(unsigned int func, int ref, unsigned int mask) {
+            static void setStencilFunc(const unsigned int func, const int ref, const unsigned int mask)
+            {
                 _rendererApi->setStencilFunc(func, ref, mask);
             }
 
@@ -204,7 +205,8 @@ namespace nexo::renderer {
              * Usage:
              * - Set before performing complex stencil operations like object outlining or shadow volumes.
              */
-            static void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) {
+            static void setStencilOp(const unsigned int sfail, const unsigned int dpfail, const unsigned int dppass)
+            {
                 _rendererApi->setStencilOp(sfail, dpfail, dppass);
             }
 

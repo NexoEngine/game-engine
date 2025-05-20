@@ -130,7 +130,7 @@ namespace nexo::system {
 		{
 			constexpr float zoomSpeed = 0.5f;
 			auto &sceneTag = getComponent<components::SceneTag>(entity);
-			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
 			if (!sceneTag.isActive || sceneTag.id != sceneRendered || !cameraComponent.active)
 				continue;
 			auto &transform = getComponent<components::TransformComponent>(entity);
@@ -190,8 +190,7 @@ namespace nexo::system {
 
             // Extract camera orientation vectors from current quaternion
             glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f, 0.0f);
-            glm::vec3 up = transform.quat * glm::vec3(0.0f, 1.0f, 0.0f);
-            glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+
 
             // Create rotation quaternions based on mouse movement
             glm::quat pitchRotation = glm::angleAxis(glm::radians(-mouseDelta.y), right);
@@ -230,7 +229,7 @@ namespace nexo::system {
 		{
 			constexpr float zoomSpeed = 0.5f;
 			auto &tag = getComponent<components::SceneTag>(entity);
-			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+			const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
 			if (!tag.isActive || sceneRendered != tag.id || !cameraComponent.active)
 				continue;
 			auto &target = getComponent<components::PerspectiveCameraTarget>(entity);

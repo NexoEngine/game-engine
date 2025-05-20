@@ -17,20 +17,23 @@
 #include "RenderProperty.hpp"
 #include "AEntityProperty.hpp"
 #include "Application.hpp"
+#include "DocumentWindows/PopupManager.hpp"
 #include "Framebuffer.hpp"
 #include "components/Light.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
+#include "context/ActionManager.hpp"
 #include "ImNexo/Panels.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Components.hpp"
 
 namespace nexo::editor {
 
-    void RenderProperty::createMaterialPopup(ecs::Entity entity) const
+    void RenderProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
@@ -72,7 +75,7 @@ namespace nexo::editor {
             ImGui::BeginChild("MaterialPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
             auto &app = getApp();
-            Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(scenePreviewInfo.sceneId), nexo::RenderingType::FRAMEBUFFER};
+            const Application::SceneInfo sceneInfo{scenePreviewInfo.sceneId, nexo::RenderingType::FRAMEBUFFER};
             app.run(sceneInfo);
             auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
@@ -153,8 +156,13 @@ namespace nexo::editor {
             ImGui::Text("Hide");
             ImGui::SameLine(0, 12);
             bool hidden = !renderComponent.isRendered;
-            ImGui::Checkbox("##HideCheckBox", &hidden);
-            renderComponent.isRendered = !hidden;
+            if (ImGui::Checkbox("##HideCheckBox", &hidden)) {
+                auto beforeState = renderComponent.save();
+                renderComponent.isRendered = !hidden;
+                auto afterState = renderComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::RenderComponent>>(entity, beforeState, afterState);
+                ActionManager::get().recordAction(std::move(action));
+            }
 
             ImNexo::ToggleButtonWithSeparator("Material", &sectionOpen);
             static std::shared_ptr<renderer::NxFramebuffer> framebuffer = nullptr;
@@ -168,7 +176,7 @@ namespace nexo::editor {
 					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
 					auto &app = nexo::getApp();
 					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-					Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(previewParams.sceneId), nexo::RenderingType::FRAMEBUFFER};
+					const Application::SceneInfo sceneInfo{previewParams.sceneId, nexo::RenderingType::FRAMEBUFFER};
 					app.run(sceneInfo);
 					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
 					framebuffer = cameraComponent.m_renderTarget;
@@ -210,7 +218,7 @@ namespace nexo::editor {
         if (m_popupManager.showPopupModal("Create new material"))
         {
             createMaterialPopup(entity);
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 }

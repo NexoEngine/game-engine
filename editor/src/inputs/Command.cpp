@@ -19,22 +19,43 @@
 #include <unordered_map>
 #include <cctype>
 #include <iostream>
-
-#include "String.hpp"
+#include <utility>
 
 namespace nexo::editor {
+
+    struct StringHash {
+        using is_transparent = void;                   // enable heterogeneous lookup
+        size_t operator()(std::string_view sv) const noexcept {
+            return std::hash<std::string_view>{}(sv);
+        }
+        size_t operator()(const std::string &s) const noexcept {
+            return operator()(std::string_view(s));
+        }
+    };
+
+    // 2) Transparent equal
+    struct StringEqual {
+        using is_transparent = void;                   // enable heterogeneous lookup
+        bool operator()(std::string_view a, std::string_view b) const noexcept {
+            return a == b;
+        }
+        bool operator()(const std::string &a, const std::string &b) const noexcept {
+            return a == b;
+        }
+    };
+
     Command::Command(
-        const std::string &description,
+        std::string description,
         const std::string &key,
         const std::function<void()> &pressedCallback,
         const std::function<void()> &releaseCallback,
         const std::function<void()> &repeatCallback,
         bool isModifier,
-        const std::vector<Command> &children)
-    : m_description(description), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(children)
+        const std::vector<Command> &childrens)
+    : m_description(std::move(description)), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(childrens)
     {
         // Create a mapping of key names to ImGuiKey values
-        static const std::unordered_map<std::string, ImGuiKey> keyMap = {
+        static const std::unordered_map<std::string, ImGuiKey, StringHash, StringEqual> keyMap = {
             // Common modifiers
             {"ctrl", ImGuiKey_LeftCtrl},
             {"control", ImGuiKey_LeftCtrl},
@@ -114,8 +135,8 @@ namespace nexo::editor {
             segment.erase(segment.find_last_not_of(" \t") + 1);
 
             // Convert to lowercase for case-insensitive comparison
-            std::transform(segment.begin(), segment.end(), segment.begin(),
-                          [](unsigned char c){ return std::tolower(c); });
+            std::ranges::transform(segment, segment.begin(),
+                                   [](const unsigned char c){ return std::tolower(c); });
 
             // Look up in the map and set the bit in the signature
             auto it = keyMap.find(segment);
@@ -153,7 +174,7 @@ namespace nexo::editor {
             m_repeatCallback();
     }
 
-    const std::span<const Command> Command::getChildren() const
+    std::span<const Command> Command::getChildren() const
     {
         return std::span<const Command>(m_childrens);
     }

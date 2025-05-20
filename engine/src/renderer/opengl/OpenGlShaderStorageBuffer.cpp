@@ -16,7 +16,7 @@
 #include "OpenGlShaderStorageBuffer.hpp"
 
 namespace nexo::renderer {
-	NxOpenGlShaderStorageBuffer::NxOpenGlShaderStorageBuffer(unsigned int size)
+	NxOpenGlShaderStorageBuffer::NxOpenGlShaderStorageBuffer(const unsigned int size)
 	{
 		glCreateBuffers(1, &m_id);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
@@ -29,7 +29,7 @@ namespace nexo::renderer {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
 	}
 
-	void NxOpenGlShaderStorageBuffer::bindBase(unsigned int bindingLocation) const
+	void NxOpenGlShaderStorageBuffer::bindBase(const unsigned int bindingLocation) const
 	{
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingLocation, m_id);
 	}
@@ -39,7 +39,7 @@ namespace nexo::renderer {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
-	void NxOpenGlShaderStorageBuffer::setData(void* data, unsigned int size)
+	void NxOpenGlShaderStorageBuffer::setData(void* data, const unsigned int size)
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);

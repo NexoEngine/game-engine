@@ -16,14 +16,16 @@
 #include "components/Uuid.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Panels.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
     void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
     {
-        if (uuid != "" && uiName != "" &&ImGui::MenuItem("Delete Scene")) {
+        if (!uuid.empty() && !uiName.empty() &&ImGui::MenuItem("Delete Scene")) {
             auto &app = Application::getInstance();
             auto &selector = Selector::get();
             selector.clearSelection();
@@ -43,6 +45,8 @@ namespace nexo::editor {
                     const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                            {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                     sceneManager.getScene(sceneId).addEntity(newCube);
+                    auto action = std::make_unique<EntityCreationAction>(newCube);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 ImGui::EndMenu();
             }
@@ -57,16 +61,22 @@ namespace nexo::editor {
                 if (ImGui::MenuItem("Directional")) {
                     const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
                     sceneManager.getScene(sceneId).addEntity(directionalLight);
+                    auto action = std::make_unique<EntityCreationAction>(directionalLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 if (ImGui::MenuItem("Point")) {
                     const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
                     utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(pointLight);
+                    auto action = std::make_unique<EntityCreationAction>(pointLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 if (ImGui::MenuItem("Spot")) {
                     const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
                     utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(spotLight);
+                    auto action = std::make_unique<EntityCreationAction>(spotLight);
+                    ActionManager::get().recordAction(std::move(action));
                 }
                 ImGui::EndMenu();
             }
@@ -77,7 +87,7 @@ namespace nexo::editor {
                     const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
                     for (const auto &scene : editorScenes) {
                         if (scene->getSceneId() == sceneId) {
-                            ImNexo::CameraInspector(sceneId, scene->getContentSize());
+                            ImNexo::CameraInspector(sceneId);
                             break;
                         }
                     }
@@ -94,18 +104,18 @@ namespace nexo::editor {
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
 
         if (m_popupManager.showPopup("Scene selection context menu"))
         {
             m_popupManager.runPopupCallback("Scene selection context menu");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
 
         if (m_popupManager.showPopupModal("Popup camera inspector")) {
             m_popupManager.runPopupCallback("Popup camera inspector");
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
@@ -119,18 +129,16 @@ namespace nexo::editor {
         ImGui::Text("Enter Scene Name:");
         ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
 
-        if (ImNexo::Button("Create")) {
-            if (handleSceneCreation(sceneNameBuffer)) {
-                memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
-                m_popupManager.closePopupInContext();
-            }
+        if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer)) {
+            memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
+            PopupManager::closePopupInContext();
         }
 
         ImGui::SameLine();
         if (ImNexo::Button("Cancel"))
-            m_popupManager.closePopupInContext();
+            PopupManager::closePopupInContext();
 
-        m_popupManager.closePopup();
+        PopupManager::closePopup();
     }
 
     void SceneTreeWindow::showNode(SceneObject &object)
@@ -144,7 +152,7 @@ namespace nexo::editor {
 
         // Check if this object is selected
         auto const &selector = Selector::get();
-        bool isSelected = selector.isEntitySelected(object.data.entity);
+        const bool isSelected = selector.isEntitySelected(static_cast<int>(object.data.entity));
 
         if (isSelected)
             baseFlags |= ImGuiTreeNodeFlags_Selected;
@@ -172,7 +180,7 @@ namespace nexo::editor {
         if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
         {
             // Only show rename option for the primary selected entity or for non-selected entities
-            if ((!isSelected || (isSelected && selector.getPrimaryEntity() == object.data.entity)) &&
+            if ((!isSelected || selector.getPrimaryEntity() == static_cast<int>(object.data.entity)) &&
                 ImGui::MenuItem("Rename"))
             {
                 m_renameTarget = {object.type, object.uuid};
@@ -212,7 +220,7 @@ namespace nexo::editor {
             m_focused = ImGui::IsWindowFocused();
             m_hovered = ImGui::IsWindowHovered();
 
-            auto &selector = Selector::get();
+            const auto &selector = Selector::get();
 
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(

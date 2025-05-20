@@ -29,12 +29,12 @@ namespace nexo::editor {
         }
     }
 
-    void AssetManagerWindow::calculateLayout(float availWidth)
+    void AssetManagerWindow::calculateLayout(const float availWidth)
     {
         // Sizes
-        m_layout.size.columnCount = std::max(static_cast<int>(availWidth / (m_layout.size.iconSize + m_layout.size.iconSpacing)), 1);
+        m_layout.size.columnCount = std::max(static_cast<int>(availWidth / (m_layout.size.iconSize + static_cast<float>(m_layout.size.iconSpacing))), 1);
         m_layout.size.itemSize = ImVec2(m_layout.size.iconSize + ImGui::GetFontSize() * 1.5f, m_layout.size.iconSize + ImGui::GetFontSize() * 1.7f);
-        m_layout.size.itemStep = ImVec2(m_layout.size.itemSize.x + m_layout.size.iconSpacing, m_layout.size.itemSize.y + m_layout.size.iconSpacing);
+        m_layout.size.itemStep = ImVec2(m_layout.size.itemSize.x + static_cast<float>(m_layout.size.iconSpacing), m_layout.size.itemSize.y + static_cast<float>(m_layout.size.iconSpacing));
 
         // Colors
 		m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
@@ -52,7 +52,7 @@ namespace nexo::editor {
 		m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
     }
 
-    void AssetManagerWindow::handleSelection(int index, bool isSelected)
+    void AssetManagerWindow::handleSelection(int index, const bool isSelected)
     {
         LOG(NEXO_INFO, "Asset {} {}", index, isSelected ? "deselected" : "selected");
         if (ImGui::GetIO().KeyCtrl) {
@@ -77,7 +77,7 @@ namespace nexo::editor {
         }
     }
 
-    static ImU32 getAssetTypeOverlayColor(assets::AssetType type)
+    static ImU32 getAssetTypeOverlayColor(const assets::AssetType type)
     {
         switch (type) {
             case assets::AssetType::TEXTURE: return IM_COL32(200, 70, 70, 255);
@@ -88,7 +88,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::drawAsset(
         const assets::GenericAssetRef& asset,
-        int index,
+        const int index,
         const ImVec2& itemPos,
         const ImVec2& itemSize
     ) {
@@ -96,14 +96,14 @@ namespace nexo::editor {
         if (!assetData)
             return;
         ImDrawList* drawList = ImGui::GetWindowDrawList();
-        ImVec2 itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
+        const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
 
         ImGui::PushID(index);
 
 
         // Highlight selection
-        bool isSelected = std::find(m_selectedAssets.begin(), m_selectedAssets.end(), index) != m_selectedAssets.end();
-        ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
+        const bool isSelected = std::ranges::find(m_selectedAssets, index) != m_selectedAssets.end();
+        const ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
 
         // Add selection border
@@ -120,17 +120,17 @@ namespace nexo::editor {
         }
 
         // Draw thumbnail
-        ImVec2 thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
+        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
         drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
 
         // Draw type overlay
-        ImVec2 overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.overlayPadding, itemPos.y + m_layout.size.overlayPadding);
-        ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
+        const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.overlayPadding, itemPos.y + m_layout.size.overlayPadding);
+        const ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
         drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.overlaySize, overlayPos.y + m_layout.size.overlaySize), overlayColor);
 
         // Draw title
         const char *assetName = assetData->getMetadata().location.getName().c_str();
-        ImVec2 textPos = ImVec2(itemPos.x + (itemSize.x - ImGui::CalcTextSize(assetName).x) * 0.5f,
+        const auto textPos = ImVec2(itemPos.x + (itemSize.x - ImGui::CalcTextSize(assetName).x) * 0.5f,
             thumbnailEnd.y + m_layout.size.titlePadding);
         // Background rectangle for text
         drawList->AddRectFilled(ImVec2(itemPos.x, thumbnailEnd.y), ImVec2(itemEnd.x, itemEnd.y), m_layout.color.titleBg);
@@ -158,15 +158,24 @@ namespace nexo::editor {
 
         ImGuiListClipper clipper;
         const auto assets = assets::AssetCatalog::getInstance().getAssets();
-        clipper.Begin(assets.size(), m_layout.size.itemStep.y);
+        clipper.Begin(static_cast<int>(assets.size()), m_layout.size.itemStep.y);
         while (clipper.Step()) {
             for (int lineIdx = clipper.DisplayStart; lineIdx < clipper.DisplayEnd; ++lineIdx) {
                 int startIdx = lineIdx * m_layout.size.columnCount;
                 int endIdx = std::min(startIdx + m_layout.size.columnCount, static_cast<int>(assets.size()));
 
+                int columns = m_layout.size.columnCount;
+                float stepX  = m_layout.size.itemStep.x;
+                float stepY  = m_layout.size.itemStep.y;
+
                 for (int i = startIdx; i < endIdx; ++i) {
-                    ImVec2 itemPos = ImVec2(startPos.x + (i % m_layout.size.columnCount) * m_layout.size.itemStep.x,
-                        startPos.y + (i / m_layout.size.columnCount) * m_layout.size.itemStep.y);
+                    auto idx     = static_cast<float>(i);
+                    float col     = std::fmod(idx, static_cast<float>(columns));
+                    float row     = std::floor(idx / static_cast<float>(columns));
+                    ImVec2 itemPos{
+                        startPos.x + col * stepX,
+                        startPos.y + row * stepY
+                    };
                     drawAsset(assets[i], i, itemPos, m_layout.size.itemSize);
                 }
             }

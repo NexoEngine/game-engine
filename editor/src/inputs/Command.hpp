@@ -24,7 +24,7 @@ namespace nexo::editor {
     class Command {
         public:
             Command(
-                const std::string &description,
+                std::string description,
                 const std::string &key,
                 const std::function<void()> &pressedCallback,
                 const std::function<void()> &releaseCallback,
@@ -33,29 +33,29 @@ namespace nexo::editor {
                 const std::vector<Command> &childrens = {}
             );
 
-            bool exactMatch(const std::bitset<ImGuiKey_NamedKey_COUNT> &inputSignature) const;
-            bool partialMatch(const std::bitset<ImGuiKey_NamedKey_COUNT> &inputSignature) const;
+            [[nodiscard]] bool exactMatch(const std::bitset<ImGuiKey_NamedKey_COUNT> &inputSignature) const;
+            [[nodiscard]] bool partialMatch(const std::bitset<ImGuiKey_NamedKey_COUNT> &inputSignature) const;
             void executePressedCallback() const;
             void executeReleasedCallback() const;
             void executeRepeatCallback() const;
-            const std::span<const Command> getChildren() const;
-            const std::bitset<ImGuiKey_NamedKey_COUNT> &getSignature() const;
-            const std::string &getKey() const;
-            const std::string &getDescription() const;
-            bool isModifier() const;
+            [[nodiscard]] std::span<const Command> getChildren() const;
+            [[nodiscard]] const std::bitset<ImGuiKey_NamedKey_COUNT> &getSignature() const;
+            [[nodiscard]] const std::string &getKey() const;
+            [[nodiscard]] const std::string &getDescription() const;
+            [[nodiscard]] bool isModifier() const;
 
             class Builder {
                 public:
                     Builder& description(std::string val) { desc = std::move(val); return *this; }
                     Builder& key(std::string val) { k = std::move(val); return *this; }
-                    Builder& onPressed(std::function<void()> cb) { pressed = cb; return *this; }
-                    Builder& onReleased(std::function<void()> cb) { released = cb; return *this; }
-                    Builder& onRepeat(std::function<void()> cb) { repeat = cb; return *this; }
-                    Builder& modifier(bool val) { mod = val; return *this; }
+                    Builder& onPressed(const std::function<void()> &cb) { pressed = cb; return *this; }
+                    Builder& onReleased(const std::function<void()> &cb) { released = cb; return *this; }
+                    Builder& onRepeat(const std::function<void()> &cb) { repeat = cb; return *this; }
+                    Builder& modifier(const bool val) { mod = val; return *this; }
                     Builder& addChild(Command child) { children.push_back(std::move(child)); return *this; }
 
-                    Command build() const {
-                        return Command(desc, k, pressed, released, repeat, mod, children);
+                    [[nodiscard]] Command build() const {
+                        return {desc, k, pressed, released, repeat, mod, children};
                     }
 
                 private:
@@ -68,7 +68,7 @@ namespace nexo::editor {
                     std::vector<Command> children;
             };
 
-            static Builder create() { return Builder(); }
+            static Builder create() { return {}; }
 
         private:
             std::bitset<ImGuiKey_NamedKey_COUNT> m_signature;

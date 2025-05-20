@@ -17,10 +17,12 @@
 #include "IconsFontAwesome.h"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
-    void EditorScene::initialToolbarSetup(const float buttonWidth, const float buttonHeight)
+    void EditorScene::initialToolbarSetup(const float buttonWidth) const
     {
         ImVec2 toolbarPos = m_windowPos;
         toolbarPos.x += 10.0f;
@@ -28,7 +30,7 @@ namespace nexo::editor {
 
         ImGui::SetCursorScreenPos(toolbarPos);
 
-        ImVec2 toolbarSize = ImVec2(m_contentSize.x - buttonWidth, 50.0f);
+        const auto toolbarSize = ImVec2(m_contentSize.x - buttonWidth, 50.0f);
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
         ImGui::BeginChild("##ToolbarOverlay", toolbarSize, 0,
@@ -45,7 +47,7 @@ namespace nexo::editor {
     {
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
-        bool clicked = ImNexo::IconGradientButton(uniqueId, icon, ImVec2(buttonWidth, buttonHeight), gradientStop);
+        const bool clicked = ImNexo::IconGradientButton(uniqueId, icon, ImVec2(buttonWidth, buttonHeight), gradientStop);
         if (!tooltip.empty() && ImGui::IsItemHovered())
             ImGui::SetTooltip("%s", tooltip.c_str());
         if (rightClicked != nullptr)
@@ -53,7 +55,7 @@ namespace nexo::editor {
         return clicked;
     }
 
-    void EditorScene::renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu)
+    void EditorScene::renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu) const
     {
         auto &app = getApp();
         static const std::vector<ImNexo::ButtonProps> buttonProps =
@@ -66,6 +68,8 @@ namespace nexo::editor {
                         const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
                                                                                {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
                         app.getSceneManager().getScene(this->m_sceneId).addEntity(newCube);
+                        auto createAction = std::make_unique<EntityCreationAction>(newCube);
+                        ActionManager::get().recordAction(std::move(createAction));
                     },
                 .tooltip = "Create Cube"
             }
@@ -89,7 +93,7 @@ namespace nexo::editor {
                         this->m_popupManager.openPopup("Snap settings popup", ImVec2(400, 140));
                     },
                 .tooltip = "Toggle Translate Snap",
-                .buttonGradient = (m_snapTranslateOn) ? m_selectedGradient : m_buttonGradient
+                .buttonGradient = m_snapTranslateOn ? m_selectedGradient : m_buttonGradient
             },
             {
                 .uniqueId = "toggle_rotate_snap",
@@ -103,7 +107,7 @@ namespace nexo::editor {
                         this->m_popupManager.openPopup("Snap settings popup", ImVec2(400, 140));
                     },
                 .tooltip = "Toggle Rotate Snap",
-                .buttonGradient = (m_snapRotateOn) ? m_selectedGradient : m_buttonGradient
+                .buttonGradient = m_snapRotateOn ? m_selectedGradient : m_buttonGradient
             }
             // Snap on scale is kinda strange, the IsOver is not able to detect it, so for now we disable it
             // {
@@ -157,17 +161,17 @@ namespace nexo::editor {
             ImGui::Spacing();
             ImGui::Spacing();
 
-            float buttonWidth = 120.0f;
-            float windowWidth = ImGui::GetWindowSize().x;
+            constexpr float buttonWidth = 120.0f;
+            const float windowWidth = ImGui::GetWindowSize().x;
             ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                m_popupManager.closePopupInContext();
+                PopupManager::closePopupInContext();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
@@ -175,9 +179,8 @@ namespace nexo::editor {
     {
         if (m_popupManager.showPopupModal("Grid settings"))
         {
-            auto &app = getApp();
             components::RenderContext::GridParams &gridSettings =
-                app.m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
+                Application::m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
 
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
             ImGui::Indent(10.0f);
@@ -202,37 +205,35 @@ namespace nexo::editor {
             ImGui::Spacing();
             ImGui::Spacing();
 
-            float buttonWidth = 120.0f;
-            float windowWidth = ImGui::GetWindowSize().x;
+            constexpr float buttonWidth = 120.0f;
+            const float windowWidth = ImGui::GetWindowSize().x;
             ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                m_popupManager.closePopupInContext();
+                PopupManager::closePopupInContext();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            m_popupManager.closePopup();
+            PopupManager::closePopup();
         }
     }
 
     void EditorScene::renderEditorCameraToolbarButton()
     {
-        auto &app = getApp();
         auto &selector = Selector::get();
-        bool editorMode = m_activeCamera == m_editorCamera;
         if (m_activeCamera == m_editorCamera) {
             if (renderToolbarButton("editor_camera", ICON_FA_CAMERA, "Edit Editor Camera Setting", m_buttonGradient)) {
-                const auto &uuidComponent = app.m_coordinator->getComponent<components::UuidComponent>(m_editorCamera);
+                const auto &uuidComponent = Application::m_coordinator->getComponent<components::UuidComponent>(m_editorCamera);
                 selector.addToSelection(uuidComponent.uuid, m_editorCamera);
             }
         } else {
             if (renderToolbarButton("switch_back", ICON_FA_EXCHANGE, "Switch back to editor camera", m_buttonGradient)) {
-                auto &oldCameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+                auto &oldCameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
                 oldCameraComponent.active = false;
                 oldCameraComponent.render = false;
                 m_activeCamera = m_editorCamera;
-                auto &editorCameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+                auto &editorCameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
                 editorCameraComponent.render = true;
                 editorCameraComponent.active = true;
             }
@@ -256,13 +257,12 @@ namespace nexo::editor {
 
     void EditorScene::renderToolbar()
     {
-        auto &app = getApp();
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
         constexpr ImVec2 buttonSize{buttonWidth, buttonHeight};
         ImVec2 originalCursorPos = ImGui::GetCursorPos();
 
-        initialToolbarSetup(buttonWidth, buttonHeight);
+        initialToolbarSetup(buttonWidth);
 
         // -------------------------------- BUTTONS -------------------------------
         // -------- Add primitve button --------
@@ -283,10 +283,10 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Gizmo operation button --------
-        static const ImNexo::ButtonProps gizmoTranslateButtonProps = ImNexo::ButtonProps{"translate", ICON_FA_ARROWS, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;}, nullptr, "Translate"};
-        static const ImNexo::ButtonProps gizmoRotateButtonProps = ImNexo::ButtonProps{"rotate", ICON_FA_REFRESH, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;}, nullptr, "Rotate"};
-        static const ImNexo::ButtonProps gizmoScaleButtonProps = ImNexo::ButtonProps{"scale", ICON_FA_EXPAND, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;}, nullptr, "Scale"};
-        static const ImNexo::ButtonProps gizmoUniversalButtonProps = ImNexo::ButtonProps{"universal", ICON_FA_ARROWS_ALT, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;}, nullptr, "Universal"};
+        static const auto gizmoTranslateButtonProps = ImNexo::ButtonProps{"translate", ICON_FA_ARROWS, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;}, nullptr, "Translate"};
+        static const auto gizmoRotateButtonProps = ImNexo::ButtonProps{"rotate", ICON_FA_REFRESH, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::ROTATE;}, nullptr, "Rotate"};
+        static const auto gizmoScaleButtonProps = ImNexo::ButtonProps{"scale", ICON_FA_EXPAND, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::SCALE;}, nullptr, "Scale"};
+        static const auto gizmoUniversalButtonProps = ImNexo::ButtonProps{"universal", ICON_FA_ARROWS_ALT, [this]() {this->m_currentGizmoOperation = ImGuizmo::OPERATION::UNIVERSAL;}, nullptr, "Universal"};
         std::vector<ImNexo::ButtonProps> gizmoButtons = {
             gizmoTranslateButtonProps,
             gizmoRotateButtonProps,
@@ -350,11 +350,10 @@ namespace nexo::editor {
 
         // -------- Grid enabled button --------
         bool rightClicked = false;
-        components::RenderContext::GridParams &gridParams = app.m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
+        components::RenderContext::GridParams &gridParams = Application::m_coordinator->getSingletonComponent<components::RenderContext>().gridParams;
         if (renderToolbarButton("grid_enabled", ICON_FA_TH_LARGE, "Enable / Disable grid", gridParams.enabled ? m_selectedGradient : m_buttonGradient, &rightClicked))
         {
             gridParams.enabled = !gridParams.enabled;
-
         }
         if (rightClicked)
             m_popupManager.openPopup("Grid settings", ImVec2(300, 180));

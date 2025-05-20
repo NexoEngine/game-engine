@@ -16,23 +16,23 @@
 
 namespace nexo::math {
 
-    const glm::vec3 projectRayToWorld(float x, float y,
+    glm::vec3 projectRayToWorld(const float x, const float y,
                                     const glm::mat4 &viewProjectionMatrix,
                                     const glm::vec3 &cameraPosition,
-                                    unsigned int width, unsigned int height
+                                    const unsigned int width, const unsigned int height
     ) {
         // Convert to NDC
-        float ndcX = (2.0f * x) / width - 1.0f;
-        float ndcY = 1.0f - (2.0f * y) / height;
+        const float ndcX = (2.0f * x) / static_cast<float>(width) - 1.0f;
+        const float ndcY = 1.0f - (2.0f * y) / static_cast<float>(height);
 
-        glm::mat4 inverseViewProj = glm::inverse(viewProjectionMatrix);
+        const glm::mat4 inverseViewProj = glm::inverse(viewProjectionMatrix);
 
         // Points in NDC space at near and far planes
         glm::vec4 nearPoint = inverseViewProj * glm::vec4(ndcX, ndcY, -1.0f, 1.0f);
 
         nearPoint /= nearPoint.w;
 
-        glm::vec3 rayDir = glm::normalize(glm::vec3(nearPoint) - cameraPosition);
+        const glm::vec3 rayDir = glm::normalize(glm::vec3(nearPoint) - cameraPosition);
 
         return rayDir;
     }

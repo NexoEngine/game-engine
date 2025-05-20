@@ -17,10 +17,9 @@
 #include "math/Vector.hpp"
 #include "core/event/Input.hpp"
 #include "renderer/Framebuffer.hpp"
-#include "ecs/Entity.hpp"
+#include "ecs/Definitions.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 
 namespace nexo::components {
 
@@ -113,17 +112,26 @@ namespace nexo::components {
             float farPlane;
             CameraType type;
             glm::vec4 clearColor;
-            bool active;
-            bool render;
             bool main;
-            bool resizing;
             std::shared_ptr<renderer::NxFramebuffer> renderTarget;
-
-            CameraComponent restore() const
-            {
-                return {width, height, viewportLocked, fov, nearPlane, farPlane, type, clearColor, active, render, main, resizing, renderTarget};
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            if (width != memento.width || height != memento.height) {
+                width = memento.width;
+                height = memento.height;
+                resize(width, height);
+            }
+            viewportLocked = memento.viewportLocked;
+            fov = memento.fov;
+            nearPlane = memento.nearPlane;
+            farPlane = memento.farPlane;
+            type = memento.type;
+            clearColor = memento.clearColor;
+            main = memento.main;
+            m_renderTarget = memento.renderTarget;
+        }
 
         [[nodiscard]] Memento save() const
         {
@@ -136,15 +144,10 @@ namespace nexo::components {
                 farPlane,
                 type,
                 clearColor,
-                active,
-                render,
                 main,
-                resizing,
                 m_renderTarget
             };
         }
-
-
     };
 
     struct EditorCameraTag {};
@@ -166,18 +169,14 @@ namespace nexo::components {
 
         struct Memento {
             float mouseSensitivity;
-            float yaw;
-            float pitch;
             float translationSpeed;
-
-            PerspectiveCameraController restore() const
-            {
-                PerspectiveCameraController controller;
-                controller.mouseSensitivity = mouseSensitivity;
-                controller.translationSpeed = translationSpeed;
-                return controller;
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            mouseSensitivity = memento.mouseSensitivity;
+            translationSpeed = memento.translationSpeed;
+        }
 
         [[nodiscard]] Memento save() const
         {
@@ -186,8 +185,6 @@ namespace nexo::components {
                 translationSpeed
             };
         }
-
-
     };
 
     /**
@@ -205,16 +202,14 @@ namespace nexo::components {
             float mouseSensitivity;
             float distance;
             ecs::Entity targetEntity;
-
-            PerspectiveCameraTarget restore() const
-            {
-                PerspectiveCameraTarget target;
-                target.mouseSensitivity = mouseSensitivity;
-                target.distance = distance;
-                target.targetEntity = targetEntity;
-                return target;
-            }
         };
+
+        void restore(const Memento& memento)
+        {
+            mouseSensitivity = memento.mouseSensitivity;
+            distance = memento.distance;
+            targetEntity = memento.targetEntity;
+        }
 
         [[nodiscard]] Memento save() const
         {
@@ -224,8 +219,6 @@ namespace nexo::components {
                 targetEntity
             };
         }
-
-
     };
 
     /**

@@ -18,7 +18,7 @@
 
 namespace nexo::editor {
 
-	void DockingRegistry::setDockId(const std::string& name, ImGuiID id)
+	void DockingRegistry::setDockId(const std::string& name, const ImGuiID id)
 	{
 		dockIds[name] = id;
 	}

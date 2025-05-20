@@ -106,7 +106,7 @@ namespace nexo {
          * @return false If this message has been logged before
          */
         bool shouldLog(const std::string& key) {
-            std::lock_guard<std::mutex> lock(m_mutex);
+            std::scoped_lock lock(m_mutex);
             return m_loggedKeys.insert(key).second;
         }
 
@@ -116,7 +116,7 @@ namespace nexo {
          * @param key The unique identifier for the message to reset
          */
         void reset(const std::string& key) {
-            std::lock_guard<std::mutex> lock(m_mutex);
+            std::scoped_lock lock(m_mutex);
             m_loggedKeys.erase(key);
         }
 
@@ -124,7 +124,7 @@ namespace nexo {
          * @brief Reset all messages so they can be logged again
          */
         void resetAll() {
-            std::lock_guard<std::mutex> lock(m_mutex);
+            std::scoped_lock lock(m_mutex);
             m_loggedKeys.clear();
         }
 
