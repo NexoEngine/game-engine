@@ -19,7 +19,6 @@
 #include <utility>
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace nexo::renderer {
 
     static constexpr unsigned int sMaxFramebufferSize = 8192;
@@ -313,7 +312,7 @@ namespace nexo::renderer {
         toResize = true;
     }
 
-    const glm::vec2 NxOpenGlFramebuffer::getSize() const
+    glm::vec2 NxOpenGlFramebuffer::getSize() const
     {
         return glm::vec2(m_specs.width, m_specs.height);
     }

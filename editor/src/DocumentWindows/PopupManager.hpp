@@ -91,14 +91,14 @@ namespace nexo::editor {
 			*
 			* Ends the current ImGui popup.
 			*/
-            void closePopup() const;
+            static void closePopup() ;
 
 			/**
 			* @brief Closes the current popup in its context.
 			*
 			* Requests ImGui to close the current popup.
 			*/
-            void closePopupInContext() const;
+            static void closePopupInContext() ;
 
             /**
              * @brief Executes the callback associated with a popup.
@@ -108,7 +108,7 @@ namespace nexo::editor {
              *
              * @param popupName The name of the popup whose callback should be executed.
              */
-            void runPopupCallback(const std::string &popupName);
+            void runPopupCallback(const std::string &popupName) const;
 
         private:
             struct TransparentHasher {

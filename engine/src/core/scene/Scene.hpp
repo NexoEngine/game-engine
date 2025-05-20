@@ -91,7 +91,7 @@ namespace nexo::scene {
 			void setName(std::string_view newName) { m_sceneName = newName; }
 			[[nodiscard]] unsigned int getId() const {return m_id;};
 			[[nodiscard]] const std::string &getUuid() const {return m_uuid;}
-			[[nodiscard]] const std::set<ecs::Entity> &getEntities() {return m_entities;};
+			[[nodiscard]] const std::set<ecs::Entity> &getEntities() const {return m_entities;};
 		private:
 			unsigned int m_id = nextSceneId++;
 			std::string m_sceneName;

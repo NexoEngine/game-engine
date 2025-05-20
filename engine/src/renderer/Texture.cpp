@@ -32,9 +32,9 @@ namespace nexo::renderer {
         return NxTextureFormat::INVALID;
     }
 
-    void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, size_t size)
+    void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, const size_t size)
     {
-        uint32_t *pixels = reinterpret_cast<uint32_t *>(bytes);
+        auto *pixels = reinterpret_cast<uint32_t *>(bytes);
         const size_t width = size / 4;
 
         for (size_t i = 0; i < width; ++i) {

@@ -1,4 +1,4 @@
-//// Material.hpp /////////////////////////////////////////////////////////////
+//// ComponentRestoreFactory.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -6,28 +6,21 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      Guillaume HEIN
-//  Date:        24/02/2025
-//  Description: Header file for the Material class
+//  Author:      Mehdy MORVAN
+//  Date:        30/04/2025
+//  Description: Header file for the restore component action factory
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#include "assets/Asset.hpp"
+#include "Action.hpp"
+#include "ecs/Definitions.hpp"
+#include <memory>
+#include <typeindex>
 
-namespace nexo::assets {
-
-    /**
-     * @class Material
-     *
-     * @brief Represents a material asset.
-     */
-    class Material final : public Asset<components::Material, AssetType::MATERIAL> {
+namespace nexo::editor {
+    class ComponentRestoreFactory {
         public:
-            Material() = default;
-
-            ~Material() override = default;
+            static std::unique_ptr<Action> createRestoreComponent(ecs::Entity entity, std::type_index typeIndex);
     };
-
 }

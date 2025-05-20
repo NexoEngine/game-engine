@@ -138,12 +138,12 @@ namespace nexo::renderer {
             virtual bool setUniformInt(const std::string &name, int value) const = 0;
             virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
-            virtual bool setUniformFloat(const NxShaderUniforms uniform, const float value) const = 0;
-            virtual bool setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
-            virtual bool setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const = 0;
-            virtual bool setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
-            virtual bool setUniformInt(const NxShaderUniforms uniform, int value) const = 0;
-            virtual bool setUniformIntArray(const NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
+            virtual bool setUniformFloat(NxShaderUniforms uniform, float value) const = 0;
+            virtual bool setUniformFloat3(NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
+            virtual bool setUniformFloat4(NxShaderUniforms uniform, const glm::vec4 &values) const = 0;
+            virtual bool setUniformMatrix(NxShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformInt(NxShaderUniforms uniform, int value) const = 0;
+            virtual bool setUniformIntArray(NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
             void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);

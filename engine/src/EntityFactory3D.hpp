@@ -14,14 +14,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 #include "assets/Assets/Model/Model.hpp"
-#include "ecs/ECSExceptions.hpp"
 #include "components/Components.hpp"
-#include "renderer/Framebuffer.hpp"
 
 namespace nexo
 {

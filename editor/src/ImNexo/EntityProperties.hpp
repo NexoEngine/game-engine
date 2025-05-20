@@ -13,14 +13,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <imgui.h>
-#include <string>
-#include <vector>
-
+#include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
 
 namespace ImNexo {
+
+    void Ambient(nexo::components::AmbientLightComponent &ambientComponent);
+
+    void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent);
+
+    void PointLight(nexo::components::PointLightComponent &pointComponent, nexo::components::TransformComponent &pointTransform);
+
+    void SpotLight(nexo::components::SpotLightComponent &spotComponent, nexo::components::TransformComponent &spotTransform);
+
 
     /**
      * @brief Renders and handles the transform component editor UI.
@@ -34,6 +40,7 @@ namespace ImNexo {
      * @param lastDisplayedEuler Reference to vector storing the last displayed euler angles for computing deltas
      */
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler);
+
 
     /**
      * @brief Renders and handles the camera component editor UI.

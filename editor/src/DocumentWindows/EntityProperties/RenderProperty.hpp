@@ -18,7 +18,7 @@
 #include "DocumentWindows/PopupManager.hpp"
 
 namespace nexo::editor {
-    class RenderProperty : public nexo::editor::AEntityProperty {
+    class RenderProperty final : public AEntityProperty {
         public:
         	using AEntityProperty::AEntityProperty;
 
@@ -46,7 +46,7 @@ namespace nexo::editor {
              *
              * @param entity The entity associated with the material being created.
              */
-            void createMaterialPopup(ecs::Entity entity) const;
+            static void createMaterialPopup(ecs::Entity entity);
         private:
         	PopupManager m_popupManager;
     };

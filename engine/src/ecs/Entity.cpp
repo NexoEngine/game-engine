@@ -11,6 +11,7 @@
 //  Description: Source file for the entity class
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #include "Entity.hpp"
 #include "ECSExceptions.hpp"
 

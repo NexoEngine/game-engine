@@ -16,11 +16,12 @@
 
 #include "ADocumentWindow.hpp"
 #include "Editor.hpp"
+#include <loguru.hpp>
 
 namespace nexo::editor {
 
-    std::string verbosityToString(const loguru::Verbosity level);
-    loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level);
+    std::string verbosityToString(loguru::Verbosity level);
+    loguru::Verbosity nexoLevelToLoguruLevel(LogLevel level);
     const ImVec4 getVerbosityColor(loguru::Verbosity level);
     std::string generateLogFilePath();
 
@@ -112,7 +113,7 @@ namespace nexo::editor {
             char m_inputBuf[512] = {};
             std::vector<std::string> m_commands; // History of executed commands.
 
-            std::string m_logFilePath = "";
+            std::string m_logFilePath;
             bool m_exportLog = true;
 
             bool m_scrollToBottom = true;
@@ -159,19 +160,15 @@ namespace nexo::editor {
              * @param fmt Format string similar to printf
              * @param args Arguments for the format string
              */
-             // Add this implementation to your ConsoleWindow.hpp file
              template<typename... Args>
-             void addLog(const char *fmt, Args &&... args)
+             void addLog(std::format_string<Args...> fmt, Args&&... args)
              {
                  try {
-                     char buffer[1024];
-                     int result = snprintf(buffer, sizeof(buffer), fmt, std::forward<Args>(args)...);
-                     if (result < 0)
-                         return;
+                     std::string formattedString = std::format(fmt, std::forward<Args>(args)...);
 
                      LogMessage newMessage;
                      newMessage.verbosity = loguru::Verbosity_1;
-                     newMessage.message = std::string(buffer);
+                     newMessage.message = formattedString;
                      newMessage.prefix = "";
                      m_logs.push_back(newMessage);
                  } catch (const std::exception &e) {
@@ -179,9 +176,19 @@ namespace nexo::editor {
                      newMessage.verbosity = loguru::Verbosity_ERROR;
 
                      char errorBuffer[1024];
-                     snprintf(errorBuffer, sizeof(errorBuffer), "Error formatting log message: %s", e.what());
-                     newMessage.message = std::string(errorBuffer);
 
+                     // format up to sizeof(errorBuffer)-1 characters
+                     auto result = std::format_to_n(
+                         std::begin(errorBuffer),
+                         std::size(errorBuffer) - 1,
+                         "Error formatting log message: {}",
+                         e.what()
+                     );
+
+                     // null-terminate
+                     *result.out = '\0';
+
+                     newMessage.message = std::string(errorBuffer);
                      newMessage.prefix = "";
                      m_logs.push_back(newMessage);
                  }
@@ -205,7 +212,7 @@ namespace nexo::editor {
              * Writes any logs in the export buffer to the configured log file,
              * helping to prevent memory buildup from excessive logging.
              */
-            void exportLogsBuffered();
+            void exportLogsBuffered() const;
 
             /**
              * @brief Displays the popup for configuring verbosity settings.

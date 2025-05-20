@@ -17,7 +17,7 @@
 namespace nexo::editor::utils {
 	std::string removeIconPrefix(const std::string &str)
 	{
-		if (size_t pos = str.find(" "); pos != std::string::npos)
+		if (const size_t pos = str.find(' '); pos != std::string::npos)
 			return str.substr(pos + 1);
 		return str;
 	}

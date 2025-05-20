@@ -11,6 +11,7 @@
 //  Description: Header file containing the transparent string hash used for maps
 //
 ///////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #include <string>
 

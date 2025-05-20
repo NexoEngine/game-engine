@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "ImNexo/ImNexo.hpp"
 #include "Nexo.hpp"
 #include "Panels.hpp"
 #include "Elements.hpp"
@@ -21,9 +22,13 @@
 #include "Path.hpp"
 #include "IconsFontAwesome.h"
 #include "assets/AssetCatalog.hpp"
+#include "components/Camera.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "context/Selector.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/EditorProps.hpp"
+#include "context/ActionManager.hpp"
 
 namespace ImNexo {
     bool MaterialInspector(nexo::components::Material *material)
@@ -53,7 +58,7 @@ namespace ImNexo {
 		ImGui::SameLine();
 		static int currentRenderingModeIndex = 0;
 		const char* renderingModeOptions[] = { "Opaque", "Transparent", "Refraction" };
-		float availableWidth = ImGui::GetContentRegionAvail().x;
+		const float availableWidth = ImGui::GetContentRegionAvail().x;
 
 		ImGui::SetNextItemWidth(availableWidth);
 		if (ImGui::Combo("##RenderingModeCombo", &currentRenderingModeIndex, renderingModeOptions, IM_ARRAYSIZE(renderingModeOptions)))
@@ -67,7 +72,7 @@ namespace ImNexo {
             static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerAlbedo = false;
 		    const auto asset = material->albedoTexture.lock();
-		    auto albedoTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
+		    const auto albedoTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
 		    if (TextureButton("Albedo texture", albedoTexture, newTexturePath)
@@ -89,7 +94,7 @@ namespace ImNexo {
             static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerSpecular = false;
 		    const auto asset = material->metallicMap.lock();
-		    auto metallicTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
+		    const auto metallicTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
 		    if (TextureButton("Specular texture", metallicTexture, newTexturePath)
@@ -118,32 +123,30 @@ namespace ImNexo {
     * @param sceneViewportSize The dimensions to use for the camera's framebuffer
     * @return The entity ID of the created camera
     */
-	static nexo::ecs::Entity createDefaultPerspectiveCamera(const nexo::scene::SceneId sceneId, ImVec2 sceneViewportSize)
+	static nexo::ecs::Entity createDefaultPerspectiveCamera(const nexo::scene::SceneId sceneId, const ImVec2 sceneViewportSize)
 	{
         auto &app = nexo::getApp();
         nexo::renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
             nexo::renderer::NxFrameBufferTextureFormats::RGBA8, nexo::renderer::NxFrameBufferTextureFormats::RED_INTEGER, nexo::renderer::NxFrameBufferTextureFormats::Depth
         };
-        const ImVec2 availSize = ImGui::GetContentRegionAvail();
-        const float totalWidth = availSize.x;
-        float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
 
         // Define layout: 60% for inspector, 40% for preview
-        const float inspectorWidth = totalWidth * 0.4f;
-        const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panel
         framebufferSpecs.width = static_cast<unsigned int>(sceneViewportSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(sceneViewportSize.y);
         const auto renderTarget = nexo::renderer::NxFramebuffer::create(framebufferSpecs);
-        nexo::ecs::Entity defaultCamera = nexo::CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
-        app.getSceneManager().getScene(sceneId).addEntity(static_cast<nexo::ecs::Entity>(defaultCamera));
+        const nexo::ecs::Entity defaultCamera = nexo::CameraFactory::createPerspectiveCamera({0.0f, 0.0f, -5.0f}, static_cast<unsigned int>(sceneViewportSize.x), static_cast<unsigned int>(sceneViewportSize.y), renderTarget);
+        app.getSceneManager().getScene(sceneId).addEntity(defaultCamera);
         nexo::editor::utils::addPropsTo(defaultCamera, nexo::editor::utils::PropsType::CAMERA);
         return defaultCamera;
 	}
 
-	bool CameraInspector(const nexo::scene::SceneId sceneId, ImVec2 sceneViewportSize)
+	bool CameraInspector(const nexo::scene::SceneId sceneId)
 	{
 	    auto &app = nexo::getApp();
+		static int undoStackSize = -1;
+		if (undoStackSize == -1)
+		    undoStackSize = static_cast<int>(nexo::editor::ActionManager::get().getUndoStackSize());
 
         const ImVec2 availSize = ImGui::GetContentRegionAvail();
         const float totalWidth = availSize.x;
@@ -161,20 +164,19 @@ namespace ImNexo {
         static char cameraName[128] = "";
         static bool nameIsEmpty = false;
         static bool closingPopup = false;
-        static bool result = false;
 
         // We do this since imgui seems to render once more the popup, so we need to wait one frame before deleting
         // the render target
         if (closingPopup) {
             // Now it's safe to delete the entity
-            auto &app = nexo::getApp();
             app.deleteEntity(camera);
 
             camera = nexo::ecs::MAX_ENTITIES;
             cameraName[0] = '\0';
             nameIsEmpty = false;
+            undoStackSize = -1;
             closingPopup = false;
-
+            ImGui::CloseCurrentPopup();
             return true;
         }
         ImGui::Columns(2, "CameraCreatorColumns", false);
@@ -208,9 +210,19 @@ namespace ImNexo {
 
             if (Header("##CameraNode", "Camera"))
             {
-                auto &cameraComponent = app.m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
+                auto &cameraComponent = nexo::Application::m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
                 cameraComponent.render = true;
+                static nexo::components::CameraComponent::Memento beforeState;
+                auto cameraComponentCopy = cameraComponent;
+                resetItemStates();
                 Camera(cameraComponent);
+                if (isItemActivated()) {
+                    beforeState = cameraComponentCopy.save();
+                } else if (isItemDeactivated()) {
+                    auto afterState = cameraComponent.save();
+                    auto action = std::make_unique<nexo::editor::ComponentChangeAction<nexo::components::CameraComponent>>(camera, beforeState, afterState);
+                    nexo::editor::ActionManager::get().recordAction(std::move(action));
+                }
                 ImGui::TreePop();
             }
 
@@ -221,24 +233,54 @@ namespace ImNexo {
             if (Header("##TransformNode", "Transform Component"))
             {
                 static glm::vec3 lastDisplayedEuler(0.0f);
-                auto &transformComponent = app.m_coordinator->getComponent<nexo::components::TransformComponent>(camera);
+                auto &transformComponent = nexo::Application::m_coordinator->getComponent<nexo::components::TransformComponent>(camera);
+                static nexo::components::TransformComponent::Memento beforeState;
+                resetItemStates();
+                auto transformComponentCopy = transformComponent;
                 Transform(transformComponent, lastDisplayedEuler);
+                if (isItemActivated()) {
+                    beforeState = transformComponentCopy.save();
+                } else if (isItemDeactivated()) {
+                    auto afterState = transformComponent.save();
+                    auto action = std::make_unique<nexo::editor::ComponentChangeAction<nexo::components::TransformComponent>>(camera, beforeState, afterState);
+                    nexo::editor::ActionManager::get().recordAction(std::move(action));
+                }
                 ImGui::TreePop();
             }
 
-            if (app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
+            if (nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
                 Header("##PerspectiveCameraTarget", "Camera Target Component"))
             {
-                auto &cameraTargetComponent = app.m_coordinator->getComponent<nexo::components::PerspectiveCameraTarget>(camera);
+                auto &cameraTargetComponent = nexo::Application::m_coordinator->getComponent<nexo::components::PerspectiveCameraTarget>(camera);
+                nexo::components::PerspectiveCameraTarget::Memento beforeState{};
+                resetItemStates();
+                auto cameraTargetComponentCopy = cameraTargetComponent;
                 CameraTarget(cameraTargetComponent);
+                if (isItemActivated()) {
+                    beforeState = cameraTargetComponentCopy.save();
+                } else if (isItemDeactivated()) {
+                    auto afterState = cameraTargetComponent.save();
+                    auto action = std::make_unique<nexo::editor::ComponentChangeAction<nexo::components::PerspectiveCameraTarget>>(camera, beforeState, afterState);
+                    nexo::editor::ActionManager::get().recordAction(std::move(action));
+                }
                 ImGui::TreePop();
             }
 
-            if (app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
+            if (nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
                 Header("##PerspectiveCameraController", "Camera Controller Component"))
             {
-                auto &cameraControllerComponent = app.m_coordinator->getComponent<nexo::components::PerspectiveCameraController>(camera);
+                auto &cameraControllerComponent = nexo::Application::m_coordinator->getComponent<nexo::components::PerspectiveCameraController>(camera);
+                nexo::components::PerspectiveCameraController::Memento beforeState{};
+                auto cameraControllerComponentCopy = cameraControllerComponent;
+                resetItemStates();
                 CameraController(cameraControllerComponent);
+                if (isItemActivated()) {
+                    beforeState = cameraControllerComponentCopy.save();
+                } else if (isItemDeactivated()) {
+                    auto afterState = cameraControllerComponent.save();
+                    auto action = std::make_unique<nexo::editor::ComponentChangeAction<nexo::components::PerspectiveCameraController>>(camera, beforeState, afterState);
+                    nexo::editor::ActionManager::get().recordAction(std::move(action));
+                }
                 ImGui::TreePop();
             }
 
@@ -255,12 +297,12 @@ namespace ImNexo {
             // Static variables for state tracking
             static bool showComponentSelector = false;
             static float animProgress = 0.0f;
-            static float lastClickTime = 0.0f;
+            static double lastClickTime = 0.0f;
 
             // Button with arrow indicating state
             std::string buttonText = "Add Component " + std::string(showComponentSelector ? ICON_FA_CHEVRON_UP : ICON_FA_CHEVRON_DOWN);
 
-            if (Button(buttonText.c_str(), ImVec2(buttonWidth, 0)))
+            if (Button(buttonText, ImVec2(buttonWidth, 0)))
             {
                 showComponentSelector = !showComponentSelector;
                 if (showComponentSelector) {
@@ -274,12 +316,12 @@ namespace ImNexo {
             if (showComponentSelector)
             {
                 // Animation calculation
-                const float animDuration = 0.25f;
-                float timeSinceClick = ImGui::GetTime() - lastClickTime;
+                constexpr float animDuration = 0.25f;
+                auto timeSinceClick = static_cast<float>(ImGui::GetTime() - lastClickTime);
                 animProgress = std::min(timeSinceClick / animDuration, 1.0f);
 
                 // Simplified component grid with compact layout
-                const float maxGridHeight = 90.0f;
+                constexpr float maxGridHeight = 90.0f;
                 const float currentHeight = maxGridHeight * animProgress;
 
                 // Create child window for components with animated height
@@ -291,27 +333,29 @@ namespace ImNexo {
 
                 if (animProgress > 0.5f)
                 {
-                    // Center elements horizontally with proper spacing
-                    const float itemSize = 75.0f;
 
                     // Draw component buttons side-by-side with controlled spacing
                     ImGui::BeginGroup();
 
-                    if (!app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
-                        !app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
+                    if (!nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
+                        !nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
                         ButtonWithIconAndText("camera_target", ICON_FA_CAMERA, "Camera target", ImVec2(75.0f, 75.0f)))
                     {
+                        auto action = std::make_unique<nexo::editor::ComponentAddAction<nexo::components::PerspectiveCameraTarget>>(camera);
+                        nexo::editor::ActionManager::get().recordAction(std::move(action));
                         nexo::components::PerspectiveCameraTarget cameraTarget{};
-                        app.m_coordinator->addComponent(camera, cameraTarget);
+                        nexo::Application::m_coordinator->addComponent(camera, cameraTarget);
                         showComponentSelector = false;
                     }
                     ImGui::SameLine();
-                    if (!app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
-                        !app.m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
+                    if (!nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraTarget>(camera) &&
+                        !nexo::Application::m_coordinator->entityHasComponent<nexo::components::PerspectiveCameraController>(camera) &&
                         ButtonWithIconAndText("camera_controller", ICON_FA_GAMEPAD, "Camera Controller", ImVec2(75.0f, 75.0f)))
                     {
+                        auto action = std::make_unique<nexo::editor::ComponentAddAction<nexo::components::PerspectiveCameraController>>(camera);
+                        nexo::editor::ActionManager::get().recordAction(std::move(action));
                         nexo::components::PerspectiveCameraController cameraController{};
-                        app.m_coordinator->addComponent(camera, cameraController);
+                        nexo::Application::m_coordinator->addComponent(camera, cameraController);
                         showComponentSelector = false;
                     }
                     ImGui::EndGroup();
@@ -333,8 +377,7 @@ namespace ImNexo {
         {
             ImGui::BeginChild("CameraPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
-            auto &app = nexo::getApp();
-            nexo::Application::SceneInfo sceneInfo{static_cast<nexo::scene::SceneId>(sceneId), nexo::RenderingType::FRAMEBUFFER};
+            nexo::Application::SceneInfo sceneInfo{sceneId, nexo::RenderingType::FRAMEBUFFER};
             app.run(sceneInfo);
             auto const &cameraComponent = nexo::Application::m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
@@ -343,7 +386,7 @@ namespace ImNexo {
             const float displayWidth = displayHeight;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
-            ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
+            Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
                         ImVec2(displayWidth, displayHeight));
 
             ImGui::EndChild();
@@ -363,19 +406,25 @@ namespace ImNexo {
             }
             nameIsEmpty = false;
             auto &selector = nexo::editor::Selector::get();
-            auto &uuid = app.m_coordinator->getComponent<nexo::components::UuidComponent>(camera);
-            auto &cameraComponent = app.m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
+            const auto &uuid = nexo::Application::m_coordinator->getComponent<nexo::components::UuidComponent>(camera);
+            auto &cameraComponent = nexo::Application::m_coordinator->getComponent<nexo::components::CameraComponent>(camera);
             cameraComponent.active = false;
             selector.setUiHandle(uuid.uuid, std::string(ICON_FA_CAMERA "  ") + cameraName);
+            unsigned int stackSize = nexo::editor::ActionManager::get().getUndoStackSize() - undoStackSize;
+            nexo::editor::ActionManager::get().clearHistory(stackSize);
+            auto action = std::make_unique<nexo::editor::EntityCreationAction>(camera);
+            nexo::editor::ActionManager::get().recordAction(std::move(action));
             camera = nexo::ecs::MAX_ENTITIES;
             cameraName[0] = '\0';
+            undoStackSize = -1;
             ImGui::CloseCurrentPopup();
             return true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
-            ImGui::CloseCurrentPopup();
+            unsigned int stackSize = nexo::editor::ActionManager::get().getUndoStackSize() - undoStackSize;
+            nexo::editor::ActionManager::get().clearHistory(stackSize);
             closingPopup = true;
             return false;
         }

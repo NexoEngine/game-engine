@@ -49,6 +49,8 @@ namespace nexo::ecs {
          * @param entity The entity being destroyed
          */
         virtual void entityDestroyed(Entity entity) = 0;
+
+        virtual void duplicateComponent(Entity sourceEntity, Entity destEntity) = 0;
     };
 
     /**
@@ -194,6 +196,14 @@ namespace nexo::ecs {
             if (!hasComponent(entity))
                 THROW_EXCEPTION(ComponentNotFound, entity);
             return m_componentArray[m_sparse[entity]];
+        }
+
+        void duplicateComponent(Entity sourceEntity, Entity destEntity) override
+        {
+            if (!hasComponent(sourceEntity))
+                THROW_EXCEPTION(ComponentNotFound, sourceEntity);
+
+            insert(destEntity, get(sourceEntity));
         }
 
         /**
