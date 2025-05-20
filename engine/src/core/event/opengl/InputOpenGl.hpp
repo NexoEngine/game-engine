@@ -19,7 +19,7 @@
 namespace nexo::event {
     class InputOpenGl final : public Input {
         public:
-        explicit InputOpenGl(const std::shared_ptr<renderer::Window>& window) : Input(window)
+        explicit InputOpenGl(const std::shared_ptr<renderer::NxWindow>& window) : Input(window)
         {
             LOG(NEXO_DEV, "Opengl input handler initialized");
         };

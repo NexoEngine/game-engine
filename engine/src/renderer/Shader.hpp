@@ -23,11 +23,42 @@
 
 namespace nexo::renderer {
 
+    enum class NxShaderUniforms {
+        VIEW_PROJECTION,
+        MODEL_MATRIX,
+        CAMERA_POSITION,
+
+        TEXTURE_SAMPLER,
+
+        DIR_LIGHT,
+        AMBIENT_LIGHT,
+        POINT_LIGHT_ARRAY,
+        NB_POINT_LIGHT,
+        SPOT_LIGHT_ARRAY,
+        NB_SPOT_LIGHT,
+
+        MATERIAL
+    };
+
+    inline const std::unordered_map<NxShaderUniforms, std::string> ShaderUniformsName = {
+        {NxShaderUniforms::VIEW_PROJECTION, "uViewProjection"},
+        {NxShaderUniforms::MODEL_MATRIX, "uMatModel"},
+        {NxShaderUniforms::CAMERA_POSITION, "uCamPos"},
+        {NxShaderUniforms::TEXTURE_SAMPLER, "uTexture"},
+        {NxShaderUniforms::DIR_LIGHT, "uDirLight"},
+        {NxShaderUniforms::AMBIENT_LIGHT, "uAmbientLight"},
+        {NxShaderUniforms::POINT_LIGHT_ARRAY, "uPointLights"},
+        {NxShaderUniforms::NB_POINT_LIGHT, "uNbPointLights"},
+        {NxShaderUniforms::SPOT_LIGHT_ARRAY, "uSpotLights"},
+        {NxShaderUniforms::NB_SPOT_LIGHT, "uNbSpotLights"},
+        {NxShaderUniforms::MATERIAL, "uMaterial"}
+    };
+
     /**
-    * @class Shader
+    * @class NxShader
     * @brief Abstract class representing a shader program in the rendering pipeline.
     *
-    * The `Shader` class provides a generic interface for creating and managing shader
+    * The `NxShader` class provides a generic interface for creating and managing shader
     * programs. These programs are used to execute rendering operations on the GPU.
     *
     * Responsibilities:
@@ -36,18 +67,18 @@ namespace nexo::renderer {
     * - Set uniform variables to pass data from the CPU to the GPU.
     *
     * Subclasses:
-    * - `OpenGlShader`: Implements this interface using OpenGL-specific functionality.
+    * - `NxOpenGlShader`: Implements this interface using OpenGL-specific functionality.
     *
     * Example Usage:
     * ```cpp
-    * auto shader = Shader::create("path/to/shader.glsl");
+    * auto shader = NxShader::create("path/to/shader.glsl");
     * shader->bind();
     * shader->setUniformFloat("uTime", 1.0f);
     * ```
     */
-    class Shader {
+    class NxShader {
         public:
-            virtual ~Shader() = default;
+            virtual ~NxShader() = default;
 
             /**
             * @brief Creates a shader program from a source file.
@@ -59,10 +90,10 @@ namespace nexo::renderer {
             * @return A shared pointer to the created `Shader` instance.
             *
             * Throws:
-            * - `UnknownGraphicsApi` if no graphics API is supported.
-            * - `ShaderCreationFailed` if shader compilation fails.
+            * - `NxUnknownGraphicsApi` if no graphics API is supported.
+            * - `NxShaderCreationFailed` if shader compilation fails.
             */
-            static std::shared_ptr<Shader> create(const std::string &path);
+            static std::shared_ptr<NxShader> create(const std::string &path);
 
             /**
             * @brief Creates a shader program from source code strings.
@@ -75,10 +106,10 @@ namespace nexo::renderer {
             * @return A shared pointer to the created `Shader` instance.
             *
             * Throws:
-            * - `UnknownGraphicsApi` if no graphics API is supported.
-            * - `ShaderCreationFailed` if shader compilation fails.
+            * - `NxUnknownGraphicsApi` if no graphics API is supported.
+            * - `NxShaderCreationFailed` if shader compilation fails.
             */
-            static std::shared_ptr<Shader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
+            static std::shared_ptr<NxShader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
 
             /**
             * @brief Binds the shader program for use in the rendering pipeline.
@@ -99,13 +130,22 @@ namespace nexo::renderer {
             virtual void unbind() const = 0;
 
             virtual bool setUniformFloat(const std::string &name, float value) const = 0;
+            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const = 0;
             virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
             virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
             virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformBool(const std::string &name, bool value) const = 0;
             virtual bool setUniformInt(const std::string &name, int value) const = 0;
             virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
 
-            void addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer);
+            virtual bool setUniformFloat(const NxShaderUniforms uniform, const float value) const = 0;
+            virtual bool setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
+            virtual bool setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const = 0;
+            virtual bool setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
+            virtual bool setUniformInt(const NxShaderUniforms uniform, int value) const = 0;
+            virtual bool setUniformIntArray(const NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
+
+            void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
             virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
             virtual void bindStorageBuffer(unsigned int index) const = 0;
@@ -115,18 +155,9 @@ namespace nexo::renderer {
             virtual unsigned int getProgramId() const = 0;
         protected:
             static std::string readFile(const std::string &filepath);
-        	std::vector<std::shared_ptr<ShaderStorageBuffer>> m_storageBuffers;
+        	std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
+            std::unordered_map<NxShaderUniforms, int> m_uniformLocations;
     };
 
-    class ShaderLibrary {
-        public:
-            void add(const std::shared_ptr<Shader> &shader);
-            void add(const std::string &name, const std::shared_ptr<Shader> &shader);
-            std::shared_ptr<Shader> load(const std::string &path);
-            std::shared_ptr<Shader> load(const std::string &name, const std::string &path);
-            std::shared_ptr<Shader> load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource);
-            std::shared_ptr<Shader> get(const std::string &name) const;
-        private:
-            std::unordered_map<std::string , std::shared_ptr<Shader>> m_shaders;
-    };
+
 }

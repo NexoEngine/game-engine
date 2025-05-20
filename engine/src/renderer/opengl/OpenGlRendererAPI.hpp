@@ -18,11 +18,11 @@
 namespace nexo::renderer {
 
     /**
-    * @class OpenGlRendererApi
+    * @class NxOpenGlRendererApi
     * @brief Implementation of the RendererApi interface using OpenGL.
     *
-    * The `OpenGlRendererApi` class provides OpenGL-specific implementations for the
-    * methods defined in `RendererApi`. It interacts directly with OpenGL functions
+    * The `NxOpenGlRendererApi` class provides OpenGL-specific implementations for the
+    * methods defined in `NxRendererApi`. It interacts directly with OpenGL functions
     * to configure and manage rendering operations.
     *
     * Responsibilities:
@@ -30,7 +30,7 @@ namespace nexo::renderer {
     * - Provide access to OpenGL-specific features like blending and depth testing.
     * - Issue draw calls for indexed geometry.
     */
-    class OpenGlRendererApi final : public RendererApi {
+    class NxOpenGlRendererApi final : public NxRendererApi {
         public:
             /**
             * @brief Initializes the OpenGL renderer API.
@@ -41,7 +41,7 @@ namespace nexo::renderer {
             * - Configuring maximum viewport dimensions.
             *
             * Throws:
-            * - GraphicsApiNotInitialized if OpenGL fails to initialize.
+            * - NxGraphicsApiNotInitialized if OpenGL fails to initialize.
             */
             void init() override;
 
@@ -57,7 +57,7 @@ namespace nexo::renderer {
             * @param height The height of the viewport in pixels.
             *
             * Throws:
-            * - GraphicsApiViewportResizingFailure if the dimensions exceed the maximum allowed size.
+            * - NxGraphicsApiViewportResizingFailure if the dimensions exceed the maximum allowed size.
             */
             void setViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
 
@@ -78,7 +78,7 @@ namespace nexo::renderer {
             * Resets the color and depth buffers using the current clear color and depth values.
             *
             * Throws:
-            * - GraphicsApiNotInitialized if OpenGL is not initialized.
+            * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
             */
             void clear() override;
 
@@ -90,7 +90,7 @@ namespace nexo::renderer {
             * @param color A `glm::vec4` containing the red, green, blue, and alpha components of the clear color.
             *
             * Throws:
-            * - GraphicsApiNotInitialized if OpenGL is not initialized.
+            * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
             */
             void setClearColor(const glm::vec4 &color) override;
 
@@ -102,23 +102,34 @@ namespace nexo::renderer {
             * @param depth A float value representing the clear depth.
             *
             * Throws:
-            * - GraphicsApiNotInitialized if OpenGL is not initialized.
+            * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
             */
             void setClearDepth(float depth) override;
+
+            void setDepthTest(bool enable) override;
+            void setDepthFunc(unsigned int func) override;
+            void setDepthMask(bool enable) override;
 
             /**
              * @brief Renders indexed geometry using OpenGL.
              *
-             * Issues a draw call for indexed primitives using data from the specified `VertexArray`.
+             * Issues a draw call for indexed primitives using data from the specified `NxVertexArray`.
              *
-             * @param vertexArray A shared pointer to the `VertexArray` containing vertex and index data.
+             * @param vertexArray A shared pointer to the `NxVertexArray` containing vertex and index data.
              * @param indexCount The number of indices to draw. If zero, all indices in the buffer are used.
              *
              * Throws:
-             * - GraphicsApiNotInitialized if OpenGL is not initialized.
-             * - InvalidValue if the `vertexArray` is null.
+             * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
+             * - NxInvalidValue if the `vertexArray` is null.
              */
-            void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int indexCount = 0) override;
+            void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, unsigned int indexCount = 0) override;
+
+            void drawUnIndexed(unsigned int verticesCount) override;
+
+            void setStencilTest(bool enable) override;
+            void setStencilMask(unsigned int mask) override;
+            void setStencilFunc(unsigned int func, int ref, unsigned int mask) override;
+            void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) override;
         private:
             bool m_initialized = false;
             unsigned int m_maxWidth = 0;

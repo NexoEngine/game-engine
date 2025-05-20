@@ -43,7 +43,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${NEXO_VERSION_PATCH}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "NexoEngine")
 
 # Set the icon path
-set(NEXO_ICON_PATH "${CMAKE_SOURCE_DIR}/assets/nexo.ico")
+set(NEXO_ICON_PATH "${CMAKE_SOURCE_DIR}/resources/nexo.ico")
 
 # Configs for different package generators (but not the actual CPack configuration)
 include("${CMAKE_SOURCE_DIR}/scripts/linux/deb_config.cmake")
@@ -72,6 +72,7 @@ cpack_add_component(headers
                     DISABLED
                     GROUP optional
 )
+
 cpack_add_component_group(optional
                           DISPLAY_NAME "Optional Components"
                           DESCRIPTION "Optional components of the NEXO Engine."

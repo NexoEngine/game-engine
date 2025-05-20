@@ -13,49 +13,48 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "src/Editor.hpp"
-#include "src/DocumentWindows/ConsoleWindow.hpp"
-#include "src/DocumentWindows/EditorScene.hpp"
-#include "src/DocumentWindows/SceneTreeWindow.hpp"
-#include "src/DocumentWindows/InspectorWindow.hpp"
-#include "src/DocumentWindows/AssetManagerWindow.hpp"
-#include "src/DocumentWindows/MaterialInspector.hpp"
+#include "src/DocumentWindows/ConsoleWindow/ConsoleWindow.hpp"
+#include "src/DocumentWindows/EditorScene/EditorScene.hpp"
+#include "src/DocumentWindows/SceneTreeWindow/SceneTreeWindow.hpp"
+#include "src/DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+#include "src/DocumentWindows/AssetManager/AssetManagerWindow.hpp"
+#include "src/DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 
 #include <thread>
+#include <tinyfiledialogs.h>
 #include <core/exceptions/Exceptions.hpp>
 
 int main(int argc, char **argv)
-{
-    try {
-        loguru::init(argc, argv);
-        loguru::g_stderr_verbosity = loguru::Verbosity_3;
-        nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
+try {
+    loguru::init(argc, argv);
+    loguru::g_stderr_verbosity = loguru::Verbosity_3;
+    nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
 
-        editor.registerWindow<nexo::editor::EditorScene>("Default scene");
-        editor.registerWindow<nexo::editor::SceneTreeWindow>("Scene tree");
-        editor.registerWindow<nexo::editor::InspectorWindow>("Inspector");
-        editor.registerWindow<nexo::editor::ConsoleWindow>("Console");
-        editor.registerWindow<nexo::editor::MaterialInspector>("Material inspector");
-        editor.registerWindow<nexo::editor::AssetManagerWindow>("Asset Manager");
+    editor.registerWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0));
+    editor.registerWindow<nexo::editor::SceneTreeWindow>(NEXO_WND_USTRID_SCENE_TREE);
+    editor.registerWindow<nexo::editor::InspectorWindow>(NEXO_WND_USTRID_INSPECTOR);
+    editor.registerWindow<nexo::editor::ConsoleWindow>(NEXO_WND_USTRID_CONSOLE);
+    editor.registerWindow<nexo::editor::MaterialInspector>(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
+    editor.registerWindow<nexo::editor::AssetManagerWindow>(NEXO_WND_USTRID_ASSET_MANAGER);
 
-        if (auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default scene").lock())
-            defaultScene->setDefault();
+    if (auto defaultScene = editor.getWindow<nexo::editor::EditorScene>("Default Scene" NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(0)).lock())
+        defaultScene->setDefault();
 
-        editor.init();
+    editor.init();
 
-        while (editor.isOpen())
-        {
-            auto start = std::chrono::high_resolution_clock::now();
-            editor.render();
-            editor.update();
+    while (editor.isOpen())
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        editor.render();
+        editor.update();
 
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = end - start;
-            std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
-        }
-        editor.shutdown();
-        return 0;
-    } catch (const nexo::Exception &e) {
-        LOG_EXCEPTION(e);
-        return 1;
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
     }
+    editor.shutdown();
+    return 0;
+} catch (const nexo::Exception &e) {
+    LOG_EXCEPTION(e);
+    return 1;
 }

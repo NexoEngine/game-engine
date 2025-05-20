@@ -1,10 +1,8 @@
 # Prevent pushing window layouts
-config/default-layout.ini
+./config/default-layout.ini
 
-src/server/server
-src/server/Makefile
-src/client/client
-src/client/Makefile
+# Do not push auto generated COPYRIGHT
+COPYRIGHT_generated
 
 # Prerequisites
 *.d
@@ -37,8 +35,6 @@ src/client/Makefile
 *.exe
 *.out
 *.app
-*r-type_server*
-*r-type_client*
 
 # Directory for CMake builds
 */build/
@@ -49,12 +45,6 @@ src/client/Makefile
 # Zed editor
 .cache
 .zed
-
-random
-robot.glb
-example_game_engine
-
-src/client/main.cpp
 
 ### CLion template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider

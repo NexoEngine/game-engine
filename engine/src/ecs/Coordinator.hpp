@@ -24,6 +24,83 @@
 #include "Logger.hpp"
 
 namespace nexo::ecs {
+
+    template <typename T>
+    struct Exclude {
+        using type = T;
+    };
+
+    // Check if type is an Exclude specialization
+    template <typename T>
+    struct is_exclude : std::false_type {};
+
+    template <typename T>
+    struct is_exclude<Exclude<T>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_exclude_v = is_exclude<T>::value;
+
+    // Extract the actual type from Exclude<T>
+    template <typename T>
+    struct extract_type {
+        using type = T;
+    };
+
+    template <typename T>
+    struct extract_type<Exclude<T>> {
+        using type = T;
+    };
+
+    template <typename T>
+    using extract_type_t = typename extract_type<T>::type;
+
+    // Check if T has a nested Memento type
+    template<typename T, typename = void>
+    struct has_memento_type : std::false_type {};
+
+    template<typename T>
+    struct has_memento_type<T, std::void_t<typename T::Memento>> : std::true_type {};
+
+    // Check if T has a save() method that returns Memento
+    template<typename T, typename = void>
+    struct has_save_method : std::false_type {};
+
+    template<typename T>
+    struct has_save_method<T,
+        std::void_t<decltype(std::declval<const T&>().save())>>
+        : std::is_same<decltype(std::declval<const T&>().save()), typename T::Memento> {};
+
+    // Check if T::Memento has a restore() method that returns T
+    template<typename T, typename = void>
+    struct has_restore_method : std::false_type {};
+
+    template<typename T>
+    struct has_restore_method<T,
+        std::void_t<decltype(std::declval<typename T::Memento>().restore())>>
+        : std::is_same<decltype(std::declval<typename T::Memento>().restore()), T> {};
+
+    // Combined check for full memento pattern support
+    template<typename T>
+    struct supports_memento_pattern :
+        std::conjunction<
+            has_memento_type<T>,
+            has_save_method<T>,
+            has_restore_method<T>
+        > {};
+
+    template<typename T>
+    inline constexpr bool has_memento_type_v = has_memento_type<T>::value;
+
+    template<typename T>
+    inline constexpr bool has_save_method_v = has_save_method<T>::value;
+
+    template<typename T>
+    inline constexpr bool has_restore_method_v = has_restore_method<T>::value;
+
+    template<typename T>
+    inline constexpr bool supports_memento_pattern_v = supports_memento_pattern<T>::value;
+
+
     /**
      * @class Coordinator
      *
@@ -60,27 +137,48 @@ namespace nexo::ecs {
             * @brief Registers a new component type within the ComponentManager.
             */
             template <typename T>
-            void registerComponent() {
+            void registerComponent()
+            {
                 m_componentManager->registerComponent<T>();
-                m_hasComponentFunctions[typeid(T)] = [this](Entity entity) -> bool {
-                    return this->entityHasComponent<T>(entity);
-                };
 
                 m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
                     return std::any(this->getComponent<T>(entity));
                 };
+                m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
+
+                m_addComponentFunctions[typeid(T)] = [this](Entity entity, const std::any& componentAny) {
+                    T component = std::any_cast<T>(componentAny);
+                    this->addComponent<T>(entity, component);
+                };
+
+                if constexpr (supports_memento_pattern_v<T>) {
+                    m_supportsMementoPattern.emplace(typeid(T), true);
+
+                    m_saveComponentFunctions[typeid(T)] = [](const std::any& componentAny) -> std::any {
+                        const T& component = std::any_cast<const T&>(componentAny);
+                        return std::any(component.save());
+                    };
+
+                    m_restoreComponentFunctions[typeid(T)] = [](const std::any& mementoAny) -> std::any {
+                        const typename T::Memento& memento = std::any_cast<const typename T::Memento&>(mementoAny);
+                        return std::any(memento.restore());
+                    };
+                } else {
+                    m_supportsMementoPattern.emplace(typeid(T), false);
+                }
             }
 
             /**
              * @brief Registers a new singleton component
              *
              * @tparam T Class that should inherit from SingletonComponent class
-             * @param component
+             * @param args Optional argument to forward to the singleton component constructor
              */
-             template <typename T, typename... Args>
-             void registerSingletonComponent(Args&&... args) {
-                 m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
-             }
+            template <typename T, typename... Args>
+            void registerSingletonComponent(Args&&... args)
+            {
+                m_singletonComponentManager->registerSingletonComponent<T>(std::forward<Args>(args)...);
+            }
 
             /**
             * @brief Adds a component to an entity, updates its signature, and notifies systems.
@@ -89,14 +187,16 @@ namespace nexo::ecs {
             * @param component - The component to add to the entity.
             */
             template <typename T>
-            void addComponent(const Entity entity, T component) {
-                m_componentManager->addComponent<T>(entity, component);
-
-                auto signature = m_entityManager->getSignature(entity);
+            void addComponent(const Entity entity, T component)
+            {
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), true);
+                m_componentManager->addComponent<T>(entity, component, oldSignature, signature);
+
                 m_entityManager->setSignature(entity, signature);
 
-                m_systemManager->entitySignatureChanged(entity, signature);
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
             }
 
             /**
@@ -107,13 +207,15 @@ namespace nexo::ecs {
             template<typename T>
             void removeComponent(const Entity entity) const
             {
-                m_componentManager->removeComponent<T>(entity);
-
-                auto signature = m_entityManager->getSignature(entity);
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
                 signature.set(m_componentManager->getComponentType<T>(), false);
+                m_componentManager->removeComponent<T>(entity, oldSignature, signature);
+
+
                 m_entityManager->setSignature(entity, signature);
 
-                m_systemManager->entitySignatureChanged(entity, signature);
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
             }
 
             /**
@@ -127,13 +229,14 @@ namespace nexo::ecs {
             template<typename T>
             void tryRemoveComponent(const Entity entity) const
             {
-                if (m_componentManager->tryRemoveComponent<T>(entity))
+                Signature signature = m_entityManager->getSignature(entity);
+                Signature oldSignature = signature;
+                signature.set(m_componentManager->getComponentType<T>(), false);
+                if (m_componentManager->tryRemoveComponent<T>(entity, oldSignature, signature))
                 {
-                    auto signature = m_entityManager->getSignature(entity);
-                    signature.set(m_componentManager->getComponentType<T>(), false);
                     m_entityManager->setSignature(entity, signature);
 
-                    m_systemManager->entitySignatureChanged(entity, signature);
+                    m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
                 }
             }
 
@@ -155,8 +258,21 @@ namespace nexo::ecs {
             * @return T& - Reference to the requested component.
             */
             template <typename T>
-            T &getComponent(const Entity entity) {
+            T &getComponent(const Entity entity)
+            {
                 return m_componentManager->getComponent<T>(entity);
+            }
+
+            /**
+             * @brief Retrieves the component array for a specific component type
+             *
+             * @tparam T The component type
+             * @return std::shared_ptr<ComponentArray<T>> Shared pointer to the component array
+             */
+            template <typename T>
+            std::shared_ptr<ComponentArray<T>> getComponentArray()
+            {
+                return m_componentManager->getComponentArray<T>();
             }
 
             /**
@@ -179,8 +295,21 @@ namespace nexo::ecs {
              * @return T& The instance of the desired singleton component
              */
             template <typename T>
-            T &getSingletonComponent() {
+            T &getSingletonComponent()
+            {
                 return m_singletonComponentManager->getSingletonComponent<T>();
+            }
+
+            /**
+             * @brief Get the Raw Singleton Component object
+             *
+             * @tparam T Class that should inherit from the SingletonComponent class
+             * @return std::shared_ptr<ISingletonComponent> The pointer to the desired singleton component
+             */
+            template <typename T>
+            std::shared_ptr<ISingletonComponent> getRawSingletonComponent() const
+            {
+                return m_singletonComponentManager->getRawSingletonComponent<T>();
             }
 
             /**
@@ -200,32 +329,41 @@ namespace nexo::ecs {
             std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
 
             /**
-             * @brief Retrieves all entities that have the specified components.
-             *
-             * @tparam Components The component types to filter by.
-             * @return std::set<Entity> A set of entities that contain all the specified components.
-             */
+            * @brief Retrieves all entities that have the specified components.
+            *
+            * @tparam Components The component types to filter by.
+            * @return std::set<Entity> A set of entities that contain all the specified components.
+            */
             template<typename... Components>
-            std::set<Entity> getAllEntitiesWith() const
+            std::vector<Entity> getAllEntitiesWith() const
             {
-	            Signature requiredSignature;
-	            (requiredSignature.set(m_componentManager->getComponentType<Components>(), true), ...);
+                // Prepare signatures
+                Signature requiredSignature;
+                Signature excludeSignature;
 
-				std::uint32_t checkedEntities = 0;
-				std::uint32_t livingEntities = m_entityManager->getLivingEntityCount();
-    			std::set<Entity> result;
-				for (Entity i = 0; i < MAX_ENTITIES; ++i)
-				{
-					Signature entitySignature = m_entityManager->getSignature(i);
-					if (entitySignature.none())
-						continue;
-					if ((entitySignature & requiredSignature) == requiredSignature)
-						result.insert(i);
-					checkedEntities++;
-					if (checkedEntities > livingEntities)
-						break;
-				}
-				return result;
+                // Process each component type
+                (processComponentSignature<Components>(requiredSignature, excludeSignature), ...);
+
+                // Query entities
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                std::vector<Entity> result;
+                result.reserve(livingEntities.size());
+
+                for (Entity entity : livingEntities)
+                {
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
+
+                    // Entity must have all required components
+                    bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
+
+                    // Entity must not have any excluded components
+                    bool hasAnyExcluded = (entitySignature & excludeSignature).any();
+
+                    if (hasAllRequired && !hasAnyExcluded)
+                        result.push_back(entity);
+                }
+
+                return result;
             }
 
             /**
@@ -240,14 +378,63 @@ namespace nexo::ecs {
             }
 
             /**
-            * @brief Registers a new system within the SystemManager.
+            * @brief Registers a new query system
             *
-            * @return std::shared_ptr<T> - Shared pointer to the newly registered system.
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
             */
-            template <typename T>
-            std::shared_ptr<T> registerSystem() {
-                return m_systemManager->registerSystem<T>();
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerQuerySystem(Args&&... args) {
+                auto newQuerySystem =  m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                const Signature querySystemSignature = newQuerySystem->getSignature();
+                for (Entity entity : livingEntities) {
+                    const Signature entitySignature = m_entityManager->getSignature(entity);
+                    if ((entitySignature & querySystemSignature) == querySystemSignature) {
+                        newQuerySystem->entities.insert(entity);
+                    }
+                }
+                return newQuerySystem;
             }
+
+            /**
+            * @brief Registers a new group system
+            *
+            * @tparam T The system type to register
+            * @tparam Args Additional constructor arguments
+            * @return std::shared_ptr<T> Shared pointer to the registered system
+            */
+            template <typename T, typename... Args>
+            std::shared_ptr<T> registerGroupSystem(Args&&... args) {
+                return m_systemManager->registerGroupSystem<T>(std::forward<Args>(args)...);
+            }
+
+            /**
+             * @brief Creates or retrieves a group for specific component combinations
+             *
+             * @tparam Owned Component types that are owned by the group
+             * @param nonOwned A get_t<...> tag specifying non-owned component types
+             * @return A shared pointer to the group (either existing or newly created)
+             */
+            template<typename... Owned>
+		    auto registerGroup(const auto & nonOwned)
+			{
+				return m_componentManager->registerGroup<Owned...>(nonOwned);
+			}
+
+			/**
+			* @brief Retrieves an existing group for specific component combinations
+			*
+			* @tparam Owned Component types that are owned by the group
+			* @param nonOwned A get_t<...> tag specifying non-owned component types
+			* @return A shared pointer to the existing group
+			*/
+			template<typename... Owned>
+			auto getGroup(const auto& nonOwned)
+			{
+				return m_componentManager->getGroup<Owned...>(nonOwned);
+			}
 
             /**
             * @brief Sets the signature for a system, defining which entities it will process.
@@ -271,20 +458,39 @@ namespace nexo::ecs {
             template<typename T>
             bool entityHasComponent(const Entity entity) const
             {
-                const auto signature = m_entityManager->getSignature(entity);
+                const Signature signature = m_entityManager->getSignature(entity);
                 const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }
-            void updateSystemEntities() const;
-        private:
 
+            bool supportsMementoPattern(const std::any& component) const;
+            std::any saveComponent(const std::any& component) const;
+            std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;
+            void addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component);
+
+        private:
+            template<typename Component>
+            void processComponentSignature(Signature& required, Signature& excluded) const {
+                if constexpr (is_exclude_v<Component>) {
+                    // This is an excluded component
+                    using ActualType = typename Component::type;
+                    excluded.set(m_componentManager->getComponentType<ActualType>(), true);
+                } else {
+                    // This is a required component
+                    required.set(m_componentManager->getComponentType<Component>(), true);
+                }
+            }
 
             std::shared_ptr<ComponentManager> m_componentManager;
             std::shared_ptr<EntityManager> m_entityManager;
             std::shared_ptr<SystemManager> m_systemManager;
             std::shared_ptr<SingletonComponentManager> m_singletonComponentManager;
 
-            std::unordered_map<std::type_index, std::function<bool(Entity)>> m_hasComponentFunctions;
+            std::unordered_map<ComponentType, std::type_index> m_typeIDtoTypeIndex;
+            std::unordered_map<std::type_index, bool> m_supportsMementoPattern;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_saveComponentFunctions;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_restoreComponentFunctions;
+            std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
     };
 }

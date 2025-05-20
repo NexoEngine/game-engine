@@ -24,11 +24,13 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
+#include "components/Editor.hpp"
 #include "components/Uuid.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "systems/CameraSystem.hpp"
+#include "systems/RenderSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -69,6 +71,8 @@ namespace nexo {
         m_coordinator->registerComponent<components::UuidComponent>();
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
+        m_coordinator->registerComponent<components::EditorCameraTag>();
+        m_coordinator->registerComponent<components::SelectedTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
@@ -162,49 +166,22 @@ namespace nexo {
 
     void Application::registerSystems()
     {
-        m_cameraContextSystem = registerSystem<system::CameraContextSystem,
-        								       components::CameraComponent,
-        								       components::SceneTag>();
+        m_cameraContextSystem = m_coordinator->registerGroupSystem<system::CameraContextSystem>();
+        m_perspectiveCameraControllerSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
+        m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
 
-        m_perspectiveCameraControllerSystem = registerSystem<system::PerspectiveCameraControllerSystem,
-        										components::TransformComponent,
-        										components::CameraComponent,
-                  								components::PerspectiveCameraController,
-        										components::SceneTag>();
+        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
 
-        m_perspectiveCameraTargetSystem = registerSystem<system::PerspectiveCameraTargetSystem,
-        										components::TransformComponent,
-                  								components::CameraComponent,
-                          						components::PerspectiveCameraTarget,
-                                				components::SceneTag>();
-
-        m_renderSystem = registerSystem<system::RenderSystem,
-        				      		    components::RenderComponent,
-        						        components::TransformComponent,
-        								components::SceneTag>();
-
-        auto pointLightSystem = registerSystem<system::PointLightsSystem,
-        								       components::PointLightComponent,
-        								       components::SceneTag>();
-
-        auto directionalLightSystem = registerSystem<system::DirectionalLightsSystem,
-        											 components::DirectionalLightComponent,
-        											 components::SceneTag>();
-
-        auto spotLightSystem = registerSystem<system::SpotLightsSystem,
-        									  components::SpotLightComponent,
-        									  components::SceneTag>();
-
-        auto ambientLightSystem = registerSystem<system::AmbientLightSystem,
-        										 components::AmbientLightComponent,
-        										 components::SceneTag>();
-
+        auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
+        auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
+        auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
+        auto ambientLightSystem = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
         m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
     }
 
     Application::Application()
     {
-        m_window = renderer::Window::create();
+        m_window = renderer::NxWindow::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
         registerSignalListeners();
@@ -240,16 +217,16 @@ namespace nexo {
         registerWindowCallbacks();
         m_window->setVsync(false);
 
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
         {
-            THROW_EXCEPTION(renderer::GraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
+            THROW_EXCEPTION(renderer::NxGraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
         }
         LOG(NEXO_INFO, "OpenGL context initialized with glad");
         glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
 #endif
 
-        renderer::Renderer::init();
+        renderer::NxRenderer::init();
 
         m_coordinator->init();
         registerEcsComponents();
@@ -266,27 +243,33 @@ namespace nexo {
 	    m_lastFrameTime = time;
     }
 
-    void Application::run(const scene::SceneId sceneId, const RenderingType renderingType)
+    void Application::run(const SceneInfo &sceneInfo)
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (!m_isMinimized)
         {
-         	renderContext.sceneRendered = sceneId;
-        	if (m_SceneManager.getScene(sceneId).isRendered())
+         	renderContext.sceneRendered = sceneInfo.id;
+            renderContext.sceneType = sceneInfo.sceneType;
+            if (sceneInfo.isChildWindow) {
+                renderContext.isChildWindow = true;
+                renderContext.viewportBounds[0] = sceneInfo.viewportBounds[0];
+                renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
+            }
+        	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
 			}
-			if (m_SceneManager.getScene(sceneId).isActive())
+			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
 
         // Update (swap buffers and poll events)
-        if (renderingType == RenderingType::WINDOW)
+        if (sceneInfo.renderingType == RenderingType::WINDOW)
             m_window->onUpdate();
         m_eventManager->dispatchEvents();
         renderContext.reset();

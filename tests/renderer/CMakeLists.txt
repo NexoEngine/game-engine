@@ -31,6 +31,7 @@ set(RENDERER_SOURCES
         engine/src/renderer/Window.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
+        engine/src/renderer/ShaderLibrary.cpp
         engine/src/renderer/VertexArray.cpp
         engine/src/renderer/RendererAPI.cpp
         engine/src/renderer/Renderer.cpp
@@ -61,7 +62,6 @@ add_executable(renderer_tests
         ${BASEDIR}/Shader.test.cpp
         ${BASEDIR}/RendererAPI.test.cpp
         ${BASEDIR}/Texture.test.cpp
-        ${BASEDIR}/Renderer2D.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
 )
@@ -74,7 +74,7 @@ find_package(Stb REQUIRED)
 target_include_directories(renderer_tests PRIVATE ${Stb_INCLUDE_DIR})
 target_sources(renderer_tests PRIVATE ${CMAKE_SOURCE_DIR}/engine/external/stb_image.cpp)
 
-target_compile_definitions(renderer_tests PRIVATE GRAPHICS_API_OPENGL)
+target_compile_definitions(renderer_tests PRIVATE NX_GRAPHICS_API_OPENGL)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glad CONFIG REQUIRED)

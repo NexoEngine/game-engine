@@ -23,21 +23,21 @@
 #include <Path.hpp>
 
 namespace nexo::renderer {
-    void Renderer2D::init()
+    void NxRenderer2D::init()
     {
-        m_storage = std::make_shared<Renderer2DStorage>();
+        m_storage = std::make_shared<NxRenderer2DStorage>();
 
         // Initialize vertex array and buffer
         m_storage->vertexArray = createVertexArray();
-        m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(QuadVertex));
+        m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(NxQuadVertex));
 
         // Define layout for the vertex buffer
-        const BufferLayout quadVertexBufferLayout = {
-            {ShaderDataType::FLOAT3, "aPos"}, // Position
-            {ShaderDataType::FLOAT4, "aColor"}, // Color
-            {ShaderDataType::FLOAT2, "aTexCoord"}, // Texture Coordinates
-            {ShaderDataType::FLOAT, "aTexIndex"}, // Texture Index
-            {ShaderDataType::INT, "aEntityID"}
+        const NxBufferLayout quadVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"}, // Position
+            {NxShaderDataType::FLOAT4, "aColor"}, // Color
+            {NxShaderDataType::FLOAT2, "aTexCoord"}, // Texture Coordinates
+            {NxShaderDataType::FLOAT, "aTexIndex"}, // Texture Index
+            {NxShaderDataType::INT, "aEntityID"}
         };
         m_storage->vertexBuffer->setLayout(quadVertexBufferLayout);
         m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
@@ -53,20 +53,20 @@ namespace nexo::renderer {
         m_storage->vertexArray->setIndexBuffer(m_storage->indexBuffer);
 
         // Initialize white texture
-        m_storage->whiteTexture = Texture2D::create(1, 1);
+        m_storage->whiteTexture = NxTexture2D::create(1, 1);
         unsigned int whiteTextureData = 0xffffffff;
         m_storage->whiteTexture->setData(&whiteTextureData, sizeof(unsigned int));
 
         // Setup texture samplers
-        std::array<int, Renderer2DStorage::maxTextureSlots> samplers{};
-        for (int i = 0; i < static_cast<int>(Renderer2DStorage::maxTextureSlots); ++i)
+        std::array<int, NxRenderer2DStorage::maxTextureSlots> samplers{};
+        for (int i = 0; i < static_cast<int>(NxRenderer2DStorage::maxTextureSlots); ++i)
             samplers[i] = i;
 
         try {
-            m_storage->textureShader = Shader::create(
-                Path::resolvePathRelativeToExe("../assets/shaders/texture.glsl").string());
+            m_storage->textureShader = NxShader::create(
+                Path::resolvePathRelativeToExe("../resources/shaders/texture.glsl").string());
             m_storage->textureShader->bind();
-            m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), Renderer2DStorage::maxTextureSlots);
+            m_storage->textureShader->setUniformIntArray("uTexture", samplers.data(), NxRenderer2DStorage::maxTextureSlots);
         } catch (const Exception &e) {
             LOG_EXCEPTION(e);
         }
@@ -84,17 +84,17 @@ namespace nexo::renderer {
     }
 
 
-    void Renderer2D::shutdown()
+    void NxRenderer2D::shutdown()
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_2D);
         m_storage.reset();
     }
 
-    void Renderer2D::beginScene(const glm::mat4 &viewProjection)
+    void NxRenderer2D::beginScene(const glm::mat4 &viewProjection)
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_2D);
         m_storage->textureShader->bind();
         m_storage->vertexArray->bind();
         m_storage->vertexBuffer->bind();
@@ -106,19 +106,19 @@ namespace nexo::renderer {
         m_renderingScene = true;
     }
 
-    void Renderer2D::flush() const
+    void NxRenderer2D::flush() const
     {
         m_storage->textureShader->bind();
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
             m_storage->textureSlots[i]->bind(i);
         }
-        RenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
+        NxRenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
         m_storage->stats.drawCalls++;
         m_storage->vertexArray->unbind();
         m_storage->vertexBuffer->unbind();
     }
 
-    void Renderer2D::flushAndReset() const
+    void NxRenderer2D::flushAndReset() const
     {
         flush();
         m_storage->indexCount = 0;
@@ -127,12 +127,12 @@ namespace nexo::renderer {
         m_storage->textureSlotIndex = 1;
     }
 
-    void Renderer2D::endScene() const
+    void NxRenderer2D::endScene() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_2D);
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         const auto vertexDataSize = static_cast<unsigned int>(
             reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
@@ -146,7 +146,7 @@ namespace nexo::renderer {
     }
 
 
-    void Renderer2D::generateQuadVertices(const glm::mat4 &transform, const glm::vec4 color, const float textureIndex,
+    void NxRenderer2D::generateQuadVertices(const glm::mat4 &transform, const glm::vec4 color, const float textureIndex,
                                           const glm::vec2 *textureCoords, int entityID) const
     {
         constexpr unsigned int quadVertexCount = 4;
@@ -185,7 +185,7 @@ namespace nexo::renderer {
     }
 
 
-    float Renderer2D::getTextureIndex(const std::shared_ptr<Texture2D> &texture) const
+    float NxRenderer2D::getTextureIndex(const std::shared_ptr<NxTexture2D> &texture) const
     {
         float textureIndex = 0.0f;
 
@@ -205,18 +205,18 @@ namespace nexo::renderer {
         return textureIndex;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, color, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -236,20 +236,20 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
+                              const std::shared_ptr<NxTexture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, texture, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
+                              const std::shared_ptr<NxTexture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -271,20 +271,20 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size,
+                              const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, subTexture, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
-                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size,
+                              const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -301,19 +301,19 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
                               const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, color, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, float rotation, const glm::vec4 &color, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -333,20 +333,20 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
+                              const std::shared_ptr<NxTexture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, texture, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<Texture2D> &texture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
+                              const std::shared_ptr<NxTexture2D> &texture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -369,20 +369,20 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec2 &pos, const glm::vec2 &size, const float rotation,
+                              const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         drawQuad({pos.x, pos.y, 0.0f}, size, rotation, subTexture, entityID);
     }
 
-    void Renderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
-                              const std::shared_ptr<SubTexture2D> &subTexture, int entityID) const
+    void NxRenderer2D::drawQuad(const glm::vec3 &pos, const glm::vec2 &size, const float rotation,
+                              const std::shared_ptr<NxSubTexture2D> &subTexture, int entityID) const
     {
         if (!m_renderingScene)
-            THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_2D,
+            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_2D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
         if (m_storage->indexCount >= m_storage->maxIndices)
             flushAndReset();
@@ -400,18 +400,18 @@ namespace nexo::renderer {
         m_storage->stats.quadCount++;
     }
 
-    void Renderer2D::resetStats() const
+    void NxRenderer2D::resetStats() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_2D);
         m_storage->stats.drawCalls = 0;
         m_storage->stats.quadCount = 0;
     }
 
-    RendererStats Renderer2D::getStats() const
+    NxRendererStats NxRenderer2D::getStats() const
     {
         if (!m_storage)
-            THROW_EXCEPTION(RendererNotInitialized, RendererType::RENDERER_2D);
+            THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_2D);
         return m_storage->stats;
     }
 

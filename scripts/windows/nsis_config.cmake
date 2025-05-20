@@ -26,7 +26,7 @@ set(CPACK_NSIS_INSTALLED_ICON_NAME "bin/nexoEditor.exe")
 # On linux to convert image to the right bmp format:
 #  convert logo.png -background white -flatten BMP3:logo_nexo.bmp
 set (CPACK_PACKAGE_ICON
-     "${CMAKE_SOURCE_DIR}/assets\\\\nexo_header.bmp")
+     "${CMAKE_SOURCE_DIR}/resources\\\\nexo_header.bmp")
 
 # Adds shortcuts to the Start Menu
 # It will find exe in any subdirectory of the install directory
@@ -35,5 +35,6 @@ set(CPACK_PACKAGE_EXECUTABLES "nexoEditor" "NEXO Engine")
 set(CPACK_NSIS_MENU_LINKS
     "https://nexoengine.github.io/game-engine/" "NEXO Engine Website"
 )
-set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-set(CPACK_NSIS_MODIFY_PATH ON)
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON) # Alert the user if the program is already installed
+set(CPACK_NSIS_MODIFY_PATH ON) # Let user decide where to install
+set(CPACK_NSIS_MANIFEST_DPI_AWARE ON) # Make the installer DPI aware, less blurry

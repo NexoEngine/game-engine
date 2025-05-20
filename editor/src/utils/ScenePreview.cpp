@@ -51,70 +51,56 @@ namespace nexo::editor::utils {
         return entityCopy;
 	}
 
-	static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy, const glm::vec2 &previewSize)
+	static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy, const glm::vec2 &previewSize, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
-  		renderer::FramebufferSpecs framebufferSpecs;
+  		renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            renderer::FrameBufferTextureFormats::RGBA8,
-            renderer::FrameBufferTextureFormats::RED_INTEGER,
-            renderer::FrameBufferTextureFormats::Depth
+            renderer::NxFrameBufferTextureFormats::RGBA8,
+            renderer::NxFrameBufferTextureFormats::RED_INTEGER,
+            renderer::NxFrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(previewSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(previewSize.y);
         const auto &transformComponentBase = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         const auto &transformComponent = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
 
-        // Create the render target for the preview scene.
-        auto framebuffer = renderer::Framebuffer::create(framebufferSpecs);
+        auto framebuffer = renderer::NxFramebuffer::create(framebufferSpecs);
 
         float distance = transformComponentBase.size.z * 2.0f;
 
-        // Define default angular offsets (in degrees) for yaw and pitch
         float defaultYawDeg   = 30.0f; // horizontal offset
         float defaultPitchDeg = -20.0f; // vertical offset
 
-        // Convert the angles to radians
         float defaultYaw   = glm::radians(defaultYawDeg);
         float defaultPitch = glm::radians(defaultPitchDeg);
 
-        // Set the target position for the camera.
-        // In this preview, the target is the copied entity, whose transform we set above.
         glm::vec3 targetPos = transformComponent.pos;
 
-        // Start with an initial offset vector.
-        // Here we assume the camera initially lies along the positive Z axis (relative to the target).
         glm::vec3 initialOffset = {0.0f, 0.0f, distance};
 
-        // Create an incremental quaternion for horizontal rotation (yaw) about the world up.
         glm::quat qYaw = glm::angleAxis(defaultYaw, glm::vec3(0, 1, 0));
 
-        // For the pitch (vertical rotation), compute the right axis.
         glm::vec3 rightAxis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), initialOffset));
         if (glm::length(rightAxis) < 0.001f)  // Fallback if the vector is degenerate.
             rightAxis = glm::vec3(1, 0, 0);
         glm::quat qPitch = glm::angleAxis(defaultPitch, rightAxis);
 
-        // Combine the yaw and pitch rotations, similar to the event handler logic.
         glm::quat incrementalRotation = qYaw * qPitch;
 
-        // Apply the incremental rotation to the initial offset to get the final offset.
         glm::vec3 newOffset = incrementalRotation * initialOffset;
-        // Normalize and apply the desired distance (optional if you need to clamp or adjust)
         newOffset = glm::normalize(newOffset) * distance;
 
-        // Compute the camera's starting position.
         glm::vec3 cameraPos = targetPos + newOffset;
 
-        // Create the perspective camera using the computed position.
         ecs::Entity cameraId = CameraFactory::createPerspectiveCamera(cameraPos,
-            framebufferSpecs.width, framebufferSpecs.height, framebuffer);
+            framebufferSpecs.width, framebufferSpecs.height, framebuffer, clearColor);
 
-        // Update the camera's transform.
         auto &cameraTransform = nexo::Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
         cameraTransform.pos = cameraPos;
+        auto &cameraComponent = nexo::Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        cameraComponent.render = true;
 
-        // Compute the camera's orientation so that it looks at the target.
         glm::vec3 newFront = glm::normalize(targetPos - cameraPos);
         cameraTransform.quat = glm::normalize(glm::quatLookAt(newFront, glm::vec3(0.0f, 1.0f, 0.0f)));
 
@@ -142,7 +128,7 @@ namespace nexo::editor::utils {
         app.getSceneManager().getScene(sceneId).addEntity(spotLight);
 	}
 
-	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out)
+	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor)
 	{
 		auto &app = getApp();
 
@@ -150,7 +136,7 @@ namespace nexo::editor::utils {
 
         out.entityCopy = copyEntity(entity);
 
-        out.cameraId = createPreviewCamera(out.sceneId, entity, out.entityCopy, previewSize);
+        out.cameraId = createPreviewCamera(out.sceneId, entity, out.entityCopy, previewSize, clearColor);
 
         setupPreviewLights(out.sceneId, out.entityCopy);
         out.sceneGenerated = true;

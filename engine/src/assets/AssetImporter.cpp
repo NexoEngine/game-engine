@@ -16,7 +16,9 @@
 #include "AssetImporterBase.hpp"
 #include "AssetCatalog.hpp"
 
+#include "Assets/Model/Model.hpp"
 #include "Assets/Model/ModelImporter.hpp"
+#include "Assets/Texture/Texture.hpp"
 #include "Assets/Texture/TextureImporter.hpp"
 
 namespace nexo::assets {
@@ -59,7 +61,7 @@ namespace nexo::assets {
 
 
         importer->import(*ctx);
-        const auto asset = ctx->getMainAsset();
+        auto asset = ctx->releaseMainAsset();
         if (!asset)
             return GenericAssetRef::null();
         if (asset->getID().is_nil())
@@ -67,7 +69,7 @@ namespace nexo::assets {
         if (asset->m_metadata.location == AssetLocation("default"))
             asset->m_metadata.location = location;
 
-        return AssetCatalog::getInstance().registerAsset(location, asset);
+        return AssetCatalog::getInstance().registerAsset(location, std::move(asset));
     }
 
     GenericAssetRef AssetImporter::importAssetTryImporters(const AssetLocation& location,

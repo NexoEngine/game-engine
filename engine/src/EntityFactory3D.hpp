@@ -18,6 +18,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "assets/Assets/Model/Model.hpp"
 #include "ecs/ECSExceptions.hpp"
 #include "components/Components.hpp"
 #include "renderer/Framebuffer.hpp"
@@ -59,14 +60,10 @@ namespace nexo
 			* @return ecs::Entity The newly created cube entity.
 			*/
 	        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material);
-	        static ecs::Entity createModel(const std::string& path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
-    };
-}
 
-namespace nexo::utils
-{
-    std::shared_ptr<components::MeshNode> loadModel(const std::string& path);
-    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode const *node, const aiScene* scene);
-    components::Mesh processMesh(const std::string &path, aiMesh* mesh, const aiScene* scene);
-    glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
+	        static ecs::Entity createModel(assets::AssetRef<assets::Model> modelAsset, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
+
+			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color);
+			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
+    };
 }

@@ -16,24 +16,39 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "core/exceptions/Exceptions.hpp"
 #include "ecs/Coordinator.hpp"
+#include "Application.hpp"
 
 namespace nexo::system {
-	void DirectionalLightsSystem::update() const
+	void DirectionalLightsSystem::update()
 	{
-		auto &renderContext = coord->getSingletonComponent<components::RenderContext>();
+		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		for (const auto &directionalLights : entities)
-		{
-			auto tag = coord->getComponent<components::SceneTag>(directionalLights);
-			if (!tag.isRendered || sceneRendered != tag.id)
-				continue;
-			const auto &directionalComponent = coord->getComponent<components::DirectionalLightComponent>(directionalLights);
-			renderContext.sceneLights.directionalLights[renderContext.sceneLights.directionalLightCount++] = directionalComponent;
-		}
+		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+			[](const components::SceneTag& tag) { return tag.id; }
+		);
+
+		const auto *partition = scenePartition.getPartition(sceneRendered);
+
+        auto &app = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+		if (!partition) {
+            LOG_ONCE(NEXO_WARN, "No directional light found in scene {}, skipping", sceneName);
+            return;
+        }
+        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No directional light found in scene {}, skipping", sceneName));
+
+        if (partition->count != 1)
+            LOG_ONCE(NEXO_WARN, "For scene {}, found {} directional lights, only one is supported, picking the first one", sceneName, partition->count);
+        else
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("For scene {}, found {} directional lights, only one is supported, picking the first one", sceneName, partition->count));
+
+		const auto &dirLight = get<components::DirectionalLightComponent>()[0];
+		renderContext.sceneLights.dirLight = dirLight;
 	}
 }

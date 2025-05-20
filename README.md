@@ -18,12 +18,18 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
     - [Game Engine](#game-engine)
   - [External Dependencies](#external-dependencies)
   - [Build the project](#build-the-project)
+    - [Automatically with CMake Presets](#using-cmake-presets-automatic)
+    - [Manually with CMake](#using-cmake---build-manual)
   - [Install the project](#install-the-project)
     - [Install via CMake](#install-via-cmake)
     - [Create an installer for Windows (NSIS)](#create-an-installer-for-windows-nsis)
     - [Create an installer for Linux (DEB)](#create-an-installer-for-linux-deb)
   - [Run the tests](#run-the-tests)
   - [The Team](#the-team)
+  - [Acknowledgements](#acknowledgements)
+  - [License](#license)
+    - [How to extract the third-party licenses file](#how-to-extract-the-third-party-licenses-file)
+    - [How to generate the COPYRIGHT file](#how-to-generate-the-copyright-file)
 
 > [!NOTE]  
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
@@ -36,41 +42,57 @@ Interface screenshot
 
 ![Editor interface](docs/game_engine/editor_interface.png)
 
-Quick video of the game engine in action with Jolt Physics
+Quick video of the game engine in action
 
-https://github.com/Thyodas/rtype/assets/53176398/425d7935-3e52-4b3d-b9bd-701120994e2d
+https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4
+
+<!-- Command used for video compression: ffmpeg -ss 00:00:02 -to 00:00:57 -i .\docs\game_engine\editor_interface_video.mkv -codec copy -an -vcodec libx264 -crf
+ 4 .\docs\game_engine\editor_interface_video.mp4 -->
 
 > [!WARNING]
-> This video is from a prototype version of the engine. The final version does not currently integrate physics.
+> This project is still in development and is not yet ready for production use. Some features may change.
 
 ## External Dependencies
 
 To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source.
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **X11**: Required for Linux and macOS.
 
 ## Build the project
 
 Cloning and building is a breeze:
-1. Clone the repository with the submodules.
+
+### 1. Clone the repository with the submodules.
 ```bash
 git clone --recurse-submodules
 ```
 
-2. Run cmake to generate the build files.
+### 2. Run cmake to generate the build files.
+
+#### Using cmake presets (automatic)
+
+```bash
+cmake --workflow --present=build-debug
+```
+
+> [!NOTE]
+> There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
+
+#### Using cmake --build (manual)
+
 ```bash
 cmake -B build
 cmake --build build
 ```
-3. Launch the engine!
 
-For Linux and MacOS:
+### 3. Launch the engine!
+
+#### For Linux and MacOS:
 ```bash
 ./build/nexoEditor
 ```
 
-For Windows:
+#### For Windows:
 ```bash
 ./build/nexoEditor.exe
 ```
@@ -129,7 +151,7 @@ In this project tests use the [gtest](http://google.github.io/googletest/) libra
 
 First build the tests:
 ```bash
-cmake -B build
+cmake -B build -DNEXO_BUILD_TESTS=ON
 cmake --build build
 ```
 
@@ -157,3 +179,36 @@ NEXO Engine is brought to life by a dedicated team of fourth-year students from 
 This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.
 
 We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.<br/>
+For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file.<br/>
+You can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+
+> [!TIP]
+> For any license inquiry, please contact us at [nexo.engine@gmail.com](mailto:nexo.engine@gmail.com?subject=[NEXO%20Engine]%20License)
+
+### How to extract the third-party licenses file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-licenses
+```
+
+This will extract all licenses per third-party library in the `/path/to/install/external/licenses` directory.
+
+> [!NOTE]
+> These licenses are automatically extracted from vcpkg, there might be missing third-party libraries.
+
+### How to generate the COPYRIGHT file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-copyright
+```
+
+This will generate the COPYRIGHT file in the `/path/to/install` directory.
+
+> [!WARNING]
+> By default the COPYRIGHT file is generated with some `TODO:`, the generator cannot always determine exact licenses for some files. Please check each entry for errors.

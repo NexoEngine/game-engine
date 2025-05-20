@@ -14,10 +14,12 @@
 
 #pragma once
 
-#include <queue>
+#include <deque>
 #include <array>
+#include <vector>
+#include <span>
 
-#include "Signature.hpp"
+#include "Definitions.hpp"
 
 namespace nexo::ecs {
 
@@ -71,13 +73,24 @@ namespace nexo::ecs {
             */
             [[nodiscard]] Signature getSignature(Entity entity) const;
 
-            std::uint32_t getLivingEntityCount() const;
+            /**
+             * @brief Returns the number of currently active entities
+             *
+             * @return size_t The count of living entities
+             */
+            [[nodiscard]] size_t getLivingEntityCount() const;
+
+            /**
+             * @brief Retrieves a view of all currently active entities
+             *
+             * @return std::span<const Entity> A span containing all living entity IDs
+             */
+            [[nodiscard]] std::span<const Entity> getLivingEntities() const;
 
         private:
-            std::queue<Entity> m_availableEntities{};
+            std::deque<Entity> m_availableEntities{};
+            std::vector<Entity> m_livingEntities{};
 
             std::array<Signature, MAX_ENTITIES> m_signatures{};
-
-            std::uint32_t m_livingEntityCount{};
     };
 }
