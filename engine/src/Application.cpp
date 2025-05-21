@@ -62,6 +62,7 @@ namespace nexo {
 
     void Application::registerEcsComponents() const
     {
+
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
@@ -233,6 +234,7 @@ namespace nexo {
         m_coordinator->init();
         registerEcsComponents();
         registerSystems();
+        // std::cout << "Application m_coordinator: " << m_coordinator.get() << std::endl;
         m_SceneManager.setCoordinator(m_coordinator);
 
         nexo::scripting::HostHandler::Parameters params;

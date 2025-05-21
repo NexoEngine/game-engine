@@ -74,7 +74,7 @@ namespace nexo::scripting {
 
         NEXO_RET(ecs::Entity) CreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
-
+        NEXO_RET(void *) GetComponent(UInt32 typeId, ecs::Entity entity);
 
     }
 
@@ -86,6 +86,8 @@ namespace nexo::scripting {
 
         ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> CreateCube{&scripting::CreateCube};
         ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
+        ApiCallback<void*(UInt32, ecs::Entity)> GetComponent{&scripting::GetComponent};
+
     };
 
     inline NativeApiCallbacks nativeApiCallbacks;
