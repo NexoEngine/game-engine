@@ -16,6 +16,7 @@
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Nexo.Components;
 
@@ -49,6 +50,9 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -57,6 +61,7 @@ namespace Nexo
             public NxLogDelegate NxLog;
             public CreateCubeDelegate CreateCube;
             public GetTransformDelegate GetTransform;
+            public NxGetComponentDelegate NxGetComponent;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -173,6 +178,27 @@ namespace Nexo
             }
         }
         
+        public static unsafe ref T GetComponent<T>(UInt32 entityId) where T : unmanaged
+        {
+            UInt32 typeId = typeof(T) switch
+            {
+                var t when t == typeof(Transform) => (UInt32)NativeComponents.Transform,
+                var t when t == typeof(AmbientLightComponent) => (UInt32)NativeComponents.AmbientLight,
+                var t when t == typeof(DirectionalLightComponent) => (UInt32)NativeComponents.DirectionalLight,
+                var t when t == typeof(PointLightComponent) => (UInt32)NativeComponents.PointLight,
+                var t when t == typeof(SpotLightComponent) => (UInt32)NativeComponents.SpotLight,
+                _ => throw new InvalidOperationException($"Unsupported type: {typeof(T)}")
+            };
+
+            IntPtr ptr = s_callbacks.NxGetComponent(typeId, entityId);
+            if (ptr == IntPtr.Zero)
+                throw new InvalidOperationException($"Component {typeof(T)} not found on entity {entityId}");
+
+            return ref Unsafe.AsRef<T>((void*)ptr);
+        }
+
+
+        
         private static UInt32 _cubeId = 0;
 
         /// <summary>
@@ -206,8 +232,8 @@ namespace Nexo
             Console.WriteLine($"Created cube with ID: {cubeId}");
             
             // Call the function that gets a transform
-            Console.WriteLine($"Calling GetTransform({cubeId}):");
-            ref Transform transform = ref GetTransform(cubeId);
+            Console.WriteLine($"Calling GetComponent({cubeId}):");
+            ref Transform transform = ref GetComponent<Transform>(cubeId);
             Console.WriteLine($"Transform for cube {cubeId}: Position: {transform.pos}, Scale: {transform.size}, Rotation Quat: {transform.quat}");
             
             
@@ -218,7 +244,7 @@ namespace Nexo
         public static void Update(Double deltaTime)
         {
             // Get the transform of the cube
-            ref Transform transform = ref GetTransform(_cubeId);
+            ref Transform transform = ref GetComponent<Transform>(_cubeId);
             
             // Make the cube rotate on the Y axis
             transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (float)deltaTime) * transform.quat;
