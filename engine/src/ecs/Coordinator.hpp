@@ -141,8 +141,16 @@ namespace nexo::ecs {
                 m_componentManager->registerComponent<T>();
 
                 m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
-                    return std::any(this->getComponent<T>(entity));
+                    auto opt = this->tryGetComponent<T>(entity);
+                    if (!opt.has_value())
+                        return std::any();
+                    T* ptr = &opt.value().get();
+                    return std::any(static_cast<void*>(ptr));
                 };
+                // m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
+                //     T* ptr = &this->getComponent<T>(entity);
+                //     return std::any(ptr);
+                // };
                 m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
 
                 if constexpr (supports_memento_pattern_v<T>) {
@@ -271,6 +279,32 @@ namespace nexo::ecs {
             {
                 return m_componentManager->tryGetComponent<T>(entity);
             }
+
+            void* tryGetComponentById(ComponentType componentType, Entity entity)
+            {
+                auto itType = m_typeIDtoTypeIndex.find(componentType);
+                if (itType == m_typeIDtoTypeIndex.end()) {
+                    return nullptr;
+                }
+
+                const std::type_index& typeIndex = itType->second;
+                auto itGetter = m_getComponentFunctions.find(typeIndex);
+                if (itGetter == m_getComponentFunctions.end()) {
+                    return nullptr;
+                }
+
+                std::any componentAny = itGetter->second(entity);
+                if (!componentAny.has_value()) {
+                    return nullptr;
+                }
+
+                if (componentAny.type() != typeid(void*)) {
+                    return nullptr;
+                }
+
+                return std::any_cast<void*>(componentAny);
+            }
+
 
             /**
              * @brief Get the Singleton Component object
