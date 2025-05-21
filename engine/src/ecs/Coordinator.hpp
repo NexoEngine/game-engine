@@ -141,16 +141,16 @@ namespace nexo::ecs {
                 m_componentManager->registerComponent<T>();
 
                 m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
+                    return this->getComponent<T>(entity);
+                };
+
+                m_getComponentPointers[typeid(T)] = [this](Entity entity) -> std::any {
                     auto opt = this->tryGetComponent<T>(entity);
                     if (!opt.has_value())
                         return std::any();
                     T* ptr = &opt.value().get();
                     return std::any(static_cast<void*>(ptr));
                 };
-                // m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
-                //     T* ptr = &this->getComponent<T>(entity);
-                //     return std::any(ptr);
-                // };
                 m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
 
                 m_getComponentPointers[typeid(T)] = [this](Entity entity) -> std::any {
@@ -297,8 +297,8 @@ namespace nexo::ecs {
                 }
 
                 const std::type_index& typeIndex = itType->second;
-                auto itGetter = m_getComponentFunctions.find(typeIndex);
-                if (itGetter == m_getComponentFunctions.end()) {
+                auto itGetter = m_getComponentPointers.find(typeIndex);
+                if (itGetter == m_getComponentPointers.end()) {
                     return nullptr;
                 }
 
