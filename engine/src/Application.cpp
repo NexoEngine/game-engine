@@ -73,6 +73,7 @@ namespace nexo {
 
     void Application::registerEcsComponents() const
     {
+
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RootComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
@@ -252,6 +253,7 @@ namespace nexo {
         registerEcsComponents();
         renderer::NxRenderer3D::get().init();
         registerSystems();
+        // std::cout << "Application m_coordinator: " << m_coordinator.get() << std::endl;
         m_SceneManager.setCoordinator(m_coordinator);
 
         nexo::scripting::HostHandler::Parameters params;

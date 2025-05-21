@@ -48,6 +48,13 @@ namespace nexo::scripting {
         using Vector3 = glm::vec3;
         using Vector4 = glm::vec4;
 
+        enum class NativeComponents : UInt32 {
+            Transform = 0,
+            AmbientLight = 1,
+            DirectionalLight = 2,
+            PointLight = 3,
+            SpotLight = 4,
+        };
     }
 
 } // namespace nexo::scripting
