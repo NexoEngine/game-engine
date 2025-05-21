@@ -161,29 +161,24 @@ namespace nexo::renderer {
 			normalizeVertices(vertices);
 			indices = std::move(newIndices);
 		}
-
-		LOG(NEXO_INFO, "Sphere positions size: {}", vertices.size());
-		LOG(NEXO_INFO, "Sphere indices size: {}", indices.size());
 		VERTEX_NUMBER = vertices.size();
 	}
 
-    // unique indices for a sphere
-	const std::vector<unsigned int> sphereIndices = generateSphereIndices();
-
-	static std::vector<glm::vec2> generateTextureCoords()
+	static std::vector<glm::vec2> generateTextureCoords(const std::vector<glm::vec3> &vertices)
 	{
 		std::vector<glm::vec2> texCoords{};
 
         for (int i = 0; i < VERTEX_NUMBER; ++i) {
-			const float u = (atan2(spherePositions[i].z, spherePositions[i].x) + M_PI) / (2.0f * M_PI);
-			const float v = (asin(spherePositions[i].y) + M_PI_2) / M_PI;
+	        const glm::vec3 p = vertices[i];
+
+        	float u = (atan2(p.z, p.x) + M_PI) / (2 * M_PI);
+        	float v = acos(p.y) / M_PI;
+        	// v = 1.0f - v; // uncomment if reversed
+
 			texCoords.emplace_back(u, v);
 		}
 		return texCoords;
 	}
-
-	// unique texture coordinates for a sphere
-	const std::vector<glm::vec2> textureCoords = generateTextureCoords();
 
 
 	/**
@@ -207,7 +202,7 @@ namespace nexo::renderer {
 			const glm::vec3 vector1 = vec - glm::vec3(0, 0, 0);
 			normals.emplace_back(vector1);
 		}
-    	// texCoords = generateTextureCoords();
+    	texCoords = generateTextureCoords(vertices);
 
     	std::ranges::copy(normals, normals.begin());
     }
@@ -241,7 +236,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
@@ -288,7 +283,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
@@ -329,7 +324,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
@@ -376,7 +371,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
@@ -427,7 +422,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
@@ -522,7 +517,7 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
         {
             m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
+            m_storage->vertexBufferPtr->texCoord = texCoords[i];
             m_storage->vertexBufferPtr->normal = normals[i];
             m_storage->vertexBufferPtr->entityID = entityID;
             m_storage->vertexBufferPtr++;
