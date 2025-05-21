@@ -20,6 +20,7 @@
 #include <array>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <Logger.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -27,32 +28,6 @@
 
 namespace nexo::renderer
 {
-    // 4 unique vertices for a tetrahedron (one per corner)
-    constexpr glm::vec3 tetrahedronPositions[4] = {
-        {0.0f, 0.5f, 0.0f}, // Top vertex 0
-        {-0.5f, -0.5f, -0.5f}, // Bottom-left-back vertex 1
-        {0.5f, -0.5f, -0.5f}, // Bottom-right-back vertex 2
-        {0.0f, -0.5f, 0.5f} // Bottom-front vertex 3
-    };
-
-    constexpr unsigned int tetrahedronIndices[12] = {
-        // Front face
-        0, 1, 2,
-        // Right face
-        0, 2, 3,
-        // Left face
-        0, 3, 1,
-        // Bottom face
-        1, 3, 2
-    };
-
-    constexpr glm::vec2 textureCoords[12] = {
-        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
-        {0.5f, 1.0f}, {1.0f, 0.0f}, {0.5f, 0.5f}, // Right face
-        {0.5f, 1.0f}, {0.5f, 0.5f}, {0.0f, 0.0f}, // Left face
-        {0.0f, 0.0f}, {1.0f, 0.0f}, {0.5f, 0.5f} // Bottom face
-    };
-
     static void genTetrahedronMesh(std::array<glm::vec3, 12>& vertices,
                                    std::array<glm::vec2, 12>& texCoords,
                                    std::array<glm::vec3, 12>& normals)
