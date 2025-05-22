@@ -24,30 +24,6 @@ namespace nexo::scripting {
     // Static message to return to C#
     static const char* nativeMessage = "Hello from C++ native code!";
 
-    ecs::ComponentType getComponentTypeFromNativeId(UInt32 typeId)
-    {
-        using enum scripting::NativeComponents;
-        auto& coordinator = *getApp().m_coordinator;
-
-        switch (static_cast<NativeComponents>(typeId))
-        {
-            case Transform:
-                return coordinator.getComponentType<components::TransformComponent>();
-            case AmbientLight:
-                return coordinator.getComponentType<components::AmbientLightComponent>();
-            case DirectionalLight:
-                return coordinator.getComponentType<components::DirectionalLightComponent>();
-            case PointLight:
-                return coordinator.getComponentType<components::PointLightComponent>();
-            case SpotLight:
-                return coordinator.getComponentType<components::SpotLightComponent>();
-            default:
-                LOG(NEXO_ERROR, "Unknown NativeComponent ID: {}", typeId);
-                return -1;
-        }
-    }
-
-
     // Implementation of the native functions
     extern "C" {
 
@@ -88,12 +64,26 @@ namespace nexo::scripting {
             return &opt.value().get();
         }
 
-        void* GetComponent(UInt32 typeId, ecs::Entity entity)
+        void* GetComponent(UInt32 componentTypeId, ecs::Entity entity)
         {
-            ecs::ComponentType componentType = getComponentTypeFromNativeId(typeId);
-            const auto opt = getApp().m_coordinator->tryGetComponentById(componentType, entity);
+            auto& coordinator = *getApp().m_coordinator;
+            const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
         }
+
+        ComponentTypeIds GetComponentTypeIds()
+        {
+            auto& coordinator = *getApp().m_coordinator;
+
+            return ComponentTypeIds {
+                .Transform = coordinator.getComponentType<components::TransformComponent>(),
+                .AmbientLight = coordinator.getComponentType<components::AmbientLightComponent>(),
+                .DirectionalLight = coordinator.getComponentType<components::DirectionalLightComponent>(),
+                .PointLight = coordinator.getComponentType<components::PointLightComponent>(),
+                .SpotLight = coordinator.getComponentType<components::SpotLightComponent>(),
+            };
+        }
+
 
     }
 

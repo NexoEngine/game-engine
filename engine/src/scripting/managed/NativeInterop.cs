@@ -22,6 +22,16 @@ using Nexo.Components;
 
 namespace Nexo
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ComponentTypeIds
+    {
+        public UInt32 Transform;
+        public UInt32 AmbientLight;
+        public UInt32 DirectionalLight;
+        public UInt32 PointLight;
+        public UInt32 SpotLight;
+    }
+    
     /// <summary>
     /// Provides interop functionality for calling native C++ functions from C# using function pointers.
     /// </summary>
@@ -53,6 +63,9 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -62,10 +75,13 @@ namespace Nexo
             public CreateCubeDelegate CreateCube;
             public GetTransformDelegate GetTransform;
             public NxGetComponentDelegate NxGetComponent;
+            public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
         }
 
         private static NativeApiCallbacks s_callbacks;
-
+        private static ComponentTypeIds _componentTypeIds;
+        private static readonly Dictionary<Type, UInt32> _typeToNativeIdMap = new();
+        
         /// <summary>
         /// Initialize the native API with the provided struct pointer and size.
         /// </summary>
@@ -82,8 +98,29 @@ namespace Nexo
 
             // Marshal the struct from the IntPtr to the managed struct
             s_callbacks = Marshal.PtrToStructure<NativeApiCallbacks>(structPtr);
+            _componentTypeIds = s_callbacks.NxGetComponentTypeIds.Invoke();
+            InitializeTypeMap();
+            
             Logger.Log(LogLevel.Info, "Native API initialized.");
             return 0;
+        }
+        
+        private static void InitializeTypeMap()
+        {
+            var fields = typeof(ComponentTypeIds).GetFields();
+            foreach (var field in fields)
+            {
+                var type = Type.GetType($"Nexo.Components.{field.Name}");
+                if (type != null)
+                {
+                    var value = (UInt32)field.GetValue(_componentTypeIds);
+                    _typeToNativeIdMap[type] = value;
+                }
+                else
+                {
+                    Logger.Log(LogLevel.Warn, $"[Interop] Type not found for field {field.Name}");
+                }
+            }
         }
 
         /// <summary>
@@ -180,15 +217,8 @@ namespace Nexo
         
         public static unsafe ref T GetComponent<T>(UInt32 entityId) where T : unmanaged
         {
-            UInt32 typeId = typeof(T) switch
-            {
-                var t when t == typeof(Transform) => (UInt32)NativeComponents.Transform,
-                var t when t == typeof(AmbientLightComponent) => (UInt32)NativeComponents.AmbientLight,
-                var t when t == typeof(DirectionalLightComponent) => (UInt32)NativeComponents.DirectionalLight,
-                var t when t == typeof(PointLightComponent) => (UInt32)NativeComponents.PointLight,
-                var t when t == typeof(SpotLightComponent) => (UInt32)NativeComponents.SpotLight,
-                _ => throw new InvalidOperationException($"Unsupported type: {typeof(T)}")
-            };
+            if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
+                throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
 
             IntPtr ptr = s_callbacks.NxGetComponent(typeId, entityId);
             if (ptr == IntPtr.Zero)
@@ -196,8 +226,6 @@ namespace Nexo
 
             return ref Unsafe.AsRef<T>((void*)ptr);
         }
-
-
         
         private static UInt32 _cubeId = 0;
 
