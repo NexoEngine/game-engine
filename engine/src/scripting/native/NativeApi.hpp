@@ -66,6 +66,13 @@ namespace nexo::scripting {
     };
 
     extern "C" {
+        struct ComponentTypeIds {
+            UInt32 Transform;
+            UInt32 AmbientLight;
+            UInt32 DirectionalLight;
+            UInt32 PointLight;
+            UInt32 SpotLight;
+        };
 
         NEXO_RET(void) HelloFromNative(void);
         NEXO_RET(Int32) AddNumbers(Int32 a, Int32 b);
@@ -75,6 +82,7 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) CreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) GetComponent(UInt32 typeId, ecs::Entity entity);
+        NEXO_RET(ComponentTypeIds) GetComponentTypeIds();
 
     }
 
@@ -87,6 +95,8 @@ namespace nexo::scripting {
         ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> CreateCube{&scripting::CreateCube};
         ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
         ApiCallback<void*(UInt32, ecs::Entity)> GetComponent{&scripting::GetComponent};
+        ApiCallback<ComponentTypeIds()> GetComponentTypeIds{&scripting::GetComponentTypeIds};
+
 
     };
 
