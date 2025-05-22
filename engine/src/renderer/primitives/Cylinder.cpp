@@ -1,7 +1,7 @@
 //// Cylinder.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
-//  zzzzzzz     zzz  zzzz                 z  zzzz       zzzz           zzzz
+//  zzz zzz     zzz  zzzz               zzz  zzzz       zzzz           zzzz
 //  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
 //  zzz    zzz  zzz  zzz                zzzz  zzzz      zzzz           zzzz
 //  zzz      z  zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
@@ -31,7 +31,7 @@
 
 namespace nexo::renderer
 {
-    constexpr int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder
+    int CYLINDER_SEGMENTS = 5; // Number of segments for the cylinder min 3
     constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices()
@@ -108,11 +108,11 @@ namespace nexo::renderer
         constexpr int start = 0;
         const int step = ceil(static_cast<double>(CYLINDER_SEGMENTS) / 3.0); //3
         indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(start + 2 * step + transformer);
-        if constexpr (CYLINDER_SEGMENTS > 3) {
+        if (CYLINDER_SEGMENTS > 3) {
             capIndicesRec(start, step + 1);
             capIndicesRec(start + step, step + 1);
         }
-        if constexpr (CYLINDER_SEGMENTS > 5)
+        if (CYLINDER_SEGMENTS > 5)
             capIndicesRec(start + 2 * step, CYLINDER_SEGMENTS - 2 * step + 1);
     }
 
@@ -185,11 +185,14 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                                 const int entityID) const
+                                 const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                         "Renderer not rendering a scene, make sure to call beginScene first");
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         // Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -238,13 +241,16 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                     const glm::vec4& color, const int entityID) const
+                                     const glm::vec4& color, const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         const glm::quat rotationQuat = glm::radians(rotation);
         const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
@@ -288,13 +294,16 @@ namespace nexo::renderer
         m_storage->stats.cubeCount++;
     }
 
-    void Renderer3D::drawCylinder(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
+    void Renderer3D::drawCylinder(const glm::mat4& transform, const glm::vec4& color, const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         m_storage->textureShader->setUniformMatrix("matModel", transform);
 
@@ -332,13 +341,16 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size,
-                                     const components::Material& material, const int entityID) const
+                                     const components::Material& material, const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         // Transform matrix
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
@@ -384,13 +396,16 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                     const components::Material& material, const int entityID) const
+                                     const components::Material& material, const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         const glm::quat rotationQuat = glm::radians(rotation);
         const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
@@ -438,13 +453,16 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                                     const components::Material& material, const int entityID) const
+                                     const components::Material& material, const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         const glm::mat4 rotationMat = glm::toMat4(rotation);
         // Transform matrix
@@ -491,13 +509,16 @@ namespace nexo::renderer
     }
 
     void Renderer3D::drawCylinder(const glm::mat4& transform, const components::Material& material,
-                                     const int entityID) const
+                                     const unsigned int nbSegment, const int entityID) const
     {
         if (!m_renderingScene)
         {
             THROW_EXCEPTION(RendererSceneLifeCycleFailure, RendererType::RENDERER_3D,
                             "Renderer not rendering a scene, make sure to call beginScene first");
         }
+
+        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+            CYLINDER_SEGMENTS = nbSegment;
 
         m_storage->textureShader->setUniformMatrix("matModel", transform);
 
