@@ -481,7 +481,6 @@ namespace nexo::renderer {
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
                          const glm::vec4& color, int entityID = -1) const;
-
         /**
          * @brief Draws a pyramid using a specified transformation and color.
          *
@@ -495,7 +494,6 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
-
         /**
          * @brief Draws a pyramid using a specified transformation and material.
          *
@@ -511,7 +509,6 @@ namespace nexo::renderer {
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
                          int entityID = -1) const;
-
         /**
          * @brief Draws a pyramid using a specified transformation and material.
          *
@@ -528,7 +525,6 @@ namespace nexo::renderer {
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
                          const components::Material& material, int entityID = -1) const;
-
         /**
          * @brief Draws a pyramid using a specified transformation and material.
          *
@@ -568,14 +564,14 @@ namespace nexo::renderer {
          * @param position The position of the cylinder in the 3D space.
          * @param size The dimensions of the cylinder.
          * @param color The color of the cylinder (RGBA format).
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID The ID of the entity.
          *
          * Overloads:
          * - Draws a cylinder with a solid color.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                          int entityID = -1) const;
-
+                          unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and color.
          *
@@ -586,13 +582,13 @@ namespace nexo::renderer {
          * @param size The dimensions of the cylinder.
          * @param rotation The rotation of the cylinder.
          * @param color The color (RGBA) of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const glm::vec4& color, int entityID = -1) const;
-
+                          const glm::vec4& color, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and color.
          *
@@ -601,12 +597,12 @@ namespace nexo::renderer {
          *
          * @param transform The transformation matrix for the cylinder.
          * @param color The color (RGBA) of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
-
+        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
          *
@@ -616,13 +612,13 @@ namespace nexo::renderer {
          * @param position The position of the cylinder.
          * @param size The dimensions of the cylinder.
          * @param material The material properties of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
-                          int entityID = -1) const;
-
+                          unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
          *
@@ -633,13 +629,13 @@ namespace nexo::renderer {
          * @param size The dimensions of the cylinder.
          * @param rotation The rotation of the cylinder (in Euler angles, in degrees).
          * @param material The material properties of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const components::Material& material, int entityID = -1) const;
-
+                          const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
          *
@@ -650,12 +646,13 @@ namespace nexo::renderer {
          * @param size The dimensions of the cylinder.
          * @param rotation The rotation of the cylinder (in quaternion format).
          * @param material The material properties of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                          const components::Material& material, int entityID = -1) const;
+                          const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and color.
          *
@@ -664,13 +661,12 @@ namespace nexo::renderer {
          *
          * @param transform The transformation matrix for the cylinder.
          * @param material The material properties of the cylinder.
+         * @param nbSegment The number of segments in the cylinder.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
-
-
+        void drawCylinder(const glm::mat4& transform, const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere at the specified position and size.
