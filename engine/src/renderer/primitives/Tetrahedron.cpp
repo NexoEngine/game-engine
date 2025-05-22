@@ -1,9 +1,9 @@
-//// Tetrahedron  be.cpp ///////////////////////////////////////////////////////////////
+//// Tetrahedron.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
-//  zzzzzzz     zzz  zzzz                 z  zzzz       zzzz           zzzz
+//  zzzzzzz     zzz  zzzz               zzz  zzzz       zzzz           zzzz
 //  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz
-//  zzz    zzz  zzz  zzz                zzzz  zzzz      zzzz           zzzz
+//  zzz    zzz  zzz  zzzz               zzzz  zzzz      zzzz           zzzz
 //  zzz      z  zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Marie GIACOMEL
