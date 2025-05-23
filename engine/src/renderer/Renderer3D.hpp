@@ -349,7 +349,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, unsigned int nbSegment = 8, int entityID = -1) const;
+        void drawCylinder(const glm::mat4& transform, const glm::vec4& color, unsigned int nbSegment = 8,
+                          int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
          *
@@ -413,7 +414,8 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
+        void drawCylinder(const glm::mat4& transform, const components::Material& material, unsigned int nbSegment = 8,
+                          int entityID = -1) const;
 
         /**
          * @brief Draws a sphere at the specified position and size.
@@ -423,13 +425,14 @@ namespace nexo::renderer {
          * @param position The position of the sphere in the 3D space.
          * @param size The dimensions of the sphere.
          * @param color The color of the sphere (RGBA format).
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param entityID The ID of the entity.
          *
          * Overloads:
          * - Draws a sphere with a solid color.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                          int entityID = -1) const;
+                        unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and color.
@@ -440,13 +443,14 @@ namespace nexo::renderer {
          * @param position The position of the sphere.
          * @param size The dimensions of the sphere.
          * @param rotation The rotation of the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param color The color (RGBA) of the sphere.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const glm::vec4& color, int entityID = -1) const;
+                        const glm::vec4& color, unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and color.
@@ -456,11 +460,13 @@ namespace nexo::renderer {
          *
          * @param transform The transformation matrix for the sphere.
          * @param color The color (RGBA) of the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawSphere(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
+        void drawSphere(const glm::mat4& transform, const glm::vec4& color, unsigned int nbSubdivision = 2,
+                        int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and material.
@@ -471,12 +477,13 @@ namespace nexo::renderer {
          * @param position The position of the sphere.
          * @param size The dimensions of the sphere.
          * @param material The material properties of the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
-                          int entityID = -1) const;
+                        unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and material.
@@ -488,12 +495,13 @@ namespace nexo::renderer {
          * @param size The dimensions of the sphere.
          * @param rotation The rotation of the sphere (in Euler angles, in degrees).
          * @param material The material properties of the sphere.
+         * @param nbSubdivision
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const components::Material& material, int entityID = -1) const;
+                        const components::Material& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and material.
@@ -505,12 +513,14 @@ namespace nexo::renderer {
          * @param size The dimensions of the sphere.
          * @param rotation The rotation of the sphere (in quaternion format).
          * @param material The material properties of the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                          const components::Material& material, int entityID = -1) const;
+                        const components::Material& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
+
         /**
          * @brief Draws a sphere using a specified transformation and color.
          *
@@ -519,12 +529,13 @@ namespace nexo::renderer {
          *
          * @param transform The transformation matrix for the sphere.
          * @param material The material properties of the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere.
          * @param entityID An optional entity identifier (default is -1).
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawSphere(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
-
+        void drawSphere(const glm::mat4& transform, const components::Material& material,
+                        unsigned int nbSubdivision = 2, int entityID = -1) const;
 
 
         /**
