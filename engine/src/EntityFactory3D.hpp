@@ -31,30 +31,32 @@ namespace nexo
     {
     public:
         /**
-        * @brief Creates a cube entity with a specified color.
-        *
-        * Constructs a cube at the given position, with the specified size, rotation, and color.
-        *
-        * @param pos The position of the cube.
-        * @param size The dimensions (width, height, depth) of the cube.
-        * @param rotation The rotation of the cube (in Euler angles).
-        * @param color The color of the cube's material (default is red).
-        * @return ecs::Entity The newly created cube entity.
-        */
-        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+         * @brief Creates a cube entity with a specified color.
+         *
+         * Constructs a cube at the given position, with the specified size, rotation, and color.
+         *
+         * @param pos The position of the cube.
+         * @param size The dimensions (width, height, depth) of the cube.
+         * @param rotation The rotation of the cube (in Euler angles).
+         * @param color The color of the cube's material (default is red).
+         * @return ecs::Entity The newly created cube entity.
+         */
+        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
 
-			/**
-			* @brief Creates a cube entity with a specified material.
-			*
-			* Constructs a cube at the given position, with the specified size, rotation, and material.
-			*
-			* @param pos The position of the cube.
-			* @param size The dimensions (width, height, depth) of the cube.
-			* @param rotation The rotation of the cube (in Euler angles).
-			* @param material The material to apply to the cube.
-			* @return ecs::Entity The newly created cube entity.
-			*/
-	        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material);
+        /**
+         * @brief Creates a cube entity with a specified material.
+         *
+         * Constructs a cube at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the cube.
+         * @param size The dimensions (width, height, depth) of the cube.
+         * @param rotation The rotation of the cube (in Euler angles).
+         * @param material The material to apply to the cube.
+         * @return ecs::Entity The newly created cube entity.
+         */
+        static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                      const components::Material& material);
 
 	        static ecs::Entity createModel(assets::AssetRef<assets::Model> modelAsset, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
 			static int processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node);
@@ -105,16 +107,16 @@ namespace nexo
         static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
         /**
-        * @brief Creates a pyramid entity with a specified material.
-        *
-        * Constructs a pyramid at the given position, with the specified size, rotation, and material.
-        *
-        * @param pos The position of the pyramid.
-        * @param size The dimensions (width, height, depth) of the pyramid.
-        * @param rotation The rotation of the pyramid (in Euler angles).
-        * @param material The material to apply to the pyramid.
-        * @return ecs::Entity The newly created pyramid entity.
-        */
+         * @brief Creates a pyramid entity with a specified material.
+         *
+         * Constructs a pyramid at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the pyramid.
+         * @param size The dimensions (width, height, depth) of the pyramid.
+         * @param rotation The rotation of the pyramid (in Euler angles).
+         * @param material The material to apply to the pyramid.
+         * @return ecs::Entity The newly created pyramid entity.
+         */
         static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                          const components::Material& material);
 
@@ -133,16 +135,16 @@ namespace nexo
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                           glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
         /**
-        * @brief Creates a cylinder entity with a specified material.
-        *
-        * Constructs a cylinder at the given position, with the specified size, rotation, and material.
-        *
-        * @param pos The position of the cylinder.
-        * @param size The dimensions (width, height, depth) of the cylinder.
-        * @param rotation The rotation of the cylinder (in Euler angles).
-        * @param material The material to apply to the cylinder.
-        * @return ecs::Entity The newly created cylinder entity.
-        */
+         * @brief Creates a cylinder entity with a specified material.
+         *
+         * Constructs a cylinder at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the cylinder.
+         * @param size The dimensions (width, height, depth) of the cylinder.
+         * @param rotation The rotation of the cylinder (in Euler angles).
+         * @param material The material to apply to the cylinder.
+         * @return ecs::Entity The newly created cylinder entity.
+         */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                           const components::Material& material);
 
@@ -159,19 +161,20 @@ namespace nexo
          * @return ecs::Entity The newly created sphere entity.
          */
         static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+                                        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+
         /**
-        * @brief Creates a sphere entity with a specified material.
-        *
-        * Constructs a sphere at the given position, with the specified size, rotation, and material.
-        *
-        * @param pos The position of the sphere.
-        * @param size The dimensions (width, height, depth) of the sphere.
-        * @param rotation The rotation of the sphere (in Euler angles).
-        * @param material The material to apply to the sphere.
-        * @return ecs::Entity The newly created sphere entity.
-        */
+         * @brief Creates a sphere entity with a specified material.
+         *
+         * Constructs a sphere at the given position, with the specified size, rotation, and material.
+         *
+         * @param pos The position of the sphere.
+         * @param size The dimensions (width, height, depth) of the sphere.
+         * @param rotation The rotation of the sphere (in Euler angles).
+         * @param material The material to apply to the sphere.
+         * @return ecs::Entity The newly created sphere entity.
+         */
         static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                          const components::Material& material);
+                                        const components::Material& material);
     };
 }
