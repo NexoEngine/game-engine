@@ -54,6 +54,7 @@ set(RENDERER_SOURCES
         engine/src/renderer/primitives/Tetrahedron.cpp
         engine/src/renderer/primitives/Pyramid.cpp
         engine/src/renderer/primitives/Cylinder.cpp
+        engine/src/renderer/primitives/Sphere.cpp
 )
 
 add_executable(renderer_tests

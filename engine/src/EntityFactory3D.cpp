@@ -233,7 +233,8 @@ namespace nexo {
         return newSphere;
     }
 
-    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material)
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                              const components::Material& material)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
