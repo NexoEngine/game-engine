@@ -111,7 +111,8 @@ namespace nexo::editor {
         auto now = floor<seconds>(system_clock::now());
         zoned_time local_zoned{ current_zone(), now };
 
-        std::string ts = std::format("{:%Y%m%d_%H%M%S}", local_zoned);
+        auto local_time = local_zoned.get_local_time();
+        std::string ts = std::format("{:%Y%m%d_%H%M%S}", local_time);
         return std::format("../logs/NEXO-{}.log", ts);
     }
 }
