@@ -69,7 +69,7 @@ namespace nexo::components {
     };
 
     struct Tetrahedron final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for tetrahedron
@@ -82,7 +82,7 @@ namespace nexo::components {
     };
 
     struct Pyramid final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for pyramid
@@ -95,7 +95,7 @@ namespace nexo::components {
     };
 
     struct Cylinder final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for cylinder
@@ -108,7 +108,7 @@ namespace nexo::components {
     };
 
     struct Sphere final : Shape3D {
-        void draw(std::shared_ptr<renderer::RendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
+        void draw(std::shared_ptr<renderer::NxRendererContext> &context, const TransformComponent &transf, const Material &material, const int entityID) override
         {
             const auto renderer3D = context->renderer3D;
             //TODO: Find a way to handle materials for sphere
@@ -135,13 +135,12 @@ namespace nexo::components {
         void draw(renderer::NxRenderer3D &renderer3D, const glm::mat4 &parentTransform, const int entityID) const
         {
             const glm::mat4 localTransform = parentTransform * transform;
-            for (const auto &[name, vertices, indices, material]: meshes)
+            for (const auto &mesh : meshes)
             {
                 //TODO: Implement a way to pass the transform directly to the shader
                 std::vector<renderer::NxVertex> transformedVertices = mesh.vertices;
                 for (auto &vertex: transformedVertices)
                     vertex.position = glm::vec3(localTransform * glm::vec4(vertex.position, 1.0f));
-
                 {
                     const auto meshMaterialAsset = mesh.material.lock();
                     const auto albedoTextureAsset = meshMaterialAsset && meshMaterialAsset->isLoaded() ? meshMaterialAsset->getData()->albedoTexture.lock() : nullptr;
