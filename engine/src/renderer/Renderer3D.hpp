@@ -21,9 +21,10 @@
 #include <array>
 #include <glm/glm.hpp>
 
-namespace nexo::renderer {
-
-    struct NxVertex {
+namespace nexo::renderer
+{
+    struct NxVertex
+    {
         glm::vec3 position;
         glm::vec2 texCoord;
         glm::vec3 normal;
@@ -33,7 +34,8 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct NxIndexedMaterial {
+    struct NxIndexedMaterial
+    {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         int albedoTexIndex = 0; // Default: 0 (white texture)
         glm::vec4 specularColor = glm::vec4(1.0f);
@@ -48,14 +50,15 @@ namespace nexo::renderer {
         int opacityTexIndex = 0; // Default: 0 (white texture)
     };
 
-    struct NxMaterial {
+    struct NxMaterial
+    {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         glm::vec4 specularColor = glm::vec4(1.0f);
         glm::vec3 emissiveColor = glm::vec3(0.0f);
 
-        float roughness = 0.0f;  // 0 = smooth, 1 = rough
-        float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
-        float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
+        float roughness = 0.0f; // 0 = smooth, 1 = rough
+        float metallic = 0.0f; // 0 = non-metal, 1 = fully metallic
+        float opacity = 1.0f; // 1 = opaque, 0 = fully transparent
 
         std::shared_ptr<NxTexture2D> albedoTexture = nullptr;
         std::shared_ptr<NxTexture2D> normalMap = nullptr;
@@ -67,7 +70,8 @@ namespace nexo::renderer {
     };
 
     //TODO: Add stats for the meshes
-    struct NxRenderer3DStats {
+    struct NxRenderer3DStats
+    {
         unsigned int drawCalls = 0;
         unsigned int cubeCount = 0;
 
@@ -89,7 +93,8 @@ namespace nexo::renderer {
      * - `vertexBufferPtr`, `indexBufferPtr`: Current pointers for batching vertices and indices.
      * - `stats`: Rendering statistics.
      */
-    struct NxRenderer3DStorage {
+    struct NxRenderer3DStorage
+    {
         const unsigned int maxCubes = 10000;
         const unsigned int maxVertices = maxCubes * 8;
         const unsigned int maxIndices = maxCubes * 36;
@@ -108,7 +113,7 @@ namespace nexo::renderer {
         std::array<NxVertex, 80000> vertexBufferBase;
         std::array<unsigned int, 360000> indexBufferBase;
         NxVertex* vertexBufferPtr = nullptr;
-        unsigned int *indexBufferPtr = nullptr;
+        unsigned int* indexBufferPtr = nullptr;
 
         std::array<std::shared_ptr<NxTexture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
@@ -142,7 +147,8 @@ namespace nexo::renderer {
      * 4. Call `endScene()` to finalize the rendering and issue draw calls.
      * 5. Call `shutdown()` to release resources when the renderer is no longer needed.
      */
-    class NxRenderer3D {
+    class NxRenderer3D
+    {
     public:
 
         static NxRenderer3D& get() {
@@ -195,7 +201,7 @@ namespace nexo::renderer {
          * - NxRendererNotInitialized if the renderer is not initialized.
          * - NxRendererSceneLifeCycleFailure if called without proper initialization.
          */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos, const std::string &shader = "");
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const std::string& shader = "");
 
         /**
          * @brief Ends the current 3D rendering scene.
@@ -213,6 +219,7 @@ namespace nexo::renderer {
         static std::shared_ptr<NxVertexArray> getBillboardVAO();
 
         /**
+         *
          * @brief Draws a pyramid using a specified transformation and color.
          *
          * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
@@ -228,18 +235,19 @@ namespace nexo::renderer {
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
                          const glm::vec4& color, int entityID = -1) const;
+
         /**
-         * @brief Draws a pyramid using a specified transformation and color.
-         *
-         * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
-         * and increments the pyramid count in the statistics.
-         *
-         * @param transform The transformation matrix for the pyramid.
-         * @param color The color (RGBA) of the pyramid.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
+            * @brief Draws a pyramid using a specified transformation and color.
+            *
+            * Generates the pyramid's vertex and index data, updates the vertex buffer with the pyramid's geometry,
+            * and increments the pyramid count in the statistics.
+            *
+            * @param transform The transformation matrix for the pyramid.
+            * @param color The color (RGBA) of the pyramid.
+            * @param entityID An optional entity identifier (default is -1).
+            *
+            * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
+            */
         void drawPyramid(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
         /**
          * @brief Draws a pyramid using a specified transformation and material.
@@ -254,7 +262,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+        void drawPyramid(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material,
                          int entityID = -1) const;
         /**
          * @brief Draws a pyramid using a specified transformation and material.
@@ -271,7 +279,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                         const components::Material& material, int entityID = -1) const;
+                         const NxMaterial& material, int entityID = -1) const;
         /**
          * @brief Draws a pyramid using a specified transformation and material.
          *
@@ -287,7 +295,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawPyramid(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                         const components::Material& material, int entityID = -1) const;
+                         const NxMaterial& material, int entityID = -1) const;
         /**
          * @brief Draws a pyramid using a specified transformation and color.
          *
@@ -300,7 +308,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawPyramid(const glm::mat4& transform, const components::Material& material, int entityID = -1) const;
+        void drawPyramid(const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
 
 
         /**
@@ -365,7 +373,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+        void drawCylinder(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material,
                           unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
@@ -383,7 +391,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                          const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
+                          const NxMaterial& material, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and material.
          *
@@ -400,7 +408,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                          const components::Material& material, unsigned int nbSegment = 8, int entityID = -1) const;
+                          const NxMaterial& material, unsigned int nbSegment = 8, int entityID = -1) const;
         /**
          * @brief Draws a cylinder using a specified transformation and color.
          *
@@ -414,7 +422,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawCylinder(const glm::mat4& transform, const components::Material& material, unsigned int nbSegment = 8,
+        void drawCylinder(const glm::mat4& transform, const NxMaterial& material, unsigned int nbSegment = 8,
                           int entityID = -1) const;
 
         /**
@@ -482,7 +490,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawSphere(const glm::vec3& position, const glm::vec3& size, const components::Material& material,
+        void drawSphere(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material,
                         unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
@@ -501,7 +509,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                        const components::Material& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
+                        const NxMaterial& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and material.
@@ -519,7 +527,7 @@ namespace nexo::renderer {
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
         void drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                        const components::Material& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
+                        const NxMaterial& material, unsigned int nbSubdivision = 2, int entityID = -1) const;
 
         /**
          * @brief Draws a sphere using a specified transformation and color.
@@ -534,7 +542,7 @@ namespace nexo::renderer {
          *
          * @throws RendererSceneLifeCycleFailure if the renderer is not in a valid scene.
          */
-        void drawSphere(const glm::mat4& transform, const components::Material& material,
+        void drawSphere(const glm::mat4& transform, const NxMaterial& material,
                         unsigned int nbSubdivision = 2, int entityID = -1) const;
 
 
@@ -558,7 +566,7 @@ namespace nexo::renderer {
          */
         [[nodiscard]] NxRenderer3DStats getStats() const;
 
-        [[nodiscard]] std::shared_ptr<NxShader> &getShader() const {return m_storage->currentSceneShader;};
+        [[nodiscard]] std::shared_ptr<NxShader>& getShader() const { return m_storage->currentSceneShader; };
 
         [[nodiscard]] std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
 
