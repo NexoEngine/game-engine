@@ -42,10 +42,10 @@ namespace nexo::renderer
 
         // Define the 4 triangular faces (each has 3 vertices)
         glm::vec3 verts[] = {
-            v0, v1, v2, // Front face
-            v0, v2, v3, // Right face
-            v0, v3, v1, // Left face
-            v1, v3, v2 // Bottom face
+            v0, v2, v1, // Back face
+            v0, v3, v2, // Right face
+            v0, v1, v3, // Left face
+            v1, v2, v3  // Bottom face
         };
 
         std::ranges::copy(verts, vertices.begin());

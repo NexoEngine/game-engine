@@ -31,7 +31,7 @@
 
 namespace nexo::renderer
 {
-    int CYLINDER_SEGMENTS = 5; // Number of segments for the cylinder min 3
+    int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder min 3
     constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices()
@@ -81,7 +81,7 @@ namespace nexo::renderer
         capIndicesRec = [&indices, &transformer, &capIndicesRec](const int start, const int nbSegment) {
             if (const int step = ceil(static_cast<double>(nbSegment) / 3.0); step == 1) {
                 const int tmp = (start + 2 < CYLINDER_SEGMENTS) ? (start + 2) : 0;
-                indices.push_back(start + transformer); indices.push_back(start + 1 + transformer); indices.push_back(tmp + transformer);
+                indices.push_back(start + transformer); indices.push_back(tmp + transformer); indices.push_back(start + 1 + transformer);
             } else {
                 capIndicesRec(start, step + 1);
                 if (start + 2 * step < start + nbSegment - 1) {
@@ -94,10 +94,10 @@ namespace nexo::renderer
                         capIndicesRec(start + step, step + 1);
                     }
                     tmp = tmp > CYLINDER_SEGMENTS-1 ? 0 : tmp;
-                    indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(tmp + transformer);
+                    indices.push_back(start + transformer); indices.push_back(tmp + transformer); indices.push_back(start + step + transformer);
                 } else {
                     const int tmp = (start + nbSegment - 1 < CYLINDER_SEGMENTS) ? (start + nbSegment - 1) : 0;
-                    indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(tmp + transformer);
+                    indices.push_back(start + transformer); indices.push_back(tmp + transformer); indices.push_back(start + step + transformer);
                     if ((start + nbSegment - 1) - (start + step) > 1) {
                         capIndicesRec(start + step, step + 1);
                     }
@@ -106,8 +106,8 @@ namespace nexo::renderer
         };
 
         constexpr int start = 0;
-        const int step = ceil(static_cast<double>(CYLINDER_SEGMENTS) / 3.0); //3
-        indices.push_back(start + transformer); indices.push_back(start + step + transformer); indices.push_back(start + 2 * step + transformer);
+        const int step = ceil(static_cast<double>(CYLINDER_SEGMENTS) / 3.0);
+        indices.push_back(start + transformer); indices.push_back(start + 2 * step + transformer); indices.push_back(start + step + transformer);
         if (CYLINDER_SEGMENTS > 3) {
             capIndicesRec(start, step + 1);
             capIndicesRec(start + step, step + 1);
@@ -122,11 +122,11 @@ namespace nexo::renderer
 
         int i = 0;
         for (; i < CYLINDER_SEGMENTS-1; ++i) {
-            indices.push_back(i); indices.push_back(i + 1); indices.push_back(i + CYLINDER_SEGMENTS);
-            indices.push_back(i + 1); indices.push_back(i + CYLINDER_SEGMENTS + 1); indices.push_back(i + CYLINDER_SEGMENTS);
+            indices.push_back(i); indices.push_back(i + CYLINDER_SEGMENTS); indices.push_back(i + 1);
+            indices.push_back(i + 1); indices.push_back(i + CYLINDER_SEGMENTS); indices.push_back(i + CYLINDER_SEGMENTS + 1);
         }
-        indices.push_back(i); indices.push_back(0); indices.push_back(i + CYLINDER_SEGMENTS);
-        indices.push_back(0); indices.push_back(CYLINDER_SEGMENTS); indices.push_back(i + CYLINDER_SEGMENTS);
+        indices.push_back(i); indices.push_back(i + CYLINDER_SEGMENTS); indices.push_back(0);
+        indices.push_back(0); indices.push_back(i + CYLINDER_SEGMENTS); indices.push_back(CYLINDER_SEGMENTS);
 
         capIndices(indices, CYLINDER_SEGMENTS*2);
         capIndices(indices, CYLINDER_SEGMENTS*3);

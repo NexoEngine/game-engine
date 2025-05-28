@@ -20,7 +20,6 @@
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
-#include <Renderer3D.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
