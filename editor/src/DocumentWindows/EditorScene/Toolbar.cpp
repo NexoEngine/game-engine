@@ -72,6 +72,58 @@ namespace nexo::editor {
                         ActionManager::get().recordAction(std::move(createAction));
                     },
                 .tooltip = "Create Cube"
+            },
+            // {
+            //     .uniqueId = "sphere_primitive",
+            //     .icon = ICON_FA_CIRCLE,
+            //     .onClick = [this, &app]()
+            //     {
+            //         const ecs::Entity newSphere = EntityFactory3D::createSphere({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+            //                                                                 {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+            //         app.getSceneManager().getScene(this->m_sceneId).addEntity(newSphere);
+            //         auto createAction = std::make_unique<EntityCreationAction>(newSphere);
+            //         ActionManager::get().recordAction(std::move(createAction));
+            //     },
+            //     .tooltip = "Create Sphere"
+            // },
+            {
+                .uniqueId = "tetrahedron_primitive",
+                .icon = ICON_FA_CUBE,
+                .onClick = [this, &app]()
+                {
+                    const ecs::Entity newTetrahedron = EntityFactory3D::createTetrahedron({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                            {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+                    app.getSceneManager().getScene(this->m_sceneId).addEntity(newTetrahedron);
+                    auto createAction = std::make_unique<EntityCreationAction>(newTetrahedron);
+                    ActionManager::get().recordAction(std::move(createAction));
+                },
+                .tooltip = "Create Tetrahedron"
+            },
+            {
+                .uniqueId = "pyramid_primitive",
+                .icon = ICON_FA_CUBE,
+                .onClick = [this, &app]()
+                {
+                    const ecs::Entity newPyramid = EntityFactory3D::createPyramid({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                            {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+                    app.getSceneManager().getScene(this->m_sceneId).addEntity(newPyramid);
+                    auto createAction = std::make_unique<EntityCreationAction>(newPyramid);
+                    ActionManager::get().recordAction(std::move(createAction));
+                },
+                .tooltip = "Create Pyramid"
+            },
+            {
+                .uniqueId = "cylinder_primitive",
+                .icon = ICON_FA_CUBE,
+                .onClick = [this, &app]()
+                {
+                    const ecs::Entity newCylinder = EntityFactory3D::createCylinder({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                            {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+                    app.getSceneManager().getScene(this->m_sceneId).addEntity(newCylinder);
+                    auto createAction = std::make_unique<EntityCreationAction>(newCylinder);
+                    ActionManager::get().recordAction(std::move(createAction));
+                },
+                .tooltip = "Create Cylinder"
             }
         };
         ImNexo::ButtonDropDown(primitiveButtonPos, buttonSize, buttonProps, showPrimitiveMenu);
