@@ -20,6 +20,7 @@ namespace nexo::event {
 	void EventManager::dispatchEvents()
 	{
 	    size_t size = m_eventQueue.size();
+		std::cout << size << std::endl;
 	    while (size--) {
 	        auto event = m_eventQueue.front();
 	        m_eventQueue.pop_front();
@@ -27,7 +28,7 @@ namespace nexo::event {
 	        // Store a reference to the event to avoid evaluating *event with side effects.
 	        const IEvent &ev = *event;
 	        if (const std::type_index typeIndex(typeid(ev)); m_listeners.contains(typeIndex)) {
-	            for (auto *listener : m_listeners[typeIndex]) {
+	            for (auto listener : m_listeners[typeIndex]) {
 	                event->trigger(*listener);
 	                if (event->consumed)
 	                    break;
