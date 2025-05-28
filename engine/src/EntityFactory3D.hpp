@@ -61,9 +61,10 @@ namespace nexo
 	        static ecs::Entity createModel(assets::AssetRef<assets::Model> modelAsset, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation);
 			static int processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node);
 
-			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const glm::vec4 &color);
-			static ecs::Entity createBillboard(const glm::vec3 &pos, const glm::vec3 &size, const components::Material &material);
+        static ecs::Entity createBillboard(const glm::vec3& pos, const glm::vec3& size, const glm::vec4& color);
 
+        static ecs::Entity createBillboard(const glm::vec3& pos, const glm::vec3& size,
+                                           const components::Material& material);
 
         /**
          * @brief Creates a tetrahedron entity with a specified material.
@@ -78,17 +79,18 @@ namespace nexo
          */
         static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                              glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+
         /**
-         * @brief Creates a tetrahedron entity with a specified material.
-         *
-         * Constructs a tetrahedron at the given position, with the specified size, rotation, and material.
-         *
-         * @param pos The position of the tetrahedron.
-         * @param size The dimensions (width, height, depth) of the tetrahedron.
-         * @param rotation The rotation of the tetrahedron (in Euler angles).
-         * @param material The material to apply to the tetrahedron.
-         * @return ecs::Entity The newly created tetrahedron entity.
-         */
+            * @brief Creates a tetrahedron entity with a specified material.
+            *
+            * Constructs a tetrahedron at the given position, with the specified size, rotation, and material.
+            *
+            * @param pos The position of the tetrahedron.
+            * @param size The dimensions (width, height, depth) of the tetrahedron.
+            * @param rotation The rotation of the tetrahedron (in Euler angles).
+            * @param material The material to apply to the tetrahedron.
+            * @return ecs::Entity The newly created tetrahedron entity.
+            */
         static ecs::Entity createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                              const components::Material& material);
 
@@ -106,6 +108,7 @@ namespace nexo
          */
         static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+
         /**
          * @brief Creates a pyramid entity with a specified material.
          *
@@ -120,7 +123,6 @@ namespace nexo
         static ecs::Entity createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                          const components::Material& material);
 
-
         /**
          * @brief Creates a cylinder entity with a specified material.
          *
@@ -134,6 +136,7 @@ namespace nexo
          */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                           glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+
         /**
          * @brief Creates a cylinder entity with a specified material.
          *
@@ -147,7 +150,6 @@ namespace nexo
          */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                           const components::Material& material);
-
 
         /**
          * @brief Creates a sphere entity with a specified material.
