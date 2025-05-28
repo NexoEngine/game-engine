@@ -19,6 +19,7 @@
 #include <functional>
 #include <queue>
 #include <memory>
+#include <concepts>
 
 #include "Listener.hpp"
 #include "Logger.hpp"
@@ -30,6 +31,13 @@ namespace nexo::scene {
 #define LISTENS_TO(...) public event::Listens<__VA_ARGS__>
 
 namespace nexo::event {
+
+    template<typename L, typename E>
+    concept HandlesEvent =
+        std::derived_from<L, BaseListener> &&
+        requires(L* l, E& e) {
+            { l->handleEvent(e) } -> std::same_as<void>;
+        };
 
 	/**
 	* @brief Base interface for all events.
@@ -113,8 +121,9 @@ namespace nexo::event {
 		* @tparam EventType The event type to listen for.
 		* @param listener Pointer to the listener.
 		*/
-        template <typename EventType>
-        void registerListener(BaseListener* listener) {
+		template<typename EventType, typename L>
+        requires HandlesEvent<L, EventType>
+        void registerListener(L* listener) {
             const std::type_index typeIndex(typeid(EventType));
             if (!m_listeners.contains(typeIndex)) {
                 m_listeners[typeIndex] = std::vector<BaseListener*>();
