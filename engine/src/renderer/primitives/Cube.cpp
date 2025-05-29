@@ -66,7 +66,7 @@ namespace nexo::renderer {
 
 		std::ranges::copy(verts, vertices.begin());
 
-		glm::vec2 texc[] = {
+		glm::vec2 texturesCoord[] = {
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
@@ -75,7 +75,7 @@ namespace nexo::renderer {
 			glm::vec2(0,1), glm::vec2(0,0), glm::vec2(1,0), glm::vec2(1,0), glm::vec2(1,1), glm::vec2(0,1),
 		};
 
-		std::ranges::copy(texc, texCoords.begin());
+		std::ranges::copy(texturesCoord, texCoords.begin());
 		glm::vec3 norm[36];
 
 		for (int i = 0; i < 36; i += 3)
@@ -101,7 +101,7 @@ namespace nexo::renderer {
             return cubeVao;
 
         cubeVao = createVertexArray();
-        auto vertexBuffer = createVertexBuffer(nbVerticesCube * sizeof(NxVertex));
+        const auto vertexBuffer = createVertexBuffer(nbVerticesCube * sizeof(NxVertex));
         const NxBufferLayout cubeVertexBufferLayout = {
             {NxShaderDataType::FLOAT3, "aPos"},
             {NxShaderDataType::FLOAT2, "aTexCoord"},
