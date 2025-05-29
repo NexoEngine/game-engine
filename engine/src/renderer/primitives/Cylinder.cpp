@@ -13,9 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-#include "renderer/RendererExceptions.hpp"
-
-#include <algorithm>
 #include <array>
 #include <cmath>
 #ifndef M_PI
@@ -26,12 +23,11 @@
 #include <Logger.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <gmock/gmock-matchers.h>
 
 namespace nexo::renderer
 {
-    int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder min 3
+    unsigned int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder min 3
     constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices()
@@ -39,14 +35,14 @@ namespace nexo::renderer
         std::vector<glm::vec3> vertices{};
 
         int i = 0;
-        for (int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS; ++i, --k) {
+        for (unsigned int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS; ++i, --k) {
             const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
             const float x = std::cos(angle);
             const float z = std::sin(angle);
 
             vertices.emplace_back(x, CYLINDER_HEIGHT, z);
         }
-        for (int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS*2; ++i, --k) {
+        for (unsigned int k = CYLINDER_SEGMENTS-1; i < CYLINDER_SEGMENTS*2; ++i, --k) {
             const float angle = static_cast<float>(k) / static_cast<float>(CYLINDER_SEGMENTS) * 2.0f * static_cast<float>(M_PI);
             const float x = std::cos(angle);
             const float z = std::sin(angle);
@@ -69,9 +65,6 @@ namespace nexo::renderer
         }
         return vertices;
     }
-
-    // unique vertices for a cylinder
-    const std::vector<glm::vec3> cylinderPositions = generateCylinderVertices();
 
     static void capIndices(std::vector<unsigned int> &indices, const int transformer)
     {
@@ -105,6 +98,24 @@ namespace nexo::renderer
             }
         };
 
+        // capIndicesRec = [&indices, &transformer, &capIndicesRec](const int start, const int nbSegment) {
+        //     if (const int step = ceil(static_cast<double>(nbSegment) / 3.0); step == 1) {
+        //         const int tmp = (start + 2 < CYLINDER_SEGMENTS) ? (start + 2) : 0;
+        //         indices.push_back(start + transformer);
+        //         indices.push_back(tmp + transformer);
+        //         indices.push_back(start + 1 + transformer);
+        //     } else {
+        //         capIndicesRec(start, step + 1);
+        //         const int tmp = (start + nbSegment - 1 < CYLINDER_SEGMENTS) ? (start + nbSegment - 1) : 0;
+        //         indices.push_back(start + transformer);
+        //         indices.push_back(tmp + transformer);
+        //         indices.push_back(start + step + transformer);
+        //         if ((start + nbSegment - 1) - (start + step) > 1) {
+        //             capIndicesRec(start + step, step + 1);
+        //         }
+        //     }
+        // };
+
         constexpr int start = 0;
         const int step = ceil(static_cast<double>(CYLINDER_SEGMENTS) / 3.0);
         indices.push_back(start + transformer); indices.push_back(start + 2 * step + transformer); indices.push_back(start + step + transformer);
@@ -134,8 +145,6 @@ namespace nexo::renderer
         return indices;
     }
 
-    const std::vector<unsigned int> cylinderIndices = generateCylinderIndices();
-
     static std::vector<glm::vec2> generateTextureCoords()
     {
         std::vector<glm::vec2> texCoords{};
@@ -150,22 +159,9 @@ namespace nexo::renderer
         return texCoords;
     }
 
-    const std::vector<glm::vec2> textureCoords = generateTextureCoords();
-
-    /**
-    * @brief Generates the vertex, texture coordinate, and normal data for a cylinder mesh.
-    *
-    * Fills the provided arrays with CYLINDER_SEGMENTS*2 vertices, texture coordinates, and normals for a cylinder.
-    *
-    * @param vertices Array to store generated vertex positions.
-    * @param texCoords Array to store generated texture coordinates.
-    * @param normals Array to store generated normals.
-    */
-    static void genCylinderMesh(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &normals)
+    static std::vector<glm::vec3> generateNormals(const std::vector<glm::vec3> &vertices)
     {
-        vertices = generateCylinderVertices();
-        texCoords = generateTextureCoords();
-
+        std::vector<glm::vec3> normals{};
         int i = 0;
         for (; i < CYLINDER_SEGMENTS*1; ++i) {
             const glm::vec3 vector1 = vertices[i] - glm::vec3(0, 1, 0);
@@ -182,381 +178,58 @@ namespace nexo::renderer
             normals.emplace_back(0,-1,0);
         }
         std::ranges::copy(normals, normals.begin());
+        return normals;
     }
 
-    void NxRenderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                                 const unsigned int nbSegment, const int entityID) const
+    /**
+     * @brief Creates a vertex array object (VAO) for a cylinder mesh.
+     *
+     * @return A shared pointer to a vertex array object containing the cylinder mesh data.
+     */
+    std::shared_ptr<NxVertexArray> NxRenderer3D::getCylinderVAO(const unsigned int nbSegment)
     {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
+        if (nbSegment < 3) {
+            LOG(NEXO_WARN, "Cylinder segments must be at least 3, using default value of 8.");
+            CYLINDER_SEGMENTS = 8;
+        } else {
             CYLINDER_SEGMENTS = nbSegment;
+        }
+        const unsigned int nbVerticesCylinder = CYLINDER_SEGMENTS*4;
+        static std::shared_ptr<NxVertexArray> cylinderVao = nullptr;
+        if (cylinderVao)
+            return cylinderVao;
 
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
+        cylinderVao = createVertexArray();
+        const auto vertexBuffer = createVertexBuffer(nbVerticesCylinder * sizeof(NxVertex));
+        const NxBufferLayout cylinderVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"},
+            {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},
+            {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"},
+            {NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(cylinderVertexBufferLayout);
 
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
+        const std::vector<glm::vec3> vertices = generateCylinderVertices();
+        const std::vector<glm::vec2> texCoords = generateTextureCoords();
+        const std::vector<glm::vec3> normals = generateNormals(vertices);
         std::vector<unsigned int> indices = generateCylinderIndices();
 
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
+        std::vector<NxVertex> vertexData(nbVerticesCylinder);
+        for (unsigned int i = 0; i < nbVerticesCylinder; ++i) {
+            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord = texCoords[i];
+            vertexData[i].normal = normals[i];
         }
 
-        // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
+        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        cylinderVao->addVertexBuffer(vertexBuffer);
 
-        // Update stats
-        m_storage->stats.cubeCount++;
-        const auto vertexDataSize = static_cast<unsigned int>(
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferPtr) -
-            reinterpret_cast<std::byte*>(m_storage->vertexBufferBase.data())
-        );
+        const auto indexBuffer = createIndexBuffer();
+        indexBuffer->setData(indices.data(), indices.size());
+        cylinderVao->setIndexBuffer(indexBuffer);
 
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
-        flushAndReset();
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                     const glm::vec4& color, const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::mat4& transform, const glm::vec4& color, const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size,
-                                     const NxMaterial& material, const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                     const NxMaterial& material, const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                                     const NxMaterial& material, const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        const glm::mat4 rotationMat = glm::toMat4(rotation);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawCylinder(const glm::mat4& transform, const NxMaterial& material,
-                                     const unsigned int nbSegment, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        if (nbSegment != CYLINDER_SEGMENTS && nbSegment >= 3)
-            CYLINDER_SEGMENTS = nbSegment;
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices = generateCylinderIndices();
-
-        genCylinderMesh(verts, texCoords, normals);
-
-        // Vertex data
-        for (unsigned int i = 0; i < CYLINDER_SEGMENTS*4; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
+        return cylinderVao;
     }
 }
