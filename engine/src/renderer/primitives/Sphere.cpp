@@ -72,9 +72,6 @@ namespace nexo::renderer
         return vertices;
     }
 
-    // unique vertices for a sphere
-    const std::vector<glm::vec3> spherePositions = generateSphereVertices();
-
     static std::vector<unsigned int> generateSphereIndices()
     {
         std::vector<unsigned int> indices{};
@@ -153,12 +150,11 @@ namespace nexo::renderer
         }
     };
 
-    static void loopSubdivision(std::vector<unsigned int>& indices, std::vector<glm::vec3>& vertices,
-                                const unsigned int nbSubdivisions)
+    void loopSubdivision(std::vector<unsigned int>& indices, std::vector<glm::vec3>& vertices,
+                                const unsigned int nbSubdivision)
     {
-        for (unsigned int i = 0; i < nbSubdivisions; ++i)
+        for (unsigned int i = 0; i < nbSubdivision; ++i)
         {
-            std::set<std::pair<unsigned int, unsigned int>> edges;
             std::vector<unsigned int> newIndices{};
             std::map<glm::vec3, unsigned int, Vec3Comparator> newVertices{};
 
@@ -167,11 +163,6 @@ namespace nexo::renderer
                 const unsigned int v1 = indices[j];
                 const unsigned int v2 = indices[j + 1];
                 const unsigned int v3 = indices[j + 2];
-
-                // Add edges to the set
-                edges.insert({std::min(v1, v2), std::max(v1, v2)});
-                edges.insert({std::min(v2, v3), std::max(v2, v3)});
-                edges.insert({std::min(v1, v3), std::max(v1, v3)});
 
                 const glm::vec3 m1_pos = (vertices[v1] + vertices[v2]) / 2.0f;
                 const glm::vec3 m2_pos = (vertices[v2] + vertices[v3]) / 2.0f;
@@ -231,381 +222,72 @@ namespace nexo::renderer
 
             float u = (atan2(p.z, p.x) + M_PI) / (2 * M_PI);
             float v = acos(p.y) / M_PI;
-            // v = 1.0f - v; // uncomment if reversed
 
             texCoords.emplace_back(u, v);
         }
         return texCoords;
     }
 
-
-    /**
-    * @brief Generates the vertex, texture coordinate, and normal data for a sphere mesh.
-    *
-    * Fills the provided arrays with 36 vertices, texture coordinates, and normals for a sphere.
-    *
-    * @param vertices Array to store generated vertex positions.
-    * @param texCoords Array to store generated texture coordinates.
-    * @param normals Array to store generated normals.
-    * @param indices Array to store generated indices.
-    * @param nbSubdivisions Number of subdivisions for the sphere mesh.
-    */
-    static void genSphereMesh(std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& texCoords,
-                              std::vector<glm::vec3>& normals, std::vector<unsigned int>& indices,
-                              const unsigned int nbSubdivisions)
+    static std::vector<glm::vec3> generateSphereNormals(const std::vector<glm::vec3>& vertices)
     {
-        vertices = generateSphereVertices();
-        indices = generateSphereIndices();
-
-        loopSubdivision(indices, vertices, nbSubdivisions);
-
+        std::vector<glm::vec3> normals{};
         for (auto vec : vertices)
         {
             const glm::vec3 vector1 = vec - glm::vec3(0, 0, 0);
             normals.emplace_back(vector1);
         }
-        texCoords = generateTextureCoords(vertices);
-
-        std::ranges::copy(normals, normals.begin());
+        return normals;
     }
 
-    void NxRenderer3D::drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color,
-                                const unsigned int nbSubdivisions, const int entityID) const
+    /**
+     * @brief Creates a vertex array object (VAO) for a sphere mesh.
+     *
+     * @return A shared pointer to a vertex array object containing the sphere mesh data.
+     */
+    std::shared_ptr<NxVertexArray> NxRenderer3D::getSphereVAO(const unsigned int nbSubdivision)
     {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
+        // static std::shared_ptr<NxVertexArray> sphereVao = nullptr;
+        static std::map <unsigned int, std::shared_ptr<NxVertexArray>> sphereVaoMap;
+        if (sphereVaoMap.contains(nbSubdivision))
+            return sphereVaoMap[nbSubdivision];
+        // if (sphereVao)
+        //     return sphereVao;
 
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
+        sphereVaoMap[nbSubdivision] = createVertexArray();
+        const auto vertexBuffer = createVertexBuffer(VERTEX_NUMBER * sizeof(NxVertex));
+        const NxBufferLayout sphereVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"},
+            {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},
+            {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"},
+            {NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(sphereVertexBufferLayout);
 
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
+        std::vector<glm::vec3> vertices = generateSphereVertices();
+        std::vector<unsigned int> indices = generateSphereIndices();
 
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
+        loopSubdivision(indices, vertices, nbSubdivision);
+        VERTEX_NUMBER = vertices.size();
 
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
+        const std::vector<glm::vec3> normals = generateSphereNormals(vertices);
+        const std::vector<glm::vec2> texCoords = generateTextureCoords(vertices);
 
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
+        std::vector<NxVertex> vertexData(VERTEX_NUMBER);
+        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i) {
+            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord = texCoords[i];
+            vertexData[i].normal = normals[i];
         }
 
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
+        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        sphereVaoMap[nbSubdivision]->addVertexBuffer(vertexBuffer);
 
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
+        const auto indexBuffer = createIndexBuffer();
+        indexBuffer->setData(indices.data(), indices.size());
+        sphereVaoMap[nbSubdivision]->setIndexBuffer(indexBuffer);
 
-    void NxRenderer3D::drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                const glm::vec4& color, const unsigned int nbSubdivisions, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawSphere(const glm::mat4& transform, const glm::vec4& color, const unsigned int nbSubdivisions,
-                                const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawSphere(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material,
-                                const unsigned int nbSubdivisions, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation,
-                                const NxMaterial& material, const unsigned int nbSubdivisions,
-                                const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawSphere(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation,
-                                const NxMaterial& material, const unsigned int nbSubdivisions,
-                                const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        const glm::mat4 rotationMat = glm::toMat4(rotation);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            // m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            // m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawSphere(const glm::mat4& transform, const NxMaterial& material,
-                                const unsigned int nbSubdivisions, const int entityID) const
-    {
-        if (!m_renderingScene)
-	    {
-	        THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-	                    "Renderer not rendering a scene, make sure to call beginScene first");
-	    }
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::vector<glm::vec3> verts{};
-        std::vector<glm::vec2> texCoords{};
-        std::vector<glm::vec3> normals{};
-        std::vector<unsigned int> indices{};
-
-        genSphereMesh(verts, texCoords, normals, indices, nbSubdivisions);
-
-        // Vertex data
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
+        return sphereVaoMap[nbSubdivision];
     }
 }
