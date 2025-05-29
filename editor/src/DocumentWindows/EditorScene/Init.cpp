@@ -52,10 +52,10 @@ namespace nexo::editor {
         auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
         auto gridPass = std::make_shared<renderer::GridPass>(m_contentSize.x, m_contentSize.y);
 
-        renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
-        renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
-        renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
-        renderer::PassId gridId = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
+        const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
+        const renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
+        const renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
+        const renderer::PassId gridId = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
         // Set up prerequisites
         cameraComponent.pipeline.addPrerequisite(outlineId, maskId);
         cameraComponent.pipeline.addPrerequisite(outlineId, forwardId);

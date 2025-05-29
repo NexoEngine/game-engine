@@ -95,7 +95,7 @@ namespace nexo::editor
             },
             {
                 .uniqueId = "pyramid_primitive",
-                .icon = ICON_FA_CUBE,
+                .icon = ICON_FA_PLUS,
                 .onClick = [this, &app]()
                 {
                     const ecs::Entity newPyramid = EntityFactory3D::createPyramid(
@@ -109,7 +109,7 @@ namespace nexo::editor
             },
             {
                 .uniqueId = "cylinder_primitive",
-                .icon = ICON_FA_CUBE,
+                .icon = ICON_FA_PLUS,
                 .onClick = [this, &app]()
                 {
                     const ecs::Entity newCylinder = EntityFactory3D::createCylinder(
@@ -123,7 +123,7 @@ namespace nexo::editor
             },
             {
                 .uniqueId = "tetrahedron_primitive",
-                .icon = ICON_FA_CUBE,
+                .icon = ICON_FA_PLUS,
                 .onClick = [this, &app]()
                 {
                     const ecs::Entity newTetrahedron = EntityFactory3D::createTetrahedron(
