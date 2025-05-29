@@ -13,10 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-#include "renderer/RendererExceptions.hpp"
 
 #include <algorithm>
-#include <array>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -27,15 +25,13 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
 #include <map>
-#include <Renderer3D.hpp>
 #include <set>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 namespace nexo::renderer
 {
-    unsigned int VERTEX_NUMBER = 12;
+    // unsigned int VERTEX_NUMBER = 12;
     // Number of vertex for the sphere min 12 then VERTEX_NUMBER += (old) VERTEX_NUMBER + (old) nb of faces - 2
 
     static void normalizeVertices(std::vector<glm::vec3>& vertices)
@@ -209,14 +205,13 @@ namespace nexo::renderer
             normalizeVertices(vertices);
             indices = std::move(newIndices);
         }
-        VERTEX_NUMBER = vertices.size();
     }
 
     static std::vector<glm::vec2> generateTextureCoords(const std::vector<glm::vec3>& vertices)
     {
         std::vector<glm::vec2> texCoords{};
 
-        for (int i = 0; i < VERTEX_NUMBER; ++i)
+        for (int i = 0; i < vertices.size(); ++i)
         {
             const glm::vec3 p = vertices[i];
 
@@ -239,6 +234,13 @@ namespace nexo::renderer
         return normals;
     }
 
+    unsigned int getNbVerticesSphere(const unsigned int nbSubdivision)
+    {
+        if (nbSubdivision == 0)
+            return 12; // Base case with 12 vertices
+        return 12 * static_cast<unsigned int>(std::pow(4, nbSubdivision));
+    }
+
     /**
      * @brief Creates a vertex array object (VAO) for a sphere mesh.
      *
@@ -246,15 +248,13 @@ namespace nexo::renderer
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getSphereVAO(const unsigned int nbSubdivision)
     {
-        // static std::shared_ptr<NxVertexArray> sphereVao = nullptr;
         static std::map <unsigned int, std::shared_ptr<NxVertexArray>> sphereVaoMap;
         if (sphereVaoMap.contains(nbSubdivision))
             return sphereVaoMap[nbSubdivision];
-        // if (sphereVao)
-        //     return sphereVao;
 
+        const unsigned int nbVertices = getNbVerticesSphere(nbSubdivision);
         sphereVaoMap[nbSubdivision] = createVertexArray();
-        const auto vertexBuffer = createVertexBuffer(VERTEX_NUMBER * sizeof(NxVertex));
+        const auto vertexBuffer = createVertexBuffer(nbVertices * sizeof(NxVertex));
         const NxBufferLayout sphereVertexBufferLayout = {
             {NxShaderDataType::FLOAT3, "aPos"},
             {NxShaderDataType::FLOAT2, "aTexCoord"},
@@ -269,13 +269,12 @@ namespace nexo::renderer
         std::vector<unsigned int> indices = generateSphereIndices();
 
         loopSubdivision(indices, vertices, nbSubdivision);
-        VERTEX_NUMBER = vertices.size();
 
         const std::vector<glm::vec3> normals = generateSphereNormals(vertices);
         const std::vector<glm::vec2> texCoords = generateTextureCoords(vertices);
 
-        std::vector<NxVertex> vertexData(VERTEX_NUMBER);
-        for (unsigned int i = 0; i < VERTEX_NUMBER; ++i) {
+        std::vector<NxVertex> vertexData(nbVertices);
+        for (unsigned int i = 0; i < nbVertices; ++i) {
             vertexData[i].position = glm::vec4(vertices[i], 1.0f);
             vertexData[i].texCoord = texCoords[i];
             vertexData[i].normal = normals[i];
