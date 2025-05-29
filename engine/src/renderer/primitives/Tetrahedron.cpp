@@ -28,6 +28,15 @@
 
 namespace nexo::renderer
 {
+    /**
+    * @brief Generates the vertex, texture coordinate, and normal data for a tetrahedron mesh.
+    *
+    * Fills the provided arrays with 12 vertices, texture coordinates, and normals for a tetrahedron.
+    *
+    * @param vertices Array to store generated vertex positions.
+    * @param texCoords Array to store generated texture coordinates.
+    * @param normals Array to store generated normals.
+    */
     static void genTetrahedronMesh(std::array<glm::vec3, 12>& vertices,
                                    std::array<glm::vec2, 12>& texCoords,
                                    std::array<glm::vec3, 12>& normals)
@@ -51,14 +60,14 @@ namespace nexo::renderer
         std::ranges::copy(verts, vertices.begin());
 
         // Basic UV mapping for each face
-        glm::vec2 texc[] = {
+        glm::vec2 texturesCoord[] = {
             {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
             {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
             {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
             {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
         };
 
-        std::copy(std::begin(texc), std::end(texc), texCoords.begin());
+        std::ranges::copy(texturesCoord, texCoords.begin());
 
         // Compute normals for each face
         glm::vec3 norm[12];
@@ -78,357 +87,54 @@ namespace nexo::renderer
         std::ranges::copy(norm, normals.begin());
     }
 
-    void NxRenderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, const int entityID) const
+
+    /**
+     * @brief Creates a vertex array object (VAO) for a tetrahedron mesh.
+     *
+     * @return A shared pointer to a vertex array object containing the tetrahedron mesh data.
+     */
+    std::shared_ptr<NxVertexArray> NxRenderer3D::getTetrahedronVAO()
     {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
+        constexpr unsigned int nbVerticesTetrahedron = 12;
+        static std::shared_ptr<NxVertexArray> tetrahedronVao = nullptr;
+        if (tetrahedronVao)
+            return tetrahedronVao;
+
+        tetrahedronVao = createVertexArray();
+        const auto vertexBuffer = createVertexBuffer(nbVerticesTetrahedron * sizeof(NxVertex));
+        const NxBufferLayout tetrahedronVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"},
+            {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},
+            {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"},
+            {NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(tetrahedronVertexBufferLayout);
+
+        std::array<glm::vec3, nbVerticesTetrahedron> vertices{};
+        std::array<glm::vec2, nbVerticesTetrahedron> texCoords{};
+        std::array<glm::vec3, nbVerticesTetrahedron> normals{};
+        genTetrahedronMesh(vertices, texCoords, normals);
+
+        std::vector<NxVertex> vertexData(nbVerticesTetrahedron);
+        for (unsigned int i = 0; i < nbVerticesTetrahedron; ++i) {
+            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord = texCoords[i];
+            vertexData[i].normal = normals[i];
         }
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
 
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
+        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        tetrahedronVao->addVertexBuffer(vertexBuffer);
 
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
+        std::vector<unsigned int> indices(nbVerticesTetrahedron);
+        for (uint32_t i = 0; i < nbVerticesTetrahedron; ++i)
             indices[i] = i;
 
-        // Vertex data
-        auto vertexOffset = static_cast<unsigned int>(m_storage->vertexBufferPtr - m_storage->vertexBufferBase.data());
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
+        const auto indexBuffer = createIndexBuffer();
+        indexBuffer->setData(indices.data(), indices.size());
+        tetrahedronVao->setIndexBuffer(indexBuffer);
 
-        // Index data
-        std::ranges::for_each(indices, [this, vertexOffset](unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation, const glm::vec4& color, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                                    rotationMat *
-                                    glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index) {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::mat4& transform, const glm::vec4& color, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const NxMaterial& material, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        const glm::quat rotationQuat = glm::radians(rotation);
-        const glm::mat4 rotationMat = glm::toMat4(rotationQuat);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::vec3& position, const glm::vec3& size, const glm::quat& rotation, const NxMaterial& material, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        const glm::mat4 rotationMat = glm::toMat4(rotation);
-        // Transform matrix
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-            rotationMat *
-            glm::scale(glm::mat4(1.0f), size);
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
-    }
-
-    void NxRenderer3D::drawTetrahedron(const glm::mat4& transform, const NxMaterial& material, const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = material.albedoTexture ? getTextureIndex(material.albedoTexture) : 0;
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = material.metallicMap ? getTextureIndex(material.metallicMap) : 0;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 12> verts{};
-        std::array<glm::vec2, 12> texCoords{};
-        std::array<glm::vec3, 12> normals{};
-        std::array<unsigned int, 12> indices{};
-
-        genTetrahedronMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 12; ++i)
-            indices[i] = i;
-
-        // Vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            //m_storage->vertexBufferPtr->tangent = cubeTangents[i];
-            //m_storage->vertexBufferPtr->bitangent = cubeBitangents[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        // Index data
-        std::ranges::for_each(indices, [this](const unsigned int index)
-        {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-
-        // Update stats
-        m_storage->stats.cubeCount++;
+        return tetrahedronVao;
     }
 }
