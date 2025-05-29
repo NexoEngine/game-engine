@@ -276,9 +276,6 @@ namespace nexo
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO();
 
-        std::cout << "cylinder vao: vertices " << mesh.vao->getVertexBuffers().size()
-        << " indices: " << mesh.vao->getIndexBuffer()->getCount() << std::endl;
-
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
@@ -334,7 +331,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getSphereVAO(2);
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO();
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -364,7 +361,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getSphereVAO(0);
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO();
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::CubeMat@_internal"),

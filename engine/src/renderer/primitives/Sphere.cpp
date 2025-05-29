@@ -31,9 +31,6 @@
 
 namespace nexo::renderer
 {
-    // unsigned int VERTEX_NUMBER = 12;
-    // Number of vertex for the sphere min 12 then VERTEX_NUMBER += (old) VERTEX_NUMBER + (old) nb of faces - 2
-
     static void normalizeVertices(std::vector<glm::vec3>& vertices)
     {
         for (auto& vertex : vertices)
@@ -211,12 +208,10 @@ namespace nexo::renderer
     {
         std::vector<glm::vec2> texCoords{};
 
-        for (int i = 0; i < vertices.size(); ++i)
+        for (const auto vertex : vertices)
         {
-            const glm::vec3 p = vertices[i];
-
-            float u = (atan2(p.z, p.x) + M_PI) / (2 * M_PI);
-            float v = acos(p.y) / M_PI;
+            float u = (atan2(vertex.z, vertex.x) + M_PI) / (2 * M_PI);
+            float v = acos(vertex.y) / M_PI;
 
             texCoords.emplace_back(u, v);
         }
@@ -236,9 +231,7 @@ namespace nexo::renderer
 
     unsigned int getNbVerticesSphere(const unsigned int nbSubdivision)
     {
-        if (nbSubdivision == 0)
-            return 12; // Base case with 12 vertices
-        return 12 * static_cast<unsigned int>(std::pow(4, nbSubdivision));
+        return 10 * static_cast<unsigned int>(std::pow(4, nbSubdivision)) + 2;
     }
 
     /**
