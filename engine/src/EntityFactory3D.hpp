@@ -132,10 +132,12 @@ namespace nexo
          * @param size The dimensions (width, height, depth) of the cylinder.
          * @param rotation The rotation of the cylinder (in Euler angles).
          * @param color The color of the cylinder's material (default is red).
+         * @param nbSegment The number of segments for the cylinder's mesh (default is 12).
          * @return ecs::Entity The newly created cylinder entity.
          */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+                                          glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f},
+                                          unsigned int nbSegment = 12);
 
         /**
          * @brief Creates a cylinder entity with a specified material.
@@ -146,10 +148,12 @@ namespace nexo
          * @param size The dimensions (width, height, depth) of the cylinder.
          * @param rotation The rotation of the cylinder (in Euler angles).
          * @param material The material to apply to the cylinder.
+         * @param nbSegment The number of segments for the cylinder's mesh (default is 12).
          * @return ecs::Entity The newly created cylinder entity.
          */
         static ecs::Entity createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                          const components::Material& material);
+                                          const components::Material& material,
+                                          unsigned int nbSegment = 12);
 
         /**
          * @brief Creates a sphere entity with a specified material.
@@ -160,10 +164,12 @@ namespace nexo
          * @param size The dimensions (width, height, depth) of the sphere.
          * @param rotation The rotation of the sphere (in Euler angles).
          * @param color The color of the sphere's material (default is red).
+         * @param nbSubdivision The number of subdivisions for the sphere's mesh (default is 2).
          * @return ecs::Entity The newly created sphere entity.
          */
         static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
+                                        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f},
+                                        unsigned int nbSubdivision = 2);
 
         /**
          * @brief Creates a sphere entity with a specified material.
@@ -174,9 +180,11 @@ namespace nexo
          * @param size The dimensions (width, height, depth) of the sphere.
          * @param rotation The rotation of the sphere (in Euler angles).
          * @param material The material to apply to the sphere.
+         * @param nbSubdivision The number of subdivisions for the sphere's mesh (default is 2).
          * @return ecs::Entity The newly created sphere entity.
          */
         static ecs::Entity createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                        const components::Material& material);
+                                        const components::Material& material,
+                                        unsigned int nbSubdivision = 2);
     };
 }
