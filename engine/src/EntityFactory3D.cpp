@@ -182,7 +182,7 @@ namespace nexo
     }
 
     ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                            const components::Material& material)
+                                                   const components::Material& material)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -239,7 +239,7 @@ namespace nexo
     }
 
     ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                            const components::Material& material)
+                                               const components::Material& material)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -266,7 +266,8 @@ namespace nexo
         return newPyramid;
     }
 
-    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                                glm::vec4 color, unsigned int nbSegment)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -274,7 +275,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getCylinderVAO();
+        mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -296,7 +297,7 @@ namespace nexo
     }
 
     ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                            const components::Material& material)
+                                                const components::Material& material, unsigned int nbSegment)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -304,7 +305,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getCylinderVAO();
+        mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::CubeMat@_internal"),
@@ -323,7 +324,8 @@ namespace nexo
         return newCylinder;
     }
 
-    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                              glm::vec4 color, const unsigned int nbSubdivision)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -331,7 +333,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getSphereVAO();
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -353,7 +355,7 @@ namespace nexo
     }
 
     ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                            const components::Material& material)
+                                              const components::Material& material, const unsigned int nbSubdivision)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
@@ -361,7 +363,7 @@ namespace nexo
         transform.quat = glm::quat(rotation);
 
         components::StaticMeshComponent mesh;
-        mesh.vao = renderer::NxRenderer3D::getSphereVAO();
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::CubeMat@_internal"),
