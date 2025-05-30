@@ -207,7 +207,7 @@ namespace nexo::editor {
              * @param buttonSize Size of buttons in the dropdown
              * @param showPrimitiveMenu Reference to the flag controlling menu visibility
              */
-            void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu) const;
+            void renderPrimitiveSubMenu(const ImVec2 &primitiveButtonPos, const ImVec2 &buttonSize, bool &showPrimitiveMenu);
 
             /**
              * @brief Renders the snap settings dropdown menu.
@@ -285,13 +285,14 @@ namespace nexo::editor {
              */
             void renderView();
             void renderNoActiveCamera() const;
+            void renderPrimitiveCreationPopup(const std::string& primitive);
             void renderNewEntityPopup();
 
             void handleSelection();
             int sampleEntityTexture(float mx, float my) const;
             ecs::Entity findRootParent(ecs::Entity entityId) const;
-            void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
-            void selectModelChildren(const std::vector<components::SubMeshIndex>& children, const bool isCtrlPressed);
+            void selectEntityHierarchy(ecs::Entity entityId, bool isCtrlPressed);
+            void selectModelChildren(const std::vector<components::SubMeshIndex>& children, bool isCtrlPressed);
             void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
             void updateWindowState();
 

@@ -219,8 +219,8 @@ namespace nexo::renderer
         static std::shared_ptr<NxVertexArray> getBillboardVAO();
         static std::shared_ptr<NxVertexArray> getTetrahedronVAO();
         static std::shared_ptr<NxVertexArray> getPyramidVAO();
-        static std::shared_ptr<NxVertexArray> getCylinderVAO(unsigned int nbSegment = 8);
-        static std::shared_ptr<NxVertexArray> getSphereVAO(unsigned int nbSubdivision = 1);
+        static std::shared_ptr<NxVertexArray> getCylinderVAO(unsigned int nbSegment);
+        static std::shared_ptr<NxVertexArray> getSphereVAO(unsigned int nbSubdivision);
 
         /**
          * @brief Resets rendering statistics.
