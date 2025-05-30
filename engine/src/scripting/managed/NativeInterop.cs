@@ -255,7 +255,7 @@ namespace Nexo
             
             // Call the function that creates a cube
             Console.WriteLine("Calling CreateCube:");
-            UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(4, 5, 6), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+            UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
             Console.WriteLine($"Created cube with ID: {cubeId}");
             
@@ -267,15 +267,50 @@ namespace Nexo
             
             Console.WriteLine("=== Native Call Demonstration Complete ===");
         }
+        
+        private static float _angle = 0.0f;
+        private static float _breathingScale = 1.0f;
 
         [UnmanagedCallersOnly]
         public static void Update(Double deltaTime)
         {
-            // Get the transform of the cube
             ref Transform transform = ref GetComponent<Transform>(_cubeId);
             
-            // Make the cube rotate on the Y axis
-            transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (float)deltaTime) * transform.quat;
+            // Rotating cube effect
+            float rotationSpeed = 1.0f; // radians per second
+            transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (float)deltaTime * rotationSpeed) * transform.quat;
+            
+            // Circling cube effect
+            float speed = 1.0f;
+            float radius = 7.0f;
+            Vector3 origin = new Vector3(0, 5, 0);
+
+            _angle += (float)(speed * deltaTime);
+            
+            if (_angle > MathF.PI * 2.0f)
+            {
+                _angle = 0.0f;
+            }
+            
+            transform.pos = origin + new Vector3(
+                (float)Math.Cos(_angle) * radius,
+                0,
+                (float)Math.Sin(_angle) * radius
+            );
+
+            // Breathing cube effect
+            float startScale = 1.0f;
+            float endScale = 2.0f;
+            float breathingSpeed = 0.5f;
+
+            _breathingScale += (float)(breathingSpeed * deltaTime * MathF.PI * 2.0f);
+            if (_breathingScale > MathF.PI * 2.0f)
+            {
+                _breathingScale -= MathF.PI * 2.0f;
+            }
+
+            // Update the size of the cube based on the breathing effect
+            transform.size.Z = startScale + ((MathF.Sin(_breathingScale) * 0.5f + 0.5f) * (endScale - startScale));
         }
 
     }
