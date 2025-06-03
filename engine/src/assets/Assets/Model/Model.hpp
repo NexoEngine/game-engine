@@ -24,6 +24,8 @@ namespace nexo::assets {
         std::string name;
         std::shared_ptr<renderer::NxVertexArray> vao;
         assets::AssetRef<assets::Material> material;
+
+        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
     };
 
     struct MeshNode {
