@@ -219,7 +219,9 @@ namespace ImNexo {
 	{
 	    // Increase cell padding so rows have more space:
            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-           auto& [pos, size, quat] = transformComponent;
+           auto &pos = transformComponent.pos;
+           auto &size = transformComponent.size;
+           auto &quat = transformComponent.quat;
 
            if (ImGui::BeginTable("InspectorTransformTable", 4,
                ImGuiTableFlags_SizingStretchProp))
