@@ -32,7 +32,7 @@ namespace nexo::system {
 		ecs::Owned<
 	        ecs::Read<components::RootComponent>>,
         ecs::NonOwned<
-            ecs::Read<components::TransformComponent>,
+            ecs::Write<components::TransformComponent>,
            	ecs::Read<components::SceneTag>>,
         ecs::WriteSingleton<components::RenderContext>> {
 			public:
@@ -45,6 +45,7 @@ namespace nexo::system {
                     * @param parentTransform The parent's transform component
                     */
                 void updateChildTransforms(
+                    const std::shared_ptr<ecs::ComponentArray<components::TransformComponent>> &transformComponentArray,
                     const std::vector<ecs::Entity>& children,
                     const glm::mat4& parentWorldMatrix);
                 glm::mat4 calculateLocalMatrix(const components::TransformComponent& transform) const;
