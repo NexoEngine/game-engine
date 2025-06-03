@@ -72,6 +72,12 @@ namespace nexo::scripting {
             UInt32 DirectionalLight;
             UInt32 PointLight;
             UInt32 SpotLight;
+            UInt32 RenderComponent;
+            UInt32 SceneTag;
+            UInt32 CameraComponent;
+            UInt32 UuidComponent;
+            UInt32 PerspectiveCameraController;
+            UInt32 PerspectiveCameraTarget;
         };
 
         NEXO_RET(void) HelloFromNative(void);
