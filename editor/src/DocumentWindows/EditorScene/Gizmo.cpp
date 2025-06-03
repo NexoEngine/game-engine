@@ -299,9 +299,23 @@ namespace nexo::editor {
         glm::mat4 viewMatrix = camera.getViewMatrix(cameraTransform);
         glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 
-        // Use the world matrix directly
-        glm::mat4 worldTransformMatrix = primaryTransform->get().worldMatrix;
-        glm::mat4 originalWorldMatrix = worldTransformMatrix; // Store for delta calculation
+        // 1) M₀ = parentWorld * T(pos) * R(quat) * S(size)
+        glm::mat4 parentWorld = getEntityParentWorldMatrix(primaryEntity);
+        glm::mat4 Tpos        = glm::translate(glm::mat4(1.0f), primaryTransform->get().pos);
+        glm::mat4 Rrot        = glm::toMat4(primaryTransform->get().quat);
+        glm::mat4 Sscale      = glm::scale(glm::mat4(1.0f), primaryTransform->get().size);
+        glm::mat4 M0          = parentWorld * Tpos * Rrot * Sscale;
+
+        // 2) “centroid offset” = T(centroidLocal)
+        glm::mat4 C_offset    = glm::translate(glm::mat4(1.0f), primaryTransform->get().localCenter);
+
+        // 3) M1 = M0 * C_offset  <-- this is what ImGuizmo sees as the “world” matrix
+        glm::mat4 worldTransformMatrix = M0 * C_offset;
+
+        // Store BOTH M₁ (for ImGuizmo) and keep M₀ around for later:
+        glm::mat4 originalWorldMatrix_Centroid = worldTransformMatrix;
+        // (We’ll need “M₀” again after manipulation for decomposing back.)
+        glm::mat4 originalWorldMatrix_ModelOrigin = M0;
 
         // Track which operation is active
         if (!ImGuizmo::IsUsing()) {
@@ -334,16 +348,28 @@ namespace nexo::editor {
             // Disable camera movement during manipulation
             camera.active = false;
 
-            // Update the primary entity's local transform based on the new world transform
-            updateLocalTransformFromWorld(primaryTransform->get(), worldTransformMatrix, primaryEntity);
+            glm::mat4 newWorldMatrix_Centroid = worldTransformMatrix;
+            glm::mat4 invCentroidOffset       = glm::inverse(C_offset);
+            glm::mat4 newWorldMatrix_ModelOrigin = newWorldMatrix_Centroid * invCentroidOffset;
 
-            // Apply changes to other selected entities
-            applyTransformToEntities(
-                primaryEntity,
-                originalWorldMatrix,
-                worldTransformMatrix,
-                selectedEntities
-            );
+            // Update the primary entity's local transform based on the new world transform
+            updateLocalTransformFromWorld(primaryTransform->get(), newWorldMatrix_ModelOrigin, primaryEntity);
+
+            glm::mat4 deltaMatrix = newWorldMatrix_ModelOrigin * glm::inverse(originalWorldMatrix_ModelOrigin);
+
+            for (auto entity : selectedEntities) {
+                if (entity == primaryEntity) continue;
+                auto tComp = coord->tryGetComponent<components::TransformComponent>(entity);
+                if (!tComp) continue;
+
+                // “OtherEntity_world₀” = tComp->worldMatrix
+                glm::mat4 otherWorldMatrix_0 = tComp->get().worldMatrix;
+                // “OtherEntity_world₁” = deltaMatrix * otherWorldMatrix_0
+                glm::mat4 otherWorldMatrix_1 = deltaMatrix * otherWorldMatrix_0;
+
+                // Now convert that new world matrix back to local space of “entity”:
+                updateLocalTransformFromWorld(tComp->get(), otherWorldMatrix_1, entity);
+            }
         }
         else if (s_wasUsingGizmo) {
             // Re-enable camera when done
