@@ -41,6 +41,7 @@
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -71,7 +72,6 @@ namespace nexo {
     void Application::registerEcsComponents() const
     {
         m_coordinator->registerComponent<components::TransformComponent>();
-        m_coordinator->registerComponent<components::LocalTransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
@@ -186,6 +186,7 @@ namespace nexo {
         m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
         m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
         m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
+        m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
 
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
@@ -286,6 +287,7 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
+                m_transformMatrixSystem->update();
 			    m_transformHierarchySystem->update();
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
