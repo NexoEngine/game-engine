@@ -156,51 +156,74 @@ namespace nexo {
 
         ecs::Entity rootEntity = Application::m_coordinator->createEntity();
 
+        // Create root transform
         components::TransformComponent rootTransform;
         rootTransform.pos = pos;
         rootTransform.size = size;
         rootTransform.quat = glm::quat(glm::radians(rotation));
+
+        // Create RootComponent to identify this as the root of a hierarchy
+        components::RootComponent rootComp;
+        rootComp.modelRef = model;
+
+        // Get model name from asset if available
+        auto location = modelAsset->getMetadata().location.getName();
+        rootComp.name = location.data();
+        // Extract just the filename from path if needed
+        size_t lastSlash = rootComp.name.find_last_of("/\\");
+        if (lastSlash != std::string::npos) {
+            rootComp.name = rootComp.name.substr(lastSlash + 1);
+        }
+
+        // Add components to root entity
         Application::m_coordinator->addComponent(rootEntity, rootTransform);
+        Application::m_coordinator->addComponent(rootEntity, rootComp);
 
+        // Process model nodes to create entity hierarchy
         const assets::MeshNode& rootNode = *modelAsset->getData();
-        std::vector<components::SubMeshIndex> children = processModelNode(rootEntity, rootNode);
+        int childCount = processModelNode(rootEntity, rootNode);
 
-        components::ModelComponent modelComponent;
-        modelComponent.model = model;
-        modelComponent.children = children;
-        Application::m_coordinator->addComponent(rootEntity, modelComponent);
+        // Update child count in root component
+        rootComp.childCount = childCount;
 
+        // Add UUID to root entity
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(rootEntity, uuid);
 
         return rootEntity;
     }
 
-    std::vector<components::SubMeshIndex> EntityFactory3D::processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node)
+    int EntityFactory3D::processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node)
     {
-        std::vector<components::SubMeshIndex> nodeIndices;
+        int totalChildrenCreated = 0;
 
+        // Process meshes at this node level
         for (const auto& mesh : node.meshes)
         {
             ecs::Entity meshEntity = Application::m_coordinator->createEntity();
+            totalChildrenCreated++;
 
+            // Add UUID
             components::UuidComponent uuid;
             Application::m_coordinator->addComponent(meshEntity, uuid);
 
-            // Add world transform component (will be updated by TransformHierarchySystem)
-            components::TransformComponent worldTransform;
-            worldTransform.pos = glm::vec3(0.0f);
-            worldTransform.size = glm::vec3(1.0f);
-            worldTransform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-            Application::m_coordinator->addComponent(meshEntity, worldTransform);
+            // Create transform with centroid information
+            components::TransformComponent transform;
+            transform.pos = glm::vec3(0.0f);
+            transform.size = glm::vec3(1.0f);
+            transform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            transform.localCenter = mesh.localCenter;
 
-            // Add mesh component with vertex array
+            // Add mesh component
             components::StaticMeshComponent staticMesh;
             staticMesh.vao = mesh.vao;
             staticMesh.name = mesh.name;
+
+            // Add components to entity
+            Application::m_coordinator->addComponent(meshEntity, transform);
             Application::m_coordinator->addComponent(meshEntity, staticMesh);
 
-            // Add material component if available
+            // Add material if available
             if (mesh.material)
             {
                 components::MaterialComponent materialComponent;
@@ -208,53 +231,56 @@ namespace nexo {
                 Application::m_coordinator->addComponent(meshEntity, materialComponent);
             }
 
-            // Add parent component to establish hierarchy
+            // Set up parent-child relationship
             components::ParentComponent parentComponent;
             parentComponent.parent = parentEntity;
             Application::m_coordinator->addComponent(meshEntity, parentComponent);
 
-            // Add this mesh entity to the indices for this node
-            components::SubMeshIndex meshIndex;
-            meshIndex.child = meshEntity;
-            meshIndex.children = {};
-            nodeIndices.push_back(meshIndex);
+            // Add this child to parent's transform children list
+            auto parentTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+            if (parentTransform) {
+                parentTransform->get().children.push_back(meshEntity);
+            }
         }
 
-        // Process each child node recursively
+        // Process child nodes recursively
         for (const auto& childNode : node.children)
         {
             // Create entity for this child node
             ecs::Entity nodeEntity = Application::m_coordinator->createEntity();
+            totalChildrenCreated++;
 
+            // Add UUID
             components::UuidComponent uuid;
             Application::m_coordinator->addComponent(nodeEntity, uuid);
 
-            // Extract translation, rotation, scale from the node's transformation matrix
+            // Extract transform from node matrix
             glm::vec3 translation, scale;
             glm::quat rotation;
             nexo::math::decomposeTransformQuat(childNode.transform, translation, rotation, scale);
 
-            // Add world transform component (will be updated by TransformHierarchySystem)
-            components::TransformComponent worldTransform;
-            worldTransform.pos = translation;
-            worldTransform.size = scale;
-            worldTransform.quat = rotation;
-            Application::m_coordinator->addComponent(nodeEntity, worldTransform);
+            // Create transform component
+            components::TransformComponent transform;
+            transform.pos = translation;
+            transform.size = scale;
+            transform.quat = rotation;
+            Application::m_coordinator->addComponent(nodeEntity, transform);
 
-            // Add parent component
+            // Set up parent-child relationship
             components::ParentComponent parentComponent;
             parentComponent.parent = parentEntity;
             Application::m_coordinator->addComponent(nodeEntity, parentComponent);
 
-            // Process this child node recursively and get its children
-            components::SubMeshIndex childIndex;
-            childIndex.child = nodeEntity;
-            childIndex.children = processModelNode(nodeEntity, childNode);
+            // Add this node as a child in the parent's transform
+            auto parentTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+            if (parentTransform) {
+                parentTransform->get().children.push_back(nodeEntity);
+            }
 
-            // Add this node and its children to the indices
-            nodeIndices.push_back(childIndex);
+            // Process this child node recursively and add to total children count
+            totalChildrenCreated += processModelNode(nodeEntity, childNode);
         }
 
-        return nodeIndices;
+        return totalChildrenCreated;
     }
 }
