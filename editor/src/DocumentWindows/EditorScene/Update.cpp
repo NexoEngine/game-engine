@@ -14,6 +14,7 @@
 
 #include "EditorScene.hpp"
 #include "Types.hpp"
+#include "components/Transform.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
 #include "components/Parent.hpp"
@@ -128,19 +129,22 @@ namespace nexo::editor {
         }
 
         // Check if entity has a ModelComponent and process its children
-        if (coord->entityHasComponent<components::ModelComponent>(entityId)) {
-            const auto& modelComp = coord->getComponent<components::ModelComponent>(entityId);
-            selectModelChildren(modelComp.children, isCtrlPressed);
+        if (coord->entityHasComponent<components::TransformComponent>(entityId)) {
+            const auto& transform = coord->getComponent<components::TransformComponent>(entityId);
+            selectModelChildren(transform.children, isCtrlPressed);
         }
     }
 
-    void EditorScene::selectModelChildren(const std::vector<components::SubMeshIndex>& children, const bool isCtrlPressed)
+    void EditorScene::selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed)
     {
-        for (const auto& subMesh : children) {
-            selectEntityHierarchy(subMesh.child, isCtrlPressed);
+        const auto &coord = Application::m_coordinator;
 
-            if (!subMesh.children.empty())
-                selectModelChildren(subMesh.children, isCtrlPressed);
+        for (const auto& entity : children) {
+            selectEntityHierarchy(entity, isCtrlPressed);
+            const auto &childTransform = coord->getComponent<components::TransformComponent>(entity);
+
+            if (!childTransform.children.empty())
+                selectModelChildren(childTransform.children, isCtrlPressed);
         }
     }
 
