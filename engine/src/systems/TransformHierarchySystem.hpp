@@ -46,29 +46,5 @@ namespace nexo::system {
                 void updateChildTransforms(
                     const std::vector<components::SubMeshIndex>& children,
                     const components::TransformComponent& parentTransform);
-
-                /**
-                    * @brief Creates a transformation matrix from a transform component
-                    *
-                    * @param transform The transform component
-                    * @return glm::mat4 The resulting transformation matrix
-                    */
-                static glm::mat4 createTransformMatrix(const components::TransformComponent& transform);
-
-                /**
-                    * @brief Decomposes a transformation matrix into position, rotation, and scale
-                    *
-                    * @param matrix The transformation matrix to decompose
-                    * @param position Output parameter for position
-                    * @param rotation Output parameter for rotation quaternion
-                    * @param scale Output parameter for scale
-                    */
-                static void decomposeTransformMatrix(
-                    const glm::mat4& matrix,
-                    glm::vec3& position,
-                    glm::quat& rotation,
-                    glm::vec3& scale);
-
-                static glm::mat4 createLocalTransformMatrix(const components::LocalTransformComponent& localTransform);
 	};
 }
