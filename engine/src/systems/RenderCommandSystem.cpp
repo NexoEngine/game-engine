@@ -91,13 +91,6 @@ namespace nexo::system {
         }
     }
 
-    static glm::mat4 createTransformMatrix(const components::TransformComponent &transform)
-    {
-        return glm::translate(glm::mat4(1.0f), transform.pos) *
-               glm::toMat4(transform.quat) *
-               glm::scale(glm::mat4(1.0f), transform.size);
-    }
-
     static renderer::DrawCommand createOutlineDrawCommand(const components::CameraContext &camera)
     {
         renderer::DrawCommand cmd;
