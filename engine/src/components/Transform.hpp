@@ -13,8 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "ecs/Definitions.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <vector>
+#include <algorithm>
 
 namespace nexo::components {
 
@@ -23,6 +27,11 @@ namespace nexo::components {
             glm::vec3 position;
             glm::quat rotation;
             glm::vec3 scale;
+
+            glm::mat4 localMatrix;
+            glm::vec3 localCenter;
+
+            std::vector<ecs::Entity> children;
         };
 
         void restore(const Memento &memento)
@@ -30,11 +39,25 @@ namespace nexo::components {
             pos = memento.position;
             quat = memento.rotation;
             size = memento.scale;
+            localMatrix = memento.localMatrix;
+            localCenter = memento.localCenter;
+            children = memento.children;
         }
 
         [[nodiscard]] Memento save() const
         {
-            return {pos, quat, size};
+            return {pos, quat, size, localMatrix, localCenter, children};
+        }
+
+        void addChild(ecs::Entity childEntity) {
+            children.push_back(childEntity);
+        }
+
+        void removeChild(ecs::Entity childEntity) {
+            auto it = std::find(children.begin(), children.end(), childEntity);
+            if (it != children.end()) {
+                children.erase(it);
+            }
         }
 
         glm::vec3 pos;
@@ -43,5 +66,9 @@ namespace nexo::components {
 
         glm::mat4 worldMatrix = glm::mat4(1.0f);
         glm::mat4 localMatrix = glm::mat4(1.0f);
+
+        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+
+        std::vector<ecs::Entity> children{};
     };
 }
