@@ -32,6 +32,7 @@
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -255,6 +256,7 @@ namespace nexo {
 
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
+            std::shared_ptr<system::TransformMatrixSystem> m_transformMatrixSystem;
             std::shared_ptr<system::TransformHierarchySystem> m_transformHierarchySystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
