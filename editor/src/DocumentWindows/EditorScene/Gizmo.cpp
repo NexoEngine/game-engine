@@ -7,12 +7,13 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        28/04/2025
+//  Date:        01/06/2025
 //  Description: Source file for the gizmo rendering
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EditorScene.hpp"
+#include "components/Parent.hpp"
 #include "context/Selector.hpp"
 #include "context/ActionManager.hpp"
 #include "math/Matrix.hpp"
@@ -20,6 +21,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace nexo::editor {
     // Class-level variables for tracking gizmo state between frames
@@ -59,12 +61,94 @@ namespace nexo::editor {
         ImGuizmo::Enable(true);
     }
 
-    static glm::mat4 buildEntityTransformMatrix(const components::TransformComponent& transform)
+    static glm::mat4 getEntityParentWorldMatrix(ecs::Entity entity)
     {
-        const glm::mat4 rotationMat = glm::toMat4(transform.quat);
+        const auto& coord = nexo::Application::m_coordinator;
+
+        auto parentComponent = coord->tryGetComponent<components::ParentComponent>(entity);
+        if (!parentComponent) {
+            return glm::mat4(1.0f); // No parent, return identity
+        }
+
+        ecs::Entity parentEntity = parentComponent->get().parent;
+
+        if (parentEntity == ecs::INVALID_ENTITY) {
+            return glm::mat4(1.0f); // No parent, return identity
+        }
+
+        auto parentTransform = coord->tryGetComponent<components::TransformComponent>(parentEntity);
+        if (!parentTransform) {
+            return glm::mat4(1.0f); // Parent has no transform, return identity
+        }
+
+        return parentTransform->get().worldMatrix;
+    }
+
+    static glm::mat4 calculateWorldMatrix(const components::TransformComponent& transform)
+    {
         return glm::translate(glm::mat4(1.0f), transform.pos) *
-               rotationMat *
+               glm::toMat4(transform.quat) *
                glm::scale(glm::mat4(1.0f), transform.size);
+    }
+
+    static void updateEntityWorldMatrix(ecs::Entity entity)
+    {
+        const auto& coord = nexo::Application::m_coordinator;
+        auto transform = coord->tryGetComponent<components::TransformComponent>(entity);
+
+        if (!transform) {
+            return;
+        }
+
+        // Get parent's world matrix
+        glm::mat4 parentWorldMatrix = getEntityParentWorldMatrix(entity);
+
+        // Calculate local matrix
+        glm::mat4 localMatrix = calculateWorldMatrix(transform->get());
+
+        // Update world matrix
+        transform->get().worldMatrix = parentWorldMatrix * localMatrix;
+    }
+
+    static void updateEntityWorldMatrixRecursive(ecs::Entity entity)
+    {
+        const auto& coord = nexo::Application::m_coordinator;
+        auto parentComponent = coord->tryGetComponent<components::ParentComponent>(entity);
+        if (parentComponent) {
+            ecs::Entity parentEntity = parentComponent->get().parent;
+            if (parentEntity != ecs::INVALID_ENTITY) {
+                updateEntityWorldMatrixRecursive(parentEntity);
+            }
+        }
+        updateEntityWorldMatrix(entity);
+    }
+
+    // This function updates the local transform based on a new world matrix
+    static void updateLocalTransformFromWorld(components::TransformComponent& transform, const glm::mat4& worldMatrix, ecs::Entity entity)
+    {
+        // Get parent's world transform
+        glm::mat4 parentWorldMatrix = getEntityParentWorldMatrix(entity);
+
+        // Calculate local matrix by inverting parent world matrix and multiplying by entity's world matrix
+        glm::mat4 localMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
+
+        // Extract local transform from local matrix
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(
+            localMatrix,
+            transform.size,
+            transform.quat,
+            transform.pos,
+            skew,
+            perspective
+        );
+
+        // Normalize the quaternion
+        transform.quat = glm::normalize(transform.quat);
+
+        // Immediately update the world matrix
+        transform.worldMatrix = worldMatrix;
     }
 
     float* EditorScene::getSnapSettingsForOperation(const ImGuizmo::OPERATION operation)
@@ -92,44 +176,30 @@ namespace nexo::editor {
 
     void EditorScene::applyTransformToEntities(
         const ecs::Entity sourceEntity,
-        const components::TransformComponent& sourceTransform,
-        const components::TransformComponent& newTransform,
+        const glm::mat4& oldWorldMatrix,
+        const glm::mat4& newWorldMatrix,
         const std::vector<int>& targetEntities) const
     {
         const auto& coord = nexo::Application::m_coordinator;
 
-        // Calculate transformation deltas
-        const glm::vec3 positionDelta = newTransform.pos - sourceTransform.pos;
-        const glm::vec3 scaleFactor = newTransform.size / sourceTransform.size;
-        const glm::quat rotationDelta = newTransform.quat * glm::inverse(sourceTransform.quat);
+        // Calculate the delta transform matrix
+        glm::mat4 deltaMatrix = newWorldMatrix * glm::inverse(oldWorldMatrix);
 
-        // Apply transforms to all selected entities except the source
+        // Apply to all selected entities except the source
         for (const auto& entity : targetEntities) {
             if (entity == static_cast<int>(sourceEntity)) continue;
 
             auto entityTransform = coord->tryGetComponent<components::TransformComponent>(entity);
             if (!entityTransform) continue;
 
-            // Apply relevant transformations based on current operation
-            if (m_currentGizmoOperation & ImGuizmo::OPERATION::TRANSLATE) {
-                entityTransform->get().pos += positionDelta;
-            }
-
-            if (m_currentGizmoOperation & ImGuizmo::OPERATION::ROTATE) {
-                entityTransform->get().quat = rotationDelta * entityTransform->get().quat;
-            }
-
-            if (m_currentGizmoOperation & ImGuizmo::OPERATION::SCALE) {
-                entityTransform->get().size.x *= scaleFactor.x;
-                entityTransform->get().size.y *= scaleFactor.y;
-                entityTransform->get().size.z *= scaleFactor.z;
-            }
+            // Apply world space delta and convert back to local space
+            glm::mat4 newEntityWorldMatrix = deltaMatrix * entityTransform->get().worldMatrix;
+            updateLocalTransformFromWorld(entityTransform->get(), newEntityWorldMatrix, entity);
         }
     }
 
-
     static bool hasTransformChanged(const components::TransformComponent::Memento& before,
-                                         const components::TransformComponent::Memento& after)
+                                   const components::TransformComponent::Memento& after)
     {
         return before.position != after.position ||
                before.rotation != after.rotation ||
@@ -214,6 +284,9 @@ namespace nexo::editor {
             primaryTransform = coord->tryGetComponent<components::TransformComponent>(primaryEntity);
         }
 
+        // Make sure world matrix is up to date before manipulating
+        updateEntityWorldMatrixRecursive(primaryEntity);
+
         // Camera setup
         const auto& cameraTransform = coord->getComponent<components::TransformComponent>(m_activeCamera);
         auto& camera = coord->getComponent<components::CameraComponent>(m_activeCamera);
@@ -225,7 +298,10 @@ namespace nexo::editor {
         // Prepare matrices
         glm::mat4 viewMatrix = camera.getViewMatrix(cameraTransform);
         glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-        glm::mat4 transformMatrix = buildEntityTransformMatrix(primaryTransform->get());
+
+        // Use the world matrix directly
+        glm::mat4 worldTransformMatrix = primaryTransform->get().worldMatrix;
+        glm::mat4 originalWorldMatrix = worldTransformMatrix; // Store for delta calculation
 
         // Track which operation is active
         if (!ImGuizmo::IsUsing()) {
@@ -246,7 +322,7 @@ namespace nexo::editor {
             glm::value_ptr(projectionMatrix),
             m_currentGizmoOperation,
             m_currentGizmoMode,
-            glm::value_ptr(transformMatrix),
+            glm::value_ptr(worldTransformMatrix),
             nullptr,
             snap
         );
@@ -258,25 +334,14 @@ namespace nexo::editor {
             // Disable camera movement during manipulation
             camera.active = false;
 
-            // Extract the original transform values
-            const components::TransformComponent originalTransform = primaryTransform->get();
-
-            // Extract the new transform values from the matrix
-            glm::vec3 newPos;
-            glm::vec3 newScale;
-            glm::quat newRot;
-            math::decomposeTransformQuat(transformMatrix, newPos, newRot, newScale);
-
-            // Update the primary entity's transform
-            primaryTransform->get().pos = newPos;
-            primaryTransform->get().quat = newRot;
-            primaryTransform->get().size = newScale;
+            // Update the primary entity's local transform based on the new world transform
+            updateLocalTransformFromWorld(primaryTransform->get(), worldTransformMatrix, primaryEntity);
 
             // Apply changes to other selected entities
             applyTransformToEntities(
                 primaryEntity,
-                originalTransform,
-                primaryTransform->get(),
+                originalWorldMatrix,
+                worldTransformMatrix,
                 selectedEntities
             );
         }

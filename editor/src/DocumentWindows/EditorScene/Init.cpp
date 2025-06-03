@@ -104,7 +104,7 @@ namespace nexo::editor {
         auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
 
         const ecs::Entity gunModel = EntityFactory3D::createModel(assetRef9mn, {0.0f, 0.25f, 0.0f}, {0.01f, 0.01f, 0.01f},
-                                                               {0.0f, 0.0f, 0.0f});
+                                                               {-90.0f, 0.0f, 0.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(gunModel);
     }
 
