@@ -15,7 +15,10 @@
 #include "Scene.hpp"
 
 #include <utility>
+#include "components/Parent.hpp"
+#include "components/Render.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo::scene {
@@ -33,31 +36,45 @@ namespace nexo::scene {
 	}
 
 	void Scene::addEntity(const ecs::Entity entity)
-    {
-        const components::SceneTag tag{m_id, true, true};
-        m_coordinator->addComponent<components::SceneTag>(entity, tag);
-        m_entities.insert(entity);
+{
+    // Add scene tag to the entity itself
+    const components::SceneTag tag{m_id, true, true};
+    m_coordinator->addComponent<components::SceneTag>(entity, tag);
+    m_entities.insert(entity);
 
-        auto modelComponent = m_coordinator->tryGetComponent<components::ModelComponent>(entity);
-        if (modelComponent)
-            addModelChildEntities(modelComponent->get());
-    }
+    // If it's a root entity or has children, recursively add all children to the scene
+    if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
+        const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
 
-    void Scene::addModelChildEntities(const components::ModelComponent& modelComponent)
-    {
-        for (const auto& childIndex : modelComponent.children) {
-            const components::SceneTag childTag{m_id, true, true};
-            m_coordinator->addComponent<components::SceneTag>(childIndex.child, childTag);
-            m_entities.insert(childIndex.child);
-
-            // Recursively add any nested children
-            if (!childIndex.children.empty()) {
-                components::ModelComponent tempModelComponent;
-                tempModelComponent.children = childIndex.children;
-                addModelChildEntities(tempModelComponent);
-            }
+        // Recursively add all children to the scene
+        for (const auto &childEntity : transform.children) {
+            addChildEntityToScene(childEntity);
         }
     }
+}
+
+// New private helper method
+void Scene::addChildEntityToScene(const ecs::Entity entity)
+{
+    // Skip if the entity is already in this scene
+    if (m_entities.find(entity) != m_entities.end()) {
+        return;
+    }
+
+    // Add scene tag to this child entity
+    const components::SceneTag tag{m_id, true, true};
+    m_coordinator->addComponent<components::SceneTag>(entity, tag);
+    m_entities.insert(entity);
+
+    // Recursively add this entity's children
+    if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
+        const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
+
+        for (const auto &childEntity : transform.children) {
+            addChildEntityToScene(childEntity);
+        }
+    }
+}
 
 	void Scene::removeEntity(const ecs::Entity entity)
 	{
