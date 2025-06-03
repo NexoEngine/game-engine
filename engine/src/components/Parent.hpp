@@ -14,11 +14,19 @@
 #pragma once
 
 #include "ecs/Definitions.hpp"
+#include "assets/AssetRef.hpp"
+#include "assets/Assets/Model/Model.hpp"
 
 namespace nexo::components {
 
     struct ParentComponent {
         ecs::Entity parent;
+    };
+
+    struct RootComponent {
+        std::string name = "Root";
+        assets::AssetRef<assets::Model> modelRef;
+        int childCount = 0;
     };
 
 }
