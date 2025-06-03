@@ -55,44 +55,19 @@ namespace nexo::system {
         const std::vector<components::SubMeshIndex>& children,
         const components::TransformComponent& parentWorldTransform)
     {
-
         for (const auto& childIndex : children) {
             const ecs::Entity childEntity = childIndex.child;
-            if (!coord->entityHasComponent<components::TransformComponent>(childEntity) ||
-                !coord->entityHasComponent<components::LocalTransformComponent>(childEntity)) {
+            if (!coord->entityHasComponent<components::TransformComponent>(childEntity)) {
                 continue;
             }
 
-            const auto& localTransform = coord->getComponent<components::LocalTransformComponent>(childEntity);
-            auto& worldTransform = coord->getComponent<components::TransformComponent>(childEntity);
+            auto& transform = coord->getComponent<components::TransformComponent>(childEntity);
 
-            // POSITION: parent_pos + (parent_rotation * (parent_scale * local_pos))
-            glm::vec3 scaledLocalPos = localTransform.position * parentWorldTransform.size;
-            glm::vec3 rotatedScaledLocalPos = parentWorldTransform.quat * scaledLocalPos;
-            worldTransform.pos = parentWorldTransform.pos + rotatedScaledLocalPos;
-
-            // ROTATION: parent_rotation * local_rotation
-            worldTransform.quat = glm::normalize(parentWorldTransform.quat * localTransform.rotation);
-
-            // SCALE: parent_scale * local_scale (component-wise multiplication)
-            worldTransform.size = parentWorldTransform.size * localTransform.scale;
+            // Simply multiply parent world matrix with child local matrix
+            transform.worldMatrix = parentWorldTransform.worldMatrix * transform.localMatrix;
 
             if (!childIndex.children.empty())
-                updateChildTransforms(childIndex.children, worldTransform);
+                updateChildTransforms(childIndex.children, transform);
         }
-    }
-
-    glm::mat4 TransformHierarchySystem::createTransformMatrix(const components::TransformComponent &transform)
-    {
-        return glm::translate(glm::mat4(1.0f), transform.pos) *
-               glm::toMat4(transform.quat) *
-               glm::scale(glm::mat4(1.0f), transform.size);
-    }
-
-    glm::mat4 TransformHierarchySystem::createLocalTransformMatrix(const components::LocalTransformComponent &localTransform)
-    {
-        return glm::translate(glm::mat4(1.0f), localTransform.position) *
-               glm::toMat4(localTransform.rotation) *
-               glm::scale(glm::mat4(1.0f), localTransform.scale);
     }
 }
