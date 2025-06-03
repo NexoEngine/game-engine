@@ -14,6 +14,7 @@
 #pragma once
 
 #include "components/Model.hpp"
+#include "components/Parent.hpp"
 #include "ecs/GroupSystem.hpp"
 #include "components/Transform.hpp"
 #include "components/SceneComponents.hpp"
@@ -29,7 +30,7 @@ namespace nexo::system {
      */
      class TransformHierarchySystem final : public ecs::GroupSystem<
 		ecs::Owned<
-	        ecs::Read<components::ModelComponent>>,
+	        ecs::Read<components::RootComponent>>,
         ecs::NonOwned<
             ecs::Read<components::TransformComponent>,
            	ecs::Read<components::SceneTag>>,
@@ -44,7 +45,8 @@ namespace nexo::system {
                     * @param parentTransform The parent's transform component
                     */
                 void updateChildTransforms(
-                    const std::vector<components::SubMeshIndex>& children,
-                    const components::TransformComponent& parentTransform);
+                    const std::vector<ecs::Entity>& children,
+                    const glm::mat4& parentWorldMatrix);
+                glm::mat4 calculateLocalMatrix(const components::TransformComponent& transform) const;
 	};
 }
