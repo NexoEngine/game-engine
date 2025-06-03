@@ -20,7 +20,6 @@ namespace nexo::event {
 	void EventManager::dispatchEvents()
 	{
 	    size_t size = m_eventQueue.size();
-		std::cout << size << std::endl;
 	    while (size--) {
 	        auto event = m_eventQueue.front();
 	        m_eventQueue.pop_front();
