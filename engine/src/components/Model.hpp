@@ -16,19 +16,10 @@
 
 #include "assets/AssetRef.hpp"
 #include "assets/Assets/Model/Model.hpp"
-#include "ecs/Definitions.hpp"
-
-#include <vector>
 
 namespace nexo::components {
 
-    struct SubMeshIndex {
-        ecs::Entity child;
-        std::vector<SubMeshIndex> children;
-    };
-
     struct ModelComponent {
         assets::AssetRef<assets::Model> model;
-        std::vector<SubMeshIndex> children;
     };
 }
