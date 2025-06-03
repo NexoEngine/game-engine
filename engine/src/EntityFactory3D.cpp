@@ -187,13 +187,6 @@ namespace nexo {
             components::UuidComponent uuid;
             Application::m_coordinator->addComponent(meshEntity, uuid);
 
-            // Add local transform component
-            components::LocalTransformComponent localTransform;
-            localTransform.position = glm::vec3(0.0f); // Local position is zero initially
-            localTransform.scale = glm::vec3(1.0f);    // Local scale is identity initially
-            localTransform.rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // Identity quaternion
-            Application::m_coordinator->addComponent(meshEntity, localTransform);
-
             // Add world transform component (will be updated by TransformHierarchySystem)
             components::TransformComponent worldTransform;
             worldTransform.pos = glm::vec3(0.0f);
@@ -241,18 +234,11 @@ namespace nexo {
             glm::quat rotation;
             nexo::math::decomposeTransformQuat(childNode.transform, translation, rotation, scale);
 
-            // Add local transform component with the node's local transform
-            components::LocalTransformComponent localTransform;
-            localTransform.position = translation;
-            localTransform.scale = scale;
-            localTransform.rotation = rotation;
-            Application::m_coordinator->addComponent(nodeEntity, localTransform);
-
             // Add world transform component (will be updated by TransformHierarchySystem)
             components::TransformComponent worldTransform;
-            worldTransform.pos = glm::vec3(0.0f);
-            worldTransform.size = glm::vec3(1.0f);
-            worldTransform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            worldTransform.pos = translation;
+            worldTransform.size = scale;
+            worldTransform.quat = rotation;
             Application::m_coordinator->addComponent(nodeEntity, worldTransform);
 
             // Add parent component

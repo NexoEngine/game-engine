@@ -223,7 +223,7 @@ namespace nexo::system {
             auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
             cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
         }
-        cmd.uniforms["uMatModel"] = createTransformMatrix(transform);
+        cmd.uniforms["uMatModel"] = transform.worldMatrix;
         cmd.filterMask = 0;
         cmd.filterMask = renderer::F_OUTLINE_MASK;
         return cmd;
@@ -239,7 +239,7 @@ namespace nexo::system {
         renderer::DrawCommand cmd;
         cmd.vao = mesh.vao;
         cmd.shader = shader;
-        cmd.uniforms["uMatModel"] = createTransformMatrix(transform);
+        cmd.uniforms["uMatModel"] = transform.worldMatrix;
         cmd.uniforms["uEntityId"] = static_cast<int>(entity);
 
         cmd.uniforms["uMaterial.albedoColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
