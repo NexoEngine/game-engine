@@ -268,9 +268,9 @@ namespace nexo::editor {
             float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
             static void captureInitialTransformStates(const std::vector<int>& entities);
             void applyTransformToEntities(
-                ecs::Entity sourceEntity,
-                const components::TransformComponent& sourceTransform,
-                const components::TransformComponent& newTransform,
+                const ecs::Entity sourceEntity,
+                const glm::mat4& oldWorldMatrix,
+                const glm::mat4& newWorldMatrix,
                 const std::vector<int>& targetEntities) const;
             static void createTransformUndoActions(const std::vector<int>& entities);
             static bool s_wasUsingGizmo;
