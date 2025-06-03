@@ -72,6 +72,7 @@ namespace nexo {
     void Application::registerEcsComponents() const
     {
         m_coordinator->registerComponent<components::TransformComponent>();
+        m_coordinator->registerComponent<components::RootComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
@@ -287,8 +288,8 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
-                m_transformMatrixSystem->update();
-			    m_transformHierarchySystem->update();
+			    m_transformMatrixSystem->update();
+                m_transformHierarchySystem->update();
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
@@ -314,12 +315,60 @@ namespace nexo {
 
     void Application::deleteEntity(const ecs::Entity entity)
     {
-    	const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
-     	if (tag)
-		{
-			const unsigned int sceneId = tag->get().id;
-			m_SceneManager.getScene(sceneId).removeEntity(entity);
-		}
-		m_coordinator->destroyEntity(entity);
+        // First, recursively delete all children of this entity
+        deleteEntityChildren(entity);
+
+        // Then, remove this entity from its parent's children list (if it has a parent)
+        removeEntityFromParent(entity);
+
+        // Finally, handle the scene tag and destroy the entity as in the original code
+        const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+        if (tag)
+        {
+            const unsigned int sceneId = tag->get().id;
+            m_SceneManager.getScene(sceneId).removeEntity(entity);
+        }
+        m_coordinator->destroyEntity(entity);
+    }
+
+    void Application::removeEntityFromParent(const ecs::Entity entity)
+    {
+        // Get the parent component to find the parent entity
+        auto parentComponent = m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+        if (!parentComponent || parentComponent->get().parent == ecs::INVALID_ENTITY)
+            return;
+
+        ecs::Entity parentEntity = parentComponent->get().parent;
+
+        // Get the parent's transform component which now stores children
+        auto parentTransform = m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+        if (parentTransform)
+        {
+            // Remove this entity from parent's children vector
+            parentTransform->get().removeChild(entity);
+        }
+    }
+
+    void Application::deleteEntityChildren(const ecs::Entity entity)
+    {
+        // Check if this entity has a transform component with children
+        auto transform = m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+        if (!transform || transform->get().children.empty())
+            return;
+
+        // Create a copy of the children vector since we'll be modifying it during iteration
+        std::vector<ecs::Entity> childrenCopy = transform->get().children;
+
+        // Delete each child entity recursively
+        for (const auto& childEntity : childrenCopy)
+        {
+            if (childEntity != ecs::INVALID_ENTITY && childEntity != entity) // Avoid circular references
+            {
+                deleteEntity(childEntity);
+            }
+        }
+
+        // Clear the children list to avoid dangling references
+        transform->get().children.clear();
     }
 }
