@@ -40,31 +40,8 @@ namespace nexo::components {
         glm::vec3 pos;
         glm::vec3 size = glm::vec3(1.0f);
         glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+        glm::mat4 worldMatrix = glm::mat4(1.0f);
+        glm::mat4 localMatrix = glm::mat4(1.0f);
     };
-
-    struct LocalTransformComponent {
-        struct Memento {
-            glm::vec3 position;
-            glm::quat rotation;
-            glm::vec3 scale;
-        };
-
-        void restore(const Memento &memento)
-        {
-            position = memento.position;
-            rotation = memento.rotation;
-            scale = memento.scale;
-        }
-
-        [[nodiscard]] Memento save() const
-        {
-            return {position, rotation, scale};
-        }
-
-
-        glm::vec3 position = glm::vec3(0.0f);
-        glm::vec3 scale = glm::vec3(1.0f);
-        glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    };
-
 }
