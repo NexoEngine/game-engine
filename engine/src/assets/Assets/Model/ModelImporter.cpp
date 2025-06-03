@@ -370,10 +370,22 @@ namespace nexo::assets {
         std::vector<unsigned int> indices;
         vertices.reserve(mesh->mNumVertices);
 
+        glm::vec3 minBB(+FLT_MAX, +FLT_MAX, +FLT_MAX);
+        glm::vec3 maxBB(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             renderer::NxVertex vertex{};
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+
+            minBB.x = std::min(minBB.x, vertex.position.x);
+            minBB.y = std::min(minBB.y, vertex.position.y);
+            minBB.z = std::min(minBB.z, vertex.position.z);
+
+            maxBB.x = std::max(maxBB.x, vertex.position.x);
+            maxBB.y = std::max(maxBB.y, vertex.position.y);
+            maxBB.z = std::max(maxBB.z, vertex.position.z);
 
             if (mesh->HasNormals()) {
                 vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
@@ -386,6 +398,8 @@ namespace nexo::assets {
 
             vertices.push_back(vertex);
         }
+
+        glm::vec3 centerLocal = (minBB + maxBB) * 0.5f;
 
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
@@ -411,7 +425,7 @@ namespace nexo::assets {
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-        return {mesh->mName.data, vao, materialComponent};
+        return {mesh->mName.data, vao, materialComponent, centerLocal};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)
