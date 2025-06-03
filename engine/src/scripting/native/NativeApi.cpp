@@ -18,6 +18,7 @@
 #include "EntityFactory3D.hpp"
 #include "Logger.hpp"
 #include "Nexo.hpp"
+#include "components/Uuid.hpp"
 
 namespace nexo::scripting {
 
@@ -81,6 +82,12 @@ namespace nexo::scripting {
                 .DirectionalLight = coordinator.getComponentType<components::DirectionalLightComponent>(),
                 .PointLight = coordinator.getComponentType<components::PointLightComponent>(),
                 .SpotLight = coordinator.getComponentType<components::SpotLightComponent>(),
+                .RenderComponent = coordinator.getComponentType<components::RenderComponent>(),
+                .SceneTag = coordinator.getComponentType<components::SceneTag>(),
+                .CameraComponent = coordinator.getComponentType<components::CameraComponent>(),
+                .UuidComponent = coordinator.getComponentType<components::UuidComponent>(),
+                .PerspectiveCameraController = coordinator.getComponentType<components::PerspectiveCameraController>(),
+                .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
             };
         }
 

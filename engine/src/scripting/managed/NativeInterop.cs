@@ -30,6 +30,12 @@ namespace Nexo
         public UInt32 DirectionalLight;
         public UInt32 PointLight;
         public UInt32 SpotLight;
+        public UInt32 RenderComponent;
+        public UInt32 SceneTag;
+        public UInt32 CameraComponent;
+        public UInt32 UuidComponent;
+        public UInt32 PerspectiveCameraController;
+        public UInt32 PerspectiveCameraTarget;
     }
     
     /// <summary>
