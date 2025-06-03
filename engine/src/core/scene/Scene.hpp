@@ -56,7 +56,7 @@ namespace nexo::scene {
 			* @param entity The entity identifier to add.
 			*/
 			void addEntity(ecs::Entity entity);
-			void addModelChildEntities(const components::ModelComponent &modelComponent);
+			void addChildEntityToScene(const ecs::Entity entity);
 
 			/**
              * @brief Removes an entity from the scene.
