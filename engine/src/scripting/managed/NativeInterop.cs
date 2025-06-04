@@ -72,6 +72,9 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate ComponentTypeIds NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -82,6 +85,7 @@ namespace Nexo
             public GetTransformDelegate GetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
+            public NxAddComponentDelegate NxAddComponent;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -236,6 +240,21 @@ namespace Nexo
                 throw new InvalidOperationException($"Component {typeof(T)} not found on entity {entityId}");
 
             return ref Unsafe.AsRef<T>((void*)ptr);
+        }
+        
+        public static void AddComponent<T>(UInt32 entityId)
+        {
+            if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
+                throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
+
+            try
+            {
+                s_callbacks.NxAddComponent.Invoke(typeId, entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling AddComponent<{typeof(T)}>: {ex.Message}");
+            }
         }
         
         private static UInt32 _cubeId = 0;
