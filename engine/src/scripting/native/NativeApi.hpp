@@ -89,6 +89,7 @@ namespace nexo::scripting {
         NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) GetComponent(UInt32 typeId, ecs::Entity entity);
         NEXO_RET(ComponentTypeIds) GetComponentTypeIds();
+        NEXO_RET(void) AddComponent(UInt32 typeId, ecs::Entity entity);
 
     }
 
@@ -102,7 +103,7 @@ namespace nexo::scripting {
         ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
         ApiCallback<void*(UInt32, ecs::Entity)> GetComponent{&scripting::GetComponent};
         ApiCallback<ComponentTypeIds()> GetComponentTypeIds{&scripting::GetComponentTypeIds};
-
+        ApiCallback<void(UInt32, ecs::Entity)> AddComponent{&scripting::AddComponent};
 
     };
 

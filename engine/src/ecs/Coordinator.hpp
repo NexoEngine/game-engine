@@ -314,6 +314,13 @@ namespace nexo::ecs {
                 return std::any_cast<void*>(componentAny);
             }
 
+            const std::unordered_map<ComponentType, std::type_index>& getTypeIdToTypeIndex() const {
+                return m_typeIDtoTypeIndex;
+            }
+
+            const std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>>& getAddComponentFunctions() const {
+                return m_addComponentFunctions;
+            }
 
             /**
              * @brief Get the Singleton Component object
