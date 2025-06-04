@@ -72,6 +72,33 @@ namespace nexo::scripting {
             return opt;
         }
 
+        void AddComponent(UInt32 typeId, ecs::Entity entity)
+        {
+            auto& coordinator = *getApp().m_coordinator;
+
+            const auto& map = coordinator.getTypeIdToTypeIndex();
+            auto it = map.find(typeId);
+
+            if (it == map.end()) {
+                LOG(NEXO_ERROR, "AddComponent: Unknown typeId {}", typeId);
+                return;
+            }
+
+            const std::type_index& typeIndex = it->second;
+            const auto& addFn = coordinator.getAddComponentFunctions().find(typeIndex);
+            if (addFn == coordinator.getAddComponentFunctions().end()) {
+                LOG(NEXO_ERROR, "AddComponent: No add function registered for component {}", typeIndex.name());
+                return;
+            }
+
+            try {
+                std::any defaultConstructed = coordinator.restoreComponent(std::any{}, typeIndex);
+                addFn->second(entity, defaultConstructed);
+            } catch (const std::bad_any_cast& e) {
+                LOG(NEXO_ERROR, "AddComponent: bad_any_cast for component {}: {}", typeIndex.name(), e.what());
+            }
+        }
+
         ComponentTypeIds GetComponentTypeIds()
         {
             auto& coordinator = *getApp().m_coordinator;
