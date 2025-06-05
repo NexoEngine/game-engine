@@ -276,6 +276,8 @@ namespace nexo {
             }
         	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
+                m_transformMatrixSystem->update();
+                m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderCommandSystem->update();
@@ -288,8 +290,6 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
-			    m_transformMatrixSystem->update();
-                m_transformHierarchySystem->update();
 				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
 			}
         }
