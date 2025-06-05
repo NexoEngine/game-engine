@@ -196,58 +196,39 @@ namespace nexo {
     int EntityFactory3D::processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node)
     {
         int totalChildrenCreated = 0;
+        bool shouldCreateIntermediateNode = false;
 
-        // Process meshes at this node level
-        for (const auto& mesh : node.meshes)
-        {
-            ecs::Entity meshEntity = Application::m_coordinator->createEntity();
-            totalChildrenCreated++;
+        // Determine if this node is worth creating as a separate entity
+        shouldCreateIntermediateNode =
+            // Create a node if it has meshes
+            !node.meshes.empty() ||
+            // Create a node if it has multiple children (branch node)
+            node.children.size() > 1 ||
+            // Create a node if it appears to be an important node (e.g. named mesh)
+            (!node.meshes.empty() && !node.meshes[0].name.empty());
 
-            // Add UUID
-            components::UuidComponent uuid;
-            Application::m_coordinator->addComponent(meshEntity, uuid);
+        // If this is an intermediate node with only one child and no meshes, flatten it
+        if (!shouldCreateIntermediateNode && node.children.size() == 1) {
+            // Directly process the child node under the parent, combining transforms
+            const auto& childNode = node.children[0];
 
-            // Create transform with centroid information
-            components::TransformComponent transform;
-            transform.pos = glm::vec3(0.0f);
-            transform.size = glm::vec3(1.0f);
-            transform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-            transform.localCenter = mesh.localCenter;
+            // Combine the transforms
+            glm::mat4 combinedTransform = node.transform * childNode.transform;
 
-            // Add mesh component
-            components::StaticMeshComponent staticMesh;
-            staticMesh.vao = mesh.vao;
-            staticMesh.name = mesh.name;
+            // Create a modified child node with the combined transform
+            assets::MeshNode flattenedNode = childNode;
+            flattenedNode.transform = combinedTransform;
 
-            // Add components to entity
-            Application::m_coordinator->addComponent(meshEntity, transform);
-            Application::m_coordinator->addComponent(meshEntity, staticMesh);
-
-            // Add material if available
-            if (mesh.material)
-            {
-                components::MaterialComponent materialComponent;
-                materialComponent.material = mesh.material;
-                Application::m_coordinator->addComponent(meshEntity, materialComponent);
-            }
-
-            // Set up parent-child relationship
-            components::ParentComponent parentComponent;
-            parentComponent.parent = parentEntity;
-            Application::m_coordinator->addComponent(meshEntity, parentComponent);
-
-            // Add this child to parent's transform children list
-            auto parentTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
-            if (parentTransform) {
-                parentTransform->get().children.push_back(meshEntity);
-            }
+            // Process this flattened node directly
+            return processModelNode(parentEntity, flattenedNode);
         }
 
-        // Process child nodes recursively
-        for (const auto& childNode : node.children)
-        {
-            // Create entity for this child node
-            ecs::Entity nodeEntity = Application::m_coordinator->createEntity();
+        // Standard node processing (create a new entity)
+        ecs::Entity nodeEntity = parentEntity;
+
+        // If we need an intermediate node, create it
+        if (shouldCreateIntermediateNode && parentEntity != ecs::INVALID_ENTITY) {
+            nodeEntity = Application::m_coordinator->createEntity();
             totalChildrenCreated++;
 
             // Add UUID
@@ -257,7 +238,7 @@ namespace nexo {
             // Extract transform from node matrix
             glm::vec3 translation, scale;
             glm::quat rotation;
-            nexo::math::decomposeTransformQuat(childNode.transform, translation, rotation, scale);
+            nexo::math::decomposeTransformQuat(node.transform, translation, rotation, scale);
 
             // Create transform component
             components::TransformComponent transform;
@@ -277,6 +258,61 @@ namespace nexo {
                 parentTransform->get().children.push_back(nodeEntity);
             }
 
+            // If node has a name, store it in the StaticMeshComponent or create a special component
+            if (!node.meshes.empty() && !node.meshes[0].name.empty()) {
+                // We could add a NameComponent here if needed
+            }
+        }
+
+        // Process meshes at this node level
+        for (const auto& mesh : node.meshes)
+        {
+            ecs::Entity meshEntity = Application::m_coordinator->createEntity();
+            totalChildrenCreated++;
+
+            // Add UUID
+            components::UuidComponent uuid;
+            Application::m_coordinator->addComponent(meshEntity, uuid);
+
+            // Create transform with centroid information
+            components::TransformComponent transform;
+            transform.pos = glm::vec3(0.0f);
+            transform.size = glm::vec3(1.0f);
+            transform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            transform.localCenter = mesh.localCenter;
+
+            // Add mesh component with name
+            components::StaticMeshComponent staticMesh;
+            staticMesh.vao = mesh.vao;
+            staticMesh.name = mesh.name;
+
+            // Add components to entity
+            Application::m_coordinator->addComponent(meshEntity, transform);
+            Application::m_coordinator->addComponent(meshEntity, staticMesh);
+
+            // Add material if available
+            if (mesh.material)
+            {
+                components::MaterialComponent materialComponent;
+                materialComponent.material = mesh.material;
+                Application::m_coordinator->addComponent(meshEntity, materialComponent);
+            }
+
+            // Set up parent-child relationship
+            components::ParentComponent parentComponent;
+            parentComponent.parent = nodeEntity;
+            Application::m_coordinator->addComponent(meshEntity, parentComponent);
+
+            // Add this child to parent's transform children list
+            auto parentTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(nodeEntity);
+            if (parentTransform) {
+                parentTransform->get().children.push_back(meshEntity);
+            }
+        }
+
+        // Process child nodes recursively
+        for (const auto& childNode : node.children)
+        {
             // Process this child node recursively and add to total children count
             totalChildrenCreated += processModelNode(nodeEntity, childNode);
         }
