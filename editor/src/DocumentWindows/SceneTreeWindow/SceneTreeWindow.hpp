@@ -119,6 +119,13 @@ namespace nexo::editor {
              */
             void update() override;
 
+            void generateHierarchicalNodes(std::map<scene::SceneId, SceneObject> &scenes);
+            void buildChildNodesForEntity(
+                ecs::Entity parentEntity,
+                SceneObject& parentNode,
+                std::unordered_set<ecs::Entity>& processedEntities);
+            SceneObject createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity);
+
         private:
 	        SceneObject root_;    ///< Root node of the scene tree.
 	        unsigned int m_nbDirLights = 0;   ///< Counter for directional lights.
