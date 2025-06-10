@@ -57,11 +57,18 @@ namespace nexo::scripting {
         get_function_pointer_fn get_function_pointer;
     };
 
+    class ScriptingBackendInitFailed final : public Exception {
+        public:
+            explicit ScriptingBackendInitFailed(const std::string &message,
+                const std::source_location loc = std::source_location::current())
+                    : Exception("Couldn't load scripting backend: " + message, loc) {}
+    };
+
     class HostHandler {
         protected:
             static void defaultErrorCallback(const HostString& message);
         public:
-            typedef void(*ErrorCallBackFn)(const HostString& message);
+            using ErrorCallBackFn = std::function<void(const HostString& message)>;
 
             // Globals
             static inline const std::filesystem::path DEFAULT_NEXO_MANAGED_PATH =

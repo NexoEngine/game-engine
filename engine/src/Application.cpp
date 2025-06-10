@@ -36,6 +36,7 @@
 #include "components/MaterialComponent.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
+#include "exceptions/Exceptions.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "scripting/native/Scripting.hpp"
@@ -257,8 +258,9 @@ namespace nexo {
         m_SceneManager.setCoordinator(m_coordinator);
 
         nexo::scripting::HostHandler::Parameters params;
-        params.errorCallback = [](const nexo::scripting::HostString& message) {
+        params.errorCallback = [this](const nexo::scripting::HostString& message) {
             LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
+            m_latestScriptingError = message.to_utf8();
         };
 
 
@@ -267,6 +269,7 @@ namespace nexo {
         // Initialize the host
         if (host.initialize(params) != nexo::scripting::HostHandler::SUCCESS) {
             LOG(NEXO_ERROR, "Failed to initialize host");
+            THROW_EXCEPTION(scripting::ScriptingBackendInitFailed, m_latestScriptingError);
         }
 
         LOG(NEXO_DEV, "Application initialized");
