@@ -260,5 +260,7 @@ namespace nexo {
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
+            std::string m_latestScriptingError;
     };
 }
