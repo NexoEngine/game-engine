@@ -85,7 +85,7 @@ namespace nexo::editor {
             }
         }
         return "Unknown CPU";
-#elif defined(_WIN32)
+#elif defined(_WIN32) && defined(_M_X64)
         // Using __cpuid to get CPU brand string
         int cpuInfo[4] = {0};
         char brand[0x40] = { 0 };
