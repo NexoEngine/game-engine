@@ -48,9 +48,17 @@ configure_file(
     @ONLY                                     # Only replace variables in @VAR@ format
 )
 
+if(CMAKE_GENERATOR_PLATFORM)
+    set(ARCH_ARG --arch ${CMAKE_GENERATOR_PLATFORM})
+else()
+    set(ARCH_ARG "")
+endif()
+
+
 # Build step
 add_custom_target(nexoManaged ALL
                   COMMAND ${DOTNET_EXECUTABLE} build Nexo.csproj
+                  ${ARCH_ARG}
                   -c $<CONFIG>                        # Matches Debug/Release configuration
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}      # Working directory for the build
                   COMMENT "Building .NET managed project (Nexo.csproj)..."
@@ -62,4 +70,6 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
     ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.pdb
     ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.runtimeconfig.json
     ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.deps.json
+    ${CMAKE_CURRENT_LIST_DIR}/obj
+    ${CMAKE_CURRENT_LIST_DIR}/bin
 )
