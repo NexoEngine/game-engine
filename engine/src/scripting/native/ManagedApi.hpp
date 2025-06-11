@@ -102,6 +102,9 @@ namespace nexo::scripting {
             ManagedApiFn<Int32(Int32 a, Int32 b, Int32 *result)> AddToPtr;
         } Lib;
 
+        struct ObjectFactoryApi {
+            ManagedApiFn<IntPtr(const char *typeName, const char **parametersType, const void **parameters, UInt32 parametersCount)> CreateInstance;
+        } ObjectFactory;
 
     };
 

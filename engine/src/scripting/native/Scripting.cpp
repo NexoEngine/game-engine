@@ -270,6 +270,14 @@ namespace nexo::scripting {
             )
         };
 
+        m_managedApi.ObjectFactory = {
+            .CreateInstance = getManagedFptr<IntPtr(*)(const char *typeName, const char **parametersType, const void **parameters, UInt32 parametersCount)>(
+                "Nexo.ObjectFactory, Nexo",
+                "CreateInstance",
+                UNMANAGEDCALLERSONLY
+            )
+        };
+
         return m_status = checkManagedApi();
 
     } catch (const std::exception& e) {
@@ -348,6 +356,20 @@ namespace nexo::scripting {
         // Call the method to demonstrate calling C++ from C#
         std::cout << "\nDemonstrating calling C++ functions from C#:" << std::endl;
         m_managedApi.NativeInterop.DemonstrateNativeCalls();
+
+        // Demonstrate creating a managed object from native code
+        std::cout << "\nDemonstrating creating a managed object from native code:" << std::endl;
+        const char *typeName = "Nexo.ExampleClass";
+        const char *parametersType[] = { "System.Int32" };
+        // Create an instance of UInt32 with value 42
+        UInt32 param1 = 42;
+        const void *parameters[] = { &param1 };
+        IntPtr instance = m_managedApi.ObjectFactory.CreateInstance(typeName, parametersType, parameters, 1);
+        if (instance == nullptr) {
+            m_params.errorCallback("Failed to create instance of " + std::string(typeName));
+            return EXIT_FAILURE;
+        }
+        std::cout << "Created instance of " << typeName << " with address: " << instance << std::endl;
 
         return EXIT_SUCCESS;
     }
