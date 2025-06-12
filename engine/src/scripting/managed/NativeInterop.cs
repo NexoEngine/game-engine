@@ -26,10 +26,10 @@ namespace Nexo
     public struct ComponentTypeIds
     {
         public UInt32 Transform;
-        public UInt32 AmbientLight;
-        public UInt32 DirectionalLight;
-        public UInt32 PointLight;
-        public UInt32 SpotLight;
+        public UInt32 AmbientLightComponent;
+        public UInt32 DirectionalLightComponent;
+        public UInt32 PointLightComponent;
+        public UInt32 SpotLightComponent;
         public UInt32 RenderComponent;
         public UInt32 SceneTag;
         public UInt32 CameraComponent;
@@ -74,7 +74,8 @@ namespace Nexo
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate ComponentTypeIds NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
+            public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
+
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -120,17 +121,21 @@ namespace Nexo
             var fields = typeof(ComponentTypeIds).GetFields();
             foreach (var field in fields)
             {
-                var type = Type.GetType($"Nexo.Components.{field.Name}");
+                var expectedTypeName = $"Nexo.Components.{field.Name}";
+                var type = Type.GetType(expectedTypeName);
+
                 if (type != null)
                 {
                     var value = (UInt32)field.GetValue(_componentTypeIds);
                     _typeToNativeIdMap[type] = value;
+                    Logger.Log(LogLevel.Debug, $"[Interop] Mapped {expectedTypeName} => {value}");
                 }
                 else
                 {
-                    Logger.Log(LogLevel.Warn, $"[Interop] Type not found for field {field.Name}");
+                    Logger.Log(LogLevel.Warn, $"[Interop] Type not found for field {field.Name} (expected {expectedTypeName})");
                 }
             }
+
         }
 
         /// <summary>
@@ -283,7 +288,18 @@ namespace Nexo
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
             Console.WriteLine($"Created cube with ID: {cubeId}");
+            NativeInterop.AddComponent<CameraComponent>(cubeId);
             
+
+            try
+            {
+                ref CameraComponent cam = ref NativeInterop.GetComponent<CameraComponent>(cubeId);
+                Console.WriteLine($"[✔] CameraComponent added: active={cam.active}, fov={cam.fov}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[✘] Failed to get CameraComponent: {e.Message}");
+            }
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");
             ref Transform transform = ref GetComponent<Transform>(cubeId);
