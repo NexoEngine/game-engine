@@ -504,6 +504,14 @@ namespace nexo::ecs {
                 return signature.test(componentType);
             }
 
+            template<typename T>
+            void setRestoreComponent() {
+                m_restoreComponentFunctions[typeid(T)] = [](const std::any&) -> std::any {
+                    return std::any(T{}); // default-constructed
+                };
+            }
+
+
             bool supportsMementoPattern(const std::any& component) const;
             std::any saveComponent(const std::any& component) const;
             std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;

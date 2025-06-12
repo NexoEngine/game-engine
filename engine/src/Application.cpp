@@ -63,21 +63,35 @@ namespace nexo {
     {
 
         m_coordinator->registerComponent<components::TransformComponent>();
+        m_coordinator->setRestoreComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
+        m_coordinator->setRestoreComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
+        m_coordinator->setRestoreComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
+        m_coordinator->setRestoreComponent<components::CameraComponent>();
         m_coordinator->registerComponent<components::AmbientLightComponent>();
+        m_coordinator->setRestoreComponent<components::AmbientLightComponent>();
         m_coordinator->registerComponent<components::PointLightComponent>();
+        m_coordinator->setRestoreComponent<components::PointLightComponent>();
         m_coordinator->registerComponent<components::DirectionalLightComponent>();
+        m_coordinator->setRestoreComponent<components::DirectionalLightComponent>();
         m_coordinator->registerComponent<components::SpotLightComponent>();
+        m_coordinator->setRestoreComponent<components::SpotLightComponent>();
         m_coordinator->registerComponent<components::UuidComponent>();
+        m_coordinator->setRestoreComponent<components::UuidComponent>();
         m_coordinator->registerComponent<components::PerspectiveCameraController>();
+        m_coordinator->setRestoreComponent<components::PerspectiveCameraController>();
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
+        m_coordinator->setRestoreComponent<components::PerspectiveCameraTarget>();
         m_coordinator->registerComponent<components::EditorCameraTag>();
+        m_coordinator->setRestoreComponent<components::EditorCameraTag>();
         m_coordinator->registerComponent<components::SelectedTag>();
+        m_coordinator->setRestoreComponent<components::SelectedTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
         m_coordinator->registerComponent<components::InActiveScene>();
+        m_coordinator->setRestoreComponent<components::InActiveScene>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -235,6 +249,11 @@ namespace nexo {
         registerSystems();
         // std::cout << "Application m_coordinator: " << m_coordinator.get() << std::endl;
         m_SceneManager.setCoordinator(m_coordinator);
+
+        const auto& map = m_coordinator->getTypeIdToTypeIndex();
+        for (auto& [typeId, typeIndex] : map)
+            std::cout << "Registered: " << typeId << " => " << typeIndex.name() << std::endl;
+
 
         nexo::scripting::HostHandler::Parameters params;
         params.errorCallback = [](const nexo::scripting::HostString& message) {
