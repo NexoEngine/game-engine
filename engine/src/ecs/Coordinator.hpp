@@ -329,6 +329,10 @@ namespace nexo::ecs {
                 return m_addComponentFunctions;
             }
 
+            Signature getSignature(Entity entity) const {
+                return m_entityManager->getSignature(entity);
+            }
+
             /**
              * @brief Get the Singleton Component object
              *
@@ -516,6 +520,7 @@ namespace nexo::ecs {
             std::any saveComponent(const std::any& component) const;
             std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;
             void addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component);
+
 
         private:
             template<typename Component>

@@ -99,6 +99,34 @@ namespace nexo::scripting {
             }
         }
 
+        bool HasComponent(UInt32 typeId, ecs::Entity entity)
+        {
+            auto& coordinator = *getApp().m_coordinator;
+
+            const auto& typeMap = coordinator.getTypeIdToTypeIndex();
+            auto it = typeMap.find(typeId);
+            if (it == typeMap.end())
+                return false;
+
+            const auto& typeIndex = it->second;
+
+            ecs::ComponentType matchedType = 0;
+            bool found = false;
+            for (const auto& [compType, idx] : typeMap) {
+                if (idx == typeIndex) {
+                    matchedType = compType;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return false;
+
+            ecs::Signature sig = coordinator.getSignature(entity);
+            return sig.test(matchedType);
+        }
+
         ComponentTypeIds GetComponentTypeIds()
         {
             auto& coordinator = *getApp().m_coordinator;
