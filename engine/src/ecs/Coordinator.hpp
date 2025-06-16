@@ -322,6 +322,10 @@ namespace nexo::ecs {
                 return m_addComponentFunctions;
             }
 
+            Signature getSignature(Entity entity) const {
+                return m_entityManager->getSignature(entity);
+            }
+
             /**
              * @brief Get the Singleton Component object
              *
