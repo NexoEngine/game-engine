@@ -8,7 +8,7 @@
 //
 //  Author:      Thomas PARENTEAU
 //  Date:        02/03/2025
-//  Description: Header file for init the physics system
+//  Description: Source file for the physics system
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +98,6 @@ namespace nexo::system {
         coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), components::PhysicsBodyComponent::Type::Dynamic });
         return body->GetID();
     }
-
 
     JPH::BodyID PhysicsSystem::createStaticBody(ecs::Entity entity, const components::TransformComponent& transform) {
         JPH::BoxShapeSettings baseShapeSettings(
