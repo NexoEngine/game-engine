@@ -27,7 +27,6 @@
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 #include "context/ActionManager.hpp"
-#include "ImNexo/Panels.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Components.hpp"
 

@@ -40,16 +40,9 @@ namespace nexo::editor {
             auto &sceneManager = app.getSceneManager();
 
             // --- Primitives submenu ---
-            if (ImGui::BeginMenu("Primitives")) {
-                if (ImGui::MenuItem("Cube")) {
-                    const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
-                                                                           {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
-                    sceneManager.getScene(sceneId).addEntity(newCube);
-                    auto action = std::make_unique<EntityCreationAction>(newCube);
-                    ActionManager::get().recordAction(std::move(action));
-                }
-                ImGui::EndMenu();
-            }
+            const auto &selector = Selector::get();
+            const int currentSceneId = selector.getSelectedScene();
+            ImNexo::PrimitiveSubMenu(currentSceneId);
 
             // --- Model item (with file‑dialog) ---
             if (ImGui::MenuItem("Model")) {
@@ -118,6 +111,59 @@ namespace nexo::editor {
             PopupManager::closePopup();
         }
     }
+
+    // void SceneTreeWindow::primitiveCreationMenu()
+    // {
+    //     if (!m_popupManager.showPopup("Sphere creation popup") &&
+    //         !m_popupManager.showPopup("Cylinder creation popup"))
+    //         return;
+    //     Primitives primitive;
+    //     bool showSpherePopup = m_popupManager.showPopup("Cylinder creation popup");
+    //     if (m_popupManager.showPopup("Cylinder creation popup"))
+    //     {
+    //         primitive = CYLINDER;
+    //     }
+    //     else if (showSpherePopup)
+    //     {
+    //         primitive = SPHERE;
+    //     }
+    //     else
+    //     {
+    //         return;
+    //     }
+    //
+    //     auto& app = Application::getInstance();
+    //     auto& sceneManager = app.getSceneManager();
+    //
+    //     static int value = primitive == SPHERE ? 1 : 8;
+    //     const int min = primitive == SPHERE ? 0 : 3;
+    //     const int max = primitive == SPHERE ? 8 : 100;
+    //
+    //     const char* title = primitive == SPHERE ? "Subdivision" : "Segments";
+    //
+    //     ImGui::SliderScalar(title, ImGuiDataType_U32, &value, &min, &max, "%u");
+    //
+    //     if (ImGui::Button("Create"))
+    //     {
+    //         const ecs::Entity newPrimitive = primitive == SPHERE
+    //                                              ? EntityFactory3D::createSphere(
+    //                                                  {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+    //                                                  {0.0f, 0.0f, 0.0f},
+    //                                                  {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f},
+    //                                                  value)
+    //                                              : EntityFactory3D::createCylinder(
+    //                                                  {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+    //                                                  {0.0f, 0.0f, 0.0f},
+    //                                                  {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f},
+    //                                                  value);
+    //         const auto &selector = Selector::get();
+    //         const int currentSceneId = selector.getSelectedScene();
+    //         sceneManager.getScene(currentSceneId).addEntity(newPrimitive);
+    //         auto createAction = std::make_unique<EntityCreationAction>(newPrimitive);
+    //         ActionManager::get().recordAction(std::move(createAction));
+    //     }
+    //     ImGui::EndPopup();
+    // }
 
     void SceneTreeWindow::sceneCreationMenu()
     {
@@ -229,8 +275,7 @@ namespace nexo::editor {
             }
 
             // Display multi-selection count at top of window if applicable
-            const auto& selectedEntities = selector.getSelectedEntities();
-            if (selectedEntities.size() > 1) {
+            if (const auto& selectedEntities = selector.getSelectedEntities(); selectedEntities.size() > 1) {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
                 ImGui::Text("%zu entities selected", selectedEntities.size());
                 ImGui::PopStyleColor();
@@ -243,6 +288,7 @@ namespace nexo::editor {
             }
             sceneContextMenu();
             sceneCreationMenu();
+            // primitiveCreationMenu();
         }
         ImGui::End();
     }
