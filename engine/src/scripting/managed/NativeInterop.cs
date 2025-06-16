@@ -76,6 +76,8 @@ namespace Nexo
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
 
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxHasComponentDelegate(UInt32 typeId, UInt32 entityId);
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -87,6 +89,7 @@ namespace Nexo
             public NxGetComponentDelegate NxGetComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
             public NxAddComponentDelegate NxAddComponent;
+            public NxHasComponentDelegate NxHasComponent;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -261,6 +264,23 @@ namespace Nexo
             }
         }
         
+        public static bool HasComponent<T>(UInt32 entityId)
+        {
+            if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
+                throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
+
+            try
+            {
+                return s_callbacks.NxHasComponent.Invoke(typeId, entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling HasComponent<{typeof(T)}>: {ex.Message}");
+                return false;
+            }
+        }
+
+        
         private static UInt32 _cubeId = 0;
 
         /// <summary>
@@ -292,18 +312,34 @@ namespace Nexo
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
             Console.WriteLine($"Created cube with ID: {cubeId}");
-            NativeInterop.AddComponent<CameraComponent>(cubeId);
             
-
-            try
-            {
-                ref CameraComponent cam = ref NativeInterop.GetComponent<CameraComponent>(cubeId);
-                Console.WriteLine($"[✔] CameraComponent added: active={cam.active}, fov={cam.fov}");
+            // AddComponent test
+            AddComponent<CameraComponent>(cubeId);
+            
+            try {
+                ref CameraComponent cam = ref GetComponent<CameraComponent>(cubeId);
+                Console.WriteLine($"CameraComponent added: active={cam.active}, fov={cam.fov}");
             }
-            catch (Exception e)
-            {
-                Console.WriteLine($"[✘] Failed to get CameraComponent: {e.Message}");
+            catch (Exception e) {
+                Console.WriteLine($"Failed to get CameraComponent: {e.Message}");
             }
+            
+            // HasComponent test
+            if (HasComponent<CameraComponent>(cubeId))
+                Console.WriteLine("Entity has a camera!");
+            else
+                Console.WriteLine("Entity does NOT have a camera.");
+            
+            if (HasComponent<Transform>(cubeId))
+                Console.WriteLine("Entity has a Transform!");
+            else
+                Console.WriteLine("Entity does NOT have a Transform.");
+            
+            if (HasComponent<AmbientLightComponent>(cubeId))
+                Console.WriteLine("Entity has a AmbientLight!");
+            else
+                Console.WriteLine("Entity does NOT have a AmbientLight.");
+            
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");
             ref Transform transform = ref GetComponent<Transform>(cubeId);
