@@ -85,6 +85,7 @@ namespace nexo::editor
                 .icon = ICON_FA_CIRCLE,
                 .onClick = [this]()
                 {
+                    // ImNexo::PrimitiveCustomizationMenu(this->m_sceneId, SPHERE);
                     this->m_popupManager.openPopup("Sphere creation popup");
                 },
                 .tooltip = "Create Sphere"
@@ -94,6 +95,7 @@ namespace nexo::editor
                 .icon = ICON_FA_PLUS,
                 .onClick = [this]()
                 {
+                    // ImNexo::PrimitiveCustomizationMenu(this->m_sceneId, CYLINDER);
                     this->m_popupManager.openPopup("Cylinder creation popup");
                 },
                 .tooltip = "Create Cylinder"

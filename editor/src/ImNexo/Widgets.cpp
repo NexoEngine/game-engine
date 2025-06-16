@@ -14,13 +14,14 @@
 
 #include "Widgets.hpp"
 
+#include <Editor.hpp>
+#include <EntityFactory3D.hpp>
 #include <imgui.h>
+#include <context/ActionManager.hpp>
+#include <DocumentWindows/PopupManager.hpp>
 
 #include "IconsFontAwesome.h"
 #include "Nexo.hpp"
-#include "Texture.hpp"
-#include "components/Camera.hpp"
-#include "components/Uuid.hpp"
 #include "ImNexo.hpp"
 
 namespace ImNexo {
@@ -164,4 +165,80 @@ namespace ImNexo {
 
         ImGui::PopStyleVar(3);
 	}
+
+	void PrimitiveCustomizationMenu(const int sceneId, const nexo::Primitives primitive)
+	{
+		auto &app = nexo::Application::getInstance();
+		auto &sceneManager = app.getSceneManager();
+
+		static int value = primitive == nexo::Primitives::SPHERE ? 1 : 8;
+		const int min = primitive == nexo::Primitives::SPHERE ? 0 : 3;
+		const int max = primitive == nexo::Primitives::SPHERE ? 8 : 100;
+
+		const char* title = primitive == nexo::Primitives::SPHERE ? "Subdivision" : "Segments";
+
+		ImGui::SliderScalar(title, ImGuiDataType_U32, &value, &min, &max, "%u");
+
+		if (ImGui::Button("Create"))
+		{
+			const nexo::ecs::Entity newPrimitive = primitive == nexo::Primitives::SPHERE
+												 ? nexo::EntityFactory3D::createSphere(
+													 {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+													 {0.0f, 0.0f, 0.0f},
+													 {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f},
+													 value)
+												 : nexo::EntityFactory3D::createCylinder(
+													 {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+													 {0.0f, 0.0f, 0.0f},
+													 {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f},
+													 value);
+			sceneManager.getScene(sceneId).addEntity(newPrimitive);
+			auto createAction = std::make_unique<nexo::editor::EntityCreationAction>(newPrimitive);
+			nexo::editor::ActionManager::get().recordAction(std::move(createAction));
+		}
+		ImGui::EndPopup();
+	}
+
+    void PrimitiveSubMenu(const int sceneId)
+	{
+		auto &app = nexo::Application::getInstance();
+		auto &sceneManager = app.getSceneManager();
+
+	    if (ImGui::BeginMenu("Primitives")) {
+	        if (ImGui::MenuItem("Cube")) {
+	            const nexo::ecs::Entity newCube = nexo::EntityFactory3D::createCube({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+	                                                                                {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+	            sceneManager.getScene(sceneId).addEntity(newCube);
+	            auto createAction = std::make_unique<nexo::editor::EntityCreationAction>(newCube);
+	            nexo::editor::ActionManager::get().recordAction(std::move(createAction));
+	        }
+	        if (ImGui::MenuItem("Sphere")) {
+	   			// nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
+	   			// const auto primitiveWindow = editor.getWindow<nexo::editor::PrimitiveWindow>(NEXO_WND_USTRID_PRIMITIVE_WINDOW).lock();
+	   			// primitiveWindow->setSelectedPrimitive(nexo::Primitives::SPHERE);
+				// primitiveWindow->setOpened(true);
+
+	        	// PrimitiveCustomizationMenu(sceneId, nexo::Primitives::SPHERE);
+	        }
+	        if (ImGui::MenuItem("Cylinder")) {
+				// PrimitiveCustomizationMenu(sceneId, nexo::Primitives::CYLINDER);
+	        }
+	        if (ImGui::MenuItem("Pyramid")) {
+	            const nexo::ecs::Entity newPyramid = nexo::EntityFactory3D::createPyramid({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                                                                       {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+	            sceneManager.getScene(sceneId).addEntity(newPyramid);
+	            auto createAction = std::make_unique<nexo::editor::EntityCreationAction>(newPyramid);
+	            nexo::editor::ActionManager::get().recordAction(std::move(createAction));
+	        }
+	        if (ImGui::MenuItem("Tetrahedron")) {
+	            const nexo::ecs::Entity newTetrahedron = nexo::EntityFactory3D::createTetrahedron({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+	                                                                                              {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
+	            sceneManager.getScene(sceneId).addEntity(newTetrahedron);
+	            auto createAction = std::make_unique<nexo::editor::EntityCreationAction>(newTetrahedron);
+	            nexo::editor::ActionManager::get().recordAction(std::move(createAction));
+	        }
+	        ImGui::EndMenu();
+	    }
+	}
+
 }

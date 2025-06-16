@@ -19,6 +19,7 @@
 #include "src/DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "src/DocumentWindows/AssetManager/AssetManagerWindow.hpp"
 #include "src/DocumentWindows/MaterialInspector/MaterialInspector.hpp"
+#include "src/DocumentWindows/PrimitiveWindow/PrimitiveWindow.hpp"
 
 #include <thread>
 #include <loguru.hpp>
@@ -37,6 +38,7 @@ try {
     editor.registerWindow<nexo::editor::InspectorWindow>(NEXO_WND_USTRID_INSPECTOR);
     editor.registerWindow<nexo::editor::ConsoleWindow>(NEXO_WND_USTRID_CONSOLE);
     editor.registerWindow<nexo::editor::MaterialInspector>(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
+    editor.registerWindow<nexo::editor::PrimitiveWindow>(NEXO_WND_USTRID_PRIMITIVE_WINDOW);
     editor.registerWindow<nexo::editor::AssetManagerWindow>(NEXO_WND_USTRID_ASSET_MANAGER);
 
     if (const auto defaultScene = editor.getWindow<nexo::editor::EditorScene>(std::format("Default Scene{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0)).lock())

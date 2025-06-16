@@ -21,6 +21,16 @@
 
 namespace nexo
 {
+
+     enum Primitives
+     {
+         CUBE,
+         TETRAHEDRON,
+         PYRAMID,
+         CYLINDER,
+         SPHERE,
+     };
+
     /**
      * @brief Factory class for creating 3D entities.
      *

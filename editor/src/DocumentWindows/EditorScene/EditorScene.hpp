@@ -285,7 +285,7 @@ namespace nexo::editor {
              */
             void renderView();
             void renderNoActiveCamera() const;
-            void renderPrimitiveCreationPopup(const std::string& primitive);
+            void renderPrimitiveCreationPopup(const Primitives& primitive);
             void renderNewEntityPopup();
 
             void handleSelection();
