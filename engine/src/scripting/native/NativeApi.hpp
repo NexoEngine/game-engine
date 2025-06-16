@@ -90,6 +90,7 @@ namespace nexo::scripting {
         NEXO_RET(void *) GetComponent(UInt32 typeId, ecs::Entity entity);
         NEXO_RET(ComponentTypeIds) GetComponentTypeIds();
         NEXO_RET(void) AddComponent(UInt32 typeId, ecs::Entity entity);
+        NEXO_RET(bool) HasComponent(UInt32 typeId, ecs::Entity entity);
 
     }
 
@@ -104,6 +105,7 @@ namespace nexo::scripting {
         ApiCallback<void*(UInt32, ecs::Entity)> GetComponent{&scripting::GetComponent};
         ApiCallback<ComponentTypeIds()> GetComponentTypeIds{&scripting::GetComponentTypeIds};
         ApiCallback<void(UInt32, ecs::Entity)> AddComponent{&scripting::AddComponent};
+        ApiCallback<bool(UInt32, ecs::Entity)> HasComponent{&scripting::HasComponent};
 
     };
 
