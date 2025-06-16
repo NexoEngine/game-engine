@@ -8,7 +8,7 @@
 //
 //  Author:      Thomas PARENTEAU
 //  Date:        02/03/2025
-//  Description: Header file for init the physics system
+//  Description: Header file for the physics system
 //
 ///////////////////////////////////////////////////////////////////////////////
 
