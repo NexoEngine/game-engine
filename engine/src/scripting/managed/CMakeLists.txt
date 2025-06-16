@@ -29,6 +29,9 @@ set(SOURCES
     Logger.cs
     NativeComponents.cs
     Components/Transform.cs
+    Components/Camera.cs
+    Components/Render.cs
+    Components/Scene.cs
     Components/Light.cs
     Components/Uuid.cs
     Components/Scene.cs
