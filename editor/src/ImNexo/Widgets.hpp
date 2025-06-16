@@ -14,12 +14,10 @@
 #pragma once
 
 #include <imgui.h>
-#include <glm/glm.hpp>
 #include <string>
+#include "EntityFactory3D.hpp"
 
 #include "Components.hpp"
-#include "components/Render3D.hpp"
-#include "renderer/Texture.hpp"
 
 namespace ImNexo {
 
@@ -97,4 +95,8 @@ namespace ImNexo {
 		bool &closure,
 		DropdownOrientation orientation = DropdownOrientation::DOWN
 	);
+
+	void PrimitiveSubMenu(int sceneId);
+	void PrimitiveCustomizationMenu(int sceneId, nexo::Primitives primitive);
+
 }
