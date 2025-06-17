@@ -34,23 +34,23 @@ namespace nexo::editor {
         ImGui::Text("No active camera");
     }
 
-    void EditorScene::renderPrimitiveCreationPopup(const std::string& primitive)
+    void EditorScene::renderPrimitiveCreationPopup(const Primitives& primitive)
     {
         auto &app = Application::getInstance();
         auto &sceneManager = app.getSceneManager();
         const auto sceneId = m_sceneId;
 
-        static int value = primitive == "sphere" ? 1 : 8;
-        const int min = primitive == "sphere" ? 0 : 3;
-        const int max = primitive == "sphere" ? 8 : 100;
+        static int value = primitive == SPHERE ? 1 : 8;
+        const int min = primitive == SPHERE ? 0 : 3;
+        const int max = primitive == SPHERE ? 8 : 100;
 
-        const char* title = primitive == "sphere" ? "Subdivision" : "Segments";
+        const char* title = primitive == SPHERE ? "Subdivision" : "Segments";
 
         ImGui::SliderScalar(title, ImGuiDataType_U32, &value, &min, &max, "%u");
 
         if (ImGui::Button("Create"))
         {
-            const ecs::Entity newPrimitive = primitive == "sphere"
+            const ecs::Entity newPrimitive = primitive == SPHERE
                                                  ? EntityFactory3D::createSphere(
                                                      {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
                                                      {0.0f, 0.0f, 0.0f},
@@ -212,11 +212,11 @@ namespace nexo::editor {
 
             if (m_popupManager.showPopup("Sphere creation popup"))
             {
-                renderPrimitiveCreationPopup("sphere");
+                renderPrimitiveCreationPopup(SPHERE);
             }
             if (m_popupManager.showPopup("Cylinder creation popup"))
             {
-                renderPrimitiveCreationPopup("cylinder");
+                renderPrimitiveCreationPopup(CYLINDER);
             }
         }
         ImGui::End();
