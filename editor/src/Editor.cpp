@@ -35,6 +35,9 @@ namespace nexo::editor {
 
     void Editor::shutdown() const
     {
+        Application& app = Application::getInstance();
+
+        app.shutdownScripting();
         LOG(NEXO_INFO, "Closing editor");
         LOG(NEXO_INFO, "All windows destroyed");
         m_windowRegistry.shutdown();
@@ -220,6 +223,9 @@ namespace nexo::editor {
 		setupEngine();
 		setupStyle();
 		m_windowRegistry.setup();
+
+        const Application& app = Application::getInstance();
+        app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be created in the editor window
     }
 
     bool Editor::isOpen() const
@@ -542,6 +548,7 @@ namespace nexo::editor {
     void Editor::update() const
     {
     	m_windowRegistry.update();
+        Application& app = Application::getInstance();
         getApp().endFrame();
     }
 }

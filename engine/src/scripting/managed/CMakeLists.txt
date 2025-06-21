@@ -38,6 +38,7 @@ set(SOURCES
     Components/Scene.cs
     Components/Light.cs
     Components/Uuid.cs
+    Systems/SystemBase.cs
     Systems/WorldState.cs
 )
 

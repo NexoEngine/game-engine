@@ -70,8 +70,8 @@ namespace nexo::scripting {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
-        ecs::Entity CreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color) {
-
+        ecs::Entity CreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color)
+        {
             auto &app = getApp();
             const ecs::Entity basicCube = EntityFactory3D::createCube(std::move(pos), std::move(size), std::move(rotation), std::move(color));
             app.getSceneManager().getScene(0).addEntity(basicCube);
