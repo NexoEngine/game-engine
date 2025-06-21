@@ -17,22 +17,30 @@
 
 #include "Application.hpp"
 
+#include "scripting/native/ManagedTypedef.hpp"
+
 namespace nexo::scripting {
 
-    struct WorldState {
+    /**
+     * @brief Represents the state of the world in the game engine.
+     * This structure is 1 to 1 equivalent to the WorldState class in the C# managed code.
+     * @warning If you modify this structure, ensure that the C# managed code is updated accordingly.
+     */
+    struct ManagedWorldState {
         struct WorldTime {
-            double deltaTime = 0.0; // Time since last update
-            double totalTime = 0.0; // Total time since the start of the world
+            Double deltaTime = 0.0; // Time since last update
+            Double totalTime = 0.0; // Total time since the start of the world
         } time;
 
         struct WorldStats {
-            int frameCount = 0; // Number of frames rendered
+            UInt64 frameCount = 0; // Number of frames rendered
         } stats;
 
-        void updateTime()
-        {
-            const auto &app = Application::getInstance();
-            time.deltaTime = app.
+        void update(const WorldState& worldState) {
+            // Update the world state with the current time and stats
+            time.deltaTime = worldState.time.deltaTime;
+            time.totalTime = worldState.time.totalTime;
+            stats.frameCount = worldState.stats.frameCount;
         }
     };
 
