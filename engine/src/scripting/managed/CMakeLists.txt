@@ -36,6 +36,7 @@ set(SOURCES
     Components/Uuid.cs
     Systems/SystemBase.cs
     Systems/WorldState.cs
+    Scripts/CubeSystem.cs
 )
 
 # Locate the dotnet executable
