@@ -77,12 +77,6 @@ namespace nexo::scripting {
         return m_status = SUCCESS;
     }
 
-    HostHandler::Status HostHandler::update(Double deltaTime)
-    {
-        m_managedApi.NativeInterop.Update(deltaTime);
-        return m_status;
-    }
-
     void *HostHandler::getManagedFptrVoid(const char_t* typeName, const char_t* methodName,
         const char_t* delegateTypeName) const
     {
@@ -226,7 +220,7 @@ namespace nexo::scripting {
     HostHandler::Status HostHandler::initManagedApi()
     try {
         m_managedApi.NativeInterop = {
-            .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, Int32)>(
+            .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, UInt32)>(
                 "Nexo.NativeInterop, Nexo",
                 "Initialize",
                 UNMANAGEDCALLERSONLY
@@ -266,6 +260,24 @@ namespace nexo::scripting {
             .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
                 "Nexo.Lib, Nexo",
                 "AddToPtr",
+                UNMANAGEDCALLERSONLY
+            )
+        };
+
+        m_managedApi.SystemBase = {
+            .InitializeSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                "Nexo.Systems.SystemBase, Nexo",
+                "InitializeSystems",
+                UNMANAGEDCALLERSONLY
+            ),
+            .ShutdownSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                "Nexo.Systems.SystemBase, Nexo",
+                "ShutdownSystems",
+                UNMANAGEDCALLERSONLY
+            ),
+            .UpdateSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                "Nexo.Systems.SystemBase, Nexo",
+                "UpdateSystems",
                 UNMANAGEDCALLERSONLY
             )
         };
