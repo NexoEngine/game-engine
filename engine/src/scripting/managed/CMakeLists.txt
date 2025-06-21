@@ -34,6 +34,7 @@ set(SOURCES
     Components/Scene.cs
     Components/Transform.cs
     Components/Uuid.cs
+    Systems/SystemBase.cs
     Systems/WorldState.cs
 )
 
