@@ -509,7 +509,7 @@ namespace nexo::ecs {
             }
 
 
-            bool supportsMementoPattern(const std::any& component) const;
+            bool supportsMementoPattern(const std::type_index typeIndex) const;
             std::any saveComponent(const std::any& component) const;
             std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;
             void addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component);
@@ -536,6 +536,9 @@ namespace nexo::ecs {
 
             std::unordered_map<ComponentType, std::type_index> m_typeIDtoTypeIndex;
             std::unordered_map<std::type_index, bool> m_supportsMementoPattern;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_saveComponentFunctions;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_restoreComponentFunctions;
+            std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
     };
