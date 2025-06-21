@@ -48,17 +48,6 @@ try {
 
     editor.init();
 
-    auto &scriptHost = nexo::scripting::HostHandler::getInstance();
-
-    if (scriptHost.runScriptExample() == EXIT_FAILURE) {
-        LOG(NEXO_ERROR, "Error in runScriptExample");
-    } else {
-        LOG(NEXO_INFO, "Successfully ran runScriptExample");
-    }
-
-    auto clock = std::chrono::high_resolution_clock::now();
-    auto scriptDetlaStart = clock;
-    std::chrono::duration<double, std::milli> scriptDeltaElapsed = clock - scriptDetlaStart;
     while (editor.isOpen())
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -68,14 +57,9 @@ try {
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
-        scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDetlaStart;
-        scriptHost.update(scriptDeltaElapsed.count() / 1000.0);
-        scriptDetlaStart = std::chrono::high_resolution_clock::now();
-
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
-
-
     }
+
     editor.shutdown();
     return 0;
 } catch (const nexo::Exception &e) {
