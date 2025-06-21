@@ -102,7 +102,7 @@ namespace Nexo
         /// <param name="structPtr">Pointer to the struct</param>
         /// <param name="structSize">Size of the struct</param>
         [UnmanagedCallersOnly]
-        public static Int32 Initialize(IntPtr structPtr, Int32 structSize)
+        public static Int32 Initialize(IntPtr structPtr, UInt32 structSize)
         {
             if (structSize != Marshal.SizeOf<NativeApiCallbacks>())
             {
@@ -113,13 +113,17 @@ namespace Nexo
             // Marshal the struct from the IntPtr to the managed struct
             s_callbacks = Marshal.PtrToStructure<NativeApiCallbacks>(structPtr);
             _componentTypeIds = s_callbacks.NxGetComponentTypeIds.Invoke();
-            InitializeTypeMap();
+            if (InitializeTypeMap() != 0)
+            {
+                Logger.Log(LogLevel.Fatal, "Failed to initialize type map for component type IDs.");
+                return 1;
+            }
             
             Logger.Log(LogLevel.Info, "Native API initialized.");
             return 0;
         }
         
-        private static void InitializeTypeMap()
+        private static Int32 InitializeTypeMap()
         {
             var fields = typeof(ComponentTypeIds).GetFields();
             foreach (var field in fields)
@@ -129,13 +133,14 @@ namespace Nexo
 
                 if (type != null)
                 {
-                    object? value = field.GetValue(_componentTypeIds);
+                    var value = field.GetValue(_componentTypeIds);
                     if (value == null)
                     {
-                        Logger.Log(LogLevel.Warn, $"[Interop] Field {field.Name} has a null value in ComponentTypeIds");
-                        continue;
+                        Logger.Log(LogLevel.Warn, $"Field {field.Name} in ComponentTypeIds is null");
+                        return 1;
                     }
                     _typeToNativeIdMap[type] = (UInt32)value;
+                    Logger.Log(LogLevel.Debug, $"[Interop] Mapped {expectedTypeName} => {value}");
                 }
                 else
                 {
@@ -143,6 +148,7 @@ namespace Nexo
                 }
             }
 
+            return 0;
         }
 
         /// <summary>
