@@ -34,6 +34,7 @@ set(SOURCES
     Components/Scene.cs
     Components/Transform.cs
     Components/Uuid.cs
+    Systems/WorldState.cs
 )
 
 # Locate the dotnet executable
