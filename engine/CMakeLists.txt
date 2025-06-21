@@ -51,6 +51,7 @@ set(COMMON_SOURCES
         engine/src/systems/RenderCommandSystem.cpp
         engine/src/systems/RenderBillboardSystem.cpp
         engine/src/systems/LightSystem.cpp
+        engine/src/systems/ScriptingSystem.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp

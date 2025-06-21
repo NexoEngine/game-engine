@@ -45,6 +45,7 @@
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
+#include "systems/ScriptingSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -210,6 +211,18 @@ namespace nexo {
         auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
         auto ambientLightSystem = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
         m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
+
+        m_scriptingSystem = std::make_shared<system::ScriptingSystem>();
+    }
+
+    int Application::initScripting() const
+    {
+        return m_scriptingSystem->init();
+    }
+
+    int Application::shutdownScripting() const
+    {
+        return m_scriptingSystem->shutdown();
     }
 
     Application::Application()
@@ -272,35 +285,22 @@ namespace nexo {
         for (auto& [typeId, typeIndex] : map)
             std::cout << "Registered: " << typeId << " => " << typeIndex.name() << std::endl;
 
-
-        nexo::scripting::HostHandler::Parameters params;
-        params.errorCallback = [this](const nexo::scripting::HostString& message) {
-            LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
-            m_latestScriptingError = message.to_utf8();
-        };
-
-
-        nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
-
-        // Initialize the host
-        if (host.initialize(params) != nexo::scripting::HostHandler::SUCCESS) {
-            LOG(NEXO_ERROR, "Failed to initialize host");
-            THROW_EXCEPTION(scripting::ScriptingBackendInitFailed, m_latestScriptingError);
-        }
-
         LOG(NEXO_DEV, "Application initialized");
     }
 
     void Application::beginFrame()
     {
-	    const auto time = static_cast<float>(glfwGetTime());
-	    m_currentTimestep = time - m_lastFrameTime;
-	    m_lastFrameTime = time;
+	    const auto time = glfwGetTime();
+        m_worldState.time.deltaTime = time - m_worldState.time.totalTime;
+        m_worldState.time.totalTime = time;
+        m_worldState.stats.frameCount += 1;
     }
 
     void Application::run(const SceneInfo &sceneInfo)
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
+
+        m_scriptingSystem->update();
 
         if (!m_isMinimized)
         {
@@ -327,7 +327,7 @@ namespace nexo {
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
-				m_perspectiveCameraControllerSystem->update(m_currentTimestep);
+				m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
 			}
         }
 

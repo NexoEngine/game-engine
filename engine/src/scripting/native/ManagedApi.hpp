@@ -20,6 +20,7 @@
 #include "Exception.hpp"
 #include "ManagedTypedef.hpp"
 #include "components/Transform.hpp"
+#include "systems/ManagedWorldState.hpp"
 
 namespace nexo::scripting {
 
@@ -79,7 +80,7 @@ namespace nexo::scripting {
     struct ManagedApi {
 
         struct NativeInteropApi {
-            ManagedApiFn<Int32(NativeApiCallbacks *callbacks, Int32 callbackSize)> Initialize;
+            ManagedApiFn<Int32(NativeApiCallbacks *callbacks, UInt32 callbackSize)> Initialize;
 
             ManagedApiFn<void(void)> DemonstrateNativeCalls;
 
@@ -101,6 +102,14 @@ namespace nexo::scripting {
             ManagedApiFn<Int32(Int32 a, Int32 b)> Add;
             ManagedApiFn<Int32(Int32 a, Int32 b, Int32 *result)> AddToPtr;
         } Lib;
+
+        struct SystemBaseApi {
+            ManagedApiFn<Int32(ManagedWorldState *worldState, UInt32 size)> InitializeSystems;
+
+            ManagedApiFn<Int32(ManagedWorldState *worldState, UInt32 size)> ShutdownSystems;
+
+            ManagedApiFn<Int32(ManagedWorldState *worldState, UInt32 size)> UpdateSystems;
+        } SystemBase;
 
 
     };
