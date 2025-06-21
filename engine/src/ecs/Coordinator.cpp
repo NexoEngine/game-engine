@@ -76,6 +76,7 @@ namespace nexo::ecs {
 
         return components;
     }
+
     Entity Coordinator::duplicateEntity(const Entity sourceEntity) const
     {
         const Entity newEntity = createEntity();
@@ -93,9 +94,10 @@ namespace nexo::ecs {
         return newEntity;
     }
 
-    bool Coordinator::supportsMementoPattern(const std::type_index typeIndex) const
+    bool Coordinator::supportsMementoPattern(const std::any& component) const
     {
-        auto it = m_supportsMementoPattern.find(typeIndex);
+        auto typeId = std::type_index(component.type());
+        auto it = m_supportsMementoPattern.find(typeId);
         return (it != m_supportsMementoPattern.end()) && it->second;
     }
 
