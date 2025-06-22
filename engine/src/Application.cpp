@@ -302,9 +302,6 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
-        const auto time = static_cast<float>(glfwGetTime());
-        const Timestep timestep = time - m_lastFrameTime;
-        m_lastFrameTime = time;
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         m_scriptingSystem->update();
@@ -331,8 +328,7 @@ namespace nexo {
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures
 				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
-        	    physicsSystem.Update(timestep, *m_coordinator);
-        	    m_physicsSystem->update(timestep);
+        	    m_physicsSystem->update(m_currentTimestep);
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
