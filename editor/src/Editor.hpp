@@ -115,6 +115,7 @@ namespace nexo::editor {
             	return m_windowRegistry.getWindow<T>(windowName);
             }
         private:
+
 	        /**
 	         * @brief Initializes the core engine and configures ImGui components.
 	         *
@@ -161,7 +162,7 @@ namespace nexo::editor {
             void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const;
             void drawBackground() const;
 
-            void handleGlobalCommands() const;
+            void handleGlobalCommands();
     		std::vector<CommandInfo> handleFocusedWindowCommands();
 
             bool m_quit = false;

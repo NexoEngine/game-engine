@@ -30,6 +30,7 @@ namespace nexo::editor {
     #define NEXO_WND_USTRID_MATERIAL_INSPECTOR "###Material Inspector"
     #define NEXO_WND_USTRID_DEFAULT_SCENE "###Default Scene"
     #define NEXO_WND_USTRID_BOTTOM_BAR "###CommandsBar"
+    #define NEXO_WND_USTRID_TEST "###TestWindow"
 
     class ADocumentWindow : public IDocumentWindow {
         public:
@@ -47,6 +48,7 @@ namespace nexo::editor {
 
             [[nodiscard]] bool isFocused() const override { return m_focused; }
             [[nodiscard]] bool isOpened() const override { return m_opened; }
+            void setOpened(bool opened) override { m_opened = opened; }
             [[nodiscard]] bool isHovered() const override { return m_hovered; }
 
             [[nodiscard]] const ImVec2 &getContentSize() const override { return m_contentSize; }

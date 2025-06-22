@@ -26,6 +26,10 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
     - [Create an installer for Linux (DEB)](#create-an-installer-for-linux-deb)
   - [Run the tests](#run-the-tests)
   - [The Team](#the-team)
+  - [Acknowledgements](#acknowledgements)
+  - [License](#license)
+    - [How to extract the third-party licenses file](#how-to-extract-the-third-party-licenses-file)
+    - [How to generate the COPYRIGHT file](#how-to-generate-the-copyright-file)
 
 > [!NOTE]  
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
@@ -175,3 +179,36 @@ NEXO Engine is brought to life by a dedicated team of fourth-year students from 
 This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.
 
 We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.<br/>
+For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file.<br/>
+You can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+
+> [!TIP]
+> For any license inquiry, please contact us at [nexo.engine@gmail.com](mailto:nexo.engine@gmail.com?subject=[NEXO%20Engine]%20License)
+
+### How to extract the third-party licenses file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-licenses
+```
+
+This will extract all licenses per third-party library in the `/path/to/install/external/licenses` directory.
+
+> [!NOTE]
+> These licenses are automatically extracted from vcpkg, there might be missing third-party libraries.
+
+### How to generate the COPYRIGHT file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-copyright
+```
+
+This will generate the COPYRIGHT file in the `/path/to/install` directory.
+
+> [!WARNING]
+> By default the COPYRIGHT file is generated with some `TODO:`, the generator cannot always determine exact licenses for some files. Please check each entry for errors.

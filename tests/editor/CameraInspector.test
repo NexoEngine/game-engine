@@ -1,0 +1,14 @@
+# Camera Inspector
+- Should be able to modify transform component
+- Should be able to modify camera component
+- Should be able to add camera controller component
+- Should be able to modify camera controller
+- Should be able to add camera target component
+- Should be able to modify camera target component
+- Undo/Redo should work properly in this inspector
+- An error should be showed if no name is provided
+- Nothing should be added when cancelling
+- Undo/Redo should reset when cancelling
+- A new camera should be added when confirming
+- Undo should delete the newly camera created
+- Camera preview should display a preview of the scene from the new camera

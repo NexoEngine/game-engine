@@ -190,6 +190,7 @@ namespace nexo::editor {
             * @return A SceneObject representing the ambient light.
             */
             static SceneObject newAmbientLightNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity lightEntity);
+
             /**
              * @brief Creates a new directional light node.
              *
