@@ -24,28 +24,26 @@ namespace nexo::editor {
 
     std::unique_ptr<Action> ComponentRestoreFactory::createRestoreComponent(ecs::Entity entity, const std::type_index typeIndex)
     {
-        if (typeIndex == typeid(components::TransformComponent))
-            return std::make_unique<ComponentRestoreAction<components::TransformComponent>>(entity);
-        if (typeIndex == typeid(components::RenderComponent))
-            return std::make_unique<ComponentRestoreAction<components::RenderComponent>>(entity);
-        if (typeIndex == typeid(components::SceneTag))
-            return std::make_unique<ComponentRestoreAction<components::SceneTag>>(entity);
-        if (typeIndex == typeid(components::CameraComponent))
-            return std::make_unique<ComponentRestoreAction<components::CameraComponent>>(entity);
-        if (typeIndex == typeid(components::AmbientLightComponent))
-            return std::make_unique<ComponentRestoreAction<components::AmbientLightComponent>>(entity);
-        if (typeIndex == typeid(components::DirectionalLightComponent))
-            return std::make_unique<ComponentRestoreAction<components::DirectionalLightComponent>>(entity);
-        if (typeIndex == typeid(components::PointLightComponent))
-            return std::make_unique<ComponentRestoreAction<components::PointLightComponent>>(entity);
-        if (typeIndex == typeid(components::SpotLightComponent))
-            return std::make_unique<ComponentRestoreAction<components::SpotLightComponent>>(entity);
-        if (typeIndex == typeid(components::UuidComponent))
-            return std::make_unique<ComponentRestoreAction<components::UuidComponent>>(entity);
-        if (typeIndex == typeid(components::PerspectiveCameraController))
-            return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraController>>(entity);
-        if (typeIndex == typeid(components::PerspectiveCameraTarget))
-            return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(entity);
+        using ActionFactory = std::function<std::unique_ptr<Action>(ecs::Entity)>;
+
+        static const std::unordered_map<std::type_index, ActionFactory> factories{
+            {typeid(components::TransformComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::TransformComponent>>(e); }},
+            {typeid(components::RenderComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::RenderComponent>>(e); }},
+            {typeid(components::SceneTag), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::SceneTag>>(e); }},
+            {typeid(components::CameraComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::CameraComponent>>(e); }},
+            {typeid(components::AmbientLightComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::AmbientLightComponent>>(e); }},
+            {typeid(components::DirectionalLightComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::DirectionalLightComponent>>(e); }},
+            {typeid(components::PointLightComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PointLightComponent>>(e); }},
+            {typeid(components::SpotLightComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::SpotLightComponent>>(e); }},
+            {typeid(components::UuidComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::UuidComponent>>(e); }},
+            {typeid(components::PerspectiveCameraController), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraController>>(e); }},
+            {typeid(components::PerspectiveCameraTarget), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(e); }},
+        };
+
+        auto it = factories.find(typeIndex);
+        if (it != factories.end()) {
+            return (it->second)(entity);
+        }
         return nullptr;
     }
 }
