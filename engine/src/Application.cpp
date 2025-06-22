@@ -319,12 +319,7 @@ namespace nexo {
                 m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
-                physicsAccumulator += m_worldState.time.deltaTime;
-
-                while (physicsAccumulator >= fixedTimestep) {
-                    m_physicsSystem->update(fixedTimestep);
-                    physicsAccumulator -= fixedTimestep;
-                }
+        	    m_physicsSystem->update(m_currentTimestep);
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
 				for (auto &camera : renderContext.cameras)
