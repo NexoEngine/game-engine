@@ -145,6 +145,8 @@ namespace ImNexo {
 	{
 	    auto &app = nexo::getApp();
 		static int undoStackSize = -1;
+		// We store the current undo stack size so that when finalizing the camera creation,
+		// we can remove the correct number of actions from the undo stack in order to only keep the camera creation action
 		if (undoStackSize == -1)
 		    undoStackSize = static_cast<int>(nexo::editor::ActionManager::get().getUndoStackSize());
 
