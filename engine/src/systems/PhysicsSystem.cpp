@@ -14,11 +14,6 @@
 
 #include "PhysicsSystem.hpp"
 
-namespace nexo::components {
-    struct PhysicsBodyComponent;
-    struct TransformComponent;
-}
-
 namespace nexo::ecs {
     class Coordinator;
 }
@@ -54,10 +49,9 @@ namespace nexo::system {
         bodyLockInterface = &physicsSystem->GetBodyLockInterface();
     }
 
-    void PhysicsSystem::update(float deltaTime) {
+    void PhysicsSystem::update(float timestep) {
         const int collisionSteps = 5;
-        // TODO: fix temporaire, update appelé trop souvent donc delta a 60ips
-        physicsSystem->Update(1.0f / 60.0f, collisionSteps, tempAllocator, jobSystem);
+        physicsSystem->Update(timestep, collisionSteps, tempAllocator, jobSystem);
 
         auto entities = coord->getEntitiesWithComponents<components::TransformComponent, components::PhysicsBodyComponent>();
 

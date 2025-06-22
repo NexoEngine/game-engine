@@ -21,9 +21,9 @@
 using namespace nexo;
 
 class PhysicsSystemTest : public ::testing::Test {
-protected:
-    std::shared_ptr<ecs::Coordinator> coordinator;
-    std::shared_ptr<system::PhysicsSystem> physicsSystem;
+    protected:
+        std::shared_ptr<ecs::Coordinator> coordinator;
+        std::shared_ptr<system::PhysicsSystem> physicsSystem;
 
     void SetUp() override {
         coordinator = std::make_shared<ecs::Coordinator>();

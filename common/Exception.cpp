@@ -15,7 +15,6 @@
 #include "Exception.hpp"
 
 #include <format>
-#include <iostream>
 
 namespace nexo {
     const char *Exception::what() const noexcept

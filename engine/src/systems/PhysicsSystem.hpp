@@ -31,7 +31,6 @@
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
-#include <Coordinator.hpp>
 #include <Entity.hpp>
 #include <GroupSystem.hpp>
 #include <QuerySystem.hpp>
@@ -53,11 +52,14 @@ namespace nexo::system {
         constexpr JPH::uint NUM_LAYERS = 2;
     }
 
-    class MyContactListener : public JPH::ContactListener
-    {
+    class MyContactListener : public JPH::ContactListener {
     public:
         // See: ContactListener
-        virtual JPH::ValidateResult	OnContactValidate(const JPH::Body &inBody1, const JPH::Body &inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult &inCollisionResult) override
+        virtual JPH::ValidateResult	OnContactValidate(
+            [[maybe_unused]] const JPH::Body &inBody1,
+            [[maybe_unused]] const JPH::Body &inBody2,
+            [[maybe_unused]] JPH::RVec3Arg inBaseOffset,
+            [[maybe_unused]] const JPH::CollideShapeResult &inCollisionResult) override
         {
             //cout << "Contact validate callback" << endl;
 
@@ -65,25 +67,32 @@ namespace nexo::system {
             return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
         }
 
-        virtual void			OnContactAdded(const JPH::Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
+        virtual void OnContactAdded(
+            [[maybe_unused]] const JPH::Body &inBody1,
+            [[maybe_unused]] const JPH::Body &inBody2,
+            [[maybe_unused]] const JPH::ContactManifold &inManifold,
+            [[maybe_unused]] JPH::ContactSettings &ioSettings) override
         {
             //cout << "A contact was added" << endl;
         }
 
-        virtual void			OnContactPersisted(const JPH::Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
+        virtual void OnContactPersisted(
+            [[maybe_unused]] const JPH::Body &inBody1,
+            [[maybe_unused]] const JPH::Body &inBody2,
+            [[maybe_unused]] const JPH::ContactManifold &inManifold,
+            [[maybe_unused]] JPH::ContactSettings &ioSettings) override
         {
             //cout << "A contact was persisted" << endl;
         }
 
-        virtual void			OnContactRemoved(const JPH::SubShapeIDPair &inSubShapePair) override
+        virtual void OnContactRemoved([[maybe_unused]] const JPH::SubShapeIDPair &inSubShapePair) override
         {
             //cout << "A contact was removed" << endl;
         }
     };
 
 
-    class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface
-    {
+    class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface {
     public:
         BPLayerInterfaceImpl()
         {
@@ -137,8 +146,7 @@ namespace nexo::system {
         }
     };
 
-    class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
-    {
+    class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter {
     public:
         virtual bool					ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
         {
@@ -160,8 +168,7 @@ namespace nexo::system {
     class PhysicsSystem : public ecs::QuerySystem<
                 ecs::Write<components::TransformComponent>,
                 ecs::Write<components::PhysicsBodyComponent>
-        >
-    {
+        > {
     public:
         PhysicsSystem();
         ~PhysicsSystem();
