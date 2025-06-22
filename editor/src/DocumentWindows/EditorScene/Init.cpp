@@ -98,13 +98,37 @@ namespace nexo::editor {
                                                                {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
         app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
 
+        const ecs::Entity sphere = EntityFactory3D::createSphere(
+            {0.0f, 10.0f, 0.0f},
+            {0.5f, 0.5f, 0.5f},
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 0.2f, 0.2f, 1.0f},
+            3);
+        app.getPhysicsSystem()->createBodyFromShape(sphere, app.m_coordinator->getComponent<components::TransformComponent>(sphere), system::ShapeType::Sphere, JPH::EMotionType::Dynamic);
+        scene.addEntity(sphere);
+
+        const ecs::Entity cylinder = EntityFactory3D::createCylinder(
+            {3.0f, 10.0f, 0.0f},
+            {0.5f, 0.5f, 0.5f},
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 0.2f, 0.2f, 1.0f},
+            15);
+        const auto& transform = app.m_coordinator->getComponent<components::TransformComponent>(cylinder);
+        app.getPhysicsSystem()->createBodyFromShape(
+            cylinder,
+            transform,
+            system::ShapeType::Cylinder,
+            JPH::EMotionType::Dynamic
+        );
+        scene.addEntity(cylinder);
+
         const ecs::Entity ground = EntityFactory3D::createCube(
             {0.0f, 0.25f, 0.0f}, // position
             {20.0f, 0.5f, 20.0f}, // size
             {0.0f, 0.0f, 0.0f},
             {0.2f, 0.2f, 0.2f, 1.0f} // color
         );
-        app.getPhysicsSystem()->createStaticBody(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground));
+        app.getPhysicsSystem()->createBodyFromShape(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground), system::ShapeType::Box, JPH::EMotionType::Static);
         scene.addEntity(ground);
 
         const ecs::Entity fallingCube = EntityFactory3D::createCube(
@@ -113,7 +137,7 @@ namespace nexo::editor {
             {0.0f, 0.0f, 0.0f},
             {1.0f, 0.2f, 0.2f, 1.0f}
         );
-        app.getPhysicsSystem()->createDynamicBody(fallingCube, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube));
+        app.getPhysicsSystem()->createBodyFromShape(fallingCube, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube), system::ShapeType::Box, JPH::EMotionType::Dynamic);
         scene.addEntity(fallingCube);
 
         const ecs::Entity fallingCube2 = EntityFactory3D::createCube(
@@ -122,7 +146,7 @@ namespace nexo::editor {
             {0.0f, 0.0f, 0.0f},
             {1.0f, 0.2f, 0.2f, 1.0f}
         );
-        app.getPhysicsSystem()->createDynamicBody(fallingCube2, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube2));
+        app.getPhysicsSystem()->createBodyFromShape(fallingCube2, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube2), system::ShapeType::Box, JPH::EMotionType::Dynamic);
         scene.addEntity(fallingCube2);
     }
 
