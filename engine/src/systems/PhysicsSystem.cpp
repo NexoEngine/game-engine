@@ -61,63 +61,80 @@ namespace nexo::system {
         }
     }
 
-JPH::BodyID PhysicsSystem::createBodyFromShape(
-    ecs::Entity entity,
-    const components::TransformComponent& transform,
-    ShapeType shapeType,
-    JPH::EMotionType motionType
-) {
-    JPH::ShapeSettings* shapeSettings = nullptr;
+    JPH::BodyID PhysicsSystem::createBodyFromShape(
+        ecs::Entity entity,
+        const components::TransformComponent& transform,
+        ShapeType shapeType,
+        JPH::EMotionType motionType
+    ) {
+        JPH::ShapeSettings* shapeSettings = nullptr;
 
-    switch (shapeType) {
-        case ShapeType::Box:
-            shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
-                transform.size.x * 0.5f,
-                transform.size.y * 0.5f,
-                transform.size.z * 0.5f));
-            break;
+        switch (shapeType) {
+            case ShapeType::Box:
+                shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
+                    transform.size.x * 0.5f,
+                    transform.size.y * 0.5f,
+                    transform.size.z * 0.5f));
+                break;
 
-        case ShapeType::Sphere:
-            shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
-            break;
+            case ShapeType::Sphere:
+                shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
+                break;
 
-    case ShapeType::Cylinder:
-        shapeSettings = new JPH::CylinderShapeSettings(
-            -transform.size.y * 0.5f,  // half-height min
-             transform.size.y * 0.5f,  // half-height max
-             transform.size.x * 0.5f   // radius (assuming X = Z)
-        );
-        break;
+            case ShapeType::Cylinder: {
+                const float halfHeight = transform.size.y;
+                const float radius = transform.size.x;
+                shapeSettings = new JPH::CylinderShapeSettings(halfHeight, radius);
+                break;
+            }
 
-        default:
-            LOG(NEXO_ERROR, "Unsupported shape type");
+            default:
+                LOG(NEXO_ERROR, "Unsupported shape type");
+                return JPH::BodyID();
+        }
+
+        JPH::ShapeRefC shape = nullptr;
+        try {
+            shape = shapeSettings->Create().Get();
+        } catch (const std::exception& e) {
+            LOG(NEXO_ERROR, "Exception during shape creation: {}", e.what());
+            delete shapeSettings;
             return JPH::BodyID();
-    }
+        }
 
-    JPH::ShapeRefC shape = shapeSettings->Create().Get();
-    delete shapeSettings;
+        delete shapeSettings;
 
-    JPH::BodyCreationSettings bodySettings(
-        shape,
-        JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
-        JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
-        motionType,
-        motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
-    );
+        if (!shape) {
+            LOG(NEXO_ERROR, "Shape was null after creation.");
+            return JPH::BodyID();
+        }
 
-    JPH::Body* body = bodyInterface->CreateBody(bodySettings);
-    bodyInterface->AddBody(body->GetID(),
-        motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
-    );
+        const JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
+        const JPH::Quat rotation(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w);
 
-    components::PhysicsBodyComponent::Type type =
-        motionType == JPH::EMotionType::Dynamic
+        JPH::BodyCreationSettings bodySettings(
+            shape, position, rotation, motionType,
+            motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
+        );
+
+        JPH::Body* body = bodyInterface->CreateBody(bodySettings);
+        if (!body) {
+            LOG(NEXO_ERROR, "Body creation failed.");
+            return JPH::BodyID();
+        }
+
+        bodyInterface->AddBody(body->GetID(),
+            motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
+        );
+
+        const auto type = motionType == JPH::EMotionType::Dynamic
             ? components::PhysicsBodyComponent::Type::Dynamic
             : components::PhysicsBodyComponent::Type::Static;
 
-    coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), type });
-    return body->GetID();
-}
+        coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), type });
+
+        return body->GetID();
+    }
 
 
     JPH::BodyID PhysicsSystem::createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform) {
