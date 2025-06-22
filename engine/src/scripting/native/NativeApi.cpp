@@ -130,25 +130,19 @@ namespace nexo::scripting {
             const auto& typeMap = coordinator.getTypeIdToTypeIndex();
             auto it = typeMap.find(typeId);
             if (it == typeMap.end())
+            {
+                LOG(NEXO_WARN, "HasComponent: Unknown typeId {}", typeId);
                 return false;
-
-            const auto& typeIndex = it->second;
-
-            ecs::ComponentType matchedType = 0;
-            bool found = false;
-            for (const auto& [compType, idx] : typeMap) {
-                if (idx == typeIndex) {
-                    matchedType = compType;
-                    found = true;
-                    break;
-                }
             }
 
-            if (!found)
-                return false;
+            ecs::ComponentType bitIndex = typeId;
 
-            ecs::Signature sig = coordinator.getSignature(entity);
-            return sig.test(matchedType);
+            ecs::Signature signature = coordinator.getSignature(entity);
+
+            // LOG(NEXO_WARN, "HasComponent: entity = {}, typeId = {}, bitIndex = {}, signature = {}",
+            //     entity, typeId, bitIndex, signature.to_string());
+
+            return signature.test(bitIndex);
         }
 
         ComponentTypeIds GetComponentTypeIds()
