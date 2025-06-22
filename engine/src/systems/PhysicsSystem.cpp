@@ -53,9 +53,7 @@ namespace nexo::system {
         const int collisionSteps = 5;
         physicsSystem->Update(timestep, collisionSteps, tempAllocator, jobSystem);
 
-        auto entities = coord->getEntitiesWithComponents<components::TransformComponent, components::PhysicsBodyComponent>();
-
-        for (auto entity : entities) {
+        for (ecs::Entity entity : entities) {
             auto& transform = getComponent<components::TransformComponent>(entity);
             auto& physicsBody = getComponent<components::PhysicsBodyComponent>(entity);
 

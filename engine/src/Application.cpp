@@ -252,6 +252,9 @@ namespace nexo {
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
+        constexpr float fixedTimestep = 1.0f / 60.0f;
+        static float physicsAccumulator = 0.0f;
+
         if (!m_isMinimized)
         {
          	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
@@ -266,7 +269,13 @@ namespace nexo {
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
 				m_renderSystem->update();
-        	    m_physicsSystem->update(m_currentTimestep);
+        	    physicsAccumulator += m_currentTimestep;
+
+        	    while (physicsAccumulator >= fixedTimestep)
+        	    {
+        	        m_physicsSystem->update(fixedTimestep);
+        	        physicsAccumulator -= fixedTimestep;
+        	    }
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
