@@ -26,7 +26,7 @@
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Body/Body.h>
@@ -163,7 +163,7 @@ namespace nexo::system {
         }
     };
 
-    enum class ShapeType { Box, Sphere, Capsule };
+    enum class ShapeType { Box, Sphere, Cylinder };
 
     class PhysicsSystem : public ecs::QuerySystem<
                 ecs::Write<components::TransformComponent>,
@@ -183,6 +183,8 @@ namespace nexo::system {
         JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
 
         JPH::BodyID createBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
+        JPH::BodyID createBodyFromShape(ecs::Entity entity, const components::TransformComponent& transform, ShapeType shapeType, JPH::EMotionType motionType);
+
 
         void syncTransformsToBodies(
             const std::vector<ecs::Entity>& entities,

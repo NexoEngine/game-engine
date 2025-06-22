@@ -61,6 +61,65 @@ namespace nexo::system {
         }
     }
 
+JPH::BodyID PhysicsSystem::createBodyFromShape(
+    ecs::Entity entity,
+    const components::TransformComponent& transform,
+    ShapeType shapeType,
+    JPH::EMotionType motionType
+) {
+    JPH::ShapeSettings* shapeSettings = nullptr;
+
+    switch (shapeType) {
+        case ShapeType::Box:
+            shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
+                transform.size.x * 0.5f,
+                transform.size.y * 0.5f,
+                transform.size.z * 0.5f));
+            break;
+
+        case ShapeType::Sphere:
+            shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
+            break;
+
+    case ShapeType::Cylinder:
+        shapeSettings = new JPH::CylinderShapeSettings(
+            -transform.size.y * 0.5f,  // half-height min
+             transform.size.y * 0.5f,  // half-height max
+             transform.size.x * 0.5f   // radius (assuming X = Z)
+        );
+        break;
+
+        default:
+            LOG(NEXO_ERROR, "Unsupported shape type");
+            return JPH::BodyID();
+    }
+
+    JPH::ShapeRefC shape = shapeSettings->Create().Get();
+    delete shapeSettings;
+
+    JPH::BodyCreationSettings bodySettings(
+        shape,
+        JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
+        JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
+        motionType,
+        motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
+    );
+
+    JPH::Body* body = bodyInterface->CreateBody(bodySettings);
+    bodyInterface->AddBody(body->GetID(),
+        motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
+    );
+
+    components::PhysicsBodyComponent::Type type =
+        motionType == JPH::EMotionType::Dynamic
+            ? components::PhysicsBodyComponent::Type::Dynamic
+            : components::PhysicsBodyComponent::Type::Static;
+
+    coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), type });
+    return body->GetID();
+}
+
+
     JPH::BodyID PhysicsSystem::createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform) {
         JPH::Vec3 halfExtent(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f);
         JPH::BoxShapeSettings shapeSettings(halfExtent);
