@@ -315,7 +315,7 @@ namespace nexo::editor {
         ImGui::DockSpaceOverViewport(viewport->ID);
     }
 
-    void Editor::handleGlobalCommands() const
+    void Editor::handleGlobalCommands()
     {
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
         {
