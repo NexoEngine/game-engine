@@ -465,7 +465,9 @@ namespace nexo::ecs {
             std::vector<Entity> getEntitiesWithComponents() const
             {
                 std::vector<Entity> result;
-                for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
+                std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+                result.reserve(livingEntities.size());
+                for (Entity entity : livingEntities)
                 {
                     bool hasAll = (entityHasComponent<ComponentTypes>(entity) && ...);
                     if (hasAll)

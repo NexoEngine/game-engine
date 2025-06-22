@@ -183,7 +183,7 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
-            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() {
+            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() const {
                 return m_physicsSystem;
             }
 
