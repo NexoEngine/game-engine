@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FileSystem.hpp"
+#include <iomanip>
 
 namespace nexo::editor::utils {
     void openFolder(const std::string &folderPath)
@@ -20,7 +21,7 @@ namespace nexo::editor::utils {
         #ifdef _WIN32
             ShellExecuteA(nullptr, "open", folderPath.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
         #else
-            const std::string command = "xdg-open " + folderPath;
+            const std::string command = "xdg-open " + std::quoted(folderPath)._M_string;
             std::system(command.c_str());
         #endif
     }
