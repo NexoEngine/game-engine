@@ -46,7 +46,7 @@ namespace nexo::editor {
         framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
-        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 4.0f, 10.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 6.0f, 20.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
         auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
@@ -111,124 +111,89 @@ namespace nexo::editor {
 
     void EditorScene::loadDefaultEntities() const
     {
-        auto &app = getApp();
-        scene::Scene &scene = app.getSceneManager().getScene(m_sceneId);
-        const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
-        scene.addEntity(ambientLight);
-        // const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
-        // utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
-        // scene.addEntity(pointLight);
-        const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
-        scene.addEntity(directionalLight);
-        // const ecs::Entity spotLight = LightFactory::createSpotLight({-2.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
-        // utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
-        // scene.addEntity(spotLight);
-        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
-        //                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
-        // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
-        const ecs::Entity basicSphere = EntityFactory3D::createSphere({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
-                                                                                {0.0f, 0.0f, 0.0f}, {
-                                                                                    0.05f * 1.5, 0.09f * 1.15,
-                                                                                    0.13f * 1.25, 1.0f
-                                                                                });
-        app.getSceneManager().getScene(m_sceneId).addEntity(basicSphere);
+        auto& app = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        assets::AssetImporter importer;
+        scene.addEntity(LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f}));
+        const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
+        utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
+        scene.addEntity(pointLight);
+        scene.addEntity(LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f}));
 
-        lightsScene(m_sceneId);
+        // Ground
+        // const ecs::Entity ground = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f}, {0, 0, 0}, {0.2f, 0.2f, 0.2f, 1.0f});
+        // app.getPhysicsSystem()->createBodyFromShape(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground), system::ShapeType::Box, JPH::EMotionType::Static);
+        // scene.addEntity(ground);
 
-        // 9mn
-        std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-        assets::ImporterFileInput fileInput9mn{path9mn};
-        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
+        auto& coord = *app.m_coordinator;
 
-        const ecs::Entity Model9mn = EntityFactory3D::createModel(assetRef9mn, {3.0f, 2.0f, 0.0f}, {0.01f, 0.01f, 0.01f},
-                                                               {0.0f, 0.0f, 0.0f});
-        app.getSceneManager().getScene(m_sceneId).addEntity(Model9mn);
+        {
+            ecs::Entity wallLeft = EntityFactory3D::createCube({-4.45f, 2.5f, 0.0f}, {0.5f, 20.0f, 10.0f}, {0, 0, 0}, {0.3f, 0.3f, 0.3f, 1.0f});
+            app.getPhysicsSystem()->createBodyFromShape(wallLeft, coord.getComponent<components::TransformComponent>(wallLeft), system::ShapeType::Box, JPH::EMotionType::Static);
+            scene.addEntity(wallLeft);
+        }
 
-        // SmilingFace
-        const std::filesystem::path pathSmilingFace = Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
-        assets::ImporterFileInput fileInputSmilingFace{pathSmilingFace};
-        const auto assetRefModelSmilingFace = importer.importAsset<assets::Model>(
-            assets::AssetLocation("my_package::SmilingFace@DefaultScene/"), fileInputSmilingFace
-        );
-        const ecs::Entity ModelSmilingFace = EntityFactory3D::createModel(assetRefModelSmilingFace, {-3.0f, 2.0f, 0.0f},
-                                                                 {2.0f, 2.0f, 2.0f},
-                                                                 {0.0f, 0.0f, 0.0f});
+        {
+            ecs::Entity wallRight = EntityFactory3D::createCube({4.7f, 2.5f, 0.0f}, {0.5f, 20.0f, 10.0f}, {0, 0, 0}, {0.3f, 0.3f, 0.3f, 1.0f});
+            app.getPhysicsSystem()->createBodyFromShape(wallRight, coord.getComponent<components::TransformComponent>(wallRight), system::ShapeType::Box, JPH::EMotionType::Static);
+            scene.addEntity(wallRight);
+        }
 
-        app.getSceneManager().getScene(m_sceneId).addEntity(ModelSmilingFace);
-        // Avocado
-        const std::filesystem::path pathAvocado = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
-        assets::ImporterFileInput fileInputAvocado{pathAvocado};
-        const auto assetRefModelAvocado = importer.importAsset<assets::Model>(
-            assets::AssetLocation("my_package::Avocado@DefaultScene/"), fileInputAvocado
-        );
-        const ecs::Entity ModelAvocado = EntityFactory3D::createModel(assetRefModelAvocado, {0.0f, 2.0f, 0.0f},
-                                                                 {50.0f, 50.0f, 50.0f}, {0.0f, 0.0f, 0.0f});
+        {
+            ecs::Entity wallBack = EntityFactory3D::createCube({0.0f, 2.5f, -1.6f}, {10.0f, 20.0f, 0.5f}, {0, 0, 0}, {0.3f, 0.3f, 0.3f, 0.1f});
+            app.getPhysicsSystem()->createBodyFromShape(wallBack, coord.getComponent<components::TransformComponent>(wallBack), system::ShapeType::Box, JPH::EMotionType::Static);
+            scene.addEntity(wallBack);
+        }
 
-        // DiscoBall
-        // const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/DiscoBall/discoball.fbx");
-        // assets::ImporterFileInput fileInput{path};
-        // const auto assetRefModel = importer.importAsset<assets::Model>(
-        //     assets::AssetLocation("my_package::discoball@DefaultScene/"), fileInput
-        // );
-        // const ecs::Entity Model = EntityFactory3D::createModel(assetRefModel, {0.0f, 0.0f, 0.0f},
-        //                                                          {1.0f, 1.0f, 1.0f},
-        //                                                          {0.0f, 0.0f, 0.0f});
+        // Mur avant
+        // {
+        //     ecs::Entity wallFront = EntityFactory3D::createCube({0.0f, 5.0f, 2.5f}, {10.0f, 10.0f, 0.5f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f, 0.0f});
+        //     app.getPhysicsSystem()->createBodyFromShape(wallFront, coord.getComponent<components::TransformComponent>(wallFront), system::ShapeType::Box, JPH::EMotionType::Static);
+        //     scene.addEntity(wallFront);
+        // }
 
-        app.getSceneManager().getScene(m_sceneId).addEntity(ModelAvocado);
+        const float spacing = 1.5f;
+        const int cols = 6;
+        const float startY = 0.0f;
+        const int totalRows = 10;
 
-        const ecs::Entity sphere = EntityFactory3D::createSphere(
-            {0.0f, 10.0f, 0.0f},
-            {0.5f, 0.5f, 0.5f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f},
-            3);
-        app.getPhysicsSystem()->createBodyFromShape(sphere, app.m_coordinator->getComponent<components::TransformComponent>(sphere), system::ShapeType::Sphere, JPH::EMotionType::Dynamic);
-        scene.addEntity(sphere);
+        for (int row = 0; row < totalRows; ++row) {
+            for (int col = 0; col < cols; ++col) {
+                float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+                glm::vec3 pos = {
+                    col * spacing - 4.0f + offsetX,
+                    startY + row * 1.2f,
+                    0.0f
+                };
 
-        const ecs::Entity cylinder = EntityFactory3D::createCylinder(
-            {3.0f, 10.0f, 0.0f},
-            {0.5f, 0.5f, 0.5f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f},
-            15);
-        const auto& transform = app.m_coordinator->getComponent<components::TransformComponent>(cylinder);
-        app.getPhysicsSystem()->createBodyFromShape(
-            cylinder,
-            transform,
-            system::ShapeType::Cylinder,
-            JPH::EMotionType::Dynamic
-        );
-        scene.addEntity(cylinder);
+                ecs::Entity peg = EntityFactory3D::createCylinder(
+                    pos,
+                    {0.2f, 2.5f, 0.2f},
+                    {glm::radians(90.0f), 0, 0},
+                    {0.6f, 0.6f, 0.6f, 1.0f},
+                    12
+                );
+                app.getPhysicsSystem()->createBodyFromShape(
+                    peg,
+                    app.m_coordinator->getComponent<components::TransformComponent>(peg),
+                    system::ShapeType::Cylinder,
+                    JPH::EMotionType::Static
+                );
+                scene.addEntity(peg);
+            }
+        }
 
-        const ecs::Entity ground = EntityFactory3D::createCube(
-            {0.0f, 0.25f, 0.0f}, // position
-            {20.0f, 0.5f, 20.0f}, // size
-            {0.0f, 0.0f, 0.0f},
-            {0.2f, 0.2f, 0.2f, 1.0f} // color
-        );
-        app.getPhysicsSystem()->createBodyFromShape(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground), system::ShapeType::Box, JPH::EMotionType::Static);
-        scene.addEntity(ground);
+        for (int i = 0; i < 300; ++i) {
+            float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            glm::vec3 pos = {x, 10.0f + static_cast<float>(i), z};
 
-        const ecs::Entity fallingCube = EntityFactory3D::createCube(
-            {0.0f, 5.0f, 0.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f}
-        );
-        app.getPhysicsSystem()->createBodyFromShape(fallingCube, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube), system::ShapeType::Box, JPH::EMotionType::Dynamic);
-        scene.addEntity(fallingCube);
-
-        const ecs::Entity fallingCube2 = EntityFactory3D::createCube(
-            {0.5f, 7.0f, 0.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f}
-        );
-        app.getPhysicsSystem()->createBodyFromShape(fallingCube2, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube2), system::ShapeType::Box, JPH::EMotionType::Dynamic);
-        scene.addEntity(fallingCube2);
+            ecs::Entity ball = EntityFactory3D::createSphere(pos, {0.3f, 0.3f, 0.3f}, {0, 0, 0}, {1.0f, 0.2f, 0.2f, 1.0f}, 3);
+            app.getPhysicsSystem()->createBodyFromShape(ball, app.m_coordinator->getComponent<components::TransformComponent>(ball), system::ShapeType::Sphere, JPH::EMotionType::Dynamic);
+            scene.addEntity(ball);
+        }
     }
+
 
     void EditorScene::setupWindow()
     {
