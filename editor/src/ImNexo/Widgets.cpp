@@ -78,11 +78,11 @@ namespace ImNexo {
             colorModified = ImGui::ColorPicker4(colorPickerInline.c_str(),
                                 reinterpret_cast<float*>(selectedEntityColor), *colorPickerMode);
             if (ImGui::IsItemActive())
-                itemIsActive();
+                setItemActive();
             if (ImGui::IsItemActivated())
-                itemIsActivated();
+                setItemActivated();
             if (ImGui::IsItemDeactivated())
-                itemIsDeactivated();
+                setItemDeactivated();
         }
         return colorModified;
 	}
