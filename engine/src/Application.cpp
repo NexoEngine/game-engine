@@ -280,8 +280,6 @@ namespace nexo {
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
-        initScripting();
-
         LOG(NEXO_DEV, "Application initialized");
     }
 
