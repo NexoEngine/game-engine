@@ -270,6 +270,11 @@ namespace nexo::scripting {
                 "InitializeSystems",
                 UNMANAGEDCALLERSONLY
             ),
+            .InitializeComponents = getManagedFptr<Int32(*)()>(
+                "Nexo.Components.IComponentBase, Nexo",
+                "InitializeComponents",
+                UNMANAGEDCALLERSONLY
+            ),
             .ShutdownSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
                 "Nexo.Systems.SystemBase, Nexo",
                 "ShutdownSystems",

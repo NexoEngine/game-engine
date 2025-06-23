@@ -71,6 +71,9 @@ namespace Nexo
             public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 size);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -87,6 +90,7 @@ namespace Nexo
             public CreateCubeDelegate CreateCube;
             public GetTransformDelegate GetTransform;
             public NxGetComponentDelegate NxGetComponent;
+            public NxRegisterComponentDelegate NxRegisterComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
             public NxAddComponentDelegate NxAddComponent;
             public NxHasComponentDelegate NxHasComponent;
@@ -286,6 +290,32 @@ namespace Nexo
             }
         }
 
+        
+        public static Int64 RegisterComponent(Type componentType)
+        {
+            var name = componentType.Name;
+            try
+            {
+                var size = (UInt32)Marshal.SizeOf(componentType);
+
+                Logger.Log(LogLevel.Info, $"Registering component {name}");
+
+                var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size);
+                if (typeId < 0)
+                {
+                    Console.WriteLine($"Failed to register component {name}, returned: {typeId}");
+                    return typeId;
+                }
+                _typeToNativeIdMap[componentType] = (UInt32)typeId;
+                Logger.Log(LogLevel.Info, $"Registered component {name} with type ID {typeId}");
+                return typeId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling NxRegisterComponent for {name}: {ex.Message}");
+                return -1;
+            }
+        }
         
         private static UInt32 _cubeId = 0;
 
