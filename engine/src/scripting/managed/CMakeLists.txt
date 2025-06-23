@@ -33,10 +33,6 @@ set(SOURCES
     Components/Render.cs
     Components/Scene.cs
     Components/Transform.cs
-    Components/Camera.cs
-    Components/Render.cs
-    Components/Scene.cs
-    Components/Light.cs
     Components/Uuid.cs
     Systems/SystemBase.cs
     Systems/WorldState.cs
