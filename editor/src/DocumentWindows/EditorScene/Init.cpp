@@ -183,7 +183,7 @@ namespace nexo::editor {
             }
         }
 
-        for (int i = 0; i < 300; ++i) {
+        for (int i = 0; i < 150; ++i) {
             float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
             float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
             glm::vec3 pos = {x, 10.0f + static_cast<float>(i), z};
