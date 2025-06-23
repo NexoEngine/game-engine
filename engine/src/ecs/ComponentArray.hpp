@@ -51,6 +51,50 @@ namespace nexo::ecs {
         virtual void entityDestroyed(Entity entity) = 0;
 
         virtual void duplicateComponent(Entity sourceEntity, Entity destEntity) = 0;
+
+        /**
+         * @brief Gets the size of each component in bytes
+         * @return Size of individual component in bytes
+         */
+        [[nodiscard]] virtual size_t getComponentSize() const = 0;
+
+        /**
+         * @brief Gets the total number of components in the array
+         * @return The number of active components
+         */
+        [[nodiscard]] virtual size_t size() const = 0;
+
+        /**
+         * @brief Gets raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Raw pointer to component data, or nullptr if not found
+         */
+        [[nodiscard]] virtual void* getRawComponent(Entity entity) = 0;
+
+        /**
+         * @brief Gets const raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Const raw pointer to component data, or nullptr if not found
+         */
+        [[nodiscard]] virtual const void* getRawComponent(Entity entity) const = 0;
+
+        /**
+         * @brief Gets raw pointer to all component data
+         * @return Raw pointer to contiguous component data
+         */
+        [[nodiscard]] virtual void* getRawData() = 0;
+
+        /**
+         * @brief Gets const raw pointer to all component data
+         * @return Const raw pointer to contiguous component data
+         */
+        [[nodiscard]] virtual const void* getRawData() const = 0;
+
+        /**
+         * @brief Gets a span of all entities with this component
+         * @return Span of entity IDs
+         */
+        [[nodiscard]] virtual std::span<const Entity> entities() const = 0;
     };
 
     /**
@@ -67,7 +111,7 @@ namespace nexo::ecs {
      * @note This class is not thread-safe. Access should be synchronized externally when
      *       used in multi-threaded contexts.
      */
-    template<typename T, unsigned int capacity = 1024>
+    template<typename T, size_t capacity = 1024>
     requires (capacity >= 1)
     class alignas(64) ComponentArray final : public IComponentArray {
     public:
@@ -87,6 +131,35 @@ namespace nexo::ecs {
             m_sparse.resize(capacity, INVALID_ENTITY);
             m_dense.reserve(capacity);
             m_componentArray.reserve(capacity);
+        }
+
+        [[nodiscard]] size_t getComponentSize() const override
+        {
+            return sizeof(T);
+        }
+
+        [[nodiscard]] void* getRawComponent(Entity entity) override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return &m_componentArray[m_sparse[entity]];
+        }
+
+        [[nodiscard]] const void* getRawComponent(Entity entity) const override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return &m_componentArray[m_sparse[entity]];
+        }
+
+        [[nodiscard]] void* getRawData() override
+        {
+            return m_componentArray.data();
+        }
+
+        [[nodiscard]] const void* getRawData() const override
+        {
+            return m_componentArray.data();
         }
 
         /**
@@ -233,7 +306,7 @@ namespace nexo::ecs {
          *
          * @return The number of active components
          */
-        [[nodiscard]] constexpr size_t size() const
+        [[nodiscard]] constexpr size_t size() const override
         {
             return m_size;
         }
@@ -279,7 +352,7 @@ namespace nexo::ecs {
          *
          * @return Const span of entity IDs
          */
-        [[nodiscard]] std::span<const Entity> entities() const
+        [[nodiscard]] std::span<const Entity> entities() const override
         {
             return {m_dense.data(), m_size};
         }
@@ -484,4 +557,298 @@ namespace nexo::ecs {
             }
         }
     };
+
+        /**
+     * @class TypeErasedComponentArray
+     * @brief A type-erased component array that can store components of any size.
+     *
+     * This class allows you to create component arrays at runtime without knowing
+     * the component type at compile time. You only need to specify the size of
+     * each component.
+     */
+    class alignas(64) TypeErasedComponentArray final : public IComponentArray {
+    public:
+        /**
+         * @brief Constructs a new type-erased component array
+         * @param componentSize Size of each component in bytes
+         * @param initialCapacity Initial capacity for the array
+         */
+        explicit TypeErasedComponentArray(const size_t componentSize, const size_t initialCapacity = 1024)
+            : m_componentSize(componentSize), m_capacity(initialCapacity)
+        {
+            if (componentSize == 0) {
+                throw std::invalid_argument("Component size cannot be zero");
+            }
+
+            m_sparse.resize(m_capacity, INVALID_ENTITY);
+            m_dense.reserve(m_capacity);
+            m_componentData.reserve(m_capacity * m_componentSize);
+        }
+
+        /**
+         * @brief Inserts a new component for the given entity
+         * @param entity The entity to add the component to
+         * @param componentData Raw pointer to the component data to copy
+         */
+        void insert(Entity entity, const void* componentData)
+        {
+            if (entity >= MAX_ENTITIES)
+                THROW_EXCEPTION(OutOfRange, entity);
+
+            ensureSparseCapacity(entity);
+
+            if (hasComponent(entity)) {
+                LOG(NEXO_WARN, "Entity {} already has component", entity);
+                return;
+            }
+
+            const size_t newIndex = m_size;
+            m_sparse[entity] = newIndex;
+            m_dense.push_back(entity);
+
+            // Resize component data vector if needed
+            size_t requiredSize = (m_size + 1) * m_componentSize;
+            if (m_componentData.size() < requiredSize) {
+                m_componentData.resize(requiredSize);
+            }
+
+            // Copy component data
+            std::memcpy(m_componentData.data() + newIndex * m_componentSize,
+                       componentData, m_componentSize);
+
+            ++m_size;
+        }
+
+        /**
+         * @brief Removes the component for the given entity
+         * @param entity The entity to remove the component from
+         */
+        void remove(Entity entity)
+        {
+            if (!hasComponent(entity))
+                THROW_EXCEPTION(ComponentNotFound, entity);
+
+            size_t indexToRemove = m_sparse[entity];
+
+            // Handle grouped components
+            if (indexToRemove < m_groupSize) {
+                size_t groupLastIndex = m_groupSize - 1;
+                if (indexToRemove != groupLastIndex) {
+                    swapComponents(indexToRemove, groupLastIndex);
+                    std::swap(m_dense[indexToRemove], m_dense[groupLastIndex]);
+                    m_sparse[m_dense[indexToRemove]] = indexToRemove;
+                    m_sparse[m_dense[groupLastIndex]] = groupLastIndex;
+                }
+                --m_groupSize;
+                indexToRemove = groupLastIndex;
+            }
+
+            // Standard removal
+            const size_t lastIndex = m_size - 1;
+            if (indexToRemove != lastIndex) {
+                swapComponents(indexToRemove, lastIndex);
+                std::swap(m_dense[indexToRemove], m_dense[lastIndex]);
+                m_sparse[m_dense[indexToRemove]] = indexToRemove;
+            }
+
+            m_sparse[entity] = INVALID_ENTITY;
+            m_dense.pop_back();
+            --m_size;
+
+            shrinkIfNeeded();
+        }
+
+        [[nodiscard]] bool hasComponent(Entity entity) const override
+        {
+            return (entity < m_sparse.size() && m_sparse[entity] != INVALID_ENTITY);
+        }
+
+        void entityDestroyed(Entity entity) override
+        {
+            if (hasComponent(entity))
+                remove(entity);
+        }
+
+        void duplicateComponent(Entity sourceEntity, Entity destEntity) override
+        {
+            if (!hasComponent(sourceEntity))
+                THROW_EXCEPTION(ComponentNotFound, sourceEntity);
+
+            const void* sourceData = getRawComponent(sourceEntity);
+            insert(destEntity, sourceData);
+        }
+
+        [[nodiscard]] size_t getComponentSize() const override
+        {
+            return m_componentSize;
+        }
+
+        [[nodiscard]] size_t size() const override
+        {
+            return m_size;
+        }
+
+        [[nodiscard]] void* getRawComponent(Entity entity) override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return m_componentData.data() + m_sparse[entity] * m_componentSize;
+        }
+
+        [[nodiscard]] const void* getRawComponent(Entity entity) const override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return m_componentData.data() + m_sparse[entity] * m_componentSize;
+        }
+
+        [[nodiscard]] void* getRawData() override
+        {
+            return m_componentData.data();
+        }
+
+        [[nodiscard]] const void* getRawData() const override
+        {
+            return m_componentData.data();
+        }
+
+        [[nodiscard]] std::span<const Entity> entities() const override
+        {
+            return {m_dense.data(), m_size};
+        }
+
+        /**
+         * @brief Gets the entity at the given index in the dense array
+         * @param index The index to look up
+         * @return The entity at that index
+         */
+        [[nodiscard]] Entity getEntityAtIndex(size_t index) const
+        {
+            if (index >= m_size)
+                THROW_EXCEPTION(OutOfRange, index);
+            return m_dense[index];
+        }
+
+        /**
+         * @brief Adds an entity to the group region
+         * @param entity The entity to add to the group
+         */
+        void addToGroup(Entity entity)
+        {
+            if (!hasComponent(entity))
+                THROW_EXCEPTION(ComponentNotFound, entity);
+
+            size_t index = m_sparse[entity];
+            if (index < m_groupSize)
+                return;
+
+            if (index != m_groupSize) {
+                swapComponents(index, m_groupSize);
+                std::swap(m_dense[index], m_dense[m_groupSize]);
+                m_sparse[m_dense[index]] = index;
+                m_sparse[m_dense[m_groupSize]] = m_groupSize;
+            }
+            ++m_groupSize;
+        }
+
+        /**
+         * @brief Removes an entity from the group region
+         * @param entity The entity to remove from the group
+         */
+        void removeFromGroup(Entity entity)
+        {
+            if (!hasComponent(entity))
+                THROW_EXCEPTION(ComponentNotFound, entity);
+
+            size_t index = m_sparse[entity];
+            if (index >= m_groupSize)
+                return;
+
+            --m_groupSize;
+            if (index != m_groupSize) {
+                swapComponents(index, m_groupSize);
+                std::swap(m_dense[index], m_dense[m_groupSize]);
+                m_sparse[m_dense[index]] = index;
+                m_sparse[m_dense[m_groupSize]] = m_groupSize;
+            }
+        }
+
+        /**
+         * @brief Gets the number of entities in the group region
+         * @return Number of grouped entities
+         */
+        [[nodiscard]] constexpr size_t groupSize() const
+        {
+            return m_groupSize;
+        }
+
+        /**
+         * @brief Get the estimated memory usage of this component array
+         * @return Size in bytes of memory used by this component array
+         */
+        [[nodiscard]] size_t memoryUsage() const
+        {
+            return m_componentData.capacity()
+                 + sizeof(size_t) * m_sparse.capacity()
+                 + sizeof(Entity) * m_dense.capacity();
+        }
+
+    private:
+        // Component data storage
+        std::vector<std::byte> m_componentData;
+        // Sparse mapping: maps entity ID to index in the dense arrays
+        std::vector<size_t> m_sparse;
+        // Dense storage for entity IDs
+        std::vector<Entity> m_dense;
+        // Size of each component in bytes
+        size_t m_componentSize;
+        // Initial capacity
+        size_t m_capacity;
+        // Current number of active components
+        size_t m_size = 0;
+        // Group size for component grouping
+        size_t m_groupSize = 0;
+
+        void ensureSparseCapacity(Entity entity)
+        {
+            if (entity >= m_sparse.size()) {
+                size_t newSize = m_sparse.size();
+                if (newSize == 0)
+                    newSize = m_capacity;
+                while (entity >= newSize)
+                    newSize *= 2;
+                m_sparse.resize(newSize, INVALID_ENTITY);
+            }
+        }
+
+        void swapComponents(size_t index1, size_t index2)
+        {
+            if (index1 == index2) return;
+
+            std::byte* data1 = m_componentData.data() + index1 * m_componentSize;
+            std::byte* data2 = m_componentData.data() + index2 * m_componentSize;
+
+            // Use a temporary buffer for swapping
+            std::vector<std::byte> temp(m_componentSize);
+            std::memcpy(temp.data(), data1, m_componentSize);
+            std::memcpy(data1, data2, m_componentSize);
+            std::memcpy(temp.data(), data2, m_componentSize);
+        }
+
+        void shrinkIfNeeded()
+        {
+            if (m_size < m_componentData.capacity() / 4 && m_componentData.capacity() > m_capacity * m_componentSize * 2) {
+                size_t newCapacity = std::max(m_size * 2, static_cast<size_t>(m_capacity)) * m_componentSize;
+                if (newCapacity < m_capacity * m_componentSize)
+                    newCapacity = m_capacity * m_componentSize;
+
+                m_componentData.shrink_to_fit();
+                m_dense.shrink_to_fit();
+
+                m_componentData.reserve(newCapacity);
+                m_dense.reserve(newCapacity / m_componentSize);
+            }
+        }
+    };
+
 }
