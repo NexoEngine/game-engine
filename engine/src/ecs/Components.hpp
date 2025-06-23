@@ -227,12 +227,23 @@ namespace nexo::ecs {
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
 
+		        assert(typeID < m_componentArrays.size() && "Component type ID exceeds component array size");
 		        if (m_componentArrays[typeID] != nullptr) {
 		            LOG(NEXO_WARN, "Component already registered");
 		            return;
 		        }
 
 		        m_componentArrays[typeID] = std::make_shared<ComponentArray<T>>();
+		    }
+
+	        ComponentType registerComponent(const size_t componentSize, const size_t initialCapacity = 1024)
+		    {
+		        const ComponentType typeID = generateComponentTypeID();
+		        assert(typeID < m_componentArrays.size() && "Component type ID exceeds component array size");
+
+		        assert(m_componentArrays[typeID] == nullptr && "TypeErasedComponent already registered, should really not happen");
+		        m_componentArrays[typeID] = std::make_shared<TypeErasedComponentArray>(componentSize, initialCapacity);
+		        return typeID;
 		    }
 
 		    /**
@@ -380,6 +391,22 @@ namespace nexo::ecs {
 				}
 			}
 
+	        /**
+             * @brief Gets the component array for a specific component type with ComponentType (const version)
+             *
+             * @param typeID The component type ID
+             * @return Const shared pointer to the component array
+             * @throws ComponentNotRegistered if the component type is not registered
+             */
+            [[nodiscard]] std::shared_ptr<IComponentArray> getComponentArray(const ComponentType typeID) const
+		    {
+		        const auto& componentArray = m_componentArrays[typeID];
+		        if (componentArray == nullptr)
+		            THROW_EXCEPTION(ComponentNotRegistered);
+
+		        return componentArray;
+		    }
+
 		    /**
 		     * @brief Gets the component array for a specific component type
 		     *
@@ -391,12 +418,7 @@ namespace nexo::ecs {
 		    [[nodiscard]] std::shared_ptr<ComponentArray<T>> getComponentArray()
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
-
-		        const auto& componentArray = m_componentArrays[typeID];
-		        if (componentArray == nullptr)
-		            THROW_EXCEPTION(ComponentNotRegistered);
-
-		        return std::static_pointer_cast<ComponentArray<T>>(componentArray);
+                return std::static_pointer_cast<ComponentArray<T>>(getComponentArray(typeID));
 		    }
 
 		    /**
@@ -410,12 +432,7 @@ namespace nexo::ecs {
 		    [[nodiscard]] std::shared_ptr<const ComponentArray<T>> getComponentArray() const
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
-
-		        const auto& componentArray = m_componentArrays[typeID];
-		        if (componentArray == nullptr)
-		            THROW_EXCEPTION(ComponentNotRegistered);
-
-		        return std::static_pointer_cast<const ComponentArray<T>>(componentArray);
+                return std::static_pointer_cast<const ComponentArray<T>>(getComponentArray(typeID));
 		    }
 
 		    /**
@@ -433,6 +450,22 @@ namespace nexo::ecs {
 		            return std::nullopt;
 
 		        return componentArray->get(entity);
+		    }
+
+	        /**
+             * @brief Safely attempts to get a component from an entity
+             *
+             * @param entity The entity to get the component from
+             * @param typeID The component type ID
+             * @return Pointer to the component if it exists, or nullptr if not found
+             */
+            [[nodiscard]] void *tryGetComponent(const Entity entity, const ComponentType typeID) const
+		    {
+		        const auto componentArray = getComponentArray(typeID);
+		        if (!componentArray->hasComponent(entity))
+		            return nullptr;
+
+		        return componentArray->getRawComponent(entity);
 		    }
 
 		    /**
