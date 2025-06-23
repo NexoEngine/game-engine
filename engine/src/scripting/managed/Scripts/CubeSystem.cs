@@ -18,6 +18,12 @@ using Nexo.Systems;
 
 namespace Nexo.Scripts;
 
+public struct TestComponent : IComponentBase
+{
+    public String Name;
+    public Int32 Value;
+}
+
 public class CubeSystem : SystemBase
 {
     private struct CubeAnimationState

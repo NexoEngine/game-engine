@@ -105,6 +105,7 @@ namespace nexo::scripting {
 
         struct SystemBaseApi {
             ManagedApiFn<Int32(ManagedWorldState *worldState, UInt32 size)> InitializeSystems;
+            ManagedApiFn<Int32()> InitializeComponents;
 
             ManagedApiFn<Int32(ManagedWorldState *worldState, UInt32 size)> ShutdownSystems;
 
