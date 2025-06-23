@@ -41,21 +41,20 @@ namespace nexo::renderer
                                    std::array<glm::vec2, 12>& texCoords,
                                    std::array<glm::vec3, 12>& normals)
     {
-        constexpr float size = 0.5f;
+        constexpr float size = 1.0f;
 
         // Define the four vertices of the tetrahedron
-        constexpr auto v0 = glm::vec3(0.0f, size, 0.0f); // Top vertex
-        constexpr auto v1 = glm::vec3(-size, -size, -size); // Bottom-left-back
-        constexpr auto v2 = glm::vec3(size, -size, -size); // Bottom-right-back
-        constexpr auto v3 = glm::vec3(0.0f, -size, size); // Bottom-front
+        constexpr auto v0 = glm::vec3(-size, -size, -size);
+        constexpr auto v1 = glm::vec3(size, -size, size);
+        constexpr auto v2 = glm::vec3(-size, size, size);
+        constexpr auto v3 = glm::vec3(size, size, -size);
 
         // Define the 4 triangular faces (each has 3 vertices)
-        glm::vec3 verts[] = {
-            v0, v2, v1, // Back face
-            v0, v3, v2, // Right face
-            v0, v1, v3, // Left face
-            v1, v2, v3  // Bottom face
-        };
+        std::vector<glm::vec3> verts{};
+        verts.emplace_back(v0); verts.emplace_back(v1); verts.emplace_back(v2);
+        verts.emplace_back(v0); verts.emplace_back(v2); verts.emplace_back(v3);
+        verts.emplace_back(v0); verts.emplace_back(v3); verts.emplace_back(v1);
+        verts.emplace_back(v1); verts.emplace_back(v3); verts.emplace_back(v2);
 
         std::ranges::copy(verts, vertices.begin());
 

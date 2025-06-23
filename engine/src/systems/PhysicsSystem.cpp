@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PhysicsSystem.hpp"
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() {
@@ -97,6 +98,36 @@ namespace nexo::system {
                 const float halfHeight = transform.size.y;
                 const float radius = transform.size.x;
                 shapeSettings = new JPH::CylinderShapeSettings(halfHeight, radius);
+                break;
+            }
+
+            case ShapeType::Tetrahedron: {
+                auto size = transform.size.x;
+                // Define the vertices of the tetrahedron relative to its center
+                JPH::Vec3 vertices[] = {
+                    JPH::Vec3(-size, -size, -size),
+                    JPH::Vec3(size, -size, size),
+                    JPH::Vec3(-size, size, size),
+                    JPH::Vec3(size, size, -size)
+                };
+
+                // Create a convex hull shape using the vertices
+                shapeSettings = new JPH::ConvexHullShapeSettings(vertices, std::size(vertices));
+                break;
+            }
+
+            case ShapeType::Pyramid: {
+                // Define the vertices of the pyramid relative to its center
+                JPH::Vec3 vertices[] = {
+                    JPH::Vec3(0.0f, 1.0f, 0.0f) * transform.size.y, // Apex
+                    JPH::Vec3(-1.0f, -1.0f, -1.0f) * transform.size.x, // Base vertex 1
+                    JPH::Vec3(1.0f, -1.0f, -1.0f) * transform.size.x,  // Base vertex 2
+                    JPH::Vec3(1.0f, -1.0f, 1.0f) * transform.size.x,   // Base vertex 3
+                    JPH::Vec3(-1.0f, -1.0f, 1.0f) * transform.size.x   // Base vertex 4
+                };
+
+                // Create a convex hull shape using the vertices
+                shapeSettings = new JPH::ConvexHullShapeSettings(vertices, std::size(vertices));
                 break;
             }
 

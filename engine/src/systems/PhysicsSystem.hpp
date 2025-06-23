@@ -163,7 +163,7 @@ namespace nexo::system {
         }
     };
 
-    enum class ShapeType { Box, Sphere, Cylinder };
+    enum class ShapeType { Box, Sphere, Cylinder, Tetrahedron, Pyramid };
 
     class PhysicsSystem : public ecs::QuerySystem<
                 ecs::Write<components::TransformComponent>,
