@@ -176,6 +176,12 @@ namespace nexo::ecs {
                 }
             }
 
+            ComponentType registerComponent(const size_t componentSize, const size_t initialCapacity = 1024)
+            {
+                auto typeID = m_componentManager->registerComponent(componentSize, initialCapacity);
+                return typeID;
+            }
+
             /**
              * @brief Registers a new singleton component
              *
@@ -296,29 +302,9 @@ namespace nexo::ecs {
                 return m_componentManager->tryGetComponent<T>(entity);
             }
 
-            void* tryGetComponentById(ComponentType componentType, Entity entity)
+            void *tryGetComponentById(const ComponentType componentType, const Entity entity)const
             {
-                auto itType = m_typeIDtoTypeIndex.find(componentType);
-                if (itType == m_typeIDtoTypeIndex.end()) {
-                    return nullptr;
-                }
-
-                const std::type_index& typeIndex = itType->second;
-                auto itGetter = m_getComponentPointers.find(typeIndex);
-                if (itGetter == m_getComponentPointers.end()) {
-                    return nullptr;
-                }
-
-                std::any componentAny = itGetter->second(entity);
-                if (!componentAny.has_value()) {
-                    return nullptr;
-                }
-
-                if (componentAny.type() != typeid(void*)) {
-                    return nullptr;
-                }
-
-                return std::any_cast<void*>(componentAny);
+                return m_componentManager->tryGetComponent(entity, componentType);
             }
 
             const std::unordered_map<ComponentType, std::type_index>& getTypeIdToTypeIndex() const {
