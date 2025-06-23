@@ -58,6 +58,12 @@ namespace nexo::ecs {
 	*/
 	inline ComponentType globalComponentCounter = 0;
 
+    inline ComponentType generateComponentTypeID()
+    {
+        assert(globalComponentCounter < MAX_COMPONENT_TYPE && "Maximum number of component types exceeded");
+        return globalComponentCounter++;
+    }
+
 	/**
 	* @brief Gets a unique ID for a component type
 	*
@@ -73,10 +79,8 @@ namespace nexo::ecs {
     {
         // This static variable is instantiated once per type T,
         // but it will be assigned a unique value from the shared global counter.
-        static const ComponentType id = []() {
-            assert(globalComponentCounter < MAX_COMPONENT_TYPE && "Maximum number of component types exceeded");
-            return globalComponentCounter++;
-        }();
+        // TODO: Warning! This is not thread-safe. (and it's a crappy implementation, but it works for now)
+        static const ComponentType id = generateComponentTypeID();
         return id;
     }
 
