@@ -25,7 +25,7 @@ namespace ImNexo {
         g_isItemActive = false;
     }
 
-    void itemIsActive()
+    void setItemActive()
     {
         g_isItemActive = true;
     }
@@ -40,7 +40,7 @@ namespace ImNexo {
         g_isItemActivated = false;
     }
 
-    void itemIsActivated()
+    void setItemActivated()
     {
         g_isItemActivated = true;
     }
@@ -55,7 +55,7 @@ namespace ImNexo {
         g_isItemDeactivated = false;
     }
 
-    void itemIsDeactivated()
+    void setItemDeactivated()
     {
         g_isItemDeactivated = true;
     }

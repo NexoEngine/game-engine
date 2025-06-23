@@ -25,7 +25,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
     {
-        if (!uuid.empty() && !uiName.empty() &&ImGui::MenuItem("Delete Scene")) {
+        if (!uuid.empty() && !uiName.empty() && ImGui::MenuItem("Delete Scene")) {
             auto &app = Application::getInstance();
             auto &selector = Selector::get();
             selector.clearSelection();

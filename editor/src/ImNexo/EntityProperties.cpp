@@ -105,11 +105,11 @@ namespace ImNexo {
             pointComponent.quadratic = quad;
         }
         if (ImGui::IsItemActive())
-            itemIsActive();
+            setItemActive();
         if (ImGui::IsItemActivated())
-            itemIsActivated();
+            setItemActivated();
         if (ImGui::IsItemDeactivated())
-            itemIsDeactivated();
+            setItemDeactivated();
         ImGui::PopStyleVar();
     }
 
