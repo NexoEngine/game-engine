@@ -65,9 +65,9 @@ namespace nexo::scripting {
             return &opt.value().get();
         }
 
-        void* GetComponent(UInt32 componentTypeId, ecs::Entity entity)
+        void* GetComponent(const UInt32 componentTypeId, const ecs::Entity entity)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            auto& coordinator = *Application::m_coordinator;
             const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
         }
@@ -121,9 +121,16 @@ namespace nexo::scripting {
             return signature.test(bitIndex);
         }
 
+        Int64 NxRegisterComponent(const char* name, const UInt64 size)
+        {
+            (void)name; // TODO: unused for now
+            auto& coordinator = *Application::m_coordinator;
+            return coordinator.registerComponent(size);
+        }
+
         ComponentTypeIds GetComponentTypeIds()
         {
-            auto& coordinator = *getApp().m_coordinator;
+            auto& coordinator = *Application::m_coordinator;
 
             return ComponentTypeIds {
                 .Transform = coordinator.getComponentType<components::TransformComponent>(),
@@ -139,9 +146,6 @@ namespace nexo::scripting {
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
             };
         }
-
-
     }
-
 
 } // namespace nexo::scripting

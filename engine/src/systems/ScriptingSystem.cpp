@@ -48,8 +48,13 @@ namespace nexo::system {
         LOG(NEXO_INFO, "Successfully ran runScriptExample");
 
         updateWorldState();
+        if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeComponents(); ret != 0) {
+            LOG(NEXO_ERROR, "Failed to initialize scripting components, returned: {}", ret);
+            return ret;
+        }
+        LOG(NEXO_INFO, "Scripting components initialized successfully");
         if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
-            LOG(NEXO_ERROR, "Failed to initialize scripting systems: {}", ret);
+            LOG(NEXO_ERROR, "Failed to initialize scripting systems, returned: {}", ret);
             return ret;
         }
         LOG(NEXO_INFO, "Scripting systems initialized successfully");
