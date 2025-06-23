@@ -49,9 +49,20 @@ namespace nexo::system {
         bodyLockInterface = &physicsSystem->GetBodyLockInterface();
     }
 
-    void PhysicsSystem::update(float timestep) {
+    void PhysicsSystem::update(float /*timestep*/)
+    {
+        const double currentTime = static_cast<double>(std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+
+        const double delta = currentTime - m_lastPhysicsTime;
+
+        if (delta < fixedTimestep)
+            return; // Pas assez de temps écoulé pour simuler une frame physique
+
+        m_lastPhysicsTime = currentTime;
+
         const int collisionSteps = 5;
-        physicsSystem->Update(timestep, collisionSteps, tempAllocator, jobSystem);
+        physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
 
         for (ecs::Entity entity : entities) {
             auto& transform = getComponent<components::TransformComponent>(entity);
@@ -64,6 +75,7 @@ namespace nexo::system {
             transform.quat = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
         }
     }
+
 
     JPH::BodyID PhysicsSystem::createBodyFromShape(
         ecs::Entity entity,
