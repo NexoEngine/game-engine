@@ -281,10 +281,6 @@ namespace nexo {
         // std::cout << "Application m_coordinator: " << m_coordinator.get() << std::endl;
         m_SceneManager.setCoordinator(m_coordinator);
 
-        const auto& map = m_coordinator->getTypeIdToTypeIndex();
-        for (auto& [typeId, typeIndex] : map)
-            std::cout << "Registered: " << typeId << " => " << typeIndex.name() << std::endl;
-
         LOG(NEXO_DEV, "Application initialized");
     }
 
