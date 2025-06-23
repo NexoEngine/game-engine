@@ -210,6 +210,10 @@ namespace nexo::system {
         ObjectVsBroadPhaseLayerFilterImpl objectVsBroadPhaseLayerFilter;
         ObjectLayerPairFilterImpl objectLayerPairFilter;
         MyContactListener contactListener;
+
+        float m_physicsAccumulator = 0.0f;
+        double m_lastPhysicsTime = 0.0;
+        constexpr static float fixedTimestep = 1.0f / 60.0f;
     };
 
 
