@@ -33,6 +33,7 @@ set(SOURCES
     Components/Scene.cs
     Components/Transform.cs
     Components/Uuid.cs
+    Components/ComponentBase.cs
     Systems/SystemBase.cs
     Systems/WorldState.cs
     Scripts/CubeSystem.cs
