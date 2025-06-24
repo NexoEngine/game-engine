@@ -27,7 +27,15 @@ namespace nexo::editor
         if (!m_opened)
         {
             // the window will just close
+            return;
         }
+
+        // When paused, we still render the scene but don't update game logic
+        // TODO: When the engine supports pausing game systems, implement it here
+        // For now, the pause state is tracked but doesn't affect the actual game update
+        
+        // The actual scene update and rendering happens through the render systems
+        // which are managed by the Application class
     }
 
     void GameWindow::shutdown()
