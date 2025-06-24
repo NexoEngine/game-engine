@@ -332,7 +332,7 @@ namespace nexo {
         m_coordinator->destroyEntity(entity);
     }
 
-    void Application::removeEntityFromParent(const ecs::Entity entity)
+    void Application::removeEntityFromParent(const ecs::Entity entity) const
     {
         // Get the parent component to find the parent entity
         auto parentComponent = m_coordinator->tryGetComponent<components::ParentComponent>(entity);

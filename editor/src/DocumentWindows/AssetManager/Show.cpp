@@ -334,7 +334,7 @@ namespace nexo::editor {
         size_t totalItems = subfolders.size() + filteredAssets.size();
 
         ImGuiListClipper clipper;
-        int rowCount = (totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount;
+        int rowCount = (static_cast<int>(totalItems) + m_layout.size.columnCount - 1) / m_layout.size.columnCount;
         clipper.Begin(rowCount, m_layout.size.itemStep.y);
 
         while (clipper.Step()) {
@@ -343,8 +343,8 @@ namespace nexo::editor {
                 int endIdx = std::min(startIdx + m_layout.size.columnCount, static_cast<int>(totalItems));
 
                 for (int i = startIdx; i < endIdx; ++i) {
-                    float col = static_cast<float>(i % m_layout.size.columnCount);
-                    float row = static_cast<float>(i / m_layout.size.columnCount);
+                    auto col = static_cast<float>(i % m_layout.size.columnCount);
+                    auto row = static_cast<float>(i / m_layout.size.columnCount);
                     ImVec2 itemPos{
                         startPos.x + col * m_layout.size.itemStep.x,
                         startPos.y + row * m_layout.size.itemStep.y

@@ -100,7 +100,7 @@ namespace nexo::renderer {
             vertexData[i].normal = normals[i];
         }
 
-        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
         billboardVao->addVertexBuffer(vertexBuffer);
 
         std::vector<unsigned int> indices(nbVerticesBillboard);
@@ -108,7 +108,7 @@ namespace nexo::renderer {
             indices[i] = i;
 
         auto indexBuffer = createIndexBuffer();
-        indexBuffer->setData(indices.data(), indices.size());
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         billboardVao->setIndexBuffer(indexBuffer);
 
         return billboardVao;

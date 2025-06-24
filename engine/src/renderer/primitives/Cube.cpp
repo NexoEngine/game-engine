@@ -124,7 +124,7 @@ namespace nexo::renderer {
             vertexData[i].normal = normals[i];
         }
 
-        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
         cubeVao->addVertexBuffer(vertexBuffer);
 
         std::vector<unsigned int> indices(nbVerticesCube);
@@ -132,7 +132,7 @@ namespace nexo::renderer {
             indices[i] = i;
 
         auto indexBuffer = createIndexBuffer();
-        indexBuffer->setData(indices.data(), indices.size());
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         cubeVao->setIndexBuffer(indexBuffer);
 
         return cubeVao;

@@ -191,7 +191,7 @@ namespace nexo {
              * @param entity The entity to delete.
              */
             void deleteEntity(ecs::Entity entity);
-            void removeEntityFromParent(const ecs::Entity entity);
+            void removeEntityFromParent(const ecs::Entity entity) const;
             void deleteEntityChildren(const ecs::Entity entity);
 
             static Application &getInstance()
