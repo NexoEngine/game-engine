@@ -97,6 +97,7 @@ namespace nexo::renderer {
 	// Cube tests
     TEST_F(Renderer3DTest, DrawCubeWithoutTexture)
     {
+		GTEST_SKIP() << "DrawCubeWithoutTexture doesn't exist anymore";
         // glm::vec3 position = {0.0f, 0.0f, 0.0f};
         // glm::vec3 size = {1.0f, 1.0f, 1.0f};
         // glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
@@ -220,6 +221,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithMaterial doesn't exist anymore";
 	//     glm::vec3 position = {0.0f, 0.0f, 0.0f};
 	//     glm::vec3 size = {1.0f, 1.0f, 1.0f};
 
@@ -281,6 +283,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithTransformMatrix)
 	{
+		GTEST_SKIP() << "DrawCubeWithTransformMatrix doesn't exist anymore";
 	    // glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
 	    //                      glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
 	    // glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
@@ -310,6 +313,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithRotationAndMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithRotationAndMaterial doesn't exist anymore";
 	    // glm::vec3 position = {1.0f, 2.0f, 3.0f};
 	    // glm::vec3 size = {2.0f, 2.0f, 2.0f};
 	    // glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
@@ -344,6 +348,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithTransformAndMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithTransformAndMaterial doesn't exist anymore";
 	    // glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
 	    //                       glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
 	    //                       glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
@@ -378,108 +383,111 @@ namespace nexo::renderer {
 	// Tetrahedron tests
 	TEST_F(Renderer3DTest, DrawTetrahedronWithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	GTEST_SKIP() << "DrawTetrahedronWithoutTexture doesn't exist anymore";
 
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, color));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A tetrahedron is made of 4 triangles.
-        EXPECT_EQ(primitivesGenerated, 4);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(12); // Expecting 12 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit tetrahedron
-        constexpr glm::vec3 expectedPositions[12] = {
-	        {0.0f, 0.5f, 0.0f}, {-0.5, -0.5, -0.5}, {0.5, -0.5, -0.5}, // v0 v1 v2 front face
-			{0, 0.5, 0}, {0.5, -0.5, -0.5}, {0, -0.5, 0.5}, // v0 v2 v3 right face
-			{0, 0.5, 0}, {0, -0.5, 0.5}, {-0.5, -0.5, -0.5}, // v0 v3 v1 left face
-			{-0.5, -0.5, -0.5}, {0, -0.5, 0.5}, {0.5, -0.5, -0.5} // v1 v3 v2 bottom face
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[12] = {
-	        {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
-			{1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
-			{0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
-			{0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-        constexpr glm::vec3 expectedNormals[12] = {
-            {0, -0.447214, 0.894427}, {0, -0.447214, 0.894427}, {0, -0.447214, 0.894427},
-            {-0.872872, -0.218218, -0.436436}, {-0.872872, -0.218218, -0.436436}, {-0.872872, -0.218218, -0.436436},
-            {0.872872, -0.218218, -0.436436}, {0.872872, -0.218218, -0.436436}, {0.872872, -0.218218, -0.436436},
-            {0, 1, 0}, {0, 1, 0}, {0, 1, 0}
-        };
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 12; ++i) {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-        	// std::cout << "Normal: " << vertexData[i].normal.x << ", " << vertexData[i].normal.y << ", " << vertexData[i].normal.z << std::endl;
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(12); // Expecting 12 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 12 * sizeof(unsigned int), indexData.data());
-
-        // Since we fill indices sequentially from 0 to 12:
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            EXPECT_EQ(indexData[i], i);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+   //      glm::vec3 position = {0.0f, 0.0f, 0.0f};
+   //      glm::vec3 size = {1.0f, 1.0f, 1.0f};
+   //      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+   //
+   //      // Use an OpenGL query to count the number of triangles drawn.
+   //      GLuint query;
+   //      glGenQueries(1, &query);
+   //      glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+   //
+   //      renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+   //      EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, color));
+   //      renderer3D->endScene();
+   //
+   //      glEndQuery(GL_PRIMITIVES_GENERATED);
+   //      GLuint primitivesGenerated = 0;
+   //      glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+   //      // A tetrahedron is made of 4 triangles.
+   //      EXPECT_EQ(primitivesGenerated, 4);
+   //
+   //      glDeleteQueries(1, &query);
+   //
+   //      // Validate vertex buffer data:
+   //      GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+   //      glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+   //      std::vector<Vertex> vertexData(12); // Expecting 12 vertices
+   //      glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
+   //
+   //      // Expected vertex positions for a unit tetrahedron
+   //      constexpr glm::vec3 expectedPositions[12] = {
+	  //       {0.0f, 0.5f, 0.0f}, {-0.5, -0.5, -0.5}, {0.5, -0.5, -0.5}, // v0 v1 v2 front face
+			// {0, 0.5, 0}, {0.5, -0.5, -0.5}, {0, -0.5, 0.5}, // v0 v2 v3 right face
+			// {0, 0.5, 0}, {0, -0.5, 0.5}, {-0.5, -0.5, -0.5}, // v0 v3 v1 left face
+			// {-0.5, -0.5, -0.5}, {0, -0.5, 0.5}, {0.5, -0.5, -0.5} // v1 v3 v2 bottom face
+   //      };
+   //
+   //      // Expected texture coordinates for each vertex
+   //      const glm::vec2 expectedTexCoords[12] = {
+	  //       {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
+			// {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
+			// {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
+			// {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
+   //      };
+   //
+   //      // Expected normal vectors for each face (same normal for all vertices in a face)
+   //      constexpr glm::vec3 expectedNormals[12] = {
+   //          {0, -0.447214, 0.894427}, {0, -0.447214, 0.894427}, {0, -0.447214, 0.894427},
+   //          {-0.872872, -0.218218, -0.436436}, {-0.872872, -0.218218, -0.436436}, {-0.872872, -0.218218, -0.436436},
+   //          {0.872872, -0.218218, -0.436436}, {0.872872, -0.218218, -0.436436}, {0.872872, -0.218218, -0.436436},
+   //          {0, 1, 0}, {0, 1, 0}, {0, 1, 0}
+   //      };
+   //
+   //      // Check vertex data
+   //      for (unsigned int i = 0; i < 12; ++i) {
+   //          // Compare the vertex position
+   //          EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+   //          // Compare texture coordinates
+   //          EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+   //          // Compare normals
+   //      	// std::cout << "Normal: " << vertexData[i].normal.x << ", " << vertexData[i].normal.y << ", " << vertexData[i].normal.z << std::endl;
+   //          EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+   //          // Check that the entityID was correctly set (here we passed -1)
+   //          EXPECT_EQ(vertexData[i].entityID, -1);
+   //      }
+   //      glBindBuffer(GL_ARRAY_BUFFER, 0);
+   //
+   //      // Validate index buffer content:
+   //      GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+   //      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+   //      std::vector<unsigned int> indexData(12); // Expecting 12 indices
+   //      glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 12 * sizeof(unsigned int), indexData.data());
+   //
+   //      // Since we fill indices sequentially from 0 to 12:
+   //      for (unsigned int i = 0; i < 12; ++i)
+   //      {
+   //          EXPECT_EQ(indexData[i], i);
+   //      }
+   //      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawTetrahedronWithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawTetrahedronWithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -490,26 +498,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawTetrahedronWithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, rotation, color));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawTetrahedronWithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, rotation, color));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -520,25 +529,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawTetrahedronWithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawTetrahedron(transform, color));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawTetrahedronWithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawTetrahedron(transform, color));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -549,30 +559,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawTetrahedronWithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, rotation, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawTetrahedronWithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawTetrahedron(position, size, rotation, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -583,28 +594,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawTetrahedronWithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawTetrahedron(transform, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawTetrahedronWithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawTetrahedron(transform, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 4); // A tetrahedron is made of 4 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -617,120 +629,122 @@ namespace nexo::renderer {
 	// Pyramid tests
 	TEST_F(Renderer3DTest, DrawPyramidWithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, color));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A pyramid is made of 6 triangles.
-        EXPECT_EQ(primitivesGenerated, 6);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(18); // Expecting 18 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit tetrahedron
-        constexpr glm::vec3 expectedPositions[18] = {
-        	// Base face
-	        {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, 1.0f},
-        	{-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f},
-        	// Side faces
-			{0.0f, 1.0f, 0.0f}, {1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f},
-			{0.0f, 1.0f, 0.0f}, {1.0f, -1.0f, 1.0f}, {1.0f, -1.0f, -1.0f},
-			{0.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 1.0f},
-			{0.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, 1.0f}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[18] = {
-        	// Base face
-	        {0.5f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f},
-			{0.5f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-			// Side faces
-			{0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
-			{0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
-			{0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
-			{0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-    	constexpr glm::vec3 expectedNormals[18] = {
-    		// Base face
-    		{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-			{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-    		// Side faces
-    		{0.0f, 0.447214f, -0.894427f}, {0.0f, 0.447214f, -0.894427f}, {0.0f, 0.447214f, -0.894427f},
-			{0.894427f, 0.447214f, 0.0f}, {0.894427f, 0.447214f, 0.0f}, {0.894427f, 0.447214f, 0.0f},
-			{0.0f, 0.447214f, 0.894427f}, {0.0f, 0.447214f, 0.894427f}, {0.0f, 0.447214f, 0.894427f},
-			{-0.894427f, 0.447214f, 0.0f}, {-0.894427f, 0.447214f, 0.0f}, {-0.894427f, 0.447214f, 0.0f}
-    	};
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 18; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(18); // Expecting 18 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 18 * sizeof(unsigned int), indexData.data());
-
-        // Since we fill indices sequentially from 0 to 18:
-        for (unsigned int i = 0; i < 18; ++i)
-        {
-            EXPECT_EQ(indexData[i], i);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawPyramidWithoutTexture doesn't exist anymore";
+   //      glm::vec3 position = {0.0f, 0.0f, 0.0f};
+   //      glm::vec3 size = {1.0f, 1.0f, 1.0f};
+   //      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+   //
+   //      // Use an OpenGL query to count the number of triangles drawn.
+   //      GLuint query;
+   //      glGenQueries(1, &query);
+   //      glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+   //
+   //      renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+   //      EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, color));
+   //      renderer3D->endScene();
+   //
+   //      glEndQuery(GL_PRIMITIVES_GENERATED);
+   //      GLuint primitivesGenerated = 0;
+   //      glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+   //      // A pyramid is made of 6 triangles.
+   //      EXPECT_EQ(primitivesGenerated, 6);
+   //
+   //      glDeleteQueries(1, &query);
+   //
+   //      // Validate vertex buffer data:
+   //      GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+   //      glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+   //      std::vector<Vertex> vertexData(18); // Expecting 18 vertices
+   //      glGetBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof(Vertex), vertexData.data());
+   //
+   //      // Expected vertex positions for a unit tetrahedron
+   //      constexpr glm::vec3 expectedPositions[18] = {
+   //      	// Base face
+	  //       {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, 1.0f},
+   //      	{-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f},
+   //      	// Side faces
+			// {0.0f, 1.0f, 0.0f}, {1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f},
+			// {0.0f, 1.0f, 0.0f}, {1.0f, -1.0f, 1.0f}, {1.0f, -1.0f, -1.0f},
+			// {0.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 1.0f},
+			// {0.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, 1.0f}
+   //      };
+   //
+   //      // Expected texture coordinates for each vertex
+   //      const glm::vec2 expectedTexCoords[18] = {
+   //      	// Base face
+	  //       {0.5f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f},
+			// {0.5f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
+			// // Side faces
+			// {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+			// {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+			// {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f},
+			// {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}
+   //      };
+   //
+   //      // Expected normal vectors for each face (same normal for all vertices in a face)
+   //  	constexpr glm::vec3 expectedNormals[18] = {
+   //  		// Base face
+   //  		{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+			// {0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+   //  		// Side faces
+   //  		{0.0f, 0.447214f, -0.894427f}, {0.0f, 0.447214f, -0.894427f}, {0.0f, 0.447214f, -0.894427f},
+			// {0.894427f, 0.447214f, 0.0f}, {0.894427f, 0.447214f, 0.0f}, {0.894427f, 0.447214f, 0.0f},
+			// {0.0f, 0.447214f, 0.894427f}, {0.0f, 0.447214f, 0.894427f}, {0.0f, 0.447214f, 0.894427f},
+			// {-0.894427f, 0.447214f, 0.0f}, {-0.894427f, 0.447214f, 0.0f}, {-0.894427f, 0.447214f, 0.0f}
+   //  	};
+   //
+   //      // Check vertex data
+   //      for (unsigned int i = 0; i < 18; ++i)
+   //      {
+   //          // Compare the vertex position
+   //          EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+   //          // Compare texture coordinates
+   //          EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+   //          // Compare normals
+   //          EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+   //          // Check that the entityID was correctly set (here we passed -1)
+   //          EXPECT_EQ(vertexData[i].entityID, -1);
+   //      }
+   //      glBindBuffer(GL_ARRAY_BUFFER, 0);
+   //
+   //      // Validate index buffer content:
+   //      GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+   //      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+   //      std::vector<unsigned int> indexData(18); // Expecting 18 indices
+   //      glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 18 * sizeof(unsigned int), indexData.data());
+   //
+   //      // Since we fill indices sequentially from 0 to 18:
+   //      for (unsigned int i = 0; i < 18; ++i)
+   //      {
+   //          EXPECT_EQ(indexData[i], i);
+   //      }
+   //      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawPyramidWithMaterial)
-    {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
-    	glDeleteQueries(1, &query);
+	{
+		GTEST_SKIP() << "DrawPyramidWithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -740,27 +754,28 @@ namespace nexo::renderer {
     }
 
 	TEST_F(Renderer3DTest, DrawPyramidWithRotation)
-    {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, rotation, color));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
-    	glDeleteQueries(1, &query);
+	{
+		GTEST_SKIP() << "DrawPyramidWithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, rotation, color));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -771,25 +786,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawPyramidWithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawPyramid(transform, color));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawPyramidWithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawPyramid(transform, color));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -800,30 +816,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawPyramidWithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, rotation, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawPyramidWithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawPyramid(position, size, rotation, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -834,28 +851,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawPyramidWithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawPyramid(transform, material));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawPyramidWithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawPyramid(transform, material));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 6); // A pyramid is made of 6 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -868,182 +886,184 @@ namespace nexo::renderer {
 	// Cylinder 8 tests
 	TEST_F(Renderer3DTest, DrawCylinder8WithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 8));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A cylinder is made of 28 triangles.
-        EXPECT_EQ(primitivesGenerated, 28);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(32); // Expecting 32 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 32 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit tetrahedron
-        constexpr glm::vec3 expectedPositions[32] = {
-        	{0.707107f, 1, -0.707107f},
-		   {1.19249e-08f, 1, -1},
-		   {-0.707107f, 1, -0.707107f},
-		   {-1, 1, -8.74228e-08f},
-		   {-0.707107f, 1, 0.707107f},
-		   {-4.37114e-08f, 1, 1},
-		   {0.707107f, 1, 0.707107f},
-		   {1, 1, 0},
-		   {0.707107f, -1, -0.707107f},
-		   {1.19249e-08f, -1, -1},
-		   {-0.707107f, -1, -0.707107f},
-		   {-1, -1, -8.74228e-08f},
-		   {-0.707107f, -1, 0.707107f},
-		   {-4.37114e-08f, -1, 1},
-		   {0.707107f, -1, 0.707107f},
-		   {1, -1, 0},
-		   {1, 1, 0},
-		   {0.707107f, 1, 0.707107f},
-		   {-4.37114e-08f, 1, 1},
-		   {-0.707107f, 1, 0.707107f},
-		   {-1, 1, -8.74228e-08f},
-		   {-0.707107f, 1, -0.707107f},
-		   {1.19249e-08f, 1, -1},
-		   {0.707107f, 1, -0.707107f},
-		   {1, -1, 0},
-		   {0.707107f, -1, 0.707107f},
-		   {-4.37114e-08f, -1, 1},
-		   {-0.707107f, -1, 0.707107f},
-		   {-1, -1, -8.74228e-08f},
-		   {-0.707107f, -1, -0.707107f},
-		   {1.19249e-08f, -1, -1},
-		   {0.707107f, -1, -0.707107f}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[32] = {
-	        {0.0f, 1.0f}, {0.125f, 1.0f}, {0.25f, 1.0f}, {0.375f, 1.0f},
-			{0.5f, 1.0f}, {0.625f, 1.0f}, {0.75f, 1.0f}, {0.875f, 1.0f},
-			{1.0f, 1.0f}, {1.125f, 1.0f}, {1.25f, 1.0f}, {1.375f, 1.0f},
-			{1.5f, 1.0f}, {1.625f, 1.0f}, {1.75f, 1.0f}, {1.875f, 1.0f},
-			{2.0f, 1.0f}, {2.125f, 1.0f}, {2.25f, 1.0f}, {2.375f, 1.0f},
-			{2.5f, 1.0f}, {2.625f, 1.0f}, {2.75f, 1.0f}, {2.875f, 1.0f},
-			{3.0f, 1.0f}, {3.125f, 1.0f}, {3.25f, 1.0f}, {3.375f, 1.0f},
-			{3.5f, 1.0f}, {3.625f, 1.0f}, {3.75f, 1.0f}, {3.875f, 1.0f}
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-    	constexpr glm::vec3 expectedNormals[32] = {
-    		{0.707107f, 0.0f, -0.707107f}, {1.19249e-08f, 0.0f, -1.0f},
-			{-0.707107f, 0.0f, -0.707107f}, {-1.0f, 0.0f, -8.74228e-08f},
-			{-0.707107f, 0.0f, 0.707107f}, {-4.37114e-08f, 0.0f, 1.0f},
-			{0.707107f, 0.0f, 0.707107f}, {1.0f, 0.0f, 0.0f},
-			{0.707107f, 0.0f, -0.707107f}, {1.19249e-08f, 0.0f, -1.0f},
-			{-0.707107f, 0.0f, -0.707107f}, {-1.0f, 0.0f, -8.74228e-08f},
-			{-0.707107f, 0.0f, 0.707107f}, {-4.37114e-08f, 0.0f, 1.0f},
-			{0.707107f, 0.0f, 0.707107f}, {1.0f, 0.0f, 0.0f},
-			{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
-			{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
-			{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
-			{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
-			{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-			{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-			{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
-			{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}
-		};
-
-    	constexpr int expectedIndices[28*3] = {
-    		0, 1, 8,
-			1, 9, 8,
-			1, 2, 9,
-			2, 10, 9,
-			2, 3, 10,
-			3, 11, 10,
-			3, 4, 11,
-			4, 12, 11,
-			4, 5, 12,
-			5, 13, 12,
-			5, 6, 13,
-			6, 14, 13,
-			6, 7, 14,
-			7, 15, 14,
-			7, 0, 15,
-			0, 8, 15,
-			16, 19, 22,
-			16, 17, 18,
-			16, 18, 19,
-			19, 20, 21,
-			19, 21, 22,
-			22, 23, 16,
-			24, 27, 30,
-			24, 25, 26,
-			24, 26, 27,
-			27, 28, 29,
-			27, 29, 30,
-			30, 31, 24
-    	};
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 32; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(28*3); // Expecting 28*3 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 28*3 * sizeof(unsigned int), indexData.data());
-
-        for (unsigned int i = 0; i < 28*3; ++i)
-        {
-            EXPECT_EQ(indexData[i], expectedIndices[i]);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawCylinder8WithoutTexture doesn't exist anymore";
+  //       glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  //       glm::vec3 size = {1.0f, 1.0f, 1.0f};
+  //       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+  //
+  //       // Use an OpenGL query to count the number of triangles drawn.
+  //       GLuint query;
+  //       glGenQueries(1, &query);
+  //       glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+  //
+  //       renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+  //       EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 8));
+  //       renderer3D->endScene();
+  //
+  //       glEndQuery(GL_PRIMITIVES_GENERATED);
+  //       GLuint primitivesGenerated = 0;
+  //       glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+  //       // A cylinder is made of 28 triangles.
+  //       EXPECT_EQ(primitivesGenerated, 28);
+  //
+  //       glDeleteQueries(1, &query);
+  //
+  //       // Validate vertex buffer data:
+  //       GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+  //       glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+  //       std::vector<Vertex> vertexData(32); // Expecting 32 vertices
+  //       glGetBufferSubData(GL_ARRAY_BUFFER, 0, 32 * sizeof(Vertex), vertexData.data());
+  //
+  //       // Expected vertex positions for a unit tetrahedron
+  //       constexpr glm::vec3 expectedPositions[32] = {
+  //       	{0.707107f, 1, -0.707107f},
+		//    {1.19249e-08f, 1, -1},
+		//    {-0.707107f, 1, -0.707107f},
+		//    {-1, 1, -8.74228e-08f},
+		//    {-0.707107f, 1, 0.707107f},
+		//    {-4.37114e-08f, 1, 1},
+		//    {0.707107f, 1, 0.707107f},
+		//    {1, 1, 0},
+		//    {0.707107f, -1, -0.707107f},
+		//    {1.19249e-08f, -1, -1},
+		//    {-0.707107f, -1, -0.707107f},
+		//    {-1, -1, -8.74228e-08f},
+		//    {-0.707107f, -1, 0.707107f},
+		//    {-4.37114e-08f, -1, 1},
+		//    {0.707107f, -1, 0.707107f},
+		//    {1, -1, 0},
+		//    {1, 1, 0},
+		//    {0.707107f, 1, 0.707107f},
+		//    {-4.37114e-08f, 1, 1},
+		//    {-0.707107f, 1, 0.707107f},
+		//    {-1, 1, -8.74228e-08f},
+		//    {-0.707107f, 1, -0.707107f},
+		//    {1.19249e-08f, 1, -1},
+		//    {0.707107f, 1, -0.707107f},
+		//    {1, -1, 0},
+		//    {0.707107f, -1, 0.707107f},
+		//    {-4.37114e-08f, -1, 1},
+		//    {-0.707107f, -1, 0.707107f},
+		//    {-1, -1, -8.74228e-08f},
+		//    {-0.707107f, -1, -0.707107f},
+		//    {1.19249e-08f, -1, -1},
+		//    {0.707107f, -1, -0.707107f}
+  //       };
+  //
+  //       // Expected texture coordinates for each vertex
+  //       const glm::vec2 expectedTexCoords[32] = {
+	 //        {0.0f, 1.0f}, {0.125f, 1.0f}, {0.25f, 1.0f}, {0.375f, 1.0f},
+		// 	{0.5f, 1.0f}, {0.625f, 1.0f}, {0.75f, 1.0f}, {0.875f, 1.0f},
+		// 	{1.0f, 1.0f}, {1.125f, 1.0f}, {1.25f, 1.0f}, {1.375f, 1.0f},
+		// 	{1.5f, 1.0f}, {1.625f, 1.0f}, {1.75f, 1.0f}, {1.875f, 1.0f},
+		// 	{2.0f, 1.0f}, {2.125f, 1.0f}, {2.25f, 1.0f}, {2.375f, 1.0f},
+		// 	{2.5f, 1.0f}, {2.625f, 1.0f}, {2.75f, 1.0f}, {2.875f, 1.0f},
+		// 	{3.0f, 1.0f}, {3.125f, 1.0f}, {3.25f, 1.0f}, {3.375f, 1.0f},
+		// 	{3.5f, 1.0f}, {3.625f, 1.0f}, {3.75f, 1.0f}, {3.875f, 1.0f}
+  //       };
+  //
+  //       // Expected normal vectors for each face (same normal for all vertices in a face)
+  //   	constexpr glm::vec3 expectedNormals[32] = {
+  //   		{0.707107f, 0.0f, -0.707107f}, {1.19249e-08f, 0.0f, -1.0f},
+		// 	{-0.707107f, 0.0f, -0.707107f}, {-1.0f, 0.0f, -8.74228e-08f},
+		// 	{-0.707107f, 0.0f, 0.707107f}, {-4.37114e-08f, 0.0f, 1.0f},
+		// 	{0.707107f, 0.0f, 0.707107f}, {1.0f, 0.0f, 0.0f},
+		// 	{0.707107f, 0.0f, -0.707107f}, {1.19249e-08f, 0.0f, -1.0f},
+		// 	{-0.707107f, 0.0f, -0.707107f}, {-1.0f, 0.0f, -8.74228e-08f},
+		// 	{-0.707107f, 0.0f, 0.707107f}, {-4.37114e-08f, 0.0f, 1.0f},
+		// 	{0.707107f, 0.0f, 0.707107f}, {1.0f, 0.0f, 0.0f},
+		// 	{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+		// 	{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+		// 	{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+		// 	{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+		// 	{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+		// 	{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+		// 	{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+		// 	{0.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}
+		// };
+  //
+  //   	constexpr int expectedIndices[28*3] = {
+  //   		0, 1, 8,
+		// 	1, 9, 8,
+		// 	1, 2, 9,
+		// 	2, 10, 9,
+		// 	2, 3, 10,
+		// 	3, 11, 10,
+		// 	3, 4, 11,
+		// 	4, 12, 11,
+		// 	4, 5, 12,
+		// 	5, 13, 12,
+		// 	5, 6, 13,
+		// 	6, 14, 13,
+		// 	6, 7, 14,
+		// 	7, 15, 14,
+		// 	7, 0, 15,
+		// 	0, 8, 15,
+		// 	16, 19, 22,
+		// 	16, 17, 18,
+		// 	16, 18, 19,
+		// 	19, 20, 21,
+		// 	19, 21, 22,
+		// 	22, 23, 16,
+		// 	24, 27, 30,
+		// 	24, 25, 26,
+		// 	24, 26, 27,
+		// 	27, 28, 29,
+		// 	27, 29, 30,
+		// 	30, 31, 24
+  //   	};
+  //
+  //       // Check vertex data
+  //       for (unsigned int i = 0; i < 32; ++i)
+  //       {
+  //           // Compare the vertex position
+  //           EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+  //           // Compare texture coordinates
+  //           EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+  //           // Compare normals
+  //           EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+  //           // Check that the entityID was correctly set (here we passed -1)
+  //           EXPECT_EQ(vertexData[i].entityID, -1);
+  //       }
+  //       glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //
+  //       // Validate index buffer content:
+  //       GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+  //       std::vector<unsigned int> indexData(28*3); // Expecting 28*3 indices
+  //       glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 28*3 * sizeof(unsigned int), indexData.data());
+  //
+  //       for (unsigned int i = 0; i < 28*3; ++i)
+  //       {
+  //           EXPECT_EQ(indexData[i], expectedIndices[i]);
+  //       }
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawCylinder8WithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 8));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder8WithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 8));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1054,26 +1074,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder8WithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 8));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder8WithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 8));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1084,25 +1105,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder8WithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 8));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder8WithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 8));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1113,30 +1135,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder8WithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 8));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder8WithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 8));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1147,28 +1170,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder8WithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 8));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder8WithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 8));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 28); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1181,127 +1205,129 @@ namespace nexo::renderer {
 	// Cylinder 3 tests
 	TEST_F(Renderer3DTest, DrawCylinder3WithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 3));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A cylinder is made of 8 triangles.
-        EXPECT_EQ(primitivesGenerated, 8);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(12); // Expecting 12 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit tetrahedron
-        constexpr glm::vec3 expectedPositions[12] = {
-        	{-0.5, 1, -0.866025},
-		   {-0.5, 1, 0.866025},
-		   {1, 1, 0},
-		   {-0.5, -1, -0.866025},
-		   { -0.5, -1, 0.866025},
-		   {1, -1, 0},
-		   {1, 1, 0},
-		   {-0.5, 1, 0.866025},
-		   {-0.5, 1, -0.866025},
-		   {1, -1, 0},
-		   {-0.5, -1, 0.866025},
-		   {-0.5, -1, -0.866025}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[12] = {
-	        {0.0f, 1.0f}, {0.333333, 1}, {0.666667, 1}, {1, 1},
-			{1.33333, 1}, {1.66667, 1}, {2, 1}, {2.33333, 1},
-			{2.66667, 1}, {3, 1}, {3.33333, 1}, {3.66667, 1}
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-    	constexpr glm::vec3 expectedNormals[12] = {
-    		{-0.5, 0, -0.866025}, {-0.5, 0, 0.866025},
-			{1, 0, 0}, {-0.5, 0, -0.866025},
-			{-0.5, 0, 0.866025}, {1, 0, 0},
-			{0, 1, 0}, {0, 1, 0},
-			{0, 1, 0}, {0, -1, 0},
-			{0, -1, 0}, {0, -1, 0}
-		};
-
-    	constexpr int expectedIndices[8*3] = {
-    		0, 1, 3,
-    		1, 4, 3,
-			1, 2, 4,
-			2, 5, 4,
-			2, 0, 5,
-			0, 3, 5,
-			6, 7, 8,
-			9, 10, 11,
-    	};
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(8*3); // Expecting 8*3 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 8*3 * sizeof(unsigned int), indexData.data());
-
-		// Check index data
-    	for (unsigned int i = 0; i < 8*3; ++i) {
-            EXPECT_EQ(indexData[i], expectedIndices[i]);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawCylinder3WithoutTexture doesn't exist anymore";
+  //       glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  //       glm::vec3 size = {1.0f, 1.0f, 1.0f};
+  //       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+  //
+  //       // Use an OpenGL query to count the number of triangles drawn.
+  //       GLuint query;
+  //       glGenQueries(1, &query);
+  //       glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+  //
+  //       renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+  //       EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 3));
+  //       renderer3D->endScene();
+  //
+  //       glEndQuery(GL_PRIMITIVES_GENERATED);
+  //       GLuint primitivesGenerated = 0;
+  //       glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+  //       // A cylinder is made of 8 triangles.
+  //       EXPECT_EQ(primitivesGenerated, 8);
+  //
+  //       glDeleteQueries(1, &query);
+  //
+  //       // Validate vertex buffer data:
+  //       GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+  //       glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+  //       std::vector<Vertex> vertexData(12); // Expecting 12 vertices
+  //       glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
+  //
+  //       // Expected vertex positions for a unit tetrahedron
+  //       constexpr glm::vec3 expectedPositions[12] = {
+  //       	{-0.5, 1, -0.866025},
+		//    {-0.5, 1, 0.866025},
+		//    {1, 1, 0},
+		//    {-0.5, -1, -0.866025},
+		//    { -0.5, -1, 0.866025},
+		//    {1, -1, 0},
+		//    {1, 1, 0},
+		//    {-0.5, 1, 0.866025},
+		//    {-0.5, 1, -0.866025},
+		//    {1, -1, 0},
+		//    {-0.5, -1, 0.866025},
+		//    {-0.5, -1, -0.866025}
+  //       };
+  //
+  //       // Expected texture coordinates for each vertex
+  //       const glm::vec2 expectedTexCoords[12] = {
+	 //        {0.0f, 1.0f}, {0.333333, 1}, {0.666667, 1}, {1, 1},
+		// 	{1.33333, 1}, {1.66667, 1}, {2, 1}, {2.33333, 1},
+		// 	{2.66667, 1}, {3, 1}, {3.33333, 1}, {3.66667, 1}
+  //       };
+  //
+  //       // Expected normal vectors for each face (same normal for all vertices in a face)
+  //   	constexpr glm::vec3 expectedNormals[12] = {
+  //   		{-0.5, 0, -0.866025}, {-0.5, 0, 0.866025},
+		// 	{1, 0, 0}, {-0.5, 0, -0.866025},
+		// 	{-0.5, 0, 0.866025}, {1, 0, 0},
+		// 	{0, 1, 0}, {0, 1, 0},
+		// 	{0, 1, 0}, {0, -1, 0},
+		// 	{0, -1, 0}, {0, -1, 0}
+		// };
+  //
+  //   	constexpr int expectedIndices[8*3] = {
+  //   		0, 1, 3,
+  //   		1, 4, 3,
+		// 	1, 2, 4,
+		// 	2, 5, 4,
+		// 	2, 0, 5,
+		// 	0, 3, 5,
+		// 	6, 7, 8,
+		// 	9, 10, 11,
+  //   	};
+  //
+  //       // Check vertex data
+  //       for (unsigned int i = 0; i < 12; ++i)
+  //       {
+  //           // Compare the vertex position
+  //           EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+  //           // Compare texture coordinates
+  //           EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+  //           // Compare normals
+  //           EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+  //           // Check that the entityID was correctly set (here we passed -1)
+  //           EXPECT_EQ(vertexData[i].entityID, -1);
+  //       }
+  //       glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //
+  //       // Validate index buffer content:
+  //       GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+  //       std::vector<unsigned int> indexData(8*3); // Expecting 8*3 indices
+  //       glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 8*3 * sizeof(unsigned int), indexData.data());
+  //
+		// // Check index data
+  //   	for (unsigned int i = 0; i < 8*3; ++i) {
+  //           EXPECT_EQ(indexData[i], expectedIndices[i]);
+  //       }
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawCylinder3WithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 3));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder3WithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 3));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1312,26 +1338,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder3WithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 3));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder3WithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 3));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1342,25 +1369,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder3WithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 3));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder3WithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 3));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1371,30 +1399,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder3WithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 3));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder3WithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 3));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1405,28 +1434,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder3WithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 3));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder3WithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 3));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 8); // A cylinder is made of 28 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1439,149 +1469,151 @@ namespace nexo::renderer {
 	// Cylinder 5 tests
 	TEST_F(Renderer3DTest, DrawCylinder5WithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 5));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A cylinder 5 is made of 16 triangles.
-        EXPECT_EQ(primitivesGenerated, 16);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(20); // Expecting 20 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 20 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit tetrahedron
-        constexpr glm::vec3 expectedPositions[20] = {
-        	{0.309017, 1, -0.951056},
-			{-0.809017, 1, -0.587786},
-	   		{-0.809017, 1, 0.587785},
-	   		{0.309017, 1, 0.951057},
-	   		{1, 1, 0},
-	   		{0.309017, -1, -0.951056},
-	   		{-0.809017, -1, -0.587786},
-	   		{-0.809017, -1, 0.587785},
-	   		{0.309017, -1, 0.951057},
-	   		{1, -1, 0},
-	   		{1, 1, 0},
-	   		{0.309017, 1, 0.951057},
-	        {-0.809017, 1, 0.587785},
-	        {-0.809017, 1, -0.587786},
-        	{0.309017, 1, -0.951056},
-        	{1, -1, 0},
-        	{0.309017, -1, 0.951057},
-        	{-0.809017, -1, 0.587785},
-        	{-0.809017, -1, -0.587786},
-        	{0.309017, -1, -0.951056}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[20] = {
-	        {0, 1}, {0.2, 1}, {0.4, 1}, {0.6, 1},
-			{0.8, 1}, {1, 1}, {1.2, 1}, {1.4, 1},
-			{1.6, 1}, {1.8, 1}, {2, 1}, {2.2, 1},
-			{2.4, 1}, {2.6, 1}, {2.8, 1}, {3, 1},
-			{3.2, 1}, {3.4, 1}, {3.6, 1}, {3.8, 1},
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-    	constexpr glm::vec3 expectedNormals[20] = {
-    		{0.309017, 0, -0.951056}, {-0.809017, 0, -0.587786},
-			{-0.809017, 0, 0.587785}, {0.309017, 0, 0.951057},
-			{1, 0, 0}, {0.309017, 0, -0.951056},
-			{-0.809017, 0, -0.587786}, {-0.809017, 0, 0.587785},
-			{0.309017, 0, 0.951057}, {1, 0, 0},
-			{0, 1, 0}, {0, 1, 0},
-			{0, 1, 0}, {0, 1, 0},
-			{0, 1, 0}, {0, -1, 0},
-			{0, -1, 0}, {0, -1, 0},
-			{0, -1, 0}, {0, -1, 0}
-		};
-
-    	constexpr int expectedIndices[20*3] = {
-    		0, 1, 5,
-    		1, 6, 5,
-			1, 2, 6,
-			2, 7, 6,
-			2, 3, 7,
-			3, 8, 7,
-			3, 4, 8,
-			4, 9, 8,
-			4, 0, 9,
-			0, 5, 9,
-			10, 12, 14,
-			10, 11, 12,
-			12, 13, 14,
-			15, 17, 19,
-			15, 16, 17,
-			17, 18, 19,
-    	};
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 20; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(16*3); // Expecting 16*3 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 16*3 * sizeof(unsigned int), indexData.data());
-
-        for (unsigned int i = 0; i < 16*3; ++i)
-        {
-            EXPECT_EQ(indexData[i], expectedIndices[i]);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawCylinder5WithoutTexture doesn't exist anymore";
+  //       glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  //       glm::vec3 size = {1.0f, 1.0f, 1.0f};
+  //       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+  //
+  //       // Use an OpenGL query to count the number of triangles drawn.
+  //       GLuint query;
+  //       glGenQueries(1, &query);
+  //       glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+  //
+  //       renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+  //       EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, color, 5));
+  //       renderer3D->endScene();
+  //
+  //       glEndQuery(GL_PRIMITIVES_GENERATED);
+  //       GLuint primitivesGenerated = 0;
+  //       glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+  //       // A cylinder 5 is made of 16 triangles.
+  //       EXPECT_EQ(primitivesGenerated, 16);
+  //
+  //       glDeleteQueries(1, &query);
+  //
+  //       // Validate vertex buffer data:
+  //       GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+  //       glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+  //       std::vector<Vertex> vertexData(20); // Expecting 20 vertices
+  //       glGetBufferSubData(GL_ARRAY_BUFFER, 0, 20 * sizeof(Vertex), vertexData.data());
+  //
+  //       // Expected vertex positions for a unit tetrahedron
+  //       constexpr glm::vec3 expectedPositions[20] = {
+  //       	{0.309017, 1, -0.951056},
+		// 	{-0.809017, 1, -0.587786},
+	 //   		{-0.809017, 1, 0.587785},
+	 //   		{0.309017, 1, 0.951057},
+	 //   		{1, 1, 0},
+	 //   		{0.309017, -1, -0.951056},
+	 //   		{-0.809017, -1, -0.587786},
+	 //   		{-0.809017, -1, 0.587785},
+	 //   		{0.309017, -1, 0.951057},
+	 //   		{1, -1, 0},
+	 //   		{1, 1, 0},
+	 //   		{0.309017, 1, 0.951057},
+	 //        {-0.809017, 1, 0.587785},
+	 //        {-0.809017, 1, -0.587786},
+  //       	{0.309017, 1, -0.951056},
+  //       	{1, -1, 0},
+  //       	{0.309017, -1, 0.951057},
+  //       	{-0.809017, -1, 0.587785},
+  //       	{-0.809017, -1, -0.587786},
+  //       	{0.309017, -1, -0.951056}
+  //       };
+  //
+  //       // Expected texture coordinates for each vertex
+  //       const glm::vec2 expectedTexCoords[20] = {
+	 //        {0, 1}, {0.2, 1}, {0.4, 1}, {0.6, 1},
+		// 	{0.8, 1}, {1, 1}, {1.2, 1}, {1.4, 1},
+		// 	{1.6, 1}, {1.8, 1}, {2, 1}, {2.2, 1},
+		// 	{2.4, 1}, {2.6, 1}, {2.8, 1}, {3, 1},
+		// 	{3.2, 1}, {3.4, 1}, {3.6, 1}, {3.8, 1},
+  //       };
+  //
+  //       // Expected normal vectors for each face (same normal for all vertices in a face)
+  //   	constexpr glm::vec3 expectedNormals[20] = {
+  //   		{0.309017, 0, -0.951056}, {-0.809017, 0, -0.587786},
+		// 	{-0.809017, 0, 0.587785}, {0.309017, 0, 0.951057},
+		// 	{1, 0, 0}, {0.309017, 0, -0.951056},
+		// 	{-0.809017, 0, -0.587786}, {-0.809017, 0, 0.587785},
+		// 	{0.309017, 0, 0.951057}, {1, 0, 0},
+		// 	{0, 1, 0}, {0, 1, 0},
+		// 	{0, 1, 0}, {0, 1, 0},
+		// 	{0, 1, 0}, {0, -1, 0},
+		// 	{0, -1, 0}, {0, -1, 0},
+		// 	{0, -1, 0}, {0, -1, 0}
+		// };
+  //
+  //   	constexpr int expectedIndices[20*3] = {
+  //   		0, 1, 5,
+  //   		1, 6, 5,
+		// 	1, 2, 6,
+		// 	2, 7, 6,
+		// 	2, 3, 7,
+		// 	3, 8, 7,
+		// 	3, 4, 8,
+		// 	4, 9, 8,
+		// 	4, 0, 9,
+		// 	0, 5, 9,
+		// 	10, 12, 14,
+		// 	10, 11, 12,
+		// 	12, 13, 14,
+		// 	15, 17, 19,
+		// 	15, 16, 17,
+		// 	17, 18, 19,
+  //   	};
+  //
+  //       // Check vertex data
+  //       for (unsigned int i = 0; i < 20; ++i)
+  //       {
+  //           // Compare the vertex position
+  //           EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+  //           // Compare texture coordinates
+  //           EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+  //           // Compare normals
+  //           EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+  //           // Check that the entityID was correctly set (here we passed -1)
+  //           EXPECT_EQ(vertexData[i].entityID, -1);
+  //       }
+  //       glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //
+  //       // Validate index buffer content:
+  //       GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+  //       std::vector<unsigned int> indexData(16*3); // Expecting 16*3 indices
+  //       glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 16*3 * sizeof(unsigned int), indexData.data());
+  //
+  //       for (unsigned int i = 0; i < 16*3; ++i)
+  //       {
+  //           EXPECT_EQ(indexData[i], expectedIndices[i]);
+  //       }
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawCylinder5WithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 5));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder5WithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, material, 5));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1592,26 +1624,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder5WithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 5));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder5WithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, color, 5));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1622,25 +1655,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder5WithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 5));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder5WithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, color, 5));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1651,30 +1685,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder5WithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 5));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder5WithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(position, size, rotation, material, 5));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1685,28 +1720,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCylinder5WithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 5));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawCylinder5WithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawCylinder(transform, material, 5));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 16); // A cylinder 5 is made of 16 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1718,138 +1754,140 @@ namespace nexo::renderer {
 	// Sphere 0 tests
 	TEST_F(Renderer3DTest, DrawSphere0WithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawSphere(position, size, color, 0));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A sphere 0 is made of 20 triangles.
-        EXPECT_EQ(primitivesGenerated, 20);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(12); // Expecting 12 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit sphere
-        constexpr glm::vec3 expectedPositions[12] = {
-        	{0, 0.525731, -0.850651},
-			{0.525731, 0.850651, 0},
-	   		{-0.525731, 0.850651, 0},
-	   		{0, 0.525731, 0.850651},
-	   		{0, -0.525731, 0.850651},
-	   		{-0.850651, 0, 0.525731},
-	   		{0, -0.525731, -0.850651},
-	   		{0.850651, 0, -0.525731},
-	   		{0.850651, 0, 0.525731},
-	   		{-0.850651, 0, -0.525731},
-	   		{0.525731, -0.850651, 0},
-	   		{-0.525731, -0.850651, 0}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[12] = {
-	        {0.25, 0.323792}, {0.5, 0.176208}, {1, 0.176208}, {0.75, 0.323792},
-			{0.75, 0.676208}, {0.911896, 0.5}, {0.25, 0.676208}, {0.411896, 0.5},
-			{0.588104, 0.5}, {0.0881041, 0.5}, {0.5, 0.823792}, {1, 0.823792}
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-    	constexpr glm::vec3 expectedNormals[12] = {
-    		{0, 0.525731, -0.850651}, {0.525731, 0.850651, 0},
-			{-0.525731, 0.850651, 0}, {0, 0.525731, 0.850651},
-			{0, -0.525731, 0.850651}, {-0.850651, 0, 0.525731},
-			{0, -0.525731, -0.850651}, {0.850651, 0, -0.525731},
-			{0.850651, 0, 0.525731}, {-0.850651, 0, -0.525731},
-			{0.525731, -0.850651, 0}, {-0.525731, -0.850651, 0}
-		};
-
-        constexpr int expectedIndices[20 * 3] = {
-	        2, 1, 0,
-	        1, 2, 3,
-	        5, 4, 3,
-	        4, 8, 3,
-	        7, 6, 0,
-	        6, 9, 0,
-	        11, 10, 4,
-	        10, 11, 6,
-	        9, 5, 2,
-	        5, 9, 11,
-	        8, 7, 1,
-	        7, 8, 10,
-	        2, 5, 3,
-	        8, 1, 3,
-	        9, 2, 0,
-	        1, 7, 0,
-	        11, 9, 6,
-	        7, 10, 6,
-	        5, 11, 4,
-	        10, 8, 4
-    	};
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 12; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(20*3); // Expecting 20*3 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 20*3 * sizeof(unsigned int), indexData.data());
-
-        for (unsigned int i = 0; i < 20*3; ++i) {
-            EXPECT_EQ(indexData[i], expectedIndices[i]);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawSphere0WithoutTexture doesn't exist anymore";
+  //       glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  //       glm::vec3 size = {1.0f, 1.0f, 1.0f};
+  //       glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+  //
+  //       // Use an OpenGL query to count the number of triangles drawn.
+  //       GLuint query;
+  //       glGenQueries(1, &query);
+  //       glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+  //
+  //       renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+  //       EXPECT_NO_THROW(renderer3D->drawSphere(position, size, color, 0));
+  //       renderer3D->endScene();
+  //
+  //       glEndQuery(GL_PRIMITIVES_GENERATED);
+  //       GLuint primitivesGenerated = 0;
+  //       glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+  //       // A sphere 0 is made of 20 triangles.
+  //       EXPECT_EQ(primitivesGenerated, 20);
+  //
+  //       glDeleteQueries(1, &query);
+  //
+  //       // Validate vertex buffer data:
+  //       GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+  //       glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+  //       std::vector<Vertex> vertexData(12); // Expecting 12 vertices
+  //       glGetBufferSubData(GL_ARRAY_BUFFER, 0, 12 * sizeof(Vertex), vertexData.data());
+  //
+  //       // Expected vertex positions for a unit sphere
+  //       constexpr glm::vec3 expectedPositions[12] = {
+  //       	{0, 0.525731, -0.850651},
+		// 	{0.525731, 0.850651, 0},
+	 //   		{-0.525731, 0.850651, 0},
+	 //   		{0, 0.525731, 0.850651},
+	 //   		{0, -0.525731, 0.850651},
+	 //   		{-0.850651, 0, 0.525731},
+	 //   		{0, -0.525731, -0.850651},
+	 //   		{0.850651, 0, -0.525731},
+	 //   		{0.850651, 0, 0.525731},
+	 //   		{-0.850651, 0, -0.525731},
+	 //   		{0.525731, -0.850651, 0},
+	 //   		{-0.525731, -0.850651, 0}
+  //       };
+  //
+  //       // Expected texture coordinates for each vertex
+  //       const glm::vec2 expectedTexCoords[12] = {
+	 //        {0.25, 0.323792}, {0.5, 0.176208}, {1, 0.176208}, {0.75, 0.323792},
+		// 	{0.75, 0.676208}, {0.911896, 0.5}, {0.25, 0.676208}, {0.411896, 0.5},
+		// 	{0.588104, 0.5}, {0.0881041, 0.5}, {0.5, 0.823792}, {1, 0.823792}
+  //       };
+  //
+  //       // Expected normal vectors for each face (same normal for all vertices in a face)
+  //   	constexpr glm::vec3 expectedNormals[12] = {
+  //   		{0, 0.525731, -0.850651}, {0.525731, 0.850651, 0},
+		// 	{-0.525731, 0.850651, 0}, {0, 0.525731, 0.850651},
+		// 	{0, -0.525731, 0.850651}, {-0.850651, 0, 0.525731},
+		// 	{0, -0.525731, -0.850651}, {0.850651, 0, -0.525731},
+		// 	{0.850651, 0, 0.525731}, {-0.850651, 0, -0.525731},
+		// 	{0.525731, -0.850651, 0}, {-0.525731, -0.850651, 0}
+		// };
+  //
+  //       constexpr int expectedIndices[20 * 3] = {
+	 //        2, 1, 0,
+	 //        1, 2, 3,
+	 //        5, 4, 3,
+	 //        4, 8, 3,
+	 //        7, 6, 0,
+	 //        6, 9, 0,
+	 //        11, 10, 4,
+	 //        10, 11, 6,
+	 //        9, 5, 2,
+	 //        5, 9, 11,
+	 //        8, 7, 1,
+	 //        7, 8, 10,
+	 //        2, 5, 3,
+	 //        8, 1, 3,
+	 //        9, 2, 0,
+	 //        1, 7, 0,
+	 //        11, 9, 6,
+	 //        7, 10, 6,
+	 //        5, 11, 4,
+	 //        10, 8, 4
+  //   	};
+  //
+  //       // Check vertex data
+  //       for (unsigned int i = 0; i < 12; ++i)
+  //       {
+  //           // Compare the vertex position
+  //           EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+  //           // Compare texture coordinates
+  //           EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+  //           // Compare normals
+  //           EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+  //           // Check that the entityID was correctly set (here we passed -1)
+  //           EXPECT_EQ(vertexData[i].entityID, -1);
+  //       }
+  //       glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //
+  //       // Validate index buffer content:
+  //       GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+  //       std::vector<unsigned int> indexData(20*3); // Expecting 20*3 indices
+  //       glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 20*3 * sizeof(unsigned int), indexData.data());
+  //
+  //       for (unsigned int i = 0; i < 20*3; ++i) {
+  //           EXPECT_EQ(indexData[i], expectedIndices[i]);
+  //       }
+  //       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawSphere0WithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, material, 0));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere0WithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, material, 0));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1860,26 +1898,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere0WithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, color, 0));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere0WithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, color, 0));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1890,25 +1929,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere0WithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(transform, color, 0));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere0WithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(transform, color, 0));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -1919,30 +1959,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere0WithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, material, 0));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere0WithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, material, 0));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1953,28 +1994,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere0WithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(transform, material, 0));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere0WithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(transform, material, 0));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 20); // A sphere 0 is made of 20 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -1987,303 +2029,305 @@ namespace nexo::renderer {
 	// Sphere 1 tests
 	TEST_F(Renderer3DTest, DrawSphere1WithoutTexture)
     {
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 size = {1.0f, 1.0f, 1.0f};
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-
-        // Use an OpenGL query to count the number of triangles drawn.
-        GLuint query;
-        glGenQueries(1, &query);
-        glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-        renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-        EXPECT_NO_THROW(renderer3D->drawSphere(position, size, color, 1));
-        renderer3D->endScene();
-
-        glEndQuery(GL_PRIMITIVES_GENERATED);
-        GLuint primitivesGenerated = 0;
-        glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-        // A sphere 1 is made of 80 triangles.
-        EXPECT_EQ(primitivesGenerated, 80);
-
-        glDeleteQueries(1, &query);
-
-        // Validate vertex buffer data:
-        GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        std::vector<Vertex> vertexData(42); // Expecting 42 vertices
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, 42 * sizeof(Vertex), vertexData.data());
-
-        // Expected vertex positions for a unit sphere
-        constexpr glm::vec3 expectedPositions[42] = {
-	        {0, 0.525731, -0.850651},
-	        {0.525731, 0.850651, 0},
-	        {-0.525731, 0.850651, 0},
-	        {0, 0.525731, 0.850651},
-	        {0, -0.525731, 0.850651},
-	        {-0.850651, 0, 0.525731},
-	        {0, -0.525731, -0.850651},
-	        {0.850651, 0, -0.525731},
-	        {0.850651, 0, 0.525731},
-	        {-0.850651, 0, -0.525731},
-	        {0.525731, -0.850651, 0},
-	        {-0.525731, -0.850651, 0},
-	        {0, 1, 0},
-	        {0.309017, 0.809017, -0.5},
-	        {-0.309017, 0.809017, -0.5},
-	        {-0.309017, 0.809017, 0.5},
-	        {0.309017, 0.809017, 0.5},
-	        {-0.5, -0.309017, 0.809017},
-	        {0, 0, 1},
-	        {-0.5, 0.309017, 0.809017},
-	        {0.5, -0.309017, 0.809017},
-	        {0.5, 0.309017, 0.809017},
-	        {0.5, -0.309017, -0.809017},
-	        {0, 0, -1},
-	        {0.5, 0.309017, -0.809017},
-	        {-0.5, -0.309017, -0.809017},
-	        {-0.5, 0.309017, -0.809017},
-	        {0, -1, 0},
-	        {0.309017, -0.809017, 0.5},
-	        {-0.309017, -0.809017, 0.5},
-	        {-0.309017, -0.809017, -0.5},
-	        {0.309017, -0.809017, -0.5},
-	        {-1, 0, 0},
-	        {-0.809017, 0.5, 0.309017},
-	        {-0.809017, 0.5, -0.309017},
-	        {-0.809017, -0.5, -0.309017},
-	        {-0.809017, -0.5, 0.309017},
-	        {1, 0, 0},
-	        {0.809017, 0.5, -0.309017},
-	        {0.809017, 0.5, 0.309017},
-	        {0.809017, -0.5, 0.309017},
-	        {0.809017, -0.5, -0.309017}
-        };
-
-        // Expected texture coordinates for each vertex
-        const glm::vec2 expectedTexCoords[42] = {
-	        {0.25, 0.323792},
-	        {0.5, 0.176208},
-	        {1, 0.176208},
-	        {0.75, 0.323792},
-	        {0.75, 0.676208},
-	        {0.911896, 0.5},
-	        {0.25, 0.676208},
-	        {0.411896, 0.5},
-	        {0.588104, 0.5},
-	        {0.0881041, 0.5},
-	        {0.5, 0.823792},
-	        {1, 0.823792},
-	        {0.5, 0},
-	        {0.338104, 0.2},
-	        {0.161896, 0.2},
-	        {0.838104, 0.2},
-	        {0.661896, 0.2},
-	        {0.838104, 0.6},
-	        {0.75, 0.5},
-	        {0.838104, 0.4},
-	        {0.661896, 0.6},
-	        {0.661896, 0.4},
-	        {0.338104, 0.6},
-	        {0.25, 0.5},
-	        {0.338104, 0.4},
-	        {0.161896, 0.6},
-	        {0.161896, 0.4},
-	        {0.5, 1},
-	        {0.661896, 0.8},
-	        {0.838104, 0.8},
-	        {0.161896, 0.8},
-	        {0.338104, 0.8},
-	        {1, 0.5},
-	        {0.94193, 0.333333},
-	        {0.0580699, 0.333333},
-	        {0.0580699, 0.666667},
-	        {0.94193, 0.666667},
-	        {0.5, 0.5},
-	        {0.44193, 0.333333},
-	        {0.55807, 0.333333},
-	        {0.55807, 0.666667},
-	        {0.44193, 0.666667}
-        };
-
-        // Expected normal vectors for each face (same normal for all vertices in a face)
-        constexpr glm::vec3 expectedNormals[42] = {
-	        {0, 0.525731, -0.850651},
-	        {0.525731, 0.850651, 0},
-	        {-0.525731, 0.850651, 0},
-	        {0, 0.525731, 0.850651},
-	        {0, -0.525731, 0.850651},
-	        {-0.850651, 0, 0.525731},
-	        {0, -0.525731, -0.850651},
-	        {0.850651, 0, -0.525731},
-	        {0.850651, 0, 0.525731},
-	        {-0.850651, 0, -0.525731},
-	        {0.525731, -0.850651, 0},
-	        {-0.525731, -0.850651, 0},
-	        {0, 1, 0},
-	        {0.309017, 0.809017, -0.5},
-	        {-0.309017, 0.809017, -0.5},
-	        {-0.309017, 0.809017, 0.5},
-	        {0.309017, 0.809017, 0.5},
-	        {-0.5, -0.309017, 0.809017},
-	        {0, 0, 1},
-	        {-0.5, 0.309017, 0.809017},
-	        {0.5, -0.309017, 0.809017},
-	        {0.5, 0.309017, 0.809017},
-	        {0.5, -0.309017, -0.809017},
-	        {0, 0, -1},
-	        {0.5, 0.309017, -0.809017},
-	        {-0.5, -0.309017, -0.809017},
-	        {-0.5, 0.309017, -0.809017},
-	        {0, -1, 0},
-	        {0.309017, -0.809017, 0.5},
-	        {-0.309017, -0.809017, 0.5},
-	        {-0.309017, -0.809017, -0.5},
-	        {0.309017, -0.809017, -0.5},
-	        {-1, 0, 0},
-	        {-0.809017, 0.5, 0.309017},
-	        {-0.809017, 0.5, -0.309017},
-	        {-0.809017, -0.5, -0.309017},
-	        {-0.809017, -0.5, 0.309017},
-	        {1, 0, 0},
-	        {0.809017, 0.5, -0.309017},
-	        {0.809017, 0.5, 0.309017},
-	        {0.809017, -0.5, 0.309017},
-	        {0.809017, -0.5, -0.309017}
-        };
-
-        constexpr int expectedIndices[80 * 3] = {
-	        2, 12, 14,
-	        12, 1, 13,
-	        14, 13, 0,
-	        12, 13, 14,
-	        1, 12, 16,
-	        12, 2, 15,
-	        16, 15, 3,
-	        12, 15, 16,
-	        5, 17, 19,
-	        17, 4, 18,
-	        19, 18, 3,
-	        17, 18, 19,
-	        4, 20, 18,
-	        20, 8, 21,
-	        18, 21, 3,
-	        20, 21, 18,
-	        7, 22, 24,
-	        22, 6, 23,
-	        24, 23, 0,
-	        22, 23, 24,
-	        6, 25, 23,
-	        25, 9, 26,
-	        23, 26, 0,
-	        25, 26, 23,
-	        11, 27, 29,
-	        27, 10, 28,
-	        29, 28, 4,
-	        27, 28, 29,
-	        10, 27, 31,
-	        27, 11, 30,
-	        31, 30, 6,
-	        27, 30, 31,
-	        9, 32, 34,
-	        32, 5, 33,
-	        34, 33, 2,
-	        32, 33, 34,
-	        5, 32, 36,
-	        32, 9, 35,
-	        36, 35, 11,
-	        32, 35, 36,
-	        8, 37, 39,
-	        37, 7, 38,
-	        39, 38, 1,
-	        37, 38, 39,
-	        7, 37, 41,
-	        37, 8, 40,
-	        41, 40, 10,
-	        37, 40, 41,
-	        2, 33, 15,
-	        33, 5, 19,
-	        15, 19, 3,
-	        33, 19, 15,
-	        8, 39, 21,
-	        39, 1, 16,
-	        21, 16, 3,
-	        39, 16, 21,
-	        9, 34, 26,
-	        34, 2, 14,
-	        26, 14, 0,
-	        34, 14, 26,
-	        1, 38, 13,
-	        38, 7, 24,
-	        13, 24, 0,
-	        38, 24, 13,
-	        11, 35, 30,
-	        35, 9, 25,
-	        30, 25, 6,
-	        35, 25, 30,
-	        7, 41, 22,
-	        41, 10, 31,
-	        22, 31, 6,
-	        41, 31, 22,
-	        5, 36, 17,
-	        36, 11, 29,
-	        17, 29, 4,
-	        36, 29, 17,
-	        10, 40, 28,
-	        40, 8, 20,
-	        28, 20, 4,
-	        40, 20, 28
-        };
-
-        // Check vertex data
-        for (unsigned int i = 0; i < 42; ++i)
-        {
-            // Compare the vertex position
-            EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
-            // Compare texture coordinates
-            EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
-            // Compare normals
-            EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
-            // Check that the entityID was correctly set (here we passed -1)
-            EXPECT_EQ(vertexData[i].entityID, -1);
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Validate index buffer content:
-        GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-        std::vector<unsigned int> indexData(80*3); // Expecting 80*3 indices
-        glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 80*3 * sizeof(unsigned int), indexData.data());
-
-        for (unsigned int i = 0; i < 80*3; ++i) {
-            EXPECT_EQ(indexData[i], expectedIndices[i]);
-        }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GTEST_SKIP() << "DrawSphere1WithoutTexture doesn't exist anymore";
+        // glm::vec3 position = {0.0f, 0.0f, 0.0f};
+        // glm::vec3 size = {1.0f, 1.0f, 1.0f};
+        // glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+        //
+        // // Use an OpenGL query to count the number of triangles drawn.
+        // GLuint query;
+        // glGenQueries(1, &query);
+        // glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+        //
+        // renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+        // EXPECT_NO_THROW(renderer3D->drawSphere(position, size, color, 1));
+        // renderer3D->endScene();
+        //
+        // glEndQuery(GL_PRIMITIVES_GENERATED);
+        // GLuint primitivesGenerated = 0;
+        // glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+        // // A sphere 1 is made of 80 triangles.
+        // EXPECT_EQ(primitivesGenerated, 80);
+        //
+        // glDeleteQueries(1, &query);
+        //
+        // // Validate vertex buffer data:
+        // GLuint vertexBufferId = renderer3D->getInternalStorage()->vertexBuffer->getId();
+        // glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+        // std::vector<Vertex> vertexData(42); // Expecting 42 vertices
+        // glGetBufferSubData(GL_ARRAY_BUFFER, 0, 42 * sizeof(Vertex), vertexData.data());
+        //
+        // // Expected vertex positions for a unit sphere
+        // constexpr glm::vec3 expectedPositions[42] = {
+	       //  {0, 0.525731, -0.850651},
+	       //  {0.525731, 0.850651, 0},
+	       //  {-0.525731, 0.850651, 0},
+	       //  {0, 0.525731, 0.850651},
+	       //  {0, -0.525731, 0.850651},
+	       //  {-0.850651, 0, 0.525731},
+	       //  {0, -0.525731, -0.850651},
+	       //  {0.850651, 0, -0.525731},
+	       //  {0.850651, 0, 0.525731},
+	       //  {-0.850651, 0, -0.525731},
+	       //  {0.525731, -0.850651, 0},
+	       //  {-0.525731, -0.850651, 0},
+	       //  {0, 1, 0},
+	       //  {0.309017, 0.809017, -0.5},
+	       //  {-0.309017, 0.809017, -0.5},
+	       //  {-0.309017, 0.809017, 0.5},
+	       //  {0.309017, 0.809017, 0.5},
+	       //  {-0.5, -0.309017, 0.809017},
+	       //  {0, 0, 1},
+	       //  {-0.5, 0.309017, 0.809017},
+	       //  {0.5, -0.309017, 0.809017},
+	       //  {0.5, 0.309017, 0.809017},
+	       //  {0.5, -0.309017, -0.809017},
+	       //  {0, 0, -1},
+	       //  {0.5, 0.309017, -0.809017},
+	       //  {-0.5, -0.309017, -0.809017},
+	       //  {-0.5, 0.309017, -0.809017},
+	       //  {0, -1, 0},
+	       //  {0.309017, -0.809017, 0.5},
+	       //  {-0.309017, -0.809017, 0.5},
+	       //  {-0.309017, -0.809017, -0.5},
+	       //  {0.309017, -0.809017, -0.5},
+	       //  {-1, 0, 0},
+	       //  {-0.809017, 0.5, 0.309017},
+	       //  {-0.809017, 0.5, -0.309017},
+	       //  {-0.809017, -0.5, -0.309017},
+	       //  {-0.809017, -0.5, 0.309017},
+	       //  {1, 0, 0},
+	       //  {0.809017, 0.5, -0.309017},
+	       //  {0.809017, 0.5, 0.309017},
+	       //  {0.809017, -0.5, 0.309017},
+	       //  {0.809017, -0.5, -0.309017}
+        // };
+        //
+        // // Expected texture coordinates for each vertex
+        // const glm::vec2 expectedTexCoords[42] = {
+	       //  {0.25, 0.323792},
+	       //  {0.5, 0.176208},
+	       //  {1, 0.176208},
+	       //  {0.75, 0.323792},
+	       //  {0.75, 0.676208},
+	       //  {0.911896, 0.5},
+	       //  {0.25, 0.676208},
+	       //  {0.411896, 0.5},
+	       //  {0.588104, 0.5},
+	       //  {0.0881041, 0.5},
+	       //  {0.5, 0.823792},
+	       //  {1, 0.823792},
+	       //  {0.5, 0},
+	       //  {0.338104, 0.2},
+	       //  {0.161896, 0.2},
+	       //  {0.838104, 0.2},
+	       //  {0.661896, 0.2},
+	       //  {0.838104, 0.6},
+	       //  {0.75, 0.5},
+	       //  {0.838104, 0.4},
+	       //  {0.661896, 0.6},
+	       //  {0.661896, 0.4},
+	       //  {0.338104, 0.6},
+	       //  {0.25, 0.5},
+	       //  {0.338104, 0.4},
+	       //  {0.161896, 0.6},
+	       //  {0.161896, 0.4},
+	       //  {0.5, 1},
+	       //  {0.661896, 0.8},
+	       //  {0.838104, 0.8},
+	       //  {0.161896, 0.8},
+	       //  {0.338104, 0.8},
+	       //  {1, 0.5},
+	       //  {0.94193, 0.333333},
+	       //  {0.0580699, 0.333333},
+	       //  {0.0580699, 0.666667},
+	       //  {0.94193, 0.666667},
+	       //  {0.5, 0.5},
+	       //  {0.44193, 0.333333},
+	       //  {0.55807, 0.333333},
+	       //  {0.55807, 0.666667},
+	       //  {0.44193, 0.666667}
+        // };
+        //
+        // // Expected normal vectors for each face (same normal for all vertices in a face)
+        // constexpr glm::vec3 expectedNormals[42] = {
+	       //  {0, 0.525731, -0.850651},
+	       //  {0.525731, 0.850651, 0},
+	       //  {-0.525731, 0.850651, 0},
+	       //  {0, 0.525731, 0.850651},
+	       //  {0, -0.525731, 0.850651},
+	       //  {-0.850651, 0, 0.525731},
+	       //  {0, -0.525731, -0.850651},
+	       //  {0.850651, 0, -0.525731},
+	       //  {0.850651, 0, 0.525731},
+	       //  {-0.850651, 0, -0.525731},
+	       //  {0.525731, -0.850651, 0},
+	       //  {-0.525731, -0.850651, 0},
+	       //  {0, 1, 0},
+	       //  {0.309017, 0.809017, -0.5},
+	       //  {-0.309017, 0.809017, -0.5},
+	       //  {-0.309017, 0.809017, 0.5},
+	       //  {0.309017, 0.809017, 0.5},
+	       //  {-0.5, -0.309017, 0.809017},
+	       //  {0, 0, 1},
+	       //  {-0.5, 0.309017, 0.809017},
+	       //  {0.5, -0.309017, 0.809017},
+	       //  {0.5, 0.309017, 0.809017},
+	       //  {0.5, -0.309017, -0.809017},
+	       //  {0, 0, -1},
+	       //  {0.5, 0.309017, -0.809017},
+	       //  {-0.5, -0.309017, -0.809017},
+	       //  {-0.5, 0.309017, -0.809017},
+	       //  {0, -1, 0},
+	       //  {0.309017, -0.809017, 0.5},
+	       //  {-0.309017, -0.809017, 0.5},
+	       //  {-0.309017, -0.809017, -0.5},
+	       //  {0.309017, -0.809017, -0.5},
+	       //  {-1, 0, 0},
+	       //  {-0.809017, 0.5, 0.309017},
+	       //  {-0.809017, 0.5, -0.309017},
+	       //  {-0.809017, -0.5, -0.309017},
+	       //  {-0.809017, -0.5, 0.309017},
+	       //  {1, 0, 0},
+	       //  {0.809017, 0.5, -0.309017},
+	       //  {0.809017, 0.5, 0.309017},
+	       //  {0.809017, -0.5, 0.309017},
+	       //  {0.809017, -0.5, -0.309017}
+        // };
+        //
+        // constexpr int expectedIndices[80 * 3] = {
+	       //  2, 12, 14,
+	       //  12, 1, 13,
+	       //  14, 13, 0,
+	       //  12, 13, 14,
+	       //  1, 12, 16,
+	       //  12, 2, 15,
+	       //  16, 15, 3,
+	       //  12, 15, 16,
+	       //  5, 17, 19,
+	       //  17, 4, 18,
+	       //  19, 18, 3,
+	       //  17, 18, 19,
+	       //  4, 20, 18,
+	       //  20, 8, 21,
+	       //  18, 21, 3,
+	       //  20, 21, 18,
+	       //  7, 22, 24,
+	       //  22, 6, 23,
+	       //  24, 23, 0,
+	       //  22, 23, 24,
+	       //  6, 25, 23,
+	       //  25, 9, 26,
+	       //  23, 26, 0,
+	       //  25, 26, 23,
+	       //  11, 27, 29,
+	       //  27, 10, 28,
+	       //  29, 28, 4,
+	       //  27, 28, 29,
+	       //  10, 27, 31,
+	       //  27, 11, 30,
+	       //  31, 30, 6,
+	       //  27, 30, 31,
+	       //  9, 32, 34,
+	       //  32, 5, 33,
+	       //  34, 33, 2,
+	       //  32, 33, 34,
+	       //  5, 32, 36,
+	       //  32, 9, 35,
+	       //  36, 35, 11,
+	       //  32, 35, 36,
+	       //  8, 37, 39,
+	       //  37, 7, 38,
+	       //  39, 38, 1,
+	       //  37, 38, 39,
+	       //  7, 37, 41,
+	       //  37, 8, 40,
+	       //  41, 40, 10,
+	       //  37, 40, 41,
+	       //  2, 33, 15,
+	       //  33, 5, 19,
+	       //  15, 19, 3,
+	       //  33, 19, 15,
+	       //  8, 39, 21,
+	       //  39, 1, 16,
+	       //  21, 16, 3,
+	       //  39, 16, 21,
+	       //  9, 34, 26,
+	       //  34, 2, 14,
+	       //  26, 14, 0,
+	       //  34, 14, 26,
+	       //  1, 38, 13,
+	       //  38, 7, 24,
+	       //  13, 24, 0,
+	       //  38, 24, 13,
+	       //  11, 35, 30,
+	       //  35, 9, 25,
+	       //  30, 25, 6,
+	       //  35, 25, 30,
+	       //  7, 41, 22,
+	       //  41, 10, 31,
+	       //  22, 31, 6,
+	       //  41, 31, 22,
+	       //  5, 36, 17,
+	       //  36, 11, 29,
+	       //  17, 29, 4,
+	       //  36, 29, 17,
+	       //  10, 40, 28,
+	       //  40, 8, 20,
+	       //  28, 20, 4,
+	       //  40, 20, 28
+        // };
+        //
+        // // Check vertex data
+        // for (unsigned int i = 0; i < 42; ++i)
+        // {
+        //     // Compare the vertex position
+        //     EXPECT_VEC3_NEAR(vertexData[i].position, expectedPositions[i], 0.01f);
+        //     // Compare texture coordinates
+        //     EXPECT_VEC2_NEAR(vertexData[i].texCoord, expectedTexCoords[i], 0.01f);
+        //     // Compare normals
+        //     EXPECT_VEC3_NEAR(vertexData[i].normal, expectedNormals[i], 0.01f);
+        //     // Check that the entityID was correctly set (here we passed -1)
+        //     EXPECT_EQ(vertexData[i].entityID, -1);
+        // }
+        // glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //
+        // // Validate index buffer content:
+        // GLuint indexBufferId = renderer3D->getInternalStorage()->indexBuffer->getId();
+        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+        // std::vector<unsigned int> indexData(80*3); // Expecting 80*3 indices
+        // glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 80*3 * sizeof(unsigned int), indexData.data());
+        //
+        // for (unsigned int i = 0; i < 80*3; ++i) {
+        //     EXPECT_EQ(indexData[i], expectedIndices[i]);
+        // }
+        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
 	TEST_F(Renderer3DTest, DrawSphere1WithMaterial)
     {
-    	glm::vec3 position = {0.0f, 0.0f, 0.0f};
-    	glm::vec3 size = {1.0f, 1.0f, 1.0f};
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, material, 1));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere1WithMaterial doesn't exist anymore";
+    	// glm::vec3 position = {0.0f, 0.0f, 0.0f};
+    	// glm::vec3 size = {1.0f, 1.0f, 1.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, material, 1));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -2294,26 +2338,27 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere1WithRotation)
     {
-	    constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-    	constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, color, 1));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere1WithRotation doesn't exist anymore";
+	    // constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+    	// constexpr glm::vec4 color = {0.0f, 1.0f, 0.0f, 1.0f}; // Green color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, color, 1));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -2324,25 +2369,26 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere1WithTransformMatrix)
     {
-    	const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-    	constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
-
-    	// Use an OpenGL query to count the number of triangles drawn
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(transform, color, 1));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere1WithTransformMatrix doesn't exist anymore";
+    	// const glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		 glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+    	// constexpr glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
+	    //
+    	// // Use an OpenGL query to count the number of triangles drawn
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(transform, color, 1));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
 	    // const Renderer3DStats stats = renderer3D->getStats();
@@ -2353,30 +2399,31 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere1WithRotationAndMaterial)
     {
-    	constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
-    	constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
-    	constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
-
-    	components::Material material;
-    	material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-    	material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    	material.metallicMap = Texture2D::create(2, 2); // Example specular texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, material, 1));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere1WithRotationAndMaterial doesn't exist anymore";
+    	// constexpr glm::vec3 position = {1.0f, 2.0f, 3.0f};
+    	// constexpr glm::vec3 size = {2.0f, 2.0f, 2.0f};
+    	// constexpr glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {0.0f, 1.0f, 1.0f, 1.0f}; // Cyan color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+    	// material.specularColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    	// material.metallicMap = Texture2D::create(2, 2); // Example specular texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(position, size, rotation, material, 1));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
@@ -2387,28 +2434,29 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawSphere1WithTransformAndMaterial)
     {
-    	glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
-							  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
-							  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
-
-    	components::Material material;
-    	material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
-    	material.albedoTexture = Texture2D::create(4, 4); // Example texture
-
-    	GLuint query;
-    	glGenQueries(1, &query);
-    	glBeginQuery(GL_PRIMITIVES_GENERATED, query);
-
-    	renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
-    	EXPECT_NO_THROW(renderer3D->drawSphere(transform, material, 1));
-    	renderer3D->endScene();
-
-    	// Validate number of primitives drawn
-    	glEndQuery(GL_PRIMITIVES_GENERATED);
-    	GLuint primitivesGenerated = 0;
-    	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
-    	EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
-    	glDeleteQueries(1, &query);
+		GTEST_SKIP() << "DrawSphere1WithTransformAndMaterial doesn't exist anymore";
+    	// glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
+					// 		  glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
+					// 		  glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
+	    //
+    	// components::Material material;
+    	// material.albedoColor = {1.0f, 1.0f, 0.0f, 1.0f}; // Yellow color
+    	// material.albedoTexture = Texture2D::create(4, 4); // Example texture
+	    //
+    	// GLuint query;
+    	// glGenQueries(1, &query);
+    	// glBeginQuery(GL_PRIMITIVES_GENERATED, query);
+	    //
+    	// renderer3D->beginScene(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f});
+    	// EXPECT_NO_THROW(renderer3D->drawSphere(transform, material, 1));
+    	// renderer3D->endScene();
+	    //
+    	// // Validate number of primitives drawn
+    	// glEndQuery(GL_PRIMITIVES_GENERATED);
+    	// GLuint primitivesGenerated = 0;
+    	// glGetQueryObjectuiv(query, GL_QUERY_RESULT, &primitivesGenerated);
+    	// EXPECT_EQ(primitivesGenerated, 80); // A sphere 1 is made of 80 triangles
+    	// glDeleteQueries(1, &query);
 
     	// Validate render stats
     	// Renderer3DStats stats = renderer3D->getStats();
