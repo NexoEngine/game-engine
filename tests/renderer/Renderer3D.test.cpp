@@ -95,6 +95,7 @@ namespace nexo::renderer {
 
     TEST_F(Renderer3DTest, DrawCubeWithoutTexture)
     {
+		GTEST_SKIP() << "DrawCubeWithoutTexture doesn't exist anymore";
         // glm::vec3 position = {0.0f, 0.0f, 0.0f};
         // glm::vec3 size = {1.0f, 1.0f, 1.0f};
         // glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Red color
@@ -218,6 +219,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithMaterial doesn't exist anymore";
 	//     glm::vec3 position = {0.0f, 0.0f, 0.0f};
 	//     glm::vec3 size = {1.0f, 1.0f, 1.0f};
 
@@ -279,6 +281,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithTransformMatrix)
 	{
+		GTEST_SKIP() << "DrawCubeWithTransformMatrix doesn't exist anymore";
 	    // glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
 	    //                      glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
 	    // glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f}; // Blue color
@@ -308,6 +311,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithRotationAndMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithRotationAndMaterial doesn't exist anymore";
 	    // glm::vec3 position = {1.0f, 2.0f, 3.0f};
 	    // glm::vec3 size = {2.0f, 2.0f, 2.0f};
 	    // glm::vec3 rotation = {45.0f, 30.0f, 60.0f};
@@ -342,6 +346,7 @@ namespace nexo::renderer {
 
 	TEST_F(Renderer3DTest, DrawCubeWithTransformAndMaterial)
 	{
+		GTEST_SKIP() << "DrawCubeWithTransformAndMaterial doesn't exist anymore";
 	    // glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0f, 2.0f, 3.0f}) *
 	    //                       glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), {0.0f, 1.0f, 0.0f}) *
 	    //                       glm::scale(glm::mat4(1.0f), {2.0f, 2.0f, 2.0f});
