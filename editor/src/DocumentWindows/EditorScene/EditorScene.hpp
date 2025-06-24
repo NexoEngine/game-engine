@@ -21,6 +21,7 @@
 #include "core/scene/SceneManager.hpp"
 #include "../PopupManager.hpp"
 #include "ImNexo/Widgets.hpp"
+#include <format>
 
 namespace nexo::editor
 {
@@ -113,6 +114,10 @@ namespace nexo::editor
             {0.0f, IM_COL32(50, 50, 70, 230)},
             {1.0f, IM_COL32(30, 30, 45, 230)}
         };
+
+        // Game window focus scheduling
+        bool m_shouldFocusGameWindow = false;
+        std::string m_gameWindowToFocus;
 
         // Selected button gradient - lighter blue gradient
         const std::vector<ImNexo::GradientStop> m_selectedGradient = {

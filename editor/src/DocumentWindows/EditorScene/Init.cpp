@@ -23,6 +23,7 @@
 #include "renderPasses/OutlinePass.hpp"
 #include "assets/AssetImporter.hpp"
 #include "Path.hpp"
+#include "components/SceneComponents.hpp"
 
 namespace nexo::editor {
 
@@ -73,6 +74,8 @@ namespace nexo::editor {
         Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_editorCamera), controller);
         constexpr components::EditorCameraTag editorCameraTag;
         Application::m_coordinator->addComponent(m_editorCamera, editorCameraTag);
+        components::SceneTag sceneTag{static_cast<unsigned int>(m_sceneId)};
+        Application::m_coordinator->addComponent(m_editorCamera, sceneTag);
         m_activeCamera = m_editorCamera;
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
