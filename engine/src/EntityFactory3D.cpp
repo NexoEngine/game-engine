@@ -48,7 +48,7 @@ namespace nexo {
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
 
-        std::unique_ptr<components::Material> material = std::make_unique<components::Material>();
+        auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
                                 assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
@@ -101,7 +101,7 @@ namespace nexo {
         transform.pos = pos;
         transform.size = size;
 
-        std::unique_ptr<components::Material> material = std::make_unique<components::Material>();
+        auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
                                 assets::AssetLocation("_internal::BillboardMatFlatColor@_internal"),

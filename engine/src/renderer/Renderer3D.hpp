@@ -179,8 +179,8 @@ namespace nexo::renderer {
          */
         void shutdown();
 
-        void bindTextures();
-        void unbindTextures();
+        void bindTextures() const;
+        void unbindTextures() const;
 
         /**
          * @brief Begins a new 3D rendering scene.

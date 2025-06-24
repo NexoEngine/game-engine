@@ -93,7 +93,7 @@ namespace nexo::editor {
         }
     }
 
-    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity)
+    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) const
     {
         SceneProperties scene{sceneId, uiId};
         EntityProperties data{scene, entity};
@@ -118,7 +118,7 @@ namespace nexo::editor {
 
         // Fall back to entity ID if no name found
         if (name.empty()) {
-            name = "Entity " + std::to_string(entity);
+            name = std::format("Entity {}", entity);
         }
 
         std::string uuid;

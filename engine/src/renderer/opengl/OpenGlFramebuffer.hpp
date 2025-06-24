@@ -202,7 +202,7 @@ namespace nexo::renderer {
             NxFramebufferSpecs &getSpecs() override {return m_specs;};
             [[nodiscard]] const NxFramebufferSpecs &getSpecs() const override {return m_specs;};
 
-            [[nodiscard]] unsigned int getNbColorAttachments() const override { return m_colorAttachments.size(); };
+            [[nodiscard]] unsigned int getNbColorAttachments() const override { return static_cast<unsigned int>(m_colorAttachments.size()); };
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
             [[nodiscard]] unsigned int getDepthAttachmentId() const override { return m_depthAttachment; }
 

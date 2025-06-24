@@ -178,7 +178,7 @@ namespace nexo::renderer {
         m_finalRenderTarget = finalRenderTarget;
     }
 
-    std::shared_ptr<NxFramebuffer> RenderPipeline::getFinalRenderTarget()
+    std::shared_ptr<NxFramebuffer> RenderPipeline::getFinalRenderTarget() const
     {
         return m_finalRenderTarget;
     }
@@ -291,7 +291,7 @@ namespace nexo::renderer {
         return m_cameraClearColor;
     }
 
-    void RenderPipeline::resize(unsigned int width, unsigned int height)
+    void RenderPipeline::resize(unsigned int width, unsigned int height) const
     {
         if (!m_finalRenderTarget)
             return;

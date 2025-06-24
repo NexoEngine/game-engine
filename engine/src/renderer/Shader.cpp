@@ -172,7 +172,7 @@ namespace nexo::renderer {
         return false;
     }
 
-    bool NxShader::setUniform(const std::string &name, UniformValue value)
+    bool NxShader::setUniform(const std::string &name, UniformValue value) const
     {
         if (std::holds_alternative<float>(value))
             return setUniformFloat(name, std::get<float>(value));

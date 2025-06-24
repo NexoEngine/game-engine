@@ -51,7 +51,7 @@ namespace nexo::renderer {
             void setOutput(PassId id, std::shared_ptr<NxFramebuffer> output);
 
             void setFinalRenderTarget(std::shared_ptr<NxFramebuffer> finalRenderTarget);
-            std::shared_ptr<NxFramebuffer> getFinalRenderTarget();
+            std::shared_ptr<NxFramebuffer> getFinalRenderTarget() const;
 
             // Set the final output pass
             void setFinalOutputPass(PassId id);
@@ -81,7 +81,7 @@ namespace nexo::renderer {
             void setCameraClearColor(const glm::vec4 &clearColor);
             const glm::vec4 &getCameraClearColor() const;
 
-            void resize(unsigned int width, unsigned int height);
+            void resize(unsigned int width, unsigned int height) const;
 
         private:
             std::vector<DrawCommand> m_drawCommands;
