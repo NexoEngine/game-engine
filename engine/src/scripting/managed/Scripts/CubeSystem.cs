@@ -108,7 +108,6 @@ public class CubeSystem : SystemBase
                 1.0f
             );
             SpawnCube(position, size, rotation, color);
-            Logger.Log(LogLevel.Info, $"Spawned a new cube at {position} with size {size} and color {color}");
         }
         
         foreach (var cubeId in _cubes)
