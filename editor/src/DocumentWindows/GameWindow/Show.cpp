@@ -40,7 +40,7 @@ namespace nexo::editor
 
         // Begin the window
         std::string windowTitle = "Game View - " + m_sceneUuid + "###GameWindow" + std::to_string(m_sceneId);
-        ImGui::Begin(windowTitle.c_str(), &m_opened, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(windowTitle.c_str(), &m_opened, ImGuiWindowFlags_NoCollapse);
 
         // Call beginRender to handle docking and state tracking
         beginRender("###GameWindow" + std::to_string(m_sceneId));
@@ -49,11 +49,13 @@ namespace nexo::editor
         m_windowPos = ImGui::GetWindowPos();
         m_contentSize = ImGui::GetContentRegionAvail();
 
-        // Render the toolbar
-        renderToolbar();
-
-        // Render the viewport
+        // Render the viewport first
         renderViewport();
+
+        ImVec2 contentPos = ImGui::GetCursorScreenPos();
+        contentPos.y = m_windowPos.y + ImGui::GetFrameHeight();
+
+        renderToolbar();
 
         ImGui::End();
     }
@@ -63,9 +65,10 @@ namespace nexo::editor
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
 
+        ImVec2 windowContentMin = ImGui::GetWindowContentRegionMin();
         ImVec2 toolbarPos = m_windowPos;
-        toolbarPos.x += 10.0f;
-        toolbarPos.y += 50.0f;
+        toolbarPos.x += windowContentMin.x + 10.0f;
+        toolbarPos.y += 20.0f;
 
         ImGui::SetCursorScreenPos(toolbarPos);
 
