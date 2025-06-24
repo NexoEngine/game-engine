@@ -281,6 +281,8 @@ namespace nexo::renderer {
 
     void RenderPipeline::resize(unsigned int width, unsigned int height)
     {
+        if (!m_finalRenderTarget)
+            return;
         m_finalRenderTarget->resize(width, height);
         for (const auto &[_, pass] : passes)
             pass->resize(width, height);
