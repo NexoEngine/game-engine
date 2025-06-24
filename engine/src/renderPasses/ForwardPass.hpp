@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Framebuffer.hpp"
+#include "renderer/Framebuffer.hpp"
 #include "renderer/RenderPass.hpp"
 
 namespace nexo::renderer {
@@ -23,6 +23,7 @@ namespace nexo::renderer {
     class ForwardPass : public RenderPass {
         public:
             ForwardPass(unsigned int width, unsigned int height);
+            virtual ~ForwardPass() = default;
 
             void execute(RenderPipeline& pipeline) override;
             void resize(unsigned int width, unsigned int height) override;

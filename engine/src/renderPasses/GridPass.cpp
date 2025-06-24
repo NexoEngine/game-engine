@@ -45,11 +45,9 @@ namespace nexo::renderer {
         if (!prevPass)
             return;
 
-        //output->bind();
         output->copy(prevPass);
         output->bind();
 
-        // Render the grid
         renderer::NxRenderCommand::setDepthMask(false);
         renderer::NxRenderCommand::setCulling(false);
         const auto &drawCommands = pipeline.getDrawCommands();
@@ -68,6 +66,8 @@ namespace nexo::renderer {
 
     void GridPass::resize(unsigned int width, unsigned int height)
     {
+        if (!m_output)
+            return;
         m_output->resize(width, height);
     }
 }

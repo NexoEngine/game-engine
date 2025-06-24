@@ -14,12 +14,12 @@
 #pragma once
 
 #include "components/MaterialComponent.hpp"
-#include "ecs/GroupSystem.hpp"
 #include "components/Transform.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
+#include "ecs/GroupSystem.hpp"
 
 namespace nexo::system {
     class RenderBillboardSystem final : public ecs::GroupSystem<

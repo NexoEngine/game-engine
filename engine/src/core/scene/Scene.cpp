@@ -36,45 +36,38 @@ namespace nexo::scene {
 	}
 
 	void Scene::addEntity(const ecs::Entity entity)
-{
-    // Add scene tag to the entity itself
-    const components::SceneTag tag{m_id, true, true};
-    m_coordinator->addComponent<components::SceneTag>(entity, tag);
-    m_entities.insert(entity);
+    {
+        const components::SceneTag tag{m_id, true, true};
+        m_coordinator->addComponent<components::SceneTag>(entity, tag);
+        m_entities.insert(entity);
 
-    // If it's a root entity or has children, recursively add all children to the scene
-    if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
-        const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
+        // If it's a root entity or has children, recursively add all children to the scene
+        if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
+            const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
 
-        // Recursively add all children to the scene
-        for (const auto &childEntity : transform.children) {
-            addChildEntityToScene(childEntity);
+            for (const auto &childEntity : transform.children)
+                addChildEntityToScene(childEntity);
         }
     }
-}
 
-// New private helper method
-void Scene::addChildEntityToScene(const ecs::Entity entity)
-{
-    // Skip if the entity is already in this scene
-    if (m_entities.find(entity) != m_entities.end()) {
-        return;
-    }
+    void Scene::addChildEntityToScene(const ecs::Entity entity)
+    {
+        if (m_entities.find(entity) != m_entities.end())
+            return;
 
-    // Add scene tag to this child entity
-    const components::SceneTag tag{m_id, true, true};
-    m_coordinator->addComponent<components::SceneTag>(entity, tag);
-    m_entities.insert(entity);
+        // Add scene tag to this child entity
+        const components::SceneTag tag{m_id, true, true};
+        m_coordinator->addComponent<components::SceneTag>(entity, tag);
+        m_entities.insert(entity);
 
-    // Recursively add this entity's children
-    if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
-        const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
+        // Recursively add this entity's children
+        if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
+            const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
 
-        for (const auto &childEntity : transform.children) {
-            addChildEntityToScene(childEntity);
+            for (const auto &childEntity : transform.children)
+                addChildEntityToScene(childEntity);
         }
     }
-}
 
 	void Scene::removeEntity(const ecs::Entity entity)
 	{

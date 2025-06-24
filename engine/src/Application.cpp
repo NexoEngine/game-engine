@@ -325,8 +325,7 @@ namespace nexo {
 
         // Finally, handle the scene tag and destroy the entity as in the original code
         const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
-        if (tag)
-        {
+        if (tag) {
             const unsigned int sceneId = tag->get().id;
             m_SceneManager.getScene(sceneId).removeEntity(entity);
         }
@@ -344,8 +343,7 @@ namespace nexo {
 
         // Get the parent's transform component which now stores children
         auto parentTransform = m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
-        if (parentTransform)
-        {
+        if (parentTransform) {
             // Remove this entity from parent's children vector
             parentTransform->get().removeChild(entity);
         }
@@ -365,9 +363,7 @@ namespace nexo {
         for (const auto& childEntity : childrenCopy)
         {
             if (childEntity != ecs::INVALID_ENTITY && childEntity != entity) // Avoid circular references
-            {
                 deleteEntity(childEntity);
-            }
         }
 
         // Clear the children list to avoid dangling references

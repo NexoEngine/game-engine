@@ -23,6 +23,7 @@ namespace nexo::renderer {
     class OutlinePass : public RenderPass {
         public:
             OutlinePass(unsigned int width, unsigned int height);
+            virtual ~OutlinePass() = default;
 
             void execute(RenderPipeline& pipeline) override;
             void resize(unsigned int width, unsigned int height) override;

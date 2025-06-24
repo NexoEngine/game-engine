@@ -89,7 +89,7 @@ namespace nexo::editor {
      */
     class SceneTreeWindow final : public ADocumentWindow {
         public:
-       		using ADocumentWindow::ADocumentWindow;
+            using ADocumentWindow::ADocumentWindow;
             ~SceneTreeWindow() override = default;
 
             // No-op method in this class

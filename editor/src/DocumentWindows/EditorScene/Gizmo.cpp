@@ -66,20 +66,17 @@ namespace nexo::editor {
         const auto& coord = nexo::Application::m_coordinator;
 
         auto parentComponent = coord->tryGetComponent<components::ParentComponent>(entity);
-        if (!parentComponent) {
+        if (!parentComponent)
             return glm::mat4(1.0f); // No parent, return identity
-        }
 
         ecs::Entity parentEntity = parentComponent->get().parent;
 
-        if (parentEntity == ecs::INVALID_ENTITY) {
+        if (parentEntity == ecs::INVALID_ENTITY)
             return glm::mat4(1.0f); // No parent, return identity
-        }
 
         auto parentTransform = coord->tryGetComponent<components::TransformComponent>(parentEntity);
-        if (!parentTransform) {
+        if (!parentTransform)
             return glm::mat4(1.0f); // Parent has no transform, return identity
-        }
 
         return parentTransform->get().worldMatrix;
     }
@@ -123,16 +120,13 @@ namespace nexo::editor {
         updateEntityWorldMatrix(entity);
     }
 
-    // This function updates the local transform based on a new world matrix
     static void updateLocalTransformFromWorld(components::TransformComponent& transform, const glm::mat4& worldMatrix, ecs::Entity entity)
     {
-        // Get parent's world transform
         glm::mat4 parentWorldMatrix = getEntityParentWorldMatrix(entity);
 
         // Calculate local matrix by inverting parent world matrix and multiplying by entity's world matrix
         glm::mat4 localMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
 
-        // Extract local transform from local matrix
         glm::vec3 skew;
         glm::vec4 perspective;
         glm::decompose(
@@ -144,10 +138,7 @@ namespace nexo::editor {
             perspective
         );
 
-        // Normalize the quaternion
         transform.quat = glm::normalize(transform.quat);
-
-        // Immediately update the world matrix
         transform.worldMatrix = worldMatrix;
     }
 
@@ -182,7 +173,6 @@ namespace nexo::editor {
     {
         const auto& coord = nexo::Application::m_coordinator;
 
-        // Calculate the delta transform matrix
         glm::mat4 deltaMatrix = newWorldMatrix * glm::inverse(oldWorldMatrix);
 
         // Apply to all selected entities except the source
@@ -211,7 +201,6 @@ namespace nexo::editor {
         const auto& coord = nexo::Application::m_coordinator;
         auto& actionManager = ActionManager::get();
 
-        // If multiple entities selected, create a group action
         if (entities.size() > 1) {
             auto groupAction = ActionManager::createActionGroup();
             bool anyChanges = false;
@@ -239,7 +228,6 @@ namespace nexo::editor {
                 actionManager.recordAction(std::move(groupAction));
             }
         }
-        // Single entity selected - simpler action
         else if (entities.size() == 1) {
             auto entity = entities[0];
             auto transform = coord->tryGetComponent<components::TransformComponent>(entity);
@@ -291,11 +279,9 @@ namespace nexo::editor {
         const auto& cameraTransform = coord->getComponent<components::TransformComponent>(m_activeCamera);
         auto& camera = coord->getComponent<components::CameraComponent>(m_activeCamera);
 
-        // Configure ImGuizmo
         setupGizmoContext(camera);
         ImGuizmo::SetID(static_cast<int>(primaryEntity));
 
-        // Prepare matrices
         glm::mat4 viewMatrix = camera.getViewMatrix(cameraTransform);
         glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 
@@ -309,28 +295,20 @@ namespace nexo::editor {
         // 2) “centroid offset” = T(centroidLocal)
         glm::mat4 C_offset    = glm::translate(glm::mat4(1.0f), primaryTransform->get().localCenter);
 
-        // 3) M1 = M0 * C_offset  <-- this is what ImGuizmo sees as the “world” matrix
+        // 3) M1 = M0 * C_offset
         glm::mat4 worldTransformMatrix = M0 * C_offset;
 
-        // Store BOTH M₁ (for ImGuizmo) and keep M₀ around for later:
-        glm::mat4 originalWorldMatrix_Centroid = worldTransformMatrix;
         // (We’ll need “M₀” again after manipulation for decomposing back.)
         glm::mat4 originalWorldMatrix_ModelOrigin = M0;
 
-        // Track which operation is active
-        if (!ImGuizmo::IsUsing()) {
+        if (!ImGuizmo::IsUsing())
             s_lastOperation = getActiveGuizmoOperation();
-        }
 
-        // Get snap settings if applicable
         const float* snap = getSnapSettingsForOperation(s_lastOperation);
 
-        // Capture initial state when starting to use gizmo
-        if (!s_wasUsingGizmo && ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGuizmo::IsOver()) {
+        if (!s_wasUsingGizmo && ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGuizmo::IsOver())
             captureInitialTransformStates(selectedEntities);
-        }
 
-        // Perform the actual manipulation
         ImGuizmo::Manipulate(
             glm::value_ptr(viewMatrix),
             glm::value_ptr(projectionMatrix),
@@ -341,7 +319,6 @@ namespace nexo::editor {
             snap
         );
 
-        // Update isUsingGizmo after manipulation
         bool isUsingGizmo = ImGuizmo::IsUsing();
 
         if (isUsingGizmo) {
@@ -358,7 +335,7 @@ namespace nexo::editor {
             glm::mat4 deltaMatrix = newWorldMatrix_ModelOrigin * glm::inverse(originalWorldMatrix_ModelOrigin);
 
             for (auto entity : selectedEntities) {
-                if (entity == primaryEntity) continue;
+                if (static_cast<unsigned int>(entity) == primaryEntity) continue;
                 auto tComp = coord->tryGetComponent<components::TransformComponent>(entity);
                 if (!tComp) continue;
 
@@ -370,16 +347,12 @@ namespace nexo::editor {
                 // Now convert that new world matrix back to local space of “entity”:
                 updateLocalTransformFromWorld(tComp->get(), otherWorldMatrix_1, entity);
             }
-        }
-        else if (s_wasUsingGizmo) {
+        } else if (s_wasUsingGizmo) {
             // Re-enable camera when done
             camera.active = true;
-
-            // Create undo/redo actions
             createTransformUndoActions(selectedEntities);
         }
 
-        // Update state for next frame
         s_wasUsingGizmo = isUsingGizmo;
     }
 }

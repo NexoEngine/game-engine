@@ -43,7 +43,6 @@ namespace nexo::renderer {
         // For each prerequisite -> effect pair, create a new relationship
         for (PassId prereqId : prerequisites) {
             for (PassId effectId : effects) {
-                // Connect prerequisite directly to effect
                 addPrerequisite(effectId, prereqId);
                 addEffect(prereqId, effectId);
             }
@@ -221,7 +220,7 @@ namespace nexo::renderer {
         // DFS helper to build execution plan
         std::function<void(PassId)> buildPlan = [&](PassId current) {
             if (visited.find(current) != visited.end())
-                return;  // Already processed
+                return;
 
             // First process all prerequisites
             for (PassId prereq : passes[current]->prerequisites) {
@@ -259,7 +258,6 @@ namespace nexo::renderer {
         if (m_isDirty)
             m_plan = createExecutionPlan();
 
-        // Execute passes in order
         for (PassId id : m_plan) {
             if (passes.find(id) != passes.end())
                 passes[id]->execute(*this);

@@ -205,7 +205,6 @@ namespace nexo::system {
             else
                 transform.quat = newQuat;
 
-            // Update last position after processing
             controller.lastMousePosition = currentMousePosition;
             event.consumed = true;
         }
