@@ -80,35 +80,35 @@ namespace nexo::scripting {
             UInt32 PerspectiveCameraTarget;
         };
 
-        NEXO_RET(void) HelloFromNative(void);
-        NEXO_RET(Int32) AddNumbers(Int32 a, Int32 b);
-        NEXO_RET(const char*) GetNativeMessage(void);
+        NEXO_RET(void) NxHelloFromNative(void);
+        NEXO_RET(Int32) NxAddNumbers(Int32 a, Int32 b);
+        NEXO_RET(const char*) NxGetNativeMessage(void);
         NEXO_RET(void) NxLog(UInt32 level, const char *message);
 
-        NEXO_RET(ecs::Entity) CreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
-        NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
-        NEXO_RET(void *) GetComponent(ecs::Entity entity, UInt32 componentTypeId);
-        NEXO_RET(void) AddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
-        NEXO_RET(bool) HasComponent(ecs::Entity entity, UInt32 typeId);
+        NEXO_RET(ecs::Entity) NxCreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(components::TransformComponent *) NxGetTransformComponent(ecs::Entity entity);
+        NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
+        NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
+        NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 size);
-        NEXO_RET(ComponentTypeIds) GetComponentTypeIds();
+        NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 
 
     }
 
     struct NativeApiCallbacks {
-        ApiCallback<void(void)> HelloFromNative{&scripting::HelloFromNative};
-        ApiCallback<Int32(Int32, Int32)> AddNumbers{&scripting::AddNumbers};
-        ApiCallback<const char*()> GetNativeMessage{&scripting::GetNativeMessage};
+        ApiCallback<void(void)> NxHelloFromNative{&scripting::NxHelloFromNative};
+        ApiCallback<Int32(Int32, Int32)> NxAddNumbers{&scripting::NxAddNumbers};
+        ApiCallback<const char*()> NxGetNativeMessage{&scripting::NxGetNativeMessage};
         ApiCallback<void(UInt32, const char*)> NxLog{&scripting::NxLog};
 
-        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> CreateCube{&scripting::CreateCube};
-        ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
-        ApiCallback<void*(ecs::Entity, UInt32)> GetComponent{&scripting::GetComponent};
-        ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> AddComponent{&scripting::AddComponent};
-        ApiCallback<bool(ecs::Entity, UInt32)> HasComponent{&scripting::HasComponent};
+        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
+        ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
+        ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
+        ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
+        ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
         ApiCallback<Int64(const char*, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
-        ApiCallback<ComponentTypeIds()> GetComponentTypeIds{&scripting::GetComponentTypeIds};
+        ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
     };
 
     inline NativeApiCallbacks nativeApiCallbacks;
