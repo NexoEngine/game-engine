@@ -34,6 +34,6 @@ public static class Logger
     /// </summary>
     /// <param name="level">Specifies the log level (e.g., Fatal, Error, Warn, Info, Debug, Dev, User).</param>
     /// <param name="message">The message to be logged.</param>
-    public static void Log(LogLevel level, String message) => NativeInterop.NxLog((UInt32)level, message);
+    public static void Log(LogLevel level, String message) => NativeInterop.Log((UInt32)level, message);
     
 }
