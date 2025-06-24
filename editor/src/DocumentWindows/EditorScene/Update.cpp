@@ -86,10 +86,17 @@ namespace nexo::editor {
         if (!uuid)
             return;
 
-        const bool selectDirectEntity = ImGui::IsKeyDown(ImGuiKey_V); // Hold V to select direct entity
+        const bool selectWholeHierarchy = ImGui::IsKeyDown(ImGuiKey_V); // Hold V to select hierarchy instead of direct entity
         auto &selector = Selector::get();
 
-        if (selectDirectEntity) {
+        if (selectWholeHierarchy) {
+            ecs::Entity rootEntity = findRootParent(entityId);
+
+            if (!isShiftPressed && !isCtrlPressed)
+                selector.clearSelection();
+
+            selectEntityHierarchy(rootEntity, isCtrlPressed);
+        } else {
             const SelectionType selType = getSelectionType(entityId);
 
             if (isCtrlPressed)
@@ -98,15 +105,6 @@ namespace nexo::editor {
                 selector.addToSelection(uuid->get().uuid, entityId, selType);
             else
                 selector.selectEntity(uuid->get().uuid, entityId, selType);
-        } else {
-            // Find root parent
-            ecs::Entity rootEntity = findRootParent(entityId);
-
-            if (!isShiftPressed && !isCtrlPressed)
-                selector.clearSelection();
-
-            // Recursively select the entire hierarchy
-            selectEntityHierarchy(rootEntity, isCtrlPressed);
         }
 
         updateWindowState();
