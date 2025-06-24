@@ -21,8 +21,6 @@ namespace nexo::components {
     struct StaticMeshComponent {
         std::shared_ptr<renderer::NxVertexArray> vao;
 
-        std::string name;
-
         renderer::RequiredAttributes meshAttributes;
     };
 
