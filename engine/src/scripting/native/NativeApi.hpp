@@ -88,10 +88,11 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) CreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) GetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) GetComponent(UInt32 componentTypeId, ecs::Entity entity);
+        NEXO_RET(void) AddComponent(UInt32 typeId, ecs::Entity entity, const void *componentData);
+        NEXO_RET(bool) HasComponent(UInt32 typeId, ecs::Entity entity);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 size);
         NEXO_RET(ComponentTypeIds) GetComponentTypeIds();
-        NEXO_RET(void) AddComponent(UInt32 typeId, ecs::Entity entity);
-        NEXO_RET(bool) HasComponent(UInt32 typeId, ecs::Entity entity);
+
 
     }
 
@@ -104,7 +105,7 @@ namespace nexo::scripting {
         ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> CreateCube{&scripting::CreateCube};
         ApiCallback<components::TransformComponent*(ecs::Entity)> GetTransformComponent{&scripting::GetTransformComponent};
         ApiCallback<void*(UInt32, ecs::Entity)> GetComponent{&scripting::GetComponent};
-        ApiCallback<void(UInt32, ecs::Entity)> AddComponent{&scripting::AddComponent};
+        ApiCallback<void(UInt32, ecs::Entity, const void *componentData)> AddComponent{&scripting::AddComponent};
         ApiCallback<bool(UInt32, ecs::Entity)> HasComponent{&scripting::HasComponent};
         ApiCallback<Int64(const char*, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
         ApiCallback<ComponentTypeIds()> GetComponentTypeIds{&scripting::GetComponentTypeIds};
