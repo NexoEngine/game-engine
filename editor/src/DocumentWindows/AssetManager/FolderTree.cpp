@@ -60,7 +60,9 @@ namespace nexo::editor {
                 m_folderCreationState.parentPath = path;
                 m_folderCreationState.isCreatingFolder = true;
                 ImGui::OpenPopup("Create New Folder");
-                strncpy(m_folderCreationState.folderName, "New Folder", sizeof(m_folderCreationState.folderName) - 1);
+                snprintf(m_folderCreationState.folderName,
+                         sizeof(m_folderCreationState.folderName),
+                         "%s", "New Folder");
             }
             ImGui::EndPopup();
         }
@@ -100,7 +102,7 @@ namespace nexo::editor {
                 if (ImGui::Button("Create", ImVec2(120, 0)))
                 {
                     // Validate the folder name (non-empty, no special characters, etc.)
-                    if (strlen(m_folderCreationState.folderName) > 0)
+                    if (strnlen(m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName)) > 0)
                     {
                         // Generate the full path for the new folder
                         std::string newFolderPath;
@@ -292,7 +294,9 @@ namespace nexo::editor {
                 if (ImGui::MenuItem("New Folder")) {
                     m_folderCreationState.parentPath = "";
                     m_folderCreationState.isCreatingFolder = true;
-                    strncpy(m_folderCreationState.folderName, "New Folder", sizeof(m_folderCreationState.folderName) - 1);
+                    snprintf(m_folderCreationState.folderName,
+                             sizeof(m_folderCreationState.folderName),
+                             "%s", "New Folder");
                 }
                 ImGui::EndPopup();
             }
