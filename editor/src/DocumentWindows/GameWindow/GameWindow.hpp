@@ -48,6 +48,7 @@ namespace nexo::editor
         ImVec2 m_viewportBounds[2];
 
         bool m_firstFrame{true};
+        bool m_isPaused{false};
         PopupManager m_popupManager;
 
         void renderViewport();
