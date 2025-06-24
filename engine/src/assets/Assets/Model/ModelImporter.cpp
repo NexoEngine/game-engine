@@ -329,13 +329,13 @@ namespace nexo::assets {
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
     }
 
-    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node,
-        const aiScene* scene)
+    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene)
     {
         auto meshNode = MeshNode{};
 
-        const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
+        meshNode.name = node->mName.C_Str();
 
+        const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
         meshNode.transform = nodeTransform;
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
