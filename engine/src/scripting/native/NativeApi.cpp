@@ -65,21 +65,21 @@ namespace nexo::scripting {
             return &opt.value().get();
         }
 
-        void* GetComponent(const UInt32 componentTypeId, const ecs::Entity entity)
+        void* GetComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
             auto& coordinator = *Application::m_coordinator;
             const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
         }
 
-        void AddComponent(const UInt32 typeId, const ecs::Entity entity, const void *componentData)
+        void AddComponent(const ecs::Entity entity, const UInt32 typeId, const void *componentData)
         {
             auto& coordinator = *Application::m_coordinator;
 
             coordinator.addComponent(entity, typeId, componentData);
         }
 
-        bool HasComponent(UInt32 typeId, ecs::Entity entity)
+        bool HasComponent(ecs::Entity entity, UInt32 typeId)
         {
             auto& coordinator = *Application::m_coordinator;
 
