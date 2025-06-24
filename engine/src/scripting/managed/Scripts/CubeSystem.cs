@@ -18,6 +18,17 @@ using Nexo.Systems;
 
 namespace Nexo.Scripts;
 
+public struct TestComponent() : IComponentBase
+{
+    public struct Nested()
+    {
+        public Int32 NestedValue = 42;
+        public Vector3 NestedVector = new Vector3(1, 2, 3);
+    }
+    public Nested NestedComponent = new Nested();
+    public Double RootValue = 84;
+}
+
 public class CubeSystem : SystemBase
 {
     private struct CubeAnimationState : IComponentBase
@@ -82,6 +93,8 @@ public class CubeSystem : SystemBase
             BreathingPhase = Random.Shared.NextSingle() * MathF.PI * 2.0f
         };
         NativeInterop.AddComponent<CubeAnimationState>(cubeId, ref state);
+        var testComponent = new TestComponent();
+        NativeInterop.AddComponent<TestComponent>(cubeId, ref testComponent);
         _cubes.Add(cubeId);
     }
     
