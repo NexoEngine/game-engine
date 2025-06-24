@@ -33,7 +33,7 @@ namespace nexo::components {
         std::vector<CameraContext> cameras;
         LightContext sceneLights{};
 
-        RenderContext() {};
+        RenderContext() = default;
 
         // Delete copy constructor to enforce singleton semantics
         RenderContext(const RenderContext&) = delete;
