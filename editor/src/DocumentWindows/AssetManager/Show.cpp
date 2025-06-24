@@ -138,25 +138,7 @@ namespace nexo::editor {
             auto textureAsset = asset.as<assets::Texture>();
             auto textureData = textureAsset.lock();
             ImTextureID textureId = textureData->getData().get()->texture->getId();
-            if (textureId) {
-                // Calculate padding for the thumbnail
-                const float padding = 4.0f;
-                ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
-                ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
-
-                // Render the actual texture
-                drawList->AddImage(
-                    textureId,
-                    imageStart,
-                    imageEnd,
-                    ImVec2(0, 1),     // UV0 (top-left)
-                    ImVec2(1, 0),     // UV1 (bottom-right)
-                    IM_COL32(255, 255, 255, 255) // White tint
-                );
-            } else {
-                // Fallback if texture ID couldn't be retrieved
-                drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
-            }
+            drawTextureThumbnail(drawList, textureId, itemPos, thumbnailEnd);
         } else {
             // For non-texture assets, use a standard background
             drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
