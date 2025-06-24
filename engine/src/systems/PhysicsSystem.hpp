@@ -38,28 +38,31 @@
 #include <components/Transform.hpp>
 #include <vector>
 
-namespace nexo::system {
-
-    namespace Layers {
+namespace nexo::system
+{
+    namespace Layers
+    {
         constexpr JPH::ObjectLayer NON_MOVING = 0;
         constexpr JPH::ObjectLayer MOVING = 1;
         constexpr JPH::ObjectLayer NUM_LAYERS = 2;
     }
 
-    namespace BroadPhaseLayers {
+    namespace BroadPhaseLayers
+    {
         constexpr JPH::BroadPhaseLayer NON_MOVING(0);
         constexpr JPH::BroadPhaseLayer MOVING(1);
         constexpr JPH::uint NUM_LAYERS = 2;
     }
 
-    class MyContactListener : public JPH::ContactListener {
+    class MyContactListener : public JPH::ContactListener
+    {
     public:
         // See: ContactListener
-        virtual JPH::ValidateResult	OnContactValidate(
-            [[maybe_unused]] const JPH::Body &inBody1,
-            [[maybe_unused]] const JPH::Body &inBody2,
+        virtual JPH::ValidateResult OnContactValidate(
+            [[maybe_unused]] const JPH::Body& inBody1,
+            [[maybe_unused]] const JPH::Body& inBody2,
             [[maybe_unused]] JPH::RVec3Arg inBaseOffset,
-            [[maybe_unused]] const JPH::CollideShapeResult &inCollisionResult) override
+            [[maybe_unused]] const JPH::CollideShapeResult& inCollisionResult) override
         {
             //cout << "Contact validate callback" << endl;
 
@@ -68,31 +71,32 @@ namespace nexo::system {
         }
 
         virtual void OnContactAdded(
-            [[maybe_unused]] const JPH::Body &inBody1,
-            [[maybe_unused]] const JPH::Body &inBody2,
-            [[maybe_unused]] const JPH::ContactManifold &inManifold,
-            [[maybe_unused]] JPH::ContactSettings &ioSettings) override
+            [[maybe_unused]] const JPH::Body& inBody1,
+            [[maybe_unused]] const JPH::Body& inBody2,
+            [[maybe_unused]] const JPH::ContactManifold& inManifold,
+            [[maybe_unused]] JPH::ContactSettings& ioSettings) override
         {
             //cout << "A contact was added" << endl;
         }
 
         virtual void OnContactPersisted(
-            [[maybe_unused]] const JPH::Body &inBody1,
-            [[maybe_unused]] const JPH::Body &inBody2,
-            [[maybe_unused]] const JPH::ContactManifold &inManifold,
-            [[maybe_unused]] JPH::ContactSettings &ioSettings) override
+            [[maybe_unused]] const JPH::Body& inBody1,
+            [[maybe_unused]] const JPH::Body& inBody2,
+            [[maybe_unused]] const JPH::ContactManifold& inManifold,
+            [[maybe_unused]] JPH::ContactSettings& ioSettings) override
         {
             //cout << "A contact was persisted" << endl;
         }
 
-        virtual void OnContactRemoved([[maybe_unused]] const JPH::SubShapeIDPair &inSubShapePair) override
+        virtual void OnContactRemoved([[maybe_unused]] const JPH::SubShapeIDPair& inSubShapePair) override
         {
             //cout << "A contact was removed" << endl;
         }
     };
 
 
-    class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface {
+    class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface
+    {
     public:
         BPLayerInterfaceImpl()
         {
@@ -101,12 +105,12 @@ namespace nexo::system {
             mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
         }
 
-        virtual JPH::uint					GetNumBroadPhaseLayers() const override
+        virtual JPH::uint GetNumBroadPhaseLayers() const override
         {
             return BroadPhaseLayers::NUM_LAYERS;
         }
 
-        virtual JPH::BroadPhaseLayer			GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
+        virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
         {
             JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
             return mObjectToBroadPhase[inLayer];
@@ -125,39 +129,40 @@ namespace nexo::system {
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
 
     private:
-        JPH::BroadPhaseLayer					mObjectToBroadPhase[Layers::NUM_LAYERS];
+        JPH::BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS];
     };
 
     class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
     {
     public:
-        virtual bool				ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
+        virtual bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
         {
             switch (inLayer1)
             {
-                case Layers::NON_MOVING:
-                    return inLayer2 == BroadPhaseLayers::MOVING;
-                case Layers::MOVING:
-                    return true;
-                default:
-                    JPH_ASSERT(false);
+            case Layers::NON_MOVING:
+                return inLayer2 == BroadPhaseLayers::MOVING;
+            case Layers::MOVING:
+                return true;
+            default:
+                JPH_ASSERT(false);
                 return false;
             }
         }
     };
 
-    class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter {
+    class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
+    {
     public:
-        virtual bool					ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
+        virtual bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
         {
             switch (inObject1)
             {
-                case Layers::NON_MOVING:
-                    return inObject2 == Layers::MOVING; // Non moving only collides with moving
-                case Layers::MOVING:
-                    return true; // Moving collides with everything
-                default:
-                    JPH_ASSERT(false);
+            case Layers::NON_MOVING:
+                return inObject2 == Layers::MOVING; // Non moving only collides with moving
+            case Layers::MOVING:
+                return true; // Moving collides with everything
+            default:
+                JPH_ASSERT(false);
                 return false;
             }
         }
@@ -166,9 +171,10 @@ namespace nexo::system {
     enum class ShapeType { Box, Sphere, Cylinder, Tetrahedron, Pyramid };
 
     class PhysicsSystem : public ecs::QuerySystem<
-                ecs::Write<components::TransformComponent>,
-                ecs::Write<components::PhysicsBodyComponent>
-        > {
+            ecs::Write<components::TransformComponent>,
+            ecs::Write<components::PhysicsBodyComponent>
+        >
+    {
     public:
         PhysicsSystem();
         ~PhysicsSystem();
@@ -183,7 +189,8 @@ namespace nexo::system {
         JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
 
         JPH::BodyID createBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
-        JPH::BodyID createBodyFromShape(ecs::Entity entity, const components::TransformComponent& transform, ShapeType shapeType, JPH::EMotionType motionType);
+        JPH::BodyID createBodyFromShape(ecs::Entity entity, const components::TransformComponent& transform,
+                                        ShapeType shapeType, JPH::EMotionType motionType);
 
 
         void syncTransformsToBodies(
@@ -215,8 +222,6 @@ namespace nexo::system {
         double m_lastPhysicsTime = 0.0;
         constexpr static float fixedTimestep = 1.0f / 60.0f;
     };
-
-
 }
 
 #endif // PHYSICS_SYSTEM_HPP
