@@ -18,12 +18,6 @@ using Nexo.Systems;
 
 namespace Nexo.Scripts;
 
-public struct TestComponent : IComponentBase
-{
-    public String Name;
-    public Int32 Value;
-}
-
 public class CubeSystem : SystemBase
 {
     private struct CubeAnimationState : IComponentBase
@@ -122,9 +116,4 @@ public class CubeSystem : SystemBase
         Logger.Log(LogLevel.Info, $"Shutting down {Name} system");
     }
     
-    // Helper method to clean up destroyed cubes
-    public void RemoveCubeState(uint cubeId)
-    {
-        _cubes.Remove(cubeId);
-    }
 }

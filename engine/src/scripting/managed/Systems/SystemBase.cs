@@ -124,16 +124,6 @@ namespace Nexo.Systems
             return 0;
         }
 
-        public static T? GetSystem<T>() where T : SystemBase
-        {
-            return AllSystems.OfType<T>().FirstOrDefault();
-        }
-
-        public static IEnumerable<SystemBase> GetAllSystems()
-        {
-            return AllSystems.AsReadOnly();
-        }
-
         protected virtual void OnInitialize(WorldState worldState)
         {
         }
