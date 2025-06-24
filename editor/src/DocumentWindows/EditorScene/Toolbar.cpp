@@ -19,6 +19,10 @@
 #include "components/Uuid.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
+#include "../GameWindow/GameWindow.hpp"
+#include "Editor.hpp"
+#include <imgui_internal.h>
+#include <format>
 
 namespace nexo::editor
 {
@@ -481,7 +485,47 @@ namespace nexo::editor
         ImGui::SameLine();
 
         // -------- Play button button --------
-        renderToolbarButton("play", ICON_FA_PLAY, "Play scene", m_buttonGradient);
+        if (renderToolbarButton("play", ICON_FA_PLAY, "Play scene", m_buttonGradient))
+        {
+            // Create or focus the game window
+            auto& editor = Editor::getInstance();
+            const std::string gameWindowName = std::format("Game View - {}{}{}", m_sceneUuid, NEXO_WND_USTRID_GAME_WINDOW, m_sceneId);
+            
+            // Check if game window already exists
+            if (auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+                // Window exists, just make it visible and focus it
+                gameWindow->setOpened(true);
+                ImGui::SetWindowFocus(gameWindowName.c_str());
+            } else {
+                // Get current EditorScene window's dock ID for docking the game window
+                const std::string currentWindowName = m_windowName;
+                ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(currentWindowName.c_str());
+                
+                if (currentImGuiWindow && currentImGuiWindow->DockId) {
+                    // Create new game window
+                    editor.registerWindow<GameWindow>(gameWindowName);
+                    
+                    if (auto newGameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+                        // Configure the game window
+                        newGameWindow->setSceneId(static_cast<unsigned int>(m_sceneId));
+                        newGameWindow->setSceneUuid(m_sceneUuid);
+                        newGameWindow->setParentEditorScene(this);
+                        
+                        // Set the dock ID to dock the game window with the editor scene
+                        m_windowRegistry.setDockId(gameWindowName, currentImGuiWindow->DockId);
+                        
+                        // Set up and open the window
+                        newGameWindow->setup();
+                        newGameWindow->setOpened(true);
+                        
+                        // The window will automatically dock when shown
+                        // Schedule focus for next frame
+                        m_shouldFocusGameWindow = true;
+                        m_gameWindowToFocus = gameWindowName;
+                    }
+                }
+            }
+        }
 
         ImGui::PopStyleVar();
         ImGui::EndChild();
