@@ -43,7 +43,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
@@ -74,7 +74,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
@@ -156,7 +156,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
@@ -187,7 +187,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
@@ -214,7 +214,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
@@ -244,7 +244,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
@@ -272,7 +272,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
@@ -302,7 +302,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
@@ -330,7 +330,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
@@ -360,7 +360,7 @@ namespace nexo
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
+        transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
