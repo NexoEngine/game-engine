@@ -91,6 +91,18 @@ namespace nexo::ecs {
         [[nodiscard]] virtual const void* getRawData() const = 0;
 
         /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        virtual void insertRaw(Entity entity, const void *componentData) = 0;
+
+        /**
          * @brief Gets a span of all entities with this component
          * @return Span of entity IDs
          */
@@ -188,6 +200,39 @@ namespace nexo::ecs {
             m_sparse[entity] = newIndex;
             m_dense.push_back(entity);
             m_componentArray.push_back(component);
+
+            ++m_size;
+        }
+
+        /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        void insertRaw(Entity entity, const void *componentData) override
+        {
+            if (entity >= MAX_ENTITIES)
+                THROW_EXCEPTION(OutOfRange, entity);
+
+            ensureSparseCapacity(entity);
+
+            if (hasComponent(entity)) {
+                LOG(NEXO_WARN, "Entity {} already has component: {}", entity, typeid(T).name());
+                return;
+            }
+
+            const size_t newIndex = m_size;
+            m_sparse[entity] = newIndex;
+            m_dense.push_back(entity);
+            // allocate new component in the array
+            m_componentArray.emplace_back();
+            // copy the raw data into the new component
+            std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
 
             ++m_size;
         }
@@ -591,6 +636,45 @@ namespace nexo::ecs {
          * @param componentData Raw pointer to the component data to copy
          */
         void insert(Entity entity, const void* componentData)
+        {
+            if (entity >= MAX_ENTITIES)
+                THROW_EXCEPTION(OutOfRange, entity);
+
+            ensureSparseCapacity(entity);
+
+            if (hasComponent(entity)) {
+                LOG(NEXO_WARN, "Entity {} already has component", entity);
+                return;
+            }
+
+            const size_t newIndex = m_size;
+            m_sparse[entity] = newIndex;
+            m_dense.push_back(entity);
+
+            // Resize component data vector if needed
+            size_t requiredSize = (m_size + 1) * m_componentSize;
+            if (m_componentData.size() < requiredSize) {
+                m_componentData.resize(requiredSize);
+            }
+
+            // Copy component data
+            std::memcpy(m_componentData.data() + newIndex * m_componentSize,
+                       componentData, m_componentSize);
+
+            ++m_size;
+        }
+
+        /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        void insertRaw(Entity entity, const void* componentData) override
         {
             if (entity >= MAX_ENTITIES)
                 THROW_EXCEPTION(OutOfRange, entity);
