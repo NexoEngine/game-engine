@@ -16,30 +16,6 @@ using System.Runtime.InteropServices;
 
 namespace Nexo.Systems;
 
-// public class WorldState
-// {
-//     [StructLayout(LayoutKind.Sequential)]
-//     public struct NativeWorldState
-//     {
-//         [StructLayout(LayoutKind.Sequential)]
-//         public struct WorldTime {
-//             public Double DeltaTime; // Time since last update
-//             public Double TotalTime; // Total time since the start of the world
-//         }
-//
-//         [StructLayout(LayoutKind.Sequential)]
-//         public struct WorldStats
-//         {
-//             public UInt64 frameCount; // Number of frames rendered
-//         }
-//
-//         public WorldTime Time;
-//         public WorldStats Stats;
-//     }
-//     
-//     public NativeWorldState State;
-// }
-
 public unsafe class WorldState
 {
     [StructLayout(LayoutKind.Sequential)]
