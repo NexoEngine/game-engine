@@ -264,6 +264,8 @@ jobs:
   test-nsis-installer:
     name: Test NSIS installer
     runs-on: windows-latest
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
     needs: build
     steps:
       - name: Download NSIS installer
@@ -334,6 +336,8 @@ jobs:
   test-deb-installer:
     name: Test DEB installer
     runs-on: ubuntu-latest
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
     needs: build
     steps:
       - name: Download DEB installer
