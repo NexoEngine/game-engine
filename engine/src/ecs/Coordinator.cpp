@@ -43,20 +43,34 @@ namespace nexo::ecs {
         m_systemManager->entityDestroyed(entity, signature);
     }
 
-    std::vector<std::type_index> Coordinator::getAllComponentTypes(const Entity entity) const
+    std::vector<ComponentType> Coordinator::getAllComponentTypes(const Entity entity) const
     {
-        std::vector<std::type_index> types;
+        std::vector<ComponentType> types;
 
         Signature signature = m_entityManager->getSignature(entity);
 
         // We have a mapping from component type IDs to type_index
         for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
-            if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
-                types.emplace_back(m_typeIDtoTypeIndex.at(type));
+            if (signature.test(type)) {
+                types.emplace_back(type);
             }
         }
 
         return types;
+    }
+
+    std::vector<std::type_index> Coordinator::getAllComponentTypeIndices(Entity entity) const
+    {
+        const std::vector<ComponentType>& types = getAllComponentTypes(entity);
+        std::vector<std::type_index> typeIndices;
+        typeIndices.reserve(types.size());
+
+        for (const auto& type : types)
+        {
+            typeIndices.push_back(m_typeIDtoTypeIndex.at(type));
+        }
+
+        return typeIndices;
     }
 
     std::vector<std::pair<std::type_index, std::any>> Coordinator::getAllComponents(const Entity entity)
