@@ -37,6 +37,7 @@ set(RENDERER_SOURCES
         engine/src/renderer/Renderer.cpp
         engine/src/renderer/RenderCommand.cpp
         engine/src/renderer/Texture.cpp
+        engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/SubTexture2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/UniformCache.cpp
@@ -64,6 +65,7 @@ add_executable(renderer_tests
         ${BASEDIR}/Texture.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
+        ${BASEDIR}/Pipeline.test.cpp
 )
 
 # Find glm and add its include directories
