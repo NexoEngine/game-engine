@@ -37,6 +37,12 @@ public interface IComponentBase
                                type != typeof(IComponentBase))  // Exclude the interface itself
                 .ToList();
             
+            Logger.Log(LogLevel.Info, $"Found {componentTypes.Count} component types to register.");
+            foreach (var componentType in componentTypes)
+            {
+                Logger.Log(LogLevel.Info, $"Component: {componentType.Name}");
+            }
+            
             // Register each component type
             foreach (var componentType in componentTypes)
             {
@@ -45,8 +51,6 @@ public interface IComponentBase
                     Logger.Log(LogLevel.Error, $"Failed to register component {componentType.Name}");
                     return 1;
                 }
-
-                return 0;
             }
 
             return 0;

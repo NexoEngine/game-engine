@@ -25,30 +25,6 @@ namespace nexo::scripting {
     // Static message to return to C#
     static const char* nativeMessage = "Hello from C++ native code!";
 
-    ecs::ComponentType getComponentTypeFromNativeId(UInt32 typeId)
-    {
-        using enum scripting::NativeComponents;
-        auto& coordinator = *getApp().m_coordinator;
-
-        switch (static_cast<NativeComponents>(typeId))
-        {
-            case Transform:
-                return coordinator.getComponentType<components::TransformComponent>();
-            case AmbientLight:
-                return coordinator.getComponentType<components::AmbientLightComponent>();
-            case DirectionalLight:
-                return coordinator.getComponentType<components::DirectionalLightComponent>();
-            case PointLight:
-                return coordinator.getComponentType<components::PointLightComponent>();
-            case SpotLight:
-                return coordinator.getComponentType<components::SpotLightComponent>();
-            default:
-                LOG(NEXO_ERROR, "Unknown NativeComponent ID: {}", typeId);
-                return -1;
-        }
-    }
-
-
     // Implementation of the native functions
     extern "C" {
 
@@ -96,36 +72,16 @@ namespace nexo::scripting {
             return opt;
         }
 
-        void AddComponent(UInt32 typeId, ecs::Entity entity)
+        void AddComponent(const UInt32 typeId, const ecs::Entity entity, const void *componentData)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            auto& coordinator = *Application::m_coordinator;
 
-            const auto& map = coordinator.getTypeIdToTypeIndex();
-            auto it = map.find(typeId);
-
-            if (it == map.end()) {
-                LOG(NEXO_ERROR, "AddComponent: Unknown typeId {}", typeId);
-                return;
-            }
-
-            const std::type_index& typeIndex = it->second;
-            const auto& addFn = coordinator.getAddComponentFunctions().find(typeIndex);
-            if (addFn == coordinator.getAddComponentFunctions().end()) {
-                LOG(NEXO_ERROR, "AddComponent: No add function registered for component {}", typeIndex.name());
-                return;
-            }
-
-            try {
-                std::any defaultConstructed = coordinator.restoreComponent(std::any{}, typeIndex);
-                addFn->second(entity, defaultConstructed);
-            } catch (const std::bad_any_cast& e) {
-                LOG(NEXO_ERROR, "AddComponent: bad_any_cast for component {}: {}", typeIndex.name(), e.what());
-            }
+            coordinator.addComponent(entity, typeId, componentData);
         }
 
         bool HasComponent(UInt32 typeId, ecs::Entity entity)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            auto& coordinator = *Application::m_coordinator;
 
             const auto& typeMap = coordinator.getTypeIdToTypeIndex();
             auto it = typeMap.find(typeId);
