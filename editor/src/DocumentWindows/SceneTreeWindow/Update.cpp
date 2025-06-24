@@ -15,6 +15,7 @@
 #include "SceneTreeWindow.hpp"
 #include "components/Render3D.hpp"
 #include "components/StaticMesh.hpp"
+#include "components/Name.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
@@ -31,23 +32,14 @@ namespace nexo::editor {
         std::unordered_set<ecs::Entity> processedEntities;
 
         // Process each root entity
-        for (const ecs::Entity rootEntity : rootEntities)
-        {
+        for (const ecs::Entity rootEntity : rootEntities) {
             const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(rootEntity);
-            if (auto it = scenes.find(sceneTag.id); it != scenes.end())
-            {
-                // Create a node for this root entity
+            if (auto it = scenes.find(sceneTag.id); it != scenes.end()) {
                 SceneObject rootNode = createEntityNode(it->second.data.sceneProperties.sceneId,
                                                       it->second.data.sceneProperties.windowId,
                                                       rootEntity);
-
-                // Mark as processed
                 processedEntities.insert(rootEntity);
-
-                // Build child nodes recursively
                 buildChildNodesForEntity(rootEntity, rootNode, processedEntities);
-
-                // Add the completed hierarchy to the scene
                 it->second.children.push_back(rootNode);
             }
         }
@@ -60,28 +52,17 @@ namespace nexo::editor {
             ecs::Exclude<components::ParentComponent>,
             ecs::Exclude<components::RootComponent>>();
 
-        // Process standalone entities that haven't been processed yet
-        for (const ecs::Entity entity : standaloneEntities)
-        {
-            if (processedEntities.find(entity) != processedEntities.end()) {
+        for (const ecs::Entity entity : standaloneEntities) {
+            if (processedEntities.find(entity) != processedEntities.end())
                 continue; // Skip if already processed
-            }
 
             const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
-            if (auto it = scenes.find(sceneTag.id); it != scenes.end())
-            {
-                // Create node for standalone entity
+            if (auto it = scenes.find(sceneTag.id); it != scenes.end()) {
                 SceneObject entityNode = createEntityNode(it->second.data.sceneProperties.sceneId,
                                                        it->second.data.sceneProperties.windowId,
                                                        entity);
-
-                // Mark as processed
                 processedEntities.insert(entity);
-
-                // Build child nodes recursively (in case it has children without being a root)
                 buildChildNodesForEntity(entity, entityNode, processedEntities);
-
-                // Add to scene
                 it->second.children.push_back(entityNode);
             }
         }
@@ -94,25 +75,12 @@ namespace nexo::editor {
     {
         const auto& transform = Application::m_coordinator->getComponent<components::TransformComponent>(parentEntity);
 
-        // Process each child in the transform's children vector
-        for (const auto childEntity : transform.children)
-        {
-            if (childEntity == ecs::INVALID_ENTITY) {
+        for (const auto childEntity : transform.children) {
+            if (childEntity == ecs::INVALID_ENTITY)
                 continue;
-            }
-            // Skip if already processed (avoid cycles)
-            if (processedEntities.find(childEntity) != processedEntities.end()) {
+            // Skip if already processed
+            if (processedEntities.find(childEntity) != processedEntities.end())
                 continue;
-            }
-
-            if (!Application::m_coordinator->entityHasComponent<components::SceneTag>(childEntity)) {
-                continue;
-            }
-
-            const auto& childSceneTag = Application::m_coordinator->getComponent<components::SceneTag>(childEntity);
-            if (childSceneTag.id != parentNode.data.sceneProperties.sceneId) {
-                continue;
-            }
 
             SceneObject childNode = createEntityNode(
                 parentNode.data.sceneProperties.sceneId,
@@ -132,13 +100,15 @@ namespace nexo::editor {
 
         std::string name;
 
-        if (Application::m_coordinator->entityHasComponent<components::StaticMeshComponent>(entity)) {
-            const auto& mesh = Application::m_coordinator->getComponent<components::StaticMeshComponent>(entity);
-            if (!mesh.name.empty()) {
-                name = mesh.name;
+        // If it is a mesh node/mesh, get the name component
+        if (Application::m_coordinator->entityHasComponent<components::NameComponent>(entity)) {
+            const auto& nameComp = Application::m_coordinator->getComponent<components::NameComponent>(entity);
+            if (!nameComp.name.empty()) {
+                name = nameComp.name;
             }
         }
 
+        // If it is a root component, get the name of the model
         if (name.empty() && Application::m_coordinator->entityHasComponent<components::RootComponent>(entity)) {
             const auto& rootComp = Application::m_coordinator->getComponent<components::RootComponent>(entity);
             if (!rootComp.name.empty()) {
@@ -151,7 +121,6 @@ namespace nexo::editor {
             name = "Entity " + std::to_string(entity);
         }
 
-        // Get the UUID if available
         std::string uuid;
         if (Application::m_coordinator->entityHasComponent<components::UuidComponent>(entity)) {
             const auto& uuidComponent = Application::m_coordinator->getComponent<components::UuidComponent>(entity);
