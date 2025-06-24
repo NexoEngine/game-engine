@@ -68,13 +68,13 @@ namespace Nexo
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
+            public delegate IntPtr NxGetComponentDelegate(UInt32 entityId, UInt32 typeId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId, void *componentData);
+            public delegate void NxAddComponentDelegate(UInt32 entityId, UInt32 typeId, void *componentData);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate bool NxHasComponentDelegate(UInt32 typeId, UInt32 entityId);
+            public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 size);
@@ -252,7 +252,7 @@ namespace Nexo
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
                 throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
 
-            IntPtr ptr = s_callbacks.NxGetComponent(typeId, entityId);
+            IntPtr ptr = s_callbacks.NxGetComponent(entityId, typeId);
             if (ptr == IntPtr.Zero)
                 throw new InvalidOperationException($"Component {typeof(T)} not found on entity {entityId}");
 
@@ -266,7 +266,7 @@ namespace Nexo
 
             try
             {
-                s_callbacks.NxAddComponent.Invoke(typeId, entityId, Unsafe.AsPointer(ref componentData));
+                s_callbacks.NxAddComponent.Invoke(entityId, typeId, Unsafe.AsPointer(ref componentData));
             }
             catch (Exception ex)
             {
@@ -281,7 +281,7 @@ namespace Nexo
 
             try
             {
-                return s_callbacks.NxHasComponent.Invoke(typeId, entityId);
+                return s_callbacks.NxHasComponent.Invoke(entityId, typeId);
             }
             catch (Exception ex)
             {
