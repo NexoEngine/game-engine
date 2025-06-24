@@ -19,6 +19,7 @@ jobs:
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
       FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
+      DOTNET_INSTALL_DIR: "./.dotnet"
     permissions:
       contents: write
       packages: write
