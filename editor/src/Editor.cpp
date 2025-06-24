@@ -31,6 +31,9 @@
 #include <ImGuizmo.h>
 #include <algorithm>
 
+#include "DocumentWindows/EditorScene/EditorScene.hpp"
+#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+
 namespace nexo::editor {
 
     void Editor::shutdown() const
@@ -226,6 +229,8 @@ namespace nexo::editor {
 
         const Application& app = Application::getInstance();
         app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be created in the editor window
+        for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
+            inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow constructor, but we need the scripting to init
     }
 
     bool Editor::isOpen() const
