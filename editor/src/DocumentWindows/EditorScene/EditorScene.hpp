@@ -119,6 +119,10 @@ namespace nexo::editor
         bool m_shouldFocusGameWindow = false;
         std::string m_gameWindowToFocus;
 
+        // Deferred dock split operation
+        bool m_shouldSplitDock = false;
+        std::string m_gameWindowNameToSplit;
+
         // Selected button gradient - lighter blue gradient
         const std::vector<ImNexo::GradientStop> m_selectedGradient = {
             {0.0f, IM_COL32(70, 70, 120, 230)},

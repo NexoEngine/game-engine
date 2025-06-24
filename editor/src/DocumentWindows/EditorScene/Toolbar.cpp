@@ -511,15 +511,15 @@ namespace nexo::editor
                         newGameWindow->setSceneUuid(m_sceneUuid);
                         newGameWindow->setParentEditorScene(this);
                         
-                        // Set the dock ID to dock the game window with the editor scene
-                        m_windowRegistry.setDockId(gameWindowName, currentImGuiWindow->DockId);
-                        
-                        // Set up and open the window
+                        // Set up the window
                         newGameWindow->setup();
                         newGameWindow->setOpened(true);
                         
-                        // The window will automatically dock when shown
-                        // Schedule focus for next frame
+                        // Schedule dock split for next frame
+                        m_shouldSplitDock = true;
+                        m_gameWindowNameToSplit = gameWindowName;
+                        
+                        // Also schedule focus for after the split
                         m_shouldFocusGameWindow = true;
                         m_gameWindowToFocus = gameWindowName;
                     }
