@@ -83,12 +83,12 @@ namespace Nexo
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
 
             // Function pointers
-            public HelloFromNativeDelegate HelloFromNative;
-            public AddNumbersDelegate AddNumbers;
-            public GetNativeMessageDelegate GetNativeMessage;
+            public HelloFromNativeDelegate NxHelloFromNative;
+            public AddNumbersDelegate NxAddNumbers;
+            public GetNativeMessageDelegate NxGetNativeMessage;
             public NxLogDelegate NxLog;
-            public CreateCubeDelegate CreateCube;
-            public GetTransformDelegate GetTransform;
+            public CreateCubeDelegate NxCreateCube;
+            public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
             public NxHasComponentDelegate NxHasComponent;
@@ -162,7 +162,7 @@ namespace Nexo
         {
             try
             {
-                s_callbacks.HelloFromNative.Invoke();
+                s_callbacks.NxHelloFromNative.Invoke();
             }
             catch (Exception ex)
             {
@@ -177,7 +177,7 @@ namespace Nexo
         {
             try
             {
-                return s_callbacks.AddNumbers.Invoke(a, b);
+                return s_callbacks.NxAddNumbers.Invoke(a, b);
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ namespace Nexo
         {
             try
             {
-                IntPtr messagePtr = s_callbacks.GetNativeMessage.Invoke();
+                IntPtr messagePtr = s_callbacks.NxGetNativeMessage.Invoke();
                 return messagePtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(messagePtr) ?? string.Empty : string.Empty;
             }
             catch (Exception ex)
@@ -208,7 +208,7 @@ namespace Nexo
         /// </summary>
         /// <param name="level">The level of the log message</param>
         /// <param name="message">The message to log</param>
-        public static void NxLog(UInt32 level, String message)
+        public static void Log(UInt32 level, String message)
         {
             try
             {
@@ -225,7 +225,7 @@ namespace Nexo
         {
             try
             {
-                return s_callbacks.CreateCube.Invoke(position, size, rotation, color);
+                return s_callbacks.NxCreateCube.Invoke(position, size, rotation, color);
             }
             catch (Exception ex)
             {
@@ -238,7 +238,7 @@ namespace Nexo
         {
             try
             {
-                return ref s_callbacks.GetTransform.Invoke(entityId);
+                return ref s_callbacks.NxGetTransform.Invoke(entityId);
             }
             catch (Exception ex)
             {
