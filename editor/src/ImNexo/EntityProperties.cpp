@@ -234,7 +234,7 @@ namespace ImNexo {
 
                RowDragFloat3("Position", "X", "Y", "Z", &pos.x);
 
-               const glm::vec3 computedEuler = nexo::math::customQuatToEuler(quat);
+               const glm::vec3 computedEuler = glm::degrees(glm::eulerAngles(quat));
 
                lastDisplayedEuler = computedEuler;
                glm::vec3 rotation = lastDisplayedEuler;
@@ -246,7 +246,7 @@ namespace ImNexo {
                    const glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
                    const glm::quat deltaQuat = glm::radians(deltaEuler);
                    quat = glm::normalize(deltaQuat * quat);
-                   lastDisplayedEuler = nexo::math::customQuatToEuler(quat);
+                   lastDisplayedEuler = glm::degrees(glm::eulerAngles(quat));;
                }
                RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 
