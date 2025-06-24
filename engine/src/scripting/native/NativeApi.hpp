@@ -45,6 +45,7 @@
 #include "components/Transform.hpp"
 
 namespace nexo::scripting {
+    struct Field;
 
     template<typename Sig>
     struct ApiCallback;
@@ -90,7 +91,7 @@ namespace nexo::scripting {
         NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
         NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
-        NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 size);
+        NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 
 
@@ -107,7 +108,7 @@ namespace nexo::scripting {
         ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
         ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
         ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
-        ApiCallback<Int64(const char*, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
+        ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
     };
 
