@@ -32,7 +32,7 @@ namespace nexo::editor::utils {
             assets::AssetLocation("_internal::cameraIcon@_internal"),
             Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png")
         );
-        std::unique_ptr<components::Material> billboardMat = std::make_unique<components::Material>();
+        auto billboardMat = std::make_unique<components::Material>();
         billboardMat->isOpaque = false;
         billboardMat->albedoTexture = cameraIconTexture;
         billboardMat->shader = "Albedo unshaded transparent";
@@ -57,7 +57,7 @@ namespace nexo::editor::utils {
             assets::AssetLocation("_internal::pointLightIcon@_internal"),
             Path::resolvePathRelativeToExe("../resources/textures/pointLightIcon.png")
         );
-        std::unique_ptr<components::Material> billboardMat = std::make_unique<components::Material>();
+        auto billboardMat = std::make_unique<components::Material>();
         billboardMat->isOpaque = false;
         billboardMat->albedoTexture = pointLightIconTexture;
         billboardMat->shader = "Albedo unshaded transparent";
@@ -82,7 +82,7 @@ namespace nexo::editor::utils {
             assets::AssetLocation("_internal::spotLightIcon@_internal"),
             Path::resolvePathRelativeToExe("../resources/textures/spotLightIcon.png")
         );
-        std::unique_ptr<components::Material> billboardMat = std::make_unique<components::Material>();
+        auto billboardMat = std::make_unique<components::Material>();
         billboardMat->isOpaque = false;
         billboardMat->albedoTexture = spotLightIconTexture;
         billboardMat->shader = "Albedo unshaded transparent";

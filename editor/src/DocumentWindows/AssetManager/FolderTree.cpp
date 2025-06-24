@@ -221,7 +221,7 @@ namespace nexo::editor {
                     if (isSelected)
                         itemFlags |= ImGuiTreeNodeFlags_Selected;
 
-                    const std::string labelName = fav.label + ((isSelected) ? "   " ICON_FA_CHECK : "");
+                    const std::string labelName = fav.label + (isSelected ? "   " ICON_FA_CHECK : "");
                     ImGui::TreeNodeEx(labelName.c_str(), itemFlags);
 
                     if (ImGui::IsItemClicked()) {

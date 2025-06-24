@@ -124,7 +124,7 @@ namespace nexo::editor {
                 ecs::Entity parentEntity,
                 SceneObject& parentNode,
                 std::unordered_set<ecs::Entity>& processedEntities);
-            SceneObject createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity);
+            SceneObject createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) const;
 
         private:
 	        SceneObject root_;    ///< Root node of the scene tree.

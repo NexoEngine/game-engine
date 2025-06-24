@@ -85,7 +85,7 @@ namespace nexo::renderer {
         m_storage.reset();
     }
 
-    void NxRenderer3D::bindTextures()
+    void NxRenderer3D::bindTextures() const
     {
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
@@ -93,7 +93,7 @@ namespace nexo::renderer {
         }
     }
 
-    void NxRenderer3D::unbindTextures()
+    void NxRenderer3D::unbindTextures() const
     {
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {

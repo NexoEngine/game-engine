@@ -16,8 +16,12 @@
 
 namespace nexo::editor {
 
-    void AssetManagerWindow::drawTextureThumbnail(ImDrawList *drawList, ImTextureID textureId, const ImVec2 &itemPos, const ImVec2& thumbnailEnd)
-    {
+    void AssetManagerWindow::drawTextureThumbnail(
+        ImDrawList *drawList,
+        ImTextureID textureId,
+        const ImVec2 &itemPos,
+        const ImVec2& thumbnailEnd
+    ) const {
         if (textureId) {
             const float padding = 4.0f;
             ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);

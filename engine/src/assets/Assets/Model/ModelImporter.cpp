@@ -407,11 +407,11 @@ namespace nexo::assets {
             indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
         }
 
-        vertexBuffer->setData(vertices.data(), vertices.size() * sizeof(renderer::NxVertex));
+        vertexBuffer->setData(vertices.data(), static_cast<unsigned int>(vertices.size() * sizeof(renderer::NxVertex)));
         vao->addVertexBuffer(vertexBuffer);
 
         std::shared_ptr<renderer::NxIndexBuffer> indexBuffer = renderer::createIndexBuffer();
-        indexBuffer->setData(indices.data(), indices.size());
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         vao->setIndexBuffer(indexBuffer);
 
         AssetRef<Material> materialComponent = nullptr;
