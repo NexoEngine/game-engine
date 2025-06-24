@@ -29,6 +29,7 @@ namespace nexo::assets {
     };
 
     struct MeshNode {
+        std::string name;
         glm::mat4 transform{};
         std::vector<Mesh> meshes;
         std::vector<MeshNode> children;
