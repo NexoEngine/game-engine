@@ -34,6 +34,9 @@ set(SOURCES
     Components/Transform.cs
     Components/Uuid.cs
     Components/ComponentBase.cs
+    Components/Ui/Field.cs
+    Components/Ui/FieldArray.cs
+    Components/Ui/FieldType.cs
     Systems/SystemBase.cs
     Systems/WorldState.cs
     Scripts/CubeSystem.cs
