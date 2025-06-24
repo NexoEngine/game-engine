@@ -214,6 +214,30 @@ namespace nexo::ecs {
             }
 
             /**
+             * @brief Adds a component to an entity, updates its signature, and notifies systems.
+             *
+             * This function allows adding a component by its type ID and raw data pointer.
+             *
+             * @param entity The ID of the entity to which the component will be added.
+             * @param componentType The type ID of the component to be added.
+             * @param componentData Pointer to the raw component data.
+             *
+             * @pre componentType must be a valid registered component type.
+             * @pre componentData must point to valid memory of the component's size.
+             */
+            void addComponent(const Entity entity, const ComponentType componentType, const void *componentData) const
+            {
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
+                signature.set(componentType, true);
+                m_componentManager->addComponent(entity, componentType, componentData, oldSignature, signature);
+
+                m_entityManager->setSignature(entity, signature);
+
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
+            }
+
+            /**
             * @brief Removes a component from an entity, updates its signature, and notifies systems.
             *
             * @param entity - The ID of the entity.
