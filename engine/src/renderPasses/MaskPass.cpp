@@ -42,9 +42,8 @@ namespace nexo::renderer {
         renderer::NxRenderer3D::get().bindTextures();
         const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_OUTLINE_MASK) {
+            if (cmd.filterMask & F_OUTLINE_MASK)
                 cmd.execute();
-            }
         }
         output->unbind();
         pipeline.setOutput(id, output);
@@ -52,6 +51,8 @@ namespace nexo::renderer {
 
     void MaskPass::resize(unsigned int width, unsigned int height)
     {
+        if (!m_output)
+            return;
         m_output->resize(width, height);
     }
 }

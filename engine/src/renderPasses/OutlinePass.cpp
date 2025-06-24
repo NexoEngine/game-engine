@@ -69,11 +69,13 @@ namespace nexo::renderer {
         output->unbind();
         renderer::NxRenderCommand::setDepthMask(true);
         renderer::NxRenderCommand::setDepthTest(true);
-        pipeline.setOutput(id, m_output);
+        pipeline.setOutput(id, output);
     }
 
     void OutlinePass::resize(unsigned int width, unsigned int height)
     {
+        if (!m_output)
+            return;
         m_output->resize(width, height);
     }
 }

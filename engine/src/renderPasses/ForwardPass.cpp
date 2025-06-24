@@ -48,12 +48,8 @@ namespace nexo::renderer {
         renderer::NxRenderer3D::get().bindTextures();
         const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_FORWARD_PASS) {
-                cmd.vao->bind();
-                for (const auto &vbo : cmd.vao->getVertexBuffers())
-                    vbo->bind();
+            if (cmd.filterMask & F_FORWARD_PASS)
                 cmd.execute();
-            }
         }
         output->unbind();
         pipeline.setOutput(id, output);
@@ -61,6 +57,8 @@ namespace nexo::renderer {
 
     void ForwardPass::resize(unsigned int width, unsigned int height)
     {
+        if (!m_output)
+            return;
         m_output->resize(width, height);
     }
 }

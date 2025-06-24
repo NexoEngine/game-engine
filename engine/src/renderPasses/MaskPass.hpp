@@ -23,6 +23,7 @@ namespace nexo::renderer {
     class MaskPass : public RenderPass {
         public:
             MaskPass(unsigned int width, unsigned int height);
+            virtual ~MaskPass() = default;
 
             void execute(RenderPipeline& pipeline) override;
             void resize(unsigned int width, unsigned int height) override;

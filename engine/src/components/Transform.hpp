@@ -49,15 +49,14 @@ namespace nexo::components {
             return {pos, quat, size, localMatrix, localCenter, children};
         }
 
-        void addChild(ecs::Entity childEntity) {
+        void addChild(ecs::Entity childEntity)
+        {
             children.push_back(childEntity);
         }
 
-        void removeChild(ecs::Entity childEntity) {
-            auto it = std::find(children.begin(), children.end(), childEntity);
-            if (it != children.end()) {
-                children.erase(it);
-            }
+        void removeChild(ecs::Entity childEntity)
+        {
+            children.erase(std::remove(children.begin(), children.end(), childEntity), children.end());
         }
 
         glm::vec3 pos;
