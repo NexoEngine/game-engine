@@ -321,7 +321,7 @@ namespace ImNexo {
 
         // Get the bounding box and draw centered text
         auto [p_min, p_max] = utils::getItemRect();
-        const ImVec2 textPos = utils::calculateCenteredTextPosition(headerText.data(), p_min, p_max);
+        const ImVec2 textPos = utils::calculateCenteredTextPosition(std::string(headerText).c_str(), p_min, p_max);
 
         ImGui::GetWindowDrawList()->AddText(
             ImGui::GetFont(),

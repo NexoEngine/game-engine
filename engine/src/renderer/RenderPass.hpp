@@ -35,13 +35,13 @@ namespace nexo::renderer {
 
             bool m_isFinal = false;
 
-            RenderPass(const std::string& name) : name(name) {}
+            explicit RenderPass(const std::string& name) : name(name) {}
             virtual ~RenderPass() = default;
 
             // The actual rendering work
             virtual void execute(RenderPipeline& pipeline) = 0;
             virtual void resize(unsigned int width, unsigned int height) = 0;
-            void setFinal(bool final) {m_isFinal = final;};
+            void setFinal(bool isFinal) {m_isFinal = isFinal;};
 
     };
 }
