@@ -30,6 +30,8 @@ namespace nexo::renderer {
         // Bind VAO for mesh, or use full-screen quad
         if (type == CommandType::MESH && vao && currentVAO != vao->getId()) {
             vao->bind();
+            for (const auto &vbo : vao->getVertexBuffers())
+                vbo->bind();
             currentVAO = vao->getId();
         } else if (type == CommandType::FULL_SCREEN) {
             auto quad = getFullscreenQuad();
@@ -44,7 +46,6 @@ namespace nexo::renderer {
             }
         }
 
-        // Issue draw
         if (type == CommandType::MESH && vao) {
             NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
         } else if (type == CommandType::FULL_SCREEN) {

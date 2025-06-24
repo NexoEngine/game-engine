@@ -33,7 +33,6 @@ namespace nexo::renderer {
             // Effects - which passes this one enables
             std::vector<PassId> effects;
 
-            bool m_isFinal = false;
 
             explicit RenderPass(const std::string& name) : name(name) {}
             virtual ~RenderPass() = default;
@@ -42,6 +41,8 @@ namespace nexo::renderer {
             virtual void execute(RenderPipeline& pipeline) = 0;
             virtual void resize(unsigned int width, unsigned int height) = 0;
             void setFinal(bool isFinal) {m_isFinal = isFinal;};
-
+            bool isFinal() const {return m_isFinal;}
+        protected:
+            bool m_isFinal = false;
     };
 }

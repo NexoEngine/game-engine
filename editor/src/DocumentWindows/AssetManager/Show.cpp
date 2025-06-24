@@ -104,19 +104,15 @@ namespace nexo::editor {
 
         ImGui::PushID(index);
 
-        // Set cursor position for hover/click detection
         ImGui::SetCursorScreenPos(itemPos);
 
-        // Create button for click handling
         bool clicked = ImGui::InvisibleButton("##item", itemSize);
         bool isHovered = ImGui::IsItemHovered();
 
-        // Highlight selection
         const bool isSelected = std::ranges::find(m_selectedAssets, index) != m_selectedAssets.end();
         const ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
 
-        // Add selection border
         if (isSelected) {
             // Draw a distinctive border around selected items
             drawList->AddRect(
@@ -134,7 +130,6 @@ namespace nexo::editor {
 
         // Draw thumbnail content based on asset type
         if (assetData->getType() == assets::AssetType::TEXTURE) {
-            // Get the texture ID for rendering
             auto textureAsset = asset.as<assets::Texture>();
             auto textureData = textureAsset.lock();
             ImTextureID textureId = textureData->getData().get()->texture->getId();
@@ -160,14 +155,12 @@ namespace nexo::editor {
         drawList->AddText(textPos, m_layout.color.titleText, assetName);
 
         // Handle selection when clicked
-        if (clicked) {
+        if (clicked)
             handleSelection(index, isSelected);
-        }
 
         // On Hover show asset location
-        if (isHovered) {
+        if (isHovered)
             ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
-        }
 
         ImGui::PopID();
     }
@@ -184,10 +177,8 @@ namespace nexo::editor {
                 auto textureData = textureRef.lock();
                 // Get the ImGui texture ID from your engine's texture
                 m_folderIconTexture = textureData->getData()->texture->getId();
-            } else {
-                // Fallback or error handling
+            } else
                 LOG(NEXO_WARN, "Failed to load folder icon texture");
-            }
         }
 
         return m_folderIconTexture;
@@ -204,10 +195,8 @@ namespace nexo::editor {
 
         ImGui::PushID(("folder_" + folderPath).c_str());
 
-        // Set cursor position for hover/click detection
         ImGui::SetCursorScreenPos(itemPos);
 
-        // Create invisible button first for proper hover detection
         bool clicked = ImGui::InvisibleButton("##folder", itemSize);
         bool isHovered = ImGui::IsItemHovered();
 
@@ -215,7 +204,6 @@ namespace nexo::editor {
         ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
 
-        // Draw thumbnail area
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
 
         // Calculate padding for the icon
@@ -279,10 +267,8 @@ namespace nexo::editor {
             folderName.c_str()
         );
 
-        // Handle navigation when clicked
-        if (clicked) {
+        if (clicked)
             m_currentFolder = folderPath; // Navigate into this folder
-        }
 
         ImGui::PopID();
     }
@@ -295,11 +281,9 @@ namespace nexo::editor {
         // First, collect all immediate subfolders of the current folder
         for (const auto& [path, name] : m_folderStructure) {
             // Skip the current folder itself
-            if (path == m_currentFolder) {
+            if (path == m_currentFolder)
                 continue;
-            }
 
-            // Check if this is a direct subfolder of the current folder
             if (path.find(m_currentFolder) == 0) {
                 // For root folder (empty current folder)
                 if (m_currentFolder.empty()) {
@@ -322,7 +306,6 @@ namespace nexo::editor {
             }
         }
 
-        // Get assets to display
         const std::vector<assets::GenericAssetRef> assets = assets::AssetCatalog::getInstance().getAssets();
 
         // Filter assets by currently selected folder
@@ -340,20 +323,16 @@ namespace nexo::editor {
                 std::string assetDir = assetPath.substr(0, assetPath.find_last_of('/'));
 
                 // If there's no slash, asset is in root
-                if (assetPath.find('/') == std::string::npos) {
+                if (assetPath.find('/') == std::string::npos)
                     assetDir = "";
-                }
 
-                if (assetDir == m_currentFolder) {
+                if (assetDir == m_currentFolder)
                     filteredAssets.push_back(asset);
-                }
             }
         }
 
-        // Calculate total items (folders + assets)
         size_t totalItems = subfolders.size() + filteredAssets.size();
 
-        // Create a virtual list for clipping
         ImGuiListClipper clipper;
         int rowCount = (totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount;
         clipper.Begin(rowCount, m_layout.size.itemStep.y);
@@ -400,10 +379,8 @@ namespace nexo::editor {
 
     void AssetManagerWindow::show()
     {
-        // Ensure folder structure is built
-        if (m_folderStructure.empty()) {
+        if (m_folderStructure.empty())
             buildFolderStructure();
-        }
 
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened, ImGuiWindowFlags_MenuBar);
@@ -430,12 +407,8 @@ namespace nexo::editor {
         ImGui::PopStyleColor(3);
 
         // Handle splitter drag
-        if (ImGui::IsItemActive()) {
+        if (ImGui::IsItemActive())
             leftPanelWidth += ImGui::GetIO().MouseDelta.x;
-
-            // Clamp to reasonable values
-            //leftPanelWidth = ImClamp(leftPanelWidth, 100.0f, ImGui::GetWindowContentRegionWidth() - 200.0f);
-        }
 
         // Right panel (asset grid)
         ImGui::SameLine();
@@ -450,9 +423,8 @@ namespace nexo::editor {
             ImGui::SameLine();
 
             // Start with root level "Assets"
-            if (ImGui::Button("Assets")) {
+            if (ImGui::Button("Assets"))
                 m_currentFolder = "";
-            }
 
             // Split the current path into components
             std::string path = m_currentFolder;

@@ -126,7 +126,6 @@ namespace nexo::editor {
                 selector.addToSelection(uuid->get().uuid, entityId, selType);
         }
 
-        // Check if entity has a ModelComponent and process its children
         if (coord->entityHasComponent<components::TransformComponent>(entityId)) {
             const auto& transform = coord->getComponent<components::TransformComponent>(entityId);
             selectModelChildren(transform.children, isCtrlPressed);
@@ -139,6 +138,8 @@ namespace nexo::editor {
 
         for (const auto& entity : children) {
             selectEntityHierarchy(entity, isCtrlPressed);
+            if (!coord->entityHasComponent<components::TransformComponent>(entity))
+                continue;
             const auto &childTransform = coord->getComponent<components::TransformComponent>(entity);
 
             if (!childTransform.children.empty())

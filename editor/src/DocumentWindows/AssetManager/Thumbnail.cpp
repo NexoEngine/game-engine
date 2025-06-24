@@ -23,7 +23,6 @@ namespace nexo::editor {
             ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
             ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
 
-            // Render the actual texture
             drawList->AddImage(
                 textureId,
                 imageStart,

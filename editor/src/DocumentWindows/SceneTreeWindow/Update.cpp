@@ -22,7 +22,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::generateHierarchicalNodes(std::map<scene::SceneId, SceneObject> &scenes)
     {
-        // First, find all root entities (those with RootComponent or standalone entities without a parent)
+        // Find all root entities
         const std::vector<ecs::Entity> rootEntities = Application::m_coordinator->getAllEntitiesWith<
             components::RootComponent,
             components::TransformComponent,
@@ -130,11 +130,11 @@ namespace nexo::editor {
         // Create UI name with appropriate icon
         std::string uiName;
         if (Application::m_coordinator->entityHasComponent<components::RootComponent>(entity)) {
-            uiName = ICON_FA_OBJECT_GROUP "  " + name; // Use a different icon for root/model entities
+            uiName = ICON_FA_OBJECT_GROUP "  " + name;
         } else if (Application::m_coordinator->entityHasComponent<components::StaticMeshComponent>(entity)) {
             uiName = ICON_FA_CUBE "  " + name;
         } else {
-            uiName = ICON_FA_DOT_CIRCLE_O "  " + name; // Generic icon for other entities
+            uiName = ICON_FA_DOT_CIRCLE_O "  " + name;
         }
 
         SceneObject node(uiName, {}, SelectionType::ENTITY, data);
@@ -195,7 +195,6 @@ namespace nexo::editor {
                 return newCameraNode(sceneId, uiId, entity);
             });
 
-        // Generate hierarchical entity nodes
         generateHierarchicalNodes(sceneNodes);
 
         for (const auto &sceneNode: sceneNodes | std::views::values)

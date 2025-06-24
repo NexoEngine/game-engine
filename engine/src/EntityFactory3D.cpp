@@ -153,7 +153,7 @@ namespace nexo {
     {
         auto modelAsset = model.lock();
         if (!modelAsset || !modelAsset->getData())
-            return ecs::MAX_ENTITIES;
+            return ecs::INVALID_ENTITY;
 
         ecs::Entity rootEntity = Application::m_coordinator->createEntity();
 

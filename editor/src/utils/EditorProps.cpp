@@ -62,7 +62,7 @@ namespace nexo::editor::utils {
         billboardMat->albedoTexture = pointLightIconTexture;
         billboardMat->shader = "Albedo unshaded transparent";
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-                                assets::AssetLocation("_internal::CameraPropMat@_internal"),
+                                assets::AssetLocation("_internal::PointLightPropMat@_internal"),
                                 std::move(billboardMat));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -87,7 +87,7 @@ namespace nexo::editor::utils {
         billboardMat->albedoTexture = spotLightIconTexture;
         billboardMat->shader = "Albedo unshaded transparent";
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-                                assets::AssetLocation("_internal::CameraPropMat@_internal"),
+                                assets::AssetLocation("_internal::SpotLightPropMat@_internal"),
                                 std::move(billboardMat));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;

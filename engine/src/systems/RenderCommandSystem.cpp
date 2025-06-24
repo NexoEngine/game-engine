@@ -246,7 +246,7 @@ namespace nexo::system {
         cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
 
         cmd.uniforms["uMaterial.emissiveColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
-        auto emissiveTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
+        auto emissiveTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
         auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ? emissiveTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
 
