@@ -34,7 +34,6 @@ namespace nexo::renderer {
     {
         if (passes.find(id) == passes.end())
             return;
-
         auto& pass = passes[id];
 
         // Save prerequisites and effects before removal
@@ -68,23 +67,30 @@ namespace nexo::renderer {
             );
         }
 
-        // If this was the final output pass, find a new one
-        if (finalOutputPass == static_cast<int>(id)) {
-            // Prefer terminal passes (those with no effects)
-            auto terminalPasses = findTerminalPasses();
-            if (!terminalPasses.empty()) {
-                setFinalOutputPass(terminalPasses[0]);
-            } else if (!passes.empty()) {
-                // Fallback to any pass if no terminal passes
-                setFinalOutputPass(passes.begin()->first);
-            } else {
-                finalOutputPass = -1;
-            }
-        }
+        // First remove the pass, then find a new final output if needed
+        bool needNewFinalOutput = (finalOutputPass == static_cast<int>(id));
 
+        // Remove the pass from the maps
         passes.erase(id);
         if (passOutputs.find(id) != passOutputs.end())
             passOutputs.erase(id);
+
+        // Now, after removing the pass, find a new final output if needed
+        if (needNewFinalOutput) {
+            // If there are no passes left, set finalOutputPass to -1 directly
+            if (passes.empty()) {
+                finalOutputPass = -1;
+            } else {
+                // Prefer terminal passes (those with no effects)
+                auto terminalPasses = findTerminalPasses();
+                if (!terminalPasses.empty()) {
+                    setFinalOutputPass(terminalPasses[0]);
+                } else {
+                    // Fallback to any pass
+                    setFinalOutputPass(passes.begin()->first);
+                }
+            }
+        }
         m_isDirty = true;
     }
 
@@ -160,8 +166,9 @@ namespace nexo::renderer {
     void RenderPipeline::setFinalOutputPass(PassId id)
     {
         if (passes.find(id) != passes.end()) {
-            if (finalOutputPass != -1)
+            if (finalOutputPass != -1 && passes.find(finalOutputPass) != passes.end())
                 passes[finalOutputPass]->setFinal(false);
+
             passes[id]->setFinal(true);
             finalOutputPass = id;
         }
@@ -203,6 +210,13 @@ namespace nexo::renderer {
     std::vector<PassId> RenderPipeline::createExecutionPlan()
     {
         std::vector<PassId> result;
+
+        // Early return if there are no passes
+        if (passes.empty()) {
+            m_isDirty = false;
+            return result;
+        }
+
         std::set<PassId> visited;
         // DFS helper to build execution plan
         std::function<void(PassId)> buildPlan = [&](PassId current) {
