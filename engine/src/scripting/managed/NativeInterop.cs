@@ -47,7 +47,7 @@ namespace Nexo
         /// Native API struct that matches the C++ struct
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct NativeApiCallbacks
+        private unsafe struct NativeApiCallbacks
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void HelloFromNativeDelegate();
@@ -71,16 +71,16 @@ namespace Nexo
             public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId, void *componentData);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxHasComponentDelegate(UInt32 typeId, UInt32 entityId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 size);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
-            
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
-
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate bool NxHasComponentDelegate(UInt32 typeId, UInt32 entityId);
 
             // Function pointers
             public HelloFromNativeDelegate HelloFromNative;
@@ -90,10 +90,10 @@ namespace Nexo
             public CreateCubeDelegate CreateCube;
             public GetTransformDelegate GetTransform;
             public NxGetComponentDelegate NxGetComponent;
-            public NxRegisterComponentDelegate NxRegisterComponent;
-            public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
             public NxAddComponentDelegate NxAddComponent;
             public NxHasComponentDelegate NxHasComponent;
+            public NxRegisterComponentDelegate NxRegisterComponent;
+            public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -259,14 +259,14 @@ namespace Nexo
             return ref Unsafe.AsRef<T>((void*)ptr);
         }
         
-        public static void AddComponent<T>(UInt32 entityId)
+        public static unsafe void AddComponent<T>(UInt32 entityId, ref T componentData) where T : unmanaged
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
                 throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
 
             try
             {
-                s_callbacks.NxAddComponent.Invoke(typeId, entityId);
+                s_callbacks.NxAddComponent.Invoke(typeId, entityId, Unsafe.AsPointer(ref componentData));
             }
             catch (Exception ex)
             {
