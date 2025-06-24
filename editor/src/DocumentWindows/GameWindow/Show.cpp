@@ -80,11 +80,11 @@ namespace nexo::editor
         ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::GetFrameHeight()) * 0.5f);
 
         // Stop button
-        static const std::vector<ImNexo::GradientStop> stopButtonGradient = {
-            {0.0f, IM_COL32(204, 51, 51, 255)},
-            {1.0f, IM_COL32(153, 26, 26, 255)}};
+        static const std::vector<ImNexo::GradientStop> standardGradient = {
+            {0.0f, IM_COL32(50, 50, 70, 230)},
+            {1.0f, IM_COL32(30, 30, 45, 230)}};
 
-        if (ImNexo::IconGradientButton("stop_game", ICON_FA_STOP, ImVec2(buttonWidth, buttonHeight), stopButtonGradient))
+        if (ImNexo::IconGradientButton("stop_game", ICON_FA_STOP, ImVec2(buttonWidth, buttonHeight), standardGradient))
         {
             m_opened = false;
         }
@@ -93,17 +93,31 @@ namespace nexo::editor
 
         ImGui::SameLine();
 
-        // Pause button
-        static const std::vector<ImNexo::GradientStop> pauseButtonGradient = {
-            {0.0f, IM_COL32(51, 51, 204, 255)},
-            {1.0f, IM_COL32(26, 26, 153, 255)}};
-
-        if (ImNexo::IconGradientButton("pause_game", ICON_FA_PAUSE, ImVec2(buttonWidth, buttonHeight), pauseButtonGradient))
+        // Pause/Resume button
+        if (m_isPaused)
         {
-            // TODO: Implement pause functionality
+            // Resume button
+            static const std::vector<ImNexo::GradientStop> selectedGradient = {
+                {0.0f, IM_COL32(70, 70, 120, 230)},
+                {1.0f, IM_COL32(50, 50, 100, 230)}};
+
+            if (ImNexo::IconGradientButton("resume_game", ICON_FA_PLAY, ImVec2(buttonWidth, buttonHeight), selectedGradient))
+            {
+                m_isPaused = false;
+            }
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Resume game");
         }
-        if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Pause game (not implemented)");
+        else
+        {
+            // Pause button
+            if (ImNexo::IconGradientButton("pause_game", ICON_FA_PAUSE, ImVec2(buttonWidth, buttonHeight), standardGradient))
+            {
+                m_isPaused = true;
+            }
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Pause game");
+        }
 
         ImGui::EndChild();
         ImGui::PopStyleColor();
