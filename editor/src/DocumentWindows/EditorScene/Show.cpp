@@ -21,6 +21,7 @@
 #include "utils/EditorProps.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
+#include <imgui_internal.h>
 
 namespace nexo::editor
 {
@@ -132,7 +133,7 @@ namespace nexo::editor
 
     void EditorScene::renderView()
     {
-        auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
         if (!cameraComponent.m_renderTarget)
             return;
 
@@ -157,15 +158,41 @@ namespace nexo::editor
 
     void EditorScene::show()
     {
+        // Handle deferred dock split before rendering
+        if (m_shouldSplitDock && !m_gameWindowNameToSplit.empty())
+        {
+            const std::string currentWindowName = m_windowName;
+            ImGuiWindow *currentImGuiWindow = ImGui::FindWindowByName((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str());
+
+            if (currentImGuiWindow && currentImGuiWindow->DockId)
+            {
+                ImGuiID editorDockId = currentImGuiWindow->DockId;
+                ImGuiID rightNode, leftNode;
+
+                ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode);
+
+                // Dock the windows
+                ImGui::DockBuilderDockWindow((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str(), leftNode);
+                ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
+                ImGui::DockBuilderFinish(editorDockId);
+
+                // Update registry
+                m_windowRegistry.setDockId(currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId), leftNode);
+                m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
+            }
+
+            m_shouldSplitDock = false;
+            m_gameWindowNameToSplit.clear();
+        }
+
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto& selector = Selector::get();
         m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
-        const std::string& sceneWindowName = std::format("{}{}{}",
+        const std::string &sceneWindowName = std::format("{}{}{}",
                                                          m_windowName,
                                                          NEXO_WND_USTRID_DEFAULT_SCENE,
-                                                         m_sceneId
-        );
+                                                         m_sceneId);
         m_wasVisibleLastFrame = m_isVisibleInDock;
         m_isVisibleInDock = false;
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened,
@@ -196,9 +223,10 @@ namespace nexo::editor
                 renderView();
                 renderGizmo();
                 renderToolbar();
-                
+
                 // Handle deferred game window focus
-                if (m_shouldFocusGameWindow && !m_gameWindowToFocus.empty()) {
+                if (m_shouldFocusGameWindow && !m_gameWindowToFocus.empty())
+                {
                     ImGui::SetWindowFocus(m_gameWindowToFocus.c_str());
                     m_shouldFocusGameWindow = false;
                     m_gameWindowToFocus.clear();
