@@ -22,6 +22,7 @@
 #include "SingletonComponent.hpp"
 #include "Entity.hpp"
 #include "Logger.hpp"
+#include "TypeErasedComponent/ComponentDescription.hpp"
 
 namespace nexo::ecs {
 
@@ -174,6 +175,11 @@ namespace nexo::ecs {
                 } else {
                     m_supportsMementoPattern.emplace(typeid(T), false);
                 }
+            }
+
+            void addComponentDescription(const ComponentType componentType, const ComponentDescription& description)
+            {
+                m_componentDescriptions[componentType] = std::make_shared<ComponentDescription>(description);
             }
 
             ComponentType registerComponent(const size_t componentSize, const size_t initialCapacity = 1024)
@@ -373,7 +379,9 @@ namespace nexo::ecs {
              * @param entity The target entity identifier.
              * @return std::vector<std::type_index> A list of type indices for each component the entity has.
              */
-            std::vector<std::type_index> getAllComponentTypes(Entity entity) const;
+            std::vector<ComponentType> getAllComponentTypes(Entity entity) const;
+
+            std::vector<std::type_index> getAllComponentTypeIndices(Entity entity) const;
 
             /**
              * @brief Retrieves all components associated with an entity.
@@ -430,6 +438,11 @@ namespace nexo::ecs {
             ComponentType getComponentType() const
             {
                 return m_componentManager->getComponentType<T>();
+            }
+
+            const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>& getComponentDescriptions() const
+            {
+                return m_componentDescriptions;
             }
 
             /**
@@ -570,5 +583,7 @@ namespace nexo::ecs {
             std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
+
+            std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>> m_componentDescriptions;
     };
 }
