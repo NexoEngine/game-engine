@@ -23,6 +23,7 @@
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "components/Model.hpp"
+#include "components/Name.hpp"
 #include "components/Parent.hpp"
 #include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
@@ -90,6 +91,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::ModelComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
         m_coordinator->registerComponent<components::MaterialComponent>();
+        m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
     }
 
