@@ -22,6 +22,7 @@
 #include "../EntityProperties/CameraProperty.hpp"
 #include "../EntityProperties/CameraController.hpp"
 #include "../EntityProperties/CameraTarget.hpp"
+#include "DocumentWindows/EntityProperties/TypeErasedProperty.hpp"
 #include "components/Camera.hpp"
 
 namespace nexo::editor {
@@ -37,5 +38,19 @@ namespace nexo::editor {
         registerProperty<components::CameraComponent, CameraProperty>();
         registerProperty<components::PerspectiveCameraController, CameraController>();
         registerProperty<components::PerspectiveCameraTarget, CameraTarget>();
+
+        registerTypeErasedProperties();
     }
+
+    void InspectorWindow::registerTypeErasedProperties()
+    {
+        // Register TypeErased components
+        const auto& coordinator = Application::m_coordinator;
+        const auto& componentDescriptions = coordinator->getComponentDescriptions();
+
+        for (const auto& [componentType, description] : componentDescriptions) {
+            registerProperty(componentType, std::make_shared<TypeErasedProperty>(*this, componentType, description));
+        }
+    }
+
 }

@@ -58,7 +58,7 @@ namespace nexo::editor {
 
     void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
-        const std::vector<std::type_index> componentsType = Application::getAllEntityComponentTypes(entity);
+        const std::vector<ecs::ComponentType>& componentsType = Application::getAllEntityComponentTypes(entity);
         for (auto& type : componentsType)
         {
             if (m_entityProperties.contains(type))
