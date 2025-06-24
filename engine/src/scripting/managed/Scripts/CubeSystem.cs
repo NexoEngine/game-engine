@@ -26,13 +26,13 @@ public struct TestComponent : IComponentBase
 
 public class CubeSystem : SystemBase
 {
-    private struct CubeAnimationState
+    private struct CubeAnimationState : IComponentBase
     {
         public Single Angle;
         public Single BreathingPhase;
     }
 
-    private readonly Dictionary<UInt32, CubeAnimationState> _cubeStates = [];
+    private readonly List<UInt32> _cubes = [];
     
     protected override void OnInitialize(WorldState worldState)
     {
@@ -42,17 +42,8 @@ public class CubeSystem : SystemBase
     private void MoveCube(UInt32 cubeId, Single deltaTime)
     {
         ref Transform transform = ref NativeInterop.GetComponent<Transform>(cubeId);
-        
-        // Get or create animation state for this cube
-        if (!_cubeStates.TryGetValue(cubeId, out var state))
-        {
-            state = new CubeAnimationState
-            {
-                Angle = 0.0f,
-                BreathingPhase = 0.0f
-            };
-        }
-        
+        ref CubeAnimationState state = ref NativeInterop.GetComponent<CubeAnimationState>(cubeId);
+ 
         // Rotating cube effect
         float rotationSpeed = 1.0f;
         transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, deltaTime * rotationSpeed) * transform.quat;
@@ -86,19 +77,18 @@ public class CubeSystem : SystemBase
         }
         
         transform.size.Z = startScale + ((MathF.Sin(state.BreathingPhase) * 0.5f + 0.5f) * (endScale - startScale));
-        
-        // Update the stored state
-        _cubeStates[cubeId] = state;
     }
     
     private void SpawnCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
     {
         var cubeId = NativeInterop.CreateCube(position, size, rotation, color);
-        _cubeStates[cubeId] = new CubeAnimationState
+        var state = new CubeAnimationState
         {
-            Angle = Random.Shared.NextSingle() * MathF.PI * 2.0f,
+            Angle = Random.Shared.NextSingle() * MathF.PI * 2.0f, 
             BreathingPhase = Random.Shared.NextSingle() * MathF.PI * 2.0f
         };
+        NativeInterop.AddComponent<CubeAnimationState>(cubeId, ref state);
+        _cubes.Add(cubeId);
     }
     
     protected override void OnUpdate(WorldState worldState)
@@ -118,9 +108,10 @@ public class CubeSystem : SystemBase
                 1.0f
             );
             SpawnCube(position, size, rotation, color);
+            Logger.Log(LogLevel.Info, $"Spawned a new cube at {position} with size {size} and color {color}");
         }
         
-        foreach (var cubeId in _cubeStates.Keys)
+        foreach (var cubeId in _cubes)
         {
             MoveCube(cubeId, deltaTime);
         }
@@ -128,13 +119,13 @@ public class CubeSystem : SystemBase
     
     protected override void OnShutdown(WorldState worldState)
     {
-        _cubeStates.Clear();
+        _cubes.Clear();
         Logger.Log(LogLevel.Info, $"Shutting down {Name} system");
     }
     
     // Helper method to clean up destroyed cubes
     public void RemoveCubeState(uint cubeId)
     {
-        _cubeStates.Remove(cubeId);
+        _cubes.Remove(cubeId);
     }
 }
