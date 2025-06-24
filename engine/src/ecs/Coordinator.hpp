@@ -511,10 +511,23 @@ namespace nexo::ecs {
              * @return false Otherwise.
              */
             template<typename T>
-            bool entityHasComponent(const Entity entity) const
+            [[nodiscard]] bool entityHasComponent(const Entity entity) const
+            {
+                const ComponentType componentType = m_componentManager->getComponentType<T>();
+                return entityHasComponent(entity, componentType);
+            }
+
+            /**
+             * @brief Checks whether an entity has a specific component by its type ID.
+             *
+             * @param entity The target entity.
+             * @param componentType The type ID of the component.
+             * @return true If the entity has the component.
+             * @return false Otherwise.
+             */
+            [[nodiscard]] bool entityHasComponent(const Entity entity, const ComponentType componentType) const
             {
                 const Signature signature = m_entityManager->getSignature(entity);
-                const ComponentType componentType = m_componentManager->getComponentType<T>();
                 return signature.test(componentType);
             }
 
