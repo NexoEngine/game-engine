@@ -21,6 +21,7 @@
 #include <vector>
 #include <span>
 #include <algorithm>
+#include <cstring>
 
 namespace nexo::ecs {
     /**
