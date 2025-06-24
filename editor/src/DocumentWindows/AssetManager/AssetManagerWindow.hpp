@@ -83,6 +83,8 @@ namespace nexo::editor {
             void drawFolderTree();
             void drawFolderTreeItem(const std::string& name, const std::string& path);
 
+            void drawTextureThumbnail(ImDrawList *drawList, ImTextureID textureId, const ImVec2 &itemPos, const ImVec2& thumbnailEnd);
+
             struct FolderCreationState {
                 bool isCreatingFolder = false;
                 char folderName[14] = "";
