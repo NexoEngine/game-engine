@@ -20,6 +20,7 @@
 #include "Nexo.hpp"
 #include "components/Uuid.hpp"
 #include "ui/Field.hpp"
+#include "core/event/Input.hpp"
 
 namespace nexo::scripting {
 
@@ -138,6 +139,35 @@ namespace nexo::scripting {
                 .PerspectiveCameraController = coordinator.getComponentType<components::PerspectiveCameraController>(),
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
             };
+        }
+
+        bool NxIsKeyPressed(const Int32 keycode)
+        {
+            return event::isKeyPressed(keycode);
+        }
+
+        bool NxIsKeyReleased(const Int32 keycode)
+        {
+            return event::isKeyReleased(keycode);
+        }
+
+        bool NxIsMouseDown(const Int32 button)
+        {
+            return event::isMouseDown(button);
+        }
+
+        bool NxIsMouseReleased(const Int32 button)
+        {
+            return event::isMouseReleased(button);
+        }
+
+        void NxGetMousePosition(Vector2 *position)
+        {
+            if (position) {
+                const auto mousePos = event::getMousePosition();
+                position->x = mousePos.x;
+                position->y = mousePos.y;
+            }
         }
     }
 

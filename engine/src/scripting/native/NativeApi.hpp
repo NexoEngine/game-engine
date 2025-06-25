@@ -94,6 +94,11 @@ namespace nexo::scripting {
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 
+        NEXO_RET(bool) NxIsKeyPressed(Int32 keycode);
+        NEXO_RET(bool) NxIsKeyReleased(Int32 keycode);
+        NEXO_RET(bool) NxIsMouseDown(Int32 button);
+        NEXO_RET(bool) NxIsMouseReleased(Int32 button);
+        NEXO_RET(void) NxGetMousePosition(Vector2 *position);
 
     }
 
@@ -110,6 +115,11 @@ namespace nexo::scripting {
         ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
         ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
+        ApiCallback<bool(Int32)> NxIsKeyPressed{&scripting::NxIsKeyPressed};
+        ApiCallback<bool(Int32)> NxIsKeyReleased{&scripting::NxIsKeyReleased};
+        ApiCallback<bool(Int32)> NxIsMouseDown{&scripting::NxIsMouseDown};
+        ApiCallback<bool(Int32)> NxIsMouseReleased{&scripting::NxIsMouseReleased};
+        ApiCallback<void(Vector2*)> NxGetMousePosition{&scripting::NxGetMousePosition};
     };
 
     inline NativeApiCallbacks nativeApiCallbacks;
