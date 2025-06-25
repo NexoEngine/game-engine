@@ -28,8 +28,8 @@ void main()
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 
-#define MAX_POINT_LIGHTS 8
-#define MAX_SPOT_LIGHTS 8
+#define MAX_POINT_LIGHTS 10
+#define MAX_SPOT_LIGHTS 10
 
 // Light definitions.
 struct DirectionalLight {
