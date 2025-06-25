@@ -12,6 +12,7 @@ set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
 set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
 set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
 set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
+set(NEXO_BUILD_SCRIPTING ON CACHE BOOL "Enable C# scripting support")
 set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -97,8 +98,10 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 # SETUP MANAGED CSHARP LIB
-include("${CMAKE_CURRENT_SOURCE_DIR}/engine/src/scripting/managed/CMakeLists.txt")
-add_dependencies(nexoEditor nexoManaged)
+if(NEXO_BUILD_SCRIPTING)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/engine/src/scripting/managed/CMakeLists.txt")
+    add_dependencies(nexoEditor nexoManaged)
+endif()
 # SETUP EXAMPLE
 include("${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt")
 # SETUP TESTS

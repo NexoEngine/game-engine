@@ -45,6 +45,7 @@ namespace nexo::scripting {
         //    Decimal             A decimal (128-bit) value. Unsupported in C++
         using IntPtr = void*;  // A pointer to an unspecified type.
 
+        using Vector2 = glm::vec2;
         using Vector3 = glm::vec3;
         using Vector4 = glm::vec4;
 

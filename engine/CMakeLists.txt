@@ -50,7 +50,6 @@ set(COMMON_SOURCES
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderSystem.cpp
         engine/src/systems/LightSystem.cpp
-        engine/src/systems/ScriptingSystem.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
@@ -63,10 +62,17 @@ set(COMMON_SOURCES
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
         engine/src/assets/Assets/Texture/TextureImporter.cpp
-        engine/src/scripting/native/Scripting.cpp
-        engine/src/scripting/native/HostString.cpp
-        engine/src/scripting/native/NativeApi.cpp
 )
+
+# Add scripting sources if enabled
+if(NEXO_BUILD_SCRIPTING)
+    list(APPEND COMMON_SOURCES
+            engine/src/systems/ScriptingSystem.cpp
+            engine/src/scripting/native/Scripting.cpp
+            engine/src/scripting/native/HostString.cpp
+            engine/src/scripting/native/NativeApi.cpp
+    )
+endif()
 
 # Add API-specific sources
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
@@ -122,9 +128,12 @@ target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 # Scripting
 ###########################################
 
-# nethost
-find_package(unofficial-nethost CONFIG REQUIRED)
-target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
+if(NEXO_BUILD_SCRIPTING)
+    # nethost
+    find_package(unofficial-nethost CONFIG REQUIRED)
+    target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
+    target_compile_definitions(nexoRenderer PUBLIC NEXO_SCRIPTING_ENABLED)
+endif()
 
 if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
