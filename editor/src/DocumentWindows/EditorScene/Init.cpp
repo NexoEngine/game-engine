@@ -90,7 +90,7 @@ namespace nexo::editor
         auto& app = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        scene.addEntity(LightFactory::createAmbientLight({0.45f, 0.45f, 0.45f}));
+        scene.addEntity(LightFactory::createAmbientLight({0.4f, 0.4f, 0.4f}));
         // const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
         // addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
         // scene.addEntity(pointLight);
@@ -108,10 +108,10 @@ namespace nexo::editor
                     entity = EntityFactory3D::createCube(pos, size, rotation, color);
                     break;
                 case system::ShapeType::Sphere:
-                    entity = EntityFactory3D::createSphere(pos, size, rotation, color);
+                    entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
                     break;
                 case system::ShapeType::Cylinder:
-                    entity = EntityFactory3D::createCylinder(pos, size, rotation, color);
+                    entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
                     break;
                 case system::ShapeType::Tetrahedron:
                     entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
@@ -132,34 +132,34 @@ namespace nexo::editor
         {
             float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
             float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
-            glm::vec3 pos = {x, 42.0f + static_cast<float>(i), z};
+            glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
             glm::vec4 color = {
                 1.0f, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, 1.0f
             };
-            createAndAddEntity(pos, {0.5f, 0.5f, 0.5f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+            createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
                                JPH::EMotionType::Dynamic);
         }
 
         // Background
-        createAndAddEntity({-0.0f, 30.0f, -3.0f}, {40.0f, 60.0f, 0.5f}, {0, 0, 0}, {0.2f, 0.2f, 0.2f, 1.0f},
+        createAndAddEntity({-0.0f, 30.0f, -3.0f}, {40.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.2f, 0.2f, 0.2f, 1.0f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
 
         // Funnel
-        createAndAddEntity({-6.0f, 40.0f, 0.0f}, {10.0f, 0.5f, 6.0f}, {0, 0, -45.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
+        createAndAddEntity({-6.0f, 60.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
-        createAndAddEntity({6.0f, 40.0f, 0.0f}, {10.0f, 0.5f, 6.0f}, {0, 0, 45.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
+        createAndAddEntity({6.0f, 60.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
 
         // Spinner
-        createAndAddEntity({0.0f, 35.0f, 0.0f}, {0.5f, 3.0f, 6.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f, 1.0f},
+        createAndAddEntity({0.0f, 55.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {5.0f, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
 
         // Stairs
         std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> stairs = {
-            {{3.0f, 31.5f, 0.0f}, {5.0f, 0.5f, 6.0f}, {0, 0, -15.0f}},
-            {{11.0f, 28.5f, 0.0f}, {8.0f, 0.5f, 6.0f}, {0, 0, 20.0f}},
-            {{3.0f, 25.5f, 0.0f}, {5.0f, 0.5f, 6.0f}, {0, 0, -15.0f}},
-            {{10.0f, 22.5f, 0.0f}, {12.0f, 0.5f, 6.0f}, {0, 0, 20.0f}}
+            {{3.0f, 51.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}},
+            {{11.0f, 48.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0, 0, 20.0f}},
+            {{3.0f, 45.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}},
+            {{10.0f, 42.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0, 0, 20.0f}}
         };
         for (const auto& [pos, size, rotation] : stairs)
         {
@@ -169,9 +169,9 @@ namespace nexo::editor
 
         // Tunnel
         std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
-            {{-6.0f, 29.0f, 0.0f}, {3.0f, 11.0f, 6.0f}, {0, 0, 0}},
-            {{-1.0f, 28.5f, 0.0f}, {3.0f, 8.0f, 6.0f}, {0, 0, 0}},
-            {{-5.0f, 21.0f, 0.0f}, {9.0f, 0.5f, 6.0f}, {0, 0, -25.0f}}
+            {{-6.0f, 49.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
+            {{-1.0f, 48.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
+            {{-5.0f, 41.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
         };
         for (const auto& [pos, size, rotation] : tunnels)
         {
@@ -180,27 +180,31 @@ namespace nexo::editor
         }
 
         // Dominos
-        createAndAddEntity({-9.0f, 14.0f, 0.0f}, {21.0f, 0.5f, 6.0f}, {0, 0, 0.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
+        createAndAddEntity({-9.0f, 34.0f, 0.0f}, {21.0f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
-        createAndAddEntity({9.5f, 14.0f, 0.0f}, {13.0f, 0.5f, 6.0f}, {0, 0, 0.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
+        createAndAddEntity({9.5f, 34.0f, 0.0f}, {13.0f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.3f, 0.3f, 0.3f, 0.1f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
 
         for (int i = 0; i < 22; ++i)
         {
             if (i == 13) continue;
             float x = -18.4f + static_cast<float>(i) * 1.6f;
-            glm::vec3 pos = {x, 15.0f, 0.0f};
+            glm::vec3 pos = {x, 35.0f, 0.0f};
             createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, {0.6f, 0.6f, 0.6f, 1.0f},
                                system::ShapeType::Box, JPH::EMotionType::Dynamic);
         }
 
-        const float spacing = 4.0f;
-        const int totalRows = 20;
-        const float startY = -11.0f;
-        const float startX = -16.0f;
-        const int cols = 8;
+        // Spinner
+        createAndAddEntity({2.5f, 31.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
 
         // Fakir
+        const float spacing = 3.0f;
+        const int totalRows = 20;
+        const float startY = 4.0f;
+        const float startX = -14.0f;
+        const int cols = 10;
+
         for (int row = 0; row < totalRows; ++row)
         {
             for (int col = 0; col < cols; ++col)
@@ -208,16 +212,9 @@ namespace nexo::editor
                 float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
                 glm::vec3 pos = {col * spacing + startX + offsetX, startY + row * 1.2f, 0.0f};
                 glm::vec4 color = {
-                    static_cast<float>(rand()) / RAND_MAX, 1.0f, static_cast<float>(rand()) / RAND_MAX, 1.0f
+                    static_cast<float>(rand()) / RAND_MAX,  static_cast<float>(rand()) / RAND_MAX, 1.0f, 1.0f
                 };
-                createAndAddEntity(pos, {0.25f, 3.0f, 0.25f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
-                // ecs::Entity peg = EntityFactory3D::createCylinder(pos, {0.35f, 6.0f, 0.35f}, {90.0f, 0, 0}, color);
-                // app.getPhysicsSystem()->createBodyFromShape(peg,
-                //                                             app.m_coordinator->getComponent<
-                //                                                 components::TransformComponent>(peg),
-                //                                             system::ShapeType::Cylinder,
-                //                                             JPH::EMotionType::Static);
-                // scene.addEntity(peg);
+                createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
             }
         }
     }
