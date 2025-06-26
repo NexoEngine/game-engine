@@ -40,13 +40,6 @@ namespace nexo::system {
 
         auto &scriptHost = scripting::HostHandler::getInstance();
 
-        if (scriptHost.runScriptExample() == EXIT_FAILURE) {
-            LOG(NEXO_ERROR, "Error in runScriptExample");
-            return 1;
-        }
-
-        LOG(NEXO_INFO, "Successfully ran runScriptExample");
-
         updateWorldState();
         if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeComponents(); ret != 0) {
             LOG(NEXO_ERROR, "Failed to initialize scripting components, returned: {}", ret);
@@ -58,6 +51,13 @@ namespace nexo::system {
             return ret;
         }
         LOG(NEXO_INFO, "Scripting systems initialized successfully");
+
+        if (scriptHost.runScriptExample() == EXIT_FAILURE) {
+            LOG(NEXO_ERROR, "Error in runScriptExample");
+            return 1;
+        }
+
+        LOG(NEXO_INFO, "Successfully ran runScriptExample");
         return 0;
     }
 
