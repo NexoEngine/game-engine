@@ -104,6 +104,19 @@ namespace nexo::ecs {
         virtual void insertRaw(Entity entity, const void *componentData) = 0;
 
         /**
+         * @brief Removes the component for the given entity.
+         *
+         * If the entity is grouped (i.e. within the first m_groupSize entries),
+         * then adjusts the group boundary appropriately.
+         *
+         * @param entity The entity to remove the component from
+         * @throws ComponentNotFoundException if the entity doesn't have the component
+         *
+         * @pre The entity must have the component
+         */
+        virtual void remove(Entity entity) = 0;
+
+        /**
          * @brief Gets a span of all entities with this component
          * @return Span of entity IDs
          */
@@ -218,7 +231,7 @@ namespace nexo::ecs {
         void insertRaw(Entity entity, const void *componentData) override
         {
             if constexpr (!std::is_trivially_copyable_v<T>) {
-                LOG(NEXO_ERROR, "Component type {} is not trivially copyable, cannot use insertRaw", typeid(T).name());
+                THROW_EXCEPTION(InternalError, "Component type must be trivially copyable for raw insertion");
             }
             if (entity >= MAX_ENTITIES)
                 THROW_EXCEPTION(OutOfRange, entity);
@@ -253,7 +266,7 @@ namespace nexo::ecs {
          *
          * @pre The entity must have the component
          */
-        void remove(const Entity entity)
+        void remove(const Entity entity) override
         {
             if (!hasComponent(entity))
                 THROW_EXCEPTION(ComponentNotFound, entity);
@@ -648,7 +661,7 @@ namespace nexo::ecs {
          * @brief Removes the component for the given entity
          * @param entity The entity to remove the component from
          */
-        void remove(Entity entity);
+        void remove(Entity entity) override;
 
         [[nodiscard]] bool hasComponent(Entity entity) const override;
 
