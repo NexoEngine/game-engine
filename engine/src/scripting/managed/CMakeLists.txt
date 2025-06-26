@@ -27,6 +27,8 @@ set(SOURCES
     ObjectFactory.cs
     NativeInterop.cs
     Logger.cs
+    Input.cs
+    KeyCode.cs
     Components/Camera.cs
     Components/Light.cs
     Components/Render.cs
@@ -40,6 +42,7 @@ set(SOURCES
     Systems/SystemBase.cs
     Systems/WorldState.cs
     Scripts/CubeSystem.cs
+    Scripts/InputDemoSystem.cs
 )
 
 # Locate the dotnet executable
@@ -69,7 +72,7 @@ endif()
 add_custom_target(nexoManaged ALL
                   COMMAND ${DOTNET_EXECUTABLE} build Nexo.csproj
                   ${ARCH_ARG}
-                  -c $<CONFIG>                        # Matches Debug/Release configuration
+                  -c "$<IF:$<CONFIG:Debug>,Debug,Release>"    # Matches Debug/Release configuration
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}      # Working directory for the build
                   COMMENT "Building .NET managed project (Nexo.csproj)..."
 )

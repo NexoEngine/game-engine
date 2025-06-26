@@ -54,33 +54,40 @@ namespace nexo::scripting {
     struct ApiCallback<Ret(Args...)> {
         using Type = Ret (NEXO_CALL *)(Args...);
 
+        // Default constructor
+        ApiCallback() : func(nullptr) {}
+
         // Constructor explicitly accepting function pointers
         explicit ApiCallback(Type f) : func(f) {}
 
-        explicit ApiCallback(nullptr_t) = delete;
+        // Assignment operator for initialization
+        ApiCallback& operator=(Type f) {
+            func = f;
+            return *this;
+        }
 
-        // Delete the default constructor to enforce initialization
-        ApiCallback() = delete;
+        explicit ApiCallback(nullptr_t) = delete;
 
         private:
             Type func;
     };
 
-    extern "C" {
-        struct ComponentTypeIds {
-            UInt32 Transform;
-            UInt32 AmbientLight;
-            UInt32 DirectionalLight;
-            UInt32 PointLight;
-            UInt32 SpotLight;
-            UInt32 RenderComponent;
-            UInt32 SceneTag;
-            UInt32 CameraComponent;
-            UInt32 UuidComponent;
-            UInt32 PerspectiveCameraController;
-            UInt32 PerspectiveCameraTarget;
-        };
+    struct ComponentTypeIds {
+        UInt32 Transform;
+        UInt32 AmbientLight;
+        UInt32 DirectionalLight;
+        UInt32 PointLight;
+        UInt32 SpotLight;
+        UInt32 RenderComponent;
+        UInt32 SceneTag;
+        UInt32 CameraComponent;
+        UInt32 UuidComponent;
+        UInt32 PerspectiveCameraController;
+        UInt32 PerspectiveCameraTarget;
+    };
 
+    // Forward declare the extern "C" functions within the namespace
+    extern "C" {
         NEXO_RET(void) NxHelloFromNative(void);
         NEXO_RET(Int32) NxAddNumbers(Int32 a, Int32 b);
         NEXO_RET(const char*) NxGetNativeMessage(void);
@@ -94,24 +101,33 @@ namespace nexo::scripting {
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 
-
+        NEXO_RET(bool) NxIsKeyPressed(Int32 keycode);
+        NEXO_RET(bool) NxIsKeyReleased(Int32 keycode);
+        NEXO_RET(bool) NxIsMouseDown(Int32 button);
+        NEXO_RET(bool) NxIsMouseReleased(Int32 button);
+        NEXO_RET(void) NxGetMousePosition(Vector2 *position);
     }
 
     struct NativeApiCallbacks {
-        ApiCallback<void(void)> NxHelloFromNative{&scripting::NxHelloFromNative};
-        ApiCallback<Int32(Int32, Int32)> NxAddNumbers{&scripting::NxAddNumbers};
-        ApiCallback<const char*()> NxGetNativeMessage{&scripting::NxGetNativeMessage};
-        ApiCallback<void(UInt32, const char*)> NxLog{&scripting::NxLog};
+        ApiCallback<void(void)> NxHelloFromNative;
+        ApiCallback<Int32(Int32, Int32)> NxAddNumbers;
+        ApiCallback<const char*()> NxGetNativeMessage;
+        ApiCallback<void(UInt32, const char*)> NxLog;
 
-        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
-        ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
-        ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
-        ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
-        ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
-        ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
-        ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
+        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> NxCreateCube;
+        ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent;
+        ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent;
+        ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent;
+        ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent;
+        ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent;
+        ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds;
+        ApiCallback<bool(Int32)> NxIsKeyPressed;
+        ApiCallback<bool(Int32)> NxIsKeyReleased;
+        ApiCallback<bool(Int32)> NxIsMouseDown;
+        ApiCallback<bool(Int32)> NxIsMouseReleased;
+        ApiCallback<void(Vector2*)> NxGetMousePosition;
     };
 
-    inline NativeApiCallbacks nativeApiCallbacks;
+    extern NativeApiCallbacks nativeApiCallbacks;
 
 } // namespace nexo::scripting

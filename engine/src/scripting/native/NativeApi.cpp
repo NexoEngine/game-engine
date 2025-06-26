@@ -20,8 +20,12 @@
 #include "Nexo.hpp"
 #include "components/Uuid.hpp"
 #include "ui/Field.hpp"
+#include "core/event/Input.hpp"
 
 namespace nexo::scripting {
+
+    // Define the global callbacks instance
+    NativeApiCallbacks nativeApiCallbacks;
 
     // Static message to return to C#
     static const char* nativeMessage = "Hello from C++ native code!";
@@ -139,6 +143,62 @@ namespace nexo::scripting {
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
             };
         }
+
+        bool NxIsKeyPressed(const Int32 keycode)
+        {
+            return event::isKeyPressed(keycode);
+        }
+
+        bool NxIsKeyReleased(const Int32 keycode)
+        {
+            return event::isKeyReleased(keycode);
+        }
+
+        bool NxIsMouseDown(const Int32 button)
+        {
+            return event::isMouseDown(button);
+        }
+
+        bool NxIsMouseReleased(const Int32 button)
+        {
+            return event::isMouseReleased(button);
+        }
+
+        void NxGetMousePosition(Vector2 *position)
+        {
+            if (position) {
+                const auto mousePos = event::getMousePosition();
+                position->x = mousePos.x;
+                position->y = mousePos.y;
+            }
+        }
     }
+
+    // Initialize the callbacks with the extern "C" functions
+    void initializeNativeApiCallbacks() {
+        nativeApiCallbacks.NxHelloFromNative = &NxHelloFromNative;
+        nativeApiCallbacks.NxAddNumbers = &NxAddNumbers;
+        nativeApiCallbacks.NxGetNativeMessage = &NxGetNativeMessage;
+        nativeApiCallbacks.NxLog = &NxLog;
+        nativeApiCallbacks.NxCreateCube = &NxCreateCube;
+        nativeApiCallbacks.NxGetTransformComponent = &NxGetTransformComponent;
+        nativeApiCallbacks.NxGetComponent = &NxGetComponent;
+        nativeApiCallbacks.NxAddComponent = &NxAddComponent;
+        nativeApiCallbacks.NxHasComponent = &NxHasComponent;
+        nativeApiCallbacks.NxRegisterComponent = &NxRegisterComponent;
+        nativeApiCallbacks.NxGetComponentTypeIds = &NxGetComponentTypeIds;
+        nativeApiCallbacks.NxIsKeyPressed = &NxIsKeyPressed;
+        nativeApiCallbacks.NxIsKeyReleased = &NxIsKeyReleased;
+        nativeApiCallbacks.NxIsMouseDown = &NxIsMouseDown;
+        nativeApiCallbacks.NxIsMouseReleased = &NxIsMouseReleased;
+        nativeApiCallbacks.NxGetMousePosition = &NxGetMousePosition;
+    }
+
+    // Static initialization
+    static struct NativeApiCallbacksInitializer {
+        NativeApiCallbacksInitializer() {
+            initializeNativeApiCallbacks();
+        }
+    } nativeApiCallbacksInitializer;
 
 } // namespace nexo::scripting

@@ -229,8 +229,10 @@ namespace nexo::editor {
 
         const Application& app = Application::getInstance();
         app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be created in the editor window
+#ifdef NEXO_SCRIPTING_ENABLED
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
             inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow constructor, but we need the scripting to init
+#endif
     }
 
     bool Editor::isOpen() const

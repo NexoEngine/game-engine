@@ -25,8 +25,10 @@
 #include <core/exceptions/Exceptions.hpp>
 
 #include "Path.hpp"
+#ifdef NEXO_SCRIPTING_ENABLED
 #include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
+#endif
 
 int main(int argc, char **argv)
 try {

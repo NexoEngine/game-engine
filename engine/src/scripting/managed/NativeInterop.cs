@@ -82,6 +82,21 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxIsKeyPressedDelegate(Int32 keycode);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxIsKeyReleasedDelegate(Int32 keycode);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxIsMouseDownDelegate(Int32 button);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxIsMouseReleasedDelegate(Int32 button);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public unsafe delegate void NxGetMousePositionDelegate(Vector2* position);
 
             // Function pointers
             public HelloFromNativeDelegate NxHelloFromNative;
@@ -95,6 +110,11 @@ namespace Nexo
             public NxHasComponentDelegate NxHasComponent;
             public NxRegisterComponentDelegate NxRegisterComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
+            public NxIsKeyPressedDelegate NxIsKeyPressed;
+            public NxIsKeyReleasedDelegate NxIsKeyReleased;
+            public NxIsMouseDownDelegate NxIsMouseDown;
+            public NxIsMouseReleasedDelegate NxIsMouseReleased;
+            public NxGetMousePositionDelegate NxGetMousePosition;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -288,6 +308,73 @@ namespace Nexo
             {
                 Console.WriteLine($"Error calling HasComponent<{typeof(T)}>: {ex.Message}");
                 return false;
+            }
+        }
+        
+        public static bool IsKeyPressed(Int32 keycode)
+        {
+            try
+            {
+                return s_callbacks.NxIsKeyPressed.Invoke(keycode);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling IsKeyPressed: {ex.Message}");
+                return false;
+            }
+        }
+        
+        public static bool IsKeyReleased(Int32 keycode)
+        {
+            try
+            {
+                return s_callbacks.NxIsKeyReleased.Invoke(keycode);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling IsKeyReleased: {ex.Message}");
+                return false;
+            }
+        }
+        
+        public static bool IsMouseDown(Int32 button)
+        {
+            try
+            {
+                return s_callbacks.NxIsMouseDown.Invoke(button);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling IsMouseDown: {ex.Message}");
+                return false;
+            }
+        }
+        
+        public static bool IsMouseReleased(Int32 button)
+        {
+            try
+            {
+                return s_callbacks.NxIsMouseReleased.Invoke(button);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling IsMouseReleased: {ex.Message}");
+                return false;
+            }
+        }
+        
+        public static unsafe Vector2 GetMousePosition()
+        {
+            try
+            {
+                Vector2 position = new Vector2();
+                s_callbacks.NxGetMousePosition.Invoke(&position);
+                return position;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling GetMousePosition: {ex.Message}");
+                return Vector2.Zero;
             }
         }
 

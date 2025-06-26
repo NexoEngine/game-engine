@@ -31,10 +31,12 @@
 #include "exceptions/Exceptions.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
+#ifdef NEXO_SCRIPTING_ENABLED
 #include "scripting/native/Scripting.hpp"
+#include "systems/ScriptingSystem.hpp"
+#endif
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderSystem.hpp"
-#include "systems/ScriptingSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -197,17 +199,27 @@ namespace nexo {
         auto ambientLightSystem = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
         m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
 
+#ifdef NEXO_SCRIPTING_ENABLED
         m_scriptingSystem = std::make_shared<system::ScriptingSystem>();
+#endif
     }
 
     int Application::initScripting() const
     {
+#ifdef NEXO_SCRIPTING_ENABLED
         return m_scriptingSystem->init();
+#else
+        return 0;
+#endif
     }
 
     int Application::shutdownScripting() const
     {
+#ifdef NEXO_SCRIPTING_ENABLED
         return m_scriptingSystem->shutdown();
+#else
+        return 0;
+#endif
     }
 
     Application::Application()
@@ -280,7 +292,9 @@ namespace nexo {
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
+#ifdef NEXO_SCRIPTING_ENABLED
         m_scriptingSystem->update();
+#endif
 
         if (!m_isMinimized)
         {

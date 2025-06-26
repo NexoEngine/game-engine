@@ -38,9 +38,11 @@
 
 namespace nexo {
 
+#ifdef NEXO_SCRIPTING_ENABLED
     namespace system {
         class ScriptingSystem;
     }
+#endif
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -261,7 +263,9 @@ namespace nexo {
             std::shared_ptr<system::LightSystem> m_lightSystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
+#ifdef NEXO_SCRIPTING_ENABLED
             std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
+#endif
 
             std::vector<ProfileResult> m_profilesResults;
     };

@@ -319,6 +319,10 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::initCallbacks()
     {
+        // Ensure callbacks are initialized
+        extern void initializeNativeApiCallbacks();
+        initializeNativeApiCallbacks();
+        
         // Initialize callbacks
         if (m_managedApi.NativeInterop.Initialize(&nativeApiCallbacks, sizeof(nativeApiCallbacks))) {
             m_params.errorCallback("Failed to initialize native API callbacks");
