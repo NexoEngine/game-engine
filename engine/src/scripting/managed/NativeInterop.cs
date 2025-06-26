@@ -76,7 +76,10 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxRemoveComponentDelegate(UInt32 entityId, UInt32 typeId);
-
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxDestroyEntityDelegate(UInt32 entityId);
+            
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
             
@@ -96,6 +99,7 @@ namespace Nexo
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
             public NxRemoveComponentDelegate NxRemoveComponent;
+            public NxDestroyEntityDelegate NxDestroyEntity;
             public NxHasComponentDelegate NxHasComponent;
             public NxRegisterComponentDelegate NxRegisterComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
@@ -293,7 +297,17 @@ namespace Nexo
                 Console.WriteLine($"Error calling RemoveComponent<{typeof(T)}>: {ex.Message}");
             }
         }
-
+        public static void DestroyEntity(UInt32 entityId)
+        {
+            try
+            {
+                s_callbacks.NxDestroyEntity.Invoke(entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling DestroyEntity: {ex.Message}");
+            }
+        }
         
         public static bool HasComponent<T>(UInt32 entityId)
         {
