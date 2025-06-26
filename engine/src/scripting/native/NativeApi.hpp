@@ -90,11 +90,10 @@ namespace nexo::scripting {
         NEXO_RET(components::TransformComponent *) NxGetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
+        NEXO_RET(void) NxRemoveComponent(const ecs::Entity entity, const UInt32 componentTypeId);
         NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
-
-
     }
 
     struct NativeApiCallbacks {
@@ -107,6 +106,7 @@ namespace nexo::scripting {
         ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
         ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
         ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
+        ApiCallback<void(const ecs::Entity, const UInt32)> NxRemoveComponent{&scripting::NxRemoveComponent};
         ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
         ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
