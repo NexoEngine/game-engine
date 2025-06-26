@@ -89,6 +89,12 @@ namespace nexo::scripting {
             coordinator.removeComponent(entity, componentTypeId);
         }
 
+        void NxDestroyEntity(const ecs::Entity entity)
+        {
+            auto& coordinator = *Application::m_coordinator;
+            coordinator.destroyEntity(entity);
+        }
+
         bool NxHasComponent(const ecs::Entity entity, const UInt32 typeId)
         {
             const auto& coordinator = *Application::m_coordinator;
