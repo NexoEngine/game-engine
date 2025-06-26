@@ -319,6 +319,32 @@ namespace nexo::ecs {
 		        }
 		    }
 
+	        /**
+             * @brief Removes a component from an entity using type ID
+             *
+             * Removes the component using the component type ID and updates any groups that
+             * depend on the component.
+             *
+             * @param entity The entity to remove the component from
+             * @param componentType The type ID of the component to remove
+             * @param previousSignature The entity's signature before removal
+             * @param newSignature The entity's signature after removal
+             *
+             * @pre componentType must be a valid registered component type
+             */
+	        void removeComponent(const Entity entity, const ComponentType componentType, const Signature previousSignature, const Signature newSignature)
+		    {
+		        for (const auto& group : std::ranges::views::values(m_groupRegistry))
+		        {
+		            if (((previousSignature & group->allSignature()) == group->allSignature()) &&
+                        ((newSignature & group->allSignature()) != group->allSignature()))
+		            {
+		                group->removeFromGroup(entity);
+		            }
+		        }
+		    }
+
+
 		    /**
 		     * @brief Removes a component from an entity
 		     *
