@@ -73,6 +73,9 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxAddComponentDelegate(UInt32 entityId, UInt32 typeId, void *componentData);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxRemoveComponentDelegate(UInt32 entityId, UInt32 typeId);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
@@ -92,6 +95,7 @@ namespace Nexo
             public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
+            public NxRemoveComponentDelegate NxRemoveComponent;
             public NxHasComponentDelegate NxHasComponent;
             public NxRegisterComponentDelegate NxRegisterComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
@@ -275,6 +279,22 @@ namespace Nexo
             }
         }
         
+        public static void RemoveComponent<T>(UInt32 entityId) where T : unmanaged
+        {
+            if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
+                throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
+
+            try
+            {
+                s_callbacks.NxRemoveComponent.Invoke(entityId, typeId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling RemoveComponent<{typeof(T)}>: {ex.Message}");
+            }
+        }
+
+        
         public static bool HasComponent<T>(UInt32 entityId)
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
@@ -355,6 +375,8 @@ namespace Nexo
             Console.WriteLine("Calling CreateCube:");
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
+            CameraComponent camera = new CameraComponent();
+            AddComponent(_cubeId, ref camera);
             Console.WriteLine($"Created cube with ID: {cubeId}");
             
             // HasComponent test
@@ -372,6 +394,26 @@ namespace Nexo
                 Console.WriteLine("Entity has a AmbientLight!");
             else
                 Console.WriteLine("Entity does NOT have a AmbientLight.");
+            
+            RemoveComponent<CameraComponent>(_cubeId);
+            
+            
+            // HasComponent test
+            if (HasComponent<CameraComponent>(cubeId))
+                Console.WriteLine("Entity has a camera!");
+            else
+                Console.WriteLine("Entity does NOT have a camera.");
+            
+            if (HasComponent<Transform>(cubeId))
+                Console.WriteLine("Entity has a Transform!");
+            else
+                Console.WriteLine("Entity does NOT have a Transform.");
+            
+            if (HasComponent<AmbientLightComponent>(cubeId))
+                Console.WriteLine("Entity has a AmbientLight!");
+            else
+                Console.WriteLine("Entity does NOT have a AmbientLight.");
+            
             
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");
