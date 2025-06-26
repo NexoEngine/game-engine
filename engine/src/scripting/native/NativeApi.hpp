@@ -33,7 +33,7 @@
 #ifdef WIN32 // Set calling convention according to .NET https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.dllimportattribute.callingconvention?view=net-9.0#remarks
     #define NEXO_CALL  __stdcall
 #elif defined(__GNUC__) || defined(__clang__)
-    #define NEXO_CALL __attribute__((cdecl))
+    #define NEXO_CALL  // cdecl is the default on Linux/Unix, no need to specify
 #else
     #define NEXO_CALL __cdecl
 #endif

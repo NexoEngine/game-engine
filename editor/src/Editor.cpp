@@ -555,7 +555,6 @@ namespace nexo::editor {
     void Editor::update() const
     {
     	m_windowRegistry.update();
-        Application& app = Application::getInstance();
         getApp().endFrame();
     }
 }

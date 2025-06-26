@@ -22,6 +22,7 @@
 #include <span>
 #include <algorithm>
 #include <cstring>
+#include <type_traits>
 
 namespace nexo::ecs {
     /**
@@ -232,8 +233,18 @@ namespace nexo::ecs {
             m_dense.push_back(entity);
             // allocate new component in the array
             m_componentArray.emplace_back();
-            // copy the raw data into the new component
-            std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+            
+            // Use appropriate copy method based on type traits
+            if constexpr (std::is_trivially_copyable_v<T>) {
+                // For POD types, memcpy is safe and efficient
+                std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+            } else {
+                // For non-trivial types, use placement new with copy constructor
+                // First destroy the default-constructed object
+                m_componentArray[newIndex].~T();
+                // Then construct the new object by copying from componentData
+                new (&m_componentArray[newIndex]) T(*static_cast<const T*>(componentData));
+            }
 
             ++m_size;
         }
