@@ -44,10 +44,13 @@ namespace nexo::editor {
                 break;
             case ecs::FieldType::UInt8:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U8, data);
+                break;
             case ecs::FieldType::UInt16:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U16, data);
+                break;
             case ecs::FieldType::UInt32:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U32, data);
+                break;
             case ecs::FieldType::UInt64:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U64, data);
                 break;
@@ -76,6 +79,7 @@ namespace nexo::editor {
                 break;
             case ecs::FieldType::Vector4:
                 ImGui::Text("Cannot edit Vector4 for now"); // TODO: Implement Vector4 editing
+                break;
             default: return;
         }
     }
