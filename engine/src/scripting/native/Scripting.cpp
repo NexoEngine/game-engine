@@ -320,7 +320,6 @@ namespace nexo::scripting {
     HostHandler::Status HostHandler::initCallbacks()
     {
         // Ensure callbacks are initialized
-        extern void initializeNativeApiCallbacks();
         initializeNativeApiCallbacks();
         
         // Initialize callbacks

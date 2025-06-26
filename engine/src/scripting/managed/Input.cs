@@ -78,13 +78,7 @@ namespace Nexo
         /// <returns>true if any key is pressed</returns>
         public static bool IsAnyKeyPressed()
         {
-            // Check common keys
-            foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
-            {
-                if (IsKeyPressed(key))
-                    return true;
-            }
-            return false;
+            return NativeInterop.IsAnyKeyPressed();
         }
         
         /// <summary>

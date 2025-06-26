@@ -15,7 +15,19 @@
 namespace Nexo
 {
     /// <summary>
-    /// Keyboard key codes matching the C++ definitions
+    /// Keyboard key codes matching the C++ definitions.
+    /// 
+    /// These values follow GLFW's key code system exactly to enable direct pass-through
+    /// to the underlying windowing API without translation. GLFW uses a hybrid approach:
+    /// - Printable ASCII characters (32-126) use their ASCII values directly
+    /// - Special keys (arrows, function keys, etc.) use GLFW-specific codes starting from 256
+    /// 
+    /// This design choice allows the engine to pass key codes directly to GLFW's input
+    /// functions without any conversion overhead. When adding new keys, use the corresponding
+    /// GLFW key code value.
+    /// 
+    /// For a complete list of GLFW key codes, see:
+    /// https://www.glfw.org/docs/latest/group__keys.html
     /// </summary>
     public enum KeyCode
     {
@@ -26,7 +38,7 @@ namespace Nexo
         Key2 = 50,
         Key3 = 51,
         
-        // Letter keys (using AZERTY layout codes)
+        // Letter keys (GLFW uses ASCII values for printable characters)
         Q = 65,
         D = 68,
         E = 69,

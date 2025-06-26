@@ -103,6 +103,7 @@ namespace nexo::scripting {
 
         NEXO_RET(bool) NxIsKeyPressed(Int32 keycode);
         NEXO_RET(bool) NxIsKeyReleased(Int32 keycode);
+        NEXO_RET(bool) NxIsAnyKeyPressed(void);
         NEXO_RET(bool) NxIsMouseDown(Int32 button);
         NEXO_RET(bool) NxIsMouseReleased(Int32 button);
         NEXO_RET(void) NxGetMousePosition(Vector2 *position);
@@ -123,11 +124,14 @@ namespace nexo::scripting {
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds;
         ApiCallback<bool(Int32)> NxIsKeyPressed;
         ApiCallback<bool(Int32)> NxIsKeyReleased;
+        ApiCallback<bool()> NxIsAnyKeyPressed;
         ApiCallback<bool(Int32)> NxIsMouseDown;
         ApiCallback<bool(Int32)> NxIsMouseReleased;
         ApiCallback<void(Vector2*)> NxGetMousePosition;
     };
 
     extern NativeApiCallbacks nativeApiCallbacks;
+
+    void initializeNativeApiCallbacks();
 
 } // namespace nexo::scripting

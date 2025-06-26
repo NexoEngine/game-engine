@@ -154,6 +154,26 @@ namespace nexo::scripting {
             return event::isKeyReleased(keycode);
         }
 
+        bool NxIsAnyKeyPressed()
+        {
+            // GLFW key range: 32-96 (printable characters), 256-348 (special keys)
+            // Check printable ASCII range
+            for (Int32 key = 32; key <= 96; ++key) {
+                if (event::isKeyPressed(key)) {
+                    return true;
+                }
+            }
+            
+            // Check special keys range
+            for (Int32 key = 256; key <= 348; ++key) {
+                if (event::isKeyPressed(key)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
         bool NxIsMouseDown(const Int32 button)
         {
             return event::isMouseDown(button);
@@ -189,6 +209,7 @@ namespace nexo::scripting {
         nativeApiCallbacks.NxGetComponentTypeIds = &NxGetComponentTypeIds;
         nativeApiCallbacks.NxIsKeyPressed = &NxIsKeyPressed;
         nativeApiCallbacks.NxIsKeyReleased = &NxIsKeyReleased;
+        nativeApiCallbacks.NxIsAnyKeyPressed = &NxIsAnyKeyPressed;
         nativeApiCallbacks.NxIsMouseDown = &NxIsMouseDown;
         nativeApiCallbacks.NxIsMouseReleased = &NxIsMouseReleased;
         nativeApiCallbacks.NxGetMousePosition = &NxGetMousePosition;

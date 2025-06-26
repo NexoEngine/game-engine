@@ -90,6 +90,9 @@ namespace Nexo
             public delegate bool NxIsKeyReleasedDelegate(Int32 keycode);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxIsAnyKeyPressedDelegate();
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate bool NxIsMouseDownDelegate(Int32 button);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -112,6 +115,7 @@ namespace Nexo
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
             public NxIsKeyPressedDelegate NxIsKeyPressed;
             public NxIsKeyReleasedDelegate NxIsKeyReleased;
+            public NxIsAnyKeyPressedDelegate NxIsAnyKeyPressed;
             public NxIsMouseDownDelegate NxIsMouseDown;
             public NxIsMouseReleasedDelegate NxIsMouseReleased;
             public NxGetMousePositionDelegate NxGetMousePosition;
@@ -333,6 +337,19 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling IsKeyReleased: {ex.Message}");
+                return false;
+            }
+        }
+        
+        public static bool IsAnyKeyPressed()
+        {
+            try
+            {
+                return s_callbacks.NxIsAnyKeyPressed.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling IsAnyKeyPressed: {ex.Message}");
                 return false;
             }
         }
