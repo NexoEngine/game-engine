@@ -342,6 +342,7 @@ namespace nexo::ecs {
 		                group->removeFromGroup(entity);
 		            }
 		        }
+		        getComponentArray(componentType)->remove(entity);
 		    }
 
 
