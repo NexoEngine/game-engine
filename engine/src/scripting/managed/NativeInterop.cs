@@ -360,6 +360,11 @@ namespace Nexo
         }
         
         private static UInt32 _cubeId = 0;
+        private struct DemonstrationComponent : IComponentBase
+        {
+            public UInt16 DemonstrationId;
+            public Vector3 DemonstrationVector;
+        }
 
         /// <summary>
         /// Demonstrates calling native functions from C#
@@ -389,15 +394,20 @@ namespace Nexo
             Console.WriteLine("Calling CreateCube:");
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
-            CameraComponent camera = new CameraComponent();
-            AddComponent(_cubeId, ref camera);
+            
+            var demonstrationComponent = new DemonstrationComponent
+            {
+                DemonstrationId = 1,
+                DemonstrationVector = new Vector3(0.5f, 0.5f, 0.5f)
+            };
+            AddComponent(_cubeId, ref demonstrationComponent);
             Console.WriteLine($"Created cube with ID: {cubeId}");
             
             // HasComponent test
-            if (HasComponent<CameraComponent>(cubeId))
-                Console.WriteLine("Entity has a camera!");
+            if (HasComponent<DemonstrationComponent>(cubeId))
+                Console.WriteLine("Entity has a DemonstrationComponent!");
             else
-                Console.WriteLine("Entity does NOT have a camera.");
+                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
             
             if (HasComponent<Transform>(cubeId))
                 Console.WriteLine("Entity has a Transform!");
@@ -409,14 +419,13 @@ namespace Nexo
             else
                 Console.WriteLine("Entity does NOT have a AmbientLight.");
             
-            RemoveComponent<CameraComponent>(_cubeId);
-            
+            RemoveComponent<DemonstrationComponent>(_cubeId);
             
             // HasComponent test
-            if (HasComponent<CameraComponent>(cubeId))
-                Console.WriteLine("Entity has a camera!");
+            if (HasComponent<DemonstrationComponent>(cubeId))
+                Console.WriteLine("Entity has a DemonstrationComponent!");
             else
-                Console.WriteLine("Entity does NOT have a camera.");
+                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
             
             if (HasComponent<Transform>(cubeId))
                 Console.WriteLine("Entity has a Transform!");
@@ -428,6 +437,12 @@ namespace Nexo
             else
                 Console.WriteLine("Entity does NOT have a AmbientLight.");
             
+            var demonstrationComponent2 = new DemonstrationComponent
+            {
+                DemonstrationId = 2,
+                DemonstrationVector = new Vector3(3f, 2f, 1f)
+            };
+            AddComponent(_cubeId, ref demonstrationComponent2);
             
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");
