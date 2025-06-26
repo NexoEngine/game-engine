@@ -264,9 +264,9 @@ namespace nexo::ecs {
         bool hasComponentB = false;
 
         for (const auto& typeIndex : types) {
-            if (typeIndex == std::type_index(typeid(TestComponent))) hasTestComponent = true;
-            else if (typeIndex == std::type_index(typeid(ComponentA))) hasComponentA = true;
-            else if (typeIndex == std::type_index(typeid(ComponentB))) hasComponentB = true;
+            if (typeIndex == getComponentTypeID<TestComponent>()) hasTestComponent = true;
+            else if (typeIndex == getComponentTypeID<ComponentA>()) hasComponentA = true;
+            else if (typeIndex == getComponentTypeID<ComponentB>()) hasComponentB = true;
         }
 
         EXPECT_TRUE(hasTestComponent);
@@ -283,9 +283,9 @@ namespace nexo::ecs {
         hasComponentB = false;
 
         for (const auto& typeIndex : types) {
-            if (typeIndex == std::type_index(typeid(TestComponent))) hasTestComponent = true;
-            else if (typeIndex == std::type_index(typeid(ComponentA))) hasComponentA = true;
-            else if (typeIndex == std::type_index(typeid(ComponentB))) hasComponentB = true;
+            if (typeIndex == getComponentTypeID<TestComponent>()) hasTestComponent = true;
+            else if (typeIndex == getComponentTypeID<ComponentA>()) hasComponentA = true;
+            else if (typeIndex == getComponentTypeID<ComponentB>()) hasComponentB = true;
         }
 
         EXPECT_FALSE(hasTestComponent);
