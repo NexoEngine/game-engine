@@ -62,6 +62,18 @@ namespace nexo::editor {
 	class WindowRegistry {
 		public:
 
+			bool hasWindow(const std::string &windowName) const
+			{
+				for (const auto &[type, windows] : m_windows) {
+					if (std::ranges::any_of(windows, [&windowName](const auto &window) {
+							return window->getWindowName() == windowName;
+						})) {
+						return true;
+						}
+				}
+				return false;
+			}
+
 			/**
 			* @brief Adds a document window instance to the registry.
 			*

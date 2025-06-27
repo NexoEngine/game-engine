@@ -40,7 +40,22 @@ namespace nexo::editor {
     		loguru::log(loguruLevel, loc.file_name(), loc.line(), "%s", message.c_str());
 		};
 		Logger::setCallback(engineLogCallback);
-		m_logFilePath = Path::resolvePathRelativeToExe(generateLogFilePath()).string();
+    	try {
+    		const auto logFilePath = generateLogFilePath();
+    		if (logFilePath.empty()) {
+    			throw std::runtime_error("Generated log file path is empty.");
+    		}
+
+    		const auto resolvedPath = Path::resolvePathRelativeToExe(logFilePath);
+    		if (resolvedPath.empty()) {
+    			throw std::runtime_error("Resolved log file path is empty.");
+    		}
+
+    		m_logFilePath = resolvedPath.string();
+    	} catch (const std::exception &e) {
+    		LOG_F(ERROR, "Failed to resolve log file path: {}", e.what());
+    		m_logFilePath.clear();
+    	}
 		m_logs.reserve(m_maxLogCapacity);
 		m_bufferLogsToExport.reserve(m_maxBufferLogToExportCapacity);
     };
