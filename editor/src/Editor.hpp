@@ -93,6 +93,10 @@ namespace nexo::editor {
             requires std::derived_from<T, IDocumentWindow>
             void registerWindow(const std::string &name)
             {
+            	if (m_windowRegistry.hasWindow(name)) {
+            		LOG(NEXO_WARN, "A window with the name '{}' already exists. Please choose a different name.", name);
+            		return;
+            	}
             	auto window = std::make_shared<T>(name, m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
             }
