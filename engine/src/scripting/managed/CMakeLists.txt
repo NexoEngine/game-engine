@@ -30,6 +30,7 @@ set(SOURCES
     Components/Light.cs
     Components/Transform.cs
     Components/ComponentBase.cs
+    Components/PhysicsBodyComponent.cs
     Components/Ui/Field.cs
     Components/Ui/FieldArray.cs
     Components/Ui/FieldType.cs
