@@ -58,7 +58,7 @@ namespace nexo::system {
         const double delta = currentTime - m_lastPhysicsTime;
 
         if (delta < fixedTimestep)
-            return; // Pas assez de temps écoulé pour simuler une frame physique
+            return;
 
         m_lastPhysicsTime = currentTime;
 

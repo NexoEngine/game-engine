@@ -48,12 +48,71 @@ namespace nexo::scripting {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
-        ecs::Entity NxCreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color)
+        ecs::Entity NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
         {
-            auto &app = getApp();
-            const ecs::Entity basicCube = EntityFactory3D::createCube(std::move(pos), std::move(size), std::move(rotation), std::move(color));
-            app.getSceneManager().getScene(0).addEntity(basicCube);
-            return basicCube;
+            auto& app = Application::getInstance();
+            const ecs::Entity entity = EntityFactory3D::createCube(
+                {position.x, position.y, position.z},
+                {size.x, size.y, size.z},
+                {rotation.x, rotation.y, rotation.z},
+                {color.x, color.y, color.z, color.w}
+            );
+            app.getSceneManager().getScene(0).addEntity(entity);
+            return entity;
+        }
+
+        ecs::Entity NxCreateTetrahedron(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
+        {
+            auto& app = Application::getInstance();
+            const ecs::Entity entity = EntityFactory3D::createTetrahedron(
+                {position.x, position.y, position.z},
+                {size.x, size.y, size.z},
+                {rotation.x, rotation.y, rotation.z},
+                {color.x, color.y, color.z, color.w}
+            );
+            app.getSceneManager().getScene(0).addEntity(entity);
+            return entity;
+        }
+
+        ecs::Entity NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
+        {
+            auto& app = Application::getInstance();
+            const ecs::Entity entity = EntityFactory3D::createPyramid(
+                {position.x, position.y, position.z},
+                {size.x, size.y, size.z},
+                {rotation.x, rotation.y, rotation.z},
+                {color.x, color.y, color.z, color.w}
+            );
+            app.getSceneManager().getScene(0).addEntity(entity);
+            return entity;
+        }
+
+        ecs::Entity NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment)
+        {
+            auto& app = Application::getInstance();
+            const ecs::Entity entity = EntityFactory3D::createCylinder(
+                {position.x, position.y, position.z},
+                {size.x, size.y, size.z},
+                {rotation.x, rotation.y, rotation.z},
+                {color.x, color.y, color.z, color.w},
+                nbSegment
+            );
+            app.getSceneManager().getScene(0).addEntity(entity);
+            return entity;
+        }
+
+        ecs::Entity NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision)
+        {
+            auto& app = Application::getInstance();
+            const ecs::Entity entity = EntityFactory3D::createSphere(
+                {position.x, position.y, position.z},
+                {size.x, size.y, size.z},
+                {rotation.x, rotation.y, rotation.z},
+                {color.x, color.y, color.z, color.w},
+                nbSubdivision
+            );
+            app.getSceneManager().getScene(0).addEntity(entity);
+            return entity;
         }
 
         components::TransformComponent *NxGetTransformComponent(ecs::Entity entity)
