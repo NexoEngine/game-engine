@@ -21,6 +21,7 @@
 #include "components/Uuid.hpp"
 #include "components/PhysicsBodyComponent.hpp"
 #include "ui/Field.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 namespace nexo::scripting {
 
@@ -218,6 +219,48 @@ namespace nexo::scripting {
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
                 .PhysicsBodyComponent = coordinator.getComponentType<components::PhysicsBodyComponent>(),
             };
+        }
+
+        void NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType)
+        {
+            auto& app = Application::getInstance();
+            auto physicsSystem = app.getPhysicsSystem();
+            
+            if (!physicsSystem) {
+                LOG(NEXO_ERROR, "Physics system not available");
+                return;
+            }
+
+            components::TransformComponent transform;
+            transform.pos = {position.x, position.y, position.z};
+            transform.size = {size.x, size.y, size.z};
+            transform.quat = glm::quat(glm::radians(glm::vec3(rotation.x, rotation.y, rotation.z)));
+
+            system::ShapeType cppShapeType = static_cast<system::ShapeType>(shapeType);
+            JPH::EMotionType cppMotionType = static_cast<JPH::EMotionType>(motionType);
+
+            JPH::BodyID bodyID = physicsSystem->createBodyFromShape(entity, transform, cppShapeType, cppMotionType);
+
+            LOG(NEXO_DEV, "Physics body created");
+        }
+
+        void NxApplyForce(ecs::Entity entity, Vector3 force)
+        {
+            auto& app = Application::getInstance();
+            auto physicsSystem = app.getPhysicsSystem();
+            if (!physicsSystem) {
+                LOG(NEXO_ERROR, "Physics system not available");
+                return;
+            }
+            auto& coordinator = *Application::m_coordinator;
+            if (!coordinator.entityHasComponent<components::PhysicsBodyComponent>(entity)) {
+                LOG(NEXO_ERROR, "Entity {} has no PhysicsBodyComponent", entity);
+                return;
+            }
+            auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
+            JPH::BodyID joltBodyID = bodyComp.bodyID;
+            JPH::Vec3 joltForce(force.x, force.y, force.z);
+            physicsSystem->applyForce(joltBodyID, joltForce);
         }
     }
 
