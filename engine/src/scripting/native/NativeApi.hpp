@@ -79,6 +79,7 @@ namespace nexo::scripting {
             UInt32 UuidComponent;
             UInt32 PerspectiveCameraController;
             UInt32 PerspectiveCameraTarget;
+            UInt32 PhysicsBodyComponent;
         };
 
         NEXO_RET(void) NxHelloFromNative(void);

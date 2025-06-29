@@ -19,6 +19,7 @@
 #include "Logger.hpp"
 #include "Nexo.hpp"
 #include "components/Uuid.hpp"
+#include "components/PhysicsBodyComponent.hpp"
 #include "ui/Field.hpp"
 
 namespace nexo::scripting {
@@ -161,6 +162,7 @@ namespace nexo::scripting {
                 .UuidComponent = coordinator.getComponentType<components::UuidComponent>(),
                 .PerspectiveCameraController = coordinator.getComponentType<components::PerspectiveCameraController>(),
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
+                .PhysicsBodyComponent = coordinator.getComponentType<components::PhysicsBodyComponent>(),
             };
         }
     }
