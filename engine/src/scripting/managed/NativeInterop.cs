@@ -37,6 +37,7 @@ namespace Nexo
         public UInt32 UuidComponent;
         public UInt32 PerspectiveCameraController;
         public UInt32 PerspectiveCameraTarget;
+        public UInt32 PhysicsBodyComponent;
     }
     
     /// <summary>
