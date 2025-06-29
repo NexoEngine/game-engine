@@ -101,6 +101,11 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(ecs::Entity) NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
         NEXO_RET(ecs::Entity) NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
+        
+        // Physics functions
+        NEXO_RET(void) NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
+        NEXO_RET(void) NxApplyForce(ecs::Entity entity, Vector3 force);
+
     }
 
     struct NativeApiCallbacks {
@@ -114,6 +119,11 @@ namespace nexo::scripting {
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreatePyramid{&scripting::NxCreatePyramid};
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateCylinder{&scripting::NxCreateCylinder};
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateSphere{&scripting::NxCreateSphere};
+        
+        // Physics callbacks
+        ApiCallback<void(ecs::Entity, Vector3, Vector3, Vector3, UInt32, UInt32)> NxCreateBodyFromShape{&scripting::NxCreateBodyFromShape};
+        ApiCallback<void(ecs::Entity, Vector3)> NxApplyForce{&scripting::NxApplyForce};
+        
         ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
         ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
         ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
