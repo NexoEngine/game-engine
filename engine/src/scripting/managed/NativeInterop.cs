@@ -67,6 +67,18 @@ namespace Nexo
             public delegate UInt32 CreateCubeDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateTetrahedronDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreatePyramidDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateCylinderDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateSphereDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -96,6 +108,10 @@ namespace Nexo
             public GetNativeMessageDelegate NxGetNativeMessage;
             public NxLogDelegate NxLog;
             public CreateCubeDelegate NxCreateCube;
+            public CreateTetrahedronDelegate NxCreateTetrahedron;
+            public CreatePyramidDelegate NxCreatePyramid;
+            public CreateCylinderDelegate NxCreateCylinder;
+            public CreateSphereDelegate NxCreateSphere;
             public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
@@ -230,7 +246,7 @@ namespace Nexo
                 Console.WriteLine($"Fallback to WriteLine: Log Level: {level}, Message: {message}");
             }
         }
-        
+
         public static UInt32 CreateCube(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
         {
             try
@@ -240,7 +256,63 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateCube: {ex.Message}");
-                return UInt32.MaxValue;
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Creates a tetrahedron entity in the native engine
+        /// </summary>
+        public static UInt32 CreateTetrahedron(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
+        {
+            try
+            {
+                return s_callbacks.NxCreateTetrahedron.Invoke(position, size, rotation, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateTetrahedron: {ex.Message}");
+                return 0;
+            }
+        }
+
+        public static UInt32 CreatePyramid(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
+        {
+            try
+            {
+                return s_callbacks.NxCreatePyramid.Invoke(position, size, rotation, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreatePyramid: {ex.Message}");
+                return 0;
+            }
+        }
+
+
+        public static UInt32 CreateCylinder(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color, UInt32 nbSegment = 12)
+        {
+            try
+            {
+                return s_callbacks.NxCreateCylinder.Invoke(position, size, rotation, color, nbSegment);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateCylinder: {ex.Message}");
+                return 0;
+            }
+        }
+
+        public static UInt32 CreateSphere(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color, UInt32 nbSubdivision = 2)
+        {
+            try
+            {
+                return s_callbacks.NxCreateSphere.Invoke(position, size, rotation, color, nbSubdivision);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateSphere: {ex.Message}");
+                return 0;
             }
         }
         

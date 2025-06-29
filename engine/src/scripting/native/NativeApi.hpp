@@ -87,7 +87,7 @@ namespace nexo::scripting {
         NEXO_RET(const char*) NxGetNativeMessage(void);
         NEXO_RET(void) NxLog(UInt32 level, const char *message);
 
-        NEXO_RET(ecs::Entity) NxCreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) NxGetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
@@ -96,6 +96,11 @@ namespace nexo::scripting {
         NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
+
+        NEXO_RET(ecs::Entity) NxCreateTetrahedron(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
+        NEXO_RET(ecs::Entity) NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
     }
 
     struct NativeApiCallbacks {
@@ -104,7 +109,11 @@ namespace nexo::scripting {
         ApiCallback<const char*()> NxGetNativeMessage{&scripting::NxGetNativeMessage};
         ApiCallback<void(UInt32, const char*)> NxLog{&scripting::NxLog};
 
-        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreateTetrahedron{&scripting::NxCreateTetrahedron};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreatePyramid{&scripting::NxCreatePyramid};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateCylinder{&scripting::NxCreateCylinder};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateSphere{&scripting::NxCreateSphere};
         ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
         ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
         ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
