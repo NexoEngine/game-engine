@@ -79,6 +79,12 @@ namespace Nexo
             public delegate UInt32 CreateSphereDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void CreateBodyFromShapeDelegate(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void ApplyForceDelegate(UInt32 entityId, Vector3 force);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -112,6 +118,8 @@ namespace Nexo
             public CreatePyramidDelegate NxCreatePyramid;
             public CreateCylinderDelegate NxCreateCylinder;
             public CreateSphereDelegate NxCreateSphere;
+            public CreateBodyFromShapeDelegate NxCreateBodyFromShape;
+            public ApplyForceDelegate NxApplyForce;
             public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
@@ -313,6 +321,47 @@ namespace Nexo
             {
                 Console.WriteLine($"Error calling CreateSphere: {ex.Message}");
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// Creates a physics body from a specified shape
+        /// </summary>
+        /// <param name="entityId">Entity ID</param>
+        /// <param name="position">Body position</param>
+        /// <param name="size">Body size</param>
+        /// <param name="rotation">Body rotation (in degrees)</param>
+        /// <param name="shapeType">Shape type</param>
+        /// <param name="motionType">Motion type</param>
+        /// <returns>ID of the created physics body</returns>
+        public static void CreateBodyFromShape(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, ShapeType shapeType, MotionType motionType)
+        {
+            try
+            {
+                Console.WriteLine("Olalalalalala je vais créer un body");
+                s_callbacks.NxCreateBodyFromShape.Invoke(entityId, position, size, rotation, (UInt32)shapeType, (UInt32)motionType);
+                Console.WriteLine("Olalalalalala j'ai crée un body un body");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateBodyFromShape: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Applies a force to a physics body
+        /// </summary>
+        /// <param name="entityId">Physics body ID</param>
+        /// <param name="force">Force to apply</param>
+        public static void ApplyForce(UInt32 entityId, in Vector3 force)
+        {
+            try
+            {
+                s_callbacks.NxApplyForce.Invoke(entityId, force);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling ApplyForce: {ex.Message}");
             }
         }
         
@@ -522,6 +571,13 @@ namespace Nexo
                 DemonstrationVector = new Vector3(3f, 2f, 1f)
             };
             AddComponent(_cubeId, ref demonstrationComponent2);
+            
+            UInt32 cube2 = CreateCube(new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+            CreateBodyFromShape(cube2, new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), ShapeType.Box, MotionType.Dynamic);
+            
+            Vector3 force = new Vector3(0, 800000, 0);
+            ApplyForce(cube2, force);
+            Console.WriteLine("Force applied to entity ");
             
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");

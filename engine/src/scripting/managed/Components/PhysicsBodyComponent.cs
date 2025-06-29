@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 namespace Nexo.Components
 {
     /// <summary>
-    /// Type de corps physique
+    /// Type of physics body
     /// </summary>
     public enum PhysicsBodyType : UInt32
     {
@@ -27,26 +27,26 @@ namespace Nexo.Components
     }
 
     /// <summary>
-    /// Composant pour les corps physiques
+    /// Component for physics bodies
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct PhysicsBodyComponent
     {
         /// <summary>
-        /// ID du corps physique dans le moteur Jolt
+        /// ID of the physics body in the Jolt engine
         /// </summary>
         public UInt32 bodyID;
 
         /// <summary>
-        /// Type du corps physique (statique ou dynamique)
+        /// Type of the physics body (static or dynamic)
         /// </summary>
         public PhysicsBodyType type;
 
         /// <summary>
-        /// Crée un nouveau composant PhysicsBodyComponent
+        /// Creates a new PhysicsBodyComponent
         /// </summary>
-        /// <param name="bodyID">ID du corps physique</param>
-        /// <param name="type">Type du corps physique</param>
+        /// <param name="bodyID">Physics body ID</param>
+        /// <param name="type">Type of the physics body</param>
         public PhysicsBodyComponent(UInt32 bodyID, PhysicsBodyType type)
         {
             this.bodyID = bodyID;
@@ -54,20 +54,20 @@ namespace Nexo.Components
         }
 
         /// <summary>
-        /// Crée un corps physique statique
+        /// Creates a static physics body component
         /// </summary>
-        /// <param name="bodyID">ID du corps physique</param>
-        /// <returns>Nouveau composant PhysicsBodyComponent statique</returns>
+        /// <param name="bodyID">Physics body ID</param>
+        /// <returns>New static PhysicsBodyComponent</returns>
         public static PhysicsBodyComponent CreateStatic(UInt32 bodyID)
         {
             return new PhysicsBodyComponent(bodyID, PhysicsBodyType.Static);
         }
 
         /// <summary>
-        /// Crée un corps physique dynamique
+        /// Creates a dynamic physics body component
         /// </summary>
-        /// <param name="bodyID">ID du corps physique</param>
-        /// <returns>Nouveau composant PhysicsBodyComponent dynamique</returns>
+        /// <param name="bodyID">Physics body ID</param>
+        /// <returns>New dynamic PhysicsBodyComponent</returns>
         public static PhysicsBodyComponent CreateDynamic(UInt32 bodyID)
         {
             return new PhysicsBodyComponent(bodyID, PhysicsBodyType.Dynamic);
