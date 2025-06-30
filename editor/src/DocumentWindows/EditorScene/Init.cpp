@@ -99,6 +99,7 @@ namespace nexo::editor {
         // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
 
         assets::AssetImporter importer;
+        // 9mn
         // std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/Avocado.gltf");
         // assets::ImporterFileInput fileInput{path};
         // auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
@@ -107,15 +108,35 @@ namespace nexo::editor {
         //                                                        {0.0f, 0.0f, 0.0f});
         // app.getSceneManager().getScene(m_sceneId).addEntity(gunModel);
 
-        const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
+        // SmilingFace
         // const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
+        // assets::ImporterFileInput fileInput{path};
+        // const auto assetRefModel = importer.importAsset<assets::Model>(
+        //     assets::AssetLocation("my_package::SmilingFace@DefaultScene/"), fileInput
+        // );
+        // const ecs::Entity Model = EntityFactory3D::createModel(assetRefModel, {0.0f, 0.0f, 0.0f},
+        //                                                          {5.0f, 5.0f, 5.0f},
+        //                                                          {0.0f, 0.0f, 0.0f});
+
+        // Avocado
+        const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
         assets::ImporterFileInput fileInput{path};
         const auto assetRefModel = importer.importAsset<assets::Model>(
-            assets::AssetLocation("my_package::SmilingFace@DefaultScene/"), fileInput
+            assets::AssetLocation("my_package::Avocado@DefaultScene/"), fileInput
         );
         const ecs::Entity Model = EntityFactory3D::createModel(assetRefModel, {0.0f, 0.0f, 0.0f},
-                                                                 {5.0f, 5.0f, 5.0f},
-                                                                 {0.0f, 0.0f, 0.0f});
+                                                                 {50.0f, 50.0f, 50.0f}, {0.0f, 0.0f, 0.0f});
+
+        // DiscoBall
+        // const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/DiscoBall/discoball.fbx");
+        // assets::ImporterFileInput fileInput{path};
+        // const auto assetRefModel = importer.importAsset<assets::Model>(
+        //     assets::AssetLocation("my_package::discoball@DefaultScene/"), fileInput
+        // );
+        // const ecs::Entity Model = EntityFactory3D::createModel(assetRefModel, {0.0f, 0.0f, 0.0f},
+        //                                                          {1.0f, 1.0f, 1.0f},
+        //                                                          {0.0f, 0.0f, 0.0f});
+
         app.getSceneManager().getScene(m_sceneId).addEntity(Model);
     }
 
