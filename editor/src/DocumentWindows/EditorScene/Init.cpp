@@ -85,13 +85,6 @@ namespace nexo::editor {
         auto& app = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(sceneId);
 
-        // scene.addEntity(LightFactory::createAmbientLight({1.0f, 1.0f, 1.0f}));
-        //
-        // // Cylinder base
-        // const auto entity = EntityFactory3D::createCube({0.0f, 1.0f, 0.0f}, {5.0f, 0.5f, 5.0f}, {0, 0, 0},
-        //                                                     {0.75f, 0.75f, 0.75f, 1.0f});
-        // scene.addEntity(entity);
-
         // Lights
         constexpr int numLights = 5;
         constexpr glm::vec3 center = {0.0f, 5.0f, 0.0f};
@@ -113,11 +106,6 @@ namespace nexo::editor {
         }
 
         assets::AssetImporter importer;
-
-        // Sphere TODO: replace with disco ball model
-        // const auto sphere = EntityFactory3D::createSphere({0.0f, 5.0f, 0.0f}, {2.0f, 2.0f, 2.0f}, {0, 0, 0},
-        //                                                   {0.7f, 0.7f, 0.7f, 1.0f}, 2);
-        // scene.addEntity(sphere);
     }
 
     void EditorScene::loadDefaultEntities() const
