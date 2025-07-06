@@ -19,6 +19,8 @@
 #include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
+#include <cstring>
+#include "Logger.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -168,6 +170,29 @@ namespace nexo::editor {
         // On Hover show asset location
         if (isHovered)
             ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
+
+        // Handle drag source for assets
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            AssetDragDropPayload payload;
+            payload.type = assetData->getType();
+
+            // Copy strings safely into fixed-size arrays
+            std::string fullLocation = assetData->getMetadata().location.getFullLocation();
+            std::strncpy(payload.path, fullLocation.c_str(), sizeof(payload.path) - 1);
+            payload.path[sizeof(payload.path) - 1] = '\0';
+
+            std::string assetName = assetData->getMetadata().location.getName().c_str();
+            std::strncpy(payload.name, assetName.c_str(), sizeof(payload.name) - 1);
+            payload.name[sizeof(payload.name) - 1] = '\0';
+
+            ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
+
+            // Show preview while dragging
+            ImGui::Text("Asset: %s", assetData->getMetadata().location.getName().c_str());
+
+            ImGui::EndDragDropSource();
+        }
 
         ImGui::PopID();
     }
