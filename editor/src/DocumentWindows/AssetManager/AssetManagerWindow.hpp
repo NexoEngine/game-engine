@@ -110,5 +110,24 @@ namespace nexo::editor {
                 const ImVec2& itemPos,
                 const ImVec2& itemSize
             );
+
+            // File drop handling
+            std::vector<std::string> m_pendingDroppedFiles;
+            bool m_showDropIndicator = false;
+
+            void handleDroppedFiles();
+            void importDroppedFile(const std::string& filePath);
+    };
+
+    /**
+     * @brief Payload structure for drag and drop operations from asset manager.
+     *
+     * Contains information about the asset being dragged.
+     */
+    struct AssetDragDropPayload
+    {
+        assets::AssetType type; ///< Type of the asset
+        char path[256]; ///< Path to the asset
+        char name[128]; ///< Display name of the asset
     };
 }
