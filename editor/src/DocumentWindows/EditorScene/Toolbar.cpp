@@ -70,8 +70,9 @@ namespace nexo::editor {
     void EditorScene::initialToolbarSetup(const float buttonWidth) const
     {
         ImVec2 toolbarPos = m_windowPos;
-        toolbarPos.x += 10.0f;
-        toolbarPos.y += 20.0f;
+        ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+        toolbarPos.x += contentMin.x + 10.0f;
+        toolbarPos.y += contentMin.y + 20.0f;
 
         ImGui::SetCursorScreenPos(toolbarPos);
 
