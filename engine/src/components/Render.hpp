@@ -19,6 +19,7 @@ namespace nexo::components
     {
         CUBE,
         MESH,
+        BILLBOARD,
     };
 
     struct RenderComponent {
