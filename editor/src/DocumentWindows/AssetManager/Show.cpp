@@ -18,6 +18,7 @@
 #include "IconsFontAwesome.h"
 #include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
+#include "context/ThumbnailCache.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -128,15 +129,22 @@ namespace nexo::editor {
         // Draw thumbnail area
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
 
-        // Draw thumbnail content based on asset type
-        if (assetData->getType() == assets::AssetType::TEXTURE) {
-            auto textureAsset = asset.as<assets::Texture>();
-            auto textureData = textureAsset.lock();
-            ImTextureID textureId = textureData->getData().get()->texture->getId();
-            drawTextureThumbnail(drawList, textureId, itemPos, thumbnailEnd);
-        } else {
-            // For non-texture assets, use a standard background
+        ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset);
+        if (!textureId) {
             drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
+        } else {
+            const float padding = 4.0f;
+            ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
+            ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
+
+            drawList->AddImage(
+                textureId,
+                imageStart,
+                imageEnd,
+                ImVec2(0, 1),     // UV0 (top-left)
+                ImVec2(1, 0),     // UV1 (bottom-right)
+                IM_COL32(255, 255, 255, 255) // White tint
+            );
         }
 
         // Draw type overlay
