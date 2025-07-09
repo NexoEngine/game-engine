@@ -23,7 +23,9 @@
 #include "../EntityProperties/CameraController.hpp"
 #include "../EntityProperties/CameraTarget.hpp"
 #include "DocumentWindows/EntityProperties/TypeErasedProperty.hpp"
+#include "../EntityProperties/MaterialProperty.hpp"
 #include "components/Camera.hpp"
+#include "components/MaterialComponent.hpp"
 
 namespace nexo::editor {
 
@@ -38,6 +40,7 @@ namespace nexo::editor {
         registerProperty<components::CameraComponent, CameraProperty>();
         registerProperty<components::PerspectiveCameraController, CameraController>();
         registerProperty<components::PerspectiveCameraTarget, CameraTarget>();
+        registerProperty<components::MaterialComponent, MaterialProperty>();
 
         registerTypeErasedProperties();
     }
