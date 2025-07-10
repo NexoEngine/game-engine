@@ -28,7 +28,7 @@ namespace ImNexo {
     * @param material Pointer to the components::Material to be inspected and modified.
     * @return true if any material property was modified; false otherwise.
     */
-    bool MaterialInspector(nexo::components::Material *material);
+    bool MaterialInspector(nexo::components::Material &material);
 
     /**
      * @brief Displays a camera creation and configuration dialog.

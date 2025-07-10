@@ -31,7 +31,7 @@
 #include "context/ActionManager.hpp"
 
 namespace ImNexo {
-    bool MaterialInspector(nexo::components::Material *material)
+    bool MaterialInspector(nexo::components::Material &material)
 	{
 		bool modified = false;
 		// --- Shader Selection ---
@@ -71,7 +71,7 @@ namespace ImNexo {
         {
             static ImGuiColorEditFlags colorPickerModeAlbedo = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerAlbedo = false;
-		    const auto asset = material->albedoTexture.lock();
+		    const auto asset = material.albedoTexture.lock();
 		    const auto albedoTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
@@ -83,17 +83,17 @@ namespace ImNexo {
 					newTexturePath
 				);
 		    	if (newTexture)
-		    		material->albedoTexture = newTexture;
+		    		material.albedoTexture = newTexture;
 		    }
 		    ImGui::SameLine();
-		    modified = ColorEditor("##ColorEditor Albedo texture", &material->albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
+		    modified = ColorEditor("##ColorEditor Albedo texture", &material.albedoColor, &colorPickerModeAlbedo, &showColorPickerAlbedo) || modified;
         }
 
 		// --- Specular texture ---
         {
             static ImGuiColorEditFlags colorPickerModeSpecular = ImGuiColorEditFlags_PickerHueBar;
 		    static bool showColorPickerSpecular = false;
-		    const auto asset = material->metallicMap.lock();
+		    const auto asset = material.metallicMap.lock();
 		    const auto metallicTexture = asset && asset->isLoaded() ? asset->getData()->texture : nullptr;
 
 			std::filesystem::path newTexturePath;
@@ -105,10 +105,10 @@ namespace ImNexo {
 					newTexturePath
 				);
 		    	if (newTexture)
-		    		material->metallicMap = newTexture;
+		    		material.metallicMap = newTexture;
 		    }
 		    ImGui::SameLine();
-		    modified = ColorEditor("##ColorEditor Specular texture", &material->specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
+		    modified = ColorEditor("##ColorEditor Specular texture", &material.specularColor, &colorPickerModeSpecular, &showColorPickerSpecular) || modified;
 		}
         return modified;
 	}
