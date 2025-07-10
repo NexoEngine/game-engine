@@ -19,13 +19,13 @@
 
 namespace nexo::renderer {
 
-    inline static std::shared_ptr<NxVertexArray> g_fullscreenQuad = nullptr;
-
     // Function to get the quad, initializing it on first use
-    inline std::shared_ptr<NxVertexArray> getFullscreenQuad() {
-        if (!g_fullscreenQuad) {
+    inline std::shared_ptr<NxVertexArray> getFullscreenQuad()
+    {
+        static std::shared_ptr<NxVertexArray> s_fullscreenQuad = nullptr;
+        if (!s_fullscreenQuad) {
             // Create a simple 2-triangle quad covering NDC [-1..1]
-            g_fullscreenQuad = createVertexArray();
+            s_fullscreenQuad = createVertexArray();
             static float quadVertices[] = {
                 // positions   // tex coords
                 -1.0f,  1.0f,  0.0f, 1.0f,
@@ -41,9 +41,9 @@ namespace nexo::renderer {
                 {NxShaderDataType::FLOAT2, "aPosition"},
                 {NxShaderDataType::FLOAT2, "aTexCoord"}
             });
-            g_fullscreenQuad->addVertexBuffer(vb);
+            s_fullscreenQuad->addVertexBuffer(vb);
         }
-        return g_fullscreenQuad;
+        return s_fullscreenQuad;
     }
 
     enum class CommandType {

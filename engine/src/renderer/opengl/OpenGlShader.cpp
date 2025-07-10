@@ -186,12 +186,19 @@ namespace nexo::renderer {
         m_uniformInfos = ShaderReflection::reflectUniforms(m_id);
         m_attributeInfos = ShaderReflection::reflectAttributes(m_id);
 
+        static const std::unordered_map<std::string, std::function<void(RequiredAttributes&)>> attributeMappers = {
+            {"aPos", [](RequiredAttributes& attrs) { attrs.bitsUnion.flags.position = true; }},
+            {"aNormal", [](RequiredAttributes& attrs) { attrs.bitsUnion.flags.normal = true; }},
+            {"aTangent", [](RequiredAttributes& attrs) { attrs.bitsUnion.flags.tangent = true; }},
+            {"aBiTangent", [](RequiredAttributes& attrs) { attrs.bitsUnion.flags.bitangent = true; }},
+            {"aTexCoord", [](RequiredAttributes& attrs) { attrs.bitsUnion.flags.uv0 = true; }}
+        };
+
         for (const auto& [location, info] : m_attributeInfos) {
-            if (info.name == "aPos") m_requiredAttributes.bitsUnion.flags.position = true;
-            else if (info.name == "aNormal") m_requiredAttributes.bitsUnion.flags.normal = true;
-            else if (info.name == "aTangent") m_requiredAttributes.bitsUnion.flags.tangent = true;
-            else if (info.name == "aBiTangent") m_requiredAttributes.bitsUnion.flags.bitangent = true;
-            else if (info.name == "aTexCoord") m_requiredAttributes.bitsUnion.flags.uv0 = true;
+            auto it = attributeMappers.find(info.name);
+            if (it != attributeMappers.end()) {
+                it->second(m_requiredAttributes);
+            }
         }
     }
 

@@ -30,8 +30,11 @@ namespace nexo::renderer {
     };
 
     class ShaderLibrary {
-        public:
+        private:
+            // Singleton: private constructor and destructor
             ShaderLibrary();
+            ~ShaderLibrary() = default;
+        public:
             void add(const std::shared_ptr<NxShader> &shader);
             void add(const std::string &name, const std::shared_ptr<NxShader> &shader);
             std::shared_ptr<NxShader> load(const std::string &path);
@@ -39,11 +42,15 @@ namespace nexo::renderer {
             std::shared_ptr<NxShader> load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource);
             std::shared_ptr<NxShader> get(const std::string &name) const;
 
-            static ShaderLibrary& getInstance() {
+            static ShaderLibrary& getInstance()
+            {
                 static ShaderLibrary instance;
                 return instance;
             }
+            ShaderLibrary(ShaderLibrary const&) = delete;
+            void operator=(ShaderLibrary const&) = delete;
         private:
+
             std::unordered_map<
                 std::string,
                 std::shared_ptr<NxShader>,

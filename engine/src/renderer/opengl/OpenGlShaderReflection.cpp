@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlShaderReflection.hpp"
+#include "Logger.hpp"
 #include <glad/glad.h>
 
 namespace nexo::renderer {
@@ -20,6 +21,13 @@ namespace nexo::renderer {
     std::unordered_map<std::string, UniformInfo> ShaderReflection::reflectUniforms(unsigned int programId)
     {
         std::unordered_map<std::string, UniformInfo> uniforms;
+
+        GLint linkStatus;
+        glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus);
+        if (linkStatus != GL_TRUE) {
+            LOG(NEXO_ERROR, "Cannot reflect uniforms from unlinked program {}", programId);
+            return uniforms;
+        }
 
         int uniformCount;
         glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &uniformCount);
