@@ -17,6 +17,7 @@
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "DocumentWindows/PopupManager.hpp"
 #include "assets/Assets/Material/Material.hpp"
+#include "utils/ScenePreview.hpp"
 
 namespace nexo::editor {
 
@@ -32,6 +33,7 @@ namespace nexo::editor {
             void show(ecs::Entity entity) override;
         private:
             void createMaterialPopup(const ecs::Entity entity);
+            void cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out);
             PopupManager m_popupManager;
     };
 }

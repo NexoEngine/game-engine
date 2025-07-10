@@ -25,6 +25,18 @@
 #include <imgui.h>
 
 namespace nexo::editor {
+
+    void MaterialProperty::cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out)
+    {
+        assets::AssetCatalog::getInstance().deleteAsset(materialRef);
+        materialRef = nullptr;
+        if (out.sceneGenerated) {
+            Application::getInstance().getSceneManager().deleteScene(out.sceneId);
+            out.sceneGenerated = false;
+        }
+        ImGui::CloseCurrentPopup();
+    }
+
     void MaterialProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
@@ -130,26 +142,11 @@ namespace nexo::editor {
                 LOG(NEXO_INFO, "Applied new material '{}' to entity {}", finalLocation.getFullLocation(), entity);
             }
 
-            // Clean up the temporary material
-            assets::AssetCatalog::getInstance().deleteAsset(materialRef);
-            materialRef = nullptr;
-            if (out.sceneGenerated) {
-                Application::getInstance().getSceneManager().deleteScene(out.sceneId);
-                out.sceneGenerated = false;
-            }
-            ImGui::CloseCurrentPopup();
+            cleanupPopup(materialRef, out);
         }
         ImGui::SameLine();
         if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0)))
-        {
-            assets::AssetCatalog::getInstance().deleteAsset(materialRef);
-            materialRef = nullptr;
-            if (out.sceneGenerated) {
-                Application::getInstance().getSceneManager().deleteScene(out.sceneId);
-                out.sceneGenerated = false;
-            }
-            ImGui::CloseCurrentPopup();
-        }
+            cleanupPopup(materialRef, out);
     }
 
 
