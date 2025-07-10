@@ -25,7 +25,7 @@ namespace ImNexo {
     * This function displays controls for shader selection, rendering mode, and textures/colors
     * for material properties such as albedo and specular components.
     *
-    * @param material Pointer to the components::Material to be inspected and modified.
+    * @param material Reference to the components::Material to be inspected and modified.
     * @return true if any material property was modified; false otherwise.
     */
     bool MaterialInspector(nexo::components::Material &material);
