@@ -12,7 +12,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "DocumentWindows/EntityProperties/MaterialProperty.hpp"
 #include "MaterialInspector.hpp"
+#include "components/MaterialComponent.hpp"
+#include "context/ThumbnailCache.hpp"
 #include "utils/ScenePreview.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "ImNexo/Elements.hpp"
@@ -21,59 +24,39 @@
 
 namespace nexo::editor {
 
-    void MaterialInspector::renderMaterialInspector(const int selectedEntity)
-	{
-		bool &materialModified = m_materialModified;
-		static utils::ScenePreviewOut previewParams;
+    void MaterialInspector::renderMaterialInspector()
+    {
+        const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
+        auto dataOpt = inspectorWindow->getSubInspectorData<MaterialInspector, MaterialInspectorData>();
+        if (!dataOpt.has_value())
+            return;
+        auto& data = *dataOpt;
 
-		if (selectedEntity != -1 && m_ecsEntity != selectedEntity)
-		{
-			auto renderComp = Application::m_coordinator->tryGetComponent<components::RenderComponent>(selectedEntity);
-			if (renderComp)
-			{
-				m_ecsEntity = selectedEntity;
-				materialModified = true;
-			}
-			else
-			{
-				m_ecsEntity = -1;
-			}
-		}
+        if (!Application::m_coordinator->entityHasComponent<components::MaterialComponent>(data.m_selectedEntity))
+            return;
 
-		if (m_ecsEntity == -1)
-			return;
+        unsigned int textureID = 0;
+        if (m_materialModified)
+        {
+            textureID = ThumbnailCache::getInstance().updateMaterialThumbnail(data.material);
+        } else {
+            textureID = ThumbnailCache::getInstance().getMaterialThumbnail(data.material);
+        }
+        if (!textureID)
+            return;
 
-		if (materialModified)
-		{
-			utils::genScenePreview("Modify material inspector", {64, 64}, m_ecsEntity, previewParams);
-			auto &app = getApp();
-			const Application::SceneInfo sceneInfo{previewParams.sceneId, RenderingType::FRAMEBUFFER};
-			app.run(sceneInfo);
-			const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-			m_framebuffer = cameraComponent.m_renderTarget;
-			materialModified = false;
-			app.getSceneManager().deleteScene(previewParams.sceneId);
-		}
+        // --- Material preview ---
+        ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureID)), {64, 64});
+        ImGui::SameLine();
 
-		if (!m_framebuffer)
-			THROW_EXCEPTION(BackendRendererApiFatalFailure, "OPENGL", "Failed to initialize framebuffer in Material Inspector window");
-		// --- Material preview ---
-		if (m_framebuffer->getColorAttachmentId(0) != 0)
-			ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(m_framebuffer->getColorAttachmentId(0))), {64, 64});
-		ImGui::SameLine();
+        auto material = data.material.lock();
+        components::Material& materialData = *material->getData();
 
-		const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
-		if (!inspectorWindow)
-			return;
-		auto materialVariant = inspectorWindow->getSubInspectorData<MaterialInspector, components::Material>();
-		if (materialVariant)
-			materialModified = ImNexo::MaterialInspector(materialVariant);
-	}
+        m_materialModified = ImNexo::MaterialInspector(materialData);
+    }
 
 	void MaterialInspector::show()
 	{
-		auto const &selector = Selector::get();
-		const int selectedEntity = selector.getPrimaryEntity();
 		const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
 		if (!inspectorWindow)
 			return;
@@ -86,7 +69,7 @@ namespace nexo::editor {
 			if (ImGui::Begin("Material Inspector" NEXO_WND_USTRID_MATERIAL_INSPECTOR, &inspectorWindow->getSubInspectorVisibility<MaterialInspector>(), window_flags))
 			{
 				beginRender(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
-				renderMaterialInspector(selectedEntity);
+				renderMaterialInspector();
 			}
 			ImGui::End();
 		}
