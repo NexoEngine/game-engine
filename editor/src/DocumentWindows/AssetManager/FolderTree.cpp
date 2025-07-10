@@ -29,11 +29,7 @@ namespace nexo::editor {
         if (path == m_currentFolder)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        // Check if this is a leaf node (no subfolders) - O(1) lookup
-        bool hasSubfolders = m_folderChildren.find(path) != m_folderChildren.end() &&
-                             !m_folderChildren[path].empty();
-
-        if (!hasSubfolders)
+        if (!m_folderChildren.contains(path))
             flags |= ImGuiTreeNodeFlags_Leaf;
 
         // Folder icon
@@ -52,9 +48,11 @@ namespace nexo::editor {
                 m_folderCreationState.parentPath = path;
                 m_folderCreationState.isCreatingFolder = true;
                 ImGui::OpenPopup("Create New Folder");
-                snprintf(m_folderCreationState.folderName,
-                         sizeof(m_folderCreationState.folderName),
-                         "%s", "New Folder");
+                std::format_to_n(
+                    m_folderCreationState.folderName,
+                    sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
+                    "New Folder"
+                );
             }
             ImGui::EndPopup();
         }
@@ -161,7 +159,7 @@ namespace nexo::editor {
         m_folderChildren.clear(); // Clear the folder children map
 
         // First pass: build the folder structure as before
-        std::set<std::string> uniqueFolderPaths;
+        std::set<std::string, std::less<>> uniqueFolderPaths;
 
         const auto assets = assets::AssetCatalog::getInstance().getAssets();
         for (const auto& asset : assets) {
@@ -264,9 +262,11 @@ namespace nexo::editor {
                 if (ImGui::MenuItem("New Folder")) {
                     m_folderCreationState.parentPath = "";
                     m_folderCreationState.isCreatingFolder = true;
-                    snprintf(m_folderCreationState.folderName,
-                             sizeof(m_folderCreationState.folderName),
-                             "%s", "New Folder");
+                    std::format_to_n(
+                        m_folderCreationState.folderName,
+                        sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
+                        "New Folder"
+                    );
                 }
                 ImGui::EndPopup();
             }
