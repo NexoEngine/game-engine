@@ -30,7 +30,6 @@ namespace nexo::renderer {
             return std::make_shared<NxOpenGlShader>(path);
         #endif
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-
     }
 
     std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
@@ -39,7 +38,6 @@ namespace nexo::renderer {
             return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
         #endif
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-
     }
 
     std::string NxShader::readFile(const std::string &filepath)
@@ -72,9 +70,11 @@ namespace nexo::renderer {
     bool NxShader::setUniformFloat(const std::string& name, float value) const
     {
         // Use uniform cache to avoid redundant state changes
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<float>(m_uniformCache.getValue(name)) &&
-                std::get<float>(m_uniformCache.getValue(name)) == value) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<float>(*optionalValue) &&
+                std::get<float>(*optionalValue) == value) {
                 return true; // Value hasn't changed, skip the update
             }
         }
@@ -85,9 +85,11 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformFloat2(const std::string& name, const glm::vec2& values) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<glm::vec2>(m_uniformCache.getValue(name)) &&
-                std::get<glm::vec2>(m_uniformCache.getValue(name)) == values) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec2>(*optionalValue) &&
+                std::get<glm::vec2>(*optionalValue) == values) {
                 return true;
             }
         }
@@ -98,9 +100,11 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformFloat3(const std::string& name, const glm::vec3& values) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<glm::vec3>(m_uniformCache.getValue(name)) &&
-                std::get<glm::vec3>(m_uniformCache.getValue(name)) == values) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec3>(*optionalValue) &&
+                std::get<glm::vec3>(*optionalValue) == values) {
                 return true;
             }
         }
@@ -111,9 +115,11 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformFloat4(const std::string& name, const glm::vec4& values) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<glm::vec4>(m_uniformCache.getValue(name)) &&
-                std::get<glm::vec4>(m_uniformCache.getValue(name)) == values) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec4>(*optionalValue) &&
+                std::get<glm::vec4>(*optionalValue) == values) {
                 return true;
             }
         }
@@ -124,13 +130,14 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformMatrix(const std::string& name, const glm::mat4& matrix) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<glm::mat4>(m_uniformCache.getValue(name)) &&
-                std::get<glm::mat4>(m_uniformCache.getValue(name)) == matrix) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::mat4>(*optionalValue) &&
+                std::get<glm::mat4>(*optionalValue) == matrix) {
                 return true;
             }
         }
-
 
         m_uniformCache.setMatrix(name, matrix);
         return false;
@@ -138,9 +145,11 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformBool(const std::string& name, bool value) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<bool>(m_uniformCache.getValue(name)) &&
-                std::get<bool>(m_uniformCache.getValue(name)) == value) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<bool>(*optionalValue) &&
+                std::get<bool>(*optionalValue) == value) {
                 return true;
             }
         }
@@ -151,9 +160,11 @@ namespace nexo::renderer {
 
     bool NxShader::setUniformInt(const std::string& name, int value) const
     {
-        if (!m_uniformCache.isDirty(name) && m_uniformCache.hasValue(name)) {
-            if (std::holds_alternative<int>(m_uniformCache.getValue(name)) &&
-                std::get<int>(m_uniformCache.getValue(name)) == value) {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<int>(*optionalValue) &&
+                std::get<int>(*optionalValue) == value) {
                 return true;
             }
         }
@@ -174,21 +185,25 @@ namespace nexo::renderer {
 
     bool NxShader::setUniform(const std::string &name, UniformValue value) const
     {
-        if (std::holds_alternative<float>(value))
-            return setUniformFloat(name, std::get<float>(value));
-        if (std::holds_alternative<glm::vec2>(value))
-            return setUniformFloat2(name, std::get<glm::vec2>(value));
-        if (std::holds_alternative<glm::vec3>(value))
-            return setUniformFloat3(name, std::get<glm::vec3>(value));
-        if (std::holds_alternative<glm::vec4>(value))
-            return setUniformFloat4(name, std::get<glm::vec4>(value));
-        if (std::holds_alternative<int>(value))
-            return setUniformInt(name, std::get<int>(value));
-        if (std::holds_alternative<bool>(value))
-            return setUniformBool(name, std::get<bool>(value));
-        if (std::holds_alternative<glm::mat4>(value))
-            return setUniformMatrix(name, std::get<glm::mat4>(value));
-        return false;
+        return std::visit([this, &name](auto&& arg) -> bool {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, float>)
+                return setUniformFloat(name, arg);
+            else if constexpr (std::is_same_v<T, glm::vec2>)
+                return setUniformFloat2(name, arg);
+            else if constexpr (std::is_same_v<T, glm::vec3>)
+                return setUniformFloat3(name, arg);
+            else if constexpr (std::is_same_v<T, glm::vec4>)
+                return setUniformFloat4(name, arg);
+            else if constexpr (std::is_same_v<T, int>)
+                return setUniformInt(name, arg);
+            else if constexpr (std::is_same_v<T, bool>)
+                return setUniformBool(name, arg);
+            else if constexpr (std::is_same_v<T, glm::mat4>)
+                return setUniformMatrix(name, arg);
+            else
+                return false;
+        }, value);
     }
 
     bool NxShader::hasUniform(const std::string& name) const

@@ -90,11 +90,10 @@ namespace nexo::renderer {
         return m_values.find(name) != m_values.end();
     }
 
-    const UniformValue& UniformCache::getValue(const std::string& name) const
+    std::optional<UniformValue> UniformCache::getValue(const std::string& name) const
     {
-        static UniformValue defaultValue = 0.0f;
         auto it = m_values.find(name);
-        return (it != m_values.end()) ? it->second : defaultValue;
+        return (it != m_values.end()) ? std::optional<UniformValue>(it->second) : std::nullopt;
     }
 
     void UniformCache::clearDirtyFlag(const std::string& name)

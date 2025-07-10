@@ -7,7 +7,7 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        07/05/2025a
+//  Date:        07/05/2025
 //  Description: Header file for the attributes definitions
 //
 ///////////////////////////////////////////////////////////////////////////////
