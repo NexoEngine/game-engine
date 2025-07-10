@@ -63,6 +63,7 @@ namespace nexo::editor {
             };
 
             std::set<int> m_selectedAssets;
+            std::unordered_map<std::string, std::vector<std::string>> m_folderChildren;
             LayoutSettings m_layout;
 
             void calculateLayout(float availWidth);
@@ -89,7 +90,7 @@ namespace nexo::editor {
 
             struct FolderCreationState {
                 bool isCreatingFolder = false;
-                char folderName[14] = "";
+                char folderName[256] = "";
                 std::string parentPath;
                 bool showError = false;
                 std::string errorMessage;
