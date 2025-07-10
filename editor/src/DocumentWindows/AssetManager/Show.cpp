@@ -184,7 +184,10 @@ namespace nexo::editor {
             if (textureRef) {
                 auto textureData = textureRef.lock();
                 // Get the ImGui texture ID from your engine's texture
-                m_folderIconTexture = textureData->getData()->texture->getId();
+                if (textureData && textureData->getData() && textureData->getData()->texture)
+                    m_folderIconTexture = textureData->getData()->texture->getId();
+                else
+                    LOG(NEXO_ERROR, "Failed to load folder icon texture");
             } else
                 LOG(NEXO_WARN, "Failed to load folder icon texture");
         }
