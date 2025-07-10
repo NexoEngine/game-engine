@@ -17,6 +17,7 @@
 #include <set>
 #include <imgui.h>
 #include <assets/AssetRef.hpp>
+#include "utils/TransparentStringHash.hpp"
 
 namespace nexo::editor {
 
@@ -63,7 +64,7 @@ namespace nexo::editor {
             };
 
             std::set<int> m_selectedAssets;
-            std::unordered_map<std::string, std::vector<std::string>> m_folderChildren;
+            std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
             LayoutSettings m_layout;
 
             void calculateLayout(float availWidth);
