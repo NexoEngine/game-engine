@@ -84,8 +84,8 @@ namespace nexo::editor {
 			 * @tparam T The type of the sub-inspector.
 			 * @param data Pointer to the material data to associate with the sub-inspector.
 			 */
-			template<typename T>
-			void setSubInspectorData(components::Material *data)
+			template<typename T, typename Data>
+			void setSubInspectorData(Data data)
 			{
 			    m_subInspectorData[std::type_index(typeid(T))] = data;
 			}
@@ -133,19 +133,19 @@ namespace nexo::editor {
 			 * @return A pointer to the Data type if found, or nullptr if not found.
 			 */
 			template<typename WindowType, typename Data>
-			Data *getSubInspectorData() const
-			{
-			    auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
-				if (it != m_subInspectorData.end()) {
+			std::optional<Data> getSubInspectorData() const
+            {
+                auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
+                if (it != m_subInspectorData.end()) {
                     try {
-                        return std::any_cast<Data*>(it->second);
+                        return std::any_cast<Data>(it->second);
                     }
                     catch (const std::bad_any_cast& e) {
-                        return nullptr;
+                        return std::nullopt;
                     }
-				}
-				return nullptr;
-			}
+                }
+                return std::nullopt;
+            }
 	    private:
 			std::unordered_map<ecs::ComponentType, std::shared_ptr<IEntityProperty>> m_entityProperties;
 

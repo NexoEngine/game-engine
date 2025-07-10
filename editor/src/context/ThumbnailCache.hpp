@@ -37,6 +37,9 @@ namespace nexo::editor {
         unsigned int getMaterialThumbnail(const assets::AssetRef<assets::Material>& materialRef,
                                          const glm::vec2& size = {128, 128});
 
+        unsigned int updateMaterialThumbnail(const assets::AssetRef<assets::Material> &materialRef,
+                                            const glm::vec2 &size = {128, 128});
+
         // Get thumbnail for texture (creates if not exists)
         unsigned int getTextureThumbnail(const assets::AssetRef<assets::Texture>& textureRef,
                                         const glm::vec2& size = {128, 128});

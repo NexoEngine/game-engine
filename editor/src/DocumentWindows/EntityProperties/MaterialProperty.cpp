@@ -172,6 +172,11 @@ namespace nexo::editor {
                 {
                     m_inspector.setSubInspectorVisibility<MaterialInspector>(true);
                 }
+                MaterialInspectorData data;
+                data.m_selectedEntity = entity;
+                data.material = materialComponent.material;
+                m_inspector.setSubInspectorData<MaterialInspector, MaterialInspectorData>(data);
+
             }
             ImGui::EndGroup();
             const ImVec2 center = ImGui::GetMainViewport()->GetCenter();

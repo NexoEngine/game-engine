@@ -16,8 +16,15 @@
 #include "AEntityProperty.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "DocumentWindows/PopupManager.hpp"
+#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::editor {
+
+    struct MaterialInspectorData {
+        ecs::Entity m_selectedEntity;
+        assets::AssetRef<assets::Material> material;
+    };
+
     class MaterialProperty final : public AEntityProperty {
         public:
             using AEntityProperty::AEntityProperty;

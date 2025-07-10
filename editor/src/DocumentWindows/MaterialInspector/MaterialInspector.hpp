@@ -47,14 +47,10 @@ namespace nexo::editor {
 			 * it updates the preview by running a framebuffer render pass, displays the resulting image using ImGui,
 			 * and processes potential material changes through the inspector widget.
 			 *
-			 * @param selectedEntity The identifier of the selected entity. A value of -1 indicates no valid selection.
-			 *
 			 * @throw BackendRendererApiFatalFailure Thrown if the framebuffer fails to initialize.
 			 */
-			void renderMaterialInspector(int selectedEntity);
+			void renderMaterialInspector();
 
-			std::shared_ptr<renderer::NxFramebuffer> m_framebuffer = nullptr;
-			int m_ecsEntity = -1;
 			bool m_materialModified = true;
 	};
 

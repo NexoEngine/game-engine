@@ -70,7 +70,8 @@ namespace nexo::editor {
     }
 
     unsigned int ThumbnailCache::getMaterialThumbnail(const assets::AssetRef<assets::Material>& materialRef,
-                                                    const glm::vec2& size) {
+                                                    const glm::vec2& size)
+    {
         // Check if material is valid
         if (!materialRef.isValid()) {
             return 0;
@@ -99,6 +100,23 @@ namespace nexo::editor {
             removeThumbnail(assetId);
         }
 
+        return createMaterialThumbnail(materialRef, size);
+    }
+
+    unsigned int ThumbnailCache::updateMaterialThumbnail(const assets::AssetRef<assets::Material> &materialRef,
+                                        const glm::vec2 &size)
+    {
+        // Check if material is valid
+        if (!materialRef.isValid()) {
+            return 0;
+        }
+
+        auto material = materialRef.lock();
+        if (!material || !material->getData()) {
+            return 0;
+        }
+
+        std::lock_guard<std::mutex> lock(m_cacheMutex);
         return createMaterialThumbnail(materialRef, size);
     }
 
