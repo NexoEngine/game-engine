@@ -242,7 +242,7 @@ namespace nexo::assets {
 
             if (float opacity = 1.0f; material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
                 materialComponent->opacity = opacity;
-                if (opacity < 0.99f) { // Using 0.99 to account for floating point imprecision
+                if (opacity < OPACITY_THRESHOLD) { // Using 0.99 to account for floating point imprecision
                     materialComponent->isOpaque = false;
                 } else
                     materialComponent->opacity = 1.0f;
@@ -256,7 +256,7 @@ namespace nexo::assets {
             // Check 2: Transparency factor (inverse of opacity in some formats)
             float transparencyFactor = 0.0f;
             if (material->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparencyFactor) == AI_SUCCESS) {
-                if (transparencyFactor > 0.01f) { // Again with epsilon
+                if (transparencyFactor > TRANSPARENCY_EPSILON) { // Again with epsilon
                     materialComponent->isOpaque = false;
                 }
             }
@@ -350,7 +350,7 @@ namespace nexo::assets {
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             auto newNode = processNode(ctx, node->mChildren[i], scene);
-            meshNode.children.push_back(newNode);
+            meshNode.children.push_back(std::move(newNode));
         }
 
         return meshNode;
@@ -427,8 +427,8 @@ namespace nexo::assets {
             LOG(NEXO_WARN, "ModelImporter: Model {}: Mesh {} has no material.", std::quoted(ctx.location.getFullLocation()), std::quoted(mesh->mName.C_Str()));
         }
 
-        LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-        return {mesh->mName.data, vao, materialComponent, centerLocal};
+        LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.C_Str());
+        return {mesh->mName.C_Str(), vao, materialComponent, centerLocal};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)

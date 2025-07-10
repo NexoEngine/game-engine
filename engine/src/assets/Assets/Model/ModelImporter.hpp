@@ -23,6 +23,9 @@
 
 namespace nexo::assets {
 
+    constexpr float OPACITY_THRESHOLD = 0.99f;
+    constexpr float TRANSPARENCY_EPSILON = 0.01f;
+
     class ModelImporter : public AssetImporterBase {
         public:
             ModelImporter() = default;
