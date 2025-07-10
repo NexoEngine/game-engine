@@ -14,9 +14,14 @@
 
 #include "MaterialProperty.hpp"
 #include "ImNexo/Elements.hpp"
+#include "Types.hpp"
+#include "components/Camera.hpp"
+#include "components/SceneComponents.hpp"
 #include "context/ThumbnailCache.hpp"
 #include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 #include "assets/AssetCatalog.hpp"
+#include "ImNexo/Panels.hpp"
+#include "utils/ScenePreview.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -53,33 +58,29 @@ namespace nexo::editor {
             ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
             ImGui::Spacing();
 
-            if (materialRef.isValid()) {
-                auto material = materialRef.lock();
-                if (material && material->getData()) {
-                    // Example: Color picker for albedo
-                    ImVec4 albedo = ImVec4(
-                        material->getData()->albedoColor.r,
-                        material->getData()->albedoColor.g,
-                        material->getData()->albedoColor.b,
-                        material->getData()->albedoColor.a
-                    );
+            auto material = materialRef.lock();
+            components::Material& materialData = *material->getData();
 
-                    if (ImGui::ColorEdit4("Color", (float*)&albedo)) {
-                        material->getData()->albedoColor = {albedo.x, albedo.y, albedo.z, albedo.w};
-                    }
-
-                    // Add more material property controls as needed
-                }
-            }
+            if (ImNexo::MaterialInspector(materialData))
+                ThumbnailCache::getInstance().updateMaterialThumbnail(materialRef);
 
             ImGui::EndChild();
         }
+        static utils::ScenePreviewOut out;
         ImGui::NextColumn();
         // --- Right Side: Material Preview ---
         {
             ImGui::BeginChild("MaterialPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
-            const unsigned int textureId = ThumbnailCache::getInstance().getMaterialThumbnail(materialRef, {previewWidth - 8, totalHeight});
+            if (!out.sceneGenerated)
+                utils::genScenePreview("Material Creation Scene", {previewWidth - 4, totalHeight}, entity, out);
+            Application::SceneInfo sceneInfo{static_cast<scene::SceneId>(out.sceneId), RenderingType::FRAMEBUFFER};
+            auto &materialComp = Application::getInstance().m_coordinator->getComponent<components::MaterialComponent>(out.entityCopy);
+            materialComp.material = materialRef;
+            Application::getInstance().run(sceneInfo);
+            const auto &cameraComp = Application::getInstance().m_coordinator->getComponent<components::CameraComponent>(out.cameraId);
+            const unsigned int textureId = cameraComp.m_renderTarget->getColorAttachmentId();
+
 
             const float aspectRatio = static_cast<float>(previewWidth - 8) /
                                       static_cast<float>(totalHeight);
@@ -109,8 +110,14 @@ namespace nexo::editor {
                 if (name.empty()) {
                     name = "NewMaterial_" + std::to_string(static_cast<uint32_t>(entity));
                 }
+                const auto &sceneTag = Application::getInstance().m_coordinator->getComponent<components::SceneTag>(entity);
+                std::string sceneName = Application::getInstance().getSceneManager().getScene(sceneTag.id).getName();
                 // Create the asset location in materials folder
-                assets::AssetLocation finalLocation(name + "@materials");
+                auto hashPos = sceneName.find('#');
+                if (hashPos != std::string::npos) {
+                    sceneName.erase(hashPos);
+                }
+                assets::AssetLocation finalLocation(std::format("{}@{}/", name, sceneName));
 
                 // Create a new material asset by copying the preview material
                 auto newMaterialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
@@ -118,25 +125,29 @@ namespace nexo::editor {
                     std::make_unique<components::Material>(*materialRef.lock()->getData())
                 );
 
-                // Apply the new material to the entity
-                if (Application::m_coordinator->entityHasComponent<components::MaterialComponent>(entity)) {
-                    auto& materialComponent = Application::m_coordinator->getComponent<components::MaterialComponent>(entity);
-                    materialComponent.material = newMaterialRef;
-
-                    LOG(NEXO_INFO, "Applied new material '{}' to entity {}", finalLocation.getFullLocation(), entity);
-                } else {
-                    LOG(NEXO_WARN, "Entity {} does not have a MaterialComponent", entity);
-                }
+                auto& materialComponent = Application::m_coordinator->getComponent<components::MaterialComponent>(entity);
+                materialComponent.material = newMaterialRef;
+                LOG(NEXO_INFO, "Applied new material '{}' to entity {}", finalLocation.getFullLocation(), entity);
             }
 
             // Clean up the temporary material
+            assets::AssetCatalog::getInstance().deleteAsset(materialRef);
             materialRef = nullptr;
+            if (out.sceneGenerated) {
+                Application::getInstance().getSceneManager().deleteScene(out.sceneId);
+                out.sceneGenerated = false;
+            }
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
         if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
+            assets::AssetCatalog::getInstance().deleteAsset(materialRef);
             materialRef = nullptr;
+            if (out.sceneGenerated) {
+                Application::getInstance().getSceneManager().deleteScene(out.sceneId);
+                out.sceneGenerated = false;
+            }
             ImGui::CloseCurrentPopup();
         }
     }
