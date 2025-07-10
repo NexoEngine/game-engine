@@ -426,7 +426,8 @@ namespace nexo
         int childCount = processModelNode(rootEntity, rootNode);
 
         // Update child count in root component
-        rootComp.childCount = childCount;
+        auto &storedRoot = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
+        storedRoot.childCount = childCount;
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(rootEntity, uuid);
 
