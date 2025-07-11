@@ -109,21 +109,18 @@ namespace nexo::editor {
         ImGui::Columns(1);
         ImGui::Spacing();
 
-        // Bottom buttons - centered
         constexpr float buttonWidth = 120.0f;
 
         if (ImNexo::Button("OK", ImVec2(buttonWidth, 0)))
         {
             // Create a new permanent material based on the preview material
             if (materialRef.isValid()) {
-                // Create a proper name for the material (use default if empty)
                 auto name = std::string(materialName);
                 if (name.empty()) {
                     name = std::format("NewMaterial_{}", entity);
                 }
                 const auto &sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
                 std::string sceneName = Application::getInstance().getSceneManager().getScene(sceneTag.id).getName();
-                // Create the asset location in materials folder
                 auto hashPos = sceneName.find('#');
                 if (hashPos != std::string::npos) {
                     sceneName.erase(hashPos);
