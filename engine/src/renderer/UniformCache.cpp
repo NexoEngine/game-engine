@@ -87,7 +87,7 @@ namespace nexo::renderer {
 
     bool UniformCache::hasValue(const std::string& name) const
     {
-        return m_values.find(name) != m_values.end();
+        return m_values.contains(name);
     }
 
     std::optional<UniformValue> UniformCache::getValue(const std::string& name) const

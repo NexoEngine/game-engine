@@ -32,7 +32,7 @@ namespace nexo::editor {
 
             void show(ecs::Entity entity) override;
         private:
-            void createMaterialPopup(const ecs::Entity entity);
+            void createMaterialPopup(const ecs::Entity entity) const;
             void cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out) const;
             PopupManager m_popupManager;
     };

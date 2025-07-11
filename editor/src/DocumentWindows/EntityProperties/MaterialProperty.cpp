@@ -37,7 +37,7 @@ namespace nexo::editor {
         ImGui::CloseCurrentPopup();
     }
 
-    void MaterialProperty::createMaterialPopup(const ecs::Entity entity)
+    void MaterialProperty::createMaterialPopup(const ecs::Entity entity) const
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
