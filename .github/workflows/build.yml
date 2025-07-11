@@ -173,14 +173,14 @@ jobs:
                     - os: macos-latest
                       compiler: msvc
         runs-on: ${{ matrix.os }}
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
               with:
                   submodules: recursive
-                  fetch-depth: 0 # Fetch all history for all tags and branches (for SonarCloud)
+                  fetch-depth: 0
 
-            # DEBUGGING ONLY, to run this trigger with even
             - name: Setup tmate session
               uses: mxschmitt/action-tmate@v3
               if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
@@ -189,7 +189,7 @@ jobs:
                   detached: true # Run in the background and wait for connection
 
             - name: Add Ubuntu toolchain repository
-              if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+              if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
               run: |
                   sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
                   sudo apt-get update
@@ -198,7 +198,7 @@ jobs:
               if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
               uses: awalsh128/cache-apt-pkgs-action@latest
               with:
-                  packages:
+                  packages: |
                       cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
                       libstdc++-13-dev libasan8 libatomic1 libcc1-0 libgcc-13-dev \
                       libgcc-s1 libgomp1 libhwasan0 libitm1 liblsan0 libquadmath0 \
@@ -233,14 +233,14 @@ jobs:
               if: ${{ matrix.os == 'ubuntu-latest' }}
               uses: awalsh128/cache-apt-pkgs-action@latest
               with:
-                  packages: libxrandr-dev libx11-dev
-                      libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev
-                      libxcursor-dev libxcb-render0-dev libxcb-shape0-dev
-                      libxcb-randr0-dev libxcb-xfixes0-dev libxcb-sync-dev libxcb-shm0-dev
-                      libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-dri2-0-dev libxcb-dri3-dev
-                      libxcb-glx0-dev libx11-xcb-dev libglu1-mesa-dev
-                      libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
-                      libegl1-mesa-dev mono-complete
+                  packages: |
+                      libxrandr-dev libx11-dev libxext-dev libxi-dev libgl1-mesa-dev \
+                      libxinerama-dev libxcursor-dev libxcb-render0-dev libxcb-shape0-dev \
+                      libxcb-randr0-dev libxcb-xfixes0-dev libxcb-sync-dev libxcb-shm0-dev \
+                      libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-dri2-0-dev libxcb-dri3-dev \
+                      libxcb-glx0-dev libx11-xcb-dev libglu1-mesa-dev libxrender-dev \
+                      libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
+                      mono-complete
                   version: 1.0
                   execute_install_scripts: true
 
@@ -260,7 +260,7 @@ jobs:
             - name: Setup vcpkg
               uses: lukka/run-vcpkg@v11
 
-            - name: Add NuGet sources
+            - name: Add NuGet sources (Windows)
               if: ${{ matrix.os == 'windows-latest' }}
               shell: pwsh
               env:
@@ -277,6 +277,7 @@ jobs:
                     setapikey "${{ secrets.GITHUB_TOKEN }}" `
                     -Source "${{ env.FEED_URL }}"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   test-nsis-installer:
     name: Test NSIS installer
@@ -317,6 +318,9 @@ jobs:
           }
 =======
             - name: Add NuGet sources
+=======
+            - name: Add NuGet sources (Non-Windows)
+>>>>>>> 003619f4 (fix(front-material): fix indent in .yml)
               if: ${{ matrix.os != 'windows-latest' }}
               shell: bash
               env:
@@ -347,20 +351,20 @@ jobs:
 >>>>>>> 4256cce7 (fix(front-material): should be good for ubuntu build too)
 
             - name: Install Mesa for Windows
-              shell: cmd
               if: ${{ matrix.os == 'windows-latest' }}
+              shell: cmd
               run: |
                   curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
                   "C:\Program Files\7-Zip\7z.exe" x mesa.7z
                   mklink opengl32.dll "x64\opengl32.dll"
                   mklink libglapi.dll "x64\libglapi.dll"
-              working-directory: "build"
+              working-directory: build
 
             - name: Run headless test
               uses: coactions/setup-xvfb@v1
               with:
                   run: "ctest -C Debug --output-on-failure"
-                  working-directory: "build"
+                  working-directory: build
 
             - name: Collect coverage into XML report for SonarCloud
               if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -468,21 +472,15 @@ jobs:
             - name: Run NSIS installer
               shell: pwsh
               run: |
-                  # Find the first .exe file in the downloaded directory
                   $exePath = Get-ChildItem -Path "${{steps.download.outputs.download-path}}\nexo-engine-installer-msvc14-windows-latest" -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
-
                   if (-not $exePath) {
                     Write-Error "No .exe file found in the directory."
                     exit 1
                   }
-
-                  # Run the installer with /S for silent mode and /D to specify the installation directory
                   Start-Process -FilePath "$exePath" -wait -ArgumentList "/S /D=C:\Program Files\NexoEngine"
-
-                  # Check if the installation directory exists
                   if (-not (Test-Path "C:\Program Files\NexoEngine")) {
-                      Write-Error "Installation directory not found."
-                      exit 1
+                    Write-Error "Installation directory not found."
+                    exit 1
                   }
 
             - name: Install 7zip
@@ -502,8 +500,6 @@ jobs:
               timeout-minutes: 1
               run: |
                   $exePath = "C:\Program Files\NexoEngine\bin\nexoEditor.exe"
-
-                  # Test the close behavior of the NEXO Editor
                   $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru
                   $exited = $process.WaitForExit(10000)
                   if ($exited) {
@@ -516,8 +512,6 @@ jobs:
                     Write-Error "::error:: NEXO Editor exited at close window with code $($process.ExitCode)"
                     exit 1
                   }
-                  Write-Output "NEXO Editor gracefully closed with window close"
-                  exit 0
 
     test-deb-installer:
         name: Test DEB installer
@@ -539,7 +533,7 @@ jobs:
                   sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
 
             - name: Write NEXO run script
-              uses: "DamianReeves/write-file-action@master"
+              uses: DamianReeves/write-file-action@master
               with:
                   path: ./run-nexo.sh
                   contents: |
@@ -548,11 +542,9 @@ jobs:
                       process_pid=$!
                       echo "Started NEXO Editor with PID: $process_pid"
 
-                      # Wait for the process for up to 10 seconds
                       timeout=10
                       for ((i=0; i<timeout; i++)); do
                         if ! ps -p $process_pid > /dev/null; then
-                          # Process exited before timeout; capture exit code
                           wait $process_pid
                           exit_code=$?
                           echo "::error:: NEXO Editor exited before timeout with code $exit_code"
@@ -561,11 +553,7 @@ jobs:
                         sleep 1
                       done
 
-                      # Send SIGTERM signal to the process
                       kill -SIGTERM $process_pid
-                      echo "Sent SIGTERM to process with PID: $process_pid"
-
-                      # Wait for the process to terminate after SIGTERM
                       wait $process_pid
                       exit_code=$?
 
@@ -573,9 +561,6 @@ jobs:
                         echo "::error:: NEXO Editor exited at SIGTERM with code $exit_code"
                         exit 1
                       fi
-
-                      echo "NEXO Editor gracefully closed with SIGTERM"
-                      exit 0
 
             - name: Set permissions for NEXO run script
               run: chmod +x ./run-nexo.sh
