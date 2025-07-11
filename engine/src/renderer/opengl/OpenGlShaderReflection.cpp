@@ -55,7 +55,7 @@ namespace nexo::renderer {
                 baseName = baseName.substr(0, bracketPos);
 
                 // Only add if we haven't encountered this base name yet
-                if (uniforms.find(baseName) == uniforms.end()) {
+                if (!uniforms.contains(baseName)) {
                     // For arrays, the base name location is the same as the first element
                     UniformInfo baseInfo = info;
                     baseInfo.name = baseName;

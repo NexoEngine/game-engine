@@ -25,7 +25,7 @@
 namespace nexo::system {
     void TransformHierarchySystem::update()
     {
-        auto &renderContext = getSingleton<components::RenderContext>();
+        const auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1)
             return;
 
