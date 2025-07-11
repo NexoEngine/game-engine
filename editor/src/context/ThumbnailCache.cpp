@@ -145,7 +145,7 @@ namespace nexo::editor {
 
         const Application::SceneInfo sceneInfo{previewInfo.sceneId, nexo::RenderingType::FRAMEBUFFER};
         app.run(sceneInfo);
-        auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewInfo.cameraId);
+        const auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewInfo.cameraId);
 
         auto framebuffer = cameraComponent.m_renderTarget;
         app.getSceneManager().deleteScene(previewInfo.sceneId);
@@ -216,6 +216,6 @@ namespace nexo::editor {
 
     bool ThumbnailCache::hasThumbnail(const boost::uuids::uuid& assetId) const
     {
-        return m_thumbnailCache.find(assetId) != m_thumbnailCache.end();
+        return m_thumbnailCache.contains(assetId);
     }
 }

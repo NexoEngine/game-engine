@@ -53,7 +53,7 @@ namespace nexo::editor {
             ecs::Exclude<components::RootComponent>>();
 
         for (const ecs::Entity entity : standaloneEntities) {
-            if (processedEntities.find(entity) != processedEntities.end())
+            if (processedEntities.contains(entity))
                 continue; // Skip if already processed
 
             const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
