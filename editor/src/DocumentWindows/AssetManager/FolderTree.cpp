@@ -58,7 +58,7 @@ namespace nexo::editor {
         }
 
         if (opened) {
-            // Use the precomputed children list instead of searching
+            // Use the precomputed children list
             auto it = m_folderChildren.find(path);
             if (it != m_folderChildren.end()) {
                 for (const auto& childPath : it->second) {
@@ -158,7 +158,7 @@ namespace nexo::editor {
         m_folderStructure.emplace_back("", "Assets");
         m_folderChildren.clear(); // Clear the folder children map
 
-        // First pass: build the folder structure as before
+        // First pass: build the folder structure
         std::set<std::string, std::less<>> uniqueFolderPaths;
 
         const auto assets = assets::AssetCatalog::getInstance().getAssets();
@@ -209,7 +209,7 @@ namespace nexo::editor {
         ImGui::PopItemWidth();
         ImGui::Separator();
 
-        // Draw favorites section
+        // favorites section
         {
             ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
             bool favoritesOpen = ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", headerFlags);
@@ -247,7 +247,7 @@ namespace nexo::editor {
             }
         }
 
-        // Draw folder structure
+        // folder structure
         {
             ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
 

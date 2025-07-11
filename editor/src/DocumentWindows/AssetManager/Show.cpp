@@ -59,7 +59,6 @@ namespace nexo::editor {
 
     void AssetManagerWindow::handleSelection(int index, const bool isSelected)
     {
-        LOG(NEXO_INFO, "Asset {} {}", index, isSelected ? "deselected" : "selected");
         if (ImGui::GetIO().KeyCtrl) {
             if (isSelected)
                 m_selectedAssets.erase(index);
@@ -147,7 +146,7 @@ namespace nexo::editor {
             );
         }
 
-        // Draw type overlay
+        // Draw type overlay (maybe later modify it to an icon)
         const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.overlayPadding, itemPos.y + m_layout.size.overlayPadding);
         const ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
         drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.overlaySize, overlayPos.y + m_layout.size.overlaySize), overlayColor);
@@ -183,7 +182,6 @@ namespace nexo::editor {
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("folder_icon@_internal"), fileInput);
             if (textureRef) {
                 auto textureData = textureRef.lock();
-                // Get the ImGui texture ID from your engine's texture
                 if (textureData && textureData->getData() && textureData->getData()->texture)
                     m_folderIconTexture = textureData->getData()->texture->getId();
                 else

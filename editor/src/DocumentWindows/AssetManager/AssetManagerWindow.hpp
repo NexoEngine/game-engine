@@ -74,9 +74,9 @@ namespace nexo::editor {
             void handleSelection(int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;  // Currently selected folder
+            std::string m_currentFolder;
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
-            char m_searchBuffer[256] = "";  // Buffer for search input
+            char m_searchBuffer[256] = "";
 
             void buildFolderStructure();
             void drawFolderTree();
