@@ -33,7 +33,6 @@ namespace nexo::editor {
         clearCache();
     }
 
-
     unsigned int ThumbnailCache::getThumbnail(const assets::GenericAssetRef& assetRef,
                                            const glm::vec2& size)
     {
@@ -80,10 +79,8 @@ namespace nexo::editor {
         if (it != m_thumbnailCache.end() && it->second.size == size)
             return it->second.framebuffer->getColorAttachmentId(0);
 
-        if (it != m_thumbnailCache.end()) {
-            // Clean up existing thumbnail
+        if (it != m_thumbnailCache.end())
             removeThumbnail(assetId);
-        }
 
         return createMaterialThumbnail(materialRef, size);
     }
@@ -102,7 +99,8 @@ namespace nexo::editor {
     }
 
     unsigned int ThumbnailCache::getTextureThumbnail(const assets::AssetRef<assets::Texture>& textureRef,
-                                                   const glm::vec2& size) {
+                                                   const glm::vec2& size)
+    {
         if (!textureRef.isValid())
             return 0;
 
