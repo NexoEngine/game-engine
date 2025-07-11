@@ -30,7 +30,7 @@ namespace nexo::editor {
         auto dataOpt = inspectorWindow->getSubInspectorData<MaterialInspector, MaterialInspectorData>();
         if (!dataOpt.has_value())
             return;
-        auto& data = *dataOpt;
+        const auto& data = *dataOpt;
 
         if (!Application::m_coordinator->entityHasComponent<components::MaterialComponent>(data.m_selectedEntity))
             return;

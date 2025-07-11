@@ -255,11 +255,10 @@ namespace nexo::assets {
 
             // Check 2: Transparency factor (inverse of opacity in some formats)
             float transparencyFactor = 0.0f;
-            if (material->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparencyFactor) == AI_SUCCESS) {
-                if (transparencyFactor > TRANSPARENCY_EPSILON) { // Again with epsilon
+            if (material->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparencyFactor) == AI_SUCCESS
+                && transparencyFactor > TRANSPARENCY_EPSILON) {
                     materialComponent->isOpaque = false;
                 }
-            }
 
             aiString alphaMode;
             //TODO: understand why we cant access it by default
@@ -356,7 +355,7 @@ namespace nexo::assets {
         return meshNode;
     }
 
-    Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
+    Mesh ModelImporter::processMesh(const AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
         std::shared_ptr<renderer::NxVertexArray> vao = renderer::createVertexArray();
         auto vertexBuffer = renderer::createVertexBuffer(mesh->mNumVertices * sizeof(renderer::NxVertex));

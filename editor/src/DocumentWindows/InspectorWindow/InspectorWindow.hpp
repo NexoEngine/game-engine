@@ -141,6 +141,7 @@ namespace nexo::editor {
                         return std::any_cast<Data>(it->second);
                     }
                     catch (const std::bad_any_cast& e) {
+                        LOG(NEXO_ERROR, "Failed to cast sub-inspector data : {}", e.what());
                         return std::nullopt;
                     }
                 }

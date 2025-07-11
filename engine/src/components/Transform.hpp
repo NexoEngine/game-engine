@@ -34,30 +34,11 @@ namespace nexo::components {
             std::vector<ecs::Entity> children;
         };
 
-        void restore(const Memento &memento)
-        {
-            pos = memento.position;
-            quat = memento.rotation;
-            size = memento.scale;
-            localMatrix = memento.localMatrix;
-            localCenter = memento.localCenter;
-            children = memento.children;
-        }
+        void restore(const Memento &memento);
+        [[nodiscard]] Memento save() const;
 
-        [[nodiscard]] Memento save() const
-        {
-            return {pos, quat, size, localMatrix, localCenter, children};
-        }
-
-        void addChild(ecs::Entity childEntity)
-        {
-            children.push_back(childEntity);
-        }
-
-        void removeChild(ecs::Entity childEntity)
-        {
-            children.erase(std::remove(children.begin(), children.end(), childEntity), children.end());
-        }
+        void addChild(ecs::Entity childEntity);
+        void removeChild(ecs::Entity childEntity);
 
         glm::vec3 pos;
         glm::vec3 size = glm::vec3(1.0f);

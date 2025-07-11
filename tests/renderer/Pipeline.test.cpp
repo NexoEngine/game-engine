@@ -112,6 +112,7 @@ TEST_F(RenderPipelineTest, RemoveRenderPass) {
 
     PassId id1 = pipeline.addRenderPass(pass1);
     PassId id2 = pipeline.addRenderPass(pass2);
+    pipeline.setFinalOutputPass(id1);
 
     // Remove pass1 and check pass2 becomes final output
     pipeline.removeRenderPass(id1);

@@ -444,7 +444,8 @@ namespace nexo
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(nodeEntity, uuid);
 
-        glm::vec3 translation, scale;
+        glm::vec3 translation;
+        glm::vec3 scale;
         glm::quat rotation;
         nexo::math::decomposeTransformQuat(node.transform, translation, rotation, scale);
 

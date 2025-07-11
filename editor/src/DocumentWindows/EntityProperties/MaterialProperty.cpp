@@ -26,7 +26,7 @@
 
 namespace nexo::editor {
 
-    void MaterialProperty::cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out)
+    void MaterialProperty::cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out) const
     {
         assets::AssetCatalog::getInstance().deleteAsset(materialRef);
         materialRef = nullptr;
@@ -86,16 +86,15 @@ namespace nexo::editor {
 
             if (!out.sceneGenerated)
                 utils::genScenePreview("Material Creation Scene", {previewWidth - 4, totalHeight}, entity, out);
-            Application::SceneInfo sceneInfo{static_cast<scene::SceneId>(out.sceneId), RenderingType::FRAMEBUFFER};
-            auto &materialComp = Application::getInstance().m_coordinator->getComponent<components::MaterialComponent>(out.entityCopy);
+            Application::SceneInfo sceneInfo{out.sceneId, RenderingType::FRAMEBUFFER};
+            auto &materialComp = Application::m_coordinator->getComponent<components::MaterialComponent>(out.entityCopy);
             materialComp.material = materialRef;
             Application::getInstance().run(sceneInfo);
-            const auto &cameraComp = Application::getInstance().m_coordinator->getComponent<components::CameraComponent>(out.cameraId);
+            const auto &cameraComp = Application::m_coordinator->getComponent<components::CameraComponent>(out.cameraId);
             const unsigned int textureId = cameraComp.m_renderTarget->getColorAttachmentId();
 
 
-            const float aspectRatio = static_cast<float>(previewWidth - 8) /
-                                      static_cast<float>(totalHeight);
+            const float aspectRatio = (previewWidth - 8) / totalHeight;
 
             const float displayHeight = totalHeight - 20;
             const float displayWidth = displayHeight * aspectRatio;
@@ -118,11 +117,11 @@ namespace nexo::editor {
             // Create a new permanent material based on the preview material
             if (materialRef.isValid()) {
                 // Create a proper name for the material (use default if empty)
-                std::string name = std::string(materialName);
+                auto name = std::string(materialName);
                 if (name.empty()) {
-                    name = "NewMaterial_" + std::to_string(static_cast<uint32_t>(entity));
+                    name = std::format("NewMaterial_{}", entity);
                 }
-                const auto &sceneTag = Application::getInstance().m_coordinator->getComponent<components::SceneTag>(entity);
+                const auto &sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
                 std::string sceneName = Application::getInstance().getSceneManager().getScene(sceneTag.id).getName();
                 // Create the asset location in materials folder
                 auto hashPos = sceneName.find('#');
@@ -156,7 +155,7 @@ namespace nexo::editor {
             Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
             Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
             return;
-        auto& materialComponent = Application::getEntityComponent<components::MaterialComponent>(entity);
+        const auto &materialComponent = Application::getEntityComponent<components::MaterialComponent>(entity);
         if (ImNexo::Header("##MaterialNode", "Material Component"))
         {
             ImTextureID textureID = ThumbnailCache::getInstance().getMaterialThumbnail(materialComponent.material);
