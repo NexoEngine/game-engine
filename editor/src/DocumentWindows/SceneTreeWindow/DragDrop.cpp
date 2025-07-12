@@ -14,7 +14,9 @@
 
 #include "SceneTreeWindow.hpp"
 #include "DocumentWindows/AssetManager/AssetManagerWindow.hpp"
+#include "components/Uuid.hpp"
 #include "context/ActionManager.hpp"
+#include "context/Selector.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "components/Parent.hpp"
 #include "components/Transform.hpp"
@@ -26,6 +28,8 @@
 #include <imgui.h>
 #include <algorithm>
 #include <filesystem>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace nexo::editor {
 
@@ -187,10 +191,6 @@ namespace nexo::editor {
                 auto& targetScene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
                 targetScene.addEntity(payload.entity);
 
-                // Update scene tag
-                auto& sceneTag = coordinator.getComponent<components::SceneTag>(payload.entity);
-                sceneTag.id = dropTarget.data.sceneProperties.sceneId;
-
                 // Remove parent relationship if moving to different scene
                 auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(payload.entity);
                 if (parentComp.has_value())
@@ -210,50 +210,79 @@ namespace nexo::editor {
                 // For now, we just perform the operation without undo support for scene moves
             }
         }
-        else
+        else if (dropTarget.type == SelectionType::ENTITY)
         {
             // Dropping onto an entity - create parent-child relationship
             ecs::Entity parentEntity = dropTarget.data.entity;
-            ecs::Entity childEntity = payload.entity;
+            ecs::Entity childEntity  = payload.entity;
 
-            // Get old parent before modifications
+            auto& childTransform = coordinator.getComponent<components::TransformComponent>(childEntity);
+            glm::mat4 childWorldMat = childTransform.worldMatrix;
+
+            auto& parentTransform = coordinator.getComponent<components::TransformComponent>(parentEntity);
+            glm::mat4 parentWorldMat = parentTransform.worldMatrix;
+
+            // Compute the new localMatrix so that parentWorldMat * local = old world
+            glm::mat4 invParent = glm::inverse(parentWorldMat);
+            glm::mat4 newLocalMat = invParent * childWorldMat;
+
+            glm::vec3 skew, scale, translation;
+            glm::quat rotation;
+            glm::vec4 perspective;
+            glm::decompose(
+                newLocalMat,
+                scale,
+                rotation,
+                translation,
+                skew,
+                perspective
+            );
+
+            childTransform.pos  = translation;
+            childTransform.quat = rotation;
+            childTransform.size = scale;
+
             ecs::Entity oldParent = ecs::INVALID_ENTITY;
             auto oldParentComp = coordinator.tryGetComponent<components::ParentComponent>(childEntity);
             if (oldParentComp.has_value())
             {
                 oldParent = oldParentComp->get().parent;
 
-                // Update old parent's children list
-                auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(oldParent);
-                if (oldParentTransform.has_value())
-                {
-                    oldParentTransform->get().removeChild(childEntity);
+                if (auto oldPT = coordinator.tryGetComponent<components::TransformComponent>(oldParent)) {
+                    oldPT->get().removeChild(childEntity);
+                    if (oldPT->get().children.empty() && coordinator.entityHasComponent<components::RootComponent>(oldParent))
+                        coordinator.removeComponent<components::RootComponent>(oldParent);
                 }
             }
 
-            // Set new parent
             if (!oldParentComp.has_value())
-            {
                 coordinator.addComponent(childEntity, components::ParentComponent{parentEntity});
-            }
             else
-            {
                 oldParentComp->get().parent = parentEntity;
-            }
 
-            // Update parent's children list
-            auto parentTransform = coordinator.tryGetComponent<components::TransformComponent>(parentEntity);
-            if (!parentTransform.has_value())
-            {
+            if (!coordinator.entityHasComponent<components::TransformComponent>(parentEntity))
                 coordinator.addComponent(parentEntity, components::TransformComponent{});
-                parentTransform = coordinator.tryGetComponent<components::TransformComponent>(parentEntity);
-            }
-            if (parentTransform.has_value())
+            auto& pt = coordinator.getComponent<components::TransformComponent>(parentEntity);
+            pt.addChild(childEntity);
+
+            if (!coordinator.entityHasComponent<components::ParentComponent>(parentEntity) &&
+                !coordinator.entityHasComponent<components::RootComponent>(parentEntity))
             {
-                parentTransform->get().addChild(childEntity);
+                std::string name = dropTarget.uiName;
+                auto it = ObjectTypeToIcon.find(dropTarget.type);
+                if (it != ObjectTypeToIcon.end())
+                {
+                    const std::string& icon = it->second;
+                    if (name.rfind(icon, 0) == 0)
+                        name.erase(0, icon.size());
+                }
+
+                coordinator.addComponent(
+                    parentEntity,
+                    components::RootComponent{ name, nullptr, 1 }
+                );
             }
 
-            // If moving to different scene, update scene tag
             if (payload.sourceSceneId != dropTarget.data.sceneProperties.sceneId)
             {
                 sourceScene.removeEntity(childEntity);
@@ -263,6 +292,7 @@ namespace nexo::editor {
                 auto& sceneTag = coordinator.getComponent<components::SceneTag>(childEntity);
                 sceneTag.id = dropTarget.data.sceneProperties.sceneId;
             }
+
             auto action = std::make_unique<EntityParentChangeAction>(childEntity, oldParent, parentEntity);
             ActionManager::get().recordAction(std::move(action));
         }
