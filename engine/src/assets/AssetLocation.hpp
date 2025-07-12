@@ -21,6 +21,7 @@
 
 #include "AssetName.hpp"
 #include "AssetPackName.hpp"
+#include "Path.hpp"
 
 namespace nexo::assets {
 
@@ -122,8 +123,9 @@ namespace nexo::assets {
                 if (_packName)
                     fullLocation += _packName->data() + "::";
                 fullLocation += _name.data();
+                fullLocation += "@";
                 if (!_path.empty())
-                    fullLocation += "@" + _path;
+                    fullLocation += _path;
                 return fullLocation;
             }
 
@@ -152,6 +154,7 @@ namespace nexo::assets {
                 std::string extractedPath;
 
                 parseFullLocation(fullLocation, extractedAssetName, extractedPath, extractedPackName);
+                extractedPath = normalizePath(extractedPath);
 
                 try {
                     _name = AssetName(extractedAssetName);

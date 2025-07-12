@@ -149,6 +149,7 @@ namespace nexo::assets {
         public:
             virtual ~IAsset() = default;
 
+            [[nodiscard]] virtual AssetMetadata& getMetadata() = 0;
             [[nodiscard]] virtual const AssetMetadata& getMetadata() const = 0;
             [[nodiscard]] virtual AssetType getType() const = 0;
             [[nodiscard]] virtual AssetID getID() const = 0;
@@ -190,6 +191,7 @@ namespace nexo::assets {
 
             ~Asset() override = default;
 
+            [[nodiscard]] virtual AssetMetadata& getMetadata() { return m_metadata; };
             [[nodiscard]] const AssetMetadata& getMetadata() const override { return m_metadata; }
             [[nodiscard]] AssetType getType() const override { return getMetadata().type; }
             [[nodiscard]] AssetID getID() const override { return getMetadata().id; }
