@@ -190,7 +190,13 @@ namespace nexo::editor {
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
 
             // Show preview while dragging
-            ImGui::Text("Asset: %s", assetData->getMetadata().location.getName().c_str());
+            //TODO: Add asset preview thanks to thumbnail cache after rebasing
+            if (assetData->getType() == assets::AssetType::TEXTURE) {
+                auto textureAsset = asset.as<assets::Texture>();
+                auto textureData = textureAsset.lock();
+                ImTextureID textureId = textureData->getData().get()->texture->getId();
+                ImGui::Image(textureId, {64, 64});
+            }
 
             ImGui::EndDragDropSource();
         }
@@ -408,6 +414,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::show()
     {
+        m_hoveredFolder.clear();
         if (m_folderStructure.empty())
             buildFolderStructure();
 
