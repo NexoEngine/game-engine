@@ -69,5 +69,16 @@ namespace nexo {
             inline static std::filesystem::path m_executableRootPathCached;
     };
 
+    inline std::string normalizePath(const std::string &rawPath)
+    {
+        std::string_view sv{rawPath};
+        // find first non-'/' and last non-'/'
+        auto b = sv.find_first_not_of('/');
+        if (b == std::string_view::npos)
+            return {};               // all slashes or empty
+        auto e = sv.find_last_not_of('/');
+        return std::string{ sv.substr(b, e - b + 1) };
+    }
+
 
 } // namespace nexo
