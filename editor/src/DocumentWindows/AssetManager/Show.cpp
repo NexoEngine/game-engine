@@ -176,6 +176,7 @@ namespace nexo::editor {
         {
             AssetDragDropPayload payload;
             payload.type = assetData->getType();
+            payload.id = assetData->getID();
 
             // Copy strings safely into fixed-size arrays
             std::string fullLocation = assetData->getMetadata().location.getFullLocation();
@@ -228,6 +229,23 @@ namespace nexo::editor {
             m_hoveredFolder = folderPath;
         } else if (m_hoveredFolder == folderPath) {
             m_hoveredFolder.clear();
+        }
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+            {
+                // Cast back to your payload struct
+                const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+
+                // e.g. move the asset at data->path into this folder:
+                std::shared_ptr<assets::IAsset> asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock();
+                if (asset) {
+                    assets::AssetMetadata &metadata = asset->getMetadata();
+                    metadata.location.setLocation(metadata.location.getFullLocation() + folderPath + "/");
+                }
+            }
+            ImGui::EndDragDropTarget();
         }
 
         // Background - use hover color when hovered
@@ -306,106 +324,87 @@ namespace nexo::editor {
     void AssetManagerWindow::drawAssetsGrid()
     {
         ImVec2 startPos = ImGui::GetCursorScreenPos();
-        std::vector<std::pair<std::string, std::string>> subfolders;
 
-        // First, collect all immediate subfolders of the current folder
-        for (const auto& [path, name] : m_folderStructure) {
-            // Skip the current folder itself
-            if (path == m_currentFolder)
+        // 1) Collect immediate subfolders of the current folder
+        std::vector<std::pair<std::string,std::string>> subfolders;
+        for (auto& [path,name] : m_folderStructure) {
+            if (path.empty() || path.front() == '_')
                 continue;
 
-            if (path.find(m_currentFolder) == 0) {
-                // For root folder (empty current folder)
-                if (m_currentFolder.empty()) {
-                    if (path.find('/') == std::string::npos) {
-                        subfolders.emplace_back(path, name);
-                    }
-                }
-                // For non-root folders
-                else {
-                    // Check if it's a direct child (only one more / after current folder)
-                    std::string pathAfterCurrent = path.substr(m_currentFolder.length());
-                    if (pathAfterCurrent[0] == '/') {
-                        pathAfterCurrent = pathAfterCurrent.substr(1);
-                    }
-
-                    if (pathAfterCurrent.find('/') == std::string::npos && !pathAfterCurrent.empty()) {
-                        subfolders.emplace_back(path, pathAfterCurrent);
-                    }
+            if (m_currentFolder.empty()) {
+                // root level = no slash in path
+                if (path.find('/') == std::string::npos)
+                    subfolders.emplace_back(path, name);
+            } else {
+                std::string prefix = m_currentFolder + "/";
+                // immediate child: starts with "curr/" but has no further '/'
+                if (path.rfind(prefix, 0) == 0 &&
+                    path.find('/', prefix.size()) == std::string::npos)
+                {
+                    subfolders.emplace_back(path, path.substr(prefix.size()));
                 }
             }
         }
 
-        const std::vector<assets::GenericAssetRef> assets = assets::AssetCatalog::getInstance().getAssets();
+        // 2) Collect assets exactly in the current folder
+        std::vector<assets::GenericAssetRef> filtered;
+        for (auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
+            if (auto d = ref.lock()) {
+                const auto& folder = d->getMetadata().location.getPath();
+                if (folder == "_internal")           continue;
+                if (m_selectedType != assets::AssetType::UNKNOWN &&
+                    d->getType() != m_selectedType)  continue;
 
-        // Filter assets by currently selected folder
-        std::vector<assets::GenericAssetRef> filteredAssets;
-        for (const auto& asset : assets) {
-            if (auto assetData = asset.lock()) {
-                if (assetData->getMetadata().location.getPath() == "_internal")
-                    continue;
-
-                if (m_selectedType != assets::AssetType::UNKNOWN && assetData->getType() != m_selectedType)
-                    continue;
-
-                // Check if asset is in current folder exactly (not in subfolders)
-                std::string assetPath = assetData->getMetadata().location.getPath();
-                std::string assetDir = assetPath.substr(0, assetPath.find_last_of('/'));
-
-                // If there's no slash, asset is in root
-                if (assetPath.find('/') == std::string::npos)
-                    assetDir = "";
-
-                if (assetDir == m_currentFolder)
-                    filteredAssets.push_back(asset);
+                // **here’s the fix**: just compare the whole normalized folder
+                if (folder == m_currentFolder)
+                    filtered.push_back(ref);
             }
         }
 
-        size_t totalItems = subfolders.size() + filteredAssets.size();
-
+        // 3) Layout & draw both subfolders and assets
+        size_t totalItems = subfolders.size() + filtered.size();
         ImGuiListClipper clipper;
-        int rowCount = (static_cast<int>(totalItems) + m_layout.size.columnCount - 1) / m_layout.size.columnCount;
-        clipper.Begin(rowCount, m_layout.size.itemStep.y);
+        int rows = int((totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount);
+        clipper.Begin(rows, m_layout.size.itemStep.y);
 
         while (clipper.Step()) {
-            for (int lineIdx = clipper.DisplayStart; lineIdx < clipper.DisplayEnd; ++lineIdx) {
-                int startIdx = lineIdx * m_layout.size.columnCount;
-                int endIdx = std::min(startIdx + m_layout.size.columnCount, static_cast<int>(totalItems));
+            for (int line = clipper.DisplayStart; line < clipper.DisplayEnd; ++line) {
+                int startIdx = line * m_layout.size.columnCount;
+                int endIdx   = std::min(startIdx + m_layout.size.columnCount, (int)totalItems);
 
                 for (int i = startIdx; i < endIdx; ++i) {
-                    auto col = static_cast<float>(i % m_layout.size.columnCount);
-                    auto row = static_cast<float>(i / m_layout.size.columnCount);
+                    float col = float(i % m_layout.size.columnCount);
+                    float row = float(i / m_layout.size.columnCount);
                     ImVec2 itemPos{
                         startPos.x + col * m_layout.size.itemStep.x,
                         startPos.y + row * m_layout.size.itemStep.y
                     };
 
-                    // Draw folder if index is in subfolder range
-                    if (i < static_cast<int>(subfolders.size())) {
+                    if (i < (int)subfolders.size()) {
+                        // draw folder thumbnail
                         drawFolder(
                             subfolders[i].first,
                             subfolders[i].second,
                             itemPos,
                             m_layout.size.itemSize
                         );
-                    }
-                    // Otherwise draw asset
-                    else {
-                        int assetIdx = i - static_cast<int>(subfolders.size());
-                        if (assetIdx < static_cast<int>(filteredAssets.size())) {
-                            drawAsset(
-                                filteredAssets[assetIdx],
-                                assetIdx,
-                                itemPos,
-                                m_layout.size.itemSize
-                            );
-                        }
+                    } else {
+                        // draw asset thumbnail
+                        int assetIdx = i - (int)subfolders.size();
+                        drawAsset(
+                            filtered[assetIdx],
+                            assetIdx,
+                            itemPos,
+                            m_layout.size.itemSize
+                        );
                     }
                 }
             }
         }
         clipper.End();
     }
+
+
 
     void AssetManagerWindow::show()
     {
