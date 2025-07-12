@@ -65,25 +65,25 @@ namespace nexo::editor {
             {
                 IM_ASSERT(imguiPayload->DataSize == sizeof(SceneTreeDragDropPayload));
                 const auto& payload = *static_cast<const SceneTreeDragDropPayload*>(imguiPayload->Data);
-                
+
                 if (canAcceptDrop(object, payload))
                 {
                     handleDrop(object, payload);
                 }
             }
-            
+
             // Handle drops from asset manager
             if (const ImGuiPayload* assetPayload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
             {
                 IM_ASSERT(assetPayload->DataSize == sizeof(AssetDragDropPayload));
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
-                
+
                 // Handle different asset types
                 if (object.type == SelectionType::SCENE)
                 {
                     auto& app = Application::getInstance();
                     auto& sceneManager = app.getSceneManager();
-                    
+
                     if (payload.type == assets::AssetType::MODEL)
                     {
                         // Import the model
@@ -91,22 +91,24 @@ namespace nexo::editor {
                         std::filesystem::path path{payload.path};
                         assets::ImporterFileInput fileInput{path};
                         std::string assetLocationStr = std::string(payload.name) + "@DragDrop/";
-                        auto modelRef = importer.importAsset<assets::Model>(assets::AssetLocation(assetLocationStr), fileInput);
-                        if (modelRef)
+                        auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                        if (!modelRef)
+                            return;
+                        if (auto model = modelRef.as<assets::Model>(); model)
                         {
                             // Create entity with the model
                             ecs::Entity newEntity = EntityFactory3D::createModel(
-                                modelRef,
+                                model,
                                 {0.0f, 0.0f, 0.0f}, // position
                                 {1.0f, 1.0f, 1.0f}, // scale
                                 {0.0f, 0.0f, 0.0f}  // rotation
                             );
-                            
+
                             // Add to the scene
                             auto& scene = sceneManager.getScene(object.data.sceneProperties.sceneId);
                             scene.addEntity(newEntity);
-                            
-                            // Record action for undo/redo
+
+                            // Record action for undo/redo TODO: Fix undo for models, it does not seem to work properly
                             auto action = std::make_unique<EntityCreationAction>(newEntity);
                             ActionManager::get().recordAction(std::move(action));
                         }
@@ -117,7 +119,7 @@ namespace nexo::editor {
                         auto& catalog = assets::AssetCatalog::getInstance();
                         assets::AssetLocation location(payload.path);
                         auto textureRef = catalog.getAsset(location).as<assets::Texture>();
-                        
+
                         if (!textureRef)
                         {
                             // If not in catalog, try to import it
@@ -127,25 +129,25 @@ namespace nexo::editor {
                             std::string assetLocationStr = std::string(payload.name) + "@DragDrop/";
                             textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation(assetLocationStr), fileInput);
                         }
-                        
+
                         if (textureRef)
                         {
                             // Create material with the texture
                             components::Material material;
                             material.albedoTexture = textureRef;
                             material.albedoColor = glm::vec4(1.0f); // White to show texture colors
-                            
+
                             // Create billboard entity
                             ecs::Entity newEntity = EntityFactory3D::createBillboard(
                                 {0.0f, 0.0f, 0.0f}, // position
                                 {1.0f, 1.0f, 1.0f}, // size
                                 material
                             );
-                            
+
                             // Add to the scene
                             auto& scene = sceneManager.getScene(object.data.sceneProperties.sceneId);
                             scene.addEntity(newEntity);
-                            
+
                             // Record action for undo/redo
                             auto action = std::make_unique<EntityCreationAction>(newEntity);
                             ActionManager::get().recordAction(std::move(action));
@@ -153,7 +155,7 @@ namespace nexo::editor {
                     }
                 }
             }
-            
+
             ImGui::EndDragDropTarget();
         }
     }
@@ -190,7 +192,7 @@ namespace nexo::editor {
 
         // Get the source scene
         auto& sourceScene = sceneManager.getScene(payload.sourceSceneId);
-        
+
         if (dropTarget.type == SelectionType::SCENE)
         {
             // Dropping onto a scene - move entity to that scene
@@ -198,15 +200,15 @@ namespace nexo::editor {
             {
                 // Remove from source scene
                 sourceScene.removeEntity(payload.entity);
-                
+
                 // Add to target scene
                 auto& targetScene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
                 targetScene.addEntity(payload.entity);
-                
+
                 // Update scene tag
                 auto& sceneTag = coordinator.getComponent<components::SceneTag>(payload.entity);
                 sceneTag.id = dropTarget.data.sceneProperties.sceneId;
-                
+
                 // Remove parent relationship if moving to different scene
                 auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(payload.entity);
                 if (parentComp.has_value())
@@ -217,10 +219,10 @@ namespace nexo::editor {
                     {
                         parentTransform->get().removeChild(payload.entity);
                     }
-                    
+
                     coordinator.removeComponent<components::ParentComponent>(payload.entity);
                 }
-                
+
                 // Record action for undo/redo
                 // TODO: Create a specific action for moving entities between scenes
                 // For now, we just perform the operation without undo support for scene moves
@@ -231,14 +233,14 @@ namespace nexo::editor {
             // Dropping onto an entity - create parent-child relationship
             ecs::Entity parentEntity = dropTarget.data.entity;
             ecs::Entity childEntity = payload.entity;
-            
+
             // Get old parent before modifications
             ecs::Entity oldParent = ecs::INVALID_ENTITY;
             auto oldParentComp = coordinator.tryGetComponent<components::ParentComponent>(childEntity);
             if (oldParentComp.has_value())
             {
                 oldParent = oldParentComp->get().parent;
-                
+
                 // Update old parent's children list
                 auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(oldParent);
                 if (oldParentTransform.has_value())
@@ -246,7 +248,7 @@ namespace nexo::editor {
                     oldParentTransform->get().removeChild(childEntity);
                 }
             }
-            
+
             // Set new parent
             if (!oldParentComp.has_value())
             {
@@ -256,7 +258,7 @@ namespace nexo::editor {
             {
                 oldParentComp->get().parent = parentEntity;
             }
-            
+
             // Update parent's children list
             auto parentTransform = coordinator.tryGetComponent<components::TransformComponent>(parentEntity);
             if (!parentTransform.has_value())
@@ -268,14 +270,14 @@ namespace nexo::editor {
             {
                 parentTransform->get().addChild(childEntity);
             }
-            
+
             // If moving to different scene, update scene tag
             if (payload.sourceSceneId != dropTarget.data.sceneProperties.sceneId)
             {
                 sourceScene.removeEntity(childEntity);
                 auto& targetScene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
                 targetScene.addEntity(childEntity);
-                
+
                 auto& sceneTag = coordinator.getComponent<components::SceneTag>(childEntity);
                 sceneTag.id = dropTarget.data.sceneProperties.sceneId;
             }
