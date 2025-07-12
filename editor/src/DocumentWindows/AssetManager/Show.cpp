@@ -438,6 +438,45 @@ namespace nexo::editor {
         ImGui::SameLine();
         ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
 
+        // Handle file drops
+        if (ImGui::BeginDragDropTarget())
+        {
+            m_showDropIndicator = true;
+
+            // Accept external file drops (this is a placeholder - ImGui doesn't directly support OS file drops)
+            // The actual files come through the EventFileDrop event
+
+            ImGui::EndDragDropTarget();
+        }
+        else
+        {
+            m_showDropIndicator = false;
+        }
+
+        // Draw drop indicator
+        if (m_showDropIndicator || !m_pendingDroppedFiles.empty())
+        {
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImVec2 windowSize = ImGui::GetWindowSize();
+
+            // Draw semi-transparent overlay
+            drawList->AddRectFilled(windowPos, ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y),
+                                  IM_COL32(100, 100, 255, 50));
+
+            // Draw border
+            drawList->AddRect(windowPos, ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y),
+                            IM_COL32(100, 100, 255, 200), 0.0f, 0, 3.0f);
+
+            // Draw text
+            const char* dropText = "Drop files here to import";
+            ImVec2 textSize = ImGui::CalcTextSize(dropText);
+            ImVec2 textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
+                                  windowPos.y + (windowSize.y - textSize.y) * 0.5f);
+            drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.5f, textPos,
+                            IM_COL32(255, 255, 255, 255), dropText);
+        }
+
         // Show path breadcrumb
         if (m_currentFolder.empty()) {
             ImGui::Text("Assets");

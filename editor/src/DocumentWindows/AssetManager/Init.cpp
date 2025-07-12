@@ -28,6 +28,12 @@ namespace nexo::editor {
 
         {
             assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
             assets::ImporterFileInput fileInput{path};
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random/"), fileInput);
@@ -39,5 +45,7 @@ namespace nexo::editor {
             assets::ImporterFileInput fileInput{path};
             m_folderIcon = importer.importAsset<assets::Texture>(assets::AssetLocation("icon_folder@_internal"), fileInput);
         }
+        // Register for file drop events
+        Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);
     }
 }
