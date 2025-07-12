@@ -86,11 +86,6 @@ namespace nexo::editor {
 
                     if (payload.type == assets::AssetType::MODEL)
                     {
-                        // Import the model
-                        assets::AssetImporter importer;
-                        std::filesystem::path path{payload.path};
-                        assets::ImporterFileInput fileInput{path};
-                        std::string assetLocationStr = std::string(payload.name) + "@DragDrop/";
                         auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
                         if (!modelRef)
                             return;
@@ -115,26 +110,13 @@ namespace nexo::editor {
                     }
                     else if (payload.type == assets::AssetType::TEXTURE)
                     {
-                        // Get the texture from the asset catalog
-                        auto& catalog = assets::AssetCatalog::getInstance();
-                        assets::AssetLocation location(payload.path);
-                        auto textureRef = catalog.getAsset(location).as<assets::Texture>();
-
+                        auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
                         if (!textureRef)
+                            return;
+                        if (auto texture = textureRef.as<assets::Texture>(); texture)
                         {
-                            // If not in catalog, try to import it
-                            assets::AssetImporter importer;
-                            std::filesystem::path path{payload.path};
-                            assets::ImporterFileInput fileInput{path};
-                            std::string assetLocationStr = std::string(payload.name) + "@DragDrop/";
-                            textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation(assetLocationStr), fileInput);
-                        }
-
-                        if (textureRef)
-                        {
-                            // Create material with the texture
                             components::Material material;
-                            material.albedoTexture = textureRef;
+                            material.albedoTexture = texture;
                             material.albedoColor = glm::vec4(1.0f); // White to show texture colors
 
                             // Create billboard entity
