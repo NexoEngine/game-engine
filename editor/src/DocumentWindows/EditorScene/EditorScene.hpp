@@ -157,11 +157,11 @@ namespace nexo::editor
         void setupShortcuts();
 
         /**
-         * @brief Populates the scene with default entities.
-         *
-         * Creates standard light sources (ambient, directional, point, spot)
-         * and a simple ground plane in the scene.
-         */
+        * @brief Populates the scene with default entities.
+        *
+        * Creates standard light sources (ambient, directional, point, spot)
+        * and a simple ground plane in the scene.
+        */
         void loadDefaultEntities() const;
 
         /**
