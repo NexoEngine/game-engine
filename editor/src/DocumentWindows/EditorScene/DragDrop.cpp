@@ -158,7 +158,8 @@ namespace nexo::editor {
                 {
                     return;
                 }
-                Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(entityHovered);
+                if (entityHovered != ecs::INVALID_ENTITY)
+                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(entityHovered);
                 entityHovered = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
