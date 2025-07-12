@@ -18,6 +18,8 @@
 #include <imgui.h>
 #include <assets/AssetRef.hpp>
 #include "utils/TransparentStringHash.hpp"
+#include <core/event/WindowEvent.hpp>
+#include "assets/Asset.hpp"
 
 namespace nexo::editor {
 
@@ -130,6 +132,7 @@ namespace nexo::editor {
     struct AssetDragDropPayload
     {
         assets::AssetType type; ///< Type of the asset
+        assets::AssetID id;
         char path[256]; ///< Path to the asset
         char name[128]; ///< Display name of the asset
     };

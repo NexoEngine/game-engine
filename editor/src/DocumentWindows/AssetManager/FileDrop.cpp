@@ -95,9 +95,8 @@ namespace nexo::editor {
 
         // Create location based on current folder
         // The path after @ should just be the folder path, not include the asset name
-        std::string assetPath = m_currentFolder.empty() ? "" : m_currentFolder + "/";
-        assetPath += m_hoveredFolder.empty() ? "" : m_hoveredFolder + "/";
-        assetPath += assetPath.empty() ? "/" : "";
+        std::string assetPath = m_currentFolder.empty() ? "" : m_currentFolder;
+        assetPath += m_hoveredFolder.empty() ? "" : "/" + m_hoveredFolder;
         std::string locationString = assetName + "@" + assetPath;
 
         LOG(NEXO_DEV, "Creating asset location: {} (current folder: '{}')", locationString, m_currentFolder);
