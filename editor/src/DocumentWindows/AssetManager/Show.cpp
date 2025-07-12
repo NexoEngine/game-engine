@@ -224,6 +224,12 @@ namespace nexo::editor {
         bool clicked = ImGui::InvisibleButton("##folder", itemSize);
         bool isHovered = ImGui::IsItemHovered();
 
+        if (isHovered) {
+            m_hoveredFolder = folderPath;
+        } else if (m_hoveredFolder == folderPath) {
+            m_hoveredFolder.clear();
+        }
+
         // Background - use hover color when hovered
         ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);

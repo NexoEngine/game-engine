@@ -30,6 +30,8 @@ namespace nexo::editor {
             void show() override;
             void update() override;
 
+            void handleEvent(event::EventFileDrop& event) override;
+
         private:
             struct LayoutSettings {
                 struct LayoutSizes {
@@ -74,7 +76,8 @@ namespace nexo::editor {
             void handleSelection(int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;
+            std::string m_currentFolder;  // Currently selected folder
+            std::string m_hoveredFolder;  // Currently hovered folder
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
             char m_searchBuffer[256] = "";
 
