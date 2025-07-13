@@ -16,7 +16,6 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <components/Shapes3D.hpp>
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"

@@ -22,7 +22,6 @@
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
 #include "components/Render3D.hpp"
-#include "components/Shapes3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "components/Camera.hpp"
