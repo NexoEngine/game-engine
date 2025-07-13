@@ -31,19 +31,19 @@ namespace nexo::editor {
 
         private:
             struct LayoutSettings {
-    			struct LayoutSizes {
-    				float iconSize = 64.0f;
-    				int iconSpacing = 8;
-    				ImVec2 itemSize;
-    				ImVec2 itemStep;
-    				int columnCount;
-    				float thumbnailHeightRatio = 0.8f;
-    				float titlePadding = 5.0f;
-    				float overlaySize = 6.0f;
-    				float overlayPadding = 5.0f;
-    				float cornerRadius = 5.0f;
-    				float selectedBoxThickness = 4.0f;
-    			} size;
+                struct LayoutSizes {
+                    float iconSize = 64.0f;
+                    int iconSpacing = 8;
+                    ImVec2 itemSize;
+                    ImVec2 itemStep;
+                    int columnCount;
+                    float thumbnailHeightRatio = 0.8f;
+                    float titlePadding = 5.0f;
+                    float overlaySize = 6.0f;
+                    float overlayPadding = 5.0f;
+                    float cornerRadius = 5.0f;
+                    float selectedBoxThickness = 4.0f;
+                } size;
 
                 struct LayoutColors {
                     ImU32 thumbnailBg;
@@ -51,7 +51,7 @@ namespace nexo::editor {
                     ImU32 thumbnailBgSelected;
                     ImU32 thumbnailBgSelectedHovered;
 
-               	ImU32 selectedBoxColor;
+                    ImU32 selectedBoxColor;
 
                     ImU32 titleBg;
                     ImU32 titleBgHovered;
