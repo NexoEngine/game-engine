@@ -245,7 +245,8 @@ namespace nexo::assets {
                 materialComponent->opacity = opacity;
                 if (opacity < 0.99f) { // Using 0.99 to account for floating point imprecision
                     materialComponent->isOpaque = false;
-                }
+                } else
+                    materialComponent->opacity = 1.0f;
             }
 
             int blendFunc = 0;
@@ -337,12 +338,15 @@ namespace nexo::assets {
 
         const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
         meshNode.transform = nodeTransform;
+        meshNode.meshes.reserve(node->mNumMeshes);
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
             meshNode.meshes.push_back(processMesh(ctx, mesh, scene));
         }
+
+        meshNode.children.reserve(node->mNumChildren);
 
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
