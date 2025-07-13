@@ -62,7 +62,7 @@ namespace nexo::assets {
              */
             AssetLocation& setPath(const std::string& path)
             {
-                _path = path;
+                _path = normalizePath(path);
                 return *this;
             }
 
