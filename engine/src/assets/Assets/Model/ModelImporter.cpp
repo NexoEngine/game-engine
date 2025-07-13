@@ -23,7 +23,6 @@
 
 #include "Buffer.hpp"
 #include "VertexArray.hpp"
-#include "components/Shapes3D.hpp"
 #include "Path.hpp"
 
 #include "assets/AssetImporterBase.hpp"

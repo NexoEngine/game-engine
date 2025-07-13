@@ -17,7 +17,6 @@
 #include "components/BillboardMesh.hpp"
 #include "renderer/Texture.hpp"
 #include "components/Render3D.hpp"
-#include "components/Shapes3D.hpp"
 #include "Path.hpp"
 #include "Nexo.hpp"
 #include "assets/AssetCatalog.hpp"
