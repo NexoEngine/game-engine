@@ -156,6 +156,8 @@ namespace nexo::editor {
             }
         }
 
+        static_assert(true, "Unreachable code in getSelectionType");
+
         // This should not happen if m_selectedEntityIds is kept in sync with m_selectedEntities
         return SelectionType::NONE;
     }
