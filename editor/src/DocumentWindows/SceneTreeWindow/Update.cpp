@@ -79,7 +79,7 @@ namespace nexo::editor {
             if (childEntity == ecs::INVALID_ENTITY)
                 continue;
             // Skip if already processed
-            if (processedEntities.find(childEntity) != processedEntities.end())
+            if (processedEntities.contains(childEntity))
                 continue;
 
             SceneObject childNode = createEntityNode(
