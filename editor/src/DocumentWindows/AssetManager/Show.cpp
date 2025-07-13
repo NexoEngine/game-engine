@@ -241,14 +241,12 @@ namespace nexo::editor {
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
             {
-                // Cast back to your payload struct
                 const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
 
-                // e.g. move the asset at data->path into this folder:
                 std::shared_ptr<assets::IAsset> asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock();
                 if (asset) {
                     assets::AssetMetadata &metadata = asset->getMetadata();
-                    metadata.location.setLocation(metadata.location.getFullLocation() + folderPath + "/");
+                    metadata.location.setPath(folderPath);
                 }
             }
             ImGui::EndDragDropTarget();
@@ -489,50 +487,63 @@ namespace nexo::editor {
                             IM_COL32(255, 255, 255, 255), dropText);
         }
 
-        // Show path breadcrumb
-        if (m_currentFolder.empty()) {
-            ImGui::Text("Assets");
-        } else {
-            // Display clickable breadcrumbs
-            ImGui::Text(ICON_FA_FOLDER " ");
-            ImGui::SameLine();
+        ImGui::Text(ICON_FA_FOLDER " ");
+        ImGui::SameLine();
 
-            // Start with root level "Assets"
+        {
+            ImGui::PushID("breadcrumb_root");
             if (ImGui::Button("Assets"))
-                m_currentFolder = "";
+                m_currentFolder.clear();
 
-            // Split the current path into components
-            std::string path = m_currentFolder;
-            size_t pos = 0;
-            std::string segment;
-            std::string fullPath = "";
-
-            while ((pos = path.find('/')) != std::string::npos) {
-                segment = path.substr(0, pos);
-                if (!segment.empty()) {
-                    fullPath += (fullPath.empty() ? "" : "/") + segment;
-                    ImGui::SameLine();
-                    ImGui::Text(" > ");
-                    ImGui::SameLine();
-                    if (ImGui::Button(segment.c_str())) {
-                        m_currentFolder = fullPath;
-                    }
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+                {
+                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    if (auto asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock())
+                        asset->getMetadata().location.setPath("");
                 }
-                path.erase(0, pos + 1);
+                ImGui::EndDragDropTarget();
             }
+            ImGui::PopID();
+        }
 
-            // Last segment
-            if (!path.empty()) {
-                ImGui::SameLine();
-                ImGui::Text(" > ");
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", path.c_str());
+        // Intermediate breadcrumbs
+        std::string path = m_currentFolder;
+        size_t pos = 0;
+        std::string segment;
+        std::string fullPath;
+        while ((pos = path.find('/')) != std::string::npos) {
+            segment = path.substr(0, pos);
+            fullPath += (fullPath.empty() ? "" : "/") + segment;
+            ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
+
+            ImGui::PushID(("breadcrumb_" + fullPath).c_str());
+            if (ImGui::Button(segment.c_str()))
+                m_currentFolder = fullPath;
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+                {
+                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    if (auto asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock())
+                        asset->getMetadata().location.setPath(fullPath);
+                }
+                ImGui::EndDragDropTarget();
             }
+            ImGui::PopID();
+
+            path.erase(0, pos + 1);
+        }
+
+        if (!path.empty()) {
+            ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", path.c_str());
         }
 
         ImGui::Separator();
 
-        // Calculate layout for asset grid
         calculateLayout(ImGui::GetContentRegionAvail().x);
         drawAssetsGrid();
         ImGui::EndChild();
