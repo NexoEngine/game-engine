@@ -60,8 +60,8 @@ try {
     }
 
     auto clock = std::chrono::high_resolution_clock::now();
-    auto scriptDetlaStart = clock;
-    std::chrono::duration<double, std::milli> scriptDeltaElapsed = clock - scriptDetlaStart;
+    auto scriptDeltaStart = clock;
+    std::chrono::duration<double, std::milli> scriptDeltaElapsed = clock - scriptDeltaStart;
     while (editor.isOpen())
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -71,9 +71,9 @@ try {
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
-        scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDetlaStart;
+        scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDeltaStart;
         scriptHost.update(scriptDeltaElapsed.count() / 1000.0);
-        scriptDetlaStart = std::chrono::high_resolution_clock::now();
+        scriptDeltaStart = std::chrono::high_resolution_clock::now();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
 
