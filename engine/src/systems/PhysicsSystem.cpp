@@ -14,10 +14,6 @@
 
 #include "PhysicsSystem.hpp"
 
-namespace nexo::ecs {
-    class Coordinator;
-}
-
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() {
 
