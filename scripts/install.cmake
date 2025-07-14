@@ -88,16 +88,16 @@ install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/copyright.cmake"
 )
 
 # Install for scripting
-install(CODE "
+install(CODE [[
         execute_process(
             COMMAND dotnet publish
             -c $<CONFIG>
             --no-build
-            --output \"${CMAKE_BINARY_DIR}/publish\"
+            --output "${CMAKE_BINARY_DIR}/publish"
             --no-self-contained
-            WORKING_DIRECTORY \"${CMAKE_SOURCE_DIR}/engine/src/scripting/managed\"
-        )"
-)
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/engine/src/scripting/managed"
+        )
+]])
 
 install(DIRECTORY "${CMAKE_BINARY_DIR}/publish/" # source directory
         DESTINATION "bin"
