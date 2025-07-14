@@ -40,7 +40,7 @@ namespace nexo::components {
         unsigned int width;                 ///< Width of the camera's viewport.
         unsigned int height;                ///< Height of the camera's viewport.
         bool viewportLocked = false;        ///< If true, the viewport dimensions are locked.
-        float fov = 45.0f;                  ///< Field of view (in degrees) for perspective cameras.-
+        float fov = 45.0f;                  ///< Field of view (in degrees) for perspective cameras.
         float nearPlane = 0.1f;             ///< Near clipping plane distance.
         float farPlane = 1000.0f;           ///< Far clipping plane distance.
         CameraType type = CameraType::PERSPECTIVE;  ///< The type of the camera (perspective or orthographic).
