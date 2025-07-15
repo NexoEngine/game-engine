@@ -30,6 +30,10 @@ set(SOURCES
     NativeComponents.cs
     Components/Transform.cs
     Components/Light.cs
+    Components/Uuid.cs
+    Components/Scene.cs
+    Components/Camera.cs
+    Components/Render.cs
 )
 
 # Locate the dotnet executable
