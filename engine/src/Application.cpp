@@ -254,7 +254,6 @@ namespace nexo {
         registerEcsComponents();
         renderer::NxRenderer3D::get().init();
         registerSystems();
-        // std::cout << "Application m_coordinator: " << m_coordinator.get() << std::endl;
         m_SceneManager.setCoordinator(m_coordinator);
 
         nexo::scripting::HostHandler::Parameters params;
