@@ -18,20 +18,20 @@ using System.Runtime.InteropServices;
 namespace Nexo.Components
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct AmbientLightComponent
+    public struct AmbientLight
     {
         public Vector3 color;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct DirectionalLightComponent
+    public struct DirectionalLight
     {
         public Vector3 direction;
         public Vector3 color;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct PointLightComponent
+    public struct PointLight
     {
         public Vector3 color;
         public float linear;
@@ -41,7 +41,7 @@ namespace Nexo.Components
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SpotLightComponent
+    public struct SpotLight
     {
         public Vector3 direction;
         public Vector3 color;
