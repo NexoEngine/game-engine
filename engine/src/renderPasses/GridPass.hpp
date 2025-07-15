@@ -18,8 +18,6 @@
 
 namespace nexo::renderer {
 
-    #define GRID_PASS "GridPass"
-
     class GridPass : public RenderPass {
         public:
             GridPass(unsigned int width, unsigned int height);

@@ -18,11 +18,12 @@
 #include "renderPasses/Masks.hpp"
 #include "renderer/RenderPipeline.hpp"
 #include "renderer/Renderer3D.hpp"
+#include "Passes.hpp"
 
 #include <glad/glad.h>
 
 namespace nexo::renderer {
-    ForwardPass::ForwardPass(unsigned int width, unsigned int height) : RenderPass(FORWARD_PASS)
+    ForwardPass::ForwardPass(unsigned int width, unsigned int height) : RenderPass(Passes::FORWARD, "Forward Pass")
     {
         renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {

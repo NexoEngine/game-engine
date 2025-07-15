@@ -18,8 +18,6 @@
 
 namespace nexo::renderer {
 
-    #define FORWARD_PASS "ForwardPass"
-
     class ForwardPass : public RenderPass {
         public:
             ForwardPass(unsigned int width, unsigned int height);
