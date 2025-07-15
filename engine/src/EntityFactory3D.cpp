@@ -165,13 +165,9 @@ namespace nexo {
         components::RootComponent rootComp;
         rootComp.modelRef = model;
 
-        auto location = modelAsset->getMetadata().location.getName();
-        rootComp.name = location.data();
-        // Extract just the filename from path if needed
-        size_t lastSlash = rootComp.name.find_last_of("/\\");
-        if (lastSlash != std::string::npos) {
-            rootComp.name = rootComp.name.substr(lastSlash + 1);
-        }
+        const std::string rawPath = modelAsset->getMetadata().location.getName().data();
+        std::filesystem::path fsPath{ rawPath };
+        rootComp.name = fsPath.stem().string();
 
         Application::m_coordinator->addComponent(rootEntity, rootTransform);
         Application::m_coordinator->addComponent(rootEntity, rootComp);
