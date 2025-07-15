@@ -119,8 +119,13 @@ namespace Nexo
                 var type = Type.GetType($"Nexo.Components.{field.Name}");
                 if (type != null)
                 {
-                    var value = (UInt32)field.GetValue(_componentTypeIds);
-                    _typeToNativeIdMap[type] = value;
+                    object? value = field.GetValue(_componentTypeIds);
+                    if (value == null)
+                    {
+                        Logger.Log(LogLevel.Warn, $"[Interop] Field {field.Name} has a null value in ComponentTypeIds");
+                        continue;
+                    }
+                    _typeToNativeIdMap[type] = (UInt32)value;
                 }
                 else
                 {
