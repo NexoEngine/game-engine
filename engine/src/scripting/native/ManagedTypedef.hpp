@@ -54,6 +54,12 @@ namespace nexo::scripting {
             DirectionalLight = 2,
             PointLight = 3,
             SpotLight = 4,
+            RenderComponent = 5,
+            SceneTag = 6,
+            CameraComponent = 7,
+            UuidComponent = 8,
+            PerspectiveCameraController = 9,
+            PerspectiveCameraTarget = 10,
         };
     }
 
