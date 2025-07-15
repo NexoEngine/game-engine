@@ -239,6 +239,7 @@ namespace nexo {
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
             void registerSystems();
+            void initScripting();
 
             void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
