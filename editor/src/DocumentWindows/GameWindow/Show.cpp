@@ -25,6 +25,7 @@
 #include "core/scene/SceneManager.hpp"
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <format>
 
 namespace nexo::editor
 {
@@ -39,21 +40,14 @@ namespace nexo::editor
         }
 
         // Begin the window
-        std::string windowTitle = "Game View - " + m_sceneUuid + "###GameWindow" + std::to_string(m_sceneId);
+        std::string windowTitle = std::format("Game View - {}###GameWindow{}", m_sceneUuid, m_sceneId);
         ImGui::Begin(windowTitle.c_str(), &m_opened, ImGuiWindowFlags_NoCollapse);
 
         // Call beginRender to handle docking and state tracking
         beginRender("###GameWindow" + std::to_string(m_sceneId));
 
-        // Store window position and size for toolbar rendering
-        m_windowPos = ImGui::GetWindowPos();
-        m_contentSize = ImGui::GetContentRegionAvail();
-
         // Render the viewport first
         renderViewport();
-
-        ImVec2 contentPos = ImGui::GetCursorScreenPos();
-        contentPos.y = m_windowPos.y + ImGui::GetFrameHeight();
 
         renderToolbar();
 
@@ -129,15 +123,11 @@ namespace nexo::editor
     void GameWindow::renderViewport()
     {
         auto &coordinator = *Application::m_coordinator;
-        auto &app = getApp();
-        auto &sceneManager = app.getSceneManager();
-        auto &scene = sceneManager.getScene(m_sceneId);
 
         if (m_gameCamera == 0)
         {
             // No game camera, render a message
             const ImVec2 textSize = ImGui::CalcTextSize("No game camera");
-            const auto textPos = ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2);
             ImGui::SetCursorPos(ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2));
             ImGui::Text("No game camera");
             return;
@@ -163,16 +153,6 @@ namespace nexo::editor
         auto viewportOffset = ImGui::GetWindowPos();
         m_viewportBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
         m_viewportBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
-
-        // Get render context
-        auto &renderContext = coordinator.getSingletonComponent<components::RenderContext>();
-
-        // Disable grid for game view
-        bool gridWasEnabled = renderContext.gridParams.enabled;
-        renderContext.gridParams.enabled = false;
-
-        // Restore grid state
-        renderContext.gridParams.enabled = gridWasEnabled;
 
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);

@@ -16,6 +16,7 @@
 
 #include "ADocumentWindow.hpp"
 #include "../PopupManager.hpp"
+#include "ecs/Definitions.hpp"
 #include <glm/glm.hpp>
 #include <string>
 
@@ -36,14 +37,12 @@ namespace nexo::editor
 
         void setSceneId(unsigned int sceneId);
         void setSceneUuid(const std::string &sceneUuid);
-        void setParentEditorScene(EditorScene *parentScene);
 
     private:
         unsigned int m_sceneId{0};
         std::string m_sceneUuid;
-        EditorScene *m_parentEditorScene{nullptr};
 
-        ecs::Entity m_gameCamera{0};
+        ecs::Entity m_gameCamera{ecs::INVALID_ENTITY};
 
         ImVec2 m_viewportBounds[2];
 
