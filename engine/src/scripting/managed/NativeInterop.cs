@@ -274,6 +274,9 @@ namespace Nexo
             Console.WriteLine($"Calling GetComponent({cubeId}):");
             ref Transform transform = ref GetComponent<Transform>(cubeId);
             Console.WriteLine($"Transform for cube {cubeId}: Position: {transform.pos}, Scale: {transform.size}, Rotation Quat: {transform.quat}");
+
+            // Write the localMatrix for the cube
+            Console.WriteLine($"Local Matrix for cube {cubeId}:\n{transform.localMatrix}");
             
             
             Console.WriteLine("=== Native Call Demonstration Complete ===");
