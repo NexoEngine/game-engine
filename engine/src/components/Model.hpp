@@ -1,4 +1,4 @@
-//// RendererContext.hpp //////////////////////////////////////////////////////
+//// Model.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,20 +7,19 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        20/11/2024
-//  Description: Header file for the renderer context class
+//  Date:        06/05/2025
+//  Description: Header file for the model component
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
-#include "Renderer2D.hpp"
-#include "Renderer3D.hpp"
+#include "assets/AssetRef.hpp"
+#include "assets/Assets/Model/Model.hpp"
 
-namespace nexo::renderer {
-    class NxRendererContext {
-        public:
-            NxRendererContext() = default;
-            NxRenderer2D renderer2D;
-            NxRenderer3D renderer3D;
+namespace nexo::components {
+
+    struct ModelComponent {
+        assets::AssetRef<assets::Model> model;
     };
 }

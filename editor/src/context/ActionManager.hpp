@@ -22,14 +22,10 @@ namespace nexo::editor {
 
     class ActionManager {
         public:
-            // Record a command after an operation is done
             void recordAction(std::unique_ptr<Action> action);
-            // Record entity creation
             void recordEntityCreation(ecs::Entity entityId);
-            // Record entity deletion (call before actually deleting)
             static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
 
-            // For component changes using memento pattern
             template<typename MementoComponent>
             void recordComponentChange(ecs::Entity entityId,
                                     const typename MementoComponent::Memento& beforeState,
@@ -39,10 +35,8 @@ namespace nexo::editor {
                 recordAction(std::move(action));
             }
 
-            // Action group for multiple operations
             static std::unique_ptr<ActionGroup> createActionGroup();
 
-            // Basic undo/redo operations
             void undo();
             void redo();
             [[nodiscard]] bool canUndo() const;

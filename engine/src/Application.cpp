@@ -18,20 +18,31 @@
 #include <glad/glad.h>
 #include <sys/types.h>
 
-#include "components/Components.hpp"
+#include "Renderer3D.hpp"
+#include "components/BillboardMesh.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/Model.hpp"
+#include "components/Name.hpp"
+#include "components/Parent.hpp"
+#include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Editor.hpp"
 #include "components/Uuid.hpp"
+#include "components/Render.hpp"
+#include "components/MaterialComponent.hpp"
 #include "core/event/Input.hpp"
 #include "Timestep.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "systems/CameraSystem.hpp"
-#include "systems/RenderSystem.hpp"
+#include "systems/RenderBillboardSystem.hpp"
+#include "systems/RenderCommandSystem.hpp"
+#include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -62,6 +73,7 @@ namespace nexo {
     void Application::registerEcsComponents() const
     {
         m_coordinator->registerComponent<components::TransformComponent>();
+        m_coordinator->registerComponent<components::RootComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
         m_coordinator->registerComponent<components::SceneTag>();
         m_coordinator->registerComponent<components::CameraComponent>();
@@ -74,9 +86,13 @@ namespace nexo {
         m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
         m_coordinator->registerComponent<components::EditorCameraTag>();
         m_coordinator->registerComponent<components::SelectedTag>();
+        m_coordinator->registerComponent<components::StaticMeshComponent>();
+        m_coordinator->registerComponent<components::ParentComponent>();
+        m_coordinator->registerComponent<components::ModelComponent>();
+        m_coordinator->registerComponent<components::BillboardComponent>();
+        m_coordinator->registerComponent<components::MaterialComponent>();
+        m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
-
-        m_coordinator->registerComponent<components::InActiveScene>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -170,8 +186,10 @@ namespace nexo {
         m_cameraContextSystem = m_coordinator->registerGroupSystem<system::CameraContextSystem>();
         m_perspectiveCameraControllerSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
         m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
-
-        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
+        m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
+        m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
+        m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
+        m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
 
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
@@ -231,6 +249,7 @@ namespace nexo {
 
         m_coordinator->init();
         registerEcsComponents();
+        renderer::NxRenderer3D::get().init();
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
@@ -259,9 +278,17 @@ namespace nexo {
             }
         	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
 			{
+                m_transformMatrixSystem->update();
+                m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
-				m_renderSystem->update();
+				m_renderCommandSystem->update();
+				m_renderBillboardSystem->update();
+				for (auto &camera : renderContext.cameras)
+				    camera.pipeline.execute();
+				// We have to unbind after the whole pipeline since multiple passes can use the same textures
+				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
+                renderer::NxRenderer3D::get().unbindTextures();
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
@@ -290,12 +317,56 @@ namespace nexo {
 
     void Application::deleteEntity(const ecs::Entity entity)
     {
-    	const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
-     	if (tag)
-		{
-			const unsigned int sceneId = tag->get().id;
-			m_SceneManager.getScene(sceneId).removeEntity(entity);
-		}
-		m_coordinator->destroyEntity(entity);
+        // First, recursively delete all children of this entity
+        deleteEntityChildren(entity);
+
+        // Then, remove this entity from its parent's children list (if it has a parent)
+        removeEntityFromParent(entity);
+
+        // Finally, handle the scene tag and destroy the entity as in the original code
+        const auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+        if (tag) {
+            const unsigned int sceneId = tag->get().id;
+            m_SceneManager.getScene(sceneId).removeEntity(entity);
+        }
+        m_coordinator->destroyEntity(entity);
+    }
+
+    void Application::removeEntityFromParent(const ecs::Entity entity) const
+    {
+        // Get the parent component to find the parent entity
+        auto parentComponent = m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+        if (!parentComponent || parentComponent->get().parent == ecs::INVALID_ENTITY)
+            return;
+
+        ecs::Entity parentEntity = parentComponent->get().parent;
+
+        // Get the parent's transform component which now stores children
+        auto parentTransform = m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+        if (parentTransform) {
+            // Remove this entity from parent's children vector
+            parentTransform->get().removeChild(entity);
+        }
+    }
+
+    void Application::deleteEntityChildren(const ecs::Entity entity)
+    {
+        // Check if this entity has a transform component with children
+        auto transform = m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+        if (!transform || transform->get().children.empty())
+            return;
+
+        // Create a copy of the children vector since we'll be modifying it during iteration
+        std::vector<ecs::Entity> childrenCopy = transform->get().children;
+
+        // Delete each child entity recursively
+        for (const auto& childEntity : childrenCopy)
+        {
+            if (childEntity != ecs::INVALID_ENTITY && childEntity != entity) // Avoid circular references
+                deleteEntity(childEntity);
+        }
+
+        // Clear the children list to avoid dangling references
+        transform->get().children.clear();
     }
 }

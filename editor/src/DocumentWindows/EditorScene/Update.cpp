@@ -14,8 +14,10 @@
 
 #include "EditorScene.hpp"
 #include "Types.hpp"
+#include "components/Transform.hpp"
 #include "context/Selector.hpp"
 #include "components/Uuid.hpp"
+#include "components/Parent.hpp"
 
 namespace nexo::editor {
     int EditorScene::sampleEntityTexture(const float mx, const float my) const
@@ -62,27 +64,87 @@ namespace nexo::editor {
         }
     }
 
+    ecs::Entity EditorScene::findRootParent(ecs::Entity entityId) const
+    {
+        const auto &coord = Application::m_coordinator;
+        ecs::Entity currentEntity = entityId;
+
+        // Traverse up the hierarchy until we find an entity without a parent
+        while (coord->entityHasComponent<components::ParentComponent>(currentEntity)) {
+            const auto& parentComp = coord->getComponent<components::ParentComponent>(currentEntity);
+            currentEntity = parentComp.parent;
+        }
+
+        return currentEntity;
+    }
+
     void EditorScene::updateSelection(const int entityId, const bool isShiftPressed, const bool isCtrlPressed)
     {
         const auto &coord = Application::m_coordinator;
+
         const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
         if (!uuid)
             return;
 
-        // Determine selection type
-        const SelectionType selType = getSelectionType(entityId);
+        const bool selectWholeHierarchy = ImGui::IsKeyDown(ImGuiKey_V); // Hold V to select hierarchy instead of direct entity
         auto &selector = Selector::get();
 
-        // Handle different selection modes
-        if (isCtrlPressed)
-            selector.toggleSelection(uuid->get().uuid, entityId, selType);
-        else if (isShiftPressed)
-            selector.addToSelection(uuid->get().uuid, entityId, selType);
-        else
-            selector.selectEntity(uuid->get().uuid, entityId, selType);
+        if (selectWholeHierarchy) {
+            ecs::Entity rootEntity = findRootParent(entityId);
+
+            if (!isShiftPressed && !isCtrlPressed)
+                selector.clearSelection();
+
+            selectEntityHierarchy(rootEntity, isCtrlPressed);
+        } else {
+            const SelectionType selType = getSelectionType(entityId);
+
+            if (isCtrlPressed)
+                selector.toggleSelection(uuid->get().uuid, entityId, selType);
+            else if (isShiftPressed)
+                selector.addToSelection(uuid->get().uuid, entityId, selType);
+            else
+                selector.selectEntity(uuid->get().uuid, entityId, selType);
+        }
 
         updateWindowState();
         selector.setSelectedScene(m_sceneId);
+    }
+
+    void EditorScene::selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed)
+    {
+        const auto &coord = Application::m_coordinator;
+
+        const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
+        if (uuid) {
+            const SelectionType selType = getSelectionType(entityId);
+
+            auto &selector = Selector::get();
+            if (isCtrlPressed)
+                selector.toggleSelection(uuid->get().uuid, entityId, selType);
+            else
+                selector.addToSelection(uuid->get().uuid, entityId, selType);
+        }
+
+        if (coord->entityHasComponent<components::TransformComponent>(entityId)) {
+            const auto& transform = coord->getComponent<components::TransformComponent>(entityId);
+            selectModelChildren(transform.children, isCtrlPressed);
+        }
+    }
+
+    void EditorScene::selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed)
+    {
+        const auto &coord = Application::m_coordinator;
+
+        for (const auto& entity : children) {
+            selectEntityHierarchy(entity, isCtrlPressed);
+            if (!coord->entityHasComponent<components::TransformComponent>(entity))
+                continue;
+            const auto &childTransform = coord->getComponent<components::TransformComponent>(entity);
+
+            if (!childTransform.children.empty())
+                selectModelChildren(childTransform.children, isCtrlPressed);
+        }
     }
 
     void EditorScene::handleSelection()

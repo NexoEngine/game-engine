@@ -20,6 +20,8 @@
 #include <string>
 
 #include "ShaderStorageBuffer.hpp"
+#include "Attributes.hpp"
+#include "UniformCache.hpp"
 
 namespace nexo::renderer {
 
@@ -52,6 +54,20 @@ namespace nexo::renderer {
         {NxShaderUniforms::SPOT_LIGHT_ARRAY, "uSpotLights"},
         {NxShaderUniforms::NB_SPOT_LIGHT, "uNbSpotLights"},
         {NxShaderUniforms::MATERIAL, "uMaterial"}
+    };
+
+    struct UniformInfo {
+        std::string name;      // Name of the uniform
+        int location;          // Location in the shader
+        unsigned int type;     // GL type (e.g., GL_FLOAT, GL_FLOAT_VEC3)
+        int size;              // Size (for arrays)
+    };
+
+    struct AttributeInfo {
+        std::string name;      // Name of the attribute
+        int location;          // Location in the shader
+        unsigned int type;     // GL type
+        int size;              // Size
     };
 
     /**
@@ -129,14 +145,14 @@ namespace nexo::renderer {
             */
             virtual void unbind() const = 0;
 
-            virtual bool setUniformFloat(const std::string &name, float value) const = 0;
-            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const = 0;
-            virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const = 0;
-            virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const = 0;
-            virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const = 0;
-            virtual bool setUniformBool(const std::string &name, bool value) const = 0;
-            virtual bool setUniformInt(const std::string &name, int value) const = 0;
-            virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const = 0;
+            virtual bool setUniformFloat(const std::string &name, float value) const;
+            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const;
+            virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const;
+            virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const;
+            virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const;
+            virtual bool setUniformBool(const std::string &name, bool value) const;
+            virtual bool setUniformInt(const std::string &name, int value) const;
+            virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const;
 
             virtual bool setUniformFloat(NxShaderUniforms uniform, float value) const = 0;
             virtual bool setUniformFloat3(NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
@@ -145,18 +161,30 @@ namespace nexo::renderer {
             virtual bool setUniformInt(NxShaderUniforms uniform, int value) const = 0;
             virtual bool setUniformIntArray(NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
 
+            bool setUniform(const std::string &name, UniformValue value) const;
+
             void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
             void setStorageBufferData(unsigned int index, void *data, unsigned int size);
             virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
             virtual void bindStorageBuffer(unsigned int index) const = 0;
             virtual void unbindStorageBuffer(unsigned int index) const = 0;
 
+            bool hasUniform(const std::string& name) const;
+            bool hasAttribute(int location) const;
+
+            bool isCompatibleWithMesh(const RequiredAttributes& meshAttributes) const;
+
+            void resetCache();
+
             [[nodiscard]] virtual const std::string &getName() const = 0;
             virtual unsigned int getProgramId() const = 0;
         protected:
             static std::string readFile(const std::string &filepath);
         	std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
-            std::unordered_map<NxShaderUniforms, int> m_uniformLocations;
+            RequiredAttributes m_requiredAttributes;
+            std::unordered_map<std::string, UniformInfo> m_uniformInfos;
+            std::unordered_map<int, AttributeInfo> m_attributeInfos;
+            mutable UniformCache m_uniformCache;
     };
 
 

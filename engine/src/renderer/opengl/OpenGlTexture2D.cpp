@@ -138,8 +138,8 @@ namespace nexo::renderer {
                 dataFormat = GL_RGB;
                 break;
             case 2: // grey, alpha
-                internalFormat = GL_RG8;
-                dataFormat = GL_RG;
+                internalFormat = GL_RG16;
+                dataFormat = GL_RG16;
                 break;
             case 1: // grey
                 internalFormat = GL_R8;

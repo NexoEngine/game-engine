@@ -17,6 +17,9 @@
 #include "CameraFactory.hpp"
 #include "LightFactory.hpp"
 #include "components/Camera.hpp"
+#include "components/MaterialComponent.hpp"
+#include "components/Render3D.hpp"
+#include "components/StaticMesh.hpp"
 
 namespace nexo::editor::utils {
 
@@ -41,14 +44,16 @@ namespace nexo::editor::utils {
 	static ecs::Entity copyEntity(const ecs::Entity entity)
 	{
 		const ecs::Entity entityCopy = Application::m_coordinator->createEntity();
-        const auto renderComponentCopy = Application::m_coordinator->getComponent<components::RenderComponent>(entity).clone();
+        const auto staticMeshCopy = Application::m_coordinator->getComponent<components::StaticMeshComponent>(entity);
+        const auto materialCopy = Application::m_coordinator->getComponent<components::MaterialComponent>(entity);
         const auto &transformComponentBase = Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         components::TransformComponent transformComponent;
         transformComponent.pos = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};
         transformComponent.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
         transformComponent.size = transformComponentBase.size;
-        Application::m_coordinator->addComponent<components::RenderComponent>(entityCopy, renderComponentCopy);
-        Application::m_coordinator->addComponent<components::TransformComponent>(entityCopy, transformComponent);
+        Application::m_coordinator->addComponent(entityCopy, staticMeshCopy);
+        Application::m_coordinator->addComponent(entityCopy, materialCopy);
+        Application::m_coordinator->addComponent(entityCopy, transformComponent);
         return entityCopy;
 	}
 

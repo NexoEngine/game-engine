@@ -13,7 +13,6 @@ set(COMMON_SOURCES
         common/math/Vector.cpp
         common/math/Projection.cpp
         engine/src/Nexo.cpp
-        engine/src/EntityFactory2D.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
         engine/src/CameraFactory.cpp
@@ -24,6 +23,7 @@ set(COMMON_SOURCES
         engine/src/core/event/SignalEvent.cpp
         engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
+        engine/src/components/Camera.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
         engine/src/renderer/ShaderLibrary.cpp
@@ -34,10 +34,11 @@ set(COMMON_SOURCES
         engine/src/renderer/RenderCommand.cpp
         engine/src/renderer/Texture.cpp
         engine/src/renderer/SubTexture2D.cpp
-        engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
         engine/src/renderer/Framebuffer.cpp
-        engine/src/renderer/primitives/Mesh.cpp
+        engine/src/renderer/UniformCache.cpp
+        engine/src/renderer/DrawCommand.cpp
+        engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/primitives/Cube.cpp
         engine/src/renderer/primitives/Billboard.cpp
         engine/src/core/scene/Scene.cpp
@@ -47,12 +48,19 @@ set(COMMON_SOURCES
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp
         engine/src/systems/CameraSystem.cpp
-        engine/src/systems/RenderSystem.cpp
+        engine/src/systems/RenderCommandSystem.cpp
+        engine/src/systems/RenderBillboardSystem.cpp
         engine/src/systems/LightSystem.cpp
         engine/src/systems/lights/AmbientLightSystem.cpp
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
         engine/src/systems/lights/SpotLightsSystem.cpp
+        engine/src/systems/TransformHierarchySystem.cpp
+        engine/src/systems/TransformMatrixSystem.cpp
+        engine/src/renderPasses/ForwardPass.cpp
+        engine/src/renderPasses/GridPass.cpp
+        engine/src/renderPasses/MaskPass.cpp
+        engine/src/renderPasses/OutlinePass.cpp
         engine/src/assets/Asset.cpp
         engine/src/assets/AssetRef.cpp
         engine/src/assets/AssetLocation.cpp
@@ -74,6 +82,7 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlShaderStorageBuffer.cpp
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+            engine/src/renderer/opengl/OpenGlShaderReflection.cpp
     )
 endif()
 

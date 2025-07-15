@@ -1,4 +1,4 @@
-//// Render2D.hpp /////////////////////////////////////////////////////////////
+//// StaticMesh.hpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,21 +7,21 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        10/11/2024
-//  Description: Header files for the render 2D components
+//  Date:        06/05/2025
+//  Description: Header file for the static mesh component
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "renderer/SubTexture2D.hpp"
-#include <glm/glm.hpp>
+#include "renderer/Attributes.hpp"
+#include "renderer/VertexArray.hpp"
 
 namespace nexo::components {
 
-    struct SpriteComponent {
-        glm::vec4 color;
-        std::shared_ptr<renderer::NxTexture2D> texture = nullptr;
-        std::shared_ptr<renderer::NxSubTexture2D> sprite = nullptr;
+    struct StaticMeshComponent {
+        std::shared_ptr<renderer::NxVertexArray> vao;
+
+        renderer::RequiredAttributes meshAttributes;
     };
 
 }

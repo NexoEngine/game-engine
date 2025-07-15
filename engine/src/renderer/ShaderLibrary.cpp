@@ -1,4 +1,4 @@
-//// ShaderLibrary.cpp ///////////////////////////////////////////////////////////////
+//// ShaderLibrary.cpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -14,8 +14,26 @@
 
 #include "ShaderLibrary.hpp"
 #include "Logger.hpp"
+#include "Path.hpp"
 
 namespace nexo::renderer {
+
+    ShaderLibrary::ShaderLibrary()
+    {
+        load("Phong", Path::resolvePathRelativeToExe(
+            "../resources/shaders/phong.glsl").string());
+        load("Outline pulse flat", Path::resolvePathRelativeToExe(
+            "../resources/shaders/outline_pulse_flat.glsl").string());
+        load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
+            "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
+        load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
+            "../resources/shaders/albedo_unshaded_transparent.glsl").string());
+        load("Grid shader", Path::resolvePathRelativeToExe(
+            "../resources/shaders/grid_shader.glsl").string());
+        load("Flat color", Path::resolvePathRelativeToExe(
+            "../resources/shaders/flat_color.glsl").string());
+    }
+
     void ShaderLibrary::add(const std::shared_ptr<NxShader> &shader)
     {
         const std::string &name = shader->getName();

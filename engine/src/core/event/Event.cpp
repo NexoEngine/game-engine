@@ -27,7 +27,7 @@ namespace nexo::event {
 	        // Store a reference to the event to avoid evaluating *event with side effects.
 	        const IEvent &ev = *event;
 	        if (const std::type_index typeIndex(typeid(ev)); m_listeners.contains(typeIndex)) {
-	            for (auto *listener : m_listeners[typeIndex]) {
+	            for (auto listener : m_listeners[typeIndex]) {
 	                event->trigger(*listener);
 	                if (event->consumed)
 	                    break;

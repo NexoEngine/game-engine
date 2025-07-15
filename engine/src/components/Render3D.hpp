@@ -37,6 +37,6 @@ namespace nexo::components {
         assets::AssetRef<assets::Texture> roughnessMap = nullptr;
         assets::AssetRef<assets::Texture> emissiveMap = nullptr;
 
-        std::string shader = "";
+        std::string shader = "Phong";
     };
 }

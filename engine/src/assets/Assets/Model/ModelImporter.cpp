@@ -21,12 +21,14 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "components/Shapes3D.hpp"
+#include "Buffer.hpp"
+#include "VertexArray.hpp"
 #include "Path.hpp"
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
 #include "ModelParameters.hpp"
+#include "renderer/Renderer3D.hpp"
 
 #include "core/exceptions/Exceptions.hpp"
 
@@ -76,10 +78,7 @@ namespace nexo::assets {
         loadSceneMaterials(ctx, scene);
 
         auto meshNode = processNode(ctx, scene->mRootNode, scene);
-        if (!meshNode) {
-            throw core::LoadModelException(ctx.location.getFullLocation(), "Failed to process model node");
-        }
-        model->setData(std::make_unique<components::Model>(meshNode));
+        model->setData(std::make_unique<MeshNode>(meshNode));
         return model;
     }
 
@@ -243,11 +242,41 @@ namespace nexo::assets {
 
             if (float opacity = 1.0f; material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
                 materialComponent->opacity = opacity;
+                if (opacity < 0.99f) { // Using 0.99 to account for floating point imprecision
+                    materialComponent->isOpaque = false;
+                } else
+                    materialComponent->opacity = 1.0f;
+            }
+
+            int blendFunc = 0;
+            if (material->Get(AI_MATKEY_BLEND_FUNC, blendFunc) == AI_SUCCESS) {
+                materialComponent->isOpaque = false; // Any non-default blend mode suggests transparency
+            }
+
+            // Check 2: Transparency factor (inverse of opacity in some formats)
+            float transparencyFactor = 0.0f;
+            if (material->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparencyFactor) == AI_SUCCESS) {
+                if (transparencyFactor > 0.01f) { // Again with epsilon
+                    materialComponent->isOpaque = false;
+                }
+            }
+
+            aiString alphaMode;
+            //TODO: understand why we cant access it by default
+            #define AI_MATKEY_GLTF_ALPHAMODE "$mat.gltf.alphaMode"
+            #define AI_MATKEY_GLTF_ALPHACUTOFF "$mat.gltf.alphaCutoff"
+            if (material->Get(AI_MATKEY_GLTF_ALPHAMODE, 0, 0, alphaMode) == AI_SUCCESS) {
+                std::string mode = alphaMode.C_Str();
+                if (mode == "BLEND")
+                    materialComponent->isOpaque = false;
+                else if (mode == "MASK") {
+                    float alphaCutoff = 0.5f;
+                    material->Get(AI_MATKEY_GLTF_ALPHACUTOFF, 0, 0, alphaCutoff);
+                }
+                // OPAQUE mode - not transparent
             }
 
             // Load Textures
-
-
             auto loadTexture = [&](aiTextureType type) -> AssetRef<Texture> {
                 if (material->GetTextureCount(type) > 1) {
                     LOG(NEXO_WARN, "ModelImporter: Model {}: Material {} has more than one texture of type {}, only the first one will be used.", std::quoted(ctx.location.getFullLocation()), matIdx, type);
@@ -300,41 +329,66 @@ namespace nexo::assets {
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
     }
 
-    std::shared_ptr<components::MeshNode> ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node,
-        const aiScene* scene)
+    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene)
     {
-        auto meshNode = std::make_shared<components::MeshNode>();
+        auto meshNode = MeshNode{};
+
+        meshNode.name = node->mName.C_Str();
 
         const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
-
-        meshNode->transform = nodeTransform;
+        meshNode.transform = nodeTransform;
+        meshNode.meshes.reserve(node->mNumMeshes);
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            meshNode->meshes.push_back(processMesh(ctx, mesh, scene));
+            meshNode.meshes.push_back(processMesh(ctx, mesh, scene));
         }
+
+        meshNode.children.reserve(node->mNumChildren);
 
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             auto newNode = processNode(ctx, node->mChildren[i], scene);
-            if (newNode)
-                meshNode->children.push_back(newNode);
+            meshNode.children.push_back(newNode);
         }
 
         return meshNode;
     }
 
-    components::Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
+    Mesh ModelImporter::processMesh(AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
+        std::shared_ptr<renderer::NxVertexArray> vao = renderer::createVertexArray();
+        auto vertexBuffer = renderer::createVertexBuffer(mesh->mNumVertices * sizeof(renderer::NxVertex));
+        const renderer::NxBufferLayout cubeVertexBufferLayout = {
+            {renderer::NxShaderDataType::FLOAT3, "aPos"},
+            {renderer::NxShaderDataType::FLOAT2, "aTexCoord"},
+            {renderer::NxShaderDataType::FLOAT3, "aNormal"},
+            {renderer::NxShaderDataType::FLOAT3, "aTangent"},
+            {renderer::NxShaderDataType::FLOAT3, "aBiTangent"},
+            {renderer::NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(cubeVertexBufferLayout);
         std::vector<renderer::NxVertex> vertices;
         std::vector<unsigned int> indices;
         vertices.reserve(mesh->mNumVertices);
+
+        glm::vec3 minBB(+FLT_MAX, +FLT_MAX, +FLT_MAX);
+        glm::vec3 maxBB(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             renderer::NxVertex vertex{};
             vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+
+            minBB.x = std::min(minBB.x, vertex.position.x);
+            minBB.y = std::min(minBB.y, vertex.position.y);
+            minBB.z = std::min(minBB.z, vertex.position.z);
+
+            maxBB.x = std::max(maxBB.x, vertex.position.x);
+            maxBB.y = std::max(maxBB.y, vertex.position.y);
+            maxBB.z = std::max(maxBB.z, vertex.position.z);
 
             if (mesh->HasNormals()) {
                 vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
@@ -348,12 +402,20 @@ namespace nexo::assets {
             vertices.push_back(vertex);
         }
 
+        glm::vec3 centerLocal = (minBB + maxBB) * 0.5f;
+
         for (unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             const aiFace face = mesh->mFaces[i];
             indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
         }
 
+        vertexBuffer->setData(vertices.data(), static_cast<unsigned int>(vertices.size() * sizeof(renderer::NxVertex)));
+        vao->addVertexBuffer(vertexBuffer);
+
+        std::shared_ptr<renderer::NxIndexBuffer> indexBuffer = renderer::createIndexBuffer();
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
+        vao->setIndexBuffer(indexBuffer);
 
         AssetRef<Material> materialComponent = nullptr;
         if (mesh->mMaterialIndex < m_materials.size()) {
@@ -366,7 +428,7 @@ namespace nexo::assets {
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-        return {mesh->mName.data, vertices, indices, materialComponent};
+        return {mesh->mName.data, vao, materialComponent, centerLocal};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)

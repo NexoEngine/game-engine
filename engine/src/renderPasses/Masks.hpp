@@ -1,4 +1,4 @@
-//// EntityFactory2D.hpp //////////////////////////////////////////////////////
+//// Masks.hpp ////////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,22 +7,17 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        11/11/2024
-//  Description: Header file for the 2D entity factory
+//  Date:        09/05/2025
+//  Description: Header file for the pass masks
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <glm/glm.hpp>
+#include <cstdint>
 
-#include "ecs/Entity.hpp"
-
-namespace nexo
-{
-    class EntityFactory2D
-    {
-    public:
-        static ecs::Entity createQuad(glm::vec3 pos, glm::vec2 size, float rotation,
-                                      glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f});
-    };
+namespace nexo::renderer {
+    constexpr uint32_t F_FORWARD_PASS  = 1 << 0;
+    constexpr uint32_t F_OUTLINE_MASK  = 1 << 1;
+    constexpr uint32_t F_OUTLINE_PASS  = 1 << 2;
+    constexpr uint32_t F_GRID_PASS  = 1 << 3;
 }

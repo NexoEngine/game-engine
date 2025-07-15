@@ -30,7 +30,8 @@ namespace nexo::editor {
         AMBIENT_LIGHT,
         SPOT_LIGHT,
         POINT_LIGHT,
-        ENTITY
+        ENTITY,
+        CHILD,
     };
 
     /**
@@ -157,6 +158,8 @@ namespace nexo::editor {
          * @return SelectionType The type of the primary selected entity
          */
         SelectionType getPrimarySelectionType() const;
+
+        SelectionType getSelectionType(int entity) const;
 
         /**
          * @brief Sets the selection type (only applied to subsequent selections)

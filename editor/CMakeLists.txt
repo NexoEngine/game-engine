@@ -50,6 +50,8 @@ set(SRCS
         editor/src/DocumentWindows/AssetManager/Show.cpp
         editor/src/DocumentWindows/AssetManager/Shutdown.cpp
         editor/src/DocumentWindows/AssetManager/Update.cpp
+        editor/src/DocumentWindows/AssetManager/FolderTree.cpp
+        editor/src/DocumentWindows/AssetManager/Thumbnail.cpp
         editor/src/DocumentWindows/ConsoleWindow/Init.cpp
         editor/src/DocumentWindows/ConsoleWindow/Log.cpp
         editor/src/DocumentWindows/ConsoleWindow/Show.cpp

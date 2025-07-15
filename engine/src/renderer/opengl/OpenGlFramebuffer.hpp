@@ -109,6 +109,10 @@ namespace nexo::renderer {
              * - `glClear`: Clears the framebuffer with a default black color.
              */
             void bind() override;
+
+            void bindAsTexture(unsigned int slot = 0, unsigned int attachment = 0) override;
+
+            void bindDepthAsTexture(unsigned int slot = 0) override;
             /**
              * @brief Unbinds the framebuffer and restores the default framebuffer.
              *
@@ -121,6 +125,8 @@ namespace nexo::renderer {
             void unbind() override;
 
             void setClearColor(const glm::vec4 &color) override {m_clearColor = color;}
+
+            void copy(const std::shared_ptr<NxFramebuffer> source) override;
 
             [[nodiscard]] unsigned int getFramebufferId() const override;
 
@@ -196,8 +202,13 @@ namespace nexo::renderer {
             NxFramebufferSpecs &getSpecs() override {return m_specs;};
             [[nodiscard]] const NxFramebufferSpecs &getSpecs() const override {return m_specs;};
 
+            [[nodiscard]] unsigned int getNbColorAttachments() const override { return static_cast<unsigned int>(m_colorAttachments.size()); };
             [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override {return m_colorAttachments[index];};
             [[nodiscard]] unsigned int getDepthAttachmentId() const override { return m_depthAttachment; }
+
+            [[nodiscard]] bool hasDepthAttachment() const override {return m_depthAttachmentSpec.textureFormat != NxFrameBufferTextureFormats::NONE;};
+            [[nodiscard]] bool hasStencilAttachment() const override {return m_depthAttachmentSpec.textureFormat != NxFrameBufferTextureFormats::NONE;};
+            [[nodiscard]] bool hasDepthStencilAttachment() const override {return m_depthAttachmentSpec.textureFormat != NxFrameBufferTextureFormats::NONE;};
         private:
             unsigned int m_id = 0;
             bool toResize = false;

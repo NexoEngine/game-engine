@@ -89,7 +89,7 @@ namespace nexo::editor {
      */
     class SceneTreeWindow final : public ADocumentWindow {
         public:
-       		using ADocumentWindow::ADocumentWindow;
+            using ADocumentWindow::ADocumentWindow;
             ~SceneTreeWindow() override = default;
 
             // No-op method in this class
@@ -118,6 +118,13 @@ namespace nexo::editor {
              * to the root node, effectively updating the scene tree display.
              */
             void update() override;
+
+            void generateHierarchicalNodes(std::map<scene::SceneId, SceneObject> &scenes);
+            void buildChildNodesForEntity(
+                ecs::Entity parentEntity,
+                SceneObject& parentNode,
+                std::unordered_set<ecs::Entity>& processedEntities);
+            SceneObject createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) const;
 
         private:
 	        SceneObject root_;    ///< Root node of the scene tree.

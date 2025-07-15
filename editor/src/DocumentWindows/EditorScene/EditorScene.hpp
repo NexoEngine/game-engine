@@ -268,9 +268,9 @@ namespace nexo::editor {
             float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
             static void captureInitialTransformStates(const std::vector<int>& entities);
             void applyTransformToEntities(
-                ecs::Entity sourceEntity,
-                const components::TransformComponent& sourceTransform,
-                const components::TransformComponent& newTransform,
+                const ecs::Entity sourceEntity,
+                const glm::mat4& oldWorldMatrix,
+                const glm::mat4& newWorldMatrix,
                 const std::vector<int>& targetEntities) const;
             static void createTransformUndoActions(const std::vector<int>& entities);
             static bool s_wasUsingGizmo;
@@ -289,6 +289,9 @@ namespace nexo::editor {
 
             void handleSelection();
             int sampleEntityTexture(float mx, float my) const;
+            ecs::Entity findRootParent(ecs::Entity entityId) const;
+            void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
+            void selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed);
             void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
             void updateWindowState();
 

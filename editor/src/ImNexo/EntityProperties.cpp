@@ -168,7 +168,9 @@ namespace ImNexo {
 	{
 	    // Increase cell padding so rows have more space:
            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-           auto& [pos, size, quat] = transformComponent;
+           auto &pos = transformComponent.pos;
+           auto &size = transformComponent.size;
+           auto &quat = transformComponent.quat;
 
            if (ImGui::BeginTable("InspectorTransformTable", 4,
                ImGuiTableFlags_SizingStretchProp))
@@ -181,7 +183,7 @@ namespace ImNexo {
 
                RowDragFloat3("Position", "X", "Y", "Z", &pos.x);
 
-               const glm::vec3 computedEuler = nexo::math::customQuatToEuler(quat);
+               const glm::vec3 computedEuler = glm::degrees(glm::eulerAngles(quat));
 
                lastDisplayedEuler = computedEuler;
                glm::vec3 rotation = lastDisplayedEuler;
@@ -193,7 +195,7 @@ namespace ImNexo {
                    const glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
                    const glm::quat deltaQuat = glm::radians(deltaEuler);
                    quat = glm::normalize(deltaQuat * quat);
-                   lastDisplayedEuler = nexo::math::customQuatToEuler(quat);
+                   lastDisplayedEuler = glm::degrees(glm::eulerAngles(quat));;
                }
                RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 

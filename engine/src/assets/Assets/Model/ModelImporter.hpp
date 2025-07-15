@@ -16,7 +16,6 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <components/Shapes3D.hpp>
 
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
@@ -39,8 +38,8 @@ namespace nexo::assets {
             AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture *texture);
             void loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene);
 
-            std::shared_ptr<components::MeshNode> processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
-            components::Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
+            MeshNode processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
+            Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
 
             static renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
             static glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);
