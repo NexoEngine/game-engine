@@ -18,8 +18,6 @@
 
 namespace nexo::renderer {
 
-    #define MASK_PASS "MaskPass"
-
     class MaskPass : public RenderPass {
         public:
             MaskPass(unsigned int width, unsigned int height);

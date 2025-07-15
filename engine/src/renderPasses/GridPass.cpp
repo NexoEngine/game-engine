@@ -18,9 +18,10 @@
 #include "RenderCommand.hpp"
 #include "renderer/RenderPipeline.hpp"
 #include "Masks.hpp"
+#include "Passes.hpp"
 
 namespace nexo::renderer {
-    GridPass::GridPass(unsigned int width, unsigned int height) : RenderPass(GRID_PASS)
+    GridPass::GridPass(unsigned int width, unsigned int height) : RenderPass(Passes::GRID, "Grid pass")
     {
         renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
@@ -39,7 +40,7 @@ namespace nexo::renderer {
         std::shared_ptr<NxFramebuffer> prevPass = nullptr;
         for (const auto &prereq : prerequisites) {
             const auto &prereqPass = pipeline.getRenderPass(prereq);
-            prevPass = pipeline.getOutput(prereqPass->id);
+            prevPass = pipeline.getOutput(prereqPass->getId());
             break;
         }
         if (!prevPass)

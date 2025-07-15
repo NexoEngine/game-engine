@@ -18,8 +18,6 @@
 
 namespace nexo::renderer {
 
-    #define OUTLINE_PASS "OutlinePass"
-
     class OutlinePass : public RenderPass {
         public:
             OutlinePass(unsigned int width, unsigned int height);
