@@ -19,9 +19,10 @@
 #include "renderer/RenderCommand.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "Masks.hpp"
+#include "Passes.hpp"
 
 namespace nexo::renderer {
-    MaskPass::MaskPass(unsigned int width, unsigned int height) : RenderPass(MASK_PASS)
+    MaskPass::MaskPass(unsigned int width, unsigned int height) : RenderPass(Passes::MASK, "Mask pass")
     {
         renderer::NxFramebufferSpecs maskFramebufferSpecs;
         maskFramebufferSpecs.attachments = { renderer::NxFrameBufferTextureFormats::RGBA8, renderer::NxFrameBufferTextureFormats::DEPTH24STENCIL8 };

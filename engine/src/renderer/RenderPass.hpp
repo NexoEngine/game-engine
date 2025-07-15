@@ -24,17 +24,7 @@ namespace nexo::renderer {
 
     class RenderPass {
         public:
-            PassId id;
-            std::string name;
-
-            // Prerequisites - which passes must run before this one
-            std::vector<PassId> prerequisites;
-
-            // Effects - which passes this one enables
-            std::vector<PassId> effects;
-
-
-            explicit RenderPass(const std::string& name) : name(name) {}
+            RenderPass(PassId id, const std::string& debugName = "") : id(id), name(debugName) {}
             virtual ~RenderPass() = default;
 
             // The actual rendering work
@@ -42,7 +32,21 @@ namespace nexo::renderer {
             virtual void resize(unsigned int width, unsigned int height) = 0;
             void setFinal(bool isFinal) {m_isFinal = isFinal;};
             bool isFinal() const {return m_isFinal;}
+
+            PassId getId() const { return id; }
+            const std::string& getName() const { return name; }
+            std::vector<PassId> &getPrerequisites() { return prerequisites; }
+            const std::vector<PassId> &getPrerequisites() const { return prerequisites; }
+            std::vector<PassId> &getEffects() { return effects; }
+            const std::vector<PassId> &getEffects() const { return effects; }
         protected:
             bool m_isFinal = false;
+            PassId id;
+            std::string name;
+
+            // Prerequisites - which passes must run before this one
+            std::vector<PassId> prerequisites;
+            // Effects - which passes this one enables
+            std::vector<PassId> effects;
     };
 }

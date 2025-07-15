@@ -20,11 +20,12 @@
 #include "renderer/RenderPipeline.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "Masks.hpp"
+#include "Passes.hpp"
 
 #include <glad/glad.h>
 
 namespace nexo::renderer {
-    OutlinePass::OutlinePass(unsigned int width, unsigned int height) : RenderPass(OUTLINE_PASS)
+    OutlinePass::OutlinePass(unsigned int width, unsigned int height) : RenderPass(Passes::OUTLINE, "Outline pass")
     {
         renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
@@ -44,10 +45,10 @@ namespace nexo::renderer {
         std::shared_ptr<NxFramebuffer> prevPass = nullptr;
         for (const auto &prereq : prerequisites) {
             const auto &prereqPass = pipeline.getRenderPass(prereq);
-            if (prereqPass->name == MASK_PASS) {
-                maskPass = pipeline.getOutput(prereqPass->id);
+            if (prereqPass->getId() == Passes::MASK) {
+                maskPass = pipeline.getOutput(prereqPass->getId());
             } else {
-                prevPass = pipeline.getOutput(prereqPass->id);
+                prevPass = pipeline.getOutput(prereqPass->getId());
             }
         }
         if (!prevPass || !maskPass)
