@@ -51,7 +51,7 @@ namespace nexo::scripting {
             }
 
             // Access raw char_t* for hostfxr APIs
-            const char_t* c_str() const noexcept {
+            [[nodiscard]] const char_t* c_str() const noexcept {
                 return m_buffer.data();
             }
 
@@ -64,31 +64,31 @@ namespace nexo::scripting {
                 return to_wide();
             }
 
-            std::string to_utf8() const;
-            std::wstring to_wide() const;
+            [[nodiscard]] std::string to_utf8() const;
+            [[nodiscard]] std::wstring to_wide() const;
 
             // Standard string interface
-            bool empty() const noexcept { return size() == 0; }
-            size_t size() const noexcept { return m_buffer.empty() ? 0 : m_buffer.size() - 1; }
+            [[nodiscard]] bool empty() const noexcept { return size() == 0; }
+            [[nodiscard]] size_t size() const noexcept { return m_buffer.empty() ? 0 : m_buffer.size() - 1; }
 
-            char_t& operator[](const size_t index) noexcept { return m_buffer[index]; }
-            const char_t& operator[](const size_t index) const noexcept { return m_buffer[index]; }
-            char_t& at(const size_t index) noexcept { return m_buffer.at(index); }
-            const char_t& at(const size_t index) const noexcept { return m_buffer.at(index); }
+            [[nodiscard]] char_t& operator[](const size_t index) noexcept { return m_buffer[index]; }
+            [[nodiscard]] const char_t& operator[](const size_t index) const noexcept { return m_buffer[index]; }
+            [[nodiscard]] char_t& at(const size_t index) noexcept { return m_buffer.at(index); }
+            [[nodiscard]] const char_t& at(const size_t index) const noexcept { return m_buffer.at(index); }
 
             // Iterators
-            auto begin() noexcept { return m_buffer.begin(); }
-            auto begin() const noexcept { return m_buffer.begin(); }
-            auto cbegin() const noexcept { return begin(); }
-            auto end() noexcept { return m_buffer.end() - 1; } // Exclude null terminator
-            auto end() const noexcept { return m_buffer.end() - 1; } // Exclude null terminator
-            auto cend() const noexcept { return end(); }
-            auto rbegin() noexcept { return std::reverse_iterator(end()); }
-            auto rbegin() const noexcept { return std::reverse_iterator(end()); }
-            auto crbegin() const noexcept { return rbegin(); }
-            auto rend() noexcept { return std::reverse_iterator(begin()); }
-            auto rend() const noexcept { return std::reverse_iterator(begin()); }
-            auto crend() const noexcept { return rend(); }
+            [[nodiscard]] auto begin() noexcept { return m_buffer.begin(); }
+            [[nodiscard]] auto begin() const noexcept { return m_buffer.begin(); }
+            [[nodiscard]] auto cbegin() const noexcept { return begin(); }
+            [[nodiscard]] auto end() noexcept { return m_buffer.end() - 1; } // Exclude null terminator
+            [[nodiscard]] auto end() const noexcept { return m_buffer.end() - 1; } // Exclude null terminator
+            [[nodiscard]] auto cend() const noexcept { return end(); }
+            [[nodiscard]] auto rbegin() noexcept { return std::reverse_iterator(end()); }
+            [[nodiscard]] auto rbegin() const noexcept { return std::reverse_iterator(end()); }
+            [[nodiscard]] auto crbegin() const noexcept { return rbegin(); }
+            [[nodiscard]] auto rend() noexcept { return std::reverse_iterator(begin()); }
+            [[nodiscard]] auto rend() const noexcept { return std::reverse_iterator(begin()); }
+            [[nodiscard]] auto crend() const noexcept { return rend(); }
 
             // Add operators
             HostString& operator+=(const HostString& other) {
