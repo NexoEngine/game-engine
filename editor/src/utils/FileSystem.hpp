@@ -14,11 +14,6 @@
 #pragma once
 
 #include <string>
-#include <cstdlib>
-
-#ifdef _WIN32
-    #include <windows.h>
-#endif
 
 namespace nexo::editor::utils {
     /**
