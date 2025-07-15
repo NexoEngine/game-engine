@@ -53,7 +53,7 @@ namespace nexo::editor {
 
     		m_logFilePath = resolvedPath.string();
     	} catch (const std::exception &e) {
-    		LOG_F(ERROR, "Failed to resolve log file path: {}", e.what());
+    	    LOG(NEXO_ERROR, "Error setting up log file: {}", e.what());
     		m_logFilePath.clear();
     	}
 		m_logs.reserve(m_maxLogCapacity);
