@@ -14,7 +14,7 @@
 #pragma once
 
 #include "ADocumentWindow.hpp"
-#include "EntityFactory3d.hpp" // Include the header file where Primitives is defined
+#include "EntityFactory3D.hpp"
 
 namespace nexo::editor {
 
