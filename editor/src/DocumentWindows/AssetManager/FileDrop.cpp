@@ -1,4 +1,4 @@
-//// FileDrop.cpp ///////////////////////////////////////////////////////////////
+//// FileDrop.cpp /////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,7 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
+#include "assets/Asset.hpp"
 #include "assets/AssetImporter.hpp"
+#include "assets/AssetLocation.hpp"
 #include "assets/Assets/Model/Model.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "Logger.hpp"
@@ -22,9 +24,45 @@
 
 namespace nexo::editor {
 
+    static assets::AssetType getAssetTypeFromExtension(const std::string &extension)
+    {
+        static const std::set<std::string> imageExtensions = {
+            ".png", ".jpg", ".jpeg", ".bmp", ".tga", ".gif", ".psd", ".hdr", ".pic", ".pnm", ".ppm", ".pgm"
+        };
+        if (imageExtensions.contains(extension))
+            return assets::AssetType::TEXTURE;
+        static const std::set<std::string> modelExtensions = {
+            ".gltf", ".glb", ".fbx", ".obj", ".dae", ".3ds", ".stl", ".ply", ".blend", ".x3d", ".ifc"
+        };
+        if (modelExtensions.contains(extension))
+            return assets::AssetType::MODEL;
+        return assets::AssetType::UNKNOWN;
+    }
+
+    const assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
+    {
+        std::string assetName = path.stem().string();
+        std::filesystem::path folderPath;
+        if (!m_currentFolder.empty())
+            folderPath /= m_currentFolder;
+        if (!m_hoveredFolder.empty())
+            folderPath /= m_hoveredFolder;
+
+        std::string assetPath = folderPath.string();
+        std::string locationString = assetName + "@" + assetPath;
+
+        LOG(NEXO_DEV,
+            "Creating asset location: {} (current folder: '{}', hovered: '{}')",
+            locationString,
+            m_currentFolder,
+            m_hoveredFolder);
+
+        assets::AssetLocation location(locationString);
+        return location;
+    }
+
     void AssetManagerWindow::handleEvent(event::EventFileDrop& event)
     {
-        // Queue dropped files for processing in the next frame
         m_pendingDroppedFiles.insert(m_pendingDroppedFiles.end(),
                                     event.files.begin(),
                                     event.files.end());
@@ -35,15 +73,10 @@ namespace nexo::editor {
         if (m_pendingDroppedFiles.empty())
             return;
 
-        // Process each dropped file
         for (const auto& filePath : m_pendingDroppedFiles)
-        {
             importDroppedFile(filePath);
-        }
-
         m_pendingDroppedFiles.clear();
 
-        // Rebuild folder structure to include new assets
         m_folderStructure.clear();
         buildFolderStructure();
     }
@@ -52,91 +85,40 @@ namespace nexo::editor {
     {
         std::filesystem::path path(filePath);
 
-        if (!std::filesystem::exists(path))
-        {
+        if (!std::filesystem::exists(path)) {
             LOG(NEXO_WARN, "Dropped file does not exist: {}", filePath);
             return;
         }
 
-        // Get file extension
         std::string extension = path.extension().string();
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
-        // Determine asset type based on extension
-        assets::AssetType assetType = assets::AssetType::UNKNOWN;
-
-        // Image extensions
-        static const std::vector<std::string> imageExtensions = {
-            ".png", ".jpg", ".jpeg", ".bmp", ".tga", ".gif", ".psd", ".hdr", ".pic", ".pnm", ".ppm", ".pgm"
-        };
-
-        // Model extensions (common ones supported by Assimp)
-        static const std::vector<std::string> modelExtensions = {
-            ".gltf", ".glb", ".fbx", ".obj", ".dae", ".3ds", ".stl", ".ply", ".blend", ".x3d", ".ifc"
-        };
-
-        if (std::find(imageExtensions.begin(), imageExtensions.end(), extension) != imageExtensions.end())
-        {
-            assetType = assets::AssetType::TEXTURE;
-        }
-        else if (std::find(modelExtensions.begin(), modelExtensions.end(), extension) != modelExtensions.end())
-        {
-            assetType = assets::AssetType::MODEL;
-        }
-        else
-        {
+        assets::AssetType assetType = getAssetTypeFromExtension(extension);
+        if (assetType == assets::AssetType::UNKNOWN) {
             LOG(NEXO_WARN, "Unsupported file type: {}", extension);
             return;
         }
 
-        // Generate asset location
-        std::string filename = path.filename().string();
-        std::string assetName = path.stem().string();
+        assets::AssetLocation location = getAssetLocation(path);
 
-        // Create location based on current folder
-        // The path after @ should just be the folder path, not include the asset name
-        std::string assetPath = m_currentFolder.empty() ? "" : m_currentFolder;
-        assetPath += m_hoveredFolder.empty() ? "" : "/" + m_hoveredFolder;
-        std::string locationString = assetName + "@" + assetPath;
-
-        LOG(NEXO_DEV, "Creating asset location: {} (current folder: '{}')", locationString, m_currentFolder);
-        assets::AssetLocation location(locationString);
-
-        // Import the asset
         assets::AssetImporter importer;
         assets::ImporterFileInput fileInput{path};
-
-        try
-        {
-            if (assetType == assets::AssetType::TEXTURE)
-            {
+        try {
+            if (assetType == assets::AssetType::TEXTURE) {
                 auto assetRef = importer.importAsset<assets::Texture>(location, fileInput);
                 if (assetRef)
-                {
-                    LOG(NEXO_INFO, "Successfully imported texture: {}", filename);
-                }
+                    LOG(NEXO_INFO, "Successfully imported texture: {}", location.getName());
                 else
-                {
-                    LOG(NEXO_ERROR, "Failed to import texture: {}", filename);
-                }
-            }
-            else if (assetType == assets::AssetType::MODEL)
-            {
+                    LOG(NEXO_ERROR, "Failed to import texture: {}", location.getPath());
+            } else if (assetType == assets::AssetType::MODEL) {
                 auto assetRef = importer.importAsset<assets::Model>(location, fileInput);
                 if (assetRef)
-                {
-                    LOG(NEXO_INFO, "Successfully imported model: {}", filename);
-                }
+                    LOG(NEXO_INFO, "Successfully imported model: {}", location.getName());
                 else
-                {
-                    LOG(NEXO_ERROR, "Failed to import model: {}", filename);
-                }
+                    LOG(NEXO_ERROR, "Failed to import model: {}", location.getPath());
             }
-        }
-        catch (const std::exception& e)
-        {
-            LOG(NEXO_ERROR, "Exception while importing {}: {}", filename, e.what());
+        } catch (const std::exception& e) {
+            LOG(NEXO_ERROR, "Exception while importing {}: {}", location.getPath(), e.what());
         }
     }
-
-} // namespace nexo::editor
+}
