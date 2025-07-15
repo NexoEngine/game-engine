@@ -47,7 +47,7 @@ namespace nexo::editor
         // Check if a main camera already exists in the scene
         bool mainCameraFound = false;
         for (const auto &entity : scene.getEntities()) {
-            if (coordinator.hasComponent<components::CameraComponent>(entity)) {
+            if (coordinator.entityHasComponent<components::CameraComponent>(entity)) {
                 auto &camera = coordinator.getComponent<components::CameraComponent>(entity);
                 if (camera.main) {
                     // Found an existing main camera, use it
