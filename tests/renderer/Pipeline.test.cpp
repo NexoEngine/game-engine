@@ -22,9 +22,10 @@
 
 namespace nexo::renderer {
 
+
 class MockRenderPass : public RenderPass {
 public:
-    MockRenderPass(const std::string& name) : RenderPass(name) {
+    MockRenderPass(PassId id, const std::string& name) : RenderPass(id, name) {
         // Explicitly initialize prerequisites and effects to empty vectors
         prerequisites = {};
         effects = {};
@@ -79,7 +80,8 @@ protected:
     }
 
     std::shared_ptr<MockRenderPass> createMockPass(const std::string& name) {
-        return std::make_shared<MockRenderPass>(name);
+        static PassId id = 0;
+        return std::make_shared<MockRenderPass>(id++, name);
     }
 
     std::shared_ptr<MockFramebuffer> createMockFramebuffer() {
@@ -97,11 +99,11 @@ TEST_F(RenderPipelineTest, AddRenderPass) {
 
     // Verify passes were added with unique IDs
     EXPECT_NE(id1, id2);
-    EXPECT_EQ(pass1->id, id1);
-    EXPECT_EQ(pass2->id, id2);
+    EXPECT_EQ(pass1->getId(), id1);
+    EXPECT_EQ(pass2->getId(), id2);
 
     // First pass should be set as final output
-    EXPECT_EQ(pipeline.getFinalOutputPass(), static_cast<int>(id1));
+    EXPECT_EQ(pipeline.getFinalOutputPass(), id1);
 }
 
 TEST_F(RenderPipelineTest, RemoveRenderPass) {
@@ -155,17 +157,17 @@ TEST_F(RenderPipelineTest, PrerequisitesAndEffects) {
     pipeline.addEffect(id2, id3);
 
     // Check relationships
-    EXPECT_THAT(pass2->prerequisites, ::testing::ElementsAre(id1));
-    EXPECT_THAT(pass3->prerequisites, ::testing::ElementsAre(id2));
-    EXPECT_THAT(pass1->effects, ::testing::ElementsAre(id2));
-    EXPECT_THAT(pass2->effects, ::testing::ElementsAre(id3));
+    EXPECT_THAT(pass2->getPrerequisites(), ::testing::ElementsAre(id1));
+    EXPECT_THAT(pass3->getPrerequisites(), ::testing::ElementsAre(id2));
+    EXPECT_THAT(pass1->getEffects(), ::testing::ElementsAre(id2));
+    EXPECT_THAT(pass2->getEffects(), ::testing::ElementsAre(id3));
 
     // Test removal of relationships
     pipeline.removePrerequisite(id2, id1);
-    EXPECT_THAT(pass2->prerequisites, ::testing::IsEmpty());
+    EXPECT_THAT(pass2->getPrerequisites(), ::testing::IsEmpty());
 
     pipeline.removeEffect(id2, id3);
-    EXPECT_THAT(pass2->effects, ::testing::IsEmpty());
+    EXPECT_THAT(pass2->getEffects(), ::testing::IsEmpty());
 }
 
 TEST_F(RenderPipelineTest, ExecutionPlanCorrectOrder) {
@@ -217,8 +219,8 @@ TEST_F(RenderPipelineTest, RemovePassPreservesConnections) {
     pipeline.removeRenderPass(id2);
 
     // Now pass1 should be connected to pass3
-    EXPECT_THAT(pass3->prerequisites, ::testing::ElementsAre(id1));
-    EXPECT_THAT(pass1->effects, ::testing::ElementsAre(id3));
+    EXPECT_THAT(pass3->getPrerequisites(), ::testing::ElementsAre(id1));
+    EXPECT_THAT(pass1->getEffects(), ::testing::ElementsAre(id3));
 }
 
 TEST_F(RenderPipelineTest, ExecutePipeline) {
