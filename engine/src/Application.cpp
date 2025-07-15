@@ -201,6 +201,24 @@ namespace nexo {
         m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
     }
 
+    void Application::initScripting()
+    {
+        scripting::HostHandler::Parameters params;
+        params.errorCallback = [this](const scripting::HostString& message) {
+            LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
+            m_latestScriptingError = message.to_utf8();
+        };
+
+        scripting::HostHandler& host = scripting::HostHandler::getInstance();
+
+        // Initialize the host
+        if (host.initialize(params) != scripting::HostHandler::SUCCESS) {
+            LOG(NEXO_ERROR, "Failed to initialize host");
+            THROW_EXCEPTION(scripting::ScriptingBackendInitFailed, m_latestScriptingError);
+        }
+        LOG(NEXO_INFO, "Scripting host initialized successfully");
+    }
+
     Application::Application()
     {
         m_window = renderer::NxWindow::create();
@@ -256,20 +274,7 @@ namespace nexo {
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
-        nexo::scripting::HostHandler::Parameters params;
-        params.errorCallback = [this](const nexo::scripting::HostString& message) {
-            LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
-            m_latestScriptingError = message.to_utf8();
-        };
-
-
-        nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
-
-        // Initialize the host
-        if (host.initialize(params) != nexo::scripting::HostHandler::SUCCESS) {
-            LOG(NEXO_ERROR, "Failed to initialize host");
-            THROW_EXCEPTION(scripting::ScriptingBackendInitFailed, m_latestScriptingError);
-        }
+        initScripting();
 
         LOG(NEXO_DEV, "Application initialized");
     }
