@@ -140,6 +140,33 @@ namespace nexo::editor {
                         }
                     }
                 }
+                else if (object.type == SelectionType::ENTITY)
+                {
+                    auto matCompOpt = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(object.data.entity);
+                    if (!matCompOpt)
+                        { ImGui::EndDragDropTarget(); return; }
+
+                    auto& matComp = matCompOpt->get();
+
+                    if (payload.type == assets::AssetType::TEXTURE)
+                    {
+                        auto texRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                        if (auto tex = texRef.as<assets::Texture>(); tex)
+                        {
+                            auto mat = matComp.material.lock();
+                            mat->getData()->albedoTexture = tex;
+                        }
+                    }
+                    else if (payload.type == assets::AssetType::MATERIAL)
+                    {
+                        auto matRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                        if (auto m = matRef.as<assets::Material>(); m)
+                        {
+                            auto oldMat = matComp.material;
+                            matComp.material = m;
+                        }
+                    }
+                }
             }
 
             ImGui::EndDragDropTarget();
