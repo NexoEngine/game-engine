@@ -102,6 +102,15 @@ namespace nexo::scripting {
                 return result;
             }
 
+            // Comparison operators
+            bool operator==(const HostString& other) const noexcept {
+                return m_buffer == other.m_buffer;
+            }
+
+            bool operator!=(const HostString& other) const noexcept {
+                return !(*this == other);
+            }
+
         private:
             std::vector<char_t> m_buffer = {'\0'};
 
