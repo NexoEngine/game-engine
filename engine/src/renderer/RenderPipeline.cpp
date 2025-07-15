@@ -30,7 +30,7 @@ namespace nexo::renderer {
 
     void RenderPipeline::removeRenderPass(PassId id)
     {
-        if (passes.find(id) == passes.end())
+        if (!passes.contains(id))
             return;
         auto& pass = passes[id];
 
@@ -69,7 +69,7 @@ namespace nexo::renderer {
 
         // Remove the pass from the maps
         passes.erase(id);
-        if (passOutputs.find(id) != passOutputs.end())
+        if (passOutputs.contains(id))
             passOutputs.erase(id);
 
         // Now, after removing the pass, find a new final output if needed
@@ -93,7 +93,7 @@ namespace nexo::renderer {
 
     void RenderPipeline::addPrerequisite(PassId pass, PassId prerequisite)
     {
-        if (passes.find(pass) == passes.end() || passes.find(prerequisite) == passes.end())
+        if (!passes.contains(pass) || !passes.contains(prerequisite))
             return;
 
         auto& prereqs = passes[pass]->getPrerequisites();
@@ -104,7 +104,7 @@ namespace nexo::renderer {
 
     void RenderPipeline::removePrerequisite(PassId pass, PassId prerequisite)
     {
-        if (passes.find(pass) == passes.end())
+        if (!passes.contains(pass))
             return;
 
         auto& prereqs = passes[pass]->getPrerequisites();
@@ -117,7 +117,7 @@ namespace nexo::renderer {
 
     void RenderPipeline::addEffect(PassId pass, PassId effect)
     {
-        if (passes.find(pass) == passes.end() || passes.find(effect) == passes.end())
+        if (!passes.contains(pass) || !passes.contains(effect))
             return;
 
         auto& effects = passes[pass]->getEffects();
@@ -128,7 +128,7 @@ namespace nexo::renderer {
 
     void RenderPipeline::removeEffect(PassId pass, PassId effect)
     {
-        if (passes.find(pass) == passes.end())
+        if (!passes.contains(pass))
             return;
 
         auto& effects = passes[pass]->getEffects();
@@ -162,8 +162,8 @@ namespace nexo::renderer {
 
     void RenderPipeline::setFinalOutputPass(PassId id)
     {
-        if (passes.find(id) != passes.end()) {
-            if (finalOutputPass != -1 && passes.find(finalOutputPass) != passes.end())
+        if (passes.contains(id)) {
+            if (finalOutputPass != -1 && passes.contains(finalOutputPass))
                 passes[finalOutputPass]->setFinal(false);
 
             passes[id]->setFinal(true);
@@ -217,12 +217,12 @@ namespace nexo::renderer {
         std::set<PassId> visited;
         // DFS helper to build execution plan
         std::function<void(PassId)> buildPlan = [&](PassId current) {
-            if (visited.find(current) != visited.end())
+            if (visited.contains(current))
                 return;
 
             // First process all prerequisites
             for (PassId prereq : passes[current]->getPrerequisites()) {
-                if (passes.find(prereq) != passes.end())
+                if (passes.contains(prereq))
                     buildPlan(prereq);
             }
 
@@ -232,7 +232,7 @@ namespace nexo::renderer {
         };
 
         // Start with the final output pass if it exists
-        if (finalOutputPass != -1 && passes.find(finalOutputPass) != passes.end()) {
+        if (finalOutputPass != -1 && passes.contains(finalOutputPass)) {
             buildPlan(finalOutputPass);
         } else {
             // Fallback to processing all terminal passes
@@ -257,7 +257,7 @@ namespace nexo::renderer {
             m_plan = createExecutionPlan();
 
         for (PassId id : m_plan) {
-            if (passes.find(id) != passes.end())
+            if (passes.contains(id))
                 passes[id]->execute(*this);
         }
         m_drawCommands.clear();
