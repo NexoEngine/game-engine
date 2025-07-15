@@ -19,7 +19,7 @@ namespace Nexo;
 /// Must exactly match the NativeComponents enum defined in ManagedTypedef.hpp on the C++ side.
 /// </summary>
 
-public enum NativeComponents : uint
+public enum NativeComponents : UInt32
 {
     Transform = 0,
     AmbientLight = 1,
@@ -32,5 +32,4 @@ public enum NativeComponents : uint
     UuidComponent = 8,
     PerspectiveCameraController = 9,
     PerspectiveCameraTarget = 10,
-    
 }
