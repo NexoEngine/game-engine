@@ -21,9 +21,9 @@ namespace nexo::renderer {
     {
         // If this is the first pass, set it as the final output
         PassId id = pass->getId();
-        if (passes.empty())
-            setFinalOutputPass(id);
         passes[id] = std::move(pass);
+        if (passes.size() == 1)
+            setFinalOutputPass(id);
         m_isDirty = true;
         return id;
     }
