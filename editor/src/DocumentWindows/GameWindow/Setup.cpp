@@ -40,30 +40,50 @@ namespace nexo::editor
         framebufferSpecs.height = 720;
         const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
 
-        // Create a render camera
-        m_gameCamera = CameraFactory::createPerspectiveCamera(
-            {0.0f, 0.0f, 6.0f}, // Default position
-            framebufferSpecs.width,
-            framebufferSpecs.height,
-            renderTarget);
-
         auto &coordinator = *Application::m_coordinator;
-        auto &cameraComponent = coordinator.getComponent<components::CameraComponent>(m_gameCamera);
-        cameraComponent.render = true;
-        cameraComponent.active = true;
-
-        // Add the camera to the scene
         auto &app = getApp();
-        app.getSceneManager().getScene(m_sceneId).addEntity(m_gameCamera);
+        auto &scene = app.getSceneManager().getScene(m_sceneId);
+        
+        // Check if a main camera already exists in the scene
+        bool mainCameraFound = false;
+        for (const auto &entity : scene.getEntities()) {
+            if (coordinator.hasComponent<components::CameraComponent>(entity)) {
+                auto &camera = coordinator.getComponent<components::CameraComponent>(entity);
+                if (camera.main) {
+                    // Found an existing main camera, use it
+                    m_gameCamera = entity;
+                    camera.render = true;
+                    camera.active = true;
+                    camera.m_renderTarget = renderTarget;
+                    camera.resize(framebufferSpecs.width, framebufferSpecs.height);
+                    mainCameraFound = true;
+                    DLOG_F(INFO, "Using existing main camera %u for scene %u", m_gameCamera, m_sceneId);
+                    break;
+                }
+            }
+        }
+        
+        // Only create a new camera if no main camera exists
+        if (!mainCameraFound) {
+            // Create a render camera
+            m_gameCamera = CameraFactory::createPerspectiveCamera(
+                {0.0f, 0.0f, 6.0f}, // Default position
+                framebufferSpecs.width,
+                framebufferSpecs.height,
+                renderTarget);
 
-        // Tag the camera with the scene
-        components::SceneTag sceneTag{m_sceneId};
-        coordinator.addComponent(m_gameCamera, sceneTag);
+            auto &cameraComponent = coordinator.getComponent<components::CameraComponent>(m_gameCamera);
+            cameraComponent.render = true;
+            cameraComponent.active = true;
 
-        components::NameComponent nameComponent{"Render Camera"};
-        coordinator.addComponent(m_gameCamera, nameComponent);
+            // Add the camera to the scene
+            scene.addEntity(m_gameCamera);
 
-        DLOG_F(INFO, "Created game camera %u for scene %u", m_gameCamera, m_sceneId);
+            components::NameComponent nameComponent{"Render Camera"};
+            coordinator.addComponent(m_gameCamera, nameComponent);
+
+            DLOG_F(INFO, "Created new game camera %u for scene %u", m_gameCamera, m_sceneId);
+        }
 
         m_firstFrame = true;
     }

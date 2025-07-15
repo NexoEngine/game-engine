@@ -15,6 +15,7 @@
 #include "GameWindow.hpp"
 #include "Application.hpp"
 #include "ecs/Coordinator.hpp"
+#include "ecs/Definitions.hpp"
 #include "components/Camera.hpp"
 #include "core/scene/SceneManager.hpp"
 #include <loguru.hpp>
@@ -45,12 +46,14 @@ namespace nexo::editor
         auto &sceneManager = app.getSceneManager();
 
         // Clean up the game camera
-        if (m_gameCamera != 0)
+        if (m_gameCamera != ecs::INVALID_ENTITY)
         {
-            try
+            // Try to get the camera component
+            auto cameraCompOpt = coordinator.tryGetComponent<components::CameraComponent>(m_gameCamera);
+            if (cameraCompOpt)
             {
                 // Disable rendering
-                auto &cameraComp = coordinator.getComponent<components::CameraComponent>(m_gameCamera);
+                auto &cameraComp = cameraCompOpt->get();
                 cameraComp.render = false;
                 cameraComp.active = false;
 
@@ -62,13 +65,13 @@ namespace nexo::editor
 
                 DLOG_F(INFO, "Destroyed game camera entity %u", m_gameCamera);
             }
-            catch (...)
+            else
             {
                 // Camera was already destroyed
                 DLOG_F(WARNING, "Failed to properly clean up game camera");
             }
 
-            m_gameCamera = 0;
+            m_gameCamera = ecs::INVALID_ENTITY;
         }
     }
 

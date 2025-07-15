@@ -26,9 +26,4 @@ namespace nexo::editor {
         m_sceneUuid = sceneUuid;
     }
 
-    void GameWindow::setParentEditorScene(EditorScene* parentScene)
-    {
-        m_parentEditorScene = parentScene;
-    }
-
 }

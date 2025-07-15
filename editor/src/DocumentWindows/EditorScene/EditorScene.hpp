@@ -302,12 +302,22 @@ namespace nexo::editor
         void renderNewEntityPopup();
 
         void handleSelection();
-        [[nodiscard]] int sampleEntityTexture(float mx, float my) const;
-        [[nodiscard]] ecs::Entity findRootParent(ecs::Entity entityId) const;
-        void selectEntityHierarchy(ecs::Entity entityId, bool isCtrlPressed);
-        void selectModelChildren(const std::vector<ecs::Entity>& children, bool isCtrlPressed);
+        int sampleEntityTexture(float mx, float my) const;
+        ecs::Entity findRootParent(ecs::Entity entityId) const;
+        void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
+        void selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed);
         void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
         void updateWindowState();
+
+        /**
+        * @brief Creates a new game window or focuses an existing one.
+        *
+        * Checks if a game window for the current scene already exists. If it does,
+        * makes it visible and focuses it. Otherwise, creates a new game window,
+        * configures it with the scene ID and UUID, and schedules it for docking
+        * and focusing on the next frame.
+        */
+        void createOrFocusGameWindow();
 
         enum class EditorState
         {
