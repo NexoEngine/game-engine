@@ -223,14 +223,6 @@ namespace nexo::editor
                 renderView();
                 renderGizmo();
                 renderToolbar();
-
-                // Handle deferred game window focus
-                if (m_shouldFocusGameWindow && !m_gameWindowToFocus.empty())
-                {
-                    ImGui::SetWindowFocus(m_gameWindowToFocus.c_str());
-                    m_shouldFocusGameWindow = false;
-                    m_gameWindowToFocus.clear();
-                }
             }
 
             if (m_popupManager.showPopup("Add new entity popup"))
