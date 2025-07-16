@@ -35,13 +35,15 @@ namespace nexo::renderer
     {
         for (auto& vertex : vertices)
         {
-            vertex = glm::normalize(vertex);
+            vertex = normalize(vertex);
         }
     }
 
     static std::vector<glm::vec3> generateSphereVertices()
     {
         std::vector<glm::vec3> vertices{};
+        vertices.reserve(12); // Reserve space for the 12 vertices of the icosahedron
+
         const float phi = (1.0f + sqrt(5.0f)) * 0.5f; // golden ratio
         float a = 1.0f;
         float b = 1.0f / phi;
@@ -68,6 +70,7 @@ namespace nexo::renderer
     static std::vector<unsigned int> generateSphereIndices()
     {
         std::vector<unsigned int> indices{};
+        indices.reserve(60); // Reserve space for the 60 indices of the icosahedron
 
         indices.push_back(2);
         indices.push_back(1);
@@ -207,11 +210,12 @@ namespace nexo::renderer
     static std::vector<glm::vec2> generateTextureCoords(const std::vector<glm::vec3>& vertices)
     {
         std::vector<glm::vec2> texCoords{};
+        texCoords.reserve(vertices.size()); // Reserve space for texture coordinates
 
         for (const auto vertex : vertices)
         {
-            float u = (atan2(vertex.z, vertex.x) + M_PI) / (2 * M_PI);
-            float v = acos(vertex.y) / M_PI;
+            auto u = (atan2(vertex.z, vertex.x) + M_PI) / (2 * M_PI);
+            auto v = acos(vertex.y) / M_PI;
 
             texCoords.emplace_back(u, v);
         }
@@ -221,6 +225,8 @@ namespace nexo::renderer
     static std::vector<glm::vec3> generateSphereNormals(const std::vector<glm::vec3>& vertices)
     {
         std::vector<glm::vec3> normals{};
+        normals.reserve(vertices.size()); // Reserve space for normals
+
         for (auto vec : vertices)
         {
             const glm::vec3 vector1 = vec - glm::vec3(0, 0, 0);
@@ -271,6 +277,9 @@ namespace nexo::renderer
             vertexData[i].position = glm::vec4(vertices[i], 1.0f);
             vertexData[i].texCoord = texCoords[i];
             vertexData[i].normal = normals[i];
+            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+            vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
+            vertexData[i].entityID = 0; // Default entity ID
         }
 
         vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
