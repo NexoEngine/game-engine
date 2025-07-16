@@ -18,15 +18,15 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <string>
 
 #include "ShaderStorageBuffer.hpp"
 #include "Attributes.hpp"
 #include "UniformCache.hpp"
 
-namespace nexo::renderer {
-
-    enum class NxShaderUniforms {
+namespace nexo::renderer
+{
+    enum class NxShaderUniforms
+    {
         VIEW_PROJECTION,
         MODEL_MATRIX,
         CAMERA_POSITION,
@@ -57,18 +57,20 @@ namespace nexo::renderer {
         {NxShaderUniforms::MATERIAL, "uMaterial"}
     };
 
-    struct UniformInfo {
-        std::string name;      // Name of the uniform
-        int location;          // Location in the shader
-        unsigned int type;     // GL type (e.g., GL_FLOAT, GL_FLOAT_VEC3)
-        int size;              // Size (for arrays)
+    struct UniformInfo
+    {
+        std::string name; // Name of the uniform
+        int location; // Location in the shader
+        unsigned int type; // GL type (e.g., GL_FLOAT, GL_FLOAT_VEC3)
+        int size; // Size (for arrays)
     };
 
-    struct AttributeInfo {
-        std::string name;      // Name of the attribute
-        int location;          // Location in the shader
-        unsigned int type;     // GL type
-        int size;              // Size
+    struct AttributeInfo
+    {
+        std::string name; // Name of the attribute
+        int location; // Location in the shader
+        unsigned int type; // GL type
+        int size; // Size
     };
 
     /**
@@ -93,100 +95,101 @@ namespace nexo::renderer {
     * shader->setUniformFloat("uTime", 1.0f);
     * ```
     */
-    class NxShader {
-        public:
-            virtual ~NxShader() = default;
+    class NxShader
+    {
+    public:
+        virtual ~NxShader() = default;
 
-            /**
-            * @brief Creates a shader program from a source file.
-            *
-            * Loads and compiles a shader program from the specified file path. The file
-            * should contain shader stages marked with `#type` directives.
-            *
-            * @param path The file path to the shader source code.
-            * @return A shared pointer to the created `Shader` instance.
-            *
-            * Throws:
-            * - `NxUnknownGraphicsApi` if no graphics API is supported.
-            * - `NxShaderCreationFailed` if shader compilation fails.
-            */
-            static std::shared_ptr<NxShader> create(const std::string &path);
+        /**
+        * @brief Creates a shader program from a source file.
+        *
+        * Loads and compiles a shader program from the specified file path. The file
+        * should contain shader stages marked with `#type` directives.
+        *
+        * @param path The file path to the shader source code.
+        * @return A shared pointer to the created `Shader` instance.
+        *
+        * Throws:
+        * - `NxUnknownGraphicsApi` if no graphics API is supported.
+        * - `NxShaderCreationFailed` if shader compilation fails.
+        */
+        static std::shared_ptr<NxShader> create(const std::string& path);
 
-            /**
-            * @brief Creates a shader program from source code strings.
-            *
-            * Compiles and links a shader program from provided vertex and fragment shader source code.
-            *
-            * @param name The name of the shader program.
-            * @param vertexSource The source code for the vertex shader.
-            * @param fragmentSource The source code for the fragment shader.
-            * @return A shared pointer to the created `Shader` instance.
-            *
-            * Throws:
-            * - `NxUnknownGraphicsApi` if no graphics API is supported.
-            * - `NxShaderCreationFailed` if shader compilation fails.
-            */
-            static std::shared_ptr<NxShader> create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource);
+        /**
+        * @brief Creates a shader program from source code strings.
+        *
+        * Compiles and links a shader program from provided vertex and fragment shader source code.
+        *
+        * @param name The name of the shader program.
+        * @param vertexSource The source code for the vertex shader.
+        * @param fragmentSource The source code for the fragment shader.
+        * @return A shared pointer to the created `Shader` instance.
+        *
+        * Throws:
+        * - `NxUnknownGraphicsApi` if no graphics API is supported.
+        * - `NxShaderCreationFailed` if shader compilation fails.
+        */
+        static std::shared_ptr<NxShader> create(const std::string& name, const std::string& vertexSource,
+                                                const std::string& fragmentSource);
 
-            /**
-            * @brief Binds the shader program for use in the rendering pipeline.
-            *
-            * Makes the shader program active, so subsequent draw calls use this program.
-            *
-            * Must be implemented by subclasses.
-            */
-            virtual void bind() const = 0;
+        /**
+        * @brief Binds the shader program for use in the rendering pipeline.
+        *
+        * Makes the shader program active, so subsequent draw calls use this program.
+        *
+        * Must be implemented by subclasses.
+        */
+        virtual void bind() const = 0;
 
-            /**
-            * @brief Unbinds the shader program.
-            *
-            * Deactivates the currently bound shader program.
-            *
-            * Must be implemented by subclasses.
-            */
-            virtual void unbind() const = 0;
+        /**
+        * @brief Unbinds the shader program.
+        *
+        * Deactivates the currently bound shader program.
+        *
+        * Must be implemented by subclasses.
+        */
+        virtual void unbind() const = 0;
 
-            virtual bool setUniformFloat(const std::string &name, float value) const;
-            virtual bool setUniformFloat2(const std::string &name, const glm::vec2 &values) const;
-            virtual bool setUniformFloat3(const std::string &name, const glm::vec3 &values) const;
-            virtual bool setUniformFloat4(const std::string &name, const glm::vec4 &values) const;
-            virtual bool setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const;
-            virtual bool setUniformBool(const std::string &name, bool value) const;
-            virtual bool setUniformInt(const std::string &name, int value) const;
-            virtual bool setUniformIntArray(const std::string &name, const int *values, unsigned int count) const;
+        virtual bool setUniformFloat(const std::string& name, float value) const;
+        virtual bool setUniformFloat2(const std::string& name, const glm::vec2& values) const;
+        virtual bool setUniformFloat3(const std::string& name, const glm::vec3& values) const;
+        virtual bool setUniformFloat4(const std::string& name, const glm::vec4& values) const;
+        virtual bool setUniformMatrix(const std::string& name, const glm::mat4& matrix) const;
+        virtual bool setUniformBool(const std::string& name, bool value) const;
+        virtual bool setUniformInt(const std::string& name, int value) const;
+        virtual bool setUniformIntArray(const std::string& name, const int* values, unsigned int count) const;
 
-            virtual bool setUniformFloat(NxShaderUniforms uniform, float value) const = 0;
-            virtual bool setUniformFloat3(NxShaderUniforms uniform, const glm::vec3 &values) const = 0;
-            virtual bool setUniformFloat4(NxShaderUniforms uniform, const glm::vec4 &values) const = 0;
-            virtual bool setUniformMatrix(NxShaderUniforms uniform, const glm::mat4 &matrix) const = 0;
-            virtual bool setUniformInt(NxShaderUniforms uniform, int value) const = 0;
-            virtual bool setUniformIntArray(NxShaderUniforms uniform, const int *values, unsigned int count) const = 0;
+        virtual bool setUniformFloat(NxShaderUniforms uniform, float value) const = 0;
+        virtual bool setUniformFloat3(NxShaderUniforms uniform, const glm::vec3& values) const = 0;
+        virtual bool setUniformFloat4(NxShaderUniforms uniform, const glm::vec4& values) const = 0;
+        virtual bool setUniformMatrix(NxShaderUniforms uniform, const glm::mat4& matrix) const = 0;
+        virtual bool setUniformInt(NxShaderUniforms uniform, int value) const = 0;
+        virtual bool setUniformIntArray(NxShaderUniforms uniform, const int* values, unsigned int count) const = 0;
 
-            bool setUniform(const std::string &name, UniformValue value) const;
+        bool setUniform(const std::string& name, UniformValue value) const;
 
-            void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer);
-            void setStorageBufferData(unsigned int index, void *data, unsigned int size);
-            virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
-            virtual void bindStorageBuffer(unsigned int index) const = 0;
-            virtual void unbindStorageBuffer(unsigned int index) const = 0;
+        void addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer>& buffer);
+        void setStorageBufferData(unsigned int index, void* data, unsigned int size);
+        virtual void bindStorageBufferBase(unsigned int index, unsigned int bindingPoint) const = 0;
+        virtual void bindStorageBuffer(unsigned int index) const = 0;
+        virtual void unbindStorageBuffer(unsigned int index) const = 0;
 
-            bool hasUniform(const std::string& name) const;
-            bool hasAttribute(int location) const;
+        bool hasUniform(const std::string& name) const;
+        bool hasAttribute(int location) const;
 
-            bool isCompatibleWithMesh(const RequiredAttributes& meshAttributes) const;
+        bool isCompatibleWithMesh(const RequiredAttributes& meshAttributes) const;
 
-            void resetCache();
+        void resetCache();
 
-            [[nodiscard]] virtual const std::string &getName() const = 0;
-            virtual unsigned int getProgramId() const = 0;
-        protected:
-            static std::string readFile(const std::string &filepath);
-        	std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
-            RequiredAttributes m_requiredAttributes;
-            std::unordered_map<std::string, UniformInfo> m_uniformInfos;
-            std::unordered_map<int, AttributeInfo> m_attributeInfos;
-            mutable UniformCache m_uniformCache;
+        [[nodiscard]] virtual const std::string& getName() const = 0;
+        virtual unsigned int getProgramId() const = 0;
+
+    protected:
+        static std::string readFile(const std::string& filepath);
+        std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
+        RequiredAttributes m_requiredAttributes;
+        std::unordered_map<std::string, UniformInfo> m_uniformInfos;
+        std::unordered_map<int, AttributeInfo> m_attributeInfos;
+        mutable UniformCache m_uniformCache;
     };
-
-
 }
