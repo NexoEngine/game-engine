@@ -44,7 +44,7 @@ namespace nexo::editor
             // --- Primitives submenu ---
             const auto& selector = Selector::get();
             const int currentSceneId = selector.getSelectedScene();
-            ImNexo::PrimitiveSubMenu(currentSceneId);
+            ImNexo::PrimitiveSubMenu(currentSceneId, m_popupManager);
 
             // --- Model item (with file‑dialog) ---
             if (ImGui::MenuItem("Model"))
@@ -158,7 +158,7 @@ namespace nexo::editor
             baseFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
         // Check if this object is selected
-        auto const& selector = Selector::get();
+        const auto& selector = Selector::get();
         const bool isSelected = selector.isEntitySelected(static_cast<int>(object.data.entity));
 
         if (isSelected)
@@ -257,6 +257,16 @@ namespace nexo::editor
             }
             sceneContextMenu();
             sceneCreationMenu();
+            if (m_popupManager.showPopup("Sphere creation popup"))
+            {
+                const int sceneId = selector.getSelectedScene();
+                ImNexo::PrimitiveCustomizationMenu(sceneId, SPHERE);
+            }
+            if (m_popupManager.showPopup("Cylinder creation popup"))
+            {
+                const int sceneId = selector.getSelectedScene();
+                ImNexo::PrimitiveCustomizationMenu(sceneId, CYLINDER);
+            }
         }
         ImGui::End();
     }
