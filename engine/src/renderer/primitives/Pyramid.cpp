@@ -123,9 +123,12 @@ namespace nexo::renderer
         std::vector<NxVertex> vertexData(nbVerticesPyramid);
         for (unsigned int i = 0; i < nbVerticesPyramid; ++i)
         {
-            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].position = vertices[i];
             vertexData[i].texCoord = texCoords[i];
             vertexData[i].normal = normals[i];
+            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+            vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
+            vertexData[i].entityID = 0; // Default entity ID
         }
 
         vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
