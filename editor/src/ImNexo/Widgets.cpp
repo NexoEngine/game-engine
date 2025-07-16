@@ -209,7 +209,7 @@ namespace ImNexo
         // Handle the "Create" button click
         if (ImGui::Button("Create"))
         {
-            const auto DEFAULT_COLOR_PRIMITIVE = {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f};
+            constexpr glm::vec4 DEFAULT_COLOR_PRIMITIVE = {0.05f * 1.5f, 0.09f * 1.15f, 0.13f * 1.25f, 1.0f};
 
             // Create the selected primitive with the specified parameters
             const nexo::ecs::Entity newPrimitive = primitive == nexo::SPHERE
@@ -217,14 +217,14 @@ namespace ImNexo
                                                            {0.0f, 0.0f, 0.0f},
                                                            {1.0f, 1.0f, 1.0f},
                                                            {0.0f, 0.0f, 0.0f},
-                                                           DEFAULT_COLOR_PRIMITIVE,
+                                                           glm::vec4(DEFAULT_COLOR_PRIMITIVE),
                                                            segmentCount
                                                        )
                                                        : nexo::EntityFactory3D::createCylinder(
                                                            {0.0f, 0.0f, 0.0f},
                                                            {1.0f, 1.0f, 1.0f},
                                                            {0.0f, 0.0f, 0.0f},
-                                                           DEFAULT_COLOR_PRIMITIVE,
+                                                           glm::vec4(DEFAULT_COLOR_PRIMITIVE),
                                                            segmentCount
                                                        );
 
