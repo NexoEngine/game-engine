@@ -18,13 +18,11 @@
 #include "assets/AssetLocation.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Light.hpp"
-#include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
 #include "components/Render3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "components/Camera.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/MaterialComponent.hpp"
 #include "assets/AssetCatalog.hpp"
@@ -163,7 +161,7 @@ namespace nexo
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+            assets::AssetLocation("_internal::TetrahedronMatFlatColor@_internal"),
             std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -192,7 +190,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMat@_internal"),
+            assets::AssetLocation("_internal::TetrahedronMat@_internal"),
             std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -221,7 +219,7 @@ namespace nexo
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+            assets::AssetLocation("_internal::PyramidMatFlatColor@_internal"),
             std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -249,7 +247,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMat@_internal"),
+            assets::AssetLocation("_internal::PyramidMat@_internal"),
             std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -279,7 +277,7 @@ namespace nexo
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+            assets::AssetLocation("_internal::CylinderMatFlatColor@_internal"),
             std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -307,7 +305,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMat@_internal"),
+            assets::AssetLocation("_internal::CylinderMat@_internal"),
             std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -337,7 +335,7 @@ namespace nexo
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+            assets::AssetLocation("_internal::SphereMatFlatColor@_internal"),
             std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -365,7 +363,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMat@_internal"),
+            assets::AssetLocation("_internal::SphereMat@_internal"),
             std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
@@ -400,7 +398,7 @@ namespace nexo
         rootComp.modelRef = model;
 
         const std::string rawPath = modelAsset->getMetadata().location.getName().data();
-        std::filesystem::path fsPath{ rawPath };
+        std::filesystem::path fsPath{rawPath};
         rootComp.name = fsPath.stem().string();
 
         Application::m_coordinator->addComponent(rootEntity, rootTransform);
@@ -442,12 +440,14 @@ namespace nexo
         parentComponent.parent = parentEntity;
         Application::m_coordinator->addComponent(nodeEntity, parentComponent);
 
-        auto parentTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+        auto parentTransform = Application::m_coordinator->tryGetComponent<
+            components::TransformComponent>(parentEntity);
         if (parentTransform)
             parentTransform->get().children.push_back(nodeEntity);
 
 
-        if (!node.name.empty()) {
+        if (!node.name.empty())
+        {
             components::NameComponent nameComponent;
             nameComponent.name = node.name;
             Application::m_coordinator->addComponent(nodeEntity, nameComponent);
@@ -474,7 +474,8 @@ namespace nexo
             Application::m_coordinator->addComponent(meshEntity, meshTransform);
             Application::m_coordinator->addComponent(meshEntity, staticMesh);
 
-            if (!mesh.name.empty()) {
+            if (!mesh.name.empty())
+            {
                 components::NameComponent nameComponent;
                 nameComponent.name = mesh.name;
                 Application::m_coordinator->addComponent(meshEntity, nameComponent);
@@ -491,7 +492,8 @@ namespace nexo
             meshParentComponent.parent = nodeEntity;
             Application::m_coordinator->addComponent(meshEntity, meshParentComponent);
 
-            auto nodeTransform = Application::m_coordinator->tryGetComponent<components::TransformComponent>(nodeEntity);
+            auto nodeTransform = Application::m_coordinator->tryGetComponent<
+                components::TransformComponent>(nodeEntity);
             if (nodeTransform)
                 nodeTransform->get().children.push_back(meshEntity);
         }
