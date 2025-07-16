@@ -26,6 +26,7 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <format>
+#include "ecs/Definitions.hpp"
 
 namespace nexo::editor
 {
@@ -33,11 +34,7 @@ namespace nexo::editor
     void GameWindow::show()
     {
         // Set initial window size
-        if (m_firstFrame)
-        {
-            ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_FirstUseEver);
-            m_firstFrame = false;
-        }
+        ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_FirstUseEver);
 
         // Begin the window
         std::string windowTitle = std::format("Game View - {}###GameWindow{}", m_sceneUuid, m_sceneId);
@@ -124,7 +121,7 @@ namespace nexo::editor
     {
         auto &coordinator = *Application::m_coordinator;
 
-        if (m_gameCamera == 0)
+        if (m_gameCamera == ecs::INVALID_ENTITY)
         {
             // No game camera, render a message
             const ImVec2 textSize = ImGui::CalcTextSize("No game camera");
@@ -133,8 +130,19 @@ namespace nexo::editor
             return;
         }
 
-        // Get camera component
-        auto &cameraComponent = coordinator.getComponent<components::CameraComponent>(m_gameCamera);
+        // Try to get camera component - entity might have been deleted
+        auto cameraCompOpt = coordinator.template tryGetComponent<components::CameraComponent>(m_gameCamera);
+        if (!cameraCompOpt)
+        {
+            // Camera entity was deleted, reset to invalid
+            m_gameCamera = ecs::INVALID_ENTITY;
+            const ImVec2 textSize = ImGui::CalcTextSize("Camera was deleted");
+            ImGui::SetCursorPos(ImVec2((m_contentSize.x - textSize.x) / 2, (m_contentSize.y - textSize.y) / 2));
+            ImGui::Text("Camera was deleted");
+            return;
+        }
+        
+        auto &cameraComponent = cameraCompOpt->get();
         if (!cameraComponent.m_renderTarget)
             return;
 
