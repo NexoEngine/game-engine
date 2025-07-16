@@ -18,7 +18,7 @@
 #include "ecs/Definitions.hpp"
 #include "components/Camera.hpp"
 #include "core/scene/SceneManager.hpp"
-#include <loguru.hpp>
+#include "Logger.hpp"
 
 namespace nexo::editor
 {
@@ -63,12 +63,12 @@ namespace nexo::editor
                 // Destroy the entity
                 coordinator.destroyEntity(m_gameCamera);
 
-                DLOG_F(INFO, "Destroyed game camera entity %u", m_gameCamera);
+                LOG(NEXO_INFO, "Destroyed game camera entity {}", m_gameCamera);
             }
             else
             {
                 // Camera was already destroyed
-                DLOG_F(WARNING, "Failed to properly clean up game camera");
+                LOG(NEXO_WARN, "Failed to properly clean up game camera");
             }
 
             m_gameCamera = ecs::INVALID_ENTITY;

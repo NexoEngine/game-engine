@@ -22,23 +22,14 @@
 #include "core/scene/SceneManager.hpp"
 #include "renderer/Framebuffer.hpp"
 #include "CameraFactory.hpp"
-#include <loguru.hpp>
+#include "Logger.hpp"
 
 namespace nexo::editor
 {
 
     void GameWindow::setup()
     {
-        DLOG_F(INFO, "Setting up GameWindow for scene %u", m_sceneId);
-
-        renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {
-            renderer::NxFrameBufferTextureFormats::RGBA8,
-            renderer::NxFrameBufferTextureFormats::RED_INTEGER, // Required by render system
-            renderer::NxFrameBufferTextureFormats::Depth};
-        framebufferSpecs.width = 1280; // Default size, will be resized
-        framebufferSpecs.height = 720;
-        const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
+        LOG(NEXO_INFO, "Setting up GameWindow for scene {}", m_sceneId);
 
         auto &coordinator = *Application::m_coordinator;
         auto &app = getApp();
@@ -50,14 +41,12 @@ namespace nexo::editor
             if (coordinator.entityHasComponent<components::CameraComponent>(entity)) {
                 auto &camera = coordinator.getComponent<components::CameraComponent>(entity);
                 if (camera.main) {
-                    // Found an existing main camera, use it
+                    // Found an existing main camera, use it with its existing render target
                     m_gameCamera = entity;
                     camera.render = true;
                     camera.active = true;
-                    camera.m_renderTarget = renderTarget;
-                    camera.resize(framebufferSpecs.width, framebufferSpecs.height);
                     mainCameraFound = true;
-                    DLOG_F(INFO, "Using existing main camera %u for scene %u", m_gameCamera, m_sceneId);
+                    LOG(NEXO_INFO, "Using existing main camera {} for scene {}", m_gameCamera, m_sceneId);
                     break;
                 }
             }
@@ -65,6 +54,16 @@ namespace nexo::editor
         
         // Only create a new camera if no main camera exists
         if (!mainCameraFound) {
+            // Create render target specs for new camera
+            renderer::NxFramebufferSpecs framebufferSpecs;
+            framebufferSpecs.attachments = {
+                renderer::NxFrameBufferTextureFormats::RGBA8,
+                renderer::NxFrameBufferTextureFormats::RED_INTEGER, // Required by render system
+                renderer::NxFrameBufferTextureFormats::Depth};
+            framebufferSpecs.width = 1280; // Default size, will be resized
+            framebufferSpecs.height = 720;
+            const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
+            
             // Create a render camera
             m_gameCamera = CameraFactory::createPerspectiveCamera(
                 {0.0f, 0.0f, 6.0f}, // Default position
@@ -79,13 +78,8 @@ namespace nexo::editor
             // Add the camera to the scene
             scene.addEntity(m_gameCamera);
 
-            components::NameComponent nameComponent{"Render Camera"};
-            coordinator.addComponent(m_gameCamera, nameComponent);
-
-            DLOG_F(INFO, "Created new game camera %u for scene %u", m_gameCamera, m_sceneId);
+            LOG(NEXO_INFO, "Created new game camera {} for scene {}", m_gameCamera, m_sceneId);
         }
-
-        m_firstFrame = true;
     }
 
 }

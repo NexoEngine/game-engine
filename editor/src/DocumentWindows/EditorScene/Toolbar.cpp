@@ -34,9 +34,8 @@ namespace nexo::editor {
 
         // Check if game window already exists
         if (auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
-            // Window exists, just make it visible and focus it
+            // Window exists, just make it visible
             gameWindow->setOpened(true);
-            ImGui::SetWindowFocus(gameWindowName.c_str());
         } else {
             // Get current EditorScene window's dock ID for docking the game window
             const std::string currentWindowName = m_windowName;
