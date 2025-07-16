@@ -8,7 +8,7 @@
 //
 //  Author:      Marie GIACOMEL
 //  Date:        21/02/2025
-//  Description: Source file for the tetrahedron  primitive
+//  Description: Source file for the tetrahedron primitive
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -122,6 +122,9 @@ namespace nexo::renderer
             vertexData[i].position = glm::vec4(vertices[i], 1.0f);
             vertexData[i].texCoord = texCoords[i];
             vertexData[i].normal = normals[i];
+            vertexData[i].tangent = glm::vec3(0.0f); // Default tangent
+            vertexData[i].bitangent = glm::vec3(0.0f); // Default bi tangent
+            vertexData[i].entityID = 0; // Default entity ID
         }
 
         vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
