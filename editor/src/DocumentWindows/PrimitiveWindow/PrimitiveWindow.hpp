@@ -16,41 +16,42 @@
 #include "ADocumentWindow.hpp"
 #include "EntityFactory3D.hpp"
 
-namespace nexo::editor {
+namespace nexo::editor
+{
+    class PrimitiveWindow final : public ADocumentWindow
+    {
+    public:
+        using ADocumentWindow::ADocumentWindow;
+        void setup() override;
 
-	class PrimitiveWindow final : public ADocumentWindow {
-		public:
-			using ADocumentWindow::ADocumentWindow;
-			void setup() override;
+        void show() override;
 
-			void show() override;
+        // No-op method in this class
+        void shutdown() override;
 
-			// No-op method in this class
-        	void shutdown() override;
+        // No-op method in this class
+        void update() override;
 
-            // No-op method in this class
-         	void update() override;
+        /**
+         * @brief Sets the selected primitive type for customization.
+         *
+         * @param primitive The type of primitive to set as selected.
+         */
+        void setSelectedPrimitive(const Primitives primitive)
+        {
+            m_selectedPrimitive = primitive;
+        }
 
-			/**
-			 * @brief Sets the selected primitive type for customization.
-			 *
-			 * @param primitive The type of primitive to set as selected.
-			 */
-			void setSelectedPrimitive(const Primitives primitive) {
-				m_selectedPrimitive = primitive;
-			}
+    private:
+        /**
+         * @brief Renders the primitive customization window for the selected primitive.
+         *
+         * This method is responsible for rendering the UI elements related to primitive customization.
+         * It checks if the primitive window is visible, sets up the appropriate window flags,
+         * and calls the `renderPrimitiveWindow` method to handle the actual rendering of the primitive.
+         */
+        void renderPrimitiveWindow() const;
 
-		private:
-            /**
-			 * @brief Renders the primitive customization window for the selected primitive.
-			 *
-			 * This method is responsible for rendering the UI elements related to primitive customization.
-			 * It checks if the primitive window is visible, sets up the appropriate window flags,
-			 * and calls the `renderPrimitiveWindow` method to handle the actual rendering of the primitive.
-			 */
-			void renderPrimitiveWindow();
-
-			Primitives m_selectedPrimitive = CUBE; // Default primitive type
-	};
-
+        Primitives m_selectedPrimitive = CUBE; // Default primitive type
+    };
 }

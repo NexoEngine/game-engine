@@ -14,12 +14,10 @@
 
 #include "PrimitiveWindow.hpp"
 
-namespace nexo::editor {
-
-
+namespace nexo::editor
+{
     void PrimitiveWindow::update()
-	{
-		// No need to update anything
-	}
-
+    {
+        // No need to update anything
+    }
 }

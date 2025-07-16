@@ -14,11 +14,10 @@
 
 #include "PrimitiveWindow.hpp"
 
-namespace nexo::editor {
-
+namespace nexo::editor
+{
     void PrimitiveWindow::setup()
     {
         // No need to setup anything
     }
-
 }
