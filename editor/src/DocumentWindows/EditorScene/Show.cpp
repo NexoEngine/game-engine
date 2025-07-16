@@ -24,6 +24,11 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Displays a centered message indicating that no active camera is present in the scene.
+     *
+     * Renders the text "No active camera" at the center of the viewport when no camera is currently active.
+     */
     void EditorScene::renderNoActiveCamera() const
     {
         // No active camera, render the text at the center of the screen
@@ -34,6 +39,13 @@ namespace nexo::editor {
         ImGui::Text("No active camera");
     }
 
+    /**
+     * @brief Renders a popup for creating a sphere or cylinder primitive with adjustable parameters.
+     *
+     * Displays a slider to set the subdivision (for spheres) or segment count (for cylinders), then creates the selected primitive entity with the specified parameter and adds it to the current scene upon confirmation. The creation action is recorded for undo/redo support.
+     *
+     * @param primitive The type of primitive to create (SPHERE or CYLINDER).
+     */
     void EditorScene::renderPrimitiveCreationPopup(const Primitives& primitive)
     {
         auto &app = Application::getInstance();
@@ -68,6 +80,11 @@ namespace nexo::editor {
         ImGui::EndPopup();
     }
 
+    /**
+     * @brief Renders the popup menu for creating new entities in the editor scene.
+     *
+     * Displays a menu with options to add primitive shapes (Cube, Sphere, Cylinder, Pyramid, Tetrahedron), lights (Directional, Point, Spot), and a camera to the current scene. Selecting a primitive or light creates the corresponding entity at the origin with default parameters and records the creation action. Selecting "Sphere" or "Cylinder" opens a parameterized creation popup. The camera option opens an inspector popup. The model import option is present as a placeholder.
+     */
     void EditorScene::renderNewEntityPopup()
     {
         auto &app = Application::getInstance();
@@ -170,6 +187,11 @@ namespace nexo::editor {
         m_viewportBounds[1] = viewportMax;
     }
 
+    /**
+     * @brief Displays and manages the main editor scene window, including viewport rendering and entity creation popups.
+     *
+     * Renders the editor scene window with scene-specific title and size constraints. Handles focus and selection logic, displays the scene viewport or a "No active camera" message, and renders transformation gizmos and toolbar when appropriate. Manages popups for adding new entities and for creating sphere and cylinder primitives with adjustable parameters.
+     */
     void EditorScene::show()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));

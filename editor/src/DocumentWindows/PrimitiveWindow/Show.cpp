@@ -17,6 +17,11 @@
 
 namespace nexo::editor {
 
+	/**
+	 * @brief Displays customization options for the currently selected primitive shape.
+	 *
+	 * Shows a descriptive label in the UI corresponding to the selected primitive type (cube, sphere, cylinder, pyramid, or tetrahedron).
+	 */
 	void PrimitiveWindow::renderPrimitiveWindow()
 	{
 		if (m_selectedPrimitive == CUBE) {
@@ -36,6 +41,11 @@ namespace nexo::editor {
 		}
 	}
 
+	/**
+	 * @brief Displays the primitive customization window if it is visible.
+	 *
+	 * Checks the visibility of the PrimitiveWindow sub-inspector and, if visible, creates and manages an ImGui window for customizing primitive shapes. Renders the appropriate UI elements for the selected primitive.
+	 */
 	void PrimitiveWindow::show()
 	{
 		const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();

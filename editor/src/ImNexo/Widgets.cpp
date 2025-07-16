@@ -88,6 +88,17 @@ namespace ImNexo {
         return colorModified;
 	}
 
+	/**
+	 * @brief Displays a dropdown menu of buttons at a specified position and orientation.
+	 *
+	 * Renders a custom-styled ImGui dropdown menu containing a list of buttons, each with optional icons, gradients, tooltips, and click callbacks. The menu appears at a position and orientation relative to the triggering button and can be closed by clicking outside its bounds.
+	 *
+	 * @param buttonPos The position where the dropdown menu should appear, relative to the triggering button.
+	 * @param buttonSize The size of each button in the dropdown.
+	 * @param buttonProps A list of button properties, including unique ID, icon, gradient, tooltip, and click callbacks.
+	 * @param closure Reference to a boolean flag that is set to false to close the menu.
+	 * @param orientation The direction in which the dropdown menu should open (up, down, left, or right).
+	 */
 	void ButtonDropDown(const ImVec2& buttonPos, const ImVec2 buttonSize, const std::vector<ButtonProps> &buttonProps, bool &closure, DropdownOrientation orientation)
 	{
 	    constexpr float buttonSpacing = 5.0f;
@@ -166,6 +177,14 @@ namespace ImNexo {
         ImGui::PopStyleVar(3);
 	}
 
+	/**
+	 * @brief Displays a popup menu for customizing and creating a sphere or cylinder primitive.
+	 *
+	 * Shows a slider to adjust the subdivision (for spheres) or segment count (for cylinders), and a "Create" button to instantiate the selected primitive with the specified parameter. The new entity is added to the given scene and the creation action is recorded for undo/redo support.
+	 *
+	 * @param sceneId ID of the scene where the primitive will be created.
+	 * @param primitive The type of primitive to customize and create (sphere or cylinder).
+	 */
 	void PrimitiveCustomizationMenu(const int sceneId, const nexo::Primitives primitive)
 	{
 		auto &app = nexo::Application::getInstance();
@@ -199,7 +218,14 @@ namespace ImNexo {
 		ImGui::EndPopup();
 	}
 
-    void PrimitiveSubMenu(const int sceneId)
+    /**
+	 * @brief Displays a "Primitives" menu for creating basic 3D shapes in the specified scene.
+	 *
+	 * Opens an ImGui menu listing several primitive shapes. Selecting Cube, Pyramid, or Tetrahedron immediately creates the corresponding entity with default parameters, adds it to the scene, and records the creation action for undo/redo support. Sphere and Cylinder menu items are present but currently do not perform any action.
+	 *
+	 * @param sceneId The identifier of the scene where new primitives will be added.
+	 */
+	void PrimitiveSubMenu(const int sceneId)
 	{
 		auto &app = nexo::Application::getInstance();
 		auto &sceneManager = app.getSceneManager();

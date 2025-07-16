@@ -23,6 +23,15 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Displays the context menu for a selected scene, providing scene and entity management options.
+     *
+     * Shows a context menu for the selected scene, allowing the user to delete the scene or add new entities. The "Add Entity" submenu includes options for adding primitives, models (placeholder), various types of lights (Directional, Point, Spot), and a camera. Selecting a light or camera option creates the corresponding entity in the scene and records the action for undo/redo support.
+     *
+     * @param sceneId The ID of the scene for which the context menu is shown.
+     * @param uuid The unique identifier of the scene.
+     * @param uiName The UI display name of the scene.
+     */
     void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
     {
         if (!uuid.empty() && !uiName.empty() && ImGui::MenuItem("Delete Scene")) {
@@ -91,6 +100,11 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Handles and displays context menus and popups for the scene tree window.
+     *
+     * Manages the display and execution of actions for the scene tree's context menu, scene selection context menu, and camera inspector popup. Opens or closes popups as needed and triggers associated callbacks.
+     */
     void SceneTreeWindow::sceneContextMenu()
     {
         if (m_popupManager.showPopup("Scene Tree Context Menu"))
@@ -163,7 +177,11 @@ namespace nexo::editor {
     //         ActionManager::get().recordAction(std::move(createAction));
     //     }
     //     ImGui::EndPopup();
-    // }
+    /**
+     * @brief Displays a modal popup for creating a new scene.
+     *
+     * Presents a text input for the scene name and "Create" and "Cancel" buttons. On successful creation, the popup closes and the input is cleared; otherwise, the popup remains open for further input.
+     */
 
     void SceneTreeWindow::sceneCreationMenu()
     {
@@ -255,6 +273,11 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Renders the scene tree window UI and manages user interactions.
+     *
+     * Displays the hierarchical scene tree, handles selection and multi-selection display, and manages context menus and popups for scene and entity operations. Initializes window position and size on first use.
+     */
     void SceneTreeWindow::show()
     {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);

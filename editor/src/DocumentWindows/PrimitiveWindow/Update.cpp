@@ -17,7 +17,12 @@
 namespace nexo::editor {
 
 
-    void PrimitiveWindow::update()
+    /**
+	 * @brief Placeholder update method for PrimitiveWindow.
+	 *
+	 * This method is intentionally left empty as no update actions are required for PrimitiveWindow.
+	 */
+	void PrimitiveWindow::update()
 	{
 		// No need to update anything
 	}

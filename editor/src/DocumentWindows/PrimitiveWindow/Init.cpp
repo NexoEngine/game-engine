@@ -16,6 +16,11 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Prepares the PrimitiveWindow for use.
+     *
+     * This method is intentionally left empty as no setup actions are required for the PrimitiveWindow.
+     */
     void PrimitiveWindow::setup()
     {
         // No need to setup anything

@@ -25,6 +25,15 @@
 #include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
 
+/**
+ * @brief Entry point for the nexo editor application.
+ *
+ * Initializes logging, registers editor windows, sets up the main editor loop with frame rate control, and handles clean shutdown. Returns 0 on normal exit or 1 if a nexo-specific exception is caught.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @return int Exit code: 0 for success, 1 for error.
+ */
 int main(int argc, char **argv)
 try {
     loguru::init(argc, argv);

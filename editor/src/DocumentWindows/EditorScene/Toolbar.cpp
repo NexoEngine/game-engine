@@ -22,6 +22,11 @@
 
 namespace nexo::editor
 {
+    /**
+     * @brief Sets up the initial layout and style for the editor toolbar.
+     *
+     * Positions the toolbar within the editor window, defines its size, and begins an ImGui child window with custom background and style settings to prepare for rendering toolbar elements.
+     */
     void EditorScene::initialToolbarSetup(const float buttonWidth) const
     {
         ImVec2 toolbarPos = m_windowPos;
@@ -43,6 +48,19 @@ namespace nexo::editor
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
     }
 
+    /**
+     * @brief Renders a toolbar button with an icon and gradient background.
+     *
+     * Displays a button with the specified icon and gradient. Shows a tooltip when hovered, if provided.
+     * Optionally detects right-click events and stores the result in `rightClicked`.
+     *
+     * @param uniqueId Unique identifier for the button.
+     * @param icon Icon to display on the button.
+     * @param tooltip Tooltip text shown on hover.
+     * @param gradientStop Gradient color stops for the button background.
+     * @param rightClicked Optional pointer to store right-click state.
+     * @return true if the button was left-clicked, false otherwise.
+     */
     bool EditorScene::renderToolbarButton(const std::string& uniqueId, const std::string& icon,
                                           const std::string& tooltip,
                                           const std::vector<ImNexo::GradientStop>& gradientStop, bool* rightClicked)
@@ -58,6 +76,15 @@ namespace nexo::editor
         return clicked;
     }
 
+    /**
+     * @brief Renders a dropdown submenu for adding primitive 3D shapes to the scene.
+     *
+     * Displays a dropdown menu at the specified position and size, allowing users to create cube, sphere, cylinder, pyramid, or tetrahedron primitives. Some primitives are created immediately, while others open a customization popup. The submenu remains open or closed based on the value of `showPrimitiveMenu`.
+     *
+     * @param primitiveButtonPos Screen position where the submenu should appear.
+     * @param buttonSize Size of each primitive button in the submenu.
+     * @param showPrimitiveMenu Controls the visibility of the submenu; updated based on user interaction.
+     */
     void EditorScene::renderPrimitiveSubMenu(const ImVec2& primitiveButtonPos, const ImVec2& buttonSize,
                                              bool& showPrimitiveMenu)
     {
@@ -129,6 +156,15 @@ namespace nexo::editor
         ImNexo::ButtonDropDown(primitiveButtonPos, buttonSize, buttonProps, showPrimitiveMenu);
     }
 
+    /**
+     * @brief Renders the snap options submenu in the toolbar.
+     *
+     * Displays a dropdown menu at the specified position and size, allowing users to toggle translation and rotation snapping. Each button visually indicates its active state and provides access to snap settings via right-click. The submenu is shown or hidden based on the `showSnapMenu` flag.
+     *
+     * @param snapButtonPos Position where the submenu should appear.
+     * @param buttonSize Size of each button in the submenu.
+     * @param showSnapMenu Controls the visibility of the submenu; updated by user interaction.
+     */
     void EditorScene::renderSnapSubMenu(const ImVec2& snapButtonPos, const ImVec2& buttonSize, bool& showSnapMenu)
     {
         const std::vector<ImNexo::ButtonProps> buttonProps =
@@ -180,6 +216,11 @@ namespace nexo::editor
         ImNexo::ButtonDropDown(snapButtonPos, buttonSize, buttonProps, showSnapMenu);
     }
 
+    /**
+     * @brief Displays a modal popup for configuring translation and rotation snap settings.
+     *
+     * Allows the user to adjust 3D translation snap values (X, Y, Z) and the rotation snap angle using draggable controls. Includes an "OK" button to confirm changes and close the popup.
+     */
     void EditorScene::snapSettingsPopup()
     {
         if (m_popupManager.showPopupModal("Snap settings popup"))
@@ -235,6 +276,11 @@ namespace nexo::editor
         }
     }
 
+    /**
+     * @brief Displays a modal popup for configuring grid settings.
+     *
+     * Presents controls for adjusting grid size, pixel cell spacing, and cell size parameters. Tooltips provide additional context for each setting. Includes an "OK" button to close the popup and apply changes.
+     */
     void EditorScene::gridSettingsPopup()
     {
         if (m_popupManager.showPopupModal("Grid settings"))
@@ -282,6 +328,11 @@ namespace nexo::editor
         }
     }
 
+    /**
+     * @brief Renders the toolbar button for editor camera actions.
+     *
+     * Displays a button to either edit the editor camera settings (if the editor camera is active) or switch back to the editor camera (if another camera is active). Selecting the edit option adds the editor camera to the selection. Selecting the switch option deactivates the current camera and activates the editor camera.
+     */
     void EditorScene::renderEditorCameraToolbarButton()
     {
         auto& selector = Selector::get();
@@ -311,6 +362,16 @@ namespace nexo::editor
         }
     }
 
+    /**
+     * @brief Renders the toolbar button for toggling gizmo coordinate mode (local or world).
+     *
+     * Sets the active and inactive button properties based on the current gizmo mode and renders the corresponding toolbar button. Returns true if the active mode button is clicked.
+     *
+     * @param showGizmoModeMenu Whether the gizmo mode submenu is currently open, affecting button appearance.
+     * @param activeGizmoMode Populated with the properties of the currently active gizmo mode button.
+     * @param inactiveGizmoMode Populated with the properties of the inactive gizmo mode button.
+     * @return true if the active gizmo mode button is clicked; false otherwise.
+     */
     bool EditorScene::renderGizmoModeToolbarButton(const bool showGizmoModeMenu, ImNexo::ButtonProps& activeGizmoMode,
                                                    ImNexo::ButtonProps& inactiveGizmoMode)
     {
@@ -336,6 +397,11 @@ namespace nexo::editor
                                    activeGizmoMode.tooltip, showGizmoModeMenu ? m_selectedGradient : m_buttonGradient);
     }
 
+    /**
+     * @brief Renders the main editor toolbar with interactive buttons and submenus.
+     *
+     * Displays toolbar buttons for adding primitives, camera controls, gizmo operations and modes, snapping, grid toggling, wireframe mode, and scene playback. Handles the display of submenus and popups for primitives, gizmo operations, gizmo modes, snap settings, and grid settings. Maintains consistent layout and visual feedback for active states.
+     */
     void EditorScene::renderToolbar()
     {
         constexpr float buttonWidth = 35.0f;

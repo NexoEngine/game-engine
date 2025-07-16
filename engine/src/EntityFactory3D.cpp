@@ -37,6 +37,17 @@
 
 namespace nexo
 {
+    /**
+     * @brief Creates a cube entity with the specified position, size, rotation, and flat color material.
+     *
+     * Initializes a cube entity in the ECS with transform, static mesh, material, and UUID components. The cube uses a flat color material defined by the provided color vector.
+     *
+     * @param pos The position of the cube in world space.
+     * @param size The scale of the cube along each axis.
+     * @param rotation The Euler angles (in radians) for the cube's orientation.
+     * @param color The RGBA color used for the cube's material.
+     * @return ecs::Entity The created cube entity.
+     */
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
@@ -67,6 +78,17 @@ namespace nexo
         return newCube;
     }
 
+    /**
+     * @brief Creates a cube entity with the specified transform and material.
+     *
+     * The cube is initialized with position, size, and rotation, and uses the provided material for its appearance. The entity is assigned transform, static mesh, material, and UUID components.
+     *
+     * @param pos The position of the cube in world space.
+     * @param size The size (scale) of the cube.
+     * @param rotation The Euler angles (in radians) for the cube's rotation.
+     * @param material The material to apply to the cube.
+     * @return The created cube entity.
+     */
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                             const components::Material& material)
     {
@@ -95,6 +117,16 @@ namespace nexo
         return newCube;
     }
 
+    /**
+     * @brief Creates a billboard entity at the specified position and size with a flat color material.
+     *
+     * The billboard entity is initialized with transform, billboard mesh, material, and UUID components.
+     *
+     * @param pos The world position of the billboard.
+     * @param size The size of the billboard.
+     * @param color The flat color to use for the billboard's material.
+     * @return ecs::Entity The created billboard entity.
+     */
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3& pos, const glm::vec3& size, const glm::vec4& color)
     {
         components::TransformComponent transform{};
@@ -123,6 +155,16 @@ namespace nexo
         return newBillboard;
     }
 
+    /**
+     * @brief Creates a billboard entity with the specified position, size, and material.
+     *
+     * The billboard entity is initialized with transform, billboard, material, and UUID components.
+     *
+     * @param pos The world position of the billboard.
+     * @param size The size of the billboard.
+     * @param material The material to apply to the billboard.
+     * @return The created billboard entity.
+     */
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3& pos, const glm::vec3& size,
                                                  const components::Material& material)
     {
@@ -150,6 +192,17 @@ namespace nexo
         return newBillboard;
     }
 
+    /**
+     * @brief Creates a tetrahedron entity with the specified position, size, rotation, and flat color material.
+     *
+     * The entity is initialized with transform, static mesh, material, and UUID components, and uses a flat color for its material.
+     *
+     * @param pos The position of the tetrahedron in world space.
+     * @param size The scale of the tetrahedron along each axis.
+     * @param rotation The Euler angles (in radians) for the tetrahedron's orientation.
+     * @param color The RGBA color to use for the flat color material.
+     * @return ecs::Entity The created tetrahedron entity.
+     */
     ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
@@ -180,6 +233,17 @@ namespace nexo
         return newTetrahedron;
     }
 
+    /**
+     * @brief Creates a tetrahedron entity with the specified transform and material.
+     *
+     * Initializes a new entity with position, size, and rotation, assigns a static tetrahedron mesh, and applies the provided material. The entity is also assigned a unique identifier.
+     *
+     * @param pos The position of the tetrahedron in world space.
+     * @param size The scale of the tetrahedron along each axis.
+     * @param rotation The rotation of the tetrahedron in Euler angles (radians).
+     * @param material The material to apply to the tetrahedron.
+     * @return The created tetrahedron entity.
+     */
     ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                                    const components::Material& material)
     {
@@ -208,6 +272,17 @@ namespace nexo
         return newTetrahedron;
     }
 
+    /**
+     * @brief Creates a pyramid entity with the specified position, size, rotation, and flat color material.
+     *
+     * Initializes a 3D pyramid entity with transform, static mesh, material, and UUID components, using a flat color for the material.
+     *
+     * @param pos The position of the pyramid in world space.
+     * @param size The scale of the pyramid along each axis.
+     * @param rotation The Euler angles (in radians) for the pyramid's orientation.
+     * @param color The RGBA color used for the pyramid's material.
+     * @return ecs::Entity The created pyramid entity.
+     */
     ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
@@ -237,6 +312,17 @@ namespace nexo
         return newPyramid;
     }
 
+    /**
+     * @brief Creates a pyramid entity with the specified transform and material.
+     *
+     * Initializes a 3D pyramid entity at the given position, size, and rotation, using the provided material for rendering. The entity is assigned transform, static mesh, material, and UUID components.
+     *
+     * @param pos The position of the pyramid in world space.
+     * @param size The scale of the pyramid along each axis.
+     * @param rotation The rotation of the pyramid in Euler angles (radians).
+     * @param material The material to apply to the pyramid's surface.
+     * @return ecs::Entity The created pyramid entity.
+     */
     ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                                const components::Material& material)
     {
@@ -265,6 +351,18 @@ namespace nexo
         return newPyramid;
     }
 
+    /**
+     * @brief Creates a cylinder entity with the specified transform, flat color material, and segment count.
+     *
+     * The cylinder is initialized with position, size, and rotation, uses a static mesh with the given number of segments, and applies a flat color material.
+     *
+     * @param pos The position of the cylinder in world space.
+     * @param size The scale of the cylinder along each axis.
+     * @param rotation The Euler angles (in radians) for the cylinder's rotation.
+     * @param color The RGBA color to use for the cylinder's material.
+     * @param nbSegment The number of segments used to construct the cylinder mesh.
+     * @return ecs::Entity The created cylinder entity.
+     */
     ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                                 glm::vec4 color, unsigned int nbSegment)
     {
@@ -295,6 +393,18 @@ namespace nexo
         return newCylinder;
     }
 
+    /**
+     * @brief Creates a cylinder entity with the specified transform, material, and segment count.
+     *
+     * The cylinder entity is initialized with transform, static mesh, material, and UUID components.
+     *
+     * @param pos The position of the cylinder in world space.
+     * @param size The scale of the cylinder along each axis.
+     * @param rotation The Euler angles (in radians) for the cylinder's orientation.
+     * @param material The material to apply to the cylinder.
+     * @param nbSegment The number of segments used to construct the cylinder mesh.
+     * @return ecs::Entity The created cylinder entity.
+     */
     ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                                 const components::Material& material, unsigned int nbSegment)
     {
@@ -323,6 +433,18 @@ namespace nexo
         return newCylinder;
     }
 
+    /**
+     * @brief Creates a sphere entity with the specified transform, flat color material, and mesh subdivision level.
+     *
+     * The sphere entity is initialized with position, size, and rotation, uses a static mesh with the given subdivision count for detail, and applies a flat color material.
+     *
+     * @param pos The position of the sphere in world space.
+     * @param size The scale of the sphere along each axis.
+     * @param rotation The Euler angles (in radians) for the sphere's orientation.
+     * @param color The RGBA color to use for the sphere's material.
+     * @param nbSubdivision The number of subdivisions for the sphere mesh, controlling its smoothness.
+     * @return ecs::Entity The created sphere entity.
+     */
     ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                               glm::vec4 color, const unsigned int nbSubdivision)
     {
@@ -353,6 +475,18 @@ namespace nexo
         return newSphere;
     }
 
+    /**
+     * @brief Creates a sphere entity with the specified transform, material, and mesh subdivision.
+     *
+     * The sphere entity is initialized with position, size, and rotation, uses a static mesh with the given subdivision level, and is assigned the provided material.
+     *
+     * @param pos The position of the sphere in world space.
+     * @param size The scale of the sphere along each axis.
+     * @param rotation The Euler angles (in radians) for the sphere's orientation.
+     * @param material The material to apply to the sphere.
+     * @param nbSubdivision The number of subdivisions for the sphere mesh, controlling its detail.
+     * @return The created sphere entity.
+     */
     ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                               const components::Material& material, const unsigned int nbSubdivision)
     {
@@ -381,6 +515,17 @@ namespace nexo
         return newSphere;
     }
 
+    /**
+     * @brief Creates a root entity representing a 3D model hierarchy from a model asset.
+     *
+     * Initializes a root entity with transform and root components, assigns a name based on the model asset, and recursively creates child entities for each node and mesh in the model. Returns the root entity of the constructed hierarchy, or `ecs::INVALID_ENTITY` if the model asset or its data is invalid.
+     *
+     * @param model Reference to the model asset to instantiate.
+     * @param pos World position for the root entity.
+     * @param size Scale for the root entity.
+     * @param rotation Euler angles (degrees) for the root entity's rotation.
+     * @return ecs::Entity The root entity of the model hierarchy, or `ecs::INVALID_ENTITY` on failure.
+     */
     ecs::Entity EntityFactory3D::createModel(assets::AssetRef<assets::Model> model, glm::vec3 pos, glm::vec3 size,
                                              glm::vec3 rotation)
     {

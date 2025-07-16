@@ -27,14 +27,10 @@
 namespace nexo::renderer
 {
     /**
-    * @brief Generates the vertex, texture coordinate, and normal data for a pyramid mesh.
-    *
-    * Fills the provided arrays with 36 vertices, texture coordinates, and normals for a pyramid.
-    *
-    * @param vertices Array to store generated vertex positions.
-    * @param texCoords Array to store generated texture coordinates.
-    * @param normals Array to store generated normals.
-    */
+     * @brief Generates vertex positions, texture coordinates, and normals for a 3D pyramid mesh.
+     *
+     * Populates the provided arrays with data for a pyramid consisting of 6 triangles (4 sides and a 2-triangle base), totaling 18 vertices. Each array receives per-vertex data: positions, UV coordinates, and face normals.
+     */
     static void genPyramidMesh(std::array<glm::vec3, 18>& vertices,
                                std::array<glm::vec2, 18>& texCoords,
                                std::array<glm::vec3, 18>& normals)
@@ -91,10 +87,11 @@ namespace nexo::renderer
 
 
     /**
+     * @brief Returns a cached vertex array object (VAO) containing the geometry for a 3D pyramid mesh.
      *
-     * @brief Creates a vertex array object (VAO) for a pyramid mesh.
+     * The VAO includes vertex positions, texture coordinates, and normals for a pyramid composed of 18 vertices (6 triangles). The VAO is created once and reused on subsequent calls.
      *
-     * @return A shared pointer to a vertex array object containing the pyramid mesh data.
+     * @return Shared pointer to the VAO representing the pyramid mesh.
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getPyramidVAO()
     {

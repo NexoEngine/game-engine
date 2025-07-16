@@ -77,7 +77,14 @@ namespace nexo::editor
         std::string uuid; ///< The unique identifier (UUID) of the object.
         SelectionType type; ///< The type of the object.
         EntityProperties data; ///< Associated data (scene properties and entity).
-        std::vector<SceneObject> children; ///< Child objects (if any).
+        std::vector<SceneObject> children; /**
+         * @brief Constructs a SceneObject with the specified name, children, selection type, and entity data.
+         *
+         * @param name The display name for the scene object in the UI.
+         * @param children A list of child SceneObjects to be attached to this object.
+         * @param type The selection type of the object (e.g., entity, light, camera).
+         * @param data Associated entity and scene properties for this object.
+         */
 
         explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {},
                              SelectionType type = SelectionType::NONE, EntityProperties data = {})
@@ -95,7 +102,10 @@ namespace nexo::editor
     class SceneTreeWindow final : public ADocumentWindow {
         public:
             using ADocumentWindow::ADocumentWindow;
-            ~SceneTreeWindow() override = default;
+            /**
+ * @brief Destroys the SceneTreeWindow instance.
+ */
+~SceneTreeWindow() override = default;
 
         // No-op method in this class
         void setup() override;
@@ -153,6 +163,16 @@ namespace nexo::editor
          * @param nodeCreator Function that creates a SceneObject given a scene ID, UI window ID, and entity.
          */
         template <typename... Components, typename NodeCreator>
+        /**
+         * @brief Populates scene nodes with child nodes for all entities matching specified components.
+         *
+         * Iterates over all entities that have the given component types, creates a node for each using the provided node creator, and adds it as a child to the corresponding scene node in the scenes map.
+         *
+         * @tparam Components... The component types to filter entities.
+         * @tparam NodeCreator A callable that creates a SceneObject for a given scene and entity.
+         * @param scenes Map of scene IDs to their root SceneObject nodes, which will be populated with new child nodes.
+         * @param nodeCreator Function or functor that generates a SceneObject for a given scene ID, window ID, and entity.
+         */
         static void generateNodes(std::map<scene::SceneId, SceneObject>& scenes, NodeCreator nodeCreator)
         {
             const std::vector<ecs::Entity> entities = Application::m_coordinator->getAllEntitiesWith<Components...>();

@@ -16,7 +16,12 @@
 
 namespace nexo::editor {
 
-    void PrimitiveWindow::shutdown()
+    /**
+	 * @brief Performs shutdown operations for the PrimitiveWindow.
+	 *
+	 * This method is intentionally left empty because resource cleanup is handled automatically by the framebuffer's destructor.
+	 */
+	void PrimitiveWindow::shutdown()
 	{
 		// No need to delete anything since the destructor of the framebuffer will handle it
 	}

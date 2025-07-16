@@ -31,6 +31,11 @@
 
 namespace nexo::renderer
 {
+    /**
+     * @brief Normalizes each vertex in the input vector to unit length.
+     *
+     * Modifies the input vector in place so that all vertices lie on the unit sphere.
+     */
     static void normalizeVertices(std::vector<glm::vec3>& vertices)
     {
         for (auto& vertex : vertices)
@@ -39,6 +44,11 @@ namespace nexo::renderer
         }
     }
 
+    /**
+     * @brief Generates the 12 vertices of an icosahedron normalized to form a unit sphere.
+     *
+     * @return std::vector<glm::vec3> List of 12 normalized vertex positions representing the initial sphere mesh.
+     */
     static std::vector<glm::vec3> generateSphereVertices()
     {
         std::vector<glm::vec3> vertices{};
@@ -65,6 +75,13 @@ namespace nexo::renderer
         return vertices;
     }
 
+    /**
+     * @brief Returns the indices defining the 20 triangular faces of an icosahedron.
+     *
+     * The indices correspond to the initial faces of a sphere mesh before subdivision, using a fixed vertex ordering.
+     *
+     * @return std::vector<unsigned int> List of indices for the icosahedron's triangular faces.
+     */
     static std::vector<unsigned int> generateSphereIndices()
     {
         std::vector<unsigned int> indices{};
@@ -135,6 +152,16 @@ namespace nexo::renderer
 
     struct Vec3Comparator
     {
+        /**
+         * @brief Compares two glm::vec3 objects for strict weak ordering.
+         *
+         * Returns true if vector a is less than vector b, comparing x, then y, then z components in order.
+         * Useful for using glm::vec3 as keys in ordered containers such as std::map.
+         *
+         * @param a First vector to compare.
+         * @param b Second vector to compare.
+         * @return true if a is less than b; false otherwise.
+         */
         bool operator()(const glm::vec3& a, const glm::vec3& b) const
         {
             if (a.x != b.x) return a.x < b.x;
@@ -143,6 +170,15 @@ namespace nexo::renderer
         }
     };
 
+    /**
+     * @brief Refines a triangular mesh using Loop subdivision for a specified number of iterations.
+     *
+     * For each subdivision step, splits each triangle into four by inserting midpoints on each edge, adds new vertices as needed, and normalizes all vertices to maintain a spherical shape. Updates the indices to reflect the subdivided mesh.
+     *
+     * @param indices Reference to the triangle index list, updated in-place.
+     * @param vertices Reference to the vertex position list, updated in-place.
+     * @param nbSubdivision Number of subdivision iterations to perform.
+     */
     void loopSubdivision(std::vector<unsigned int>& indices, std::vector<glm::vec3>& vertices,
                                 const unsigned int nbSubdivision)
     {
@@ -204,6 +240,14 @@ namespace nexo::renderer
         }
     }
 
+    /**
+     * @brief Generates spherical texture coordinates for a set of 3D vertices.
+     *
+     * Computes (u, v) coordinates for each vertex based on its position on the unit sphere, using longitude and latitude mapping.
+     *
+     * @param vertices List of 3D positions representing points on a sphere.
+     * @return std::vector<glm::vec2> Texture coordinates corresponding to each input vertex.
+     */
     static std::vector<glm::vec2> generateTextureCoords(const std::vector<glm::vec3>& vertices)
     {
         std::vector<glm::vec2> texCoords{};
@@ -218,6 +262,14 @@ namespace nexo::renderer
         return texCoords;
     }
 
+    /**
+     * @brief Generates normal vectors for a sphere mesh based on vertex positions.
+     *
+     * Each normal is computed as the vector from the origin to the corresponding vertex, matching the normalized vertex direction for a unit sphere.
+     *
+     * @param vertices The positions of the sphere's vertices.
+     * @return std::vector<glm::vec3> The normal vectors for each vertex.
+     */
     static std::vector<glm::vec3> generateSphereNormals(const std::vector<glm::vec3>& vertices)
     {
         std::vector<glm::vec3> normals{};
@@ -229,15 +281,24 @@ namespace nexo::renderer
         return normals;
     }
 
+    /**
+     * @brief Calculates the number of vertices in a subdivided icosahedron-based sphere mesh.
+     *
+     * @param nbSubdivision The number of Loop subdivision steps applied to the initial icosahedron.
+     * @return unsigned int The total number of vertices after the specified number of subdivisions.
+     */
     unsigned int getNbVerticesSphere(const unsigned int nbSubdivision)
     {
         return 10 * static_cast<unsigned int>(std::pow(4, nbSubdivision)) + 2;
     }
 
     /**
-     * @brief Creates a vertex array object (VAO) for a sphere mesh.
+     * @brief Returns a vertex array object (VAO) representing a unit sphere mesh with the specified subdivision level.
      *
-     * @return A shared pointer to a vertex array object containing the sphere mesh data.
+     * Generates or retrieves a cached VAO containing vertex and index buffers for a sphere mesh refined using Loop subdivision. The mesh includes positions, texture coordinates, normals, tangents, bitangents, and entity IDs. The VAO is suitable for rendering a smooth sphere in 3D scenes.
+     *
+     * @param nbSubdivision Number of Loop subdivision iterations to refine the sphere mesh.
+     * @return Shared pointer to the VAO containing the sphere mesh data.
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getSphereVAO(const unsigned int nbSubdivision)
     {

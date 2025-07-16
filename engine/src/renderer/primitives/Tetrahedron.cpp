@@ -29,14 +29,10 @@
 namespace nexo::renderer
 {
     /**
-    * @brief Generates the vertex, texture coordinate, and normal data for a tetrahedron mesh.
-    *
-    * Fills the provided arrays with 12 vertices, texture coordinates, and normals for a tetrahedron.
-    *
-    * @param vertices Array to store generated vertex positions.
-    * @param texCoords Array to store generated texture coordinates.
-    * @param normals Array to store generated normals.
-    */
+     * @brief Generates vertex positions, texture coordinates, and normals for a tetrahedron mesh.
+     *
+     * Populates the provided arrays with data for a tetrahedron consisting of four triangular faces (12 vertices total). Each face's vertices, UV coordinates, and normals are assigned in sequence.
+     */
     static void genTetrahedronMesh(std::array<glm::vec3, 12>& vertices,
                                    std::array<glm::vec2, 12>& texCoords,
                                    std::array<glm::vec3, 12>& normals)
@@ -89,9 +85,11 @@ namespace nexo::renderer
 
 
     /**
-     * @brief Creates a vertex array object (VAO) for a tetrahedron mesh.
+     * @brief Returns a vertex array object (VAO) containing the mesh data for a tetrahedron.
      *
-     * @return A shared pointer to a vertex array object containing the tetrahedron mesh data.
+     * The VAO includes vertex positions, texture coordinates, and normals for a tetrahedron mesh, with a layout suitable for rendering. The VAO is cached and reused on subsequent calls.
+     *
+     * @return Shared pointer to the tetrahedron VAO.
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getTetrahedronVAO()
     {

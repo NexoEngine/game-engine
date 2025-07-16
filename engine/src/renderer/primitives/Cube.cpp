@@ -26,14 +26,14 @@
 namespace nexo::renderer {
 
 	/**
-	* @brief Generates the vertex, texture coordinate, and normal data for a cube mesh.
-	*
-	* Fills the provided arrays with 36 vertices, texture coordinates, and normals for a cube.
-	*
-	* @param vertices Array to store generated vertex positions.
-	* @param texCoords Array to store generated texture coordinates.
-	* @param normals Array to store generated normals.
-	*/
+     * @brief Generates vertex positions, texture coordinates, and normals for a unit cube mesh.
+     *
+     * Populates the provided arrays with data for a cube centered at the origin, consisting of 36 vertices (12 triangles, 6 faces). Each array receives per-vertex data: positions, texture coordinates, and flat-shaded normals.
+     *
+     * @param vertices Output array for the cube's vertex positions.
+     * @param texCoords Output array for the cube's texture coordinates.
+     * @param normals Output array for the cube's normals.
+     */
     static void genCubeMesh(std::array<glm::vec3, 36> &vertices, std::array<glm::vec2, 36> &texCoords, std::array<glm::vec3, 36> &normals)
     {
     	float x = 0.5f;
@@ -93,6 +93,13 @@ namespace nexo::renderer {
 		std::ranges::copy(norm, normals.begin());
     }
 
+    /**
+     * @brief Returns a shared vertex array object (VAO) representing a 3D cube mesh.
+     *
+     * Creates and caches a VAO containing vertex positions, texture coordinates, and normals for a unit cube centered at the origin. The VAO is constructed with 36 vertices (12 triangles) and includes a vertex buffer and index buffer with appropriate layout for rendering. Subsequent calls return the cached VAO instance.
+     *
+     * @return std::shared_ptr<NxVertexArray> Shared pointer to the cube VAO.
+     */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getCubeVAO()
     {
         constexpr unsigned int nbVerticesCube = 36;

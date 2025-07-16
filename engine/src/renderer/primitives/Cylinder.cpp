@@ -28,7 +28,14 @@
 namespace nexo::renderer
 {
     // unsigned int CYLINDER_SEGMENTS = 8; // Number of segments for the cylinder min 3
-    constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
+    constexpr float CYLINDER_HEIGHT = 1.0f; /**
+     * @brief Generates the 3D vertex positions for a cylinder mesh.
+     *
+     * Creates a vector of 3D positions for a cylinder with the specified number of segments, including vertices for the top and bottom circles and their duplicates for cap triangulation. The cylinder has a height of 2.0 units, centered at the origin along the Y-axis.
+     *
+     * @param nbSegment Number of segments to divide the cylinder's circular faces. Must be at least 3 for a valid cylinder.
+     * @return std::vector<glm::vec3> List of vertex positions for the cylinder mesh.
+     */
 
     static std::vector<glm::vec3> generateCylinderVertices(const unsigned int nbSegment)
     {
@@ -66,6 +73,15 @@ namespace nexo::renderer
         return vertices;
     }
 
+    /**
+     * @brief Generates triangle indices for a cylinder cap using recursive triangulation.
+     *
+     * Adds indices to the provided vector to form a triangulated cap (top or bottom) of a cylinder mesh, handling arbitrary segment counts.
+     *
+     * @param indices Vector to which generated triangle indices are appended.
+     * @param transformer Offset applied to each index to address the correct subset of vertices for the cap.
+     * @param nbSegment Number of segments (vertices) around the cap's circumference.
+     */
     static void capIndices(std::vector<unsigned int> &indices, const int transformer, const unsigned int nbSegment)
     {
         std::function<bool(int)> recurFun;
@@ -109,6 +125,14 @@ namespace nexo::renderer
             capIndicesRec(start + 2 * step, nbSegment - 2 * step + 1);
     }
 
+    /**
+     * @brief Generates index data for rendering a cylinder mesh with the specified number of segments.
+     *
+     * Constructs triangle indices for the cylinder's side faces and both end caps, suitable for use in an index buffer.
+     *
+     * @param nbSegment Number of segments around the cylinder's circumference.
+     * @return std::vector<unsigned int> Index buffer for the cylinder mesh.
+     */
     static std::vector<unsigned int> generateCylinderIndices(const unsigned int nbSegment)
     {
         std::vector<unsigned int> indices{};
@@ -127,6 +151,14 @@ namespace nexo::renderer
         return indices;
     }
 
+    /**
+     * @brief Generates texture coordinates for a cylinder mesh.
+     *
+     * Computes 2D texture coordinates for all vertices of a cylinder with the specified number of segments, mapping the angular position around the cylinder to the horizontal (u) coordinate and assigning a constant vertical (v) coordinate.
+     *
+     * @param nbSegment Number of segments around the cylinder.
+     * @return std::vector<glm::vec2> Texture coordinates for each vertex.
+     */
     static std::vector<glm::vec2> generateTextureCoords(const unsigned int nbSegment)
     {
         std::vector<glm::vec2> texCoords{};
@@ -141,6 +173,15 @@ namespace nexo::renderer
         return texCoords;
     }
 
+    /**
+     * @brief Generates normal vectors for a cylinder mesh.
+     *
+     * Computes normals for each vertex in a cylinder mesh based on their position and segment count. Side vertices receive outward-pointing normals, while cap vertices receive normals pointing up or down.
+     *
+     * @param vertices The list of cylinder mesh vertices.
+     * @param nbSegment The number of segments used to construct the cylinder.
+     * @return std::vector<glm::vec3> The computed normal vectors for all vertices.
+     */
     static std::vector<glm::vec3> generateNormals(const std::vector<glm::vec3> &vertices, const unsigned int nbSegment)
     {
         std::vector<glm::vec3> normals{};
@@ -164,9 +205,12 @@ namespace nexo::renderer
     }
 
     /**
-     * @brief Creates a vertex array object (VAO) for a cylinder mesh.
+     * @brief Returns a vertex array object (VAO) representing a 3D cylinder mesh with the specified segment count.
      *
-     * @return A shared pointer to a vertex array object containing the cylinder mesh data.
+     * Generates and caches the geometry, normals, texture coordinates, and indices for a cylinder mesh. If a VAO for the given segment count already exists, it is returned from cache. The segment count is clamped to a minimum of 3. The resulting VAO is ready for use in rendering.
+     *
+     * @param nbSegment Number of segments around the cylinder's circumference.
+     * @return Shared pointer to the VAO containing the cylinder mesh data.
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getCylinderVAO(unsigned int nbSegment)
     {

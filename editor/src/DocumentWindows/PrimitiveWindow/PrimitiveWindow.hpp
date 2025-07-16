@@ -32,9 +32,11 @@ namespace nexo::editor {
          	void update() override;
 
 			/**
-			 * @brief Sets the selected primitive type for customization.
+			 * @brief Updates the currently selected primitive type for customization.
 			 *
-			 * @param primitive The type of primitive to set as selected.
+			 * Sets the internal selection to the specified primitive, determining which primitive is active for editing in the customization window.
+			 *
+			 * @param primitive The primitive type to select.
 			 */
 			void setSelectedPrimitive(const Primitives primitive) {
 				m_selectedPrimitive = primitive;

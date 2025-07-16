@@ -151,6 +151,13 @@ namespace nexo::renderer
     {
     public:
 
+        /**
+         * @brief Returns the singleton instance of the 3D renderer.
+         *
+         * Provides global access to the NxRenderer3D instance for managing 3D rendering operations.
+         *
+         * @return Reference to the singleton NxRenderer3D instance.
+         */
         static NxRenderer3D& get() {
             static NxRenderer3D instance;
             return instance;
@@ -242,9 +249,21 @@ namespace nexo::renderer
          */
         [[nodiscard]] NxRenderer3DStats getStats() const;
 
-        [[nodiscard]] std::shared_ptr<NxShader>& getShader() const { return m_storage->currentSceneShader; };
+        /**
+ * @brief Returns a reference to the current scene shader.
+ *
+ * @return Reference to a shared pointer holding the active NxShader for the current rendering scene.
+ */
+[[nodiscard]] std::shared_ptr<NxShader>& getShader() const { return m_storage->currentSceneShader; };
 
-        [[nodiscard]] std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
+        /**
+ * @brief Returns a shared pointer to the internal renderer storage.
+ *
+ * Provides access to the internal data and resources used by the 3D renderer.
+ *
+ * @return std::shared_ptr<NxRenderer3DStorage> Shared pointer to the renderer's internal storage.
+ */
+[[nodiscard]] std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
 
         /**
          * @brief Returns the texture index for a given texture.

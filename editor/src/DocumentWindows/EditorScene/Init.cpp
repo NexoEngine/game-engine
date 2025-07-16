@@ -33,6 +33,11 @@ namespace nexo::editor {
         setupShortcuts();
     }
 
+    /**
+     * @brief Initializes the editor scene, including camera, framebuffer, and rendering pipeline.
+     *
+     * Sets up a new scene with a perspective camera, configures framebuffer specifications, and establishes a rendering pipeline with mask, outline, and grid passes. Adds the camera entity to the scene, attaches necessary components, and sets it as the active camera. If the default scene flag is set, loads default entities into the scene.
+     */
     void EditorScene::setupScene()
     {
         auto &app = getApp();
@@ -108,6 +113,11 @@ namespace nexo::editor {
         assets::AssetImporter importer;
     }
 
+    /**
+     * @brief Populates the editor scene with default entities, lights, and models.
+     *
+     * Adds an ambient light, a directional light, a basic sphere, and multiple point lights to the scene. Imports and places several 3D models, including "9mn", "SmilingFace", and "Avocado", at predefined positions and scales. This function is typically used to initialize the default scene content for the editor.
+     */
     void EditorScene::loadDefaultEntities() const
     {
         auto &app = getApp();
