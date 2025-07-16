@@ -240,8 +240,9 @@ namespace ImNexo
         ImGui::EndPopup();
     }
 
-    void PrimitiveSubMenu(const int sceneId)
+    void PrimitiveSubMenu(const int sceneId, nexo::editor::PopupManager& popupManager)
     {
+
         auto& app = nexo::Application::getInstance();
         auto& sceneManager = app.getSceneManager();
 
@@ -258,16 +259,11 @@ namespace ImNexo
             }
             if (ImGui::MenuItem("Sphere"))
             {
-                // nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
-                // const auto primitiveWindow = editor.getWindow<nexo::editor::PrimitiveWindow>(NEXO_WND_USTRID_PRIMITIVE_WINDOW).lock();
-                // primitiveWindow->setSelectedPrimitive(nexo::Primitives::SPHERE);
-                // primitiveWindow->setOpened(true);
-
-                // PrimitiveCustomizationMenu(sceneId, nexo::Primitives::SPHERE);
+                popupManager.openPopup("Sphere creation popup");
             }
             if (ImGui::MenuItem("Cylinder"))
             {
-                // PrimitiveCustomizationMenu(sceneId, nexo::Primitives::CYLINDER);
+                popupManager.openPopup("Cylinder creation popup");
             }
             if (ImGui::MenuItem("Pyramid"))
             {
