@@ -28,9 +28,10 @@ namespace nexo::editor {
     #define NEXO_WND_USTRID_ASSET_MANAGER "###Asset Manager"
     #define NEXO_WND_USTRID_CONSOLE "###Console"
     #define NEXO_WND_USTRID_MATERIAL_INSPECTOR "###Material Inspector"
+    #define NEXO_WND_USTRID_PRIMITIVE_WINDOW "###Primitive Window"
     #define NEXO_WND_USTRID_DEFAULT_SCENE "###Default Scene"
-    #define NEXO_WND_USTRID_BOTTOM_BAR "###CommandsBar"
-    #define NEXO_WND_USTRID_TEST "###TestWindow"
+    #define NEXO_WND_USTRID_BOTTOM_BAR "###Commands Bar"
+    #define NEXO_WND_USTRID_TEST "###Test Window"
 
     class ADocumentWindow : public IDocumentWindow {
         public:

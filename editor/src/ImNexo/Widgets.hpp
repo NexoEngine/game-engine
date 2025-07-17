@@ -14,12 +14,10 @@
 #pragma once
 
 #include <imgui.h>
-#include <glm/glm.hpp>
 #include <string>
-
+#include "EntityFactory3D.hpp"
 #include "Components.hpp"
-#include "components/Render3D.hpp"
-#include "renderer/Texture.hpp"
+#include "DocumentWindows/PopupManager.hpp"
 
 namespace ImNexo {
 
@@ -36,15 +34,15 @@ namespace ImNexo {
     * @param colorButtonFlags Optional flags for the color button (default is none).
     * @return true if the color was modified; false otherwise.
     */
-	bool ColorEditor(
-		const std::string &label,
-		glm::vec4 *selectedEntityColor,
-		ImGuiColorEditFlags *colorPickerMode,
-		bool *showPicker,
-		ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None
-	);
+    bool ColorEditor(
+        const std::string &label,
+        glm::vec4 *selectedEntityColor,
+        ImGuiColorEditFlags *colorPickerMode,
+        bool *showPicker,
+        ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None
+    );
 
-	/**
+    /**
      * @brief Configuration properties for a button in a dropdown menu.
      *
      * This structure defines the appearance and behavior of buttons in a
@@ -90,11 +88,15 @@ namespace ImNexo {
      * @param closure Reference to a boolean flag controlling dropdown visibility; set to false to close
      * @param orientation Direction the dropdown should expand (DOWN, UP, LEFT, RIGHT)
      */
-	void ButtonDropDown(
-		const ImVec2& buttonPos,
-		ImVec2 buttonSize,
-		const std::vector<ButtonProps> &buttonProps,
-		bool &closure,
-		DropdownOrientation orientation = DropdownOrientation::DOWN
-	);
+    void ButtonDropDown(
+        const ImVec2& buttonPos,
+        ImVec2 buttonSize,
+        const std::vector<ButtonProps> &buttonProps,
+        bool &closure,
+        DropdownOrientation orientation = DropdownOrientation::DOWN
+    );
+
+    void PrimitiveSubMenu(int sceneId, nexo::editor::PopupManager &popupManager);
+    void PrimitiveCustomizationMenu(int sceneId, nexo::Primitives primitive);
+
 }

@@ -52,10 +52,10 @@ namespace nexo::editor {
         auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
         auto gridPass = std::make_shared<renderer::GridPass>(m_contentSize.x, m_contentSize.y);
 
-        renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
-        renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
-        renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
-        renderer::PassId gridId = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
+        const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
+        const renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
+        const renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
+        const renderer::PassId gridId = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
         // Set up prerequisites
         cameraComponent.pipeline.addPrerequisite(outlineId, maskId);
         cameraComponent.pipeline.addPrerequisite(outlineId, forwardId);
@@ -125,6 +125,12 @@ namespace nexo::editor {
         // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
         //                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
         // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
+        const ecs::Entity basicSphere = EntityFactory3D::createSphere({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
+                                                                                {0.0f, 0.0f, 0.0f}, {
+                                                                                    0.05f * 1.5, 0.09f * 1.15,
+                                                                                    0.13f * 1.25, 1.0f
+                                                                                });
+        app.getSceneManager().getScene(m_sceneId).addEntity(basicSphere);
 
         assets::AssetImporter importer;
 

@@ -13,14 +13,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <string>
-#include <cstdlib>
-
 #ifdef _WIN32
     #include <windows.h>
 #endif
+#include <string>
 
 namespace nexo::editor::utils {
+
     /**
      * @brief Opens a file explorer window showing a specified folder.
      *
