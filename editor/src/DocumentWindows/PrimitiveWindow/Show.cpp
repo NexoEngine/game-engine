@@ -19,25 +19,25 @@ namespace nexo::editor
 {
     void PrimitiveWindow::renderPrimitiveWindow() const
     {
-        if (m_selectedPrimitive == CUBE)
+        switch (m_selectedPrimitive)
         {
-            ImGui::Text("Cube customization options");
-        }
-        else if (m_selectedPrimitive == SPHERE)
-        {
-            ImGui::Text("Sphere customization options");
-        }
-        else if (m_selectedPrimitive == CYLINDER)
-        {
-            ImGui::Text("Cylinder customization options");
-        }
-        else if (m_selectedPrimitive == PYRAMID)
-        {
-            ImGui::Text("Pyramid customization options");
-        }
-        else if (m_selectedPrimitive == TETRAHEDRON)
-        {
-            ImGui::Text("Tetrahedron customization options");
+            case CUBE:
+                ImGui::Text("Cube customization options");
+                break;
+            case SPHERE:
+                ImGui::Text("Sphere customization options");
+                break;
+            case CYLINDER:
+                ImGui::Text("Cylinder customization options");
+                break;
+            case PYRAMID:
+                ImGui::Text("Pyramid customization options");
+                break;
+            case TETRAHEDRON:
+                ImGui::Text("Tetrahedron customization options");
+                break;
+            default:
+                ImGui::Text("Primitive customization options");
         }
     }
 
