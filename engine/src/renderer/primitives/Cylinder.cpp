@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-#include <array>
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -82,16 +81,13 @@ namespace nexo::renderer
      */
     static void capIndices(std::vector<unsigned int>& indices, const int transformer, const unsigned int nbSegment)
     {
-        std::function<bool(int)> recurFun;
         std::function<void(int, unsigned int)> capIndicesRec;
 
         capIndicesRec = [&indices, &transformer, &capIndicesRec, &nbSegment](const int start, const unsigned int nbEdge)
         {
             // Calculate the step size for dividing the cap into triangles
-            const int step = ceil(static_cast<double>(nbEdge) / 3.0);
-
             // Base case: If the step size is 1, form a single triangle
-            if (step == 1)
+            if (const int step = ceil(static_cast<double>(nbEdge) / 3.0); step == 1)
             {
                 const int tmp = start + 2 < nbSegment ? start + 2 : 0;
                 indices.push_back(start + transformer);
@@ -330,7 +326,7 @@ namespace nexo::renderer
             {NxShaderDataType::FLOAT2, "aTexCoord"}, // Texture coordinate attribute
             {NxShaderDataType::FLOAT3, "aNormal"}, // Normal vector attribute
             {NxShaderDataType::FLOAT3, "aTangent"}, // Tangent vector attribute
-            {NxShaderDataType::FLOAT3, "aBiTangent"}, // Bitangent vector attribute
+            {NxShaderDataType::FLOAT3, "aBiTangent"}, // Bi tangent vector attribute
             {NxShaderDataType::INT, "aEntityID"} // Entity ID attribute
         };
         vertexBuffer->setLayout(cylinderVertexBufferLayout);
