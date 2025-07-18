@@ -169,16 +169,17 @@ namespace nexo::editor
                 ImGuiID editorDockId = currentImGuiWindow->DockId;
                 ImGuiID rightNode, leftNode;
 
-                ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode);
+                if (ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode))
+                {
+                    // Dock the windows
+                    ImGui::DockBuilderDockWindow((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str(), leftNode);
+                    ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
+                    ImGui::DockBuilderFinish(editorDockId);
 
-                // Dock the windows
-                ImGui::DockBuilderDockWindow((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str(), leftNode);
-                ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
-                ImGui::DockBuilderFinish(editorDockId);
-
-                // Update registry
-                m_windowRegistry.setDockId(currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId), leftNode);
-                m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
+                    // Update registry
+                    m_windowRegistry.setDockId(currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId), leftNode);
+                    m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
+                }
             }
 
             m_shouldSplitDock = false;
