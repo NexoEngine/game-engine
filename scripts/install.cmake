@@ -93,7 +93,15 @@ install(CODE "
             COMMAND dotnet publish
             \"${CMAKE_SOURCE_DIR}/engine/src/scripting/managed\"
             -c $<CONFIG>
-            --output \"\${CMAKE_INSTALL_PREFIX}/bin\"
+            --output \"${CMAKE_BINARY_DIR}/publish\"
             --no-self-contained
-        )
-")
+        )"
+)
+
+install(DIRECTORY "${CMAKE_BINARY_DIR}/publish/" # source directory
+        DESTINATION "bin"
+        FILES_MATCHING # install only matched files
+        PATTERN "*.dll" # select dll files
+        PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
+        PATTERN "*.deps.json" # select deps.json files
+)
