@@ -27,7 +27,6 @@ set(SOURCES
     ObjectFactory.cs
     NativeInterop.cs
     Logger.cs
-    NativeComponents.cs
     Components/Camera.cs
     Components/Light.cs
     Components/Render.cs
