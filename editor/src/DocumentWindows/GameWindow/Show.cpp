@@ -141,7 +141,7 @@ namespace nexo::editor
             ImGui::Text("Camera was deleted");
             return;
         }
-        
+
         auto &cameraComponent = cameraCompOpt->get();
         if (!cameraComponent.m_renderTarget)
             return;
@@ -155,12 +155,11 @@ namespace nexo::editor
                                    static_cast<unsigned int>(m_contentSize.y));
         }
 
-        // Store viewport bounds for potential future use
-        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-        auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-        auto viewportOffset = ImGui::GetWindowPos();
-        m_viewportBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
-        m_viewportBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
+        // Store viewport bounds after rendering the image
+        const ImVec2 viewportMin = ImGui::GetItemRectMin();
+        const ImVec2 viewportMax = ImGui::GetItemRectMax();
+        m_viewportBounds[0] = viewportMin;
+        m_viewportBounds[1] = viewportMax;
 
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);
