@@ -19,9 +19,54 @@
 #include "components/Uuid.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "context/ActionManager.hpp"
+#include "../GameWindow/GameWindow.hpp"
+#include "Editor.hpp"
+#include <imgui_internal.h>
+#include <format>
 
-namespace nexo::editor
-{
+namespace nexo::editor {
+
+    void EditorScene::createOrFocusGameWindow()
+    {
+        // Create or focus the game window
+        auto& editor = Editor::getInstance();
+        const std::string gameWindowName = std::format("Game View - {}{}{}", m_sceneUuid, NEXO_WND_USTRID_GAME_WINDOW, m_sceneId);
+
+        // Check if game window already exists
+        if (auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+            // Window exists, just make it visible
+            gameWindow->setOpened(true);
+        } else {
+            // Get current EditorScene window's dock ID for docking the game window
+            const std::string currentWindowName = m_windowName;
+            ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(currentWindowName.c_str());
+
+            if (currentImGuiWindow && currentImGuiWindow->DockId) {
+                // Create new game window
+                editor.registerWindow<GameWindow>(gameWindowName);
+
+                if (auto newGameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+                    // Configure the game window
+                    newGameWindow->setSceneId(static_cast<unsigned int>(m_sceneId));
+                    newGameWindow->setSceneUuid(m_sceneUuid);
+                    // Note: Removed setParentEditorScene() call as requested
+
+                    // Set up the window
+                    newGameWindow->setup();
+                    newGameWindow->setOpened(true);
+
+                    // Schedule dock split for next frame
+                    m_shouldSplitDock = true;
+                    m_gameWindowNameToSplit = gameWindowName;
+
+                    // Also schedule focus for after the split
+                    m_shouldFocusGameWindow = true;
+                    m_gameWindowToFocus = gameWindowName;
+                }
+            }
+        }
+    }
+
     void EditorScene::initialToolbarSetup(const float buttonWidth) const
     {
         ImVec2 toolbarPos = m_windowPos;
@@ -481,7 +526,10 @@ namespace nexo::editor
         ImGui::SameLine();
 
         // -------- Play button button --------
-        renderToolbarButton("play", ICON_FA_PLAY, "Play scene", m_buttonGradient);
+        if (renderToolbarButton("play", ICON_FA_PLAY, "Play scene", m_buttonGradient))
+        {
+            createOrFocusGameWindow();
+        }
 
         ImGui::PopStyleVar();
         ImGui::EndChild();

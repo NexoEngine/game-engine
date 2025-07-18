@@ -21,6 +21,7 @@
 #include "core/scene/SceneManager.hpp"
 #include "../PopupManager.hpp"
 #include "ImNexo/Widgets.hpp"
+#include <format>
 
 namespace nexo::editor
 {
@@ -113,6 +114,14 @@ namespace nexo::editor
             {0.0f, IM_COL32(50, 50, 70, 230)},
             {1.0f, IM_COL32(30, 30, 45, 230)}
         };
+
+        // Game window focus scheduling
+        bool m_shouldFocusGameWindow = false;
+        std::string m_gameWindowToFocus;
+
+        // Deferred dock split operation
+        bool m_shouldSplitDock = false;
+        std::string m_gameWindowNameToSplit;
 
         // Selected button gradient - lighter blue gradient
         const std::vector<ImNexo::GradientStop> m_selectedGradient = {
@@ -293,12 +302,22 @@ namespace nexo::editor
         void renderNewEntityPopup();
 
         void handleSelection();
-        [[nodiscard]] int sampleEntityTexture(float mx, float my) const;
-        [[nodiscard]] ecs::Entity findRootParent(ecs::Entity entityId) const;
-        void selectEntityHierarchy(ecs::Entity entityId, bool isCtrlPressed);
-        void selectModelChildren(const std::vector<ecs::Entity>& children, bool isCtrlPressed);
+        int sampleEntityTexture(float mx, float my) const;
+        ecs::Entity findRootParent(ecs::Entity entityId) const;
+        void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
+        void selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed);
         void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
         void updateWindowState();
+
+        /**
+        * @brief Creates a new game window or focuses an existing one.
+        *
+        * Checks if a game window for the current scene already exists. If it does,
+        * makes it visible and focuses it. Otherwise, creates a new game window,
+        * configures it with the scene ID and UUID, and schedules it for docking
+        * and focusing on the next frame.
+        */
+        void createOrFocusGameWindow();
 
         enum class EditorState
         {

@@ -23,6 +23,7 @@
 #include "renderPasses/OutlinePass.hpp"
 #include "assets/AssetImporter.hpp"
 #include "Path.hpp"
+#include "components/SceneComponents.hpp"
 
 namespace nexo::editor {
 

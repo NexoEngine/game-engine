@@ -20,6 +20,7 @@
 #include "src/DocumentWindows/AssetManager/AssetManagerWindow.hpp"
 #include "src/DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 #include "src/DocumentWindows/PrimitiveWindow/PrimitiveWindow.hpp"
+#include "src/DocumentWindows/GameWindow/GameWindow.hpp"
 
 #include <thread>
 #include <loguru.hpp>

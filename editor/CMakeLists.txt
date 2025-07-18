@@ -95,6 +95,10 @@ set(SRCS
         editor/src/DocumentWindows/PrimitiveWindow/Show.cpp
         editor/src/DocumentWindows/PrimitiveWindow/Shutdown.cpp
         editor/src/DocumentWindows/PrimitiveWindow/Update.cpp
+        editor/src/DocumentWindows/GameWindow/GameWindow.cpp
+        editor/src/DocumentWindows/GameWindow/Setup.cpp
+        editor/src/DocumentWindows/GameWindow/Show.cpp
+        editor/src/DocumentWindows/GameWindow/Update.cpp
 )
 
 # Windows App Icon
