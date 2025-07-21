@@ -28,12 +28,12 @@ set(SOURCES
     NativeInterop.cs
     Logger.cs
     NativeComponents.cs
-    Components/Transform.cs
-    Components/Light.cs
-    Components/Uuid.cs
-    Components/Scene.cs
     Components/Camera.cs
+    Components/Light.cs
     Components/Render.cs
+    Components/Scene.cs
+    Components/Transform.cs
+    Components/Uuid.cs
 )
 
 # Locate the dotnet executable

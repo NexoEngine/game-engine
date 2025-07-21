@@ -76,6 +76,7 @@ namespace nexo::ecs {
 
         return components;
     }
+
     Entity Coordinator::duplicateEntity(const Entity sourceEntity) const
     {
         const Entity newEntity = createEntity();
@@ -93,9 +94,34 @@ namespace nexo::ecs {
         return newEntity;
     }
 
-    bool Coordinator::supportsMementoPattern(const std::type_index typeIndex) const
+    bool Coordinator::supportsMementoPattern(const std::any& component) const
     {
-        auto it = m_supportsMementoPattern.find(typeIndex);
+        auto typeId = std::type_index(component.type());
+        auto it = m_supportsMementoPattern.find(typeId);
         return (it != m_supportsMementoPattern.end()) && it->second;
+    }
+
+    std::any Coordinator::saveComponent(const std::any& component) const
+    {
+        auto typeId = std::type_index(component.type());
+        auto it = m_saveComponentFunctions.find(typeId);
+        if (it != m_saveComponentFunctions.end())
+            return it->second(component);
+        return std::any();
+    }
+
+    std::any Coordinator::restoreComponent(const std::any& memento, const std::type_index& componentType) const
+    {
+        auto it = m_restoreComponentFunctions.find(componentType);
+        if (it != m_restoreComponentFunctions.end())
+            return it->second(memento);
+        return std::any();
+    }
+
+    void Coordinator::addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component)
+    {
+        auto it = m_addComponentFunctions.find(typeIndex);
+        if (it != m_addComponentFunctions.end())
+            it->second(entity, component);
     }
 }
