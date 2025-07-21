@@ -27,13 +27,15 @@ set(SOURCES
     ObjectFactory.cs
     NativeInterop.cs
     Logger.cs
-    NativeComponents.cs
     Components/Camera.cs
     Components/Light.cs
     Components/Render.cs
     Components/Scene.cs
     Components/Transform.cs
     Components/Uuid.cs
+    Systems/SystemBase.cs
+    Systems/WorldState.cs
+    Scripts/CubeSystem.cs
 )
 
 # Locate the dotnet executable

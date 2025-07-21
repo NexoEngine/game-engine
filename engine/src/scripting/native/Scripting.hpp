@@ -130,7 +130,10 @@ namespace nexo::scripting {
 
             Status initialize(Parameters parameters);
 
-            Status update(Double deltaTime);
+            const ManagedApi& getManagedApi() const
+            {
+                return m_managedApi;
+            }
 
             inline void *getManagedFptrVoid(const char_t *typeName, const char_t *methodName, const char_t *delegateTypeName) const;
 
