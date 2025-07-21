@@ -19,6 +19,7 @@ jobs:
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
       FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
+      DOTNET_INSTALL_DIR: "./.dotnet"
     permissions:
       contents: write
       packages: write
@@ -115,6 +116,11 @@ jobs:
             libegl1-mesa-dev mono-complete
           version: 1.0
           execute_install_scripts: true
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
 
       - name: Init submodules
         run: |
@@ -261,6 +267,8 @@ jobs:
   test-nsis-installer:
     name: Test NSIS installer
     runs-on: windows-latest
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
     needs: build
     steps:
       - name: Download NSIS installer
@@ -268,6 +276,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-msvc14-windows-latest'
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
 
       - name: Run NSIS installer
         shell: pwsh
@@ -326,6 +339,8 @@ jobs:
   test-deb-installer:
     name: Test DEB installer
     runs-on: ubuntu-latest
+    env:
+      DOTNET_INSTALL_DIR: "./.dotnet"
     needs: build
     steps:
       - name: Download DEB installer
@@ -333,6 +348,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
 
       - name: Install DEB package
         shell: bash

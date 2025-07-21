@@ -239,6 +239,7 @@ namespace nexo {
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
             void registerSystems();
+            void initScripting();
 
             void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
@@ -266,5 +267,7 @@ namespace nexo {
             std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
+            std::string m_latestScriptingError;
     };
 }

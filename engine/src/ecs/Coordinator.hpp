@@ -141,7 +141,15 @@ namespace nexo::ecs {
                 m_componentManager->registerComponent<T>();
 
                 m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
-                    return std::any(this->getComponent<T>(entity));
+                    return this->getComponent<T>(entity);
+                };
+
+                m_getComponentPointers[typeid(T)] = [this](Entity entity) -> std::any {
+                    auto opt = this->tryGetComponent<T>(entity);
+                    if (!opt.has_value())
+                        return std::any();
+                    T* ptr = &opt.value().get();
+                    return std::any(static_cast<void*>(ptr));
                 };
                 m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
 
@@ -271,6 +279,32 @@ namespace nexo::ecs {
             {
                 return m_componentManager->tryGetComponent<T>(entity);
             }
+
+            void* tryGetComponentById(ComponentType componentType, Entity entity)
+            {
+                auto itType = m_typeIDtoTypeIndex.find(componentType);
+                if (itType == m_typeIDtoTypeIndex.end()) {
+                    return nullptr;
+                }
+
+                const std::type_index& typeIndex = itType->second;
+                auto itGetter = m_getComponentPointers.find(typeIndex);
+                if (itGetter == m_getComponentPointers.end()) {
+                    return nullptr;
+                }
+
+                std::any componentAny = itGetter->second(entity);
+                if (!componentAny.has_value()) {
+                    return nullptr;
+                }
+
+                if (componentAny.type() != typeid(void*)) {
+                    return nullptr;
+                }
+
+                return std::any_cast<void*>(componentAny);
+            }
+
 
             /**
              * @brief Get the Singleton Component object
@@ -472,5 +506,6 @@ namespace nexo::ecs {
             std::unordered_map<ComponentType, std::type_index> m_typeIDtoTypeIndex;
             std::unordered_map<std::type_index, bool> m_supportsMementoPattern;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
+            std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
     };
 }

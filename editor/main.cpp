@@ -26,6 +26,10 @@
 #include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
 
+#include "Path.hpp"
+#include "scripting/native/ManagedTypedef.hpp"
+#include "scripting/native/Scripting.hpp"
+
 int main(int argc, char **argv)
 try {
     loguru::init(argc, argv);
@@ -47,6 +51,17 @@ try {
 
     editor.init();
 
+    auto &scriptHost = nexo::scripting::HostHandler::getInstance();
+
+    if (scriptHost.runScriptExample() == EXIT_FAILURE) {
+        LOG(NEXO_ERROR, "Error in runScriptExample");
+    } else {
+        LOG(NEXO_INFO, "Successfully ran runScriptExample");
+    }
+
+    auto clock = std::chrono::high_resolution_clock::now();
+    auto scriptDeltaStart = clock;
+    std::chrono::duration<double, std::milli> scriptDeltaElapsed = clock - scriptDeltaStart;
     while (editor.isOpen())
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -55,11 +70,24 @@ try {
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
+
+        scriptDeltaElapsed = std::chrono::high_resolution_clock::now() - scriptDeltaStart;
+        scriptHost.update(scriptDeltaElapsed.count() / 1000.0);
+        scriptDeltaStart = std::chrono::high_resolution_clock::now();
+
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+
+
     }
     editor.shutdown();
     return 0;
 } catch (const nexo::Exception &e) {
     LOG_EXCEPTION(e);
+    return 1;
+} catch (const std::exception &e) {
+    LOG(NEXO_ERROR, "Unhandled exception: {}", e.what());
+    return 1;
+} catch (...) {
+    LOG(NEXO_ERROR, "Unhandled unknown exception");
     return 1;
 }
