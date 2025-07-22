@@ -303,7 +303,7 @@ namespace Nexo
                 var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size);
                 if (typeId < 0)
                 {
-                    Console.WriteLine($"Failed to register component {name}, returned: {typeId}");
+                    Logger.Log(LogLevel.Error, $"Failed to register component {name}, returned: {typeId}");
                     return typeId;
                 }
                 _typeToNativeIdMap[componentType] = (UInt32)typeId;
@@ -312,7 +312,7 @@ namespace Nexo
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error calling NxRegisterComponent for {name}: {ex.Message}");
+                Logger.Log(LogLevel.Error, $"Error calling NxRegisterComponent for {name}: {ex.Message}");
                 return -1;
             }
         }
