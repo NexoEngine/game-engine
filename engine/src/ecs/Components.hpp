@@ -227,12 +227,23 @@ namespace nexo::ecs {
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
 
+		        assert(typeID < m_componentArrays.size() && "Component type ID exceeds component array size");
 		        if (m_componentArrays[typeID] != nullptr) {
 		            LOG(NEXO_WARN, "Component already registered");
 		            return;
 		        }
 
 		        m_componentArrays[typeID] = std::make_shared<ComponentArray<T>>();
+		    }
+
+	        ComponentType registerComponent(const size_t componentSize, const size_t initialCapacity = 1024)
+		    {
+		        const ComponentType typeID = generateComponentTypeID();
+		        assert(typeID < m_componentArrays.size() && "Component type ID exceeds component array size");
+
+		        assert(m_componentArrays[typeID] == nullptr && "TypeErasedComponent already registered, should really not happen");
+		        m_componentArrays[typeID] = std::make_shared<TypeErasedComponentArray>(componentSize, initialCapacity);
+		        return typeID;
 		    }
 
 		    /**
@@ -277,6 +288,35 @@ namespace nexo::ecs {
 		    			group->addToGroup(entity);
 					}
 				}
+		    }
+
+	        /**
+	         * @brief Adds a component to an entity using type ID and raw data
+	         *
+	         * Adds the component using the component type ID and raw data pointer,
+	         * useful for runtime component type handling. Updates any groups that
+	         * match the entity's new signature.
+	         *
+	         * @param entity The entity to add the component to
+	         * @param componentType The type ID of the component to add
+	         * @param componentData Pointer to the raw component data
+	         * @param oldSignature The entity's signature before adding the component
+	         * @param newSignature The entity's signature after adding the component
+	         *
+	         * @pre componentType must be a valid registered component type
+	         * @pre componentData must point to valid memory of the component's size
+	         */
+	        void addComponent(const Entity entity, const ComponentType componentType, const void *componentData, const Signature oldSignature, const Signature newSignature)
+		    {
+		        getComponentArray(componentType)->insertRaw(entity, componentData);
+
+		        for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
+		            // Check if entity qualifies now but did not qualify before.
+		            if (((oldSignature & group->allSignature()) != group->allSignature()) &&
+                            ((newSignature & group->allSignature()) == group->allSignature())) {
+		                group->addToGroup(entity);
+                    }
+		        }
 		    }
 
 		    /**
@@ -380,6 +420,22 @@ namespace nexo::ecs {
 				}
 			}
 
+	        /**
+             * @brief Gets the component array for a specific component type with ComponentType (const version)
+             *
+             * @param typeID The component type ID
+             * @return Const shared pointer to the component array
+             * @throws ComponentNotRegistered if the component type is not registered
+             */
+            [[nodiscard]] std::shared_ptr<IComponentArray> getComponentArray(const ComponentType typeID) const
+		    {
+		        const auto& componentArray = m_componentArrays[typeID];
+		        if (componentArray == nullptr)
+		            THROW_EXCEPTION(ComponentNotRegistered);
+
+		        return componentArray;
+		    }
+
 		    /**
 		     * @brief Gets the component array for a specific component type
 		     *
@@ -391,12 +447,7 @@ namespace nexo::ecs {
 		    [[nodiscard]] std::shared_ptr<ComponentArray<T>> getComponentArray()
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
-
-		        const auto& componentArray = m_componentArrays[typeID];
-		        if (componentArray == nullptr)
-		            THROW_EXCEPTION(ComponentNotRegistered);
-
-		        return std::static_pointer_cast<ComponentArray<T>>(componentArray);
+                return std::static_pointer_cast<ComponentArray<T>>(getComponentArray(typeID));
 		    }
 
 		    /**
@@ -410,12 +461,7 @@ namespace nexo::ecs {
 		    [[nodiscard]] std::shared_ptr<const ComponentArray<T>> getComponentArray() const
 			{
 		        const ComponentType typeID = getComponentTypeID<T>();
-
-		        const auto& componentArray = m_componentArrays[typeID];
-		        if (componentArray == nullptr)
-		            THROW_EXCEPTION(ComponentNotRegistered);
-
-		        return std::static_pointer_cast<const ComponentArray<T>>(componentArray);
+                return std::static_pointer_cast<const ComponentArray<T>>(getComponentArray(typeID));
 		    }
 
 		    /**
@@ -433,6 +479,22 @@ namespace nexo::ecs {
 		            return std::nullopt;
 
 		        return componentArray->get(entity);
+		    }
+
+	        /**
+             * @brief Safely attempts to get a component from an entity
+             *
+             * @param entity The entity to get the component from
+             * @param typeID The component type ID
+             * @return Pointer to the component if it exists, or nullptr if not found
+             */
+            [[nodiscard]] void *tryGetComponent(const Entity entity, const ComponentType typeID) const
+		    {
+		        const auto componentArray = getComponentArray(typeID);
+		        if (!componentArray->hasComponent(entity))
+		            return nullptr;
+
+		        return componentArray->getRawComponent(entity);
 		    }
 
 		    /**

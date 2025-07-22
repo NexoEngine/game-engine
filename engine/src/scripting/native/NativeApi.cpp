@@ -28,16 +28,16 @@ namespace nexo::scripting {
     // Implementation of the native functions
     extern "C" {
 
-        void HelloFromNative() {
+        void NxHelloFromNative() {
             std::cout << "Hello World from C++ native code!" << std::endl;
         }
 
-        Int32 AddNumbers(const Int32 a, const Int32 b) {
+        Int32 NxAddNumbers(const Int32 a, const Int32 b) {
             std::cout << "Native AddNumbers called with " << a << " and " << b << std::endl;
             return a + b;
         }
 
-        const char* GetNativeMessage() {
+        const char* NxGetNativeMessage() {
             std::cout << "GetNativeMessage called from C#" << std::endl;
             return nativeMessage;
         }
@@ -46,18 +46,17 @@ namespace nexo::scripting {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
-        ecs::Entity CreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color)
+        ecs::Entity NxCreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
             auto &app = getApp();
-            const ecs::Entity basicCube = EntityFactory3D::createCube(std::move(pos), std::move(size), std::move(rotation), std::move(color));
+            const ecs::Entity basicCube = EntityFactory3D::createCube(pos, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(basicCube);
             return basicCube;
         }
 
-        components::TransformComponent *GetTransformComponent(ecs::Entity entity)
+        components::TransformComponent *NxGetTransformComponent(ecs::Entity entity)
         {
-            const auto &app = getApp();
-            const auto opt = app.m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            const auto opt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
             if (!opt.has_value()) {
                 LOG(NEXO_WARN, "GetTransformComponent: Entity {} does not have a TransformComponent", entity);
                 return nullptr;
@@ -65,65 +64,41 @@ namespace nexo::scripting {
             return &opt.value().get();
         }
 
-        void* GetComponent(UInt32 componentTypeId, ecs::Entity entity)
+        void* NxGetComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            auto& coordinator = *Application::m_coordinator;
             const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
         }
 
-        void AddComponent(UInt32 typeId, ecs::Entity entity)
+        void NxAddComponent(const ecs::Entity entity, const UInt32 typeId, const void *componentData)
         {
-            auto& coordinator = *getApp().m_coordinator;
-
-            const auto& map = coordinator.getTypeIdToTypeIndex();
-            auto it = map.find(typeId);
-
-            if (it == map.end()) {
-                LOG(NEXO_ERROR, "AddComponent: Unknown typeId {}", typeId);
+            if (componentData == nullptr) {
+                LOG(NEXO_ERROR, "NxAddComponent: componentData is null for entity {}", entity);
                 return;
             }
+            const auto& coordinator = *Application::m_coordinator;
 
-            const std::type_index& typeIndex = it->second;
-            const auto& addFn = coordinator.getAddComponentFunctions().find(typeIndex);
-            if (addFn == coordinator.getAddComponentFunctions().end()) {
-                LOG(NEXO_ERROR, "AddComponent: No add function registered for component {}", typeIndex.name());
-                return;
-            }
-
-            try {
-                std::any defaultConstructed = coordinator.restoreComponent(std::any{}, typeIndex);
-                addFn->second(entity, defaultConstructed);
-            } catch (const std::bad_any_cast& e) {
-                LOG(NEXO_ERROR, "AddComponent: bad_any_cast for component {}: {}", typeIndex.name(), e.what());
-            }
+            coordinator.addComponent(entity, typeId, componentData);
         }
 
-        bool HasComponent(UInt32 typeId, ecs::Entity entity)
+        bool NxHasComponent(const ecs::Entity entity, const UInt32 typeId)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            const auto& coordinator = *Application::m_coordinator;
 
-            const auto& typeMap = coordinator.getTypeIdToTypeIndex();
-            auto it = typeMap.find(typeId);
-            if (it == typeMap.end())
-            {
-                LOG(NEXO_WARN, "HasComponent: Unknown typeId {}", typeId);
-                return false;
-            }
-
-            ecs::ComponentType bitIndex = typeId;
-
-            ecs::Signature signature = coordinator.getSignature(entity);
-
-            // LOG(NEXO_WARN, "HasComponent: entity = {}, typeId = {}, bitIndex = {}, signature = {}",
-            //     entity, typeId, bitIndex, signature.to_string());
-
-            return signature.test(bitIndex);
+            return coordinator.entityHasComponent(entity, typeId);
         }
 
-        ComponentTypeIds GetComponentTypeIds()
+        Int64 NxRegisterComponent(const char* name, const UInt64 size)
         {
-            auto& coordinator = *getApp().m_coordinator;
+            (void)name; // TODO: unused for now
+            auto& coordinator = *Application::m_coordinator;
+            return coordinator.registerComponent(size);
+        }
+
+        ComponentTypeIds NxGetComponentTypeIds()
+        {
+            auto& coordinator = *Application::m_coordinator;
 
             return ComponentTypeIds {
                 .Transform = coordinator.getComponentType<components::TransformComponent>(),
@@ -139,9 +114,6 @@ namespace nexo::scripting {
                 .PerspectiveCameraTarget = coordinator.getComponentType<components::PerspectiveCameraTarget>(),
             };
         }
-
-
     }
-
 
 } // namespace nexo::scripting

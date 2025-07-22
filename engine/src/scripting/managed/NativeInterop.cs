@@ -47,7 +47,7 @@ namespace Nexo
         /// Native API struct that matches the C++ struct
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct NativeApiCallbacks
+        private unsafe struct NativeApiCallbacks
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void HelloFromNativeDelegate();
@@ -68,28 +68,32 @@ namespace Nexo
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate IntPtr NxGetComponentDelegate(UInt32 typeId, UInt32 entityId);
+            public delegate IntPtr NxGetComponentDelegate(UInt32 entityId, UInt32 typeId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxAddComponentDelegate(UInt32 entityId, UInt32 typeId, void *componentData);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 size);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
-            
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate void NxAddComponentDelegate(UInt32 typeId, UInt32 entityId);
-
-            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate bool NxHasComponentDelegate(UInt32 typeId, UInt32 entityId);
 
             // Function pointers
-            public HelloFromNativeDelegate HelloFromNative;
-            public AddNumbersDelegate AddNumbers;
-            public GetNativeMessageDelegate GetNativeMessage;
+            public HelloFromNativeDelegate NxHelloFromNative;
+            public AddNumbersDelegate NxAddNumbers;
+            public GetNativeMessageDelegate NxGetNativeMessage;
             public NxLogDelegate NxLog;
-            public CreateCubeDelegate CreateCube;
-            public GetTransformDelegate GetTransform;
+            public CreateCubeDelegate NxCreateCube;
+            public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
-            public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
             public NxAddComponentDelegate NxAddComponent;
             public NxHasComponentDelegate NxHasComponent;
+            public NxRegisterComponentDelegate NxRegisterComponent;
+            public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
         }
 
         private static NativeApiCallbacks s_callbacks;
@@ -158,7 +162,7 @@ namespace Nexo
         {
             try
             {
-                s_callbacks.HelloFromNative.Invoke();
+                s_callbacks.NxHelloFromNative.Invoke();
             }
             catch (Exception ex)
             {
@@ -173,7 +177,7 @@ namespace Nexo
         {
             try
             {
-                return s_callbacks.AddNumbers.Invoke(a, b);
+                return s_callbacks.NxAddNumbers.Invoke(a, b);
             }
             catch (Exception ex)
             {
@@ -189,7 +193,7 @@ namespace Nexo
         {
             try
             {
-                IntPtr messagePtr = s_callbacks.GetNativeMessage.Invoke();
+                IntPtr messagePtr = s_callbacks.NxGetNativeMessage.Invoke();
                 return messagePtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(messagePtr) ?? string.Empty : string.Empty;
             }
             catch (Exception ex)
@@ -204,7 +208,7 @@ namespace Nexo
         /// </summary>
         /// <param name="level">The level of the log message</param>
         /// <param name="message">The message to log</param>
-        public static void NxLog(UInt32 level, String message)
+        public static void Log(UInt32 level, String message)
         {
             try
             {
@@ -221,7 +225,7 @@ namespace Nexo
         {
             try
             {
-                return s_callbacks.CreateCube.Invoke(position, size, rotation, color);
+                return s_callbacks.NxCreateCube.Invoke(position, size, rotation, color);
             }
             catch (Exception ex)
             {
@@ -234,7 +238,7 @@ namespace Nexo
         {
             try
             {
-                return ref s_callbacks.GetTransform.Invoke(entityId);
+                return ref s_callbacks.NxGetTransform.Invoke(entityId);
             }
             catch (Exception ex)
             {
@@ -248,21 +252,21 @@ namespace Nexo
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
                 throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
 
-            IntPtr ptr = s_callbacks.NxGetComponent(typeId, entityId);
+            IntPtr ptr = s_callbacks.NxGetComponent(entityId, typeId);
             if (ptr == IntPtr.Zero)
                 throw new InvalidOperationException($"Component {typeof(T)} not found on entity {entityId}");
 
             return ref Unsafe.AsRef<T>((void*)ptr);
         }
         
-        public static void AddComponent<T>(UInt32 entityId)
+        public static unsafe void AddComponent<T>(UInt32 entityId, ref T componentData) where T : unmanaged
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
                 throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
 
             try
             {
-                s_callbacks.NxAddComponent.Invoke(typeId, entityId);
+                s_callbacks.NxAddComponent.Invoke(entityId, typeId, Unsafe.AsPointer(ref componentData));
             }
             catch (Exception ex)
             {
@@ -277,7 +281,7 @@ namespace Nexo
 
             try
             {
-                return s_callbacks.NxHasComponent.Invoke(typeId, entityId);
+                return s_callbacks.NxHasComponent.Invoke(entityId, typeId);
             }
             catch (Exception ex)
             {
@@ -286,6 +290,32 @@ namespace Nexo
             }
         }
 
+        
+        public static Int64 RegisterComponent(Type componentType)
+        {
+            var name = componentType.Name;
+            try
+            {
+                var size = (UInt64)Marshal.SizeOf(componentType);
+
+                Logger.Log(LogLevel.Info, $"Registering component {name}");
+
+                var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size);
+                if (typeId < 0)
+                {
+                    Logger.Log(LogLevel.Error, $"Failed to register component {name}, returned: {typeId}");
+                    return typeId;
+                }
+                _typeToNativeIdMap[componentType] = (UInt32)typeId;
+                Logger.Log(LogLevel.Info, $"Registered component {name} with type ID {typeId}");
+                return typeId;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, $"Error calling NxRegisterComponent for {name}: {ex.Message}");
+                return -1;
+            }
+        }
         
         private static UInt32 _cubeId = 0;
 
@@ -318,18 +348,7 @@ namespace Nexo
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
             Console.WriteLine($"Created cube with ID: {cubeId}");
-            
-            // AddComponent test
-            AddComponent<UuidComponent>(cubeId);
-            
-            try {
-                ref UuidComponent uuid = ref GetComponent<UuidComponent>(cubeId);
-                Console.WriteLine($"Successfully got UuidComponent for cube");
-            }
-            catch (Exception e) {
-                Console.WriteLine($"Failed to get UuidComponent: {e.Message}");
-            }
-            
+
             // HasComponent test
             if (HasComponent<CameraComponent>(cubeId))
                 Console.WriteLine("Entity has a camera!");

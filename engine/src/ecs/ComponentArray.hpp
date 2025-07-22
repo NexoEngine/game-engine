@@ -21,6 +21,7 @@
 #include <vector>
 #include <span>
 #include <algorithm>
+#include <cstring>
 
 namespace nexo::ecs {
     /**
@@ -51,6 +52,62 @@ namespace nexo::ecs {
         virtual void entityDestroyed(Entity entity) = 0;
 
         virtual void duplicateComponent(Entity sourceEntity, Entity destEntity) = 0;
+
+        /**
+         * @brief Gets the size of each component in bytes
+         * @return Size of individual component in bytes
+         */
+        [[nodiscard]] virtual size_t getComponentSize() const = 0;
+
+        /**
+         * @brief Gets the total number of components in the array
+         * @return The number of active components
+         */
+        [[nodiscard]] virtual size_t size() const = 0;
+
+        /**
+         * @brief Gets raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Raw pointer to component data, or nullptr if not found
+         */
+        [[nodiscard]] virtual void* getRawComponent(Entity entity) = 0;
+
+        /**
+         * @brief Gets const raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Const raw pointer to component data, or nullptr if not found
+         */
+        [[nodiscard]] virtual const void* getRawComponent(Entity entity) const = 0;
+
+        /**
+         * @brief Gets raw pointer to all component data
+         * @return Raw pointer to contiguous component data
+         */
+        [[nodiscard]] virtual void* getRawData() = 0;
+
+        /**
+         * @brief Gets const raw pointer to all component data
+         * @return Const raw pointer to contiguous component data
+         */
+        [[nodiscard]] virtual const void* getRawData() const = 0;
+
+        /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        virtual void insertRaw(Entity entity, const void *componentData) = 0;
+
+        /**
+         * @brief Gets a span of all entities with this component
+         * @return Span of entity IDs
+         */
+        [[nodiscard]] virtual std::span<const Entity> entities() const = 0;
     };
 
     /**
@@ -67,7 +124,7 @@ namespace nexo::ecs {
      * @note This class is not thread-safe. Access should be synchronized externally when
      *       used in multi-threaded contexts.
      */
-    template<typename T, unsigned int capacity = 1024>
+    template<typename T, size_t capacity = 1024>
     requires (capacity >= 1)
     class alignas(64) ComponentArray final : public IComponentArray {
     public:
@@ -87,6 +144,35 @@ namespace nexo::ecs {
             m_sparse.resize(capacity, INVALID_ENTITY);
             m_dense.reserve(capacity);
             m_componentArray.reserve(capacity);
+        }
+
+        [[nodiscard]] size_t getComponentSize() const override
+        {
+            return sizeof(T);
+        }
+
+        [[nodiscard]] void* getRawComponent(Entity entity) override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return &m_componentArray[m_sparse[entity]];
+        }
+
+        [[nodiscard]] const void* getRawComponent(Entity entity) const override
+        {
+            if (!hasComponent(entity))
+                return nullptr;
+            return &m_componentArray[m_sparse[entity]];
+        }
+
+        [[nodiscard]] void* getRawData() override
+        {
+            return m_componentArray.data();
+        }
+
+        [[nodiscard]] const void* getRawData() const override
+        {
+            return m_componentArray.data();
         }
 
         /**
@@ -115,6 +201,39 @@ namespace nexo::ecs {
             m_sparse[entity] = newIndex;
             m_dense.push_back(entity);
             m_componentArray.push_back(component);
+
+            ++m_size;
+        }
+
+        /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        void insertRaw(Entity entity, const void *componentData) override
+        {
+            if (entity >= MAX_ENTITIES)
+                THROW_EXCEPTION(OutOfRange, entity);
+
+            ensureSparseCapacity(entity);
+
+            if (hasComponent(entity)) {
+                LOG(NEXO_WARN, "Entity {} already has component: {}", entity, typeid(T).name());
+                return;
+            }
+
+            const size_t newIndex = m_size;
+            m_sparse[entity] = newIndex;
+            m_dense.push_back(entity);
+            // allocate new component in the array
+            m_componentArray.emplace_back();
+            // copy the raw data into the new component
+            std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
 
             ++m_size;
         }
@@ -233,7 +352,7 @@ namespace nexo::ecs {
          *
          * @return The number of active components
          */
-        [[nodiscard]] constexpr size_t size() const
+        [[nodiscard]] constexpr size_t size() const override
         {
             return m_size;
         }
@@ -279,7 +398,7 @@ namespace nexo::ecs {
          *
          * @return Const span of entity IDs
          */
-        [[nodiscard]] std::span<const Entity> entities() const
+        [[nodiscard]] std::span<const Entity> entities() const override
         {
             return {m_dense.data(), m_size};
         }
@@ -484,4 +603,121 @@ namespace nexo::ecs {
             }
         }
     };
+
+        /**
+     * @class TypeErasedComponentArray
+     * @brief A type-erased component array that can store components of any size.
+     *
+     * This class allows you to create component arrays at runtime without knowing
+     * the component type at compile time. You only need to specify the size of
+     * each component.
+     */
+    class alignas(64) TypeErasedComponentArray final : public IComponentArray {
+    public:
+        /**
+         * @brief Constructs a new type-erased component array
+         * @param componentSize Size of each component in bytes
+         * @param initialCapacity Initial capacity for the array
+         */
+        explicit TypeErasedComponentArray(size_t componentSize, size_t initialCapacity = 1024);
+
+        /**
+         * @brief Inserts a new component for the given entity
+         * @param entity The entity to add the component to
+         * @param componentData Raw pointer to the component data to copy
+         */
+        void insert(Entity entity, const void* componentData);
+
+        /**
+         * @brief Inserts a raw new component for the given entity.
+         *
+         * @param entity The entity to add the component to
+         * @param componentData Pointer to the raw component data
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         * @pre componentData must point to valid memory of component's size
+         */
+        void insertRaw(Entity entity, const void* componentData) override;
+
+        /**
+         * @brief Removes the component for the given entity
+         * @param entity The entity to remove the component from
+         */
+        void remove(Entity entity);
+
+        [[nodiscard]] bool hasComponent(Entity entity) const override;
+
+        void entityDestroyed(Entity entity) override;
+
+        void duplicateComponent(Entity sourceEntity, Entity destEntity) override;
+
+        [[nodiscard]] size_t getComponentSize() const override;
+
+        [[nodiscard]] size_t size() const override;
+
+        [[nodiscard]] void* getRawComponent(Entity entity) override;
+
+        [[nodiscard]] const void* getRawComponent(Entity entity) const override;
+
+        [[nodiscard]] void* getRawData() override;
+
+        [[nodiscard]] const void* getRawData() const override;
+
+        [[nodiscard]] std::span<const Entity> entities() const override;
+
+        /**
+         * @brief Gets the entity at the given index in the dense array
+         * @param index The index to look up
+         * @return The entity at that index
+         */
+        [[nodiscard]] Entity getEntityAtIndex(size_t index) const;
+
+        /**
+         * @brief Adds an entity to the group region
+         * @param entity The entity to add to the group
+         */
+        void addToGroup(Entity entity);
+
+        /**
+         * @brief Removes an entity from the group region
+         * @param entity The entity to remove from the group
+         */
+        void removeFromGroup(Entity entity);
+
+        /**
+         * @brief Gets the number of entities in the group region
+         * @return Number of grouped entities
+         */
+        [[nodiscard]] constexpr size_t groupSize() const;
+
+        /**
+         * @brief Get the estimated memory usage of this component array
+         * @return Size in bytes of memory used by this component array
+         */
+        [[nodiscard]] size_t memoryUsage() const;
+
+    private:
+        // Component data storage
+        std::vector<std::byte> m_componentData;
+        // Sparse mapping: maps entity ID to index in the dense arrays
+        std::vector<size_t> m_sparse;
+        // Dense storage for entity IDs
+        std::vector<Entity> m_dense;
+        // Size of each component in bytes
+        size_t m_componentSize;
+        // Initial capacity
+        size_t m_capacity;
+        // Current number of active components
+        size_t m_size = 0;
+        // Group size for component grouping
+        size_t m_groupSize = 0;
+
+        void ensureSparseCapacity(Entity entity);
+
+        void swapComponents(size_t index1, size_t index2);
+
+        void shrinkIfNeeded();
+    };
+
 }
