@@ -81,6 +81,11 @@ public unsafe class FieldArray : IDisposable
             _disposed = true;
         }
     }
+
+    ~FieldArray()
+    {
+        Dispose();
+    }
     
     public static FieldArray CreateFieldArrayFromType(Type type, Boolean flatten = true)
     {
