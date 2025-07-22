@@ -140,7 +140,7 @@ namespace nexo::editor {
         // 9mn
         std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
         assets::ImporterFileInput fileInput9mn{path9mn};
-        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput99mn);
+        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
 
         const ecs::Entity Model9mn = EntityFactory3D::createModel(assetRef9mn, {3.0f, 2.0f, 0.0f}, {0.01f, 0.01f, 0.01f},
                                                                {0.0f, 0.0f, 0.0f});
