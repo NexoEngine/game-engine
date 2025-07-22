@@ -28,15 +28,14 @@ namespace nexo::editor {
             }
 
             /**
-			* @brief Displays and edits the transform properties of an entity using an ImGui interface.
-			*
-			* Retrieves the transform component (position, scale, and rotation quaternion) of the given entity,
-			* displaying the values in an ImGui table. The rotation is converted from a quaternion to Euler angles
-			* to allow intuitive editing; any changes in Euler angles are applied incrementally back to the quaternion,
-			* ensuring it remains normalized.
-			*
-			* @param entity The entity whose transform properties are rendered.
-			*/
+             * @brief Displays and edits the properties of an entity component using an ImGui interface.
+             *
+             * Retrieves the component data for the given entity based on the stored component type,
+             * and renders editable fields according to the component description metadata.
+             * Supports various field types including primitives and vector types.
+             *
+             * @param entity The entity whose component properties are rendered.
+             */
             void show(ecs::Entity entity) override;
 
         private:

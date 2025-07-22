@@ -37,6 +37,12 @@ namespace nexo::editor {
 			*/
 	        void setup() override;
 
+            /**
+             * @brief Registers type-erased properties for all component descriptions in the coordinator.
+             *
+             * This method should be called after the scripting system has been initialized
+             * to ensure all managed components have been registered with their field metadata.
+             */
             void registerTypeErasedProperties();
 
 			// No-op method in this class
