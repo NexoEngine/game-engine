@@ -16,6 +16,7 @@
 #include <gmock/gmock.h>
 #include "core/scene/Scene.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "ecs/Coordinator.hpp"
 
@@ -29,6 +30,7 @@ protected:
         coordinator = std::make_shared<nexo::ecs::Coordinator>();
         coordinator->init();
         coordinator->registerComponent<components::SceneTag>();
+        coordinator->registerComponent<components::TransformComponent>();
     }
 
     std::shared_ptr<nexo::ecs::Coordinator> coordinator;

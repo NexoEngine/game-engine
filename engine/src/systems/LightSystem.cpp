@@ -1,4 +1,4 @@
-//// LightSystem.cpp ///////////////////////////////////////////////////////////////
+//// LightSystem.cpp //////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz

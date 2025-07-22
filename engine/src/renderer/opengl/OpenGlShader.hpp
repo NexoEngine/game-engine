@@ -79,12 +79,15 @@ namespace nexo::renderer {
 
             [[nodiscard]] const std::string &getName() const override { return m_name; };
             unsigned int getProgramId() const override { return m_id; };
+
         private:
             std::string m_name;
             unsigned int m_id = 0;
+
             static std::unordered_map<GLenum, std::string> preProcess(const std::string_view &src, const std::string &filePath);
             void compile(const std::unordered_map<GLenum, std::string> &shaderSources);
             void setupUniformLocations();
+            int getUniformLocation(const std::string& name) const;
     };
 
 }

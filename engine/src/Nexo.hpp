@@ -21,7 +21,6 @@
 
 // Renderer
 #include "renderer/Renderer.hpp"
-#include "renderer/Renderer2D.hpp"
 #include "renderer/RenderCommand.hpp"
 
 #include "renderer/Buffer.hpp"

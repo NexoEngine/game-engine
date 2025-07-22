@@ -17,6 +17,7 @@
 #include "Logger.hpp"
 #include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include "OpenGlShaderReflection.hpp"
 
 #include <cstring>
 #include <array>
@@ -182,12 +183,16 @@ namespace nexo::renderer {
 
     void NxOpenGlShader::setupUniformLocations()
     {
-        glUseProgram(m_id);
-        for (const auto &[key, name] : ShaderUniformsName) {
-            const int loc = glGetUniformLocation(m_id, name.c_str());
-            m_uniformLocations[key] = loc;
+        m_uniformInfos = ShaderReflection::reflectUniforms(m_id);
+        m_attributeInfos = ShaderReflection::reflectAttributes(m_id);
+
+        for (const auto& [location, info] : m_attributeInfos) {
+            if (info.name == "aPos") m_requiredAttributes.bitsUnion.flags.position = true;
+            else if (info.name == "aNormal") m_requiredAttributes.bitsUnion.flags.normal = true;
+            else if (info.name == "aTangent") m_requiredAttributes.bitsUnion.flags.tangent = true;
+            else if (info.name == "aBiTangent") m_requiredAttributes.bitsUnion.flags.bitangent = true;
+            else if (info.name == "aTexCoord") m_requiredAttributes.bitsUnion.flags.uv0 = true;
         }
-        glUseProgram(0);
     }
 
     void NxOpenGlShader::bind() const
@@ -200,143 +205,252 @@ namespace nexo::renderer {
         glUseProgram(0);
     }
 
-    bool NxOpenGlShader::setUniformFloat(const std::string &name, const float value) const
-    {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
-            return false;
+    int NxOpenGlShader::getUniformLocation(const std::string& name) const {
+        auto it = m_uniformInfos.find(name);
+        if (it != m_uniformInfos.end()) {
+            return it->second.location;
+        }
+        return glGetUniformLocation(m_id, name.c_str());
+    }
 
-        glUniform1f(loc, value);
+    bool NxOpenGlShader::setUniformFloat(const std::string& name, float value) const
+    {
+        if (!NxShader::hasUniform(name))
+            return false;
+        if (NxShader::setUniformFloat(name, value))
+            return true; // Value was cached, no need to update
+
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform1f(location, value);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformFloat(const NxShaderUniforms uniform, const float value) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat(name, value))
+            return true;
 
-        glUniform1f(loc, value);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform1f(location, value);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat2(const std::string &name, const glm::vec2 &values) const
+    bool NxOpenGlShader::setUniformFloat2(const std::string& name, const glm::vec2& values) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat2(name, values))
+            return true;
 
-        glUniform2f(loc, values.x, values.y);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform2f(location, values.x, values.y);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
+    bool NxOpenGlShader::setUniformFloat3(const std::string& name, const glm::vec3& values) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat3(name, values))
+            return true;
 
-        glUniform3f(loc, values.x, values.y, values.z);
+
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform3f(location, values.x, values.y, values.z);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformFloat3(const NxShaderUniforms uniform, const glm::vec3 &values) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat3(name, values))
+            return true;
 
-        glUniform3f(loc, values.x, values.y, values.z);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform3f(location, values.x, values.y, values.z);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
+    bool NxOpenGlShader::setUniformFloat4(const std::string& name, const glm::vec4& values) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat4(name, values))
+            return true;
 
-        glUniform4f(loc, values.x, values.y, values.z, values.w);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform4f(location, values.x, values.y, values.z, values.w);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformFloat4(const NxShaderUniforms uniform, const glm::vec4 &values) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformFloat4(name, values))
+            return true;
 
-        glUniform4f(loc, values.x, values.y, values.z, values.w);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform4f(location, values.x, values.y, values.z, values.w);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
+    bool NxOpenGlShader::setUniformMatrix(const std::string& name, const glm::mat4& matrix) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformMatrix(name, matrix))
+            return true;
 
-        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformMatrix(const NxShaderUniforms uniform, const glm::mat4 &matrix) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformMatrix(name, matrix))
+            return true;
 
-        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformInt(const std::string &name, const int value) const
+    bool NxOpenGlShader::setUniformInt(const std::string& name, int value) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformInt(name, value))
+            return true;
 
-        glUniform1i(loc, value);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform1i(location, value);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
-    bool NxOpenGlShader::setUniformBool(const std::string &name, bool value) const
+    bool NxOpenGlShader::setUniformBool(const std::string& name, bool value) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformBool(name, value))
+            return true;
 
-        glUniform1i(loc, value);
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform1i(location, static_cast<int>(value));
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformInt(const NxShaderUniforms uniform, const int value) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        if (NxShader::setUniformInt(name, value))
+            return true;
 
-        glUniform1i(loc, value);
+
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
+        glUniform1i(location, value);
+        m_uniformCache.clearDirtyFlag(name);
         return true;
     }
 
     bool NxOpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
-        const int loc = glGetUniformLocation(m_id, name.c_str());
-        if (loc == -1)
+        if (!NxShader::hasUniform(name))
             return false;
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
 
-        glUniform1iv(loc, static_cast<int>(count), values);
+        glUniform1iv(location, static_cast<int>(count), values);
         return true;
     }
 
     bool NxOpenGlShader::setUniformIntArray(const NxShaderUniforms uniform, const int *values, const unsigned int count) const
     {
-        const int loc = m_uniformLocations.at(uniform);
-        if (loc == -1)
+        const std::string &name = ShaderUniformsName.at(uniform);
+        if (!NxShader::hasUniform(name))
             return false;
+        int location = getUniformLocation(name);
+        if (location == -1) {
+            LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
+            return false;
+        }
 
-        glUniform1iv(loc, static_cast<int>(count), values);
+        glUniform1iv(location, static_cast<int>(count), values);
         return true;
     }
 

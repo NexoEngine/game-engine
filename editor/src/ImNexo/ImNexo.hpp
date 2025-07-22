@@ -20,13 +20,13 @@ namespace ImNexo {
     inline bool g_isItemDeactivated = false;
 
     bool isItemActive();
-    void itemIsActive();
+    void setItemActive();
 
     bool isItemActivated();
-    void itemIsActivated();
+    void setItemActivated();
 
     bool isItemDeactivated();
-    void itemIsDeactivated();
+    void setItemDeactivated();
 
     void resetItemStates();
 

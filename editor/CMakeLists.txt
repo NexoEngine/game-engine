@@ -50,6 +50,8 @@ set(SRCS
         editor/src/DocumentWindows/AssetManager/Show.cpp
         editor/src/DocumentWindows/AssetManager/Shutdown.cpp
         editor/src/DocumentWindows/AssetManager/Update.cpp
+        editor/src/DocumentWindows/AssetManager/FolderTree.cpp
+        editor/src/DocumentWindows/AssetManager/Thumbnail.cpp
         editor/src/DocumentWindows/ConsoleWindow/Init.cpp
         editor/src/DocumentWindows/ConsoleWindow/Log.cpp
         editor/src/DocumentWindows/ConsoleWindow/Show.cpp
@@ -89,6 +91,14 @@ set(SRCS
         editor/src/DocumentWindows/TestWindow/Show.cpp
         editor/src/DocumentWindows/TestWindow/Shutdown.cpp
         editor/src/DocumentWindows/TestWindow/Update.cpp
+        editor/src/DocumentWindows/PrimitiveWindow/Init.cpp
+        editor/src/DocumentWindows/PrimitiveWindow/Show.cpp
+        editor/src/DocumentWindows/PrimitiveWindow/Shutdown.cpp
+        editor/src/DocumentWindows/PrimitiveWindow/Update.cpp
+        editor/src/DocumentWindows/GameWindow/GameWindow.cpp
+        editor/src/DocumentWindows/GameWindow/Setup.cpp
+        editor/src/DocumentWindows/GameWindow/Show.cpp
+        editor/src/DocumentWindows/GameWindow/Update.cpp
 )
 
 # Windows App Icon

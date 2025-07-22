@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
-#include "components/Uuid.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
 #include "context/actions/EntityActions.hpp"
@@ -21,59 +20,61 @@
 #include "ImNexo/Panels.hpp"
 #include "context/ActionManager.hpp"
 
-namespace nexo::editor {
-
-    void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string &uuid, const std::string &uiName)
+namespace nexo::editor
+{
+    void SceneTreeWindow::showSceneSelectionContextMenu(scene::SceneId sceneId, const std::string& uuid,
+                                                        const std::string& uiName)
     {
-        if (!uuid.empty() && !uiName.empty() &&ImGui::MenuItem("Delete Scene")) {
-            auto &app = Application::getInstance();
-            auto &selector = Selector::get();
+        if (!uuid.empty() && !uiName.empty() && ImGui::MenuItem("Delete Scene"))
+        {
+            auto& app = Application::getInstance();
+            auto& selector = Selector::get();
             selector.clearSelection();
-            const std::string &sceneName = selector.getUiHandle(uuid, uiName);
+            const std::string& sceneName = selector.getUiHandle(uuid, uiName);
             m_windowRegistry.unregisterWindow<EditorScene>(sceneName);
             app.getSceneManager().deleteScene(sceneId);
         }
 
         // ---- Add Entity submenu ----
-        if (ImGui::BeginMenu("Add Entity")) {
-            auto &app = Application::getInstance();
-            auto &sceneManager = app.getSceneManager();
+        if (ImGui::BeginMenu("Add Entity"))
+        {
+            auto& app = Application::getInstance();
+            auto& sceneManager = app.getSceneManager();
 
             // --- Primitives submenu ---
-            if (ImGui::BeginMenu("Primitives")) {
-                if (ImGui::MenuItem("Cube")) {
-                    const ecs::Entity newCube = EntityFactory3D::createCube({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
-                                                                           {0.0f, 0.0f, 0.0f}, {0.05f * 1.5, 0.09f * 1.15, 0.13f * 1.25, 1.0f});
-                    sceneManager.getScene(sceneId).addEntity(newCube);
-                    auto action = std::make_unique<EntityCreationAction>(newCube);
-                    ActionManager::get().recordAction(std::move(action));
-                }
-                ImGui::EndMenu();
-            }
+            const auto& selector = Selector::get();
+            const int currentSceneId = selector.getSelectedScene();
+            ImNexo::PrimitiveSubMenu(currentSceneId, m_popupManager);
 
             // --- Model item (with file‑dialog) ---
-            if (ImGui::MenuItem("Model")) {
+            if (ImGui::MenuItem("Model"))
+            {
                 //TODO: import model
             }
 
             // --- Lights submenu ---
-            if (ImGui::BeginMenu("Lights")) {
-                if (ImGui::MenuItem("Directional")) {
+            if (ImGui::BeginMenu("Lights"))
+            {
+                if (ImGui::MenuItem("Directional"))
+                {
                     const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.0f, -1.0f, 0.0f});
                     sceneManager.getScene(sceneId).addEntity(directionalLight);
                     auto action = std::make_unique<EntityCreationAction>(directionalLight);
                     ActionManager::get().recordAction(std::move(action));
                 }
-                if (ImGui::MenuItem("Point")) {
+                if (ImGui::MenuItem("Point"))
+                {
                     const ecs::Entity pointLight = LightFactory::createPointLight({0.0f, 0.5f, 0.0f});
-                    utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
+                    addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(pointLight);
                     auto action = std::make_unique<EntityCreationAction>(pointLight);
                     ActionManager::get().recordAction(std::move(action));
                 }
-                if (ImGui::MenuItem("Spot")) {
-                    const ecs::Entity spotLight = LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
-                    utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
+                if (ImGui::MenuItem("Spot"))
+                {
+                    const ecs::Entity spotLight =
+                        LightFactory::createSpotLight({0.0f, 0.5f, 0.0f}, {0.0f, -1.0f, 0.0f});
+                    addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
                     sceneManager.getScene(sceneId).addEntity(spotLight);
                     auto action = std::make_unique<EntityCreationAction>(spotLight);
                     ActionManager::get().recordAction(std::move(action));
@@ -82,16 +83,20 @@ namespace nexo::editor {
             }
 
             // --- Camera item ---
-            if (ImGui::MenuItem("Camera")) {
-                m_popupManager.openPopupWithCallback("Popup camera inspector", [this, sceneId]() {
-                    const auto &editorScenes = m_windowRegistry.getWindows<EditorScene>();
-                    for (const auto &scene : editorScenes) {
-                        if (scene->getSceneId() == sceneId) {
+            if (ImGui::MenuItem("Camera"))
+            {
+                m_popupManager.openPopupWithCallback("Popup camera inspector", [this, sceneId]()
+                {
+                    const auto& editorScenes = m_windowRegistry.getWindows<EditorScene>();
+                    for (const auto& scene : editorScenes)
+                    {
+                        if (scene->getSceneId() == sceneId)
+                        {
                             ImNexo::CameraInspector(sceneId);
                             break;
                         }
                     }
-                }, ImVec2(1440,900));
+                }, ImVec2(1440, 900));
             }
 
             ImGui::EndMenu();
@@ -113,7 +118,8 @@ namespace nexo::editor {
             PopupManager::closePopup();
         }
 
-        if (m_popupManager.showPopupModal("Popup camera inspector")) {
+        if (m_popupManager.showPopupModal("Popup camera inspector"))
+        {
             m_popupManager.runPopupCallback("Popup camera inspector");
             PopupManager::closePopup();
         }
@@ -129,7 +135,8 @@ namespace nexo::editor {
         ImGui::Text("Enter Scene Name:");
         ImGui::InputText("##SceneName", sceneNameBuffer, sizeof(sceneNameBuffer));
 
-        if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer)) {
+        if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer))
+        {
             memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
             PopupManager::closePopupInContext();
         }
@@ -141,17 +148,17 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
-    void SceneTreeWindow::showNode(SceneObject &object)
+    void SceneTreeWindow::showNode(SceneObject& object)
     {
         ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-                                       ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags_SpanAvailWidth;
         // Checks if the object is at the end of a tree
         const bool leaf = object.children.empty();
         if (leaf)
             baseFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
         // Check if this object is selected
-        auto const &selector = Selector::get();
+        const auto& selector = Selector::get();
         const bool isSelected = selector.isEntitySelected(static_cast<int>(object.data.entity));
 
         if (isSelected)
@@ -160,10 +167,13 @@ namespace nexo::editor {
         bool nodeOpen = false;
         const std::string uniqueLabel = object.uiName;
 
-        if (m_forceExpandAll && !leaf) {
+        if (m_forceExpandAll && !leaf)
+        {
             ImGui::SetNextItemOpen(true);
             m_resetExpandState = true;
-        } else if (m_forceCollapseAll) {
+        }
+        else if (m_forceCollapseAll)
+        {
             ImGui::SetNextItemOpen(false);
             m_resetExpandState = true;
         }
@@ -189,7 +199,8 @@ namespace nexo::editor {
 
             if (object.type == SelectionType::SCENE)
                 sceneSelected(object);
-            else if (object.type == SelectionType::DIR_LIGHT || object.type == SelectionType::POINT_LIGHT || object.type == SelectionType::SPOT_LIGHT)
+            else if (object.type == SelectionType::DIR_LIGHT || object.type == SelectionType::POINT_LIGHT || object.type
+                == SelectionType::SPOT_LIGHT)
                 lightSelected(object);
             else if (object.type == SelectionType::CAMERA)
                 cameraSelected(object);
@@ -201,7 +212,7 @@ namespace nexo::editor {
         // Go further into the tree
         if (nodeOpen && !leaf)
         {
-            for (auto &child: object.children)
+            for (auto& child : object.children)
             {
                 showNode(child);
             }
@@ -214,35 +225,48 @@ namespace nexo::editor {
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 20), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, ImGui::GetIO().DisplaySize.y - 40), ImGuiCond_FirstUseEver);
 
-        if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened, ImGuiWindowFlags_NoCollapse))
+        if (ImGui::Begin(ICON_FA_SITEMAP " Scene Tree" NEXO_WND_USTRID_SCENE_TREE, &m_opened,
+                         ImGuiWindowFlags_NoCollapse))
         {
             beginRender(NEXO_WND_USTRID_SCENE_TREE);
             m_focused = ImGui::IsWindowFocused();
             m_hovered = ImGui::IsWindowHovered();
 
-            const auto &selector = Selector::get();
+            const auto& selector = Selector::get();
 
             // Opens the right click popup when no items are hovered
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(
-                    ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered()) {
+                ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !ImGui::IsAnyItemHovered())
+            {
                 m_popupManager.openPopup("Scene Tree Context Menu");
             }
 
             // Display multi-selection count at top of window if applicable
-            const auto& selectedEntities = selector.getSelectedEntities();
-            if (selectedEntities.size() > 1) {
+            if (const auto& selectedEntities = selector.getSelectedEntities(); selectedEntities.size() > 1)
+            {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
                 ImGui::Text("%zu entities selected", selectedEntities.size());
                 ImGui::PopStyleColor();
                 ImGui::Separator();
             }
 
-            if (!root_.children.empty()) {
-                for (auto &node : root_.children)
+            if (!root_.children.empty())
+            {
+                for (auto& node : root_.children)
                     showNode(node);
             }
             sceneContextMenu();
             sceneCreationMenu();
+            if (m_popupManager.showPopup("Sphere creation popup"))
+            {
+                const int sceneId = selector.getSelectedScene();
+                ImNexo::PrimitiveCustomizationMenu(sceneId, SPHERE);
+            }
+            if (m_popupManager.showPopup("Cylinder creation popup"))
+            {
+                const int sceneId = selector.getSelectedScene();
+                ImNexo::PrimitiveCustomizationMenu(sceneId, CYLINDER);
+            }
         }
         ImGui::End();
     }

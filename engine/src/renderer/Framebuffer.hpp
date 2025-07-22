@@ -164,6 +164,9 @@ namespace nexo::renderer {
              */
             virtual void bind() = 0;
 
+            virtual void bindAsTexture(unsigned int slot = 0, unsigned int attachment = 0) = 0;
+            virtual void bindDepthAsTexture(unsigned int slot = 0) = 0;
+
             /**
              * @brief Unbinds the current framebuffer, reverting to the default framebuffer.
              *
@@ -173,6 +176,8 @@ namespace nexo::renderer {
             virtual void unbind() = 0;
 
             virtual void setClearColor(const glm::vec4 &color) = 0;
+
+            virtual void copy(const std::shared_ptr<NxFramebuffer> source) = 0;
 
             /**
              * @brief Retrieves the unique OpenGL ID of the framebuffer.
@@ -254,6 +259,8 @@ namespace nexo::renderer {
             * @return A constant reference to the NxFramebufferSpecs struct.
             */
             [[nodiscard]] virtual const NxFramebufferSpecs &getSpecs() const = 0;
+
+            [[nodiscard]] virtual unsigned int getNbColorAttachments() const = 0;
             /**
              * @brief Retrieves the OpenGL ID of a specific color attachment.
              *
@@ -270,6 +277,10 @@ namespace nexo::renderer {
             [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
 
             [[nodiscard]] virtual unsigned int getDepthAttachmentId() const = 0;
+
+            [[nodiscard]] virtual bool hasDepthAttachment() const = 0;
+            [[nodiscard]] virtual bool hasStencilAttachment() const = 0;
+            [[nodiscard]] virtual bool hasDepthStencilAttachment() const = 0;
 
             /**
              * @brief Creates a framebuffer based on the provided specifications.

@@ -70,13 +70,14 @@ namespace nexo::ecs {
         std::void_t<decltype(std::declval<const T&>().save())>>
         : std::is_same<decltype(std::declval<const T&>().save()), typename T::Memento> {};
 
+    // Check if T::Memento has a restore() method that returns T
     template<typename T, typename = void>
     struct has_restore_method : std::false_type {};
 
     template<typename T>
     struct has_restore_method<T,
-        std::void_t<decltype(std::declval<T>().restore(std::declval<const typename T::Memento&>()))>>
-        : std::true_type {};
+        std::void_t<decltype(std::declval<typename T::Memento>().restore())>>
+        : std::is_same<decltype(std::declval<typename T::Memento>().restore()), T> {};
 
     // Combined check for full memento pattern support
     template<typename T>
@@ -141,12 +142,35 @@ namespace nexo::ecs {
                 m_componentManager->registerComponent<T>();
 
                 m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
-                    return std::any(this->getComponent<T>(entity));
+                    return this->getComponent<T>(entity);
+                };
+
+                m_getComponentPointers[typeid(T)] = [this](Entity entity) -> std::any {
+                    auto opt = this->tryGetComponent<T>(entity);
+                    if (!opt.has_value())
+                        return std::any();
+                    T* ptr = &opt.value().get();
+                    return std::any(static_cast<void*>(ptr));
                 };
                 m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
 
+                m_addComponentFunctions[typeid(T)] = [this](Entity entity, const std::any& componentAny) {
+                    T component = std::any_cast<T>(componentAny);
+                    this->addComponent<T>(entity, component);
+                };
+
                 if constexpr (supports_memento_pattern_v<T>) {
                     m_supportsMementoPattern.emplace(typeid(T), true);
+
+                    m_saveComponentFunctions[typeid(T)] = [](const std::any& componentAny) -> std::any {
+                        const T& component = std::any_cast<const T&>(componentAny);
+                        return std::any(component.save());
+                    };
+
+                    m_restoreComponentFunctions[typeid(T)] = [](const std::any& mementoAny) -> std::any {
+                        const typename T::Memento& memento = std::any_cast<const typename T::Memento&>(mementoAny);
+                        return std::any(memento.restore());
+                    };
                 } else {
                     m_supportsMementoPattern.emplace(typeid(T), false);
                 }
@@ -270,6 +294,43 @@ namespace nexo::ecs {
             std::optional<std::reference_wrapper<T>> tryGetComponent(const Entity entity)
             {
                 return m_componentManager->tryGetComponent<T>(entity);
+            }
+
+            void* tryGetComponentById(ComponentType componentType, Entity entity)
+            {
+                auto itType = m_typeIDtoTypeIndex.find(componentType);
+                if (itType == m_typeIDtoTypeIndex.end()) {
+                    return nullptr;
+                }
+
+                const std::type_index& typeIndex = itType->second;
+                auto itGetter = m_getComponentPointers.find(typeIndex);
+                if (itGetter == m_getComponentPointers.end()) {
+                    return nullptr;
+                }
+
+                std::any componentAny = itGetter->second(entity);
+                if (!componentAny.has_value()) {
+                    return nullptr;
+                }
+
+                if (componentAny.type() != typeid(void*)) {
+                    return nullptr;
+                }
+
+                return std::any_cast<void*>(componentAny);
+            }
+
+            const std::unordered_map<ComponentType, std::type_index>& getTypeIdToTypeIndex() const {
+                return m_typeIDtoTypeIndex;
+            }
+
+            const std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>>& getAddComponentFunctions() const {
+                return m_addComponentFunctions;
+            }
+
+            Signature getSignature(Entity entity) const {
+                return m_entityManager->getSignature(entity);
             }
 
             /**
@@ -447,9 +508,13 @@ namespace nexo::ecs {
                 return signature.test(componentType);
             }
 
-            bool supportsMementoPattern(std::type_index typeIndex) const;
+            template<typename T>
+            void setRestoreComponent() {
+                m_restoreComponentFunctions[typeid(T)] = [](const std::any&) -> std::any {
+                    return std::any(T{}); // default-constructed
+                };
+            }
 
-            Entity duplicateEntity(Entity sourceEntity) const;
 
             /**
             * @brief Retrieves all entities that have all the specified components.
@@ -479,7 +544,12 @@ namespace nexo::ecs {
             }
 
         void updateSystemEntities() const;
+            bool supportsMementoPattern(const std::any& component) const;
+            std::any saveComponent(const std::any& component) const;
+            std::any restoreComponent(const std::any& memento, const std::type_index& componentType) const;
+            void addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component);
 
+            Entity duplicateEntity(Entity sourceEntity) const;
         private:
             template<typename Component>
             void processComponentSignature(Signature& required, Signature& excluded) const {
@@ -500,6 +570,10 @@ namespace nexo::ecs {
 
             std::unordered_map<ComponentType, std::type_index> m_typeIDtoTypeIndex;
             std::unordered_map<std::type_index, bool> m_supportsMementoPattern;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_saveComponentFunctions;
+            std::unordered_map<std::type_index, std::function<std::any(const std::any&)>> m_restoreComponentFunctions;
+            std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
             std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
+            std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
     };
 }

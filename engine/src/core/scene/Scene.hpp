@@ -14,6 +14,7 @@
 #pragma once
 
 #include "ecs/Coordinator.hpp"
+#include "components/Model.hpp"
 #include <set>
 
 namespace nexo::scene {
@@ -55,6 +56,7 @@ namespace nexo::scene {
 			* @param entity The entity identifier to add.
 			*/
 			void addEntity(ecs::Entity entity);
+			void addChildEntityToScene(const ecs::Entity entity);
 
 			/**
              * @brief Removes an entity from the scene.

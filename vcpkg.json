@@ -33,6 +33,8 @@
 		{ "name": "tinyfiledialogs", "version>=": "3.19.1#0" },
 		{ "name": "gtest", "version>=": "1.15.2#0" },
 		{ "name": "assimp", "version>=": "5.4.3#0" },
-        { "name": "nlohmann-json", "version>=": "3.11.3#1"}
+    { "name": "nlohmann-json", "version>=": "3.11.3#1"},
+    { "name": "nethost", "version>=": "8.0.3#0"},
+    { "name": "utfcpp", "version>=": "4.0.6#0"}
   ]
 }

@@ -14,18 +14,33 @@
 
 #pragma once
 
+#include "VertexArray.hpp"
 #include "assets/Asset.hpp"
-
-#include "components/Shapes3D.hpp"
+#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::assets {
+
+    struct Mesh {
+        std::string name;
+        std::shared_ptr<renderer::NxVertexArray> vao;
+        assets::AssetRef<assets::Material> material;
+
+        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+    };
+
+    struct MeshNode {
+        std::string name;
+        glm::mat4 transform{};
+        std::vector<Mesh> meshes;
+        std::vector<MeshNode> children;
+    };
 
     /**
      * @class Model
      *
      * @brief Represents a 3D model asset.
      */
-    class Model final : public Asset<components::Model, AssetType::MODEL> {
+    class Model final : public Asset<MeshNode, AssetType::MODEL> {
         public:
             Model() = default;
 

@@ -21,9 +21,10 @@
 #include <array>
 #include <glm/glm.hpp>
 
-namespace nexo::renderer {
-
-    struct NxVertex {
+namespace nexo::renderer
+{
+    struct NxVertex
+    {
         glm::vec3 position;
         glm::vec2 texCoord;
         glm::vec3 normal;
@@ -33,7 +34,8 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct NxIndexedMaterial {
+    struct NxIndexedMaterial
+    {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         int albedoTexIndex = 0; // Default: 0 (white texture)
         glm::vec4 specularColor = glm::vec4(1.0f);
@@ -48,14 +50,15 @@ namespace nexo::renderer {
         int opacityTexIndex = 0; // Default: 0 (white texture)
     };
 
-    struct NxMaterial {
+    struct NxMaterial
+    {
         glm::vec4 albedoColor = glm::vec4(1.0f);
         glm::vec4 specularColor = glm::vec4(1.0f);
         glm::vec3 emissiveColor = glm::vec3(0.0f);
 
-        float roughness = 0.0f;  // 0 = smooth, 1 = rough
-        float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
-        float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
+        float roughness = 0.0f; // 0 = smooth, 1 = rough
+        float metallic = 0.0f; // 0 = non-metal, 1 = fully metallic
+        float opacity = 1.0f; // 1 = opaque, 0 = fully transparent
 
         std::shared_ptr<NxTexture2D> albedoTexture = nullptr;
         std::shared_ptr<NxTexture2D> normalMap = nullptr;
@@ -67,7 +70,8 @@ namespace nexo::renderer {
     };
 
     //TODO: Add stats for the meshes
-    struct NxRenderer3DStats {
+    struct NxRenderer3DStats
+    {
         unsigned int drawCalls = 0;
         unsigned int cubeCount = 0;
 
@@ -89,7 +93,8 @@ namespace nexo::renderer {
      * - `vertexBufferPtr`, `indexBufferPtr`: Current pointers for batching vertices and indices.
      * - `stats`: Rendering statistics.
      */
-    struct NxRenderer3DStorage {
+    struct NxRenderer3DStorage
+    {
         const unsigned int maxCubes = 10000;
         const unsigned int maxVertices = maxCubes * 8;
         const unsigned int maxIndices = maxCubes * 36;
@@ -97,8 +102,6 @@ namespace nexo::renderer {
         static constexpr unsigned int maxTransforms = 1024;
 
         glm::vec3 cameraPosition;
-
-        ShaderLibrary shaderLibrary;
 
         std::shared_ptr<NxShader> currentSceneShader = nullptr;
         std::shared_ptr<NxVertexArray> vertexArray;
@@ -110,7 +113,7 @@ namespace nexo::renderer {
         std::array<NxVertex, 80000> vertexBufferBase;
         std::array<unsigned int, 360000> indexBufferBase;
         NxVertex* vertexBufferPtr = nullptr;
-        unsigned int *indexBufferPtr = nullptr;
+        unsigned int* indexBufferPtr = nullptr;
 
         std::array<std::shared_ptr<NxTexture2D>, maxTextureSlots> textureSlots;
         unsigned int textureSlotIndex = 1;
@@ -144,8 +147,14 @@ namespace nexo::renderer {
      * 4. Call `endScene()` to finalize the rendering and issue draw calls.
      * 5. Call `shutdown()` to release resources when the renderer is no longer needed.
      */
-    class NxRenderer3D {
+    class NxRenderer3D
+    {
     public:
+
+        static NxRenderer3D& get() {
+            static NxRenderer3D instance;
+            return instance;
+        }
         /**
          * @brief Initializes the NxRenderer3D and allocates required resources.
          *
@@ -176,6 +185,9 @@ namespace nexo::renderer {
          */
         void shutdown();
 
+        void bindTextures() const;
+        void unbindTextures() const;
+
         /**
          * @brief Begins a new 3D rendering scene.
          *
@@ -189,7 +201,7 @@ namespace nexo::renderer {
          * - NxRendererNotInitialized if the renderer is not initialized.
          * - NxRendererSceneLifeCycleFailure if called without proper initialization.
          */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3 &cameraPos, const std::string &shader = "");
+        void beginScene(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const std::string& shader = "");
 
         /**
          * @brief Ends the current 3D rendering scene.
@@ -203,132 +215,12 @@ namespace nexo::renderer {
          */
         void endScene() const;
 
-        /**
-         * @brief Draws a cube using a specified transformation and color.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param position The position of the cube.
-         * @param size The dimensions of the cube.
-         * @param color The color (RGBA) of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and color.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param position The position of the cube.
-         * @param size The dimensions of the cube.
-         * @param rotation The rotation of the cube.
-         * @param color The color (RGBA) of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3 &rotation,  const glm::vec4& color, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and color.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param transform The transformation matrix for the cube.
-         * @param color The color (RGBA) of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::mat4& transform, const glm::vec4& color, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and material.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param position The position of the cube.
-         * @param size The dimensions of the cube.
-         * @param material The material properties of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and material.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param position The position of the cube.
-         * @param size The dimensions of the cube.
-         * @param rotation The rotation of the cube (in Euler angles, in degrees).
-         * @param material The material properties of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::vec3& position, const glm::vec3& size, const glm::vec3& rotation, const NxMaterial& material, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and material.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param position The position of the cube.
-         * @param size The dimensions of the cube.
-         * @param rotation The rotation of the cube (in quaternion format).
-         * @param material The material properties of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::vec3 &position, const glm::vec3 &size, const glm::quat &rotation, const NxMaterial& material, int entityID = -1) const;
-
-        /**
-         * @brief Draws a cube using a specified transformation and color.
-         *
-         * Generates the cube's vertex and index data, updates the vertex buffer with the cube's geometry,
-         * and increments the cube count in the statistics.
-         *
-         * @param transform The transformation matrix for the cube.
-         * @param material The material properties of the cube.
-         * @param entityID An optional entity identifier (default is -1).
-         *
-         * @throws NxRendererSceneLifeCycleFailure if the renderer is not in a valid scene.
-         */
-        void drawCube(const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
-
-        /**
-         * @brief Draws a custom 3D mesh.
-         *
-         * The mesh is defined by its vertices and indices, and optionally textured.
-         *
-         * @param vertices A vector of vertices defining the geometry of the mesh.
-         * @param indices A vector of indices defining the connectivity of the mesh.
-         * @param texture Optional texture to apply to the mesh.
-         *
-         * Throws:
-         * - NxRendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
-         */
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const std::shared_ptr<NxTexture2D>& texture, int entityID = -1) const;
-
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size, const NxMaterial& material, int entityID = -1) const;
-        void drawMesh(const std::vector<NxVertex>& vertices, const std::vector<unsigned int>& indices, const glm::mat4& transform, const NxMaterial& material, int entityID = -1) const;
-
-        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID) const;
-        void drawBillboard(const glm::vec3& position, const glm::vec2& size, const NxMaterial& material, int entityID) const;
+        static std::shared_ptr<NxVertexArray> getCubeVAO();
+        static std::shared_ptr<NxVertexArray> getBillboardVAO();
+        static std::shared_ptr<NxVertexArray> getTetrahedronVAO();
+        static std::shared_ptr<NxVertexArray> getPyramidVAO();
+        static std::shared_ptr<NxVertexArray> getCylinderVAO(unsigned int nbSegment);
+        static std::shared_ptr<NxVertexArray> getSphereVAO(unsigned int nbSubdivision);
 
         /**
          * @brief Resets rendering statistics.
@@ -350,9 +242,19 @@ namespace nexo::renderer {
          */
         [[nodiscard]] NxRenderer3DStats getStats() const;
 
-        [[nodiscard]] std::shared_ptr<NxShader> &getShader() const {return m_storage->currentSceneShader;};
+        [[nodiscard]] std::shared_ptr<NxShader>& getShader() const { return m_storage->currentSceneShader; };
 
         [[nodiscard]] std::shared_ptr<NxRenderer3DStorage> getInternalStorage() const { return m_storage; };
+
+        /**
+         * @brief Returns the texture index for a given texture.
+         *
+         * Searches the texture slots for an existing binding. If not found, assigns a new slot.
+         *
+         * @param texture The texture to look up.
+         * @return float The texture index.
+         */
+        [[nodiscard]] int getTextureIndex(const std::shared_ptr<NxTexture2D>& texture) const;
     private:
         std::shared_ptr<NxRenderer3DStorage> m_storage;
         bool m_renderingScene = false;
@@ -369,15 +271,7 @@ namespace nexo::renderer {
          */
         void flushAndReset() const;
 
-        /**
-         * @brief Returns the texture index for a given texture.
-         *
-         * Searches the texture slots for an existing binding. If not found, assigns a new slot.
-         *
-         * @param texture The texture to look up.
-         * @return float The texture index.
-         */
-        [[nodiscard]] int getTextureIndex(const std::shared_ptr<NxTexture2D>& texture) const;
+
 
         /**
          * @brief Sets material-related uniforms in the texture shader.
@@ -390,5 +284,4 @@ namespace nexo::renderer {
          */
         void setMaterialUniforms(const NxIndexedMaterial& material) const;
     };
-
 }

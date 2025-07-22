@@ -37,9 +37,10 @@ set(RENDERER_SOURCES
         engine/src/renderer/Renderer.cpp
         engine/src/renderer/RenderCommand.cpp
         engine/src/renderer/Texture.cpp
+        engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/SubTexture2D.cpp
-        engine/src/renderer/Renderer2D.cpp
         engine/src/renderer/Renderer3D.cpp
+        engine/src/renderer/UniformCache.cpp
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/opengl/OpenGlBuffer.cpp
         engine/src/renderer/opengl/OpenGlWindow.cpp
@@ -48,8 +49,12 @@ set(RENDERER_SOURCES
         engine/src/renderer/opengl/OpenGlShader.cpp
         engine/src/renderer/opengl/OpenGlRendererApi.cpp
         engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+        engine/src/renderer/opengl/OpenGlShaderReflection.cpp
         engine/src/renderer/primitives/Cube.cpp
-        engine/src/renderer/primitives/Mesh.cpp
+        engine/src/renderer/primitives/Tetrahedron.cpp
+        engine/src/renderer/primitives/Pyramid.cpp
+        engine/src/renderer/primitives/Cylinder.cpp
+        engine/src/renderer/primitives/Sphere.cpp
 )
 
 add_executable(renderer_tests
@@ -64,6 +69,7 @@ add_executable(renderer_tests
         ${BASEDIR}/Texture.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
+        ${BASEDIR}/Pipeline.test.cpp
 )
 
 # Find glm and add its include directories

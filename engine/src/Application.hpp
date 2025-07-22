@@ -22,22 +22,29 @@
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
-#include "renderer/Buffer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
+#include "WorldState.hpp"
 #include "components/Light.hpp"
 #include "components/PhysicsBodyComponent.hpp"
 
 #include "systems/CameraSystem.hpp"
-#include "systems/RenderSystem.hpp"
 #include "systems/LightSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
+#include "systems/RenderCommandSystem.hpp"
+#include "systems/RenderBillboardSystem.hpp"
+#include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
 namespace nexo {
+
+    namespace system {
+        class ScriptingSystem;
+    }
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -196,6 +203,8 @@ namespace nexo {
              * @param entity The entity to delete.
              */
             void deleteEntity(ecs::Entity entity);
+            void removeEntityFromParent(const ecs::Entity entity) const;
+            void deleteEntityChildren(const ecs::Entity entity);
 
             static Application &getInstance()
             {
@@ -228,8 +237,12 @@ namespace nexo {
 
             scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
-            [[nodiscard]] const std::shared_ptr<renderer::NxWindow> &getWindow() const { return m_window; };
-            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
+            [[nodiscard]] const std::shared_ptr<renderer::NxWindow> &getWindow() const { return m_window; }
+            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); }
+            [[nodiscard]] WorldState &getWorldState() { return m_worldState; }
+
+            int initScripting() const;
+            int shutdownScripting() const;
 
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:
@@ -242,6 +255,7 @@ namespace nexo {
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
             void registerSystems();
+            void initScripting();
 
             void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
@@ -254,17 +268,20 @@ namespace nexo {
             bool m_displayProfileResult = true;
             std::shared_ptr<renderer::NxWindow> m_window;
 
-            float m_lastFrameTime = 0.0f;
-            Timestep m_currentTimestep;
+            WorldState m_worldState;
 
             int m_eventDebugFlags{};
 
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
-            std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
+            std::shared_ptr<system::TransformMatrixSystem> m_transformMatrixSystem;
+            std::shared_ptr<system::TransformHierarchySystem> m_transformHierarchySystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
             std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
+            std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
+            std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
+            std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
 
             std::vector<ProfileResult> m_profilesResults;
 

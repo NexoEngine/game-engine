@@ -1,0 +1,61 @@
+---
+BasedOnStyle: Google
+AlignConsecutiveAssignments:
+  Enabled: true
+AlignConsecutiveDeclarations:
+  PadOperators: true
+AlignOperands: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
+IndentPPDirectives: BeforeHash
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+BreakBeforeTernaryOperators: false
+ColumnLimit: 120
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: ^<.*
+    Priority: 1
+  - Regex: ^".*
+    Priority: 2
+  - Regex: .*
+    Priority: 3
+  - Regex: .*
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
+IndentAccessModifiers: false
+IndentWidth: 4
+InsertNewlineAtEOF: true
+NamespaceIndentation: All
+SpaceAfterTemplateKeyword: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+TabWidth: 4
+Language: Cpp
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+SpaceInEmptyParentheses: false
+SpacesInConditionalStatement: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+LineEnding: LF

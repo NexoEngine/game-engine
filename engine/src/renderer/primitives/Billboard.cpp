@@ -1,4 +1,4 @@
-//// Billboard.cpp ///////////////////////////////////////////////////////////////
+//// Billboard.cpp ////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,33 +13,28 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-#include "renderer/RendererExceptions.hpp"
 
-#include <algorithm>
 #include <array>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace nexo::renderer {
+namespace nexo::renderer
+{
     // Quad vertices for a 1x1 billboard centered at origin
     constexpr glm::vec3 billboardPositions[4] = {
-        {-0.5f, -0.5f, 0.0f},  // Bottom left
-        {0.5f, -0.5f, 0.0f},   // Bottom right
-        {0.5f, 0.5f, 0.0f},    // Top right
-        {-0.5f, 0.5f, 0.0f}    // Top left
-    };
-
-    constexpr unsigned int billboardIndices[6] = {
-        0, 1, 2, 2, 3, 0  // Two triangles forming a quad
+        {-0.5f, -0.5f, 0.0f}, // Bottom left
+        {0.5f, -0.5f, 0.0f}, // Bottom right
+        {0.5f, 0.5f, 0.0f}, // Top right
+        {-0.5f, 0.5f, 0.0f} // Top left
     };
 
     constexpr glm::vec2 billboardTexCoords[4] = {
-        {0.0f, 0.0f},  // Bottom left
-        {1.0f, 0.0f},  // Bottom right
-        {1.0f, 1.0f},  // Top right
-        {0.0f, 1.0f},  // Top left
+        {0.0f, 0.0f}, // Bottom left
+        {1.0f, 0.0f}, // Bottom right
+        {1.0f, 1.0f}, // Top right
+        {0.0f, 1.0f}, // Top left
     };
 
     /**
@@ -51,7 +46,8 @@ namespace nexo::renderer {
      * @param texCoords Array to store generated texture coordinates.
      * @param normals Array to store generated normals.
      */
-    static void genBillboardMesh(std::array<glm::vec3, 6> &vertices, std::array<glm::vec2, 6> &texCoords, std::array<glm::vec3, 6> &normals)
+    static void genBillboardMesh(std::array<glm::vec3, 6>& vertices, std::array<glm::vec2, 6>& texCoords,
+                                 std::array<glm::vec3, 6>& normals)
     {
         // Vertex positions
         vertices[0] = billboardPositions[0]; // Bottom left
@@ -70,149 +66,58 @@ namespace nexo::renderer {
         texCoords[5] = billboardTexCoords[0]; // Bottom left
 
         // All normals point forward for billboard (will be transformed to face camera)
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 6; ++i)
+        {
             normals[i] = {0.0f, 0.0f, 1.0f};
         }
     }
 
-    /**
-    * @brief Calculates a billboard rotation matrix that makes the quad face the camera.
-    *
-    * @param billboardPosition The position of the billboard in world space.
-    * @param cameraPosition The position of the camera in world space.
-    * @param cameraUp The up vector of the camera (usually {0,1,0}).
-    * @param constrainToY Whether to only rotate around Y-axis (true) or do full rotation (false).
-    * @return glm::mat4 The rotation matrix for the billboard.
-    */
-    static glm::mat4 calculateBillboardRotation(
-        const glm::vec3& billboardPosition,
-        const glm::vec3& cameraPosition,
-        const glm::vec3& cameraUp = glm::vec3(0.0f, 1.0f, 0.0f),
-        bool constrainToY = false)
+    std::shared_ptr<NxVertexArray> NxRenderer3D::getBillboardVAO()
     {
-        glm::vec3 look = glm::normalize(cameraPosition - billboardPosition);
+        constexpr unsigned int nbVerticesBillboard = 6;
+        static std::shared_ptr<NxVertexArray> billboardVao = nullptr;
+        if (billboardVao)
+            return billboardVao;
 
-        if (constrainToY) {
-            look.y = 0.0f;
-            look = glm::normalize(look);
+        billboardVao = createVertexArray();
+        auto vertexBuffer = createVertexBuffer(nbVerticesBillboard * sizeof(NxVertex));
+        const NxBufferLayout cubeVertexBufferLayout = {
+            {NxShaderDataType::FLOAT3, "aPos"},
+            {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},
+            {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"},
+            {NxShaderDataType::INT, "aEntityID"}
+        };
+        vertexBuffer->setLayout(cubeVertexBufferLayout);
 
-            glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
-            glm::vec3 up = glm::cross(look, right);
+        std::array<glm::vec3, nbVerticesBillboard> vertices{};
+        std::array<glm::vec2, nbVerticesBillboard> texCoords{};
+        std::array<glm::vec3, nbVerticesBillboard> normals{};
+        genBillboardMesh(vertices, texCoords, normals);
 
-            return {glm::vec4(right, 0.0f),
-                    glm::vec4(up, 0.0f),
-                    glm::vec4(-look, 0.0f), // Negative look preserves winding
-                    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-                };
-        }
-        const glm::vec3 right = glm::normalize(glm::cross(cameraUp, look));
-        const glm::vec3 up = glm::cross(look, right);
-
-        return {glm::vec4(right, 0.0f),
-                glm::vec4(up, 0.0f),
-                glm::vec4(-look, 0.0f), // Negative look preserves winding
-                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-            };
-    }
-
-    void NxRenderer3D::drawBillboard(
-        const glm::vec3& position,
-        const glm::vec2& size,
-        const glm::vec4& color,
-        const int entityID) const
-    {
-        if (!m_renderingScene)
+        std::vector<NxVertex> vertexData(nbVerticesBillboard);
+        for (unsigned int i = 0; i < nbVerticesBillboard; ++i)
         {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
+            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord = texCoords[i];
+            vertexData[i].normal = normals[i];
+            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+            vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
+            vertexData[i].entityID = 0; // Default entity ID
         }
 
-        const glm::vec3 cameraPos = m_storage->cameraPosition;
+        vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
+        billboardVao->addVertexBuffer(vertexBuffer);
 
-        const glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                                    billboardRotation *
-                                    glm::scale(glm::mat4(1.0f), glm::vec3(size.x, size.y, 1.0f));
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = color;
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 6> verts{};
-        std::array<glm::vec2, 6> texCoords{};
-        std::array<glm::vec3, 6> normals{};
-        std::array<unsigned int, 6> indices{};
-
-        genBillboardMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 6; ++i)
+        std::vector<unsigned int> indices(nbVerticesBillboard);
+        for (uint32_t i = 0; i < nbVerticesBillboard; ++i)
             indices[i] = i;
 
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
+        auto indexBuffer = createIndexBuffer();
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
+        billboardVao->setIndexBuffer(indexBuffer);
 
-        std::ranges::for_each(indices, [this](const unsigned int index) {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
-    }
-
-    void NxRenderer3D::drawBillboard(
-        const glm::vec3& position,
-        const glm::vec2& size,
-        const NxMaterial& material,
-        const int entityID) const
-    {
-        if (!m_renderingScene)
-        {
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                        "Renderer not rendering a scene, make sure to call beginScene first");
-        }
-
-        const glm::vec3 cameraPos = m_storage->cameraPosition;
-
-        const glm::mat4 billboardRotation = calculateBillboardRotation(position, cameraPos);
-
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                                    billboardRotation *
-                                    glm::scale(glm::mat4(1.0f), glm::vec3(size.x, size.y, 1.0f));
-
-        m_storage->currentSceneShader->setUniformMatrix("uMatModel", transform);
-
-        NxIndexedMaterial mat;
-        mat.albedoColor = material.albedoColor;
-        mat.albedoTexIndex = getTextureIndex(material.albedoTexture);
-        mat.specularColor = material.specularColor;
-        mat.specularTexIndex = getTextureIndex(material.metallicMap);
-        setMaterialUniforms(mat);
-
-        std::array<glm::vec3, 6> verts{};
-        std::array<glm::vec2, 6> texCoords{};
-        std::array<glm::vec3, 6> normals{};
-        std::array<unsigned int, 6> indices{};
-
-        genBillboardMesh(verts, texCoords, normals);
-        for (unsigned int i = 0; i < 6; ++i)
-            indices[i] = i;
-
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            m_storage->vertexBufferPtr->position = glm::vec4(verts[i], 1.0f);
-            m_storage->vertexBufferPtr->texCoord = texCoords[i];
-            m_storage->vertexBufferPtr->normal = normals[i];
-            m_storage->vertexBufferPtr->entityID = entityID;
-            m_storage->vertexBufferPtr++;
-        }
-
-        std::ranges::for_each(indices, [this](const unsigned int index) {
-            m_storage->indexBufferBase[m_storage->indexCount++] = index;
-        });
+        return billboardVao;
     }
 }
