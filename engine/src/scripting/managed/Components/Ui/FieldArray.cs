@@ -23,45 +23,64 @@ namespace Nexo.Components.Ui;
 public unsafe class FieldArray : IDisposable
 {
     private Field* _fields;
-    private readonly int _count;
-    private bool _disposed;
+    private Boolean _disposed;
     
-    public FieldArray(int capacity)
+    public FieldArray(Int32 capacity)
     {
-        _count = capacity;
+        Count = capacity;
+        if (capacity == 0)
+        {
+            _fields = null;
+            return;
+        }
+
         _fields = (Field*)Marshal.AllocHGlobal(capacity * sizeof(Field));
-        
-        for (int i = 0; i < capacity; i++)
+
+        for (var i = 0u; i < capacity; i++)
         {
             _fields[i] = default;
         }
     }
-    
+
     public FieldArray(Field[] fields)
     {
-        _count = fields.Length;
-        _fields = (Field*)Marshal.AllocHGlobal(_count * sizeof(Field));
-        
-        for (int i = 0; i < _count; i++)
+        if (fields == null)
+            throw new ArgumentNullException(nameof(fields));
+
+        Count = fields.Length;
+
+        if (Count == 0)
+        {
+            _fields = null;
+            return;
+        }
+
+        _fields = (Field*)Marshal.AllocHGlobal(Count * sizeof(Field));
+
+        for (int i = 0; i < Count; i++)
         {
             _fields[i] = fields[i];
         }
     }
     
     public Field* GetPointer() => _fields;
-    public int Count => _count;
-    
-    public Field this[int index]
+    public Int32 Count { get; }
+
+    public Field this[Int32 index]
     {
         get
         {
-            if (index < 0 || index >= _count)
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(FieldArray));
+            if (index < 0 || index >= Count)
                 throw new IndexOutOfRangeException();
             return _fields[index];
         }
         set
         {
-            if (index < 0 || index >= _count)
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(FieldArray));
+            if (index < 0 || index >= Count)
                 throw new IndexOutOfRangeException();
             _fields[index] = value;
         }
@@ -69,17 +88,16 @@ public unsafe class FieldArray : IDisposable
     
     public void Dispose()
     {
-        if (!_disposed && _fields != null)
+        if (_disposed || _fields == null)
+            return;
+        for (var i = 0; i < Count; i++)
         {
-            for (int i = 0; i < _count; i++)
-            {
-                _fields[i].Dispose();
-            }
-            
-            Marshal.FreeHGlobal((IntPtr)_fields);
-            _fields = null;
-            _disposed = true;
+            _fields[i].Dispose();
         }
+            
+        Marshal.FreeHGlobal((IntPtr)_fields);
+        _fields = null;
+        _disposed = true;
     }
 
     ~FieldArray()
