@@ -187,4 +187,4 @@ This project is part of our curriculum and end of studies project, showcasing ou
 
 We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey 🚀​
 
-Thank for you support 🫶​
+Thank you for you support 🫶​
