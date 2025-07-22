@@ -2,7 +2,7 @@
 
 # NEXO Engine
 
-👋​ Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality! 
+👋​ Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality! 🤩✨​🚀​
 
 [![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml) 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
