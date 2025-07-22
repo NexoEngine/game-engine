@@ -84,16 +84,19 @@ namespace nexo::editor {
 
     void TypeErasedProperty::show(ecs::Entity entity)
     {
-        const auto& coordinator = Application::m_coordinator;
-        const auto& componentDescriptions = coordinator->getComponentDescriptions();
-
-        // Check if the entity has any type erased components
-        if (componentDescriptions.empty()) {
-            ImGui::Text("No type erased components available for this entity.");
+        if (!m_description) {
+            ImGui::Text("No component description available for type %d", m_componentType);
             return;
         }
 
+        const auto& coordinator = Application::m_coordinator;
+
         auto componentData = static_cast<uint8_t *>(coordinator->tryGetComponentById(m_componentType, entity));
+        if (!componentData) {
+            ImGui::Text("Entity %d does not have component type %d", entity, m_componentType);
+            return;
+        }
+
         if (ImNexo::Header(std::format("##{}", m_description->name), m_description->name + " Component"))
         {
             for (const auto& field : m_description->fields) {
