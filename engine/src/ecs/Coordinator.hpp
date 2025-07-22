@@ -440,6 +440,12 @@ namespace nexo::ecs {
                 return m_componentManager->getComponentType<T>();
             }
 
+            /**
+             * @brief Retrieves all registered component descriptions.
+             *
+             * @return const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>&
+             *         A const reference to the map of component types to their descriptions.
+             */
             const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>& getComponentDescriptions() const
             {
                 return m_componentDescriptions;
