@@ -49,7 +49,7 @@ namespace nexo::scripting {
         ecs::Entity NxCreateCube(const Vector3 pos, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
             auto &app = getApp();
-            const ecs::Entity basicCube = EntityFactory3D::createCube(std::move(pos), std::move(size), std::move(rotation), std::move(color));
+            const ecs::Entity basicCube = EntityFactory3D::createCube(pos, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(basicCube);
             return basicCube;
         }
