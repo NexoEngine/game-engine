@@ -140,14 +140,28 @@ public unsafe class FieldArray : IDisposable
     
     private static List<(FieldInfo FieldInfo, String Name)> GetDirectFields(Type type)
     {
+        if (type == null)
+            throw new ArgumentNullException(nameof(type));
         return type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
             .Where(f => !f.IsStatic && !f.IsLiteral)
             .Select(f => (f, f.Name))
             .ToList();
     }
     
-    private static List<(FieldInfo FieldInfo, String Name)> GetFlattenedFields(Type type, String prefix = "")
+    private static List<(FieldInfo FieldInfo, String Name)> GetFlattenedFields(Type type, String prefix = "",
+        HashSet<Type>? visitedTypes = null)
     {
+        if (type == null)
+            throw new ArgumentNullException(nameof(type));
+
+        visitedTypes ??= new HashSet<Type>();
+
+        if (!visitedTypes.Add(type))
+        {
+            // Prevent infinite recursion for circular references
+            return new List<(FieldInfo, String)>();
+        }
+
         var result = new List<(FieldInfo, String)>();
         
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
@@ -173,7 +187,7 @@ public unsafe class FieldArray : IDisposable
                 !field.FieldType.IsPointer)
             {
                 // Recursively flatten nested struct
-                result.AddRange(GetFlattenedFields(field.FieldType, fieldName));
+                result.AddRange(GetFlattenedFields(field.FieldType, fieldName, visitedTypes));
             }
             else
             {
