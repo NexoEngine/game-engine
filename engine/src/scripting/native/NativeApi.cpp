@@ -73,6 +73,10 @@ namespace nexo::scripting {
 
         void NxAddComponent(const ecs::Entity entity, const UInt32 typeId, const void *componentData)
         {
+            if (componentData == nullptr) {
+                LOG(NEXO_ERROR, "NxAddComponent: componentData is null for entity {}", entity);
+                return;
+            }
             const auto& coordinator = *Application::m_coordinator;
 
             coordinator.addComponent(entity, typeId, componentData);
