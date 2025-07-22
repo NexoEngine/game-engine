@@ -295,13 +295,15 @@ namespace Nexo
         public static unsafe Int64 RegisterComponent(Type componentType)
         {
             var name = componentType.Name;
+            FieldArray? fieldArray = null;
+
             try
             {
                 var size = (UInt64)Marshal.SizeOf(componentType);
 
                 Logger.Log(LogLevel.Info, $"Registering component {name}");
                 
-                var fieldArray = FieldArray.CreateFieldArrayFromType(componentType);
+                fieldArray = FieldArray.CreateFieldArrayFromType(componentType);
 
                 var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size, fieldArray.GetPointer(), (UInt64)fieldArray.Count);
                 if (typeId < 0)
@@ -322,6 +324,10 @@ namespace Nexo
             {
                 Logger.Log(LogLevel.Error, $"Error calling NxRegisterComponent for {name}: {ex.Message} {ex.StackTrace}");
                 return -1;
+            }
+            finally
+            {
+                fieldArray?.Dispose();
             }
         }
         
