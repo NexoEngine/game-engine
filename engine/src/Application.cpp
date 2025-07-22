@@ -207,9 +207,6 @@ namespace nexo {
         m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
         m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
-
-        m_renderSystem = m_coordinator->registerGroupSystem<system::RenderSystem>();
-
         m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
         m_physicsSystem->init();
 
@@ -284,7 +281,6 @@ namespace nexo {
         m_coordinator->init();
         registerEcsComponents();
         renderer::NxRenderer3D::get().init();
-        physicsSystem.Init(*m_coordinator);
         registerSystems();
         m_SceneManager.setCoordinator(m_coordinator);
 
