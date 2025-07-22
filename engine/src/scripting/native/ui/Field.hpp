@@ -30,4 +30,4 @@ namespace nexo::scripting {
         UInt64 offset;    // Offset of the field in the component
     };
 
-} // namespace nexo::ecs
+} // namespace nexo::scripting

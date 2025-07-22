@@ -44,4 +44,4 @@ namespace nexo::ecs {
         _Count // Count of the number of field types, used for validation
     };
 
-} // namespace nexo::scripting
+} // namespace nexo::ecs
