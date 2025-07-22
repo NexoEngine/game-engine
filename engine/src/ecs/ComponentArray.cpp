@@ -29,31 +29,7 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::insert(Entity entity, const void* componentData)
     {
-        if (entity >= MAX_ENTITIES)
-            THROW_EXCEPTION(OutOfRange, entity);
-
-        ensureSparseCapacity(entity);
-
-        if (hasComponent(entity)) {
-            LOG(NEXO_WARN, "Entity {} already has component", entity);
-            return;
-        }
-
-        const size_t newIndex = m_size;
-        m_sparse[entity]      = newIndex;
-        m_dense.push_back(entity);
-
-        // Resize component data vector if needed
-        size_t requiredSize = (m_size + 1) * m_componentSize;
-        if (m_componentData.size() < requiredSize) {
-            m_componentData.resize(requiredSize);
-        }
-
-        // Copy component data
-        std::memcpy(m_componentData.data() + newIndex * m_componentSize,
-                    componentData, m_componentSize);
-
-        ++m_size;
+        insertRaw(entity, componentData);
     }
 
     void TypeErasedComponentArray::insertRaw(Entity entity, const void* componentData)
