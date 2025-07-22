@@ -26,6 +26,8 @@
     - [Create an installer for Linux (DEB)](#create-an-installer-for-linux-deb)
   - [Run the tests](#run-the-tests)
   - [The Team](#the-team)
+  - [Join the NEXO community](#join-the-nexo-community)
+  - [Acknowledgements](#acknowledgements)
 
 > [!NOTE]  
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
@@ -173,6 +175,11 @@ NEXO Engine is brought to life by a dedicated team of fifth-year students from E
 - Marie GIACOMEL [@Sauterelle57](https://www.linkedin.com/in/marie-giacomel/)
 - Mehdy MORVAN [@iMeaNz](https://www.linkedin.com/in/mehdy-morvan-a80959264/)
 - Thomas PARENTEAU [@ThomasParenteau](https://www.linkedin.com/in/thomas-parenteau-0570b120a/)
+
+## Join the NEXO community
+Check our [web site](https://www.nexo-engine.com/) to keep you up to date about the latest news about **NEXO**.
+Join the [community](https://github.com/orgs/NexoEngine/discussions) to ask your questions or to talk with our developers.
+Visit our [blog]https://www.nexo-engine.com/blog) to find out more about how NEXO works.
 
 ## Acknowledgements
 
