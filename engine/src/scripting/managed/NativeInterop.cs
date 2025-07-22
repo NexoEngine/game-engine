@@ -560,7 +560,7 @@ namespace Nexo
             else
                 Console.WriteLine("Entity does NOT have a Transform.");
             
-            if (HasComponent<AmbientLightComponent>(cubeId))
+            if (HasComponent<AmbientLight>(cubeId))
                 Console.WriteLine("Entity has a AmbientLight!");
             else
                 Console.WriteLine("Entity does NOT have a AmbientLight.");
