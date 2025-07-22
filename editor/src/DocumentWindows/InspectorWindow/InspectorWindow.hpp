@@ -195,6 +195,10 @@ namespace nexo::editor {
 
             void registerProperty(const ecs::ComponentType type, std::shared_ptr<IEntityProperty> property)
             {
+			    if (!property) {
+                    LOG(NEXO_ERROR, "Attempted to register a null property for component type {}", type);
+                    return;
+                }
                 m_entityProperties[type] = std::move(property);
             }
 
