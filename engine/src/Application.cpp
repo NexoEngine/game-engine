@@ -109,7 +109,6 @@ namespace nexo {
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
-        m_coordinator->registerComponent<components::InActiveScene>();
         m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
@@ -324,6 +323,12 @@ namespace nexo {
                 m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
+                physicsAccumulator += m_worldState.time.deltaTime;
+
+                while (physicsAccumulator >= fixedTimestep) {
+                    m_physicsSystem->update(fixedTimestep);
+                    physicsAccumulator -= fixedTimestep;
+                }
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
 				for (auto &camera : renderContext.cameras)
@@ -331,13 +336,6 @@ namespace nexo {
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures
 				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
-        	    physicsAccumulator += m_currentTimestep;
-
-        	    while (physicsAccumulator >= fixedTimestep)
-        	    {
-        	        m_physicsSystem->update(fixedTimestep);
-        	        physicsAccumulator -= fixedTimestep;
-        	    }
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
