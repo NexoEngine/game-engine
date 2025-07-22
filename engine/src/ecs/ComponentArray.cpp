@@ -246,7 +246,7 @@ namespace nexo::ecs {
         }
     }
 
-    void TypeErasedComponentArray::swapComponents(size_t index1, size_t index2)
+    void TypeErasedComponentArray::swapComponents(const size_t index1, const size_t index2)
     {
         if (index1 == index2) return;
 
@@ -257,7 +257,7 @@ namespace nexo::ecs {
         std::vector<std::byte> temp(m_componentSize);
         std::memcpy(temp.data(), data1, m_componentSize);
         std::memcpy(data1, data2, m_componentSize);
-        std::memcpy(temp.data(), data2, m_componentSize);
+        std::memcpy(data2, temp.data(), m_componentSize);
     }
 
     void TypeErasedComponentArray::shrinkIfNeeded()
