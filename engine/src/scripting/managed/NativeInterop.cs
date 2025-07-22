@@ -348,18 +348,7 @@ namespace Nexo
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
             Console.WriteLine($"Created cube with ID: {cubeId}");
-            
-            // AddComponent test
-            AddComponent<UuidComponent>(cubeId);
-            
-            try {
-                ref UuidComponent uuid = ref GetComponent<UuidComponent>(cubeId);
-                Console.WriteLine($"Successfully got UuidComponent for cube");
-            }
-            catch (Exception e) {
-                Console.WriteLine($"Failed to get UuidComponent: {e.Message}");
-            }
-            
+
             // HasComponent test
             if (HasComponent<CameraComponent>(cubeId))
                 Console.WriteLine("Entity has a camera!");
