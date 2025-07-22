@@ -85,24 +85,34 @@ public unsafe class FieldArray : IDisposable
             _fields[index] = value;
         }
     }
-    
-    public void Dispose()
+
+    protected virtual void Dispose(Boolean disposing)
     {
         if (_disposed || _fields == null)
             return;
-        for (var i = 0; i < Count; i++)
+
+        if (disposing)
         {
-            _fields[i].Dispose();
+            for (int i = 0; i < Count; i++)
+            {
+                _fields[i].Dispose();
+            }
         }
-            
+
         Marshal.FreeHGlobal((IntPtr)_fields);
         _fields = null;
         _disposed = true;
     }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     ~FieldArray()
     {
-        Dispose();
+        Dispose(false);
     }
     
     public static FieldArray CreateFieldArrayFromType(Type type, Boolean flatten = true)
