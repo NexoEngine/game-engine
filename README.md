@@ -177,9 +177,9 @@ NEXO Engine is brought to life by a dedicated team of fifth-year students from E
 - Thomas PARENTEAU [@ThomasParenteau](https://www.linkedin.com/in/thomas-parenteau-0570b120a/)
 
 ## Join the NEXO community
-Check our [web site](https://www.nexo-engine.com/) to keep you up to date about the latest news about **NEXO**.
-Join the [community](https://github.com/orgs/NexoEngine/discussions) to ask your questions or to talk with our developers.
-Visit our [blog]https://www.nexo-engine.com/blog) to find out more about how NEXO works.
+Check our [web site](https://www.nexo-engine.com/) to keep you up to date about the latest news about **NEXO**.</br>
+Join the [community](https://github.com/orgs/NexoEngine/discussions) to ask your questions or to talk with our developers.</br>
+Visit our [blog](https://www.nexo-engine.com/blog) to find out more about how NEXO works.</br>
 
 ## Acknowledgements
 
