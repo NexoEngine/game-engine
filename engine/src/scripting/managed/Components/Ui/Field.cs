@@ -12,11 +12,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Nexo.Components.Ui;
 
@@ -57,11 +55,14 @@ public unsafe struct Field
         return field;
     }
     
-    public static Field CreateFieldFromFieldInfo(Type declaringType, System.Reflection.FieldInfo fieldInfo)
+    public static Field CreateFieldFromFieldInfo(FieldInfo fieldInfo)
     {
         var fieldType = TypeMap.GetValueOrDefault(fieldInfo.FieldType, FieldType.Blank);
         var fieldName = fieldInfo.Name;
-        var offset = Marshal.OffsetOf(fieldInfo.DeclaringType ?? throw new InvalidOperationException(), fieldName);
+        var declaringType = fieldInfo.DeclaringType;
+        if (declaringType == null)
+            throw new InvalidOperationException($"Field '{fieldName}' has no declaring type");
+        var offset = Marshal.OffsetOf(declaringType, fieldName);
         
         var size = Marshal.SizeOf(fieldInfo.FieldType);
         Logger.Log(LogLevel.Info, $"Creating field: {fieldName}, Type: {fieldType}, Size: {Marshal.SizeOf(fieldInfo.FieldType)}");

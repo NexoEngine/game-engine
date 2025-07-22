@@ -94,7 +94,7 @@ public unsafe class FieldArray : IDisposable
         
         for (int i = 0; i < flattenedFields.Count; i++)
         {
-            fieldArray[i] = Field.CreateFieldFromFieldInfo(type, flattenedFields[i].FieldInfo);
+            fieldArray[i] = Field.CreateFieldFromFieldInfo(flattenedFields[i].FieldInfo);
         }
         
         return fieldArray;
