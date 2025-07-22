@@ -2,7 +2,7 @@
 
 # NEXO Engine
 
-Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality!
+👋​ Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality! 
 
 [![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml) 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
@@ -34,13 +34,17 @@ Welcome to the NEXO Engine repository! This project is a collaborative effort to
 
 ### Game Engine
 
-Interface screenshot
+📸​ Interface screenshot
 
-![Editor interface](docs/game_engine/editor_interface.png)
+![Editor interface](https://github.com/user-attachments/assets/cb19d00c-56bc-4cdd-9f61-069375fd7b08)
 
-Quick video of the game engine in action
+🎥 Quick videos of the game engine in action
 
-https://github.com/user-attachments/assets/f675cdc0-3a53-4fb8-8544-a22dc7a332f4
+https://github.com/user-attachments/assets/a91e61c3-b8a9-43d3-83c4-37fd02de2e7c
+
+https://github.com/user-attachments/assets/281bec66-65cc-4467-aeb7-8f546dc3fb22
+
+https://github.com/user-attachments/assets/ea92807b-da51-4fb6-bd1d-d3c9fadf0c13
 
 <!-- Command used for video compression: ffmpeg -ss 00:00:02 -to 00:00:57 -i .\docs\game_engine\editor_interface_video.mkv -codec copy -an -vcodec libx264 -crf
  4 .\docs\game_engine\editor_interface_video.mp4 -->
@@ -163,15 +167,17 @@ If you encounter any issues, please refer to our [Troubleshooting Guide](docs/tr
 
 ## The Team
 
-NEXO Engine is brought to life by a dedicated team of fourth-year students from EPITECH Strasbourg:
-- Guillaume HEIN (@Thyodas)
-- Jean CARDONNE (@jcardonne)
-- Marie GIACOMEL (@Sauterelle57)
-- Mehdy MORVAN (@iMeaNz)
-- Thomas PARENTEAU (@ThomasParenteau)
+NEXO Engine is brought to life by a dedicated team of fifth-year students from EPITECH Strasbourg:
+- Guillaume HEIN [@Thyodas](https://www.linkedin.com/in/guillaume-hein/)
+- Jean CARDONNE [@jcardonne](https://www.linkedin.com/in/jcardonne/)
+- Marie GIACOMEL [@Sauterelle57](https://www.linkedin.com/in/marie-giacomel/)
+- Mehdy MORVAN [@iMeaNz](https://www.linkedin.com/in/mehdy-morvan-a80959264/)
+- Thomas PARENTEAU [@ThomasParenteau](https://www.linkedin.com/in/thomas-parenteau-0570b120a/)
 
 ## Acknowledgements
 
 This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.
 
-We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey.
+We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey 🚀​
+
+Thank for you support 🫶​
