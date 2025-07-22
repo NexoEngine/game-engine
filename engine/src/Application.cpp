@@ -109,7 +109,6 @@ namespace nexo {
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
 
-        m_coordinator->registerComponent<components::InActiveScene>();
         m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
@@ -320,12 +319,12 @@ namespace nexo {
                 m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
-        physicsAccumulator += m_currentTimestep;
+                physicsAccumulator += m_worldState.time.deltaTime;
 
-        while (physicsAccumulator >= fixedTimestep) {
-            m_physicsSystem->update(fixedTimestep);
-            physicsAccumulator -= fixedTimestep;
-        }
+                while (physicsAccumulator >= fixedTimestep) {
+                    m_physicsSystem->update(fixedTimestep);
+                    physicsAccumulator -= fixedTimestep;
+                }
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
 				for (auto &camera : renderContext.cameras)
