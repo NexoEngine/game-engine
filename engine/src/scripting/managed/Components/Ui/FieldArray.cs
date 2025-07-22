@@ -107,12 +107,22 @@ public unsafe class FieldArray : IDisposable
     
     public static FieldArray CreateFieldArrayFromType(Type type, Boolean flatten = true)
     {
+        if (type == null)
+            throw new ArgumentNullException(nameof(type));
         var flattenedFields = flatten ? GetFlattenedFields(type) : GetDirectFields(type);
         var fieldArray = new FieldArray(flattenedFields.Count);
-        
-        for (int i = 0; i < flattenedFields.Count; i++)
+
+        try
         {
-            fieldArray[i] = Field.CreateFieldFromFieldInfo(flattenedFields[i].FieldInfo);
+            for (var i = 0; i < flattenedFields.Count; i++)
+            {
+                fieldArray[i] = Field.CreateFieldFromFieldInfo(flattenedFields[i].FieldInfo);
+            }
+        }
+        catch (Exception ex)
+        {
+            fieldArray.Dispose();
+            throw new InvalidOperationException($"Failed to create FieldArray from type {type.Name}: {ex.Message}", ex);
         }
         
         return fieldArray;
