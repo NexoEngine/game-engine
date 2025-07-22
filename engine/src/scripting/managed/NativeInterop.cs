@@ -296,7 +296,7 @@ namespace Nexo
             var name = componentType.Name;
             try
             {
-                var size = (UInt32)Marshal.SizeOf(componentType);
+                var size = (UInt64)Marshal.SizeOf(componentType);
 
                 Logger.Log(LogLevel.Info, $"Registering component {name}");
 
