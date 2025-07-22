@@ -21,8 +21,6 @@ namespace Nexo.Components;
 
 public interface IComponentBase
 {
-    private static readonly List<IComponentBase> AllComponents = [];
-    
     [UnmanagedCallersOnly]
     public static Int32 InitializeComponents()
     {
