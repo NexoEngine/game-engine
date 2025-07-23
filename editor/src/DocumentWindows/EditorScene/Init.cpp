@@ -172,6 +172,7 @@ namespace nexo::editor
             if (bodyId.IsInvalid()) {
                 LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
             }
+            scene.addEntity(entity);
             return entity;
         };
 
