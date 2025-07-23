@@ -19,6 +19,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Nexo.Components;
+using Nexo.Components.Ui;
 
 namespace Nexo
 {
@@ -77,7 +78,7 @@ namespace Nexo
             public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 size);
+            public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 componentSize, Field *fields, UInt64 fieldCount);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
@@ -291,16 +292,20 @@ namespace Nexo
         }
 
         
-        public static Int64 RegisterComponent(Type componentType)
+        public static unsafe Int64 RegisterComponent(Type componentType)
         {
             var name = componentType.Name;
+            FieldArray? fieldArray = null;
+
             try
             {
                 var size = (UInt64)Marshal.SizeOf(componentType);
 
                 Logger.Log(LogLevel.Info, $"Registering component {name}");
+                
+                fieldArray = FieldArray.CreateFieldArrayFromType(componentType);
 
-                var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size);
+                var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size, fieldArray.GetPointer(), (UInt64)fieldArray.Count);
                 if (typeId < 0)
                 {
                     Logger.Log(LogLevel.Error, $"Failed to register component {name}, returned: {typeId}");
@@ -308,12 +313,21 @@ namespace Nexo
                 }
                 _typeToNativeIdMap[componentType] = (UInt32)typeId;
                 Logger.Log(LogLevel.Info, $"Registered component {name} with type ID {typeId}");
+                for (int i = 0; i < fieldArray.Count; i++)
+                {
+                    var field = fieldArray[i];
+                    Logger.Log(LogLevel.Info, $"Registered field {field.Name} of type {field.Type} for component {componentType.Name}");
+                }
                 return typeId;
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Error, $"Error calling NxRegisterComponent for {name}: {ex.Message}");
+                Logger.Log(LogLevel.Error, $"Error calling NxRegisterComponent for {name}: {ex.Message} {ex.StackTrace}");
                 return -1;
+            }
+            finally
+            {
+                fieldArray?.Dispose();
             }
         }
         

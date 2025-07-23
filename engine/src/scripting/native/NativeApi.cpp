@@ -19,6 +19,7 @@
 #include "Logger.hpp"
 #include "Nexo.hpp"
 #include "components/Uuid.hpp"
+#include "ui/Field.hpp"
 
 namespace nexo::scripting {
 
@@ -89,11 +90,47 @@ namespace nexo::scripting {
             return coordinator.entityHasComponent(entity, typeId);
         }
 
-        Int64 NxRegisterComponent(const char* name, const UInt64 size)
+        Int64 NxRegisterComponent(const char *name, const UInt64 componentSize, const Field *fields, const UInt64 fieldCount)
         {
-            (void)name; // TODO: unused for now
+            if (!name || !fields || fieldCount == 0 || componentSize == 0) {
+                LOG(NEXO_ERROR, "Invalid parameters for component registration");
+                return -1;
+            }
+
             auto& coordinator = *Application::m_coordinator;
-            return coordinator.registerComponent(size);
+
+            for (UInt64 i = 0; i < fieldCount; ++i) {
+                if (!fields[i].name) {
+                    LOG(NEXO_WARN, "Field {} has null name", i);
+                    return -1;
+                }
+                LOG(NEXO_DEV, "Registering field {}: {} of type {}", i, static_cast<char*>(fields[i].name), static_cast<UInt64>(fields[i].type));
+            }
+
+            const auto componentType = coordinator.registerComponent(componentSize);
+
+            std::vector<ecs::Field> fieldVector;
+            fieldVector.reserve(fieldCount);
+            static_assert(sizeof(ecs::FieldType) == sizeof(FieldType), "FieldType enum size mismatch");
+            static_assert(static_cast<uint64_t>(ecs::FieldType::_Count) == static_cast<uint64_t>(FieldType::_Count), "FieldType enum value count mismatch");
+            for (UInt64 i = 0; i < fieldCount; ++i) {
+                fieldVector.emplace_back(ecs::Field {
+                    .name = fields[i].name ? std::string(static_cast<char*>(fields[i].name)) : "(null)",
+                    .type = static_cast<ecs::FieldType>(fields[i].type),
+                    .size = fields[i].size,
+                    .offset = fields[i].offset,
+                });
+            }
+
+            coordinator.addComponentDescription(
+                componentType,
+                ecs::ComponentDescription {
+                    .name = name,
+                    .fields = std::move(fieldVector),
+                }
+            );
+
+            return componentType;
         }
 
         ComponentTypeIds NxGetComponentTypeIds()

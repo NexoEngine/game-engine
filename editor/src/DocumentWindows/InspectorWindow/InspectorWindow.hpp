@@ -37,6 +37,14 @@ namespace nexo::editor {
 			*/
 	        void setup() override;
 
+            /**
+             * @brief Registers type-erased properties for all component descriptions in the coordinator.
+             *
+             * This method should be called after the scripting system has been initialized
+             * to ensure all managed components have been registered with their field metadata.
+             */
+            void registerTypeErasedProperties();
+
 			// No-op method in this class
 	        void shutdown() override;
 
@@ -139,7 +147,7 @@ namespace nexo::editor {
 				return nullptr;
 			}
 	    private:
-			std::unordered_map<std::type_index, std::shared_ptr<IEntityProperty>> m_entityProperties;
+			std::unordered_map<ecs::ComponentType, std::shared_ptr<IEntityProperty>> m_entityProperties;
 
 			std::unordered_map<std::type_index, bool> m_subInspectorVisibility;
    			std::unordered_map<std::type_index, std::any> m_subInspectorData;
@@ -181,7 +189,18 @@ namespace nexo::editor {
 			requires std::derived_from<Property, AEntityProperty>
 			void registerProperty()
 			{
-				m_entityProperties[std::type_index(typeid(Component))] = std::make_shared<Property>(*this);
+			    const auto type = Application::m_coordinator->getComponentType<Component>();
+				m_entityProperties[type] = std::make_shared<Property>(*this);
 			}
+
+            void registerProperty(const ecs::ComponentType type, std::shared_ptr<IEntityProperty> property)
+            {
+			    if (!property) {
+                    LOG(NEXO_ERROR, "Attempted to register a null property for component type {}", type);
+                    return;
+                }
+                m_entityProperties[type] = std::move(property);
+            }
+
     };
 };
