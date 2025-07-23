@@ -75,7 +75,7 @@ TEST_F(PhysicsSystemTest, PhysicsUpdatesTransformPosition) {
     coordinator->addComponent(entity, transform);
 
     physicsSystem->createDynamicBody(entity, transform);
-    physicsSystem->update(1.0f / 60.0f); // simulate one frame
+    physicsSystem->update(); // simulate one frame
 
     auto& updated = coordinator->getComponent<components::TransformComponent>(entity);
     EXPECT_NEAR(updated.pos.y, transform.pos.y, 1.0f); // should be falling slightly
