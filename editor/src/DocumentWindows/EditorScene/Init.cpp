@@ -119,6 +119,10 @@ namespace nexo::editor
         auto& app = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
         scene.addEntity(LightFactory::createAmbientLight({1.0f, 1.0f, 1.0f}));
         // const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
         // addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
@@ -143,7 +147,7 @@ namespace nexo::editor
                                       const glm::vec4& color, system::ShapeType shapeType, JPH::EMotionType motionType)
         {
             ecs::Entity entity;
-            std::cout << "Creating entity of type: " << static_cast<int>(shapeType) << std::endl;
+            LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
             switch (shapeType)
             {
                 case system::ShapeType::Box:
@@ -164,19 +168,22 @@ namespace nexo::editor
                 default:
                     throw std::runtime_error("Unsupported shape type for entity creation.");
             }
-            app.getPhysicsSystem()->createBodyFromShape(entity, app.m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
-            scene.addEntity(entity);
+            JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, app.m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
+            if (bodyId.IsInvalid()) {
+                LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+            }
             return entity;
         };
 
         // Balls
+
         for (int i = 0; i < 50; ++i)
         {
             float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
             float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
             glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
             glm::vec4 color = {
-                1.0f, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, 1.0f
+                1.0f, dis(gen), dis(gen), 1.0f
             };
             createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
                                JPH::EMotionType::Dynamic);
