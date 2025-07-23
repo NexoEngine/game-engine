@@ -183,7 +183,7 @@ namespace nexo::system
         PhysicsSystem& operator=(const PhysicsSystem&) = delete;
 
         void init();
-        void update(float dt);
+        void update();
 
         JPH::BodyID createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform);
         JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
@@ -218,8 +218,9 @@ namespace nexo::system
         ObjectLayerPairFilterImpl objectLayerPairFilter;
         MyContactListener contactListener;
 
-        float m_physicsAccumulator = 0.0f;
         double m_lastPhysicsTime = 0.0;
+
+        // Using hard value because Jolt documentation advice that the physics simulation should be able to be at 60fps all the time
         constexpr static float fixedTimestep = 1.0f / 60.0f;
     };
 }

@@ -266,6 +266,9 @@ namespace nexo::ecs {
             /**
             * @brief Removes a component from an entity, updates its signature, and notifies systems.
             *
+            * This is the runtime equivalent of removeComponent<T>(), useful when the component type
+            * is only known at runtime (e.g., from scripting APIs).
+            *
             * @param entity - The ID of the entity.
             */
             template<typename T>

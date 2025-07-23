@@ -86,7 +86,7 @@ public class CubeSystem : SystemBase
     
     private void SpawnCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
     {
-        var cubeId = NativeInterop.CreateSphere(position, size, rotation, color, 3);
+        var cubeId = NativeInterop.CreateCube(position, size, rotation, color);
         var state = new CubeAnimationState
         {
             Angle = Random.Shared.NextSingle() * MathF.PI * 2.0f, 

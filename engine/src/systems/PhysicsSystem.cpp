@@ -46,7 +46,7 @@ namespace nexo::system {
         bodyLockInterface = &physicsSystem->GetBodyLockInterface();
     }
 
-    void PhysicsSystem::update(float /*timestep*/)
+    void PhysicsSystem::update()
     {
         const double currentTime = static_cast<double>(std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now().time_since_epoch()).count());
