@@ -51,7 +51,7 @@ namespace nexo::scripting {
 
         ecs::Entity NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
         {
-            auto &app = getApp();
+            auto& app = Application::getInstance();
             const ecs::Entity basicCube = EntityFactory3D::createCube(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(basicCube);
             return basicCube;
@@ -60,12 +60,7 @@ namespace nexo::scripting {
         ecs::Entity NxCreateTetrahedron(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
         {
             auto& app = Application::getInstance();
-            const ecs::Entity entity = EntityFactory3D::createTetrahedron(
-                {position.x, position.y, position.z},
-                {size.x, size.y, size.z},
-                {rotation.x, rotation.y, rotation.z},
-                {color.x, color.y, color.z, color.w}
-            );
+            const ecs::Entity entity = EntityFactory3D::createTetrahedron(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(entity);
             return entity;
         }
@@ -73,12 +68,7 @@ namespace nexo::scripting {
         ecs::Entity NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
         {
             auto& app = Application::getInstance();
-            const ecs::Entity entity = EntityFactory3D::createPyramid(
-                {position.x, position.y, position.z},
-                {size.x, size.y, size.z},
-                {rotation.x, rotation.y, rotation.z},
-                {color.x, color.y, color.z, color.w}
-            );
+            const ecs::Entity entity = EntityFactory3D::createPyramid(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(entity);
             return entity;
         }
@@ -86,13 +76,7 @@ namespace nexo::scripting {
         ecs::Entity NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment)
         {
             auto& app = Application::getInstance();
-            const ecs::Entity entity = EntityFactory3D::createCylinder(
-                {position.x, position.y, position.z},
-                {size.x, size.y, size.z},
-                {rotation.x, rotation.y, rotation.z},
-                {color.x, color.y, color.z, color.w},
-                nbSegment
-            );
+            const ecs::Entity entity = EntityFactory3D::createCylinder(position, size, rotation, color, nbSegment);
             app.getSceneManager().getScene(0).addEntity(entity);
             return entity;
         }
@@ -100,13 +84,7 @@ namespace nexo::scripting {
         ecs::Entity NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision)
         {
             auto& app = Application::getInstance();
-            const ecs::Entity entity = EntityFactory3D::createSphere(
-                {position.x, position.y, position.z},
-                {size.x, size.y, size.z},
-                {rotation.x, rotation.y, rotation.z},
-                {color.x, color.y, color.z, color.w},
-                nbSubdivision
-            );
+            const ecs::Entity entity = EntityFactory3D::createSphere(position, size, rotation, color, nbSubdivision);
             app.getSceneManager().getScene(0).addEntity(entity);
             return entity;
         }

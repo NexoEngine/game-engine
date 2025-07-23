@@ -264,7 +264,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateCube: {ex.Message}");
-                return 0;
+                return UInt32.MaxValue;
             }
         }
 
@@ -338,9 +338,7 @@ namespace Nexo
         {
             try
             {
-                Console.WriteLine("Olalalalalala je vais créer un body");
                 s_callbacks.NxCreateBodyFromShape.Invoke(entityId, position, size, rotation, (UInt32)shapeType, (UInt32)motionType);
-                Console.WriteLine("Olalalalalala j'ai crée un body un body");
             }
             catch (Exception ex)
             {
