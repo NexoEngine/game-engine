@@ -280,7 +280,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateTetrahedron: {ex.Message}");
-                return 0;
+                return UInt32.MaxValue;
             }
         }
 
@@ -293,7 +293,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreatePyramid: {ex.Message}");
-                return 0;
+                return UInt32.MaxValue;
             }
         }
 
@@ -307,7 +307,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateCylinder: {ex.Message}");
-                return 0;
+                return UInt32.MaxValue;
             }
         }
 
@@ -320,7 +320,7 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateSphere: {ex.Message}");
-                return 0;
+                return UInt32.MaxValue;
             }
         }
 
