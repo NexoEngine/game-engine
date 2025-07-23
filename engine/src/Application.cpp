@@ -108,6 +108,8 @@ namespace nexo {
         m_coordinator->registerComponent<components::MaterialComponent>();
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
+
+        m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
     void Application::registerWindowCallbacks() const
@@ -205,6 +207,8 @@ namespace nexo {
         m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
         m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
+        m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
+        m_physicsSystem->init();
 
         auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
@@ -297,6 +301,9 @@ namespace nexo {
 
         m_scriptingSystem->update();
 
+        constexpr float fixedTimestep = 1.0f / 60.0f;
+        static float physicsAccumulator = 0.0f;
+
         if (!m_isMinimized)
         {
          	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
@@ -312,6 +319,12 @@ namespace nexo {
                 m_transformHierarchySystem->update();
 				m_cameraContextSystem->update();
 				m_lightSystem->update();
+                physicsAccumulator += m_worldState.time.deltaTime;
+
+                while (physicsAccumulator >= fixedTimestep) {
+                    m_physicsSystem->update(fixedTimestep);
+                    physicsAccumulator -= fixedTimestep;
+                }
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
 				for (auto &camera : renderContext.cameras)

@@ -28,6 +28,7 @@
 #include "Timer.hpp"
 #include "WorldState.hpp"
 #include "components/Light.hpp"
+#include "components/PhysicsBodyComponent.hpp"
 
 #include "systems/CameraSystem.hpp"
 #include "systems/LightSystem.hpp"
@@ -35,6 +36,7 @@
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
@@ -188,6 +190,10 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
+            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() const {
+                return m_physicsSystem;
+            }
+
             /**
              * @brief Deletes an existing entity.
              *
@@ -270,7 +276,9 @@ namespace nexo {
             std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
             std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
             std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
+            std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
     };
 }
