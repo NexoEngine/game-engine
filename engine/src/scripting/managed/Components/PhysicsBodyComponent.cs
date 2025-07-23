@@ -18,15 +18,6 @@ using System.Runtime.InteropServices;
 namespace Nexo.Components
 {
     /// <summary>
-    /// Type of physics body
-    /// </summary>
-    public enum PhysicsBodyType : UInt32
-    {
-        Static = 0,
-        Dynamic = 1
-    }
-
-    /// <summary>
     /// Component for physics bodies
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
@@ -40,14 +31,14 @@ namespace Nexo.Components
         /// <summary>
         /// Type of the physics body (static or dynamic)
         /// </summary>
-        public PhysicsBodyType type;
+        public MotionType type;
 
         /// <summary>
         /// Creates a new PhysicsBodyComponent
         /// </summary>
         /// <param name="bodyID">Physics body ID</param>
         /// <param name="type">Type of the physics body</param>
-        public PhysicsBodyComponent(UInt32 bodyID, PhysicsBodyType type)
+        public PhysicsBodyComponent(UInt32 bodyID, MotionType type)
         {
             this.bodyID = bodyID;
             this.type = type;
@@ -60,7 +51,7 @@ namespace Nexo.Components
         /// <returns>New static PhysicsBodyComponent</returns>
         public static PhysicsBodyComponent CreateStatic(UInt32 bodyID)
         {
-            return new PhysicsBodyComponent(bodyID, PhysicsBodyType.Static);
+            return new PhysicsBodyComponent(bodyID, MotionType.Static);
         }
 
         /// <summary>
@@ -70,7 +61,7 @@ namespace Nexo.Components
         /// <returns>New dynamic PhysicsBodyComponent</returns>
         public static PhysicsBodyComponent CreateDynamic(UInt32 bodyID)
         {
-            return new PhysicsBodyComponent(bodyID, PhysicsBodyType.Dynamic);
+            return new PhysicsBodyComponent(bodyID, MotionType.Dynamic);
         }
     }
 } 

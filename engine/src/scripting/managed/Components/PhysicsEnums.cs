@@ -7,7 +7,7 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Thomas PARENTEAU
-//  Date:        29/26/2025
+//  Date:        29/06/2025
 //  Description: Enums for physics C#
 //
 ///////////////////////////////////////////////////////////////////////////////
