@@ -50,11 +50,12 @@ namespace nexo::renderer
         constexpr auto v3 = glm::vec3(size, size, -size);
 
         // Define the 4 triangular faces (each has 3 vertices)
-        std::vector<glm::vec3> verts{};
-        verts.emplace_back(v0); verts.emplace_back(v1); verts.emplace_back(v2);
-        verts.emplace_back(v0); verts.emplace_back(v2); verts.emplace_back(v3);
-        verts.emplace_back(v0); verts.emplace_back(v3); verts.emplace_back(v1);
-        verts.emplace_back(v1); verts.emplace_back(v3); verts.emplace_back(v2);
+        std::array<glm::vec3, 12> verts = {
+            v0, v1, v2,
+            v0, v2, v3,
+            v0, v3, v1,
+            v1, v3, v2
+        };
 
         std::ranges::copy(verts, vertices.begin());
 
@@ -66,7 +67,7 @@ namespace nexo::renderer
             {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
         };
 
-        std::ranges::copy(texturesCoord, texCoords.begin());
+        vertices = verts;
 
         // Compute normals for each face
         glm::vec3 norm[12];
@@ -75,8 +76,8 @@ namespace nexo::renderer
         {
             const glm::vec3 normal = glm::normalize(
                 glm::cross(
-                    verts[i + 1] - verts[i],
-                    verts[i + 2] - verts[i]));
+                    vertices[i + 1] - vertices[i],
+                    vertices[i + 2] - vertices[i]));
 
             norm[i] = normal;
             norm[i + 1] = normal;
