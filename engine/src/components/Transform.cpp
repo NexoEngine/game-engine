@@ -32,6 +32,8 @@ namespace nexo::components {
 
     void TransformComponent::addChild(ecs::Entity childEntity)
     {
+        if (std::ranges::find(children, childEntity) != children.end())
+            return;
         children.push_back(childEntity);
     }
 

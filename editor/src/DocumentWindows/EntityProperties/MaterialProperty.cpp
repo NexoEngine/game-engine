@@ -179,7 +179,7 @@ namespace nexo::editor {
                 MaterialInspectorData data;
                 data.m_selectedEntity = entity;
                 data.material = materialComponent.material;
-                m_inspector.setSubInspectorData<MaterialInspector, MaterialInspectorData>(data);
+                m_inspector.setSubInspectorData<MaterialInspector>(data);
 
             }
             ImGui::EndGroup();
