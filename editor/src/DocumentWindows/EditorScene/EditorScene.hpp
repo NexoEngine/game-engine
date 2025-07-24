@@ -17,6 +17,7 @@
 #include <ImGuizmo.h>
 
 #include "ADocumentWindow.hpp"
+#include "Definitions.hpp"
 #include "inputs/WindowState.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "../PopupManager.hpp"
@@ -103,6 +104,8 @@ namespace nexo::editor
         float m_angleSnap = 90.0f;
         bool m_snapToGrid = false;
         bool m_wireframeEnabled = false;
+
+        ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;
 
         int m_sceneId = -1;
         std::string m_sceneUuid;
