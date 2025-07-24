@@ -41,12 +41,25 @@ namespace nexo::assets {
 
     GenericAssetRef AssetImporter::importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant)
     {
-        for (const auto& importers: m_importers | std::views::values) {
-            if (importers.empty())
-                continue;
-            if (const auto asset = importAssetTryImporters(location, inputVariant, importers))
-                return asset;
+        // Temp fix to use all importers in priority order
+        // TODO: change the way we store importers, maybe stop using a map
+        std::vector<AssetImporterBase *> allImporters;
+        std::vector<ImporterDetails> allImportersDetails;
+        for (const auto& typeIdx: m_importers | std::views::keys) {
+            const auto& importers = m_importers.at(typeIdx);
+            const auto& importerDetails = m_importersDetails.at(typeIdx);
+            for (int importerIdx = 0; importerIdx < static_cast<int>(importers.size()); ++importerIdx) {
+                const auto& details = importerDetails[importerIdx];
+                const int priority = details.priority;
+                size_t k = 0;
+                for (; k < allImporters.size() && priority <= allImportersDetails[k].priority ; ++k);
+                allImporters.insert(allImporters.begin() + static_cast<long>(k), importers[importerIdx]);
+                allImportersDetails.insert(allImportersDetails.begin() + static_cast<long>(k), details);
+            }
         }
+
+        if (const auto asset = importAssetTryImporters(location, inputVariant, allImporters))
+            return asset;
         return GenericAssetRef::null();
     }
 

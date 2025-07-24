@@ -101,19 +101,9 @@ namespace nexo::editor {
         assets::AssetImporter importer;
         assets::ImporterFileInput fileInput{path};
         try {
-            if (assetType == assets::AssetType::TEXTURE) {
-                auto assetRef = importer.importAsset<assets::Texture>(location, fileInput);
-                if (assetRef)
-                    LOG(NEXO_INFO, "Successfully imported texture: {}", location.getName().data());
-                else
-                    LOG(NEXO_ERROR, "Failed to import texture: {}", location.getPath().data());
-            } else if (assetType == assets::AssetType::MODEL) {
-                auto assetRef = importer.importAsset<assets::Model>(location, fileInput);
-                if (assetRef)
-                    LOG(NEXO_INFO, "Successfully imported model: {}", location.getName().data());
-                else
-                    LOG(NEXO_ERROR, "Failed to import model: {}", location.getPath().data());
-            }
+            auto assetRef = importer.importAssetAuto(location, fileInput);
+            if (!assetRef)
+                LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
         } catch (const std::exception& e) {
             LOG(NEXO_ERROR, "Exception while importing {}: {}", location.getPath().data(), e.what());
         }
