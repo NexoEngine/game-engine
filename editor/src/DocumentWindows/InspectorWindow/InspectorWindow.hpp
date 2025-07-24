@@ -137,11 +137,11 @@ namespace nexo::editor {
             {
                 auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
                 if (it != m_subInspectorData.end()) {
-                    try {
-                        return std::any_cast<Data>(it->second);
-                    }
-                    catch (const std::bad_any_cast& e) {
-                        LOG(NEXO_ERROR, "Failed to cast sub-inspector data : {}", e.what());
+                    if (auto ptr = std::any_cast<Data>(&it->second)) {
+                        return *ptr;
+                    } else {
+                        LOG(NEXO_ERROR, "Failed to cast sub-inspector data for type {}",
+                            typeid(WindowType).name());
                         return std::nullopt;
                     }
                 }
