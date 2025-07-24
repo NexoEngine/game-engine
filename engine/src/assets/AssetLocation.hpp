@@ -62,7 +62,7 @@ namespace nexo::assets {
              */
             AssetLocation& setPath(const std::string& path)
             {
-                _path = normalizePath(path);
+                _path = normalizePathAndRemovePrefixSlash(path);
                 return *this;
             }
 
@@ -155,7 +155,7 @@ namespace nexo::assets {
                 std::string extractedPath;
 
                 parseFullLocation(fullLocation, extractedAssetName, extractedPath, extractedPackName);
-                extractedPath = normalizePath(extractedPath);
+                extractedPath = normalizePathAndRemovePrefixSlash(extractedPath);
 
                 try {
                     _name = AssetName(extractedAssetName);

@@ -24,7 +24,7 @@ namespace nexo::assets {
     )
     {
         _name = name;
-        _path = normalizePath(path);
+        _path = normalizePathAndRemovePrefixSlash(path);
         _packName = packName;
     }
 } // namespace nexo::assets

@@ -52,5 +52,5 @@ namespace nexo {
             inline static std::filesystem::path m_executableRootPathCached;
     };
 
-    std::string normalizePath(const std::string &rawPath);
+    std::string normalizePathAndRemovePrefixSlash(const std::string &rawPath);
 } // namespace nexo
