@@ -28,15 +28,7 @@ namespace nexo {
          * @brief Get the path to the executable (e.g.: nexoEditor)
          * @return The path to the executable
          */
-        static const std::filesystem::path& getExecutablePath()
-        {
-            if (!m_executablePathCached.empty() && !m_executableRootPathCached.empty())
-                return m_executablePathCached;
-            const boost::dll::fs::path path = boost::dll::program_location();
-            m_executablePathCached = path.c_str();
-            m_executableRootPathCached = m_executablePathCached.parent_path();
-            return m_executablePathCached;
-        }
+        static const std::filesystem::path& getExecutablePath();
 
         /**
         * @brief Resolve a path relative to the executable
@@ -46,21 +38,12 @@ namespace nexo {
         * @note Example: if assets is a folder in the same directory as the executable, you can use: resolvePathRelativeToExe("assets")
         * @example ../editor/src/Editor.cpp
         */
-        static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path)
-        {
-            if (m_executableRootPathCached.empty())
-                getExecutablePath();
-            return (m_executableRootPathCached / path).lexically_normal();
-        }
+        static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path);
 
         /**
          * @brief Reset the cached paths
          */
-        static void resetCache()
-        {
-            m_executablePathCached.clear();
-            m_executableRootPathCached.clear();
-        }
+        static void resetCache();
 
         private:
             Path() = default;
@@ -69,16 +52,5 @@ namespace nexo {
             inline static std::filesystem::path m_executableRootPathCached;
     };
 
-    inline std::string normalizePath(const std::string &rawPath)
-    {
-        std::string_view sv{rawPath};
-        // find first non-'/' and last non-'/'
-        auto b = sv.find_first_not_of('/');
-        if (b == std::string_view::npos)
-            return {};               // all slashes or empty
-        auto e = sv.find_last_not_of('/');
-        return std::string{ sv.substr(b, e - b + 1) };
-    }
-
-
+    std::string normalizePath(const std::string &rawPath);
 } // namespace nexo

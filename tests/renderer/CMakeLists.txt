@@ -25,6 +25,7 @@ include_directories("./engine/src/renderer")
 set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Matrix.cpp
+        common/Path.cpp
 )
 
 set(RENDERER_SOURCES

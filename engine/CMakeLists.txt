@@ -12,6 +12,7 @@ set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Vector.cpp
         common/math/Projection.cpp
+        common/Path.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
