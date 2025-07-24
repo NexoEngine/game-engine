@@ -7,7 +7,7 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Jean CARDONNE
-//  Date:        2025-06-30
+//  Date:        30/06/2025
 //  Description: Implementation of file drop handling for asset manager
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,12 +43,9 @@ namespace nexo::editor {
     {
         std::string assetName = path.stem().string();
         std::filesystem::path folderPath;
-        if (!m_currentFolder.empty())
-            folderPath /= m_currentFolder;
-        if (!m_hoveredFolder.empty())
-            folderPath /= m_hoveredFolder;
+        std::string targetFolder = !m_hoveredFolder.empty() ? m_hoveredFolder : m_currentFolder;
 
-        std::string assetPath = folderPath.string();
+        std::string assetPath = targetFolder;
         std::string locationString = assetName + "@" + assetPath;
 
         LOG(NEXO_DEV,

@@ -154,6 +154,8 @@ namespace nexo::editor {
                         if (auto tex = texRef.as<assets::Texture>(); tex)
                         {
                             auto mat = matComp.material.lock();
+                            if (!mat)
+                                return;
                             mat->getData()->albedoTexture = tex;
                         }
                     }
@@ -243,10 +245,16 @@ namespace nexo::editor {
             ecs::Entity parentEntity = dropTarget.data.entity;
             ecs::Entity childEntity  = payload.entity;
 
-            auto& childTransform = coordinator.getComponent<components::TransformComponent>(childEntity);
+            auto childTransformOpt = coordinator.tryGetComponent<components::TransformComponent>(childEntity);
+            if (!childTransformOpt.has_value())
+                return;
+            auto &childTransform = childTransformOpt->get();
             glm::mat4 childWorldMat = childTransform.worldMatrix;
 
-            auto& parentTransform = coordinator.getComponent<components::TransformComponent>(parentEntity);
+            auto parentTransformOpt = coordinator.tryGetComponent<components::TransformComponent>(parentEntity);
+            if (!parentTransformOpt.has_value())
+                return;
+            auto& parentTransform = parentTransformOpt->get();
             glm::mat4 parentWorldMat = parentTransform.worldMatrix;
 
             // Compute the new localMatrix so that parentWorldMat * local = old world

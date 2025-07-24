@@ -93,6 +93,8 @@ namespace nexo::editor {
             if (!matComponent)
                 return;
             auto material = matComponent->get().material.lock();
+            if (!material)
+                return;
             material->getData()->albedoTexture = texture;
         }
     }
@@ -126,7 +128,6 @@ namespace nexo::editor {
 
     void EditorScene::handleDropTarget()
     {
-        static ecs::Entity entityHovered = ecs::INVALID_ENTITY;
         if (ImGui::BeginDragDropTarget())
         {
             // Handle drops from asset manager
@@ -144,23 +145,23 @@ namespace nexo::editor {
                 if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
                     return;
                 const int entityId = sampleEntityTexture(mx, my);
-                if (entityId != -1 && static_cast<ecs::Entity>(entityId) != entityHovered)
+                if (entityId != -1 && static_cast<ecs::Entity>(entityId) != m_entityHovered)
                 {
-                    entityHovered = static_cast<ecs::Entity>(entityId);
-                    Application::getInstance().m_coordinator->addComponent(entityHovered, components::SelectedTag{});
+                    m_entityHovered = static_cast<ecs::Entity>(entityId);
+                    Application::getInstance().m_coordinator->addComponent(m_entityHovered, components::SelectedTag{});
                 }
-                if (entityId == -1 && entityHovered != ecs::INVALID_ENTITY)
+                if (entityId == -1 && m_entityHovered != ecs::INVALID_ENTITY)
                 {
-                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(entityHovered);
-                    entityHovered = ecs::INVALID_ENTITY;
+                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
+                    m_entityHovered = ecs::INVALID_ENTITY;
                 }
                 if (!assetPayload->IsDelivery())
                 {
                     return;
                 }
-                if (entityHovered != ecs::INVALID_ENTITY)
-                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(entityHovered);
-                entityHovered = ecs::INVALID_ENTITY;
+                if (m_entityHovered != ecs::INVALID_ENTITY)
+                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
+                m_entityHovered = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
                 if (payload.type == assets::AssetType::MODEL)

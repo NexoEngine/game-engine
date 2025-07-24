@@ -426,10 +426,31 @@ namespace nexo::editor
         static void hideSelectedCallback();
         static void showAllCallback();
 
-        // Drag and drop functionality
+        /**
+        * @brief Handles drag source setup for scene objects.
+        * @param object The scene object being dragged.
+        */
         void handleDragSource(const SceneObject& object);
+
+        /**
+        * @brief Handles drop target setup for scene objects.
+        * @param object The scene object that can receive drops.
+        */
         void handleDropTarget(const SceneObject& object);
+
+        /**
+        * @brief Processes the drop operation.
+        * @param dropTarget The target scene object receiving the drop.
+        * @param payload The drag-and-drop payload data.
+        */
         void handleDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+
+        /**
+        * @brief Validates if a drop operation is allowed.
+        * @param dropTarget The target scene object.
+        * @param payload The drag-and-drop payload data.
+        * @return true if the drop is valid, false otherwise.
+        */
         static bool canAcceptDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
     };
 

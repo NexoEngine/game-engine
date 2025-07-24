@@ -183,8 +183,7 @@ namespace nexo::editor {
             std::strncpy(payload.path, fullLocation.c_str(), sizeof(payload.path) - 1);
             payload.path[sizeof(payload.path) - 1] = '\0';
 
-            std::string assetName = assetData->getMetadata().location.getName().c_str();
-            std::strncpy(payload.name, assetName.c_str(), sizeof(payload.name) - 1);
+            std::strncpy(payload.name, assetName, sizeof(payload.name) - 1);
             payload.name[sizeof(payload.name) - 1] = '\0';
 
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
@@ -194,8 +193,10 @@ namespace nexo::editor {
             if (assetData->getType() == assets::AssetType::TEXTURE) {
                 auto textureAsset = asset.as<assets::Texture>();
                 auto textureData = textureAsset.lock();
-                ImTextureID textureId = textureData->getData().get()->texture->getId();
-                ImGui::Image(textureId, {64, 64});
+                if (textureData && textureData->getData() && textureData->getData()->texture) {
+                    ImTextureID textureId = textureData->getData()->texture->getId();
+                    ImGui::Image(textureId, {64, 64});
+                }
             }
 
             ImGui::EndDragDropSource();
@@ -407,8 +408,6 @@ namespace nexo::editor {
         }
         clipper.End();
     }
-
-
 
     void AssetManagerWindow::show()
     {
