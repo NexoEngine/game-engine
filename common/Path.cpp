@@ -39,7 +39,7 @@ namespace nexo {
         m_executableRootPathCached.clear();
     }
 
-    std::string normalizePath(const std::string &rawPath)
+    std::string normalizePathAndRemovePrefixSlash(const std::string &rawPath)
     {
         namespace fs = std::filesystem;
         fs::path p = fs::path(rawPath).lexically_normal();
