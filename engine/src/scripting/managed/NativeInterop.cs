@@ -37,6 +37,7 @@ namespace Nexo
         public UInt32 UuidComponent;
         public UInt32 PerspectiveCameraController;
         public UInt32 PerspectiveCameraTarget;
+        public UInt32 PhysicsBodyComponent;
     }
     
     /// <summary>
@@ -66,6 +67,24 @@ namespace Nexo
             public delegate UInt32 CreateCubeDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateTetrahedronDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreatePyramidDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateCylinderDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreateSphereDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void CreateBodyFromShapeDelegate(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void ApplyForceDelegate(UInt32 entityId, Vector3 force);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -73,7 +92,13 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxAddComponentDelegate(UInt32 entityId, UInt32 typeId, void *componentData);
-
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxRemoveComponentDelegate(UInt32 entityId, UInt32 typeId);
+            
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxDestroyEntityDelegate(UInt32 entityId);
+            
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
             
@@ -89,9 +114,17 @@ namespace Nexo
             public GetNativeMessageDelegate NxGetNativeMessage;
             public NxLogDelegate NxLog;
             public CreateCubeDelegate NxCreateCube;
+            public CreateTetrahedronDelegate NxCreateTetrahedron;
+            public CreatePyramidDelegate NxCreatePyramid;
+            public CreateCylinderDelegate NxCreateCylinder;
+            public CreateSphereDelegate NxCreateSphere;
+            public CreateBodyFromShapeDelegate NxCreateBodyFromShape;
+            public ApplyForceDelegate NxApplyForce;
             public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
+            public NxRemoveComponentDelegate NxRemoveComponent;
+            public NxDestroyEntityDelegate NxDestroyEntity;
             public NxHasComponentDelegate NxHasComponent;
             public NxRegisterComponentDelegate NxRegisterComponent;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
@@ -221,7 +254,7 @@ namespace Nexo
                 Console.WriteLine($"Fallback to WriteLine: Log Level: {level}, Message: {message}");
             }
         }
-        
+
         public static UInt32 CreateCube(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
         {
             try
@@ -232,6 +265,101 @@ namespace Nexo
             {
                 Console.WriteLine($"Error calling CreateCube: {ex.Message}");
                 return UInt32.MaxValue;
+            }
+        }
+
+        /// <summary>
+        /// Creates a tetrahedron entity in the native engine
+        /// </summary>
+        public static UInt32 CreateTetrahedron(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
+        {
+            try
+            {
+                return s_callbacks.NxCreateTetrahedron.Invoke(position, size, rotation, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateTetrahedron: {ex.Message}");
+                return UInt32.MaxValue;
+            }
+        }
+
+        public static UInt32 CreatePyramid(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color)
+        {
+            try
+            {
+                return s_callbacks.NxCreatePyramid.Invoke(position, size, rotation, color);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreatePyramid: {ex.Message}");
+                return UInt32.MaxValue;
+            }
+        }
+
+
+        public static UInt32 CreateCylinder(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color, UInt32 nbSegment = 12)
+        {
+            try
+            {
+                return s_callbacks.NxCreateCylinder.Invoke(position, size, rotation, color, nbSegment);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateCylinder: {ex.Message}");
+                return UInt32.MaxValue;
+            }
+        }
+
+        public static UInt32 CreateSphere(in Vector3 position, in Vector3 size, in Vector3 rotation, in Vector4 color, UInt32 nbSubdivision = 2)
+        {
+            try
+            {
+                return s_callbacks.NxCreateSphere.Invoke(position, size, rotation, color, nbSubdivision);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateSphere: {ex.Message}");
+                return UInt32.MaxValue;
+            }
+        }
+
+        /// <summary>
+        /// Creates a physics body from a specified shape
+        /// </summary>
+        /// <param name="entityId">Entity ID</param>
+        /// <param name="position">Body position</param>
+        /// <param name="size">Body size</param>
+        /// <param name="rotation">Body rotation (in degrees)</param>
+        /// <param name="shapeType">Shape type</param>
+        /// <param name="motionType">Motion type</param>
+        /// <returns>ID of the created physics body</returns>
+        public static void CreateBodyFromShape(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, ShapeType shapeType, MotionType motionType)
+        {
+            try
+            {
+                s_callbacks.NxCreateBodyFromShape.Invoke(entityId, position, size, rotation, (UInt32)shapeType, (UInt32)motionType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreateBodyFromShape: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Applies a force to a physics body
+        /// </summary>
+        /// <param name="entityId">Physics body ID</param>
+        /// <param name="force">Force to apply</param>
+        public static void ApplyForce(UInt32 entityId, in Vector3 force)
+        {
+            try
+            {
+                s_callbacks.NxApplyForce.Invoke(entityId, force);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling ApplyForce: {ex.Message}");
             }
         }
         
@@ -272,6 +400,32 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling AddComponent<{typeof(T)}>: {ex.Message}");
+            }
+        }
+        
+        public static void RemoveComponent<T>(UInt32 entityId) where T : unmanaged
+        {
+            if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
+                throw new InvalidOperationException($"Unsupported component type: {typeof(T)}");
+
+            try
+            {
+                s_callbacks.NxRemoveComponent.Invoke(entityId, typeId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling RemoveComponent<{typeof(T)}>: {ex.Message}");
+            }
+        }
+        public static void DestroyEntity(UInt32 entityId)
+        {
+            try
+            {
+                s_callbacks.NxDestroyEntity.Invoke(entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling DestroyEntity: {ex.Message}");
             }
         }
         
@@ -332,6 +486,11 @@ namespace Nexo
         }
         
         private static UInt32 _cubeId = 0;
+        private struct DemonstrationComponent : IComponentBase
+        {
+            public UInt16 DemonstrationId;
+            public Vector3 DemonstrationVector;
+        }
 
         /// <summary>
         /// Demonstrates calling native functions from C#
@@ -361,13 +520,20 @@ namespace Nexo
             Console.WriteLine("Calling CreateCube:");
             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
             _cubeId = cubeId;
+            
+            var demonstrationComponent = new DemonstrationComponent
+            {
+                DemonstrationId = 1,
+                DemonstrationVector = new Vector3(0.5f, 0.5f, 0.5f)
+            };
+            AddComponent(_cubeId, ref demonstrationComponent);
             Console.WriteLine($"Created cube with ID: {cubeId}");
 
             // HasComponent test
-            if (HasComponent<CameraComponent>(cubeId))
-                Console.WriteLine("Entity has a camera!");
+            if (HasComponent<DemonstrationComponent>(cubeId))
+                Console.WriteLine("Entity has a DemonstrationComponent!");
             else
-                Console.WriteLine("Entity does NOT have a camera.");
+                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
             
             if (HasComponent<Transform>(cubeId))
                 Console.WriteLine("Entity has a Transform!");
@@ -378,6 +544,38 @@ namespace Nexo
                 Console.WriteLine("Entity has a AmbientLight!");
             else
                 Console.WriteLine("Entity does NOT have a AmbientLight.");
+            
+            RemoveComponent<DemonstrationComponent>(_cubeId);
+            
+            // HasComponent test
+            if (HasComponent<DemonstrationComponent>(cubeId))
+                Console.WriteLine("Entity has a DemonstrationComponent!");
+            else
+                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
+            
+            if (HasComponent<Transform>(cubeId))
+                Console.WriteLine("Entity has a Transform!");
+            else
+                Console.WriteLine("Entity does NOT have a Transform.");
+            
+            if (HasComponent<AmbientLight>(cubeId))
+                Console.WriteLine("Entity has a AmbientLight!");
+            else
+                Console.WriteLine("Entity does NOT have a AmbientLight.");
+            
+            var demonstrationComponent2 = new DemonstrationComponent
+            {
+                DemonstrationId = 2,
+                DemonstrationVector = new Vector3(3f, 2f, 1f)
+            };
+            AddComponent(_cubeId, ref demonstrationComponent2);
+            
+            UInt32 cube2 = CreateCube(new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+            CreateBodyFromShape(cube2, new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), ShapeType.Box, MotionType.Dynamic);
+            
+            Vector3 force = new Vector3(0, 800000, 0);
+            ApplyForce(cube2, force);
+            Console.WriteLine("Force applied to entity ");
             
             // Call the function that gets a transform
             Console.WriteLine($"Calling GetComponent({cubeId}):");

@@ -1,4 +1,4 @@
-﻿//// Render.cs ////////////////////////////////////////////////////////////////
+//// PhysicsEnums.cs /////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,26 +7,34 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Thomas PARENTEAU
-//  Date:        01/06/2025
-//  Description: Source file for the Render component in C#.
+//  Date:        29/06/2025
+//  Description: Enums for physics C#
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-using System.Runtime.InteropServices;
+using System;
 
 namespace Nexo.Components
 {
-    public enum RenderType
+    /// <summary>
+    /// Available physics shape types
+    /// </summary>
+    public enum ShapeType : UInt32
     {
-        Render2D = 0,
-        Render3D = 1
+        Box = 0,
+        Sphere = 1,
+        Cylinder = 2,
+        Tetrahedron = 3,
+        Pyramid = 4
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RenderComponent
+    /// <summary>
+    /// Motion types for physics bodies
+    /// </summary>
+    public enum MotionType : UInt32
     {
-        [MarshalAs(UnmanagedType.I1)] public bool isRendered;
-        public RenderType type;
-        // renderable is ignored (unmanaged/shared_ptr)
+        Static = 0,
+        Kinematic = 1,
+        Dynamic = 2
     }
-}
+} 

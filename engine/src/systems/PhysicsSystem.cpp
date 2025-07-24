@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PhysicsSystem.hpp"
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() {
@@ -45,9 +46,20 @@ namespace nexo::system {
         bodyLockInterface = &physicsSystem->GetBodyLockInterface();
     }
 
-    void PhysicsSystem::update(float timestep) {
+    void PhysicsSystem::update()
+    {
+        const double currentTime = static_cast<double>(std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+
+        const double delta = currentTime - m_lastPhysicsTime;
+
+        if (delta < fixedTimestep)
+            return;
+
+        m_lastPhysicsTime = currentTime;
+
         const int collisionSteps = 5;
-        physicsSystem->Update(timestep, collisionSteps, tempAllocator, jobSystem);
+        physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
 
         for (ecs::Entity entity : entities) {
             auto& transform = getComponent<components::TransformComponent>(entity);
@@ -60,6 +72,113 @@ namespace nexo::system {
             transform.quat = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
         }
     }
+
+
+    JPH::BodyID PhysicsSystem::createBodyFromShape(
+        ecs::Entity entity,
+        const components::TransformComponent& transform,
+        ShapeType shapeType,
+        JPH::EMotionType motionType
+    ) {
+        JPH::ShapeSettings* shapeSettings = nullptr;
+
+        switch (shapeType) {
+            case ShapeType::Box:
+                shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
+                    transform.size.x * 0.5f,
+                    transform.size.y * 0.5f,
+                    transform.size.z * 0.5f));
+                break;
+
+            case ShapeType::Sphere:
+                shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
+                break;
+
+            case ShapeType::Cylinder: {
+                const float halfHeight = transform.size.y;
+                const float radius = transform.size.x;
+                shapeSettings = new JPH::CylinderShapeSettings(halfHeight, radius);
+                break;
+            }
+
+            case ShapeType::Tetrahedron: {
+                auto size = transform.size.x;
+                // Define the vertices of the tetrahedron relative to its center
+                JPH::Vec3 vertices[] = {
+                    JPH::Vec3(-size, -size, -size),
+                    JPH::Vec3(size, -size, size),
+                    JPH::Vec3(-size, size, size),
+                    JPH::Vec3(size, size, -size)
+                };
+
+                // Create a convex hull shape using the vertices
+                shapeSettings = new JPH::ConvexHullShapeSettings(vertices, std::size(vertices));
+                break;
+            }
+
+            case ShapeType::Pyramid: {
+                // Define the vertices of the pyramid relative to its center
+                JPH::Vec3 vertices[] = {
+                    JPH::Vec3(0.0f, 1.0f, 0.0f) * transform.size.y, // Apex
+                    JPH::Vec3(-1.0f, -1.0f, -1.0f) * transform.size.x, // Base vertex 1
+                    JPH::Vec3(1.0f, -1.0f, -1.0f) * transform.size.x,  // Base vertex 2
+                    JPH::Vec3(1.0f, -1.0f, 1.0f) * transform.size.x,   // Base vertex 3
+                    JPH::Vec3(-1.0f, -1.0f, 1.0f) * transform.size.x   // Base vertex 4
+                };
+
+                // Create a convex hull shape using the vertices
+                shapeSettings = new JPH::ConvexHullShapeSettings(vertices, std::size(vertices));
+                break;
+            }
+
+            default:
+                LOG(NEXO_ERROR, "Unsupported shape type");
+                return JPH::BodyID();
+        }
+
+        JPH::ShapeRefC shape = nullptr;
+        try {
+            shape = shapeSettings->Create().Get();
+        } catch (const std::exception& e) {
+            LOG(NEXO_ERROR, "Exception during shape creation: {}", e.what());
+            delete shapeSettings;
+            return JPH::BodyID();
+        }
+
+        delete shapeSettings;
+
+        if (!shape) {
+            LOG(NEXO_ERROR, "Shape was null after creation.");
+            return JPH::BodyID();
+        }
+
+        const JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
+        const JPH::Quat rotation(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w);
+
+        JPH::BodyCreationSettings bodySettings(
+            shape, position, rotation, motionType,
+            motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
+        );
+
+        JPH::Body* body = bodyInterface->CreateBody(bodySettings);
+        if (!body) {
+            LOG(NEXO_ERROR, "Body creation failed.");
+            return JPH::BodyID();
+        }
+
+        bodyInterface->AddBody(body->GetID(),
+            motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
+        );
+
+        const auto type = motionType == JPH::EMotionType::Dynamic
+            ? components::PhysicsBodyComponent::Type::Dynamic
+            : components::PhysicsBodyComponent::Type::Static;
+
+        coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), type });
+
+        return body->GetID();
+    }
+
 
     JPH::BodyID PhysicsSystem::createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform) {
         JPH::Vec3 halfExtent(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f);

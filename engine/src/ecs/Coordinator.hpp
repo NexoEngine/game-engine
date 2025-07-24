@@ -244,7 +244,30 @@ namespace nexo::ecs {
             }
 
             /**
+             * @brief Removes a component from an entity using ComponentType, updates its signature, and notifies systems.
+             *
+             * @param entity - The ID of the entity.
+             * @param componentType - The ID of the component type to remove.
+             */
+            void removeComponent(const Entity entity, const ComponentType componentType)
+            {
+                Signature signature = m_entityManager->getSignature(entity);
+                const Signature oldSignature = signature;
+
+                signature.set(componentType, false);
+
+                m_componentManager->removeComponent(entity, componentType, oldSignature, signature);
+
+                m_entityManager->setSignature(entity, signature);
+                m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
+            }
+
+
+            /**
             * @brief Removes a component from an entity, updates its signature, and notifies systems.
+            *
+            * This is the runtime equivalent of removeComponent<T>(), useful when the component type
+            * is only known at runtime (e.g., from scripting APIs).
             *
             * @param entity - The ID of the entity.
             */
