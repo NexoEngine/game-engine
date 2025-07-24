@@ -174,23 +174,13 @@ namespace nexo::editor {
 
     ImTextureID AssetManagerWindow::getFolderIconTexture()
     {
-        // Check if folder texture is already loaded
-        if (m_folderIconTexture == 0) {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");
-            assets::ImporterFileInput fileInput{path};
-            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("folder_icon@_internal"), fileInput);
-            if (textureRef) {
-                auto textureData = textureRef.lock();
-                if (textureData && textureData->getData() && textureData->getData()->texture)
-                    m_folderIconTexture = textureData->getData()->texture->getId();
-                else
-                    LOG(NEXO_ERROR, "Failed to load folder icon texture");
-            } else
-                LOG(NEXO_WARN, "Failed to load folder icon texture");
+        if (auto texRef = m_folderIcon.lock()) {
+            auto &texData = texRef->getData();
+            if (texData && texData->texture) {
+                return texData->texture->getId();
+            }
         }
-
-        return m_folderIconTexture;
+        return 0;
     }
 
     void AssetManagerWindow::drawFolder(

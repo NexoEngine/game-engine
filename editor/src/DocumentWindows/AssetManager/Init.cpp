@@ -14,6 +14,7 @@
 
 #include "AssetManagerWindow.hpp"
 #include "assets/AssetCatalog.hpp"
+#include "assets/AssetImporter.hpp"
 #include "assets/Assets/Model/ModelImporter.hpp"
 #include "assets/Assets/Texture/TextureImporter.hpp"
 #include "Path.hpp"
@@ -30,6 +31,13 @@ namespace nexo::editor {
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
             assets::ImporterFileInput fileInput{path};
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random/"), fileInput);
+        }
+
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");
+            assets::ImporterFileInput fileInput{path};
+            m_folderIcon = importer.importAsset<assets::Texture>(assets::AssetLocation("icon_folder@_internal"), fileInput);
         }
     }
 }
