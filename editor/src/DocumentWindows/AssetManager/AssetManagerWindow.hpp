@@ -99,7 +99,7 @@ namespace nexo::editor {
             };
 
             FolderCreationState m_folderCreationState;
-            ImTextureID m_folderIconTexture = 0;
+            assets::AssetRef<assets::Texture> m_folderIcon;
 
             ImTextureID getFolderIconTexture();
 
