@@ -133,7 +133,7 @@ namespace nexo::editor {
     {
         assets::AssetType type; ///< Type of the asset
         assets::AssetID id; ///< ID of the asset
-        char path[256]; ///< Path to the asset
-        char name[128]; ///< Display name of the asset
+        std::string path; ///< Path to the asset
+        std::string name; ///< Display name of the asset
     };
 }

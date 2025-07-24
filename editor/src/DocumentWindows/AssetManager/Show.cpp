@@ -177,14 +177,8 @@ namespace nexo::editor {
             AssetDragDropPayload payload;
             payload.type = assetData->getType();
             payload.id = assetData->getID();
-
-            // Copy strings safely into fixed-size arrays
-            std::string fullLocation = assetData->getMetadata().location.getFullLocation();
-            std::strncpy(payload.path, fullLocation.c_str(), sizeof(payload.path) - 1);
-            payload.path[sizeof(payload.path) - 1] = '\0';
-
-            std::strncpy(payload.name, assetName, sizeof(payload.name) - 1);
-            payload.name[sizeof(payload.name) - 1] = '\0';
+            payload.path = assetData->getMetadata().location.getFullLocation();
+            payload.name = assetName;
 
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
 
