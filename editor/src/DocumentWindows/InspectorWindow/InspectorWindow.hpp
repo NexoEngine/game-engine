@@ -85,9 +85,9 @@ namespace nexo::editor {
 			 * @param data Pointer to the material data to associate with the sub-inspector.
 			 */
 			template<typename T, typename Data>
-			void setSubInspectorData(Data data)
+			void setSubInspectorData(Data &&data)
 			{
-			    m_subInspectorData[std::type_index(typeid(T))] = data;
+			    m_subInspectorData[std::type_index(typeid(T))] = std::forward<Data>(data);
 			}
 
 			/**
