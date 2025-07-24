@@ -41,50 +41,51 @@ namespace nexo::renderer
                                    std::array<glm::vec2, 12>& texCoords,
                                    std::array<glm::vec3, 12>& normals)
     {
-        constexpr float size = 0.5f;
+        constexpr float size = 1.0f;
 
         // Define the four vertices of the tetrahedron
-        constexpr auto v0 = glm::vec3(0.0f, size, 0.0f); // Top vertex
-        constexpr auto v1 = glm::vec3(-size, -size, -size); // Bottom-left-back
-        constexpr auto v2 = glm::vec3(size, -size, -size); // Bottom-right-back
-        constexpr auto v3 = glm::vec3(0.0f, -size, size); // Bottom-front
+        constexpr auto v0 = glm::vec3(-size, -size, -size);
+        constexpr auto v1 = glm::vec3(size, -size, size);
+        constexpr auto v2 = glm::vec3(-size, size, size);
+        constexpr auto v3 = glm::vec3(size, size, -size);
 
         // Define the 4 triangular faces (each has 3 vertices)
-        glm::vec3 verts[] = {
-            v0, v2, v1, // Back face
-            v0, v3, v2, // Right face
-            v0, v1, v3, // Left face
-            v1, v2, v3  // Bottom face
+        std::array<glm::vec3, 12> verts = {
+            v0, v1, v2,
+            v0, v2, v3,
+            v0, v3, v1,
+            v1, v3, v2
         };
 
-        std::ranges::copy(verts, vertices.begin());
+        vertices = verts;
 
         // Basic UV mapping for each face
-        glm::vec2 texturesCoord[] = {
+        std::array<glm::vec2, 12> textureCoords = {{
             {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
             {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
             {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
             {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
-        };
+        }};
 
-        std::ranges::copy(texturesCoord, texCoords.begin());
+        texCoords = textureCoords;
 
         // Compute normals for each face
-        glm::vec3 norm[12];
+        //std::array<glm::vec3, 12> norm;
 
         for (int i = 0; i < 12; i += 3)
         {
             const glm::vec3 normal = glm::normalize(
                 glm::cross(
-                    verts[i + 1] - verts[i],
-                    verts[i + 2] - verts[i]));
+                    vertices[i + 1] - vertices[i],
+                    vertices[i + 2] - vertices[i]));
 
-            norm[i] = normal;
-            norm[i + 1] = normal;
-            norm[i + 2] = normal;
+            normals[i] = normal;
+            normals[i + 1] = normal;
+            normals[i + 2] = normal;
         }
 
-        std::ranges::copy(norm, normals.begin());
+        //normals = norm;
+        //std::ranges::copy(norm, normals.begin());
     }
 
 

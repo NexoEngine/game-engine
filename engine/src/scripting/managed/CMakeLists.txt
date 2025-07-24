@@ -27,13 +27,11 @@ set(SOURCES
     ObjectFactory.cs
     NativeInterop.cs
     Logger.cs
-    Components/Camera.cs
     Components/Light.cs
-    Components/Render.cs
-    Components/Scene.cs
     Components/Transform.cs
-    Components/Uuid.cs
     Components/ComponentBase.cs
+    Components/PhysicsBodyComponent.cs
+    Components/PhysicsEnums.cs
     Components/Ui/Field.cs
     Components/Ui/FieldArray.cs
     Components/Ui/FieldType.cs

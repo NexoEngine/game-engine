@@ -79,6 +79,7 @@ namespace nexo::scripting {
             UInt32 UuidComponent;
             UInt32 PerspectiveCameraController;
             UInt32 PerspectiveCameraTarget;
+            UInt32 PhysicsBodyComponent;
         };
 
         NEXO_RET(void) NxHelloFromNative(void);
@@ -86,14 +87,24 @@ namespace nexo::scripting {
         NEXO_RET(const char*) NxGetNativeMessage(void);
         NEXO_RET(void) NxLog(UInt32 level, const char *message);
 
-        NEXO_RET(ecs::Entity) NxCreateCube(Vector3 pos, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) NxGetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
+        NEXO_RET(void) NxRemoveComponent(const ecs::Entity entity, const UInt32 componentTypeId);
+        NEXO_RET(void) NxDestroyEntity(const ecs::Entity entity);
         NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 
+        NEXO_RET(ecs::Entity) NxCreateTetrahedron(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
+        NEXO_RET(ecs::Entity) NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
+        NEXO_RET(ecs::Entity) NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
+        
+        // Physics functions
+        NEXO_RET(void) NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
+        NEXO_RET(void) NxApplyForce(ecs::Entity entity, Vector3 force);
 
     }
 
@@ -103,10 +114,21 @@ namespace nexo::scripting {
         ApiCallback<const char*()> NxGetNativeMessage{&scripting::NxGetNativeMessage};
         ApiCallback<void(UInt32, const char*)> NxLog{&scripting::NxLog};
 
-        ApiCallback<UInt32(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreateCube{&scripting::NxCreateCube};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreateTetrahedron{&scripting::NxCreateTetrahedron};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreatePyramid{&scripting::NxCreatePyramid};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateCylinder{&scripting::NxCreateCylinder};
+        ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateSphere{&scripting::NxCreateSphere};
+        
+        // Physics callbacks
+        ApiCallback<void(ecs::Entity, Vector3, Vector3, Vector3, UInt32, UInt32)> NxCreateBodyFromShape{&scripting::NxCreateBodyFromShape};
+        ApiCallback<void(ecs::Entity, Vector3)> NxApplyForce{&scripting::NxApplyForce};
+        
         ApiCallback<components::TransformComponent*(ecs::Entity)> NxGetTransformComponent{&scripting::NxGetTransformComponent};
         ApiCallback<void*(ecs::Entity, UInt32)> NxGetComponent{&scripting::NxGetComponent};
         ApiCallback<void(ecs::Entity, UInt32, const void *componentData)> NxAddComponent{&scripting::NxAddComponent};
+        ApiCallback<void(const ecs::Entity, const UInt32)> NxRemoveComponent{&scripting::NxRemoveComponent};
+        ApiCallback<void(const ecs::Entity)> NxDestroyEntity{&scripting::NxDestroyEntity};
         ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
         ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};

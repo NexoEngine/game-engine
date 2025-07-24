@@ -25,8 +25,8 @@
 #include "Path.hpp"
 #include "components/SceneComponents.hpp"
 
-namespace nexo::editor {
-
+namespace nexo::editor
+{
     void EditorScene::setup()
     {
         setupWindow();
@@ -36,18 +36,22 @@ namespace nexo::editor {
 
     void EditorScene::setupScene()
     {
-        auto &app = getApp();
+        auto& app = getApp();
 
         m_sceneId = static_cast<int>(app.getSceneManager().createScene(m_windowName));
         renderer::NxFramebufferSpecs framebufferSpecs;
         framebufferSpecs.attachments = {
-            renderer::NxFrameBufferTextureFormats::RGBA8, renderer::NxFrameBufferTextureFormats::RED_INTEGER, renderer::NxFrameBufferTextureFormats::Depth
+            renderer::NxFrameBufferTextureFormats::RGBA8, renderer::NxFrameBufferTextureFormats::RED_INTEGER,
+            renderer::NxFrameBufferTextureFormats::Depth
         };
         framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
-        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 4.0f, 10.0f}, static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y), renderTarget);
-        auto &cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
+        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 36.0f, 25.0f},
+                                                                static_cast<unsigned int>(m_contentSize.x),
+                                                                static_cast<unsigned int>(m_contentSize.y),
+                                                                renderTarget);
+        auto& cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
         auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
@@ -71,7 +75,8 @@ namespace nexo::editor {
         cameraComponent.pipeline.setFinalOutputPass(gridId);
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
         const components::PerspectiveCameraController controller;
-        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(static_cast<ecs::Entity>(m_editorCamera), controller);
+        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(
+            static_cast<ecs::Entity>(m_editorCamera), controller);
         constexpr components::EditorCameraTag editorCameraTag;
         Application::m_coordinator->addComponent(m_editorCamera, editorCameraTag);
         m_activeCamera = m_editorCamera;
@@ -111,100 +116,158 @@ namespace nexo::editor {
 
     void EditorScene::loadDefaultEntities() const
     {
-        auto &app = getApp();
-        scene::Scene &scene = app.getSceneManager().getScene(m_sceneId);
-        const ecs::Entity ambientLight = LightFactory::createAmbientLight({0.5f, 0.5f, 0.5f});
-        scene.addEntity(ambientLight);
+        auto& app = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+        scene.addEntity(LightFactory::createAmbientLight({1.0f, 1.0f, 1.0f}));
         // const ecs::Entity pointLight = LightFactory::createPointLight({2.0f, 5.0f, 0.0f});
-        // utils::addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
+        // addPropsTo(pointLight, utils::PropsType::POINT_LIGHT);
         // scene.addEntity(pointLight);
-        const ecs::Entity directionalLight = LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f});
-        scene.addEntity(directionalLight);
-        // const ecs::Entity spotLight = LightFactory::createSpotLight({-2.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f});
-        // utils::addPropsTo(spotLight, utils::PropsType::SPOT_LIGHT);
-        // scene.addEntity(spotLight);
-        // const ecs::Entity basicCube = EntityFactory3D::createCube({0.0f, 0.25f, 0.0f}, {20.0f, 0.5f, 20.0f},
-        //                                                        {0.0f, 0.0f, 0.0f}, {0.05f * 1.7, 0.09f * 1.35, 0.13f * 1.45, 1.0f});
-        // app.getSceneManager().getScene(m_sceneId).addEntity(basicCube);
-        const ecs::Entity basicSphere = EntityFactory3D::createSphere({0.0f, 0.0f, -5.0f}, {1.0f, 1.0f, 1.0f},
-                                                                                {0.0f, 0.0f, 0.0f}, {
-                                                                                    0.05f * 1.5, 0.09f * 1.15,
-                                                                                    0.13f * 1.25, 1.0f
-                                                                                });
-        app.getSceneManager().getScene(m_sceneId).addEntity(basicSphere);
+        // scene.addEntity(LightFactory::createDirectionalLight({0.2f, -1.0f, -0.3f}));
 
-        assets::AssetImporter importer;
+        // Lights
+        // constexpr int nb_lights = 5;
+        // for (int i = 0; i < nb_lights; ++i)
+        // {
+        //     constexpr float startY_light = 60.0f;
+        //     constexpr float light_spacing = 70.0f / nb_lights;
+        //     scene.addEntity(LightFactory::createPointLight({-21.0f, startY_light + static_cast<float>(i) * light_spacing, 0.0f},
+        //                                                     {1.0f, 1.0f, 1.0f}));
+        //     scene.addEntity(LightFactory::createPointLight({21.0f, startY_light + static_cast<float>(i) * light_spacing, 0.0f},
+        //                                         {1.0f, 1.0f, 1.0f}));
+        //
+        // }
 
-        lightsScene(m_sceneId);
+        // Helper function to create and add an entity
+        auto createAndAddEntity = [&](const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                      const glm::vec4& color, system::ShapeType shapeType, JPH::EMotionType motionType)
+        {
+            ecs::Entity entity;
+            LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
+            switch (shapeType)
+            {
+                case system::ShapeType::Box:
+                    entity = EntityFactory3D::createCube(pos, size, rotation, color);
+                    break;
+                case system::ShapeType::Sphere:
+                    entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
+                    break;
+                case system::ShapeType::Cylinder:
+                    entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
+                    break;
+                case system::ShapeType::Tetrahedron:
+                    entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
+                    break;
+                case system::ShapeType::Pyramid:
+                    entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
+                    break;
+                default:
+                    throw std::runtime_error("Unsupported shape type for entity creation.");
+            }
+            JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, app.m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
+            if (bodyId.IsInvalid()) {
+                LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+            }
+            scene.addEntity(entity);
+            return entity;
+        };
 
-        // 9mn
-        std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-        assets::ImporterFileInput fileInput9mn{path9mn};
-        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
+        // Balls
 
-        const ecs::Entity Model9mn = EntityFactory3D::createModel(assetRef9mn, {3.0f, 2.0f, 0.0f}, {0.01f, 0.01f, 0.01f},
-                                                               {0.0f, 0.0f, 0.0f});
-        app.getSceneManager().getScene(m_sceneId).addEntity(Model9mn);
+        for (int i = 0; i < 50; ++i)
+        {
+            float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
+            glm::vec4 color = {
+                1.0f, dis(gen), dis(gen), 1.0f
+            };
+            createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+                               JPH::EMotionType::Dynamic);
+        }
 
-        // SmilingFace
-        const std::filesystem::path pathSmilingFace = Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
-        assets::ImporterFileInput fileInputSmilingFace{pathSmilingFace};
-        const auto assetRefModelSmilingFace = importer.importAsset<assets::Model>(
-            assets::AssetLocation("my_package::SmilingFace@DefaultScene/"), fileInputSmilingFace
-        );
-        const ecs::Entity ModelSmilingFace = EntityFactory3D::createModel(assetRefModelSmilingFace, {-3.0f, 2.0f, 0.0f},
-                                                                 {2.0f, 2.0f, 2.0f},
-                                                                 {0.0f, 0.0f, 0.0f});
+        // Background
+        createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
 
-        app.getSceneManager().getScene(m_sceneId).addEntity(ModelSmilingFace);
-        // Avocado
-        const std::filesystem::path pathAvocado = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
-        assets::ImporterFileInput fileInputAvocado{pathAvocado};
-        const auto assetRefModelAvocado = importer.importAsset<assets::Model>(
-            assets::AssetLocation("my_package::Avocado@DefaultScene/"), fileInputAvocado
-        );
-        const ecs::Entity ModelAvocado = EntityFactory3D::createModel(assetRefModelAvocado, {0.0f, 2.0f, 0.0f},
-                                                                 {50.0f, 50.0f, 50.0f}, {0.0f, 0.0f, 0.0f});
+        // Funnel
+        createAndAddEntity({-6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+        createAndAddEntity({6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
 
-        // DiscoBall
-        // const std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/DiscoBall/discoball.fbx");
-        // assets::ImporterFileInput fileInput{path};
-        // const auto assetRefModel = importer.importAsset<assets::Model>(
-        //     assets::AssetLocation("my_package::discoball@DefaultScene/"), fileInput
-        // );
-        // const ecs::Entity Model = EntityFactory3D::createModel(assetRefModel, {0.0f, 0.0f, 0.0f},
-        //                                                          {1.0f, 1.0f, 1.0f},
-        //                                                          {0.0f, 0.0f, 0.0f});
+        // Spinner
+        createAndAddEntity({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
 
-        app.getSceneManager().getScene(m_sceneId).addEntity(ModelAvocado);
+        // Stairs
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
+            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}
+        };
+        for (const auto& [pos, size, rotation, color] : stairs)
+        {
+            createAndAddEntity(pos, size, rotation, color, system::ShapeType::Box, JPH::EMotionType::Static);
+        }
 
-        const ecs::Entity ground = EntityFactory3D::createCube(
-            {0.0f, 0.25f, 0.0f}, // position
-            {20.0f, 0.5f, 20.0f}, // size
-            {0.0f, 0.0f, 0.0f},
-            {0.2f, 0.2f, 0.2f, 1.0f} // color
-        );
-        app.getPhysicsSystem()->createStaticBody(ground, app.m_coordinator->getComponent<components::TransformComponent>(ground));
-        scene.addEntity(ground);
+        // Tunnel
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
+            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
+            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
+            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
+        };
+        for (int i = 0; const auto& [pos, size, rotation] : tunnels)
+        {
+            createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+        }
 
-        const ecs::Entity fallingCube = EntityFactory3D::createCube(
-            {0.0f, 5.0f, 0.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f}
-        );
-        app.getPhysicsSystem()->createDynamicBody(fallingCube, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube));
-        scene.addEntity(fallingCube);
+        // Dominos
+        createAndAddEntity({-9.0f, 44.0f, 0.0f}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+        createAndAddEntity({11.15f, 44.0f, 0.0f}, {15.5f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
 
-        const ecs::Entity fallingCube2 = EntityFactory3D::createCube(
-            {0.5f, 7.0f, 0.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.2f, 0.2f, 1.0f}
-        );
-        app.getPhysicsSystem()->createDynamicBody(fallingCube2, app.m_coordinator->getComponent<components::TransformComponent>(fallingCube2));
-        scene.addEntity(fallingCube2);
+        for (int i = 0; i < 24; ++i)
+        {
+            if (i == 13) continue;
+            float x = -18.4f + static_cast<float>(i) * 1.6f;
+            glm::vec3 pos = {x, 45.5f, 0.0f};
+            float gradientFactor = static_cast<float>(i) / 24.0f;
+            glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+            createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box, JPH::EMotionType::Dynamic);
+        }
+
+        // Spinner
+        createAndAddEntity({2.5f, 41.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Fakir
+        constexpr int totalRows = 20;
+        constexpr float startX = -14.0f;
+
+        for (int row = 0; row < totalRows; ++row)
+        {
+            constexpr int cols = 10;
+            for (int col = 0; col < cols; ++col)
+            {
+                constexpr float startY = 14.0f;
+                constexpr float spacing = 3.0f;
+                float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+                glm::vec3 pos = {col * spacing + startX + offsetX, startY + row * 1.2f, 0.0f};
+                auto maxFactor = static_cast<float>(totalRows * cols);
+                float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
+                glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+                createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
+            }
+        }
     }
+
 
     void EditorScene::setupWindow()
     {
@@ -213,11 +276,13 @@ namespace nexo::editor {
 
     void EditorScene::setCamera(const ecs::Entity cameraId)
     {
-        auto &oldCameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        auto& oldCameraComponent = Application::m_coordinator->getComponent<
+            components::CameraComponent>(m_activeCamera);
         oldCameraComponent.active = false;
         oldCameraComponent.render = false;
         m_activeCamera = static_cast<int>(cameraId);
-        auto &newCameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
-        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x), static_cast<unsigned int>(m_contentSize.y));
+        auto& newCameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
+                                  static_cast<unsigned int>(m_contentSize.y));
     }
 }
