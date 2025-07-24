@@ -18,6 +18,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::update()
     {
+        handleDroppedFiles();
         // Nothing to do for now
     }
 

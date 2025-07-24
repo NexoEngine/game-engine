@@ -425,5 +425,26 @@ namespace nexo::editor
         static void selectAllCallback();
         static void hideSelectedCallback();
         static void showAllCallback();
+
+        // Drag and drop functionality
+        void handleDragSource(const SceneObject& object);
+        void handleDropTarget(const SceneObject& object);
+        void handleDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+        static bool canAcceptDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+    };
+
+    /**
+     * @brief Payload structure for drag and drop operations in the scene tree.
+     *
+     * Contains all necessary information to perform entity/scene drag and drop
+     * operations including validation and hierarchy updates.
+     */
+    struct SceneTreeDragDropPayload
+    {
+        ecs::Entity entity; ///< The entity being dragged
+        scene::SceneId sourceSceneId; ///< The scene the entity originated from
+        SelectionType type; ///< The type of object being dragged
+        std::string uuid; ///< UUID of the dragged object
+        std::string name; ///< Display name of the dragged object
     };
 }

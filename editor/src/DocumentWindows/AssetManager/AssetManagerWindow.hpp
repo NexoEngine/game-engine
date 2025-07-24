@@ -23,7 +23,7 @@
 
 namespace nexo::editor {
 
-    class AssetManagerWindow final : public ADocumentWindow {
+    class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
         public:
             using ADocumentWindow::ADocumentWindow;
 
