@@ -8,7 +8,7 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        07/05/2025
-//  Description: Header file for the opengl uniform cache
+//  Description: Header file for the uniform cache
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <variant>
 #include <glm/glm.hpp>
+#include <optional>
 
 namespace nexo::renderer {
 
@@ -42,7 +43,7 @@ namespace nexo::renderer {
 
         bool isDirty(const std::string& name) const;
         bool hasValue(const std::string& name) const;
-        const UniformValue& getValue(const std::string& name) const;
+        std::optional<UniformValue> getValue(const std::string& name) const;
         void clearDirtyFlag(const std::string& name);
         void clearAllDirtyFlags();
 

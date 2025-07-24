@@ -18,6 +18,7 @@
 #include "IconsFontAwesome.h"
 #include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
+#include "context/ThumbnailCache.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -58,7 +59,6 @@ namespace nexo::editor {
 
     void AssetManagerWindow::handleSelection(int index, const bool isSelected)
     {
-        LOG(NEXO_INFO, "Asset {} {}", index, isSelected ? "deselected" : "selected");
         if (ImGui::GetIO().KeyCtrl) {
             if (isSelected)
                 m_selectedAssets.erase(index);
@@ -128,18 +128,25 @@ namespace nexo::editor {
         // Draw thumbnail area
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
 
-        // Draw thumbnail content based on asset type
-        if (assetData->getType() == assets::AssetType::TEXTURE) {
-            auto textureAsset = asset.as<assets::Texture>();
-            auto textureData = textureAsset.lock();
-            ImTextureID textureId = textureData->getData().get()->texture->getId();
-            drawTextureThumbnail(drawList, textureId, itemPos, thumbnailEnd);
-        } else {
-            // For non-texture assets, use a standard background
+        ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset);
+        if (!textureId) {
             drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
+        } else {
+            const float padding = 4.0f;
+            ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
+            ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
+
+            drawList->AddImage(
+                textureId,
+                imageStart,
+                imageEnd,
+                ImVec2(0, 1),     // UV0 (top-left)
+                ImVec2(1, 0),     // UV1 (bottom-right)
+                IM_COL32(255, 255, 255, 255) // White tint
+            );
         }
 
-        // Draw type overlay
+        // Draw type overlay (maybe later modify it to an icon)
         const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.overlayPadding, itemPos.y + m_layout.size.overlayPadding);
         const ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
         drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.overlaySize, overlayPos.y + m_layout.size.overlaySize), overlayColor);
@@ -167,21 +174,13 @@ namespace nexo::editor {
 
     ImTextureID AssetManagerWindow::getFolderIconTexture()
     {
-        // Check if folder texture is already loaded
-        if (m_folderIconTexture == 0) {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");
-            assets::ImporterFileInput fileInput{path};
-            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("folder_icon@_internal"), fileInput);
-            if (textureRef) {
-                auto textureData = textureRef.lock();
-                // Get the ImGui texture ID from your engine's texture
-                m_folderIconTexture = textureData->getData()->texture->getId();
-            } else
-                LOG(NEXO_WARN, "Failed to load folder icon texture");
+        if (auto texRef = m_folderIcon.lock()) {
+            auto &texData = texRef->getData();
+            if (texData && texData->texture) {
+                return texData->texture->getId();
+            }
         }
-
-        return m_folderIconTexture;
+        return 0;
     }
 
     void AssetManagerWindow::drawFolder(

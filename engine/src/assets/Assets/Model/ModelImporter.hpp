@@ -23,6 +23,9 @@
 
 namespace nexo::assets {
 
+    constexpr float OPACITY_THRESHOLD = 0.99f;
+    constexpr float TRANSPARENCY_EPSILON = 0.01f;
+
     class ModelImporter : public AssetImporterBase {
         public:
             ModelImporter() = default;
@@ -39,7 +42,7 @@ namespace nexo::assets {
             void loadSceneMaterials(AssetImporterContext& ctx, const aiScene* scene);
 
             MeshNode processNode(AssetImporterContext& ctx, aiNode const *node, const aiScene* scene);
-            Mesh processMesh(AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
+            Mesh processMesh(const AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene);
 
             static renderer::NxTextureFormat convertAssimpHintToNxTextureFormat(const char achFormatHint[9]);
             static glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4& matrix);

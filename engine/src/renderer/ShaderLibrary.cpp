@@ -20,18 +20,38 @@ namespace nexo::renderer {
 
     ShaderLibrary::ShaderLibrary()
     {
-        load("Phong", Path::resolvePathRelativeToExe(
-            "../resources/shaders/phong.glsl").string());
-        load("Outline pulse flat", Path::resolvePathRelativeToExe(
-            "../resources/shaders/outline_pulse_flat.glsl").string());
-        load("Outline pulse transparent flat", Path::resolvePathRelativeToExe(
-            "../resources/shaders/outline_pulse_transparent_flat.glsl").string());
-        load("Albedo unshaded transparent", Path::resolvePathRelativeToExe(
-            "../resources/shaders/albedo_unshaded_transparent.glsl").string());
-        load("Grid shader", Path::resolvePathRelativeToExe(
-            "../resources/shaders/grid_shader.glsl").string());
-        load("Flat color", Path::resolvePathRelativeToExe(
-            "../resources/shaders/flat_color.glsl").string());
+        // Helper lambda to safely load a shader with proper error handling
+        auto safeLoadShader = [this](const std::string& name, const std::string& relativePath) {
+            try {
+                // Resolve the absolute path
+                std::filesystem::path absPath = Path::resolvePathRelativeToExe(relativePath);
+
+                // Check if the shader file exists
+                if (!std::filesystem::exists(absPath)) {
+                    LOG(NEXO_ERROR, "Shader file not found: {}", absPath.string());
+                    return false;
+                }
+
+                // Try to load the shader
+                load(name, absPath.string());
+                LOG(NEXO_INFO, "Shader '{}' loaded successfully", name);
+                return true;
+            } catch (const std::exception& e) {
+                LOG(NEXO_ERROR, "Failed to load shader '{}': {}", name, e.what());
+                return false;
+            } catch (...) {
+                LOG(NEXO_ERROR, "Unknown error loading shader '{}'", name);
+                return false;
+            }
+        };
+
+        // Load all required shaders with error handling
+        safeLoadShader("Phong", "../resources/shaders/phong.glsl");
+        safeLoadShader("Outline pulse flat", "../resources/shaders/outline_pulse_flat.glsl");
+        safeLoadShader("Outline pulse transparent flat", "../resources/shaders/outline_pulse_transparent_flat.glsl");
+        safeLoadShader("Albedo unshaded transparent", "../resources/shaders/albedo_unshaded_transparent.glsl");
+        safeLoadShader("Grid shader", "../resources/shaders/grid_shader.glsl");
+        safeLoadShader("Flat color", "../resources/shaders/flat_color.glsl");
     }
 
     void ShaderLibrary::add(const std::shared_ptr<NxShader> &shader)

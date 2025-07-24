@@ -193,9 +193,9 @@ namespace ImNexo {
                // convert that delta into an incremental quaternion, and update the master quaternion.
                if (RowDragFloat3("Rotation", "X", "Y", "Z", &rotation.x)) {
                    const glm::vec3 deltaEuler = rotation - lastDisplayedEuler;
-                   const glm::quat deltaQuat = glm::radians(deltaEuler);
+                   const glm::quat deltaQuat = glm::quat(glm::radians(deltaEuler));
                    quat = glm::normalize(deltaQuat * quat);
-                   lastDisplayedEuler = glm::degrees(glm::eulerAngles(quat));;
+                   lastDisplayedEuler = glm::degrees(glm::eulerAngles(quat));
                }
                RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
 

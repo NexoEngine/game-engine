@@ -289,6 +289,10 @@ namespace nexo::renderer {
 
     void NxOpenGlFramebuffer::bindAsTexture(unsigned int slot, unsigned int attachment)
     {
+        if (attachment >= m_colorAttachments.size()) {
+            LOG(NEXO_ERROR, "Attachment index {} out of bounds (max: {})", attachment, m_colorAttachments.size() - 1);
+            return;
+        }
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, getColorAttachmentId(attachment));
     }
@@ -306,6 +310,10 @@ namespace nexo::renderer {
 
     void NxOpenGlFramebuffer::copy(const std::shared_ptr<NxFramebuffer> source)
     {
+        if (!source) {
+            LOG(NEXO_ERROR, "Cannot copy from null framebuffer");
+            return;
+        }
         if (toResize) {
             invalidate();
             toResize = false;

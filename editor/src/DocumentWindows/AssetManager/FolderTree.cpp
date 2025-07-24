@@ -17,6 +17,9 @@
 #include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
 
+#include <filesystem>
+#include <set>
+
 namespace nexo::editor {
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)
     {
@@ -26,17 +29,7 @@ namespace nexo::editor {
         if (path == m_currentFolder)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        // Check if this is a leaf node (no subfolders)
-        bool hasSubfolders = false;
-        for (const auto& [subPath, _] : m_folderStructure) {
-            if (subPath != path && subPath.find(path) == 0 &&
-                subPath.find('/', path.length() + 1) == std::string::npos) {
-                hasSubfolders = true;
-                break;
-            }
-        }
-
-        if (!hasSubfolders)
+        if (!m_folderChildren.contains(path))
             flags |= ImGuiTreeNodeFlags_Leaf;
 
         // Folder icon
@@ -55,20 +48,29 @@ namespace nexo::editor {
                 m_folderCreationState.parentPath = path;
                 m_folderCreationState.isCreatingFolder = true;
                 ImGui::OpenPopup("Create New Folder");
-                snprintf(m_folderCreationState.folderName,
-                         sizeof(m_folderCreationState.folderName),
-                         "%s", "New Folder");
+                std::format_to_n(
+                    m_folderCreationState.folderName,
+                    sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
+                    "New Folder"
+                );
             }
             ImGui::EndPopup();
         }
 
         if (opened) {
-            for (const auto& [subPath, subName] : m_folderStructure) {
-                if (subPath != path &&
-                    subPath.find(path) == 0 &&
-                    subPath.length() > path.length() &&
-                    subPath.find('/', path.length() + 1) == std::string::npos) {
-                    drawFolderTreeItem(subName, subPath);
+            // Use the precomputed children list
+            auto it = m_folderChildren.find(path);
+            if (it != m_folderChildren.end()) {
+                for (const auto& childPath : it->second) {
+                    // Find the name of the child from m_folderStructure
+                    std::string childName;
+                    for (const auto& [p, n] : m_folderStructure) {
+                        if (p == childPath) {
+                            childName = n;
+                            break;
+                        }
+                    }
+                    drawFolderTreeItem(childName, childPath);
                 }
             }
             ImGui::TreePop();
@@ -154,37 +156,47 @@ namespace nexo::editor {
     {
         m_folderStructure.clear();
         m_folderStructure.emplace_back("", "Assets");
+        m_folderChildren.clear(); // Clear the folder children map
+
+        // First pass: build the folder structure
+        std::set<std::string, std::less<>> uniqueFolderPaths;
 
         const auto assets = assets::AssetCatalog::getInstance().getAssets();
         for (const auto& asset : assets) {
             if (auto assetData = asset.lock()) {
                 std::string fullPath = assetData->getMetadata().location.getPath();
-                size_t pos = 0;
-                std::string currentPath;
+                std::filesystem::path fsPath(fullPath);
 
-                while ((pos = fullPath.find('/', pos)) != std::string::npos) {
-                    std::string folderPath = fullPath.substr(0, pos);
-                    std::string folderName = folderPath;
-
-                    // Extract just the folder name from the path
-                    size_t lastSlash = folderPath.find_last_of('/');
-                    if (lastSlash != std::string::npos)
-                        folderName = folderPath.substr(lastSlash + 1);
-
-                    bool found = false;
-                    for (const auto& [path, _] : m_folderStructure) {
-                        if (path == folderPath) {
-                            found = true;
-                            break;
-                        }
+                // Extract all parent directories from the path
+                while (fsPath.has_parent_path()) {
+                    fsPath = fsPath.parent_path();
+                    if (!fsPath.empty()) {
+                        uniqueFolderPaths.insert(fsPath.string());
                     }
-
-                    if (!found)
-                        m_folderStructure.emplace_back(folderPath, folderName);
-
-                    pos++;
                 }
             }
+        }
+
+        // Add the unique folder paths to m_folderStructure
+        for (const auto& folderPath : uniqueFolderPaths) {
+            std::filesystem::path fsPath(folderPath);
+            std::string folderName = fsPath.filename().string();
+            m_folderStructure.emplace_back(folderPath, folderName);
+        }
+
+        // Second pass: build the parent-child map
+        for (const auto& [path, name] : m_folderStructure) {
+            if (path.empty()) continue; // Skip root
+
+            std::filesystem::path fsPath(path);
+            std::string parentPath = fsPath.parent_path().string();
+
+            // If parent path is empty, set it to "" (root)
+            if (parentPath.empty()) {
+                parentPath = "";
+            }
+
+            m_folderChildren[parentPath].push_back(path);
         }
     }
 
@@ -197,7 +209,7 @@ namespace nexo::editor {
         ImGui::PopItemWidth();
         ImGui::Separator();
 
-        // Draw favorites section
+        // favorites section
         {
             ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
             bool favoritesOpen = ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", headerFlags);
@@ -235,7 +247,7 @@ namespace nexo::editor {
             }
         }
 
-        // Draw folder structure
+        // folder structure
         {
             ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
@@ -250,9 +262,11 @@ namespace nexo::editor {
                 if (ImGui::MenuItem("New Folder")) {
                     m_folderCreationState.parentPath = "";
                     m_folderCreationState.isCreatingFolder = true;
-                    snprintf(m_folderCreationState.folderName,
-                             sizeof(m_folderCreationState.folderName),
-                             "%s", "New Folder");
+                    std::format_to_n(
+                        m_folderCreationState.folderName,
+                        sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
+                        "New Folder"
+                    );
                 }
                 ImGui::EndPopup();
             }

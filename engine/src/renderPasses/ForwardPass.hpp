@@ -21,7 +21,7 @@ namespace nexo::renderer {
     class ForwardPass : public RenderPass {
         public:
             ForwardPass(unsigned int width, unsigned int height);
-            virtual ~ForwardPass() = default;
+            ~ForwardPass() override = default;
 
             void execute(RenderPipeline& pipeline) override;
             void resize(unsigned int width, unsigned int height) override;
