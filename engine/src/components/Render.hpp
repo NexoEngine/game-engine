@@ -17,9 +17,11 @@ namespace nexo::components
 {
     enum class PrimitiveType
     {
+        UNKNOWN,
         CUBE,
         MESH,
         BILLBOARD,
+        _COUNT
     };
 
     struct RenderComponent {

@@ -32,6 +32,13 @@
 
 namespace nexo::editor {
 
+    constexpr const char *getPrimitiveTypeName(components::PrimitiveType type)
+    {
+        if (static_cast<int>(type) < 0 || static_cast<int>(type) >= static_cast<int>(components::PrimitiveType::_COUNT))
+            return "UNKNOWN";
+        return PrimitiveTypeNames[static_cast<int>(type)];
+    }
+
     void RenderProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
@@ -149,22 +156,7 @@ namespace nexo::editor {
             ImGui::Text("Type");
             ImGui::SameLine(0, 12);
 
-            std::string primitiveTypeStr;
-            switch (renderComponent.type) {
-                case components::PrimitiveType::CUBE:
-                    primitiveTypeStr = "CUBE";
-                    break;
-                case components::PrimitiveType::BILLBOARD:
-                    primitiveTypeStr = "BILLBOARD";
-                    break;
-                case components::PrimitiveType::MESH:
-                    primitiveTypeStr = "MESH";
-                    break;
-                default:
-                    primitiveTypeStr = "Unknown";
-                    break;
-            }
-
+            std::string primitiveTypeStr = getPrimitiveTypeName(renderComponent.type);
             ImGui::Text("%s", primitiveTypeStr.c_str());
 
             ImGui::TreePop();
