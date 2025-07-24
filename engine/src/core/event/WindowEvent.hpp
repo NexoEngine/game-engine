@@ -163,4 +163,21 @@ namespace nexo::event {
                 return os;
             }
     };
+
+    class EventFileDrop final : public Event<EventFileDrop> {
+        public:
+            EventFileDrop(const std::vector<std::string>& droppedFiles) : files(droppedFiles) {};
+
+            std::vector<std::string> files;
+
+            friend std::ostream &operator<<(std::ostream &os, const EventFileDrop &event)
+            {
+                os << "[FILE DROP EVENT] " << event.files.size() << " file(s): ";
+                for (size_t i = 0; i < event.files.size(); ++i) {
+                    if (i > 0) os << ", ";
+                    os << event.files[i];
+                }
+                return os;
+            }
+    };
 }

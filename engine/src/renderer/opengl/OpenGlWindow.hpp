@@ -104,6 +104,7 @@ namespace nexo::renderer {
             void setMouseClickCallback(MouseClickCallback callback) override { _props.mouseClickCallback = std::move(callback); }
             void setMouseScrollCallback(MouseScrollCallback callback) override { _props.mouseScrollCallback = std::move(callback); }
             void setMouseMoveCallback(MouseMoveCallback callback) override { _props.mouseMoveCallback = std::move(callback); }
+            void setFileDropCallback(FileDropCallback callback) override { _props.fileDropCallback = std::move(callback); }
 
             // Linux specific method
 #ifdef __linux__

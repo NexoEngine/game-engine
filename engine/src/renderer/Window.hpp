@@ -29,6 +29,7 @@ namespace nexo::renderer {
     using MouseClickCallback = std::function<void(int, int, int)>;
     using MouseScrollCallback = std::function<void(double, double)>;
     using MouseMoveCallback = std::function<void(double, double)>;
+    using FileDropCallback = std::function<void(int, const char**)>;
 
     struct NxWindowProperty
     {
@@ -43,6 +44,7 @@ namespace nexo::renderer {
         MouseClickCallback mouseClickCallback;
         MouseScrollCallback mouseScrollCallback;
         MouseMoveCallback mouseMoveCallback;
+        FileDropCallback fileDropCallback;
 
         NxWindowProperty(const unsigned int w, const unsigned h, const char * t) : width(w), height(h), title(t) {}
     };
@@ -108,6 +110,7 @@ namespace nexo::renderer {
             virtual void setMouseClickCallback(MouseClickCallback callback) = 0;
             virtual void setMouseScrollCallback(MouseScrollCallback callback) = 0;
             virtual void setMouseMoveCallback(MouseMoveCallback callback) = 0;
+            virtual void setFileDropCallback(FileDropCallback callback) = 0;
 
             // Linux specific methods
 #ifdef __linux__

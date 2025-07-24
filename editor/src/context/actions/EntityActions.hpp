@@ -152,4 +152,21 @@ namespace nexo::editor {
             std::vector<std::unique_ptr<Action>> m_componentRestoreActions;
     };
 
+    /**
+    * Stores information needed to undo/redo entity parent changes
+    * Handles hierarchy component updates
+    */
+    class EntityParentChangeAction final : public Action {
+        public:
+            EntityParentChangeAction(ecs::Entity entity, ecs::Entity oldParent, ecs::Entity newParent)
+                : m_entity(entity), m_oldParent(oldParent), m_newParent(newParent) {}
+
+            void redo() override;
+            void undo() override;
+        private:
+            ecs::Entity m_entity;
+            ecs::Entity m_oldParent;
+            ecs::Entity m_newParent;
+    };
+
 }
