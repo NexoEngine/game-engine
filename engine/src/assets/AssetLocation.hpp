@@ -123,9 +123,10 @@ namespace nexo::assets {
                 if (_packName)
                     fullLocation += _packName->data() + "::";
                 fullLocation += _name.data();
-                fullLocation += "@";
-                if (!_path.empty())
+                if (!_path.empty()) {
+                    fullLocation += "@";
                     fullLocation += _path;
+                }
                 return fullLocation;
             }
 
