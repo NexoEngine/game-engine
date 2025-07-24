@@ -209,7 +209,7 @@ namespace nexo::assets {
 
     TEST_F(AssetImporterContextTest, DefaultContextValues)
     {
-        EXPECT_EQ(context.location.getFullLocation(), "default");
+        EXPECT_EQ(context.location.getFullLocation(), "default@");
         EXPECT_EQ(context.getMainAsset(), nullptr);
         EXPECT_TRUE(context.getDependencies().empty());
         EXPECT_TRUE(context.getParameters().is_null());

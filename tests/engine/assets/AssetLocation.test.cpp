@@ -51,7 +51,7 @@ namespace nexo::assets {
         EXPECT_EQ(location.getPackName()->get(), "myPack");
         EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "");
-        EXPECT_EQ(location.getFullLocation(), fullLocation);
+        EXPECT_EQ(location.getFullLocation(), fullLocation + "@"); // For proper handling in the asset mananger we always add @
     }
 
     TEST(AssetLocationTest, InvalidLocationEmpty)
@@ -111,7 +111,7 @@ namespace nexo::assets {
         AssetPackName packName("myPack");
 
         AssetLocation location("test");
-        EXPECT_EQ(location.getFullLocation(), "test");
+        EXPECT_EQ(location.getFullLocation(), "test@");
         location.setLocation(name, path, packName);
 
         ASSERT_TRUE(location.getPackName().has_value());
@@ -127,7 +127,7 @@ namespace nexo::assets {
         const std::string path = "path/to/asset";
 
         AssetLocation location("test");
-        EXPECT_EQ(location.getFullLocation(), "test");
+        EXPECT_EQ(location.getFullLocation(), "test@");
         location.setLocation(name, path);
 
         EXPECT_FALSE(location.getPackName().has_value());
@@ -142,14 +142,14 @@ namespace nexo::assets {
         AssetPackName packName("myPack");
 
         AssetLocation location("test");
-        EXPECT_EQ(location.getFullLocation(), "test");
+        EXPECT_EQ(location.getFullLocation(), "test@");
         location.setLocation(name, "", packName);
 
         ASSERT_TRUE(location.getPackName().has_value());
         EXPECT_EQ(location.getPackName()->get(), "myPack");
         EXPECT_EQ(location.getName(), "myAsset");
         EXPECT_EQ(location.getPath(), "");
-        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@");
     }
 
     TEST(AssetLocationTest, SetName)
