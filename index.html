@@ -96,17 +96,14 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <ul>
 <li><a href="#nexo-engine">NEXO Engine</a><ul>
 <li><a href="#table-of-contents">Table of Contents</a></li>
-<li><a href="#project-overview">Project Overview</a><ul>
-<li><a href="#game-engine">Game Engine</a></li>
-</ul>
-</li>
+<li><a href="#project-overview">Project Overview</a></li>
 <li><a href="#external-dependencies">External Dependencies</a></li>
 <li><a href="#build-the-project">Build the project</a><ul>
-<li><a href="#using-cmake-presets-automatic">Automatically with CMake Presets</a></li>
-<li><a href="#using-cmake---build-manual">Manually with CMake</a></li>
+<li><a href="#option1-using-cmake-presets-automatic-recommended">Automatically with CMake Presets</a></li>
+<li><a href="#option2-using-cmake-build-manual">Manually with CMake</a></li>
 </ul>
 </li>
-<li><a href="#install-the-project">Install the project</a><ul>
+<li><a href="#install-nexo-engine">Install NEXO Engine</a><ul>
 <li><a href="#install-via-cmake">Install via CMake</a></li>
 <li><a href="#create-an-installer-for-windows-nsis">Create an installer for Windows (NSIS)</a></li>
 <li><a href="#create-an-installer-for-linux-deb">Create an installer for Linux (DEB)</a></li>
@@ -124,7 +121,6 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
  Find the whole documentation on our <a href="https://nexoengine.github.io/game-engine/">website</a>. </p>
 </blockquote>
 <h2>Project Overview</h2>
-<h3>Game Engine</h3>
 <p >📸​ Interface screenshot</p>
 <p ><img src="https://github.com/user-attachments/assets/cb19d00c-56bc-4cdd-9f61-069375fd7b08" alt="Editor interface" class="inline"/></p>
 <p >🎥 Quick videos of the game engine in action</p>
@@ -136,20 +132,21 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </blockquote>
 <h2>External Dependencies</h2>
 <p >To run this project, ensure you have the following:</p><ul>
-<li><b>CMake</b>: Necessary for building the project from source.</li>
+<li><b>CMake</b>: Necessary for building the project from source. (version 3.28 or higher)</li>
 <li><b>C++ Compiler</b>: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.</li>
+<li><b>Git</b>: For cloning with submodules.</li>
 </ul>
 <h2>Build the project</h2>
 <p >Cloning and building is a breeze:</p>
 <h3>1. Clone the repository with the submodules.</h3>
 <div class="fragment"><div class="line">git clone --recurse-submodules</div>
 </div><!-- fragment --><h3>2. Run cmake to generate the build files.</h3>
-<h4>Using cmake presets (automatic)</h4>
-<div class="fragment"><div class="line">cmake --workflow --present=build-debug</div>
+<h4>Option1: Using <code>CMake presets</code> (automatic) [Recommended]</h4>
+<div class="fragment"><div class="line">cmake --workflow --preset=build-debug</div>
 </div><!-- fragment --><blockquote class="doxtable">
 <p >[!NOTE] There are several presets available: <code>build-debug</code>, <code>build-release</code>, <code>build-coverage</code>, <code>minimal-build</code>, <code>test-debug</code>, and <code>test-coverage</code>. </p>
 </blockquote>
-<h4>Using cmake &ndash;build (manual)</h4>
+<h4>Option2: Using <code>CMake Build</code> (manual)</h4>
 <div class="fragment"><div class="line">cmake -B build</div>
 <div class="line">cmake --build build</div>
 </div><!-- fragment --><h3>3. Launch the engine!</h3>
@@ -160,7 +157,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </div><!-- fragment --><blockquote class="doxtable">
 <p >[!NOTE] For detailed instructions, visit our Installation Guide. </p>
 </blockquote>
-<h2>Install the project</h2>
+<h2>Install NEXO Engine</h2>
 <h3>Install via CMake</h3>
 <p >First build the project as seen in the step <a href="#build-the-project">Build the project</a>. Then run the following command:</p>
 <div class="fragment"><div class="line">cmake --install build --prefix /path/to/install</div>
