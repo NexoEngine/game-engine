@@ -19,6 +19,19 @@
 
 namespace nexo::editor
 {
+
+    constexpr const char *PrimitiveTypeNames[] = {
+        "UNKNOWN",
+        "CUBE",
+        "MESH",
+        "BILLBOARD"
+    };
+
+    static_assert(
+        static_cast<int>(components::PrimitiveType::_COUNT) == std::size(PrimitiveTypeNames),
+        "PrimitiveTypeNames array size must match PrimitiveType enum size"
+    );
+
     class RenderProperty final : public AEntityProperty
     {
     public:
