@@ -439,11 +439,18 @@ namespace nexo::editor
         void handleDropTarget(const SceneObject& object);
 
         /**
-        * @brief Processes the drop operation.
+        * @brief Processes the drop operation from the scene tree itself.
         * @param dropTarget The target scene object receiving the drop.
         * @param payload The drag-and-drop payload data.
         */
-        void handleDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+        void handleDropFromSceneTree(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+
+        /**
+        * @brief Processes the drop operation from the asset manager.
+        * @param dropTarget The target scene object receiving the drop.
+        * @param payload The drag-and-drop payload data.
+        */
+        void handleDropFromAssetManager(const SceneObject& dropTarget, const struct AssetDragDropPayload& payload);
 
         /**
         * @brief Validates if a drop operation is allowed.

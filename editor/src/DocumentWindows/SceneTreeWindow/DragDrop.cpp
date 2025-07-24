@@ -35,13 +35,11 @@ namespace nexo::editor {
 
     void SceneTreeWindow::handleDragSource(const SceneObject& object)
     {
-        // Only allow dragging of entities, lights, and cameras
         if (object.type == SelectionType::SCENE || object.type == SelectionType::NONE)
             return;
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
-            // Create payload data
             SceneTreeDragDropPayload payload{
                 object.data.entity,
                 object.data.sceneProperties.sceneId,
@@ -50,12 +48,7 @@ namespace nexo::editor {
                 object.uiName
             };
 
-            // Set the payload
             ImGui::SetDragDropPayload("SCENE_TREE_NODE", &payload, sizeof(payload));
-
-            // Show preview text while dragging
-            ImGui::Text("Moving: %s", object.uiName.c_str());
-
             ImGui::EndDragDropSource();
         }
     }
@@ -71,9 +64,7 @@ namespace nexo::editor {
                 const auto& payload = *static_cast<const SceneTreeDragDropPayload*>(imguiPayload->Data);
 
                 if (canAcceptDrop(object, payload))
-                {
-                    handleDrop(object, payload);
-                }
+                    handleDropFromSceneTree(object, payload);
             }
 
             // Handle drops from asset manager
@@ -82,93 +73,7 @@ namespace nexo::editor {
                 IM_ASSERT(assetPayload->DataSize == sizeof(AssetDragDropPayload));
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
-                // Handle different asset types
-                if (object.type == SelectionType::SCENE)
-                {
-                    auto& app = Application::getInstance();
-                    auto& sceneManager = app.getSceneManager();
-
-                    if (payload.type == assets::AssetType::MODEL)
-                    {
-                        auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                        if (!modelRef)
-                            return;
-                        if (auto model = modelRef.as<assets::Model>(); model)
-                        {
-                            // Create entity with the model
-                            ecs::Entity newEntity = EntityFactory3D::createModel(
-                                model,
-                                {0.0f, 0.0f, 0.0f}, // position
-                                {1.0f, 1.0f, 1.0f}, // scale
-                                {0.0f, 0.0f, 0.0f}  // rotation
-                            );
-
-                            // Add to the scene
-                            auto& scene = sceneManager.getScene(object.data.sceneProperties.sceneId);
-                            scene.addEntity(newEntity);
-
-                            // Record action for undo/redo TODO: Fix undo for models, it does not seem to work properly
-                            auto action = std::make_unique<EntityCreationAction>(newEntity);
-                            ActionManager::get().recordAction(std::move(action));
-                        }
-                    }
-                    else if (payload.type == assets::AssetType::TEXTURE)
-                    {
-                        auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                        if (!textureRef)
-                            return;
-                        if (auto texture = textureRef.as<assets::Texture>(); texture)
-                        {
-                            components::Material material;
-                            material.albedoTexture = texture;
-                            material.albedoColor = glm::vec4(1.0f); // White to show texture colors
-
-                            // Create billboard entity
-                            ecs::Entity newEntity = EntityFactory3D::createBillboard(
-                                {0.0f, 0.0f, 0.0f}, // position
-                                {1.0f, 1.0f, 1.0f}, // size
-                                material
-                            );
-
-                            // Add to the scene
-                            auto& scene = sceneManager.getScene(object.data.sceneProperties.sceneId);
-                            scene.addEntity(newEntity);
-
-                            // Record action for undo/redo
-                            auto action = std::make_unique<EntityCreationAction>(newEntity);
-                            ActionManager::get().recordAction(std::move(action));
-                        }
-                    }
-                }
-                else if (object.type == SelectionType::ENTITY)
-                {
-                    auto matCompOpt = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(object.data.entity);
-                    if (!matCompOpt)
-                        { ImGui::EndDragDropTarget(); return; }
-
-                    auto& matComp = matCompOpt->get();
-
-                    if (payload.type == assets::AssetType::TEXTURE)
-                    {
-                        auto texRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                        if (auto tex = texRef.as<assets::Texture>(); tex)
-                        {
-                            auto mat = matComp.material.lock();
-                            if (!mat)
-                                return;
-                            mat->getData()->albedoTexture = tex;
-                        }
-                    }
-                    else if (payload.type == assets::AssetType::MATERIAL)
-                    {
-                        auto matRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                        if (auto m = matRef.as<assets::Material>(); m)
-                        {
-                            auto oldMat = matComp.material;
-                            matComp.material = m;
-                        }
-                    }
-                }
+                handleDropFromAssetManager(object, payload);
             }
 
             ImGui::EndDragDropTarget();
@@ -195,17 +100,15 @@ namespace nexo::editor {
             }
         }
 
-        // Allow dropping entities onto scenes or other entities
         return true;
     }
 
-    void SceneTreeWindow::handleDrop(const SceneObject& dropTarget, const SceneTreeDragDropPayload& payload)
+    void SceneTreeWindow::handleDropFromSceneTree(const SceneObject& dropTarget, const SceneTreeDragDropPayload& payload)
     {
         auto& app = Application::getInstance();
         auto& sceneManager = app.getSceneManager();
         auto& coordinator = *Application::m_coordinator;
 
-        // Get the source scene
         auto& sourceScene = sceneManager.getScene(payload.sourceSceneId);
 
         if (dropTarget.type == SelectionType::SCENE)
@@ -213,10 +116,8 @@ namespace nexo::editor {
             // Dropping onto a scene - move entity to that scene
             if (payload.sourceSceneId != dropTarget.data.sceneProperties.sceneId)
             {
-                // Remove from source scene
                 sourceScene.removeEntity(payload.entity);
 
-                // Add to target scene
                 auto& targetScene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
                 targetScene.addEntity(payload.entity);
 
@@ -224,12 +125,9 @@ namespace nexo::editor {
                 auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(payload.entity);
                 if (parentComp.has_value())
                 {
-                    // Update parent's children list
                     auto parentTransform = coordinator.tryGetComponent<components::TransformComponent>(parentComp->get().parent);
                     if (parentTransform.has_value())
-                    {
                         parentTransform->get().removeChild(payload.entity);
-                    }
 
                     coordinator.removeComponent<components::ParentComponent>(payload.entity);
                 }
@@ -330,6 +228,90 @@ namespace nexo::editor {
 
             auto action = std::make_unique<EntityParentChangeAction>(childEntity, oldParent, parentEntity);
             ActionManager::get().recordAction(std::move(action));
+        }
+    }
+
+    void SceneTreeWindow::handleDropFromAssetManager(const SceneObject& dropTarget, const AssetDragDropPayload& payload)
+    {
+        if (dropTarget.type == SelectionType::SCENE)
+        {
+            auto& app = Application::getInstance();
+            auto& sceneManager = app.getSceneManager();
+
+            if (payload.type == assets::AssetType::MODEL)
+            {
+                auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (!modelRef)
+                    return;
+                if (auto model = modelRef.as<assets::Model>(); model)
+                {
+                    ecs::Entity newEntity = EntityFactory3D::createModel(
+                        model,
+                        {0.0f, 0.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {0.0f, 0.0f, 0.0f}
+                    );
+                    auto& scene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
+                    scene.addEntity(newEntity);
+
+                    // Record action for undo/redo TODO: Fix undo for models, it does not seem to work properly
+                    auto action = std::make_unique<EntityCreationAction>(newEntity);
+                    ActionManager::get().recordAction(std::move(action));
+                }
+            }
+            else if (payload.type == assets::AssetType::TEXTURE)
+            {
+                auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (!textureRef)
+                    return;
+                if (auto texture = textureRef.as<assets::Texture>(); texture)
+                {
+                    components::Material material;
+                    material.albedoTexture = texture;
+                    material.albedoColor = glm::vec4(1.0f);
+
+                    ecs::Entity newEntity = EntityFactory3D::createBillboard(
+                        {0.0f, 0.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        material
+                    );
+
+                    auto& scene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
+                    scene.addEntity(newEntity);
+
+                    auto action = std::make_unique<EntityCreationAction>(newEntity);
+                    ActionManager::get().recordAction(std::move(action));
+                }
+            }
+        }
+        else if (dropTarget.type == SelectionType::ENTITY)
+        {
+            auto matCompOpt = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(dropTarget.data.entity);
+            if (!matCompOpt)
+                { ImGui::EndDragDropTarget(); return; }
+
+            auto& matComp = matCompOpt->get();
+
+            if (payload.type == assets::AssetType::TEXTURE)
+            {
+                auto texRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (auto tex = texRef.as<assets::Texture>(); tex)
+                {
+                    auto mat = matComp.material.lock();
+                    if (!mat)
+                        return;
+                    mat->getData()->albedoTexture = tex;
+                }
+            }
+            else if (payload.type == assets::AssetType::MATERIAL)
+            {
+                auto matRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (auto m = matRef.as<assets::Material>(); m)
+                {
+                    auto oldMat = matComp.material;
+                    matComp.material = m;
+                }
+            }
         }
     }
 
