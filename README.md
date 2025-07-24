@@ -15,12 +15,11 @@
 - [NEXO Engine](#nexo-engine)
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
-    - [Game Engine](#game-engine)
   - [External Dependencies](#external-dependencies)
   - [Build the project](#build-the-project)
-    - [Automatically with CMake Presets](#using-cmake-presets-automatic)
-    - [Manually with CMake](#using-cmake---build-manual)
-  - [Install the project](#install-the-project)
+    - [Automatically with CMake Presets](#option1-using-cmake-presets-automatic-recommended)
+    - [Manually with CMake](#option2-using-cmake-build-manual)
+  - [Install NEXO Engine](#install-nexo-engine)
     - [Install via CMake](#install-via-cmake)
     - [Create an installer for Windows (NSIS)](#create-an-installer-for-windows-nsis)
     - [Create an installer for Linux (DEB)](#create-an-installer-for-linux-deb)
@@ -33,8 +32,6 @@
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
 
 ## Project Overview
-
-### Game Engine
 
 📸​ Interface screenshot
 
@@ -57,8 +54,9 @@ https://github.com/user-attachments/assets/ea92807b-da51-4fb6-bd1d-d3c9fadf0c13
 ## External Dependencies
 
 To run this project, ensure you have the following:
-- **CMake**: Necessary for building the project from source.
+- **CMake**: Necessary for building the project from source. (version 3.28 or higher)
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
+- **Git**: For cloning with submodules.
 
 ## Build the project
 
@@ -71,16 +69,16 @@ git clone --recurse-submodules
 
 ### 2. Run cmake to generate the build files.
 
-#### Using cmake presets (automatic)
+#### Option1: Using `CMake presets` (automatic) [Recommended]
 
 ```bash
-cmake --workflow --present=build-debug
+cmake --workflow --preset=build-debug
 ```
 
 > [!NOTE]
 > There are several presets available: `build-debug`, `build-release`, `build-coverage`, `minimal-build`, `test-debug`, and `test-coverage`.
 
-#### Using cmake --build (manual)
+#### Option2: Using `CMake Build` (manual)
 
 ```bash
 cmake -B build
@@ -102,7 +100,7 @@ cmake --build build
 > [!NOTE]
 > For detailed instructions, visit our [Installation Guide](docs/install/README.md).
 
-## Install the project
+## Install NEXO Engine
 
 ### Install via CMake
 
