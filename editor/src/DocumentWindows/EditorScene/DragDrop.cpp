@@ -164,17 +164,19 @@ namespace nexo::editor {
                 m_entityHovered = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
-                if (payload.type == assets::AssetType::MODEL)
+                switch(payload.type)
                 {
-                    handleDropModel(payload);
-                }
-                else if (payload.type == assets::AssetType::TEXTURE)
-                {
-                    handleDropTexture(payload);
-                }
-                else if (payload.type == assets::AssetType::MATERIAL)
-                {
-                    handleDropMaterial(payload);
+                    case assets::AssetType::MODEL:
+                        handleDropModel(payload);
+                        break;
+                    case assets::AssetType::TEXTURE:
+                        handleDropTexture(payload);
+                        break;
+                    case assets::AssetType::MATERIAL:
+                        handleDropMaterial(payload);
+                        break;
+                    default:
+                        break;
                 }
             }
             ImGui::EndDragDropTarget();
