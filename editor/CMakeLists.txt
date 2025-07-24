@@ -11,6 +11,7 @@ set(SRCS
         common/Exception.cpp
         common/math/Matrix.cpp
         common/math/Light.cpp
+        common/Path.cpp
         editor/main.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
