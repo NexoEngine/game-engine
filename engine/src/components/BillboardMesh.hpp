@@ -9,7 +9,7 @@
 //  Author:      Mehdy MORVAN
 //  Date:        11/05/2025
 //  Description: Header file for the billboard mesh component, we have
-//               to handle it separatly because it has to be oriented
+//               to handle it separately because it has to be oriented
 //               facing the camera
 //
 ///////////////////////////////////////////////////////////////////////////////

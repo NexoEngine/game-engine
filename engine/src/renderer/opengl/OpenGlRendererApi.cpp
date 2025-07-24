@@ -17,7 +17,6 @@
 
 #include "OpenGlRendererAPI.hpp"
 #include "Logger.hpp"
-#include "RendererAPI.hpp"
 
 #include <glad/glad.h>
 

@@ -24,6 +24,7 @@ set(COMMON_SOURCES
         engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
         engine/src/components/Camera.cpp
+        engine/src/components/Transform.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
         engine/src/renderer/ShaderLibrary.cpp

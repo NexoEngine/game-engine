@@ -17,6 +17,7 @@
 #include <set>
 #include <imgui.h>
 #include <assets/AssetRef.hpp>
+#include "utils/TransparentStringHash.hpp"
 
 namespace nexo::editor {
 
@@ -63,6 +64,7 @@ namespace nexo::editor {
             };
 
             std::set<int> m_selectedAssets;
+            std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
             LayoutSettings m_layout;
 
             void calculateLayout(float availWidth);
@@ -72,9 +74,9 @@ namespace nexo::editor {
             void handleSelection(int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;  // Currently selected folder
+            std::string m_currentFolder;
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
-            char m_searchBuffer[256] = "";  // Buffer for search input
+            char m_searchBuffer[256] = "";
 
             void buildFolderStructure();
             void drawFolderTree();
@@ -89,7 +91,7 @@ namespace nexo::editor {
 
             struct FolderCreationState {
                 bool isCreatingFolder = false;
-                char folderName[14] = "";
+                char folderName[256] = "";
                 std::string parentPath;
                 bool showError = false;
                 std::string errorMessage;
@@ -97,7 +99,7 @@ namespace nexo::editor {
             };
 
             FolderCreationState m_folderCreationState;
-            ImTextureID m_folderIconTexture = 0;
+            assets::AssetRef<assets::Texture> m_folderIcon;
 
             ImTextureID getFolderIconTexture();
 

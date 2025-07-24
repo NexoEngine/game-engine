@@ -52,7 +52,7 @@ namespace nexo::scene {
 
     void Scene::addChildEntityToScene(const ecs::Entity entity)
     {
-        if (m_entities.find(entity) != m_entities.end())
+        if (m_entities.contains(entity))
             return;
 
         // Add scene tag to this child entity

@@ -32,6 +32,13 @@
 
 namespace nexo::editor {
 
+    constexpr const char *getPrimitiveTypeName(components::PrimitiveType type)
+    {
+        if (static_cast<int>(type) < 0 || static_cast<int>(type) >= static_cast<int>(components::PrimitiveType::_COUNT))
+            return "UNKNOWN";
+        return PrimitiveTypeNames[static_cast<int>(type)];
+    }
+
     void RenderProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
@@ -132,8 +139,6 @@ namespace nexo::editor {
             return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
-        static bool sectionOpen = true;
-
         if (ImNexo::Header("##RenderNode", "Render Component"))
         {
             ImGui::Text("Hide");
@@ -147,61 +152,14 @@ namespace nexo::editor {
                 ActionManager::get().recordAction(std::move(action));
             }
 
-            ImNexo::ToggleButtonWithSeparator("Material", &sectionOpen);
-            static std::shared_ptr<renderer::NxFramebuffer> framebuffer = nullptr;
-            static int entityBase = -1;
-            if (sectionOpen)
-            {
-            	if (entityBase != static_cast<int>(entity))
-				{
-					//TODO: I guess all of this should be centralized in the assets
-					utils::ScenePreviewOut previewParams;
-					utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
-					auto &app = nexo::getApp();
-					app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-					const Application::SceneInfo sceneInfo{previewParams.sceneId, nexo::RenderingType::FRAMEBUFFER};
-					app.run(sceneInfo);
-					const auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-					framebuffer = cameraComponent.m_renderTarget;
-					app.getSceneManager().deleteScene(previewParams.sceneId);
-					entityBase = static_cast<int>(entity);
-				}
+            ImGui::Separator();
+            ImGui::Text("Type");
+            ImGui::SameLine(0, 12);
 
-                // --- Material Preview ---
-                if (framebuffer && framebuffer->getColorAttachmentId(0) != 0)
-                	ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(framebuffer->getColorAttachmentId(0))), ImVec2(64, 64));
-                ImGui::SameLine();
-
-                ImGui::BeginGroup();
-                {
-                    // --- Dropdown for Material Types ---
-                    static int selectedMaterialIndex = 0;
-                    const char* materialTypes[] = { "Default", "Metal", "Wood", "Plastic" };
-                    ImGui::Combo("##MaterialType", &selectedMaterialIndex, materialTypes, IM_ARRAYSIZE(materialTypes));
-
-                    // --- Material Action Buttons ---
-                    if (ImNexo::Button("Create new material"))
-                    {
-                        m_popupManager.openPopup("Create new material", ImVec2(1440,900));
-                    }
-                    ImGui::SameLine();
-                    if (ImNexo::Button("Modify Material"))
-                    {
-                        m_inspector.setSubInspectorVisibility<MaterialInspector>(true);
-                    }
-                }
-                ImGui::EndGroup();
-                const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-            }
+            std::string primitiveTypeStr = getPrimitiveTypeName(renderComponent.type);
+            ImGui::Text("%s", primitiveTypeStr.c_str());
 
             ImGui::TreePop();
-        }
-
-        if (m_popupManager.showPopupModal("Create new material"))
-        {
-            createMaterialPopup(entity);
-            PopupManager::closePopup();
         }
     }
 }

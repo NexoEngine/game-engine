@@ -8,7 +8,7 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        06/05/2025
-//  Description: Header file for the parent component
+//  Description: Header file for the parent and root component
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once

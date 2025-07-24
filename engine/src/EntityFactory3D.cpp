@@ -20,6 +20,7 @@
 #include "components/Light.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
+#include "components/Render.hpp"
 #include "components/Render3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
@@ -53,7 +54,10 @@ namespace nexo
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
-        const components::UuidComponent uuid;
+        components::UuidComponent uuid;
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::CUBE;
 
         const ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
@@ -61,6 +65,7 @@ namespace nexo
         Application::m_coordinator->addComponent(newCube, matComponent);
 
         Application::m_coordinator->addComponent(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, renderComponent);
 
         return newCube;
     }
@@ -82,13 +87,17 @@ namespace nexo
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
-        const components::UuidComponent uuid;
+        components::UuidComponent uuid;
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::CUBE;
 
         const ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
         Application::m_coordinator->addComponent(newCube, mesh);
         Application::m_coordinator->addComponent(newCube, matComponent);
         Application::m_coordinator->addComponent(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, renderComponent);
 
         return newCube;
     }
@@ -110,13 +119,17 @@ namespace nexo
         components::BillboardComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
 
-        const components::UuidComponent uuid;
+        components::UuidComponent uuid;
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::BILLBOARD;
 
         const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
         Application::m_coordinator->addComponent(newBillboard, mesh);
         Application::m_coordinator->addComponent(newBillboard, matComponent);
         Application::m_coordinator->addComponent(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, renderComponent);
 
         return newBillboard;
     }
@@ -137,13 +150,17 @@ namespace nexo
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
-        const components::UuidComponent uuid;
+        components::UuidComponent uuid;
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::BILLBOARD;
 
         const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
         Application::m_coordinator->addComponent(newBillboard, mesh);
         Application::m_coordinator->addComponent(newBillboard, matComponent);
         Application::m_coordinator->addComponent(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, renderComponent);
 
         return newBillboard;
     }
@@ -409,7 +426,8 @@ namespace nexo
         int childCount = processModelNode(rootEntity, rootNode);
 
         // Update child count in root component
-        rootComp.childCount = childCount;
+        auto &storedRoot = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
+        storedRoot.childCount = childCount;
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(rootEntity, uuid);
 
@@ -426,7 +444,8 @@ namespace nexo
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(nodeEntity, uuid);
 
-        glm::vec3 translation, scale;
+        glm::vec3 translation;
+        glm::vec3 scale;
         glm::quat rotation;
         nexo::math::decomposeTransformQuat(node.transform, translation, rotation, scale);
 
@@ -471,8 +490,13 @@ namespace nexo
             components::StaticMeshComponent staticMesh;
             staticMesh.vao = mesh.vao;
 
+            components::RenderComponent renderComponent;
+            renderComponent.isRendered = true;
+            renderComponent.type = components::PrimitiveType::MESH;
+
             Application::m_coordinator->addComponent(meshEntity, meshTransform);
             Application::m_coordinator->addComponent(meshEntity, staticMesh);
+            Application::m_coordinator->addComponent(meshEntity, renderComponent);
 
             if (!mesh.name.empty())
             {
