@@ -57,20 +57,20 @@ namespace nexo::renderer
             v1, v3, v2
         };
 
-        std::ranges::copy(verts, vertices.begin());
+        vertices = verts;
 
         // Basic UV mapping for each face
-        glm::vec2 texturesCoord[] = {
+        std::array<glm::vec2, 12> textureCoords = {{
             {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
             {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
             {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
             {0.0f, 1.0f}, {1.0f, 1.0f}, {0.5f, 0.0f} // Bottom face
-        };
+        }};
 
-        vertices = verts;
+        texCoords = textureCoords;
 
         // Compute normals for each face
-        glm::vec3 norm[12];
+        //std::array<glm::vec3, 12> norm;
 
         for (int i = 0; i < 12; i += 3)
         {
@@ -79,12 +79,13 @@ namespace nexo::renderer
                     vertices[i + 1] - vertices[i],
                     vertices[i + 2] - vertices[i]));
 
-            norm[i] = normal;
-            norm[i + 1] = normal;
-            norm[i + 2] = normal;
+            normals[i] = normal;
+            normals[i + 1] = normal;
+            normals[i + 2] = normal;
         }
 
-        std::ranges::copy(norm, normals.begin());
+        //normals = norm;
+        //std::ranges::copy(norm, normals.begin());
     }
 
 
