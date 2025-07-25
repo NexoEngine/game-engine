@@ -43,6 +43,8 @@ namespace nexo::renderer {
         if (!renderTarget || !maskPass)
             return;
         renderTarget->bind();
+        constexpr GLenum singleDrawBuffer[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, singleDrawBuffer);
 
         renderer::NxRenderCommand::setDepthTest(false);
         renderer::NxRenderCommand::setDepthMask(false);
@@ -55,6 +57,8 @@ namespace nexo::renderer {
                 cmd.execute();
             }
         }
+        constexpr GLenum allBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, allBuffers);
         renderTarget->unbind();
         renderer::NxRenderCommand::setDepthMask(true);
         renderer::NxRenderCommand::setDepthTest(true);
