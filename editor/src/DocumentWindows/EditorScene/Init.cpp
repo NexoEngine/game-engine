@@ -53,9 +53,15 @@ namespace nexo::editor
                                                                 renderTarget);
         auto& cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
-        auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
-        auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
-        auto gridPass = std::make_shared<renderer::GridPass>(m_contentSize.x, m_contentSize.y);
+        auto maskPass = std::make_shared<renderer::MaskPass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
+        auto outlinePass = std::make_shared<renderer::OutlinePass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
+        auto gridPass = std::make_shared<renderer::GridPass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
         const renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));

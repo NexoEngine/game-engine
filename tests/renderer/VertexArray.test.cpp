@@ -54,7 +54,10 @@ namespace nexo::renderer {
             1.0f, 1.0f, 1.0f, 1.0f, // Color
             3, // Texture index
         };
-        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(vertices, sizeof(vertices));
+        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(
+            vertices,
+            static_cast<unsigned int>(sizeof(vertices))
+        );
         NxBufferLayout layout = {
             {NxShaderDataType::FLOAT3, "Position"},
             {NxShaderDataType::FLOAT4, "Color", true},
