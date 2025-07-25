@@ -29,7 +29,7 @@ namespace nexo::editor::utils {
         #else
             std::stringstream ss;
             ss << "xdg-open " << std::quoted(folderPath);
-            std::system(ss.str().c_str());
+            (void)std::system(ss.str().c_str());
         #endif
     }
 }
