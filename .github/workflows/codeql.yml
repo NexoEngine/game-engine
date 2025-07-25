@@ -26,9 +26,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: c-cpp
-            build-mode: autobuild
+          - language: c-cpp, csharp
+            build-mode: manual
             compiler: gcc
+            generator: Ninja
             version: 13
             os: ubuntu-latest
     steps:
@@ -125,6 +126,18 @@ jobs:
 
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
+
+
+      - name: CMake Workflow with preset 'minimal-build' for packaging
+        uses: lukka/run-cmake@v10
+        with:
+          workflowPreset: 'minimal-build'
+        env:
+          CMAKE_GENERATOR: ${{ matrix.generator }}
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
