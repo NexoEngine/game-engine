@@ -16,10 +16,10 @@
 #include "renderer/ShaderStorageBuffer.hpp"
 
 namespace nexo::renderer {
-	class OpenGlShaderStorageBuffer : public ShaderStorageBuffer {
+	class NxOpenGlShaderStorageBuffer final : public NxShaderStorageBuffer {
 	public:
-		explicit OpenGlShaderStorageBuffer(unsigned int size);
-		~OpenGlShaderStorageBuffer() override = default;
+		explicit NxOpenGlShaderStorageBuffer(unsigned int size);
+		~NxOpenGlShaderStorageBuffer() override = default;
 
 		void bind() const override;
 		void bindBase(unsigned int bindingLocation) const override;
@@ -30,6 +30,6 @@ namespace nexo::renderer {
 		[[nodiscard]] unsigned int getId() const override { return m_id; };
 
 	private:
-		unsigned int m_id;
+		unsigned int m_id{};
 	};
 }

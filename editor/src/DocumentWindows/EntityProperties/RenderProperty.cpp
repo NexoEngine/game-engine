@@ -17,18 +17,29 @@
 #include "RenderProperty.hpp"
 #include "AEntityProperty.hpp"
 #include "Application.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
+#include "DocumentWindows/PopupManager.hpp"
 #include "Framebuffer.hpp"
+#include "components/Light.hpp"
+#include "context/actions/EntityActions.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
-#include "DocumentWindows/InspectorWindow.hpp"
-#include "DocumentWindows/MaterialInspector.hpp"
+#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+#include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
+#include "context/ActionManager.hpp"
+#include "ImNexo/Elements.hpp"
+#include "ImNexo/Components.hpp"
 
 namespace nexo::editor {
 
-    void RenderProperty::createMaterialPopup(ecs::Entity entity) const
+    constexpr const char *getPrimitiveTypeName(components::PrimitiveType type)
+    {
+        if (static_cast<int>(type) < 0 || static_cast<int>(type) >= static_cast<int>(components::PrimitiveType::_COUNT))
+            return "UNKNOWN";
+        return PrimitiveTypeNames[static_cast<int>(type)];
+    }
+
+    void RenderProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
@@ -37,7 +48,7 @@ namespace nexo::editor {
         const float totalWidth = availSize.x;
         float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
 
-        // Define layout: 60% for inspector, 40% for preview
+        // Define layout: 40% for inspector, 60% for preview
         const float inspectorWidth = totalWidth * 0.4f;
         const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
 
@@ -47,8 +58,8 @@ namespace nexo::editor {
             utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
             auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
+            cameraComponent.render = true;
         }
-        auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(nexo::Application::m_coordinator->getComponent<components::RenderComponent>(scenePreviewInfo.entityCopy).renderable);
 
         ImGui::Columns(2, "MaterialPreviewColumns", false);
 
@@ -60,7 +71,6 @@ namespace nexo::editor {
             ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
             ImGui::Spacing();
 
-            Widgets::drawMaterialInspector(&renderable3D->material);
             ImGui::EndChild();
         }
         ImGui::NextColumn();
@@ -69,7 +79,8 @@ namespace nexo::editor {
             ImGui::BeginChild("MaterialPreview", ImVec2(previewWidth - 4, totalHeight), true);
 
             auto &app = getApp();
-            app.run(scenePreviewInfo.sceneId, RenderingType::FRAMEBUFFER);
+            const Application::SceneInfo sceneInfo{scenePreviewInfo.sceneId, nexo::RenderingType::FRAMEBUFFER};
+            app.run(sceneInfo);
             auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
@@ -80,8 +91,8 @@ namespace nexo::editor {
             const float displayWidth = displayHeight * aspectRatio;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
-            ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                        ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
+            ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
+                        ImVec2(displayWidth, displayHeight));
 
             ImGui::EndChild();
         }
@@ -92,7 +103,7 @@ namespace nexo::editor {
         // Bottom buttons - centered
         constexpr float buttonWidth = 120.0f;
 
-        if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
+        if (ImNexo::Button("OK", ImVec2(buttonWidth, 0)))
         {
             // TODO: Insert logic to create the new material
 
@@ -100,8 +111,6 @@ namespace nexo::editor {
             if (scenePreviewInfo.sceneGenerated)
             {
                 auto &app = getApp();
-                auto &renderComponentBase = nexo::Application::m_coordinator->getComponent<components::RenderComponent>(entity);
-                renderComponentBase.renderable = renderable3D;
                 app.getSceneManager().deleteScene(scenePreviewInfo.sceneId);
                 scenePreviewInfo.sceneGenerated = false;
             }
@@ -109,7 +118,7 @@ namespace nexo::editor {
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+        if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0)))
         {
             if (scenePreviewInfo.sceneGenerated)
             {
@@ -124,88 +133,33 @@ namespace nexo::editor {
 
     void RenderProperty::show(ecs::Entity entity)
     {
+        if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
+            Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
+            return;
         auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
-        if (renderComponent.type == components::RenderType::RENDER_3D)
+        if (ImNexo::Header("##RenderNode", "Render Component"))
         {
-            auto renderable3D = std::dynamic_pointer_cast<components::Renderable3D>(renderComponent.renderable);
-            if (renderable3D)
-            {
-                m_inspector.setSubInspectorData<MaterialInspector>(&renderable3D->material);
-            }
-        }
-        else if (renderComponent.type == components::RenderType::RENDER_2D)
-        {
-            //TODO: Implement sprite stuff
-        }
-        static bool sectionOpen = true;
-
-        if (EntityPropertiesComponents::drawHeader("##RenderNode", "Render Component"))
-        {
-            //ImGui::SetWindowFontScale(1.15f);
             ImGui::Text("Hide");
             ImGui::SameLine(0, 12);
             bool hidden = !renderComponent.isRendered;
-            ImGui::Checkbox("##HideCheckBox", &hidden);
-            renderComponent.isRendered = !hidden;
-
-            EntityPropertiesComponents::drawToggleButtonWithSeparator("Material", &sectionOpen);
-            static std::shared_ptr<renderer::Framebuffer> framebuffer = nullptr;
-            static int entityBase = -1;
-            if (sectionOpen)
-            {
-                if (entityBase != static_cast<int>(entity))
-                {
-                    //TODO: I guess all of this should be centralized in the assets
-                    utils::ScenePreviewOut previewParams;
-                    utils::genScenePreview("Modify material inspector", {64, 64}, entity, previewParams);
-                    auto &app = nexo::getApp();
-                    app.getSceneManager().getScene(previewParams.sceneId).setActiveStatus(false);
-                    auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewParams.cameraId);
-                    cameraComponent.clearColor = {0.05f, 0.05f, 0.05f, 0.0f};
-                    app.run(previewParams.sceneId, RenderingType::FRAMEBUFFER);
-                    framebuffer = cameraComponent.m_renderTarget;
-                    app.getSceneManager().deleteScene(previewParams.sceneId);
-                    entityBase = static_cast<int>(entity);
-                }
-
-                // --- Material Preview ---
-                if (framebuffer->getColorAttachmentId(0) != 0)
-                    ImGui::Image(static_cast<ImTextureID>(static_cast<intptr_t>(framebuffer->getColorAttachmentId(0))), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-
-                ImGui::SameLine();
-
-                ImGui::BeginGroup();
-                {
-                    // --- Dropdown for Material Types ---
-                    static int selectedMaterialIndex = 0;
-                    const char* materialTypes[] = { "Default", "Metal", "Wood", "Plastic" };
-                    ImGui::Combo("##MaterialType", &selectedMaterialIndex, materialTypes, IM_ARRAYSIZE(materialTypes));
-
-                    // --- Material Action Buttons ---
-                    if (ImGui::Button("Create new material"))
-                    {
-                        m_popupManager.openPopup("Create new material");
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Modify Material"))
-                    {
-                        m_inspector.setSubInspectorVisibility<MaterialInspector>(true);
-                    }
-                }
-                ImGui::EndGroup();
-                const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            if (ImGui::Checkbox("##HideCheckBox", &hidden)) {
+                auto beforeState = renderComponent.save();
+                renderComponent.isRendered = !hidden;
+                auto afterState = renderComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::RenderComponent>>(entity, beforeState, afterState);
+                ActionManager::get().recordAction(std::move(action));
             }
 
-            ImGui::TreePop();
-        }
+            ImGui::Separator();
+            ImGui::Text("Type");
+            ImGui::SameLine(0, 12);
 
-        ImGui::SetNextWindowSize(ImVec2(1440,900));
-        if (m_popupManager.showPopupModal("Create new material"))
-        {
-            createMaterialPopup(entity);
-            m_popupManager.closePopup();
+            std::string primitiveTypeStr = getPrimitiveTypeName(renderComponent.type);
+            ImGui::Text("%s", primitiveTypeStr.c_str());
+
+            ImGui::TreePop();
         }
     }
 }

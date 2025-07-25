@@ -11,25 +11,30 @@
 //  Description: Source file for the entity class
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #include "Entity.hpp"
 #include "ECSExceptions.hpp"
+
+#include <algorithm>
+#include <iostream>
+#include <ranges>
 
 namespace nexo::ecs {
 
     EntityManager::EntityManager()
     {
         for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
-            m_availableEntities.push(entity);
+            m_availableEntities.push_back(entity);
     }
 
     Entity EntityManager::createEntity()
     {
-        if (m_livingEntityCount >= MAX_ENTITIES)
+        if (m_livingEntities.size() >= MAX_ENTITIES)
             THROW_EXCEPTION(TooManyEntities);
 
         const Entity id = m_availableEntities.front();
-        m_availableEntities.pop();
-        ++m_livingEntityCount;
+        m_availableEntities.pop_front();
+        m_livingEntities.push_back(id);
 
         return id;
     }
@@ -39,11 +44,15 @@ namespace nexo::ecs {
         if (entity >= MAX_ENTITIES)
             THROW_EXCEPTION(OutOfRange, entity);
 
+        const auto it = std::ranges::find(m_livingEntities, entity);
+        if (it != m_livingEntities.end())
+            m_livingEntities.erase(it);
+        else
+            return;
         m_signatures[entity].reset();
 
-        m_availableEntities.push(entity);
-        if (m_livingEntityCount > 0)
-            --m_livingEntityCount;
+        m_availableEntities.push_front(entity);
+
     }
 
     void EntityManager::setSignature(const Entity entity, const Signature signature)
@@ -62,8 +71,14 @@ namespace nexo::ecs {
         return m_signatures[entity];
     }
 
-    std::uint32_t EntityManager::getLivingEntityCount() const
+    size_t EntityManager::getLivingEntityCount() const
     {
-        return m_livingEntityCount;
+        return m_livingEntities.size();
     }
+
+    std::span<const Entity> EntityManager::getLivingEntities() const
+    {
+        return {m_livingEntities};
+    }
+
 }

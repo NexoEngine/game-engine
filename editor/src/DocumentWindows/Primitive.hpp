@@ -40,17 +40,16 @@ namespace nexo::editor
 
     using Primitive3DFunction = ecs::Entity(*)(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color);
     inline const char* primitives3DNames[] = {
-        "  Cube", "  Plan", "  Sphere",
-        "  Cylinder", "  Cone", "  Polygon", "  Torus", "  Knot",
-        "  Hemisphere"
+        "  Cube", "  Plan", "  Sphere", "  Tetrahedron",
+        "  Pyramid", "  Cylinder", "  Cone", "  Polygon", "  Torus"
     };
     inline Primitive3DFunction addPrimitive3D[] = {
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube,
-        &EntityFactory3D::createCube,
-        &EntityFactory3D::createCube,
-        &EntityFactory3D::createCube,
+        &EntityFactory3D::createTetrahedron,
+        &EntityFactory3D::createPyramid,
+        &EntityFactory3D::createCylinder,
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube,
         &EntityFactory3D::createCube

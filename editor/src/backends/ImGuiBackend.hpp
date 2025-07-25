@@ -33,7 +33,7 @@ namespace nexo::editor {
 			* @param[in] window The application window to initialize ImGui with
 			* @throws BackendRendererApiNotSupported If the current graphics API is not supported
 			*/
-            static void init(const std::shared_ptr<renderer::Window>& window);
+            static void init(const std::shared_ptr<renderer::NxWindow>& window);
 
             /**
              * @brief Shuts down and cleans up the ImGui backend
@@ -68,7 +68,7 @@ namespace nexo::editor {
              * @param[in] window The application window to render ImGui to
              * @throws BackendRendererApiNotSupported If the current graphics API is not supported
              */
-            static void end(const std::shared_ptr<renderer::Window>& window);
+            static void end(const std::shared_ptr<renderer::NxWindow>& window);
 
             /**
              * @brief Sets up the error callback for ImGui on the window
@@ -76,6 +76,6 @@ namespace nexo::editor {
              * @param[in] window The application window to set the error callback for
              * @throws BackendRendererApiNotSupported If the current graphics API is not supported
              */
-            static void setErrorCallback(const std::shared_ptr<renderer::Window>& window);
+            static void setErrorCallback(const std::shared_ptr<renderer::NxWindow>& window);
     };
 }

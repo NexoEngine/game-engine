@@ -27,4 +27,6 @@ namespace nexo::editor::utils {
 	* @return std::string The string with the icon prefix removed.
 	*/
 	std::string removeIconPrefix(const std::string &str);
+
+	void trim(std::string &s);
 }

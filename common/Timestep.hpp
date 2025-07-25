@@ -16,14 +16,15 @@
 namespace nexo {
     class Timestep {
         public:
-            Timestep(const float time = 0.0f) : m_time(time) {};
+            explicit(false) Timestep(const double time = 0.0f) : m_time(time) {}
 
-            operator float() const {return m_time; };
+            explicit operator float() const { return m_time; }
+            explicit operator double() const { return m_time; }
 
-            [[nodiscard]] float getSeconds() const {return m_time; };
-            [[nodiscard]] float getMilliseconds() const { return m_time * 1000.0f; };
+            [[nodiscard]] double getSeconds() const {return m_time; }
+            [[nodiscard]] double getMilliseconds() const { return m_time * 1000.0f; }
 
         private:
-            float m_time = 0.0f;
+            double m_time = 0.0f;
     };
 }

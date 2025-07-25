@@ -28,15 +28,7 @@ namespace nexo {
          * @brief Get the path to the executable (e.g.: nexoEditor)
          * @return The path to the executable
          */
-        static const std::filesystem::path& getExecutablePath()
-        {
-            if (!m_executablePathCached.empty() && !m_executableRootPathCached.empty())
-                return m_executablePathCached;
-            const boost::dll::fs::path path = boost::dll::program_location();
-            m_executablePathCached = path.c_str();
-            m_executableRootPathCached = m_executablePathCached.parent_path();
-            return m_executablePathCached;
-        }
+        static const std::filesystem::path& getExecutablePath();
 
         /**
         * @brief Resolve a path relative to the executable
@@ -46,21 +38,12 @@ namespace nexo {
         * @note Example: if assets is a folder in the same directory as the executable, you can use: resolvePathRelativeToExe("assets")
         * @example ../editor/src/Editor.cpp
         */
-        static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path)
-        {
-            if (m_executableRootPathCached.empty())
-                getExecutablePath();
-            return (m_executableRootPathCached / path).lexically_normal();
-        }
+        static std::filesystem::path resolvePathRelativeToExe(const std::filesystem::path& path);
 
         /**
          * @brief Reset the cached paths
          */
-        static void resetCache()
-        {
-            m_executablePathCached.clear();
-            m_executableRootPathCached.clear();
-        }
+        static void resetCache();
 
         private:
             Path() = default;
@@ -69,5 +52,5 @@ namespace nexo {
             inline static std::filesystem::path m_executableRootPathCached;
     };
 
-
+    std::string normalizePathAndRemovePrefixSlash(const std::string &rawPath);
 } // namespace nexo

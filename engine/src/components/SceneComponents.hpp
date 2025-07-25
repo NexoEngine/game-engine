@@ -14,18 +14,30 @@
 
 #pragma once
 
-#include <set>
-
 namespace nexo::components {
 
-    struct InActiveScene {
-        std::set<unsigned int> sceneIds;
-    };
-
     struct SceneTag {
-    	unsigned int id;
-    	bool isActive = true;
-     	bool isRendered = true;
+        unsigned int id{};
+        bool isActive = true;
+        bool isRendered = true;
+
+        struct Memento {
+            unsigned int id;
+            bool isActive;
+            bool isRendered;
+        };
+
+        void restore(const Memento &memento)
+        {
+            id = memento.id;
+            isActive = memento.isActive;
+            isRendered = memento.isRendered;
+        }
+
+        [[nodiscard]] Memento save() const
+        {
+            return {id, isActive, isRendered};
+        }
     };
 
 }

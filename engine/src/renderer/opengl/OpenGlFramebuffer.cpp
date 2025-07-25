@@ -19,7 +19,6 @@
 #include <utility>
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace nexo::renderer {
 
     static constexpr unsigned int sMaxFramebufferSize = 8192;
@@ -30,14 +29,14 @@ namespace nexo::renderer {
      * Maps internal framebuffer texture formats (e.g., RGBA8, DEPTH24STENCIL8) to their
      * corresponding OpenGL formats. Used during texture attachment creation.
      *
-     * @param format The `FrameBufferTextureFormats` value to convert.
+     * @param format The `NxFrameBufferTextureFormats` value to convert.
      * @return The OpenGL format (GLenum) corresponding to the specified texture format,
      *         or -1 if the format is invalid or unsupported.
      */
-    static int framebufferTextureFormatToOpenGlInternalFormat(FrameBufferTextureFormats format)
+    static int framebufferTextureFormatToOpenGlInternalFormat(NxFrameBufferTextureFormats format)
     {
         constexpr GLenum internalFormats[] = {GL_NONE, GL_RGBA8, GL_RGBA16, GL_R32I, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
-        if (static_cast<unsigned int>(format) == 0 || format >= FrameBufferTextureFormats::NB_TEXTURE_FORMATS)
+        if (static_cast<unsigned int>(format) == 0 || format >= NxFrameBufferTextureFormats::NB_TEXTURE_FORMATS)
             return -1;
         return static_cast<int>(internalFormats[static_cast<unsigned int>(format)]);
     }
@@ -159,8 +158,8 @@ namespace nexo::renderer {
         {
             glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<int>(width), static_cast<int>(height));
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -172,27 +171,27 @@ namespace nexo::renderer {
     /**
      * @brief Checks if a texture format is a depth format.
      *
-     * Determines whether the specified `FrameBufferTextureFormats` value corresponds to
+     * Determines whether the specified `NxFrameBufferTextureFormats` value corresponds to
      * a depth or depth-stencil format.
      *
      * @param format The texture format to check.
      * @return True if the format is a depth format, false otherwise.
      */
-    static bool isDepthFormat(const FrameBufferTextureFormats format)
+    static bool isDepthFormat(const NxFrameBufferTextureFormats format)
     {
         switch (format)
         {
-            case FrameBufferTextureFormats::DEPTH24STENCIL8: return true;
+            case NxFrameBufferTextureFormats::DEPTH24STENCIL8: return true;
             default: return false;
         }
     }
 
-    OpenGlFramebuffer::OpenGlFramebuffer(FramebufferSpecs specs) : m_specs(std::move(specs))
+    NxOpenGlFramebuffer::NxOpenGlFramebuffer(NxFramebufferSpecs specs) : m_specs(std::move(specs))
     {
         if (!m_specs.width || !m_specs.height)
-            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", false, m_specs.width, m_specs.height);
+            THROW_EXCEPTION(NxFramebufferResizingFailed, "OPENGL", false, m_specs.width, m_specs.height);
         if (m_specs.width > sMaxFramebufferSize || m_specs.height > sMaxFramebufferSize)
-            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", true, m_specs.width, m_specs.height);
+            THROW_EXCEPTION(NxFramebufferResizingFailed, "OPENGL", true, m_specs.width, m_specs.height);
         for (auto format: m_specs.attachments.attachments)
         {
             if (!isDepthFormat(format.textureFormat))
@@ -203,14 +202,14 @@ namespace nexo::renderer {
         invalidate();
     }
 
-    OpenGlFramebuffer::~OpenGlFramebuffer()
+    NxOpenGlFramebuffer::~NxOpenGlFramebuffer()
     {
         glDeleteFramebuffers(1, &m_id);
         glDeleteTextures(static_cast<int>(m_colorAttachments.size()), m_colorAttachments.data());
         glDeleteTextures(1, &m_depthAttachment);
     }
 
-    void OpenGlFramebuffer::invalidate()
+    void NxOpenGlFramebuffer::invalidate()
     {
         if (m_id)
         {
@@ -239,22 +238,22 @@ namespace nexo::renderer {
                 const int glTextureInternalFormat = framebufferTextureFormatToOpenGlInternalFormat(
                     m_colorAttachmentsSpecs[i].textureFormat);
                 if (glTextureInternalFormat == -1)
-                    THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+                    THROW_EXCEPTION(NxFramebufferUnsupportedColorFormat, "OPENGL");
                 const int glTextureFormat = framebufferTextureFormatToOpenGlFormat(m_colorAttachmentsSpecs[i].textureFormat);
                 if (glTextureFormat == -1)
-                    THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+                    THROW_EXCEPTION(NxFramebufferUnsupportedColorFormat, "OPENGL");
                 attachColorTexture(m_colorAttachments[i], m_specs.samples, glTextureInternalFormat, glTextureFormat, m_specs.width,
                                    m_specs.height, i);
             }
         }
 
-        if (m_depthAttachmentSpec.textureFormat != FrameBufferTextureFormats::NONE)
+        if (m_depthAttachmentSpec.textureFormat != NxFrameBufferTextureFormats::NONE)
         {
             createTextures(multisample, &m_depthAttachment, 1);
             bindTexture(multisample, m_depthAttachment);
             int glDepthFormat = framebufferTextureFormatToOpenGlInternalFormat(m_depthAttachmentSpec.textureFormat);
             if (glDepthFormat == -1)
-                THROW_EXCEPTION(FramebufferUnsupportedDepthFormat, "OPENGL");
+                THROW_EXCEPTION(NxFramebufferUnsupportedDepthFormat, "OPENGL");
             attachDepthTexture(m_depthAttachment, m_specs.samples, glDepthFormat, GL_DEPTH_STENCIL_ATTACHMENT,
                                m_specs.width, m_specs.height);
         }
@@ -262,7 +261,7 @@ namespace nexo::renderer {
         if (m_colorAttachments.size() > 1)
         {
             if (m_colorAttachments.size() >= 4)
-                THROW_EXCEPTION(FramebufferCreationFailed, "OPENGL");
+                THROW_EXCEPTION(NxFramebufferCreationFailed, "OPENGL");
             constexpr GLenum buffers[4] = {
                 GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
             };
@@ -271,12 +270,12 @@ namespace nexo::renderer {
             glDrawBuffer(GL_NONE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            THROW_EXCEPTION(FramebufferCreationFailed, "OPENGL");
+            THROW_EXCEPTION(NxFramebufferCreationFailed, "OPENGL");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void OpenGlFramebuffer::bind()
+    void NxOpenGlFramebuffer::bind()
     {
         if (toResize)
         {
@@ -286,43 +285,137 @@ namespace nexo::renderer {
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
-
-        //glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGlFramebuffer::unbind()
+    void NxOpenGlFramebuffer::bindAsTexture(unsigned int slot, unsigned int attachment)
+    {
+        if (attachment >= m_colorAttachments.size()) {
+            LOG(NEXO_ERROR, "Attachment index {} out of bounds (max: {})", attachment, m_colorAttachments.size() - 1);
+            return;
+        }
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, getColorAttachmentId(attachment));
+    }
+
+    void NxOpenGlFramebuffer::bindDepthAsTexture(unsigned int slot)
+    {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
+    }
+
+    void NxOpenGlFramebuffer::unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    unsigned int OpenGlFramebuffer::getFramebufferId() const
+    void NxOpenGlFramebuffer::copy(const std::shared_ptr<NxFramebuffer> source)
+    {
+        if (!source) {
+            LOG(NEXO_ERROR, "Cannot copy from null framebuffer");
+            return;
+        }
+        if (toResize) {
+            invalidate();
+            toResize = false;
+        }
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, source->getFramebufferId());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
+
+        unsigned int numAttachments = source->getNbColorAttachments();
+        for (unsigned int i = 0; i < numAttachments; i++) {
+            GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+
+            // Set read and draw buffers
+            glReadBuffer(attachment);
+            glDrawBuffer(attachment);
+
+            // Blit this attachment
+            glBlitFramebuffer(
+                0, 0, source->getSpecs().width, source->getSpecs().height,
+                0, 0, m_specs.width, m_specs.height,
+                GL_COLOR_BUFFER_BIT,
+                GL_NEAREST
+            );
+        }
+
+        // Reset state: read buffer back to first attachment
+        glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+        // Reset draw buffers to enable all attachments at once
+        // Create a dynamic array based on actual attachment count
+        std::vector<GLenum> drawBuffers(numAttachments);
+        for (unsigned int i = 0; i < numAttachments; i++) {
+            drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+        }
+        glDrawBuffers(numAttachments, drawBuffers.data());
+
+        // If depth and stencil are combined, copy them together
+        if (source->hasDepthStencilAttachment() && this->hasDepthStencilAttachment()) {
+            glBlitFramebuffer(
+                0, 0, source->getSpecs().width, source->getSpecs().height,
+                0, 0, m_specs.width, m_specs.height,
+                GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT,
+                GL_NEAREST
+            );
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            return;
+        }
+
+        // Copy depth buffer if both source and destination have it
+        if (source->hasDepthAttachment() && this->hasDepthAttachment()) {
+            glBlitFramebuffer(
+                0, 0, source->getSpecs().width, source->getSpecs().height,
+                0, 0, m_specs.width, m_specs.height,
+                GL_DEPTH_BUFFER_BIT,
+                GL_NEAREST
+            );
+        }
+
+        // Copy stencil buffer if both source and destination have it
+        if (source->hasStencilAttachment() && this->hasStencilAttachment()) {
+            glBlitFramebuffer(
+                0, 0, source->getSpecs().width, source->getSpecs().height,
+                0, 0, m_specs.width, m_specs.height,
+                GL_STENCIL_BUFFER_BIT,
+                GL_NEAREST
+            );
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    unsigned int NxOpenGlFramebuffer::getFramebufferId() const
     {
         return m_id;
     }
 
-    void OpenGlFramebuffer::resize(const unsigned int width, const unsigned int height)
+    void NxOpenGlFramebuffer::resize(const unsigned int width, const unsigned int height)
     {
         if (!width || !height)
-            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", false, width, height);
+            THROW_EXCEPTION(NxFramebufferResizingFailed, "OPENGL", false, width, height);
         if (width > sMaxFramebufferSize || height > sMaxFramebufferSize)
-            THROW_EXCEPTION(FramebufferResizingFailed, "OPENGL", true, width, height);
+            THROW_EXCEPTION(NxFramebufferResizingFailed, "OPENGL", true, width, height);
 
         m_specs.width = width;
         m_specs.height = height;
         toResize = true;
     }
 
-    void OpenGlFramebuffer::getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const
+    glm::vec2 NxOpenGlFramebuffer::getSize() const
+    {
+        return glm::vec2(m_specs.width, m_specs.height);
+    }
+
+    void NxOpenGlFramebuffer::getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const
     {
         // Add more types here when necessary
         if (ti == typeid(int))
             *static_cast<int*>(result) = getPixelImpl<int>(attachementIndex, x, y);
         else
-            THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+            THROW_EXCEPTION(NxFramebufferUnsupportedColorFormat, "OPENGL");
     }
 
-    void OpenGlFramebuffer::clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const
+    void NxOpenGlFramebuffer::clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const
     {
         // Add more types here when necessary
         if (ti == typeid(int))
@@ -330,7 +423,7 @@ namespace nexo::renderer {
         else if (ti == typeid(glm::vec4))
             clearAttachmentImpl<glm::vec4>(attachmentIndex, value);
         else
-            THROW_EXCEPTION(FramebufferUnsupportedColorFormat, "OPENGL");
+            THROW_EXCEPTION(NxFramebufferUnsupportedColorFormat, "OPENGL");
     }
 
 }

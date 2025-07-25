@@ -16,6 +16,8 @@
 
 #include <Path.hpp>
 
+#include <boost/uuid/random_generator.hpp>
+
 namespace nexo::assets {
 
     void AssetCatalog::deleteAsset(AssetID id)
@@ -30,6 +32,20 @@ namespace nexo::assets {
         if (const auto assetData = asset.lock()) {
             deleteAsset(assetData->getID());
         }
+    }
+
+    void AssetCatalog::moveAsset(const GenericAssetRef &asset, const std::string &path)
+    {
+        if (const auto assetData = asset.lock())
+            moveAsset(assetData->getID(), path);
+    }
+
+    void AssetCatalog::moveAsset(AssetID id, const std::string &path)
+    {
+        if (!m_assets.contains(id))
+            return;
+        auto asset = m_assets.at(id);
+        asset->m_metadata.location.setPath(path);
     }
 
     GenericAssetRef AssetCatalog::getAsset(AssetID id) const
@@ -58,12 +74,12 @@ namespace nexo::assets {
         return assets;
     }
 
-    GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, IAsset* asset)
+    GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, std::unique_ptr<IAsset> asset)
     {
         if (!asset)
             return GenericAssetRef::null();
         // TODO: implement error handling if already exists (once we have the folder tree)
-        auto shared_ptr = std::shared_ptr<IAsset>(asset);
+        std::shared_ptr<IAsset> shared_ptr = std::move(asset);
         shared_ptr->m_metadata.location = location;
         if (shared_ptr->m_metadata.id.is_nil())
             shared_ptr->m_metadata.id = boost::uuids::random_generator()();

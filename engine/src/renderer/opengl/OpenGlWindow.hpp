@@ -19,10 +19,10 @@
 namespace nexo::renderer {
 
     /**
-    * @class OpenGlWindow
-    * @brief OpenGL-specific implementation of the `Window` class.
+    * @class NxOpenGlWindow
+    * @brief OpenGL-specific implementation of the `NxWindow` class.
     *
-    * The `OpenGlWindow` class manages the creation and behavior of a window in
+    * The `NxOpenGlWindow` class manages the creation and behavior of a window in
     * an OpenGL context. It integrates with GLFW for window management and event
     * handling.
     *
@@ -31,19 +31,19 @@ namespace nexo::renderer {
     * - Provide event handling for window, keyboard, and mouse events.
     * - Manage OpenGL context initialization and VSync settings.
     */
-    class OpenGlWindow final : public Window {
+    class NxOpenGlWindow final : public NxWindow {
         public:
             /**
             * @brief Creates an OpenGL window with the specified properties.
             *
-            * Initializes the `WindowProperty` structure with the given width, height,
+            * Initializes the `NxWindowProperty` structure with the given width, height,
             * and title. The window itself is created during the `init()` call.
             *
             * @param width Initial width of the window.
             * @param height Initial height of the window.
             * @param title Title of the window.
             */
-            explicit OpenGlWindow(const int width = 1920,
+            explicit NxOpenGlWindow(const int width = 1920,
                          const int height = 1080,
                          const char *title = "Nexo window") :
                     _props(width, height, title) {}
@@ -54,8 +54,8 @@ namespace nexo::renderer {
             * Creates the window using GLFW, sets up the OpenGL context, and configures
             * callbacks for handling window events like resizing, closing, and input.
             *
-            * @throw GraphicsApiInitFailure If GLFW initialization fails.
-            * @throw GraphicsApiWindowInitFailure If the window creation fails.
+            * @throw NxGraphicsApiInitFailure If GLFW initialization fails.
+            * @throw NxGraphicsApiWindowInitFailure If the window creation fails.
             */
             void init() override;
 
@@ -104,6 +104,7 @@ namespace nexo::renderer {
             void setMouseClickCallback(MouseClickCallback callback) override { _props.mouseClickCallback = std::move(callback); }
             void setMouseScrollCallback(MouseScrollCallback callback) override { _props.mouseScrollCallback = std::move(callback); }
             void setMouseMoveCallback(MouseMoveCallback callback) override { _props.mouseMoveCallback = std::move(callback); }
+            void setFileDropCallback(FileDropCallback callback) override { _props.fileDropCallback = std::move(callback); }
 
             // Linux specific method
 #ifdef __linux__
@@ -116,7 +117,7 @@ namespace nexo::renderer {
 #endif
         private:
             GLFWwindow *_openGlWindow{};
-            WindowProperty _props;
+            NxWindowProperty _props;
 
             void setupCallback() const;
     };

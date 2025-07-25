@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include "Asset.hpp"
 #include "AssetImporterContext.hpp"
 #include "AssetImporterInput.hpp"
 
 #include <fstream>
+#include <iomanip>
 
 namespace nexo::assets {
 
@@ -69,7 +69,19 @@ namespace nexo::assets {
                     }
                 } catch (const std::exception& e) {
                     // Log the error
-                    LOG(NEXO_ERROR, "Failed to import asset from file '{}': {}", ctx.location.getPath(), e.what());
+                    if (std::holds_alternative<ImporterFileInput>(ctx.input))
+                        LOG(NEXO_ERROR, "Failed to import asset {} from file {}: {}",
+                            std::quoted(ctx.location.getFullLocation()),
+                            std::quoted(std::get<ImporterFileInput>(ctx.input).filePath.generic_string()),
+                            e.what());
+                    else if (std::holds_alternative<ImporterMemoryInput>(ctx.input))
+                        LOG(NEXO_ERROR, "Failed to import asset {} from memory: {}",
+                            std::quoted(ctx.location.getFullLocation()),
+                            e.what());
+                    else
+                        LOG(NEXO_ERROR, "Failed to import asset {}: {}",
+                            std::quoted(ctx.location.getFullLocation()),
+                            e.what());
                 }
             }
     };

@@ -12,9 +12,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Shader.hpp"
+#include "Attributes.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#include <variant>
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
 
@@ -22,25 +24,23 @@
 
 namespace nexo::renderer {
 
-    std::shared_ptr<Shader> Shader::create(const std::string &path)
+    std::shared_ptr<NxShader> NxShader::create(const std::string &path)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlShader>(path);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlShader>(path);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
-
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<Shader> Shader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlShader>(name, vertexSource, fragmentSource);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
-
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::string Shader::readFile(const std::string &filepath)
+    std::string NxShader::readFile(const std::string &filepath)
     {
         std::string result;
         if (std::ifstream in(filepath, std::ios::in | std::ios::binary); in)
@@ -52,61 +52,177 @@ namespace nexo::renderer {
             in.close();
             return result;
         }
-        THROW_EXCEPTION(FileNotFoundException, filepath);
+        THROW_EXCEPTION(NxFileNotFoundException, filepath);
     }
 
-    void Shader::addStorageBuffer(const std::shared_ptr<ShaderStorageBuffer> &buffer)
+    void NxShader::addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer)
     {
         m_storageBuffers.push_back(buffer);
     }
 
-    void Shader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
+    void NxShader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
     {
         if (index >= m_storageBuffers.size())
-            THROW_EXCEPTION(OutOfRangeException, index, m_storageBuffers.size());
+            THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
         m_storageBuffers[index]->setData(data, size);
     }
 
-    void ShaderLibrary::add(const std::shared_ptr<Shader> &shader)
+    bool NxShader::setUniformFloat(const std::string& name, float value) const
     {
-        const std::string &name = shader->getName();
-        m_shaders[name] = shader;
-    }
-
-    void ShaderLibrary::add(const std::string &name, const std::shared_ptr<Shader> &shader)
-    {
-        m_shaders[name] = shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(name, shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &path)
-    {
-        auto shader = Shader::create(path);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
-    {
-        auto shader = Shader::create(name, vertexSource, fragmentSource);
-        add(shader);
-        return shader;
-    }
-
-    std::shared_ptr<Shader> ShaderLibrary::get(const std::string &name) const
-    {
-        if (!m_shaders.contains(name))
-        {
-            LOG(NEXO_WARN, "ShaderLibrary::get: shader {} not found", name);
-            return nullptr;
+        // Use uniform cache to avoid redundant state changes
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<float>(*optionalValue) &&
+                std::get<float>(*optionalValue) == value) {
+                return true; // Value hasn't changed, skip the update
+            }
         }
-        return m_shaders.at(name);
+
+        m_uniformCache.setFloat(name, value);
+        return false;
     }
 
+    bool NxShader::setUniformFloat2(const std::string& name, const glm::vec2& values) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec2>(*optionalValue) &&
+                std::get<glm::vec2>(*optionalValue) == values) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setFloat2(name, values);
+        return false;
+    }
+
+    bool NxShader::setUniformFloat3(const std::string& name, const glm::vec3& values) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec3>(*optionalValue) &&
+                std::get<glm::vec3>(*optionalValue) == values) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setFloat3(name, values);
+        return false;
+    }
+
+    bool NxShader::setUniformFloat4(const std::string& name, const glm::vec4& values) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::vec4>(*optionalValue) &&
+                std::get<glm::vec4>(*optionalValue) == values) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setFloat4(name, values);
+        return false;
+    }
+
+    bool NxShader::setUniformMatrix(const std::string& name, const glm::mat4& matrix) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<glm::mat4>(*optionalValue) &&
+                std::get<glm::mat4>(*optionalValue) == matrix) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setMatrix(name, matrix);
+        return false;
+    }
+
+    bool NxShader::setUniformBool(const std::string& name, bool value) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<bool>(*optionalValue) &&
+                std::get<bool>(*optionalValue) == value) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setBool(name, value);
+        return false;
+    }
+
+    bool NxShader::setUniformInt(const std::string& name, int value) const
+    {
+        if (!m_uniformCache.isDirty(name)) {
+            auto optionalValue = m_uniformCache.getValue(name);
+            if (optionalValue.has_value() &&
+                std::holds_alternative<int>(*optionalValue) &&
+                std::get<int>(*optionalValue) == value) {
+                return true;
+            }
+        }
+
+        m_uniformCache.setInt(name, value);
+        return false;
+    }
+
+    bool NxShader::setUniformIntArray(
+        [[maybe_unused]] const std::string& name,
+        [[maybe_unused]] const int* values,
+        [[maybe_unused]] unsigned int count
+    ) const {
+        // Arrays are more complex for caching, so we'll always update them
+        // In a real implementation, you might want to cache arrays too
+        return false;
+    }
+
+    bool NxShader::setUniform(const std::string &name, UniformValue value) const
+    {
+        return std::visit([this, &name]<typename T>(T&& arg) -> bool {
+            using DecayedT = std::decay_t<T>;
+            if constexpr (std::is_same_v<DecayedT, float>)
+                return setUniformFloat(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, glm::vec2>)
+                return setUniformFloat2(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, glm::vec3>)
+                return setUniformFloat3(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, glm::vec4>)
+                return setUniformFloat4(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, int>)
+                return setUniformInt(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, bool>)
+                return setUniformBool(name, std::forward<T>(arg));
+            else if constexpr (std::is_same_v<DecayedT, glm::mat4>)
+                return setUniformMatrix(name, std::forward<T>(arg));
+            else
+                return false;
+        }, value);
+    }
+
+    bool NxShader::hasUniform(const std::string& name) const
+    {
+        return m_uniformInfos.contains(name);
+    }
+
+    bool NxShader::hasAttribute(int location) const
+    {
+        return m_attributeInfos.contains(location);
+    }
+
+    bool NxShader::isCompatibleWithMesh(const RequiredAttributes& attributes) const
+    {
+        return attributes.compatibleWith(m_requiredAttributes);
+    }
+
+    void NxShader::resetCache()
+    {
+        m_uniformCache.clearAllDirtyFlags();
+    }
 }

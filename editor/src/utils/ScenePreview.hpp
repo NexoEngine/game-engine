@@ -27,9 +27,9 @@ namespace nexo::editor::utils {
      * was successfully generated.
      */
     struct ScenePreviewOut {
-        scene::SceneId sceneId;  ///< The ID of the generated preview scene.
-        ecs::Entity cameraId;    ///< The entity ID of the preview camera.
-        ecs::Entity entityCopy;  ///< A copy of the original entity for preview purposes.
+        scene::SceneId sceneId{};  ///< The ID of the generated preview scene.
+        ecs::Entity cameraId{};    ///< The entity ID of the preview camera.
+        ecs::Entity entityCopy{};  ///< A copy of the original entity for preview purposes.
         bool sceneGenerated = false;  ///< Flag indicating whether the scene preview was generated.
     };
 
@@ -67,6 +67,6 @@ namespace nexo::editor::utils {
      * @param entity The entity to generate the preview from.
      * @param out Output structure containing preview scene details.
      */
-	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out);
+	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor = {0.05f, 0.05f, 0.05f, 0.0f});
 
 }

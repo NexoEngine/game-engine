@@ -23,6 +23,7 @@ namespace nexo::core {
 
         FileNotFoundException ex("missing_file.txt");
         std::string formattedMessage = ex.what();
+        std::cout << "Formatted message: " << formattedMessage << std::endl;
 
         EXPECT_NE(formattedMessage.find("File not found: missing_file.txt"), std::string::npos);
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
@@ -35,6 +36,7 @@ namespace nexo::core {
 
         LoadModelException ex("model.obj", "Invalid format");
         std::string formattedMessage = ex.what();
+        std::cout << "Formatted message: " << formattedMessage << std::endl;
 
         EXPECT_NE(formattedMessage.find("Failure to load model : model.obj : Invalid format"), std::string::npos);
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);
@@ -47,6 +49,7 @@ namespace nexo::core {
 
         SceneManagerLifecycleException ex("Coordinator not set before creating scene");
         std::string formattedMessage = ex.what();
+        std::cout << "Formatted message: " << formattedMessage << std::endl;
 
         EXPECT_NE(formattedMessage.find("Coordinator not set before creating scene"), std::string::npos);
         EXPECT_NE(formattedMessage.find(expectedFile), std::string::npos);

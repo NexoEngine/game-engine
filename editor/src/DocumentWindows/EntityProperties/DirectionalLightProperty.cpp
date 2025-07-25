@@ -13,43 +13,33 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "DirectionalLightProperty.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
-#include "Components/Widgets.hpp"
+#include "ImNexo/EntityProperties.hpp"
+#include "ImNexo/ImNexo.hpp"
 #include "components/Light.hpp"
+#include "ImNexo/Widgets.hpp"
+#include "context/ActionManager.hpp"
 
 namespace nexo::editor {
 
-	void DirectionalLightProperty::show(const ecs::Entity entity)
-	{
+    void DirectionalLightProperty::show(const ecs::Entity entity)
+    {
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
+        static components::DirectionalLightComponent::Memento beforeState;
 
-
-        if (EntityPropertiesComponents::drawHeader("##DirectionalNode", "Directional light"))
+        if (ImNexo::Header("##DirectionalNode", "Directional light"))
         {
-       		ImGui::Spacing();
-        	static ImGuiColorEditFlags colorPickerMode = ImGuiColorEditFlags_PickerHueBar;
-			static bool showColorPicker = false;
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			glm::vec4 color = {directionalComponent.color, 1.0f};
-			Widgets::drawColorEditor("##ColorEditor Directional light", &color, &colorPickerMode, &showColorPicker);
-			directionalComponent.color = color;
-
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-   			if (ImGui::BeginTable("InspectorDirectionTable", 4,
-                ImGuiTableFlags_SizingStretchProp))
-            {
-                ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-
-                EntityPropertiesComponents::drawRowDragFloat3("Direction", "X", "Y", "Z", &directionalComponent.direction.x);
-
-                ImGui::EndTable();
+            const auto directionalComponentCopy = directionalComponent;
+            ImNexo::resetItemStates();
+            ImNexo::DirectionalLight(directionalComponent);
+            if (ImNexo::isItemActivated()) {
+                beforeState = directionalComponentCopy.save();
+            } else if (ImNexo::isItemDeactivated()) {
+                auto afterState = directionalComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::DirectionalLightComponent>>(entity, beforeState, afterState);
+                ActionManager::get().recordAction(std::move(action));
+                beforeState = components::DirectionalLightComponent::Memento{};
             }
-            ImGui::PopStyleVar();
-        	ImGui::TreePop();
+            ImGui::TreePop();
         }
-	}
+    }
 }

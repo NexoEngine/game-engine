@@ -8,7 +8,7 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        10/11/2024
-//  Description: Source file for the components array and component manager classes
+//  Description: Source file for the component manager class
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,12 +16,15 @@
 
 namespace nexo::ecs {
 
-    void ComponentManager::entityDestroyed(const Entity entity) const
+    void ComponentManager::entityDestroyed(const Entity entity, const Signature &entitySignature)
     {
-        for (const auto &[fst, snd]: m_componentArrays)
-        {
-            auto const &component = snd;
-            component->entityDestroyed(entity);
+        for (const auto &group: m_groupRegistry | std::views::values) {
+            if ((entitySignature & group->allSignature()) == group->allSignature())
+                group->removeFromGroup(entity);
+        }
+        for (const auto& componentArray : m_componentArrays) {
+            if (componentArray)
+                componentArray->entityDestroyed(entity);
         }
     }
 

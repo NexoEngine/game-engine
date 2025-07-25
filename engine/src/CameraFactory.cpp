@@ -1,4 +1,4 @@
-//// CameraFactory.cpp ///////////////////////////////////////////////////////////////
+//// CameraFactory.cpp ////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -13,15 +13,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CameraFactory.hpp"
+
+#include <utility>
 #include "Application.hpp"
 #include "components/Transform.hpp"
 #include "components/Camera.hpp"
 #include "components/Uuid.hpp"
+#include "renderPasses/ForwardPass.hpp"
 
 namespace nexo {
 	ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width,
-       									               unsigned int height, std::shared_ptr<renderer::Framebuffer> renderTarget,
-                               				           float fov, float nearPlane, float farPlane)
+       									               unsigned int height, std::shared_ptr<renderer::NxFramebuffer> renderTarget,
+                             				           const glm::vec4 &clearColor, float fov, float nearPlane, float farPlane)
 	{
 		components::TransformComponent transform{};
 		transform.pos = pos;
@@ -33,7 +36,16 @@ namespace nexo {
 		camera.nearPlane = nearPlane;
 		camera.farPlane = farPlane;
 		camera.type = components::CameraType::PERSPECTIVE;
-		camera.m_renderTarget = renderTarget;
+
+		auto forwardPass = std::make_shared<renderer::ForwardPass>(width, height);
+		renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
+		camera.pipeline.setFinalOutputPass(forwardPassId);
+		camera.pipeline.setCameraClearColor(clearColor);
+		if (renderTarget) {
+		    camera.m_renderTarget = std::move(renderTarget);
+			camera.pipeline.setFinalRenderTarget(camera.m_renderTarget);
+		}
+		camera.clearColor = clearColor;
 
 		ecs::Entity newCamera = Application::m_coordinator->createEntity();
 		Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);

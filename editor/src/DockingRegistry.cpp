@@ -14,10 +14,11 @@
 
 #include "DockingRegistry.hpp"
 #include <optional>
+#include <iostream>
 
 namespace nexo::editor {
 
-	void DockingRegistry::setDockId(const std::string& name, ImGuiID id)
+	void DockingRegistry::setDockId(const std::string& name, const ImGuiID id)
 	{
 		dockIds[name] = id;
 	}
@@ -29,5 +30,13 @@ namespace nexo::editor {
 			return it->second;
 		}
 		return std::nullopt;
+	}
+
+	void DockingRegistry::resetDockId(const std::string &name)
+	{
+        auto it = dockIds.find(name);
+        if (it == dockIds.end())
+            return;
+        dockIds.erase(it);
 	}
 }

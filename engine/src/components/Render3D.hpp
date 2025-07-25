@@ -13,10 +13,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "renderer/Texture.hpp"
-#include "renderer/Shader.hpp"
 #include <glm/glm.hpp>
-#include <optional>
+
+#include "assets/AssetRef.hpp"
+#include "assets/Assets/Texture/Texture.hpp"
 
 namespace nexo::components {
 
@@ -25,16 +25,18 @@ namespace nexo::components {
         glm::vec4 specularColor = glm::vec4(1.0f);
         glm::vec3 emissiveColor = glm::vec3(0.0f);
 
+        bool isOpaque = true;
+
         float roughness = 0.0f;  // 0 = smooth, 1 = rough
         float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
         float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
 
-        std::shared_ptr<renderer::Texture2D> albedoTexture = nullptr;
-        std::shared_ptr<renderer::Texture2D> normalMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> metallicMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> roughnessMap = nullptr;
-        std::shared_ptr<renderer::Texture2D> emissiveMap = nullptr;
+        assets::AssetRef<assets::Texture> albedoTexture = nullptr;
+        assets::AssetRef<assets::Texture> normalMap = nullptr;
+        assets::AssetRef<assets::Texture> metallicMap = nullptr;
+        assets::AssetRef<assets::Texture> roughnessMap = nullptr;
+        assets::AssetRef<assets::Texture> emissiveMap = nullptr;
 
-        std::optional<std::shared_ptr<renderer::Shader>> shader = std::nullopt;
+        std::string shader = "Phong";
     };
 }
