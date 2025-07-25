@@ -33,7 +33,7 @@ namespace nexo::renderer
         std::vector<glm::vec3> vertices{};
         vertices.reserve(nbSegment * 4); // Reserve memory for all vertices (2 caps + 2 sides)
 
-        int i = 0;
+        unsigned int i = 0;
         for (unsigned int k = nbSegment - 1; i < nbSegment; ++i, --k)
         {
             const float angle = static_cast<float>(k) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
@@ -81,9 +81,9 @@ namespace nexo::renderer
      */
     static void capIndices(std::vector<unsigned int>& indices, const int transformer, const unsigned int nbSegment)
     {
-        std::function<void(int, unsigned int)> capIndicesRec;
+        std::function<void(unsigned int, unsigned int)> capIndicesRec;
 
-        capIndicesRec = [&indices, &transformer, &capIndicesRec, &nbSegment](const int start, const unsigned int nbEdge)
+        capIndicesRec = [&indices, &transformer, &capIndicesRec, &nbSegment](const unsigned int start, const unsigned int nbEdge)
         {
             // Calculate the step size for dividing the cap into triangles
             // Base case: If the step size is 1, form a single triangle
@@ -101,7 +101,7 @@ namespace nexo::renderer
 
                 if (start + 2 * step < start + nbEdge - 1)
                 {
-                    int tmp = 0;
+                    unsigned int tmp = 0;
                     if (start + 2 * step < start + nbEdge - 1)
                     {
                         tmp = static_cast<int>(start + nbEdge - 1);
@@ -132,7 +132,7 @@ namespace nexo::renderer
         };
 
         // Initial setup: Define the starting point and step size
-        constexpr int start = 0;
+        constexpr unsigned int start = 0;
         const int step = ceil(static_cast<double>(nbSegment) / 3.0);
 
         // Add the first triangle to the indices
@@ -170,7 +170,7 @@ namespace nexo::renderer
         indices.reserve(nbSegment * 12);
 
         // Generate indices for the side faces of the cylinder
-        int i = 0;
+        unsigned int i = 0;
         for (; i < nbSegment - 1; ++i)
         {
             // Create two triangles for each segment
@@ -215,18 +215,18 @@ namespace nexo::renderer
         texCoords.reserve(nbSegment * 4); // Reserve memory for all texture coordinates (one for each vertex)
 
         // Generate texture coordinates for cylinder sides
-        for (int i = 0; i < nbSegment; ++i)
+        for (unsigned int i = 0; i < nbSegment; ++i)
         {
             const float u = static_cast<float>(i) / static_cast<float>(nbSegment);
             texCoords.emplace_back(u, 1.0f); // Top edge
         }
-        for (int i = 0; i < nbSegment; ++i)
+        for (unsigned int i = 0; i < nbSegment; ++i)
         {
             const float u = static_cast<float>(i) / static_cast<float>(nbSegment);
             texCoords.emplace_back(u, 0.0f); // Bottom edge
         }
         // Cap vertices use radial UV mapping
-        for (int i = 0; i < nbSegment * 2; ++i)
+        for (unsigned int i = 0; i < nbSegment * 2; ++i)
         {
             const float angle = static_cast<float>(i % nbSegment) / static_cast<float>(nbSegment) * 2.0f * static_cast<
                 float>(M_PI);
@@ -255,7 +255,7 @@ namespace nexo::renderer
     {
         std::vector<glm::vec3> normals{};
         normals.reserve(vertices.size()); // Reserve memory for all normals (2 caps + 2 sides)
-        int i = 0;
+        unsigned int i = 0;
 
         // Generate normals for the top cap of the cylinder
         for (; i < nbSegment * 1; ++i)
