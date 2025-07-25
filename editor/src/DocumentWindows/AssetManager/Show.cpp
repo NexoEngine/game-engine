@@ -237,12 +237,7 @@ namespace nexo::editor {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
             {
                 const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-
-                std::shared_ptr<assets::IAsset> asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock();
-                if (asset) {
-                    assets::AssetMetadata &metadata = asset->getMetadata();
-                    metadata.location.setPath(folderPath);
-                }
+                assets::AssetCatalog::getInstance().moveAsset(data->id, folderPath);
             }
             ImGui::EndDragDropTarget();
         }
@@ -493,8 +488,7 @@ namespace nexo::editor {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
                     const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-                    if (auto asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock())
-                        asset->getMetadata().location.setPath("");
+                    assets::AssetCatalog::getInstance().moveAsset(data->id, "");
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -520,8 +514,7 @@ namespace nexo::editor {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
                     const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-                    if (auto asset = assets::AssetCatalog::getInstance().getAsset(data->id).lock())
-                        asset->getMetadata().location.setPath(fullPath);
+                    assets::AssetCatalog::getInstance().moveAsset(data->id, fullPath);
                 }
                 ImGui::EndDragDropTarget();
             }
