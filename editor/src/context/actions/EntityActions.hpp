@@ -58,9 +58,7 @@ namespace nexo::editor {
 
             void redo() override
             {
-                ComponentType target;
-                target.restore(m_memento);
-                Application::m_coordinator->addComponent(m_entity, target);
+                //We have nothing to do here since we are simply redeleting the entity and its components
             }
 
         private:

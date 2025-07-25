@@ -29,7 +29,7 @@ namespace nexo::editor {
     void EntityCreationAction::undo()
     {
         const auto &coordinator = Application::m_coordinator;
-        const std::vector<std::type_index>& componentsTypeIndex = coordinator->getAllComponentTypeIndices(m_entityId);
+        const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
         for (const auto typeIndex : componentsTypeIndex) {
             if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
@@ -41,7 +41,7 @@ namespace nexo::editor {
     EntityDeletionAction::EntityDeletionAction(const ecs::Entity entityId) : m_entityId(entityId)
     {
         const auto &coordinator = Application::m_coordinator;
-        std::vector<std::type_index> componentsTypeIndex = coordinator->getAllComponentTypeIndices(entityId);
+        const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
         for (const auto typeIndex : componentsTypeIndex) {
              if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
