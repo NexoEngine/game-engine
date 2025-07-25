@@ -18,6 +18,8 @@
 #include "IconsFontAwesome.h"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
+#include "context/ActionManager.hpp"
+#include "context/actions/AssetActions.hpp"
 #include <cstring>
 #include <imgui.h>
 
