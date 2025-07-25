@@ -186,7 +186,7 @@ class GroupBenchmarkSystem : public nexo::ecs::GroupSystem<
 	        auto start = std::chrono::high_resolution_clock::now();
 
 	        for (int i = 0; i < numIterations; i++) {
-	            m_group->each([](nexo::ecs::Entity entity, Position& position, const Velocity& velocity) {
+	            m_group->each([]([[maybe_unused]] nexo::ecs::Entity entity, Position& position, const Velocity& velocity) {
 	                position.x += velocity.x;
 	                position.y += velocity.y;
 
