@@ -37,13 +37,13 @@ namespace nexo {
 		camera.farPlane = farPlane;
 		camera.type = components::CameraType::PERSPECTIVE;
 
-		auto forwardPass = std::make_shared<renderer::ForwardPass>(width, height);
+		auto forwardPass = std::make_shared<renderer::ForwardPass>();
 		renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
 		camera.pipeline.setFinalOutputPass(forwardPassId);
 		camera.pipeline.setCameraClearColor(clearColor);
 		if (renderTarget) {
 		    camera.m_renderTarget = std::move(renderTarget);
-			camera.pipeline.setFinalRenderTarget(camera.m_renderTarget);
+			camera.pipeline.setRenderTarget(camera.m_renderTarget);
 		}
 		camera.clearColor = clearColor;
 
