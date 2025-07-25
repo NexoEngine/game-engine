@@ -209,4 +209,11 @@ namespace nexo::renderer {
                                        const std::source_location loc = std::source_location::current())
                 : Exception(std::format("STBI load failed: {}", msg), loc) {}
     };
+
+    class NxPipelineRenderTargetNotSetException final : public Exception {
+        public:
+            explicit NxPipelineRenderTargetNotSetException(const std::source_location loc =
+                                                                  std::source_location::current())
+                : Exception(std::format("Pipeline render target not set"), loc) {}
+    };
 }
