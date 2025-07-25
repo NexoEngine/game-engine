@@ -236,11 +236,9 @@ TEST_F(RenderPipelineTest, ExecutePipeline) {
     PassId id1 = pipeline.addRenderPass(pass1);
     PassId id2 = pipeline.addRenderPass(pass2);
 
-    std::cout << "la" << std::endl;
     // Setup pass1 -> pass2
     pipeline.addPrerequisite(id2, id1);
     pipeline.addEffect(id1, id2);
-    std::cout << "la2" << std::endl;
 
 
 
@@ -251,7 +249,6 @@ TEST_F(RenderPipelineTest, ExecutePipeline) {
 
     // Verify the setup is correct
     EXPECT_EQ(pipeline.getFinalOutputPass(), static_cast<int>(id2));
-    std::cout << "la7" << std::endl;
 
 
 
