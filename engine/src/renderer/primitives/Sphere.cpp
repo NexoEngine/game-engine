@@ -126,17 +126,17 @@ namespace nexo::renderer
                 if (!newVertices.contains(m1_pos))
                 {
                     vertices.emplace_back(m1_pos);
-                    newVertices.insert({m1_pos, vertices.size() - 1});
+                    newVertices.insert({m1_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
                 if (!newVertices.contains(m2_pos))
                 {
                     vertices.emplace_back(m2_pos);
-                    newVertices.insert({m2_pos, vertices.size() - 1});
+                    newVertices.insert({m2_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
                 if (!newVertices.contains(m3_pos))
                 {
                     vertices.emplace_back(m3_pos);
-                    newVertices.insert({m3_pos, vertices.size() - 1});
+                    newVertices.insert({m3_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
 
                 auto m1 = newVertices[m1_pos];
