@@ -77,8 +77,8 @@ namespace nexo::ecs {
 
     template<typename T>
     struct has_restore_method<T,
-        std::void_t<decltype(std::declval<typename T::Memento>().restore())>>
-        : std::is_same<decltype(std::declval<typename T::Memento>().restore()), T> {};
+        std::void_t<decltype(std::declval<T&>().restore(std::declval<const typename T::Memento&>()))>>
+        : std::is_same<decltype(std::declval<T&>().restore(std::declval<const typename T::Memento&>())), void> {};
 
     // Combined check for full memento pattern support
     template<typename T>
@@ -170,7 +170,9 @@ namespace nexo::ecs {
 
                     m_restoreComponentFunctions[typeid(T)] = [](const std::any& mementoAny) -> std::any {
                         const typename T::Memento& memento = std::any_cast<const typename T::Memento&>(mementoAny);
-                        return std::any(memento.restore());
+                        T component{};
+                        component.restore(memento);
+                        return std::any(std::move(component));
                     };
                 } else {
                     m_supportsMementoPattern.emplace(typeid(T), false);
@@ -412,7 +414,7 @@ namespace nexo::ecs {
              * @param entity The target entity identifier.
              * @return std::vector<std::pair<std::type_index, std::any>> A vector of pairs, each containing a component type and its instance.
              */
-            std::vector<std::pair<std::type_index, std::any>> getAllComponents(Entity entity);
+            std::vector<std::any> getAllComponents(Entity entity);
 
             /**
             * @brief Retrieves all entities that have the specified components.
@@ -576,7 +578,7 @@ namespace nexo::ecs {
             template<typename T>
             void setRestoreComponent() {
                 m_restoreComponentFunctions[typeid(T)] = [](const std::any&) -> std::any {
-                    return std::any(T{}); // default-constructed
+                    return std::any(T{});
                 };
             }
 

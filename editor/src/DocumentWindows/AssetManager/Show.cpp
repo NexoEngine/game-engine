@@ -19,6 +19,8 @@
 #include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
+#include "context/ActionManager.hpp"
+#include "context/actions/AssetActions.hpp"
 #include <cstring>
 #include "Logger.hpp"
 #include <imgui.h>
@@ -237,7 +239,16 @@ namespace nexo::editor {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
             {
                 const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-                assets::AssetCatalog::getInstance().moveAsset(data->id, folderPath);
+
+                auto assetRef = assets::AssetCatalog::getInstance().getAsset(data->id);
+                if (auto assetData = assetRef.lock()) {
+                    std::string fromPath = assetData->getMetadata().location.getPath();
+
+                    auto action = std::make_unique<AssetMoveAction>(data->id, fromPath, folderPath);
+                    ActionManager::get().recordAction(std::move(action));
+
+                    assets::AssetCatalog::getInstance().moveAsset(data->id, folderPath);
+                }
             }
             ImGui::EndDragDropTarget();
         }
@@ -488,7 +499,16 @@ namespace nexo::editor {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
                     const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-                    assets::AssetCatalog::getInstance().moveAsset(data->id, "");
+
+                    auto assetRef = assets::AssetCatalog::getInstance().getAsset(data->id);
+                    if (auto assetData = assetRef.lock()) {
+                        std::string fromPath = assetData->getMetadata().location.getPath();
+
+                        auto action = std::make_unique<AssetMoveAction>(data->id, fromPath, "");
+                        ActionManager::get().recordAction(std::move(action));
+
+                        assets::AssetCatalog::getInstance().moveAsset(data->id, "");
+                    }
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -514,7 +534,16 @@ namespace nexo::editor {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
                     const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
-                    assets::AssetCatalog::getInstance().moveAsset(data->id, fullPath);
+
+                    auto assetRef = assets::AssetCatalog::getInstance().getAsset(data->id);
+                    if (auto assetData = assetRef.lock()) {
+                        std::string fromPath = assetData->getMetadata().location.getPath();
+
+                        auto action = std::make_unique<AssetMoveAction>(data->id, fromPath, fullPath);
+                        ActionManager::get().recordAction(std::move(action));
+
+                        assets::AssetCatalog::getInstance().moveAsset(data->id, fullPath);
+                    }
                 }
                 ImGui::EndDragDropTarget();
             }

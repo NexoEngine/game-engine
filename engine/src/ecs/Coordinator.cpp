@@ -73,9 +73,9 @@ namespace nexo::ecs {
         return typeIndices;
     }
 
-    std::vector<std::pair<std::type_index, std::any>> Coordinator::getAllComponents(const Entity entity)
+    std::vector<std::any> Coordinator::getAllComponents(const Entity entity)
     {
-        std::vector<std::pair<std::type_index, std::any>> components;
+        std::vector<std::any> components;
 
         // Get the entity's signature which already tells us which components it has
         Signature signature = m_entityManager->getSignature(entity);
@@ -84,7 +84,7 @@ namespace nexo::ecs {
         for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
             if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
                 const auto& typeIndex = m_typeIDtoTypeIndex.at(type);
-                components.emplace_back(typeIndex, m_getComponentFunctions[typeIndex](entity));
+                components.emplace_back(m_getComponentFunctions[typeIndex](entity));
             }
         }
 
@@ -112,7 +112,8 @@ namespace nexo::ecs {
     {
         auto typeId = std::type_index(component.type());
         auto it = m_supportsMementoPattern.find(typeId);
-        return (it != m_supportsMementoPattern.end()) && it->second;
+        bool temp = (it != m_supportsMementoPattern.end()) && it->second;
+        return temp;
     }
 
     std::any Coordinator::saveComponent(const std::any& component) const
