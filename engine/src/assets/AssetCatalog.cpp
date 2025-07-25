@@ -34,6 +34,20 @@ namespace nexo::assets {
         }
     }
 
+    void AssetCatalog::moveAsset(const GenericAssetRef &asset, const std::string &path)
+    {
+        if (const auto assetData = asset.lock())
+            moveAsset(assetData->getID(), path);
+    }
+
+    void AssetCatalog::moveAsset(AssetID id, const std::string &path)
+    {
+        if (!m_assets.contains(id))
+            return;
+        auto asset = m_assets.at(id);
+        asset->m_metadata.location.setPath(path);
+    }
+
     GenericAssetRef AssetCatalog::getAsset(AssetID id) const
     {
         if (!m_assets.contains(id))
