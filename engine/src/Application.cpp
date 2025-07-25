@@ -196,6 +196,16 @@ namespace nexo {
             m_eventManager->emitEvent<event::EventMouseMove>(
                 std::make_shared<event::EventMouseMove>(static_cast<float>(xpos), static_cast<float>(ypos)));
         });
+
+        m_window->setFileDropCallback([this](const int count, const char** paths) {
+            std::vector<std::string> files;
+            files.reserve(count);
+            for (int i = 0; i < count; ++i) {
+                files.emplace_back(paths[i]);
+            }
+            m_eventManager->emitEvent<event::EventFileDrop>(
+                std::make_shared<event::EventFileDrop>(files));
+        });
     }
 
     void Application::registerSystems()

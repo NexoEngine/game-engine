@@ -186,6 +186,9 @@ namespace nexo::editor
 
         handleHovering(object);
 
+        handleDragSource(object);
+        handleDropTarget(object);
+
         // Handles the right click on each different type of object
         if (object.type != SelectionType::NONE && ImGui::BeginPopupContextItem(uniqueLabel.c_str()))
         {

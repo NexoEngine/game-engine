@@ -29,7 +29,7 @@ namespace nexo::system {
 
         for (const ecs::Entity entity : entities) {
             auto &sceneTag = getComponent<components::SceneTag>(entity);
-			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+			if (sceneTag.id != sceneRendered)
 				continue;
             auto &transform = getComponent<components::TransformComponent>(entity);
             transform.localMatrix = createTransformMatrix(transform);

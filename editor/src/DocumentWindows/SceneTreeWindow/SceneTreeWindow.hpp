@@ -425,5 +425,54 @@ namespace nexo::editor
         static void selectAllCallback();
         static void hideSelectedCallback();
         static void showAllCallback();
+
+        /**
+        * @brief Handles drag source setup for scene objects.
+        * @param object The scene object being dragged.
+        */
+        void handleDragSource(const SceneObject& object);
+
+        /**
+        * @brief Handles drop target setup for scene objects.
+        * @param object The scene object that can receive drops.
+        */
+        void handleDropTarget(const SceneObject& object);
+
+        /**
+        * @brief Processes the drop operation from the scene tree itself.
+        * @param dropTarget The target scene object receiving the drop.
+        * @param payload The drag-and-drop payload data.
+        */
+        void handleDropFromSceneTree(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+
+        /**
+        * @brief Processes the drop operation from the asset manager.
+        * @param dropTarget The target scene object receiving the drop.
+        * @param payload The drag-and-drop payload data.
+        */
+        void handleDropFromAssetManager(const SceneObject& dropTarget, const struct AssetDragDropPayload& payload);
+
+        /**
+        * @brief Validates if a drop operation is allowed.
+        * @param dropTarget The target scene object.
+        * @param payload The drag-and-drop payload data.
+        * @return true if the drop is valid, false otherwise.
+        */
+        static bool canAcceptDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+    };
+
+    /**
+     * @brief Payload structure for drag and drop operations in the scene tree.
+     *
+     * Contains all necessary information to perform entity/scene drag and drop
+     * operations including validation and hierarchy updates.
+     */
+    struct SceneTreeDragDropPayload
+    {
+        ecs::Entity entity; ///< The entity being dragged
+        scene::SceneId sourceSceneId; ///< The scene the entity originated from
+        SelectionType type; ///< The type of object being dragged
+        std::string uuid; ///< UUID of the dragged object
+        std::string name; ///< Display name of the dragged object
     };
 }

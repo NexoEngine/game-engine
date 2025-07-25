@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetLocation.hpp"
+#include "Path.hpp"
 
 namespace nexo::assets {
 
@@ -23,7 +24,7 @@ namespace nexo::assets {
     )
     {
         _name = name;
-        _path = path;
+        _path = normalizePathAndRemovePrefixSlash(path);
         _packName = packName;
     }
 } // namespace nexo::assets

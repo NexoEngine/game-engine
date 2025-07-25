@@ -81,6 +81,13 @@ namespace nexo::renderer {
             if (props->mouseMoveCallback)
                 props->mouseMoveCallback(xpos, ypos);
         });
+
+        glfwSetDropCallback(_openGlWindow, [](GLFWwindow *window, const int count, const char **paths)
+        {
+            const auto *props = static_cast<NxWindowProperty *>(glfwGetWindowUserPointer(window));
+            if (props->fileDropCallback)
+                props->fileDropCallback(count, paths);
+        });
     }
 
     void NxOpenGlWindow::init()

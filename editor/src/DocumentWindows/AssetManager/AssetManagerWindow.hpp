@@ -18,10 +18,12 @@
 #include <imgui.h>
 #include <assets/AssetRef.hpp>
 #include "utils/TransparentStringHash.hpp"
+#include <core/event/WindowEvent.hpp>
+#include "assets/Asset.hpp"
 
 namespace nexo::editor {
 
-    class AssetManagerWindow final : public ADocumentWindow {
+    class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
         public:
             using ADocumentWindow::ADocumentWindow;
 
@@ -29,6 +31,8 @@ namespace nexo::editor {
             void shutdown() override;
             void show() override;
             void update() override;
+
+            void handleEvent(event::EventFileDrop& event) override;
 
         private:
             struct LayoutSettings {
@@ -74,7 +78,8 @@ namespace nexo::editor {
             void handleSelection(int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;
+            std::string m_currentFolder;  // Currently selected folder
+            std::string m_hoveredFolder;  // Currently hovered folder
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
             char m_searchBuffer[256] = "";
 
@@ -110,5 +115,25 @@ namespace nexo::editor {
                 const ImVec2& itemPos,
                 const ImVec2& itemSize
             );
+
+            std::vector<std::string> m_pendingDroppedFiles;
+            bool m_showDropIndicator = false;
+
+            void handleDroppedFiles();
+            const assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
+            void importDroppedFile(const std::string& filePath);
+    };
+
+    /**
+     * @brief Payload structure for drag and drop operations from asset manager.
+     *
+     * Contains information about the asset being dragged.
+     */
+    struct AssetDragDropPayload
+    {
+        assets::AssetType type; ///< Type of the asset
+        assets::AssetID id; ///< ID of the asset
+        std::string path; ///< Path to the asset
+        std::string name; ///< Display name of the asset
     };
 }

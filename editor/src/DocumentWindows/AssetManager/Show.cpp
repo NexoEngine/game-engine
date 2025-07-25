@@ -19,6 +19,8 @@
 #include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
+#include <cstring>
+#include "Logger.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -169,6 +171,31 @@ namespace nexo::editor {
         if (isHovered)
             ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
 
+        // Handle drag source for assets
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            AssetDragDropPayload payload;
+            payload.type = assetData->getType();
+            payload.id = assetData->getID();
+            payload.path = assetData->getMetadata().location.getFullLocation();
+            payload.name = assetName;
+
+            ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
+
+            // Show preview while dragging
+            //TODO: Add asset preview thanks to thumbnail cache after rebasing
+            if (assetData->getType() == assets::AssetType::TEXTURE) {
+                auto textureAsset = asset.as<assets::Texture>();
+                auto textureData = textureAsset.lock();
+                if (textureData && textureData->getData() && textureData->getData()->texture) {
+                    ImTextureID textureId = textureData->getData()->texture->getId();
+                    ImGui::Image(textureId, {64, 64});
+                }
+            }
+
+            ImGui::EndDragDropSource();
+        }
+
         ImGui::PopID();
     }
 
@@ -198,6 +225,22 @@ namespace nexo::editor {
 
         bool clicked = ImGui::InvisibleButton("##folder", itemSize);
         bool isHovered = ImGui::IsItemHovered();
+
+        if (isHovered) {
+            m_hoveredFolder = folderPath;
+        } else if (m_hoveredFolder == folderPath) {
+            m_hoveredFolder.clear();
+        }
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+            {
+                const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                assets::AssetCatalog::getInstance().moveAsset(data->id, folderPath);
+            }
+            ImGui::EndDragDropTarget();
+        }
 
         // Background - use hover color when hovered
         ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
@@ -275,100 +318,79 @@ namespace nexo::editor {
     void AssetManagerWindow::drawAssetsGrid()
     {
         ImVec2 startPos = ImGui::GetCursorScreenPos();
-        std::vector<std::pair<std::string, std::string>> subfolders;
 
-        // First, collect all immediate subfolders of the current folder
-        for (const auto& [path, name] : m_folderStructure) {
-            // Skip the current folder itself
-            if (path == m_currentFolder)
+        // 1) Collect immediate subfolders of the current folder
+        std::vector<std::pair<std::string,std::string>> subfolders;
+        for (auto& [path,name] : m_folderStructure) {
+            if (path.empty() || path.front() == '_')
                 continue;
 
-            if (path.find(m_currentFolder) == 0) {
-                // For root folder (empty current folder)
-                if (m_currentFolder.empty()) {
-                    if (path.find('/') == std::string::npos) {
-                        subfolders.emplace_back(path, name);
-                    }
-                }
-                // For non-root folders
-                else {
-                    // Check if it's a direct child (only one more / after current folder)
-                    std::string pathAfterCurrent = path.substr(m_currentFolder.length());
-                    if (pathAfterCurrent[0] == '/') {
-                        pathAfterCurrent = pathAfterCurrent.substr(1);
-                    }
-
-                    if (pathAfterCurrent.find('/') == std::string::npos && !pathAfterCurrent.empty()) {
-                        subfolders.emplace_back(path, pathAfterCurrent);
-                    }
+            if (m_currentFolder.empty()) {
+                // root level = no slash in path
+                if (path.find('/') == std::string::npos)
+                    subfolders.emplace_back(path, name);
+            } else {
+                std::string prefix = m_currentFolder + "/";
+                // immediate child: starts with "curr/" but has no further '/'
+                if (path.rfind(prefix, 0) == 0 &&
+                    path.find('/', prefix.size()) == std::string::npos)
+                {
+                    subfolders.emplace_back(path, path.substr(prefix.size()));
                 }
             }
         }
 
-        const std::vector<assets::GenericAssetRef> assets = assets::AssetCatalog::getInstance().getAssets();
+        // 2) Collect assets exactly in the current folder
+        std::vector<assets::GenericAssetRef> filtered;
+        for (auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
+            if (auto d = ref.lock()) {
+                const auto& folder = d->getMetadata().location.getPath();
+                if (folder == "_internal")           continue;
+                if (m_selectedType != assets::AssetType::UNKNOWN &&
+                    d->getType() != m_selectedType)  continue;
 
-        // Filter assets by currently selected folder
-        std::vector<assets::GenericAssetRef> filteredAssets;
-        for (const auto& asset : assets) {
-            if (auto assetData = asset.lock()) {
-                if (assetData->getMetadata().location.getPath() == "_internal")
-                    continue;
-
-                if (m_selectedType != assets::AssetType::UNKNOWN && assetData->getType() != m_selectedType)
-                    continue;
-
-                // Check if asset is in current folder exactly (not in subfolders)
-                std::string assetPath = assetData->getMetadata().location.getPath();
-                std::string assetDir = assetPath.substr(0, assetPath.find_last_of('/'));
-
-                // If there's no slash, asset is in root
-                if (assetPath.find('/') == std::string::npos)
-                    assetDir = "";
-
-                if (assetDir == m_currentFolder)
-                    filteredAssets.push_back(asset);
+                // **here’s the fix**: just compare the whole normalized folder
+                if (folder == m_currentFolder)
+                    filtered.push_back(ref);
             }
         }
 
-        size_t totalItems = subfolders.size() + filteredAssets.size();
-
+        // 3) Layout & draw both subfolders and assets
+        size_t totalItems = subfolders.size() + filtered.size();
         ImGuiListClipper clipper;
-        int rowCount = (static_cast<int>(totalItems) + m_layout.size.columnCount - 1) / m_layout.size.columnCount;
-        clipper.Begin(rowCount, m_layout.size.itemStep.y);
+        int rows = int((totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount);
+        clipper.Begin(rows, m_layout.size.itemStep.y);
 
         while (clipper.Step()) {
-            for (int lineIdx = clipper.DisplayStart; lineIdx < clipper.DisplayEnd; ++lineIdx) {
-                int startIdx = lineIdx * m_layout.size.columnCount;
-                int endIdx = std::min(startIdx + m_layout.size.columnCount, static_cast<int>(totalItems));
+            for (int line = clipper.DisplayStart; line < clipper.DisplayEnd; ++line) {
+                int startIdx = line * m_layout.size.columnCount;
+                int endIdx   = std::min(startIdx + m_layout.size.columnCount, (int)totalItems);
 
                 for (int i = startIdx; i < endIdx; ++i) {
-                    auto col = static_cast<float>(i % m_layout.size.columnCount);
-                    auto row = static_cast<float>(i / m_layout.size.columnCount);
+                    float col = float(i % m_layout.size.columnCount);
+                    float row = float(i / m_layout.size.columnCount);
                     ImVec2 itemPos{
                         startPos.x + col * m_layout.size.itemStep.x,
                         startPos.y + row * m_layout.size.itemStep.y
                     };
 
-                    // Draw folder if index is in subfolder range
-                    if (i < static_cast<int>(subfolders.size())) {
+                    if (i < (int)subfolders.size()) {
+                        // draw folder thumbnail
                         drawFolder(
                             subfolders[i].first,
                             subfolders[i].second,
                             itemPos,
                             m_layout.size.itemSize
                         );
-                    }
-                    // Otherwise draw asset
-                    else {
-                        int assetIdx = i - static_cast<int>(subfolders.size());
-                        if (assetIdx < static_cast<int>(filteredAssets.size())) {
-                            drawAsset(
-                                filteredAssets[assetIdx],
-                                assetIdx,
-                                itemPos,
-                                m_layout.size.itemSize
-                            );
-                        }
+                    } else {
+                        // draw asset thumbnail
+                        int assetIdx = i - (int)subfolders.size();
+                        drawAsset(
+                            filtered[assetIdx],
+                            assetIdx,
+                            itemPos,
+                            m_layout.size.itemSize
+                        );
                     }
                 }
             }
@@ -378,6 +400,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::show()
     {
+        m_hoveredFolder.clear();
         if (m_folderStructure.empty())
             buildFolderStructure();
 
@@ -413,50 +436,100 @@ namespace nexo::editor {
         ImGui::SameLine();
         ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
 
-        // Show path breadcrumb
-        if (m_currentFolder.empty()) {
-            ImGui::Text("Assets");
-        } else {
-            // Display clickable breadcrumbs
-            ImGui::Text(ICON_FA_FOLDER " ");
-            ImGui::SameLine();
+        // Handle file drops
+        if (ImGui::BeginDragDropTarget())
+        {
+            m_showDropIndicator = true;
 
-            // Start with root level "Assets"
+            // Accept external file drops (this is a placeholder - ImGui doesn't directly support OS file drops)
+            // The actual files come through the EventFileDrop event
+
+            ImGui::EndDragDropTarget();
+        }
+        else
+        {
+            m_showDropIndicator = false;
+        }
+
+        // Draw drop indicator
+        if (m_showDropIndicator || !m_pendingDroppedFiles.empty())
+        {
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImVec2 windowSize = ImGui::GetWindowSize();
+
+            // Draw semi-transparent overlay
+            drawList->AddRectFilled(windowPos, ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y),
+                                  IM_COL32(100, 100, 255, 50));
+
+            // Draw border
+            drawList->AddRect(windowPos, ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y),
+                            IM_COL32(100, 100, 255, 200), 0.0f, 0, 3.0f);
+
+            // Draw text
+            const char* dropText = "Drop files here to import";
+            ImVec2 textSize = ImGui::CalcTextSize(dropText);
+            ImVec2 textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
+                                  windowPos.y + (windowSize.y - textSize.y) * 0.5f);
+            drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.5f, textPos,
+                            IM_COL32(255, 255, 255, 255), dropText);
+        }
+
+        ImGui::Text(ICON_FA_FOLDER " ");
+        ImGui::SameLine();
+
+        {
+            ImGui::PushID("breadcrumb_root");
             if (ImGui::Button("Assets"))
-                m_currentFolder = "";
+                m_currentFolder.clear();
 
-            // Split the current path into components
-            std::string path = m_currentFolder;
-            size_t pos = 0;
-            std::string segment;
-            std::string fullPath = "";
-
-            while ((pos = path.find('/')) != std::string::npos) {
-                segment = path.substr(0, pos);
-                if (!segment.empty()) {
-                    fullPath += (fullPath.empty() ? "" : "/") + segment;
-                    ImGui::SameLine();
-                    ImGui::Text(" > ");
-                    ImGui::SameLine();
-                    if (ImGui::Button(segment.c_str())) {
-                        m_currentFolder = fullPath;
-                    }
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+                {
+                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    assets::AssetCatalog::getInstance().moveAsset(data->id, "");
                 }
-                path.erase(0, pos + 1);
+                ImGui::EndDragDropTarget();
             }
+            ImGui::PopID();
+        }
 
-            // Last segment
-            if (!path.empty()) {
-                ImGui::SameLine();
-                ImGui::Text(" > ");
-                ImGui::SameLine();
-                ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", path.c_str());
+        // Intermediate breadcrumbs
+        std::string path = m_currentFolder;
+        size_t pos = 0;
+        std::string segment;
+        std::string fullPath;
+        while ((pos = path.find('/')) != std::string::npos) {
+            segment = path.substr(0, pos);
+            fullPath += (fullPath.empty() ? "" : "/") + segment;
+            ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
+
+            ImGui::PushID(("breadcrumb_" + fullPath).c_str());
+            if (ImGui::Button(segment.c_str()))
+                m_currentFolder = fullPath;
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+                {
+                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    assets::AssetCatalog::getInstance().moveAsset(data->id, fullPath);
+                }
+                ImGui::EndDragDropTarget();
             }
+            ImGui::PopID();
+
+            path.erase(0, pos + 1);
+        }
+
+        if (!path.empty()) {
+            ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", path.c_str());
         }
 
         ImGui::Separator();
 
-        // Calculate layout for asset grid
         calculateLayout(ImGui::GetContentRegionAvail().x);
         drawAssetsGrid();
         ImGui::EndChild();

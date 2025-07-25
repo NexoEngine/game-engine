@@ -17,11 +17,13 @@
 #include <ImGuizmo.h>
 
 #include "ADocumentWindow.hpp"
+#include "Definitions.hpp"
 #include "inputs/WindowState.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "../PopupManager.hpp"
 #include "ImNexo/Widgets.hpp"
 #include <format>
+#include "DocumentWindows/AssetManager/AssetManagerWindow.hpp"
 
 namespace nexo::editor
 {
@@ -103,6 +105,8 @@ namespace nexo::editor
         bool m_snapToGrid = false;
         bool m_wireframeEnabled = false;
 
+        ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;
+
         int m_sceneId = -1;
         std::string m_sceneUuid;
         int m_activeCamera = -1;
@@ -157,11 +161,11 @@ namespace nexo::editor
         void setupShortcuts();
 
         /**
-         * @brief Populates the scene with default entities.
-         *
-         * Creates standard light sources (ambient, directional, point, spot)
-         * and a simple ground plane in the scene.
-         */
+        * @brief Populates the scene with default entities.
+        *
+        * Creates standard light sources (ambient, directional, point, spot)
+        * and a simple ground plane in the scene.
+        */
         void loadDefaultEntities() const;
 
         /**
@@ -302,6 +306,10 @@ namespace nexo::editor
         void renderNewEntityPopup();
 
         void handleSelection();
+        void handleDropTarget();
+        void handleDropModel(const AssetDragDropPayload &payload);
+        void handleDropTexture(const AssetDragDropPayload &payload);
+        void handleDropMaterial(const AssetDragDropPayload &payload);
         int sampleEntityTexture(float mx, float my) const;
         ecs::Entity findRootParent(ecs::Entity entityId) const;
         void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);

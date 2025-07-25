@@ -110,8 +110,6 @@ namespace nexo::editor
             const auto light = LightFactory::createPointLight(position, colors[i % colors.size()], 0.01, 0.0010);
             scene.addEntity(light);
         }
-
-        assets::AssetImporter importer;
     }
 
     void EditorScene::loadDefaultEntities() const
@@ -274,7 +272,6 @@ namespace nexo::editor
             }
         }
     }
-
 
     void EditorScene::setupWindow()
     {

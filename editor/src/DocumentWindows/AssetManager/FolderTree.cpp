@@ -155,50 +155,47 @@ namespace nexo::editor {
     void AssetManagerWindow::buildFolderStructure()
     {
         m_folderStructure.clear();
+        // Root entry
         m_folderStructure.emplace_back("", "Assets");
         m_folderChildren.clear(); // Clear the folder children map
 
         // First pass: build the folder structure
         std::set<std::string, std::less<>> uniqueFolderPaths;
 
-        const auto assets = assets::AssetCatalog::getInstance().getAssets();
-        for (const auto& asset : assets) {
-            if (auto assetData = asset.lock()) {
-                std::string fullPath = assetData->getMetadata().location.getPath();
-                std::filesystem::path fsPath(fullPath);
+        std::unordered_set<std::string> seen{""};
 
-                // Extract all parent directories from the path
-                while (fsPath.has_parent_path()) {
-                    fsPath = fsPath.parent_path();
-                    if (!fsPath.empty()) {
-                        uniqueFolderPaths.insert(fsPath.string());
+        const auto assets = assets::AssetCatalog::getInstance().getAssets();
+        for (auto& ref : assets) {
+            if (auto assetData = ref.lock()) {
+                // normalized path: e.g. "Random/Sub"
+                std::filesystem::path p{ assetData->getMetadata().location.getPath() };
+                std::filesystem::path curr;
+                for (auto const& part : p) {
+                    // skip empty or “_internal” style parts
+                    auto s = part.string();
+                    if (s.empty() || s.front() == '_')
+                        continue;
+                    curr /= part;
+                    auto folderPath = curr.string();
+                    if (seen.emplace(folderPath).second) {
+                        m_folderStructure.emplace_back(
+                            folderPath,
+                            curr.filename().string()
+                        );
                     }
                 }
             }
         }
 
-        // Add the unique folder paths to m_folderStructure
-        for (const auto& folderPath : uniqueFolderPaths) {
-            std::filesystem::path fsPath(folderPath);
-            std::string folderName = fsPath.filename().string();
-            m_folderStructure.emplace_back(folderPath, folderName);
-        }
-
-        // Second pass: build the parent-child map
-        for (const auto& [path, name] : m_folderStructure) {
-            if (path.empty()) continue; // Skip root
-
-            std::filesystem::path fsPath(path);
-            std::string parentPath = fsPath.parent_path().string();
-
-            // If parent path is empty, set it to "" (root)
-            if (parentPath.empty()) {
-                parentPath = "";
+        std::sort(
+            m_folderStructure.begin() + 1,
+            m_folderStructure.end(),
+            [](auto const& a, auto const& b){
+                return a.first < b.first;
             }
-
-            m_folderChildren[parentPath].push_back(path);
-        }
+        );
     }
+
 
     void AssetManagerWindow::drawFolderTree()
     {

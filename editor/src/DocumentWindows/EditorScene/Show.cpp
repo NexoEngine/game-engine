@@ -150,6 +150,7 @@ namespace nexo::editor
         const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), m_contentSize);
 
+        handleDropTarget();
         const ImVec2 viewportMin = ImGui::GetItemRectMin();
         const ImVec2 viewportMax = ImGui::GetItemRectMax();
         m_viewportBounds[0] = viewportMin;

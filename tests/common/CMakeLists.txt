@@ -23,6 +23,7 @@ include_directories("./common")
 # TODO: make common a library and link it to the tests
 set(COMMON_SOURCES
     common/Exception.cpp
+    common/Path.cpp
     common/math/Matrix.cpp
     common/math/Vector.cpp
     common/math/Light.cpp
