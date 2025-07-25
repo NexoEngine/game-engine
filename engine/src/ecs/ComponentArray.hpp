@@ -230,9 +230,6 @@ namespace nexo::ecs {
          */
         void insertRaw(Entity entity, const void *componentData) override
         {
-            if constexpr (!std::is_trivially_copyable_v<T>) {
-                THROW_EXCEPTION(InternalError, "Component type must be trivially copyable for raw insertion");
-            }
             if (entity >= MAX_ENTITIES)
                 THROW_EXCEPTION(OutOfRange, entity);
 
@@ -249,8 +246,12 @@ namespace nexo::ecs {
 
             // allocate new component in the array
             m_componentArray.emplace_back();
-            // copy the raw data into the new component
-            std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+            // copy the raw data into the new component, if it is trivially copyable, use memcpy, otherwise use placement new
+            if constexpr (std::is_trivially_copyable_v<T>) {
+                std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+            } else {
+                new (&m_componentArray[newIndex]) T(*reinterpret_cast<const T*>(componentData));
+            }
 
             ++m_size;
         }

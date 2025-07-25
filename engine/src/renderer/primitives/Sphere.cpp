@@ -113,7 +113,7 @@ namespace nexo::renderer
             std::vector<unsigned int> newIndices{};
             std::map<glm::vec3, unsigned int, Vec3Comparator> newVertices{};
 
-            for (int j = 0; j < indices.size(); j += 3)
+            for (size_t j = 0; j < indices.size(); j += 3)
             {
                 const unsigned int v1 = indices[j];
                 const unsigned int v2 = indices[j + 1];
