@@ -20,6 +20,7 @@
 #include <iomanip>
 #include <sstream>
 #include "FileSystem.hpp"
+#include "Logger.hpp"
 
 namespace nexo::editor::utils {
     void openFolder(const std::string &folderPath)
@@ -29,7 +30,11 @@ namespace nexo::editor::utils {
         #else
             std::stringstream ss;
             ss << "xdg-open " << std::quoted(folderPath);
-            (void)std::system(ss.str().c_str());
+            int status = std::system(ss.str().c_str());
+            if (status == -1)
+                LOG(NEXO_ERROR, "Failed to open folder '{}'", folderPath);
+            else if (status != 0)
+                LOG(NEXO_WARN, "Opening folder '{}' returned exit code {}", folderPath, status);
         #endif
     }
 }
