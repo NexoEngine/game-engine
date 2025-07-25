@@ -44,14 +44,8 @@ namespace nexo::renderer {
             // Get a render pass by ID
             std::shared_ptr<RenderPass> getRenderPass(PassId id);
 
-            // Get output from a pass
-            std::shared_ptr<NxFramebuffer> getOutput(PassId id);
-
-            // Set output for a pass
-            void setOutput(PassId id, const std::shared_ptr<NxFramebuffer>& output);
-
-            void setFinalRenderTarget(const std::shared_ptr<NxFramebuffer>& finalRenderTarget);
-            std::shared_ptr<NxFramebuffer> getFinalRenderTarget() const;
+            void setRenderTarget(std::shared_ptr<NxFramebuffer> finalRenderTarget);
+            std::shared_ptr<NxFramebuffer> getRenderTarget() const;
 
             // Set the final output pass
             void setFinalOutputPass(PassId id);
@@ -59,7 +53,7 @@ namespace nexo::renderer {
             // Get the final output pass
             PassId getFinalOutputPass() const { return finalOutputPass; }
 
-            // Calculate execution plan using GOAP
+            // Calculate execution plan using DFS
             std::vector<PassId> createExecutionPlan();
 
             // Execute the pipeline
@@ -95,10 +89,7 @@ namespace nexo::renderer {
             // For generating unique IDs
             PassId nextPassId = 0;
 
-            // Stores outputs of passes
-            std::unordered_map<PassId, std::shared_ptr<NxFramebuffer>> passOutputs;
-
-            std::shared_ptr<NxFramebuffer> m_finalRenderTarget = nullptr;
+            std::shared_ptr<NxFramebuffer> m_renderTarget = nullptr;
 
             // The final output pass (what gets rendered to screen)
             int finalOutputPass = -1;
