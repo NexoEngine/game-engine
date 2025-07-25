@@ -133,7 +133,7 @@ namespace nexo::renderer
 
         // Initial setup: Define the starting point and step size
         constexpr unsigned int start = 0;
-        const int step = ceil(static_cast<double>(nbSegment) / 3.0);
+        const unsigned int step = static_cast<unsigned int>(ceil(static_cast<double>(nbSegment) / 3.0));
 
         // Add the first triangle to the indices
         indices.push_back(start + transformer);
