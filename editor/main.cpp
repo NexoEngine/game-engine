@@ -26,7 +26,6 @@
 #include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
 
-#include "Path.hpp"
 #include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
 

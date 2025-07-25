@@ -16,7 +16,6 @@
 #include "MaterialInspector.hpp"
 #include "components/MaterialComponent.hpp"
 #include "context/ThumbnailCache.hpp"
-#include "utils/ScenePreview.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Panels.hpp"
@@ -27,7 +26,7 @@ namespace nexo::editor {
     void MaterialInspector::renderMaterialInspector()
     {
         const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
-        auto dataOpt = inspectorWindow->getSubInspectorData<MaterialInspector, MaterialInspectorData>();
+        const auto dataOpt = inspectorWindow->getSubInspectorData<MaterialInspector, MaterialInspectorData>();
         if (!dataOpt.has_value())
             return;
         const auto& data = *dataOpt;
@@ -49,7 +48,7 @@ namespace nexo::editor {
         ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureID)), {64, 64});
         ImGui::SameLine();
 
-        auto material = data.material.lock();
+        const auto material = data.material.lock();
         components::Material& materialData = *material->getData();
 
         m_materialModified = ImNexo::MaterialInspector(materialData);

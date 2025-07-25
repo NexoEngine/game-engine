@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
-#include "components/Render3D.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/Name.hpp"
 #include "components/Uuid.hpp"
@@ -69,7 +68,7 @@ namespace nexo::editor {
     }
 
     void SceneTreeWindow::buildChildNodesForEntity(
-        ecs::Entity parentEntity,
+        const ecs::Entity parentEntity,
         SceneObject& parentNode,
         std::unordered_set<ecs::Entity>& processedEntities)
     {
@@ -93,10 +92,10 @@ namespace nexo::editor {
         }
     }
 
-    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) const
+    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity)
     {
-        SceneProperties scene{sceneId, uiId};
-        EntityProperties data{scene, entity};
+        const SceneProperties scene{sceneId, uiId};
+        const EntityProperties data{scene, entity};
 
         std::string name;
 

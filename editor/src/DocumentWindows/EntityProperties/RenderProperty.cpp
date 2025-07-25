@@ -15,17 +15,13 @@
 #include <imgui.h>
 
 #include "RenderProperty.hpp"
-#include "AEntityProperty.hpp"
 #include "Application.hpp"
-#include "DocumentWindows/PopupManager.hpp"
 #include "Framebuffer.hpp"
 #include "components/Light.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "utils/ScenePreview.hpp"
 #include "components/Camera.hpp"
 #include "components/Render.hpp"
-#include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
-#include "DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 #include "context/ActionManager.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Components.hpp"
@@ -156,7 +152,7 @@ namespace nexo::editor {
             ImGui::Text("Type");
             ImGui::SameLine(0, 12);
 
-            std::string primitiveTypeStr = getPrimitiveTypeName(renderComponent.type);
+            const std::string primitiveTypeStr = getPrimitiveTypeName(renderComponent.type);
             ImGui::Text("%s", primitiveTypeStr.c_str());
 
             ImGui::TreePop();

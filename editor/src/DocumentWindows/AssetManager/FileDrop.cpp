@@ -13,40 +13,21 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
-#include "assets/Asset.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
-#include "assets/Assets/Model/Model.hpp"
-#include "assets/Assets/Texture/Texture.hpp"
 #include "Logger.hpp"
 #include <filesystem>
 #include <algorithm>
 
 namespace nexo::editor {
 
-    static assets::AssetType getAssetTypeFromExtension(const std::string &extension)
+    assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
     {
-        static const std::set<std::string> imageExtensions = {
-            ".png", ".jpg", ".jpeg", ".bmp", ".tga", ".gif", ".psd", ".hdr", ".pic", ".pnm", ".ppm", ".pgm"
-        };
-        if (imageExtensions.contains(extension))
-            return assets::AssetType::TEXTURE;
-        static const std::set<std::string> modelExtensions = {
-            ".gltf", ".glb", ".fbx", ".obj", ".dae", ".3ds", ".stl", ".ply", ".blend", ".x3d", ".ifc"
-        };
-        if (modelExtensions.contains(extension))
-            return assets::AssetType::MODEL;
-        return assets::AssetType::UNKNOWN;
-    }
-
-    const assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
-    {
-        std::string assetName = path.stem().string();
+        const std::string assetName = path.stem().string();
         std::filesystem::path folderPath;
-        std::string targetFolder = !m_hoveredFolder.empty() ? m_hoveredFolder : m_currentFolder;
+        const std::string targetFolder = !m_hoveredFolder.empty() ? m_hoveredFolder : m_currentFolder;
 
-        std::string assetPath = targetFolder;
-        std::string locationString = assetName + "@" + assetPath;
+        std::string locationString = assetName + "@" + targetFolder;
 
         LOG(NEXO_DEV,
             "Creating asset location: {} (current folder: '{}', hovered: '{}')",
@@ -78,9 +59,9 @@ namespace nexo::editor {
         buildFolderStructure();
     }
 
-    void AssetManagerWindow::importDroppedFile(const std::string& filePath)
+    void AssetManagerWindow::importDroppedFile(const std::string& filePath) const
     {
-        std::filesystem::path path(filePath);
+        const std::filesystem::path path(filePath);
 
         if (!std::filesystem::exists(path)) {
             LOG(NEXO_WARN, "Dropped file does not exist: {}", filePath);
@@ -88,21 +69,14 @@ namespace nexo::editor {
         }
 
         std::string extension = path.extension().string();
-        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+        std::ranges::transform(extension, extension.begin(), ::tolower);
 
-        assets::AssetType assetType = getAssetTypeFromExtension(extension);
-        if (assetType == assets::AssetType::UNKNOWN) {
-            LOG(NEXO_WARN, "Unsupported file type: {}", extension);
-            return;
-        }
+        const assets::AssetLocation location = getAssetLocation(path);
 
-        assets::AssetLocation location = getAssetLocation(path);
-
-        assets::AssetImporter importer;
         assets::ImporterFileInput fileInput{path};
         try {
-            auto assetRef = importer.importAssetAuto(location, fileInput);
-            if (!assetRef)
+            assets::AssetImporter importer;
+            if (const auto assetRef = importer.importAssetAuto(location, fileInput); !assetRef)
                 LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
         } catch (const std::exception& e) {
             LOG(NEXO_ERROR, "Exception while importing {}: {}", location.getPath().data(), e.what());

@@ -26,7 +26,7 @@ namespace nexo::editor {
     void SceneTreeWindow::entitySelected(const SceneObject &obj)
     {
         auto &selector = Selector::get();
-        auto &app = nexo::getApp();
+        auto &app = getApp();
 
         // Check if we're operating on a single item or multiple items
         const auto& selectedEntities = selector.getSelectedEntities();

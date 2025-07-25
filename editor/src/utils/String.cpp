@@ -14,7 +14,6 @@
 
 #include "String.hpp"
 
-#include <algorithm>
 #include <cctype>
 #include <ranges>
 #include <string>
@@ -29,10 +28,10 @@ namespace nexo::editor::utils {
 
 	void trim(std::string &s)
     {
-        auto not_space = [](char c){ return !std::isspace(static_cast<unsigned char>(c)); };
+        auto not_space = [](const char c){ return !std::isspace(static_cast<unsigned char>(c)); };
 
         s.erase(s.begin(), std::ranges::find_if(s, not_space));
-        auto rit = std::ranges::find_if(
+        const auto rit = std::ranges::find_if(
             s | std::views::reverse,
             not_space
         );

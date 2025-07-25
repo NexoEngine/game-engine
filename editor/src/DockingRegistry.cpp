@@ -25,7 +25,7 @@ namespace nexo::editor {
 
 	std::optional<ImGuiID> DockingRegistry::getDockId(const std::string& name) const
 	{
-		auto it = dockIds.find(name);
+		const auto it = dockIds.find(name);
 		if (it != dockIds.end()) {
 			return it->second;
 		}
@@ -34,7 +34,7 @@ namespace nexo::editor {
 
 	void DockingRegistry::resetDockId(const std::string &name)
 	{
-        auto it = dockIds.find(name);
+        const auto it = dockIds.find(name);
         if (it == dockIds.end())
             return;
         dockIds.erase(it);

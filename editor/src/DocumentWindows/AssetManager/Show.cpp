@@ -16,11 +16,9 @@
 #include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "IconsFontAwesome.h"
-#include "Path.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
 #include <cstring>
-#include "Logger.hpp"
 #include <imgui.h>
 
 namespace nexo::editor {
@@ -39,10 +37,17 @@ namespace nexo::editor {
     void AssetManagerWindow::calculateLayout(const float availWidth)
     {
         // Sizes
-        m_layout.size.columnCount = std::max(static_cast<int>(availWidth / (m_layout.size.iconSize + static_cast<float>(m_layout.size.iconSpacing))), 1);
-        m_layout.size.itemSize = ImVec2(m_layout.size.iconSize + ImGui::GetFontSize() * 1.5f, m_layout.size.iconSize + ImGui::GetFontSize() * 1.7f);
-        m_layout.size.itemStep = ImVec2(m_layout.size.itemSize.x + static_cast<float>(m_layout.size.iconSpacing), m_layout.size.itemSize.y + static_cast<float>(m_layout.size.iconSpacing));
-
+        m_layout.size.columnCount = std::max(
+            static_cast<int>(availWidth / m_layout.size.itemStep.x), 1
+        );
+        m_layout.size.itemSize = ImVec2(
+            m_layout.size.iconSize + ImGui::GetFontSize() * 1.5f, // width
+            m_layout.size.iconSize + ImGui::GetFontSize() * 1.7f  // height
+        );
+        m_layout.size.itemStep = ImVec2(
+            m_layout.size.itemSize.x + m_layout.size.iconSpacing,
+            m_layout.size.itemSize.y + m_layout.size.iconSpacing
+        );
         // Colors
         m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
         m_layout.color.thumbnailBgHovered = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
@@ -59,7 +64,7 @@ namespace nexo::editor {
         m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
     }
 
-    void AssetManagerWindow::handleSelection(int index, const bool isSelected)
+    void AssetManagerWindow::handleSelection(const unsigned int index, const bool isSelected)
     {
         if (ImGui::GetIO().KeyCtrl) {
             if (isSelected)
@@ -67,13 +72,13 @@ namespace nexo::editor {
             else
                 m_selectedAssets.insert(index);
         } else if (ImGui::GetIO().KeyShift) {
-            const int latestSelected = m_selectedAssets.empty() ? 0 : *m_selectedAssets.rbegin();
+            const unsigned int latestSelected = m_selectedAssets.empty() ? 0 : *m_selectedAssets.rbegin();
             if (latestSelected <= index) {
-                for (int i = latestSelected ; i <= index; ++i) {
+                for (unsigned int i = latestSelected ; i <= index; ++i) {
                     m_selectedAssets.insert(i);
                 }
             } else {
-                for (int i = index; i <= latestSelected; ++i) {
+                for (unsigned int i = index; i <= latestSelected; ++i) {
                     m_selectedAssets.insert(i);
                 }
             }
@@ -94,22 +99,22 @@ namespace nexo::editor {
 
     void AssetManagerWindow::drawAsset(
         const assets::GenericAssetRef& asset,
-        const int index,
+        const unsigned int index,
         const ImVec2& itemPos,
         const ImVec2& itemSize
     ) {
-        auto assetData = asset.lock();
+        const auto assetData = asset.lock();
         if (!assetData)
             return;
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
 
-        ImGui::PushID(index);
+        ImGui::PushID(static_cast<int>(index));
 
         ImGui::SetCursorScreenPos(itemPos);
 
-        bool clicked = ImGui::InvisibleButton("##item", itemSize);
-        bool isHovered = ImGui::IsItemHovered();
+        const bool clicked = ImGui::InvisibleButton("##item", itemSize);
+        const bool isHovered = ImGui::IsItemHovered();
 
         const bool isSelected = std::ranges::find(m_selectedAssets, index) != m_selectedAssets.end();
         const ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
@@ -130,13 +135,12 @@ namespace nexo::editor {
         // Draw thumbnail area
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
 
-        ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset);
-        if (!textureId) {
+        if (const ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset); !textureId) {
             drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
         } else {
-            const float padding = 4.0f;
-            ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
-            ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
+            constexpr float padding = 4.0f;
+            const ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
+            const ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
 
             drawList->AddImage(
                 textureId,
@@ -159,7 +163,7 @@ namespace nexo::editor {
             thumbnailEnd.y + m_layout.size.titlePadding);
 
         // Background rectangle for text
-        ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : m_layout.color.titleBg;
+        const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : m_layout.color.titleBg;
         drawList->AddRectFilled(ImVec2(itemPos.x, thumbnailEnd.y), ImVec2(itemEnd.x, itemEnd.y), titleBgColor);
         drawList->AddText(textPos, m_layout.color.titleText, assetName);
 
@@ -185,10 +189,10 @@ namespace nexo::editor {
             // Show preview while dragging
             //TODO: Add asset preview thanks to thumbnail cache after rebasing
             if (assetData->getType() == assets::AssetType::TEXTURE) {
-                auto textureAsset = asset.as<assets::Texture>();
-                auto textureData = textureAsset.lock();
-                if (textureData && textureData->getData() && textureData->getData()->texture) {
-                    ImTextureID textureId = textureData->getData()->texture->getId();
+                const auto textureAsset = asset.as<assets::Texture>();
+                if (const auto textureData = textureAsset.lock();
+                    textureData && textureData->getData() && textureData->getData()->texture) {
+                    const ImTextureID textureId = textureData->getData()->texture->getId();
                     ImGui::Image(textureId, {64, 64});
                 }
             }
@@ -199,10 +203,10 @@ namespace nexo::editor {
         ImGui::PopID();
     }
 
-    ImTextureID AssetManagerWindow::getFolderIconTexture()
+    ImTextureID AssetManagerWindow::getFolderIconTexture() const
     {
-        if (auto texRef = m_folderIcon.lock()) {
-            auto &texData = texRef->getData();
+        if (const auto texRef = m_folderIcon.lock()) {
+            const auto &texData = texRef->getData();
             if (texData && texData->texture) {
                 return texData->texture->getId();
             }
@@ -223,8 +227,8 @@ namespace nexo::editor {
 
         ImGui::SetCursorScreenPos(itemPos);
 
-        bool clicked = ImGui::InvisibleButton("##folder", itemSize);
-        bool isHovered = ImGui::IsItemHovered();
+        const bool clicked = ImGui::InvisibleButton("##folder", itemSize);
+        const bool isHovered = ImGui::IsItemHovered();
 
         if (isHovered) {
             m_hoveredFolder = folderPath;
@@ -236,46 +240,45 @@ namespace nexo::editor {
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
             {
-                const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                const auto* data = static_cast<const AssetDragDropPayload *>(payload->Data);
                 assets::AssetCatalog::getInstance().moveAsset(data->id, folderPath);
             }
             ImGui::EndDragDropTarget();
         }
 
         // Background - use hover color when hovered
-        ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
+        const ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
 
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
 
         // Calculate padding for the icon
-        const float padding = 10.0f;
+        constexpr float padding = 10.0f;
 
         // Calculate available area dimensions
-        float availWidth = thumbnailEnd.x - itemPos.x - (padding * 2.0f);
-        float availHeight = thumbnailEnd.y - itemPos.y - (padding * 2.0f);
+        const float availWidth = thumbnailEnd.x - itemPos.x - (padding * 2.0f);
+        const float availHeight = thumbnailEnd.y - itemPos.y - (padding * 2.0f);
 
         // Maintain aspect ratio by using the smaller dimension
-        float displaySize = std::min(availWidth, availHeight);
+        const float displaySize = std::min(availWidth, availHeight);
 
         // Calculate centered position
-        float xOffset = (availWidth - displaySize) * 0.5f + padding;
-        float yOffset = (availHeight - displaySize) * 0.5f + padding;
+        const float xOffset = (availWidth - displaySize) * 0.5f + padding;
+        const float yOffset = (availHeight - displaySize) * 0.5f + padding;
 
         // Final image coordinates maintaining aspect ratio
-        ImVec2 imageStart(
+        const ImVec2 imageStart(
             itemPos.x + xOffset,
             itemPos.y + yOffset
         );
-        ImVec2 imageEnd(
+        const ImVec2 imageEnd(
             imageStart.x + displaySize,
             imageStart.y + displaySize
         );
 
         // Draw folder PNG icon
-        ImTextureID folderIconTexture = getFolderIconTexture();
 
-        if (folderIconTexture) {
+        if (const ImTextureID folderIconTexture = getFolderIconTexture()) {
             drawList->AddImage(
                 folderIconTexture,
                 imageStart,
@@ -287,11 +290,11 @@ namespace nexo::editor {
         }
 
         // Calculate text size to ensure it fits
-        ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
+        const ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
 
         // Draw title background
-        ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : IM_COL32(0, 0, 0, 0);
-        float titleAreaHeight = itemSize.y * (1.0f - m_layout.size.thumbnailHeightRatio);
+        const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : IM_COL32(0, 0, 0, 0);
+        const float titleAreaHeight = itemSize.y * (1.0f - m_layout.size.thumbnailHeightRatio);
 
         drawList->AddRectFilled(
             ImVec2(itemPos.x, thumbnailEnd.y),
@@ -300,8 +303,8 @@ namespace nexo::editor {
         );
 
         // Position text with proper vertical alignment
-        float textY = thumbnailEnd.y + ((titleAreaHeight - textSize.y) * 0.5f);
-        float textX = itemPos.x + (itemSize.x - textSize.x) * 0.5f;
+        const float textY = thumbnailEnd.y + ((titleAreaHeight - textSize.y) * 0.5f);
+        const float textX = itemPos.x + (itemSize.x - textSize.x) * 0.5f;
 
         drawList->AddText(
             ImVec2(textX, textY),
@@ -317,64 +320,58 @@ namespace nexo::editor {
 
     void AssetManagerWindow::drawAssetsGrid()
     {
-        ImVec2 startPos = ImGui::GetCursorScreenPos();
+        const ImVec2 startPos = ImGui::GetCursorScreenPos();
 
-        // 1) Collect immediate subfolders of the current folder
         std::vector<std::pair<std::string,std::string>> subfolders;
         for (auto& [path,name] : m_folderStructure) {
             if (path.empty() || path.front() == '_')
                 continue;
 
             if (m_currentFolder.empty()) {
-                // root level = no slash in path
                 if (path.find('/') == std::string::npos)
                     subfolders.emplace_back(path, name);
             } else {
-                std::string prefix = m_currentFolder + "/";
-                // immediate child: starts with "curr/" but has no further '/'
-                if (path.rfind(prefix, 0) == 0 &&
-                    path.find('/', prefix.size()) == std::string::npos)
+                if (std::string prefix = m_currentFolder + "/"; path.rfind(prefix, 0) == 0 &&
+                                                                path.find('/', prefix.size()) == std::string::npos)
                 {
                     subfolders.emplace_back(path, path.substr(prefix.size()));
                 }
             }
         }
 
-        // 2) Collect assets exactly in the current folder
         std::vector<assets::GenericAssetRef> filtered;
         for (auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
-            if (auto d = ref.lock()) {
+            if (const auto d = ref.lock()) {
                 const auto& folder = d->getMetadata().location.getPath();
-                if (folder == "_internal")           continue;
+                if (folder == "_internal")
+                    continue;
                 if (m_selectedType != assets::AssetType::UNKNOWN &&
                     d->getType() != m_selectedType)  continue;
 
-                // **here’s the fix**: just compare the whole normalized folder
                 if (folder == m_currentFolder)
                     filtered.push_back(ref);
             }
         }
 
-        // 3) Layout & draw both subfolders and assets
-        size_t totalItems = subfolders.size() + filtered.size();
+        const size_t totalItems = subfolders.size() + filtered.size();
         ImGuiListClipper clipper;
-        int rows = int((totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount);
+        const auto rows = static_cast<int>((totalItems + m_layout.size.columnCount - 1) / m_layout.size.columnCount);
         clipper.Begin(rows, m_layout.size.itemStep.y);
 
         while (clipper.Step()) {
             for (int line = clipper.DisplayStart; line < clipper.DisplayEnd; ++line) {
-                int startIdx = line * m_layout.size.columnCount;
-                int endIdx   = std::min(startIdx + m_layout.size.columnCount, (int)totalItems);
+                const unsigned int startIdx = line * m_layout.size.columnCount;
+                const unsigned int endIdx   = std::min(startIdx + m_layout.size.columnCount, static_cast<unsigned int>(totalItems));
 
-                for (int i = startIdx; i < endIdx; ++i) {
-                    float col = float(i % m_layout.size.columnCount);
-                    float row = float(i / m_layout.size.columnCount);
+                for (unsigned int i = startIdx; i < endIdx; ++i) {
+                    unsigned int col = i % m_layout.size.columnCount;
+                    unsigned int row = i / m_layout.size.columnCount;
                     ImVec2 itemPos{
                         startPos.x + col * m_layout.size.itemStep.x,
                         startPos.y + row * m_layout.size.itemStep.y
                     };
 
-                    if (i < (int)subfolders.size()) {
+                    if (i < static_cast<unsigned int>(subfolders.size())) {
                         // draw folder thumbnail
                         drawFolder(
                             subfolders[i].first,
@@ -384,7 +381,7 @@ namespace nexo::editor {
                         );
                     } else {
                         // draw asset thumbnail
-                        int assetIdx = i - (int)subfolders.size();
+                        const auto assetIdx = i - static_cast<unsigned int>(subfolders.size());
                         drawAsset(
                             filtered[assetIdx],
                             assetIdx,
@@ -411,7 +408,7 @@ namespace nexo::editor {
         drawMenuBar();
 
         // Calculate sizes for splitter
-        const float splitterWidth = 5.0f;
+        constexpr float splitterWidth = 5.0f;
         static float leftPanelWidth = 200.0f; // Default width
 
         // Left panel (folder hierarchy)
@@ -437,17 +434,11 @@ namespace nexo::editor {
         ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
 
         // Handle file drops
-        if (ImGui::BeginDragDropTarget())
-        {
+        if (ImGui::BeginDragDropTarget()) {
             m_showDropIndicator = true;
-
-            // Accept external file drops (this is a placeholder - ImGui doesn't directly support OS file drops)
-            // The actual files come through the EventFileDrop event
-
+            // Only to show the drop indicator
             ImGui::EndDragDropTarget();
-        }
-        else
-        {
+        } else {
             m_showDropIndicator = false;
         }
 
@@ -455,8 +446,8 @@ namespace nexo::editor {
         if (m_showDropIndicator || !m_pendingDroppedFiles.empty())
         {
             ImDrawList* drawList = ImGui::GetWindowDrawList();
-            ImVec2 windowPos = ImGui::GetWindowPos();
-            ImVec2 windowSize = ImGui::GetWindowSize();
+            const ImVec2 windowPos = ImGui::GetWindowPos();
+            const ImVec2 windowSize = ImGui::GetWindowSize();
 
             // Draw semi-transparent overlay
             drawList->AddRectFilled(windowPos, ImVec2(windowPos.x + windowSize.x, windowPos.y + windowSize.y),
@@ -467,12 +458,12 @@ namespace nexo::editor {
                             IM_COL32(100, 100, 255, 200), 0.0f, 0, 3.0f);
 
             // Draw text
-            const char* dropText = "Drop files here to import";
-            ImVec2 textSize = ImGui::CalcTextSize(dropText);
-            ImVec2 textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
+            const std::string dropText = "Drop files here to import";
+            const ImVec2 textSize = ImGui::CalcTextSize(dropText.c_str());
+            const ImVec2 textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
                                   windowPos.y + (windowSize.y - textSize.y) * 0.5f);
             drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.5f, textPos,
-                            IM_COL32(255, 255, 255, 255), dropText);
+                            IM_COL32(255, 255, 255, 255), dropText.c_str());
         }
 
         ImGui::Text(ICON_FA_FOLDER " ");
@@ -487,7 +478,7 @@ namespace nexo::editor {
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
-                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    const auto data = static_cast<const AssetDragDropPayload *>(payload->Data);
                     assets::AssetCatalog::getInstance().moveAsset(data->id, "");
                 }
                 ImGui::EndDragDropTarget();
@@ -513,7 +504,7 @@ namespace nexo::editor {
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
                 {
-                    const AssetDragDropPayload* data = (const AssetDragDropPayload*)payload->Data;
+                    const auto data = static_cast<const AssetDragDropPayload *>(payload->Data);
                     assets::AssetCatalog::getInstance().moveAsset(data->id, fullPath);
                 }
                 ImGui::EndDragDropTarget();

@@ -139,7 +139,7 @@ namespace nexo::editor {
                                    [](const unsigned char c){ return std::tolower(c); });
 
             // Look up in the map and set the bit in the signature
-            auto it = keyMap.find(segment);
+            const auto it = keyMap.find(segment);
             if (it != keyMap.end()) {
                 m_signature.set(static_cast<size_t>(it->second - ImGuiKey_NamedKey_BEGIN));
             }
@@ -176,7 +176,7 @@ namespace nexo::editor {
 
     std::span<const Command> Command::getChildren() const
     {
-        return std::span<const Command>(m_childrens);
+        return {m_childrens};
     }
 
     const std::bitset<ImGuiKey_NamedKey_COUNT> &Command::getSignature() const

@@ -20,7 +20,6 @@
 #include <fstream>
 
 #ifdef __linux__
-  #include <unistd.h>
   #include <sys/utsname.h>
 #endif
 
@@ -54,11 +53,10 @@ namespace nexo::editor {
 #elif defined(__APPLE__)
         return "macOS";
 #elif defined(__linux__)
-        struct utsname info;
+        utsname info{};
         if (uname(&info) == 0)
             return std::string(info.sysname) + " " + info.release;
-        else
-            return "Linux";
+        return "Linux";
 #else
         return "Unknown OS";
 #endif
@@ -78,7 +76,7 @@ namespace nexo::editor {
                     // trim leading spaces
                     model.erase(
                         model.begin(),
-                        std::ranges::find_if(model, [](unsigned char ch) { return !std::isspace(ch); })
+                        std::ranges::find_if(model, [](const unsigned char ch) { return !std::isspace(ch); })
                     );
                     return model;
                 }
@@ -110,9 +108,9 @@ namespace nexo::editor {
     static std::string getGraphicsInfo()
     {
 #ifdef NX_GRAPHICS_API_OPENGL
-        auto vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        auto renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        auto version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+        const auto vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        const auto renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+        const auto version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
         return std::string("OpenGL: ") + vendor + " - " + renderer + " (" + version + ")";
 #else
         return "Graphics info not available";
@@ -149,12 +147,12 @@ namespace nexo::editor {
 
     static std::filesystem::path getTestReportFilePath()
     {
-        auto now_tp = floor<std::chrono::seconds>(std::chrono::system_clock::now());
+        const auto now_tp = floor<std::chrono::seconds>(std::chrono::system_clock::now());
         std::chrono::zoned_time local_zoned{std::chrono::current_zone(), now_tp};
         std::string ts = std::format("{:%Y%m%d}", local_zoned);
-        std::string filename = std::format("EditorTestResults_{}.report", ts);
+        const std::string filename = std::format("EditorTestResults_{}.report", ts);
 
-        auto testDir = std::filesystem::path(Path::resolvePathRelativeToExe("../tests/editor"));
+        const auto testDir = std::filesystem::path(Path::resolvePathRelativeToExe("../tests/editor"));
         std::filesystem::create_directories(testDir);
         auto filePath = testDir / filename;
         return filePath;
@@ -170,7 +168,7 @@ namespace nexo::editor {
 
         writeEnvironmentReport(out);
 
-        for (auto &section : m_testSections) {
+        for (const auto &section : m_testSections) {
             out << std::format("# {}\n", section.name);
             for (const auto &tc : section.testCases)
                 writeTestCaseReport(out, tc);

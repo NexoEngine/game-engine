@@ -158,7 +158,7 @@ namespace nexo::editor {
     */
     class EntityParentChangeAction final : public Action {
         public:
-            EntityParentChangeAction(ecs::Entity entity, ecs::Entity oldParent, ecs::Entity newParent)
+            EntityParentChangeAction(const ecs::Entity entity, const ecs::Entity oldParent, const ecs::Entity newParent)
                 : m_entity(entity), m_oldParent(oldParent), m_newParent(newParent) {}
 
             void redo() override;

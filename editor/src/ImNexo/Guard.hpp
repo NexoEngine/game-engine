@@ -14,7 +14,6 @@
 #pragma once
 
 #include <imgui.h>
-#include <imgui_internal.h>
 #include <vector>
 #include <string>
 
@@ -314,7 +313,6 @@ namespace ImNexo {
           * @param scale The scaling factor to apply to the current window's font
           */
          explicit FontScaleGuard(const float scale)
-             : m_active(true)
          {
              ImGui::SetWindowFontScale(scale);
          }

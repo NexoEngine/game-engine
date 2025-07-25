@@ -66,6 +66,7 @@ namespace nexo::editor::utils {
      * @param previewSize The size (width, height) of the preview.
      * @param entity The entity to generate the preview from.
      * @param out Output structure containing preview scene details.
+     * @param clearColor The clear color of the camera
      */
 	void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity, ScenePreviewOut &out, const glm::vec4 &clearColor = {0.05f, 0.05f, 0.05f, 0.0f});
 

@@ -18,6 +18,8 @@
 
 #include <algorithm>
 #include <numbers>
+#include <math.h>
+#include <imgui_internal.h>
 
 namespace ImNexo {
 
@@ -98,7 +100,7 @@ namespace ImNexo {
 
         if (textSize.x > wrapWidth) {
             // Try to find a space to split the text
-            size_t splitPos = text.find(' ');
+            const size_t splitPos = text.find(' ');
 
             if (splitPos != std::string::npos) {
                 // Split text into two lines
