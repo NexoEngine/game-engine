@@ -13,13 +13,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Utils.hpp"
+#include <imgui_internal.h>
 
 namespace ImNexo::utils {
 
     ImU32 imLerpColor(const ImU32 colA, const ImU32 colB, const float t)
     {
-        const unsigned char a0 = (colA >> 24) & 0xFF, r0 = (colA >> 16) & 0xFF, g0 = (colA >> 8) & 0xFF, b0 = colA & 0xFF;
-        const unsigned char a1 = (colB >> 24) & 0xFF, r1 = (colB >> 16) & 0xFF, g1 = (colB >> 8) & 0xFF, b1 = colB & 0xFF;
+        const unsigned char a0 = (colA >> 24) & 0xFF;
+        const unsigned char r0 = (colA >> 16) & 0xFF;
+        const unsigned char g0 = (colA >> 8) & 0xFF;
+        const unsigned char b0 = colA & 0xFF;
+        const unsigned char a1 = (colB >> 24) & 0xFF;
+        const unsigned char r1 = (colB >> 16) & 0xFF;
+        const unsigned char g1 = (colB >> 8) & 0xFF;
+        const unsigned char b1 = colB & 0xFF;
         const auto a = static_cast<unsigned char>(static_cast<float>(a0) + t * static_cast<float>(a1 - a0));
         const auto r = static_cast<unsigned char>(static_cast<float>(r0) + t * static_cast<float>(r1 - r0));
         const auto g = static_cast<unsigned char>(static_cast<float>(g0) + t * static_cast<float>(g1 - g0));

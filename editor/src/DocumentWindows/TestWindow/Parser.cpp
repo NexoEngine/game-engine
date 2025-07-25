@@ -25,7 +25,7 @@
 
 namespace nexo::editor {
 
-    static std::string parseBullet(std::string line)
+    static std::string parseBullet(const std::string &line)
     {
         if (line.size() >= 2 && line[0] == '-' && std::isspace(line[1]))
             return line.substr(2);
@@ -58,7 +58,7 @@ namespace nexo::editor {
                 currentSubSection = &currentSection->subSections.back();
                 currentSubSection->name = line.substr(3);
             // Test case
-            } else if (line.rfind("-", 0) == 0) {
+            } else if (line.rfind('-', 0) == 0) {
                 std::string testName = parseBullet(line);
                 if (testName.empty())
                     THROW_EXCEPTION(InvalidTestFileFormat, entry.path().string(), "Test case format is invalid : \"- Test case name \"");
@@ -76,7 +76,7 @@ namespace nexo::editor {
 
     void TestWindow::parseTestFolder()
     {
-        std::filesystem::path testDir = Path::resolvePathRelativeToExe(
+        const std::filesystem::path testDir = Path::resolvePathRelativeToExe(
             "../tests/editor");
 
         for (const auto &entry : std::filesystem::directory_iterator(testDir)) {

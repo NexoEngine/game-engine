@@ -64,7 +64,7 @@ namespace nexo::editor {
         }
     }
 
-    ecs::Entity EditorScene::findRootParent(ecs::Entity entityId) const
+    ecs::Entity EditorScene::findRootParent(const ecs::Entity entityId)
     {
         const auto &coord = Application::m_coordinator;
         ecs::Entity currentEntity = entityId;
@@ -90,7 +90,7 @@ namespace nexo::editor {
         auto &selector = Selector::get();
 
         if (selectWholeHierarchy) {
-            ecs::Entity rootEntity = findRootParent(entityId);
+            const ecs::Entity rootEntity = findRootParent(entityId);
 
             if (!isShiftPressed && !isCtrlPressed)
                 selector.clearSelection();
@@ -111,19 +111,19 @@ namespace nexo::editor {
         selector.setSelectedScene(m_sceneId);
     }
 
-    void EditorScene::selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed)
+    void EditorScene::selectEntityHierarchy(const ecs::Entity entityId, const bool isCtrlPressed)
     {
         const auto &coord = Application::m_coordinator;
 
         const auto uuid = coord->tryGetComponent<components::UuidComponent>(entityId);
         if (uuid) {
-            const SelectionType selType = getSelectionType(entityId);
+            const SelectionType selType = getSelectionType(static_cast<int>(entityId));
 
             auto &selector = Selector::get();
             if (isCtrlPressed)
-                selector.toggleSelection(uuid->get().uuid, entityId, selType);
+                selector.toggleSelection(uuid->get().uuid, static_cast<int>(entityId), selType);
             else
-                selector.addToSelection(uuid->get().uuid, entityId, selType);
+                selector.addToSelection(uuid->get().uuid, static_cast<int>(entityId), selType);
         }
 
         if (coord->entityHasComponent<components::TransformComponent>(entityId)) {

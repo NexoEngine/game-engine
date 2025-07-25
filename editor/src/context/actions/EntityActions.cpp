@@ -71,7 +71,7 @@ namespace nexo::editor {
 
         // Handle old parent
         if (m_oldParent != ecs::INVALID_ENTITY) {
-            auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_oldParent);
+            const auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_oldParent);
             if (oldParentTransform.has_value()) {
                 oldParentTransform->get().removeChild(m_entity);
             }
@@ -80,7 +80,7 @@ namespace nexo::editor {
         // Handle new parent
         if (m_newParent != ecs::INVALID_ENTITY) {
             // Add or update parent component on entity
-            auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
+            const auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
             if (!parentComp.has_value()) {
                 coordinator.addComponent(m_entity, components::ParentComponent{m_newParent});
             } else {
@@ -98,7 +98,7 @@ namespace nexo::editor {
             }
         } else {
             // Remove parent component (make it a root entity)
-            auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
+            const auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
             if (parentComp.has_value()) {
                 coordinator.removeComponent<components::ParentComponent>(m_entity);
             }
@@ -111,7 +111,7 @@ namespace nexo::editor {
 
         // Handle new parent (undo by removing from it)
         if (m_newParent != ecs::INVALID_ENTITY) {
-            auto newParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_newParent);
+            const auto newParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_newParent);
             if (newParentTransform.has_value()) {
                 newParentTransform->get().removeChild(m_entity);
             }
@@ -120,7 +120,7 @@ namespace nexo::editor {
         // Handle old parent (restore to it)
         if (m_oldParent != ecs::INVALID_ENTITY) {
             // Add or update parent component on entity
-            auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
+            const auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
             if (!parentComp.has_value()) {
                 coordinator.addComponent(m_entity, components::ParentComponent{m_oldParent});
             } else {
@@ -138,7 +138,7 @@ namespace nexo::editor {
             }
         } else {
             // Remove parent component (restore to root entity)
-            auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
+            const auto parentComp = coordinator.tryGetComponent<components::ParentComponent>(m_entity);
             if (parentComp.has_value()) {
                 coordinator.removeComponent<components::ParentComponent>(m_entity);
             }

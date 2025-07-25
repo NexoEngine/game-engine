@@ -33,19 +33,19 @@ namespace nexo::editor {
         const std::string gameWindowName = std::format("Game View - {}{}{}", m_sceneUuid, NEXO_WND_USTRID_GAME_WINDOW, m_sceneId);
 
         // Check if game window already exists
-        if (auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+        if (const auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
             // Window exists, just make it visible
             gameWindow->setOpened(true);
         } else {
             // Get current EditorScene window's dock ID for docking the game window
             const std::string currentWindowName = m_windowName;
-            ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(currentWindowName.c_str());
+            const ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(currentWindowName.c_str());
 
             if (currentImGuiWindow && currentImGuiWindow->DockId) {
                 // Create new game window
                 editor.registerWindow<GameWindow>(gameWindowName);
 
-                if (auto newGameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
+                if (const auto newGameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
                     // Configure the game window
                     newGameWindow->setSceneId(static_cast<unsigned int>(m_sceneId));
                     newGameWindow->setSceneUuid(m_sceneUuid);
@@ -70,7 +70,7 @@ namespace nexo::editor {
     void EditorScene::initialToolbarSetup(const float buttonWidth) const
     {
         ImVec2 toolbarPos = m_windowPos;
-        ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+        const ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
         toolbarPos.x += contentMin.x + 10.0f;
         toolbarPos.y += contentMin.y + 20.0f;
 

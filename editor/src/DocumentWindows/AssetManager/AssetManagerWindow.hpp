@@ -67,15 +67,15 @@ namespace nexo::editor {
                 } color;
             };
 
-            std::set<int> m_selectedAssets;
+            std::set<unsigned int> m_selectedAssets;
             std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
             LayoutSettings m_layout;
 
             void calculateLayout(float availWidth);
             void drawMenuBar();
             void drawAssetsGrid();
-            void drawAsset(const assets::GenericAssetRef& asset, int index, const ImVec2& itemPos, const ImVec2& itemSize);
-            void handleSelection(int index, bool isSelected);
+            void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
+            void handleSelection(unsigned int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
             std::string m_currentFolder;  // Currently selected folder
@@ -86,13 +86,6 @@ namespace nexo::editor {
             void buildFolderStructure();
             void drawFolderTree();
             void drawFolderTreeItem(const std::string& name, const std::string& path);
-
-            void drawTextureThumbnail(
-                ImDrawList *drawList,
-                ImTextureID textureId,
-                const ImVec2 &itemPos,
-                const ImVec2& thumbnailEnd
-            ) const ;
 
             struct FolderCreationState {
                 bool isCreatingFolder = false;
@@ -106,7 +99,7 @@ namespace nexo::editor {
             FolderCreationState m_folderCreationState;
             assets::AssetRef<assets::Texture> m_folderIcon;
 
-            ImTextureID getFolderIconTexture();
+            ImTextureID getFolderIconTexture() const;
 
             void handleNewFolderCreation();
             void drawFolder(
@@ -120,8 +113,8 @@ namespace nexo::editor {
             bool m_showDropIndicator = false;
 
             void handleDroppedFiles();
-            const assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
-            void importDroppedFile(const std::string& filePath);
+            assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
+            void importDroppedFile(const std::string& filePath) const;
     };
 
     /**

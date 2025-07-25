@@ -109,16 +109,16 @@ namespace nexo::editor {
     {
         auto &selector = Selector::get();
         SceneObject entityNode;
-        std::string uiName = "";
-        if (nexo::Application::m_coordinator->entityHasComponent<components::NameComponent>(entity)) {
-            const auto &nameComponent = nexo::Application::m_coordinator->getComponent<components::NameComponent>(entity);
+        std::string uiName;
+        if (Application::m_coordinator->entityHasComponent<components::NameComponent>(entity)) {
+            const auto &nameComponent = Application::m_coordinator->getComponent<components::NameComponent>(entity);
             uiName = nameComponent.name;
         } else
             uiName = std::format("{}{}", ObjectTypeToIcon.at(SelectionType::ENTITY), entity);
         entityNode.type = SelectionType::ENTITY;
         entityNode.data.sceneProperties = SceneProperties{sceneId, uiId};
         entityNode.data.entity = entity;
-        const auto entityUuid = nexo::Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+        const auto entityUuid = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
         if (entityUuid)
         {
             entityNode.uuid = entityUuid->get().uuid;

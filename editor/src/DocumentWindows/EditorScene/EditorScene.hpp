@@ -22,7 +22,6 @@
 #include "core/scene/SceneManager.hpp"
 #include "../PopupManager.hpp"
 #include "ImNexo/Widgets.hpp"
-#include <format>
 #include "DocumentWindows/AssetManager/AssetManagerWindow.hpp"
 
 namespace nexo::editor
@@ -284,11 +283,11 @@ namespace nexo::editor
         void setupGizmoContext(const components::CameraComponent& camera) const;
         float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
         static void captureInitialTransformStates(const std::vector<int>& entities);
-        void applyTransformToEntities(
+        static void applyTransformToEntities(
             ecs::Entity sourceEntity,
             const glm::mat4& oldWorldMatrix,
             const glm::mat4& newWorldMatrix,
-            const std::vector<int>& targetEntities) const;
+            const std::vector<int>& targetEntities) ;
         static void createTransformUndoActions(const std::vector<int>& entities);
         static bool s_wasUsingGizmo;
         static ImGuizmo::OPERATION s_lastOperation;
@@ -307,13 +306,13 @@ namespace nexo::editor
 
         void handleSelection();
         void handleDropTarget();
-        void handleDropModel(const AssetDragDropPayload &payload);
-        void handleDropTexture(const AssetDragDropPayload &payload);
-        void handleDropMaterial(const AssetDragDropPayload &payload);
+        void handleDropModel(const AssetDragDropPayload &payload) const;
+        void handleDropTexture(const AssetDragDropPayload &payload) const;
+        void handleDropMaterial(const AssetDragDropPayload &payload) const;
         int sampleEntityTexture(float mx, float my) const;
-        ecs::Entity findRootParent(ecs::Entity entityId) const;
-        void selectEntityHierarchy(ecs::Entity entityId, const bool isCtrlPressed);
-        void selectModelChildren(const std::vector<ecs::Entity>& children, const bool isCtrlPressed);
+        static ecs::Entity findRootParent(ecs::Entity entityId);
+        void selectEntityHierarchy(ecs::Entity entityId, bool isCtrlPressed);
+        void selectModelChildren(const std::vector<ecs::Entity>& children, bool isCtrlPressed);
         void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
         void updateWindowState();
 

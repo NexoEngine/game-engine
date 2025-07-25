@@ -78,7 +78,7 @@ namespace nexo::editor {
      * @param level The verbosity level for which the corresponding color is computed.
      * @return ImVec4 The color associated with the specified verbosity level.
      */
-    const ImVec4 getVerbosityColor(const loguru::Verbosity level)
+    ImVec4 getVerbosityColor(const loguru::Verbosity level)
     {
         ImVec4 color;
 
@@ -107,8 +107,8 @@ namespace nexo::editor {
         using namespace std::chrono;
 
         // Truncate to seconds precision
-        auto now = floor<seconds>(system_clock::now());
-        zoned_time local_zoned{ current_zone(), now };
+        const auto now = floor<seconds>(system_clock::now());
+        const zoned_time local_zoned{ current_zone(), now };
 
         auto local_time = local_zoned.get_local_time();
         std::string ts = std::format("{:%Y%m%d_%H%M%S}", local_time);

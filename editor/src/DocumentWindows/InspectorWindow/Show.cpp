@@ -28,7 +28,7 @@ namespace nexo::editor {
         std::string uiHandle = selector.getUiHandle(scene.getUuid(), "");
 
         // Remove the icon prefix
-        if (size_t spacePos = uiHandle.find(' '); spacePos != std::string::npos)
+        if (const size_t spacePos = uiHandle.find(' '); spacePos != std::string::npos)
             uiHandle = uiHandle.substr(spacePos + 1);
 
         if (ImNexo::Header("##SceneNode", uiHandle))

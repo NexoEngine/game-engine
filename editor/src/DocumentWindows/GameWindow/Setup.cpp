@@ -17,8 +17,6 @@
 #include "ecs/Coordinator.hpp"
 #include "components/Camera.hpp"
 #include "components/Transform.hpp"
-#include "components/SceneComponents.hpp"
-#include "components/Name.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "renderer/Framebuffer.hpp"
 #include "CameraFactory.hpp"

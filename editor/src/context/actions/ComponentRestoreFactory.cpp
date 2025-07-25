@@ -40,8 +40,7 @@ namespace nexo::editor {
             {typeid(components::PerspectiveCameraTarget), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(e); }},
         };
 
-        auto it = factories.find(typeIndex);
-        if (it != factories.end()) {
+        if (const auto it = factories.find(typeIndex); it != factories.end()) {
             return (it->second)(entity);
         }
         return nullptr;

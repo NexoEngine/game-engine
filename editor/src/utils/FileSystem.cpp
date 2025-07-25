@@ -30,7 +30,7 @@ namespace nexo::editor::utils {
         #else
             std::stringstream ss;
             ss << "xdg-open " << std::quoted(folderPath);
-            int status = std::system(ss.str().c_str());
+            const int status = std::system(ss.str().c_str());
             if (status == -1)
                 LOG(NEXO_ERROR, "Failed to open folder '{}'", folderPath);
             else if (status != 0)

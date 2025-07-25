@@ -22,7 +22,7 @@ namespace nexo::editor {
 
     std::string verbosityToString(loguru::Verbosity level);
     loguru::Verbosity nexoLevelToLoguruLevel(LogLevel level);
-    const ImVec4 getVerbosityColor(loguru::Verbosity level);
+    ImVec4 getVerbosityColor(loguru::Verbosity level);
     std::string generateLogFilePath();
 
 	constexpr auto LOGURU_CALLBACK_NAME = "GEE";
@@ -57,6 +57,7 @@ namespace nexo::editor {
             * establishing an engine log callback that maps custom LogLevel messages to loguru verbosity levels
             * using nexoLevelToLoguruLevel before logging them with VLOG_F.
             *
+            * @param windowName The name of the window
             * @param registry The window registry used to register this console window.
             */
             explicit ConsoleWindow(const std::string &windowName, WindowRegistry &registry);

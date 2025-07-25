@@ -302,7 +302,7 @@ namespace ImNexo {
             static double lastClickTime = 0.0f;
 
             // Button with arrow indicating state
-            std::string buttonText = "Add Component " + std::string(showComponentSelector ? ICON_FA_CHEVRON_UP : ICON_FA_CHEVRON_DOWN);
+            const std::string buttonText = "Add Component " + std::string(showComponentSelector ? ICON_FA_CHEVRON_UP : ICON_FA_CHEVRON_DOWN);
 
             if (Button(buttonText, ImVec2(buttonWidth, 0)))
             {
