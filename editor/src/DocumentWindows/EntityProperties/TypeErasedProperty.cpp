@@ -82,7 +82,7 @@ namespace nexo::editor {
         }
     }
 
-    void TypeErasedProperty::show(ecs::Entity entity)
+    void TypeErasedProperty::show(const ecs::Entity entity)
     {
         if (!m_description) {
             ImGui::Text("No component description available for type %d", m_componentType);
@@ -91,7 +91,7 @@ namespace nexo::editor {
 
         const auto& coordinator = Application::m_coordinator;
 
-        auto componentData = static_cast<uint8_t *>(coordinator->tryGetComponentById(m_componentType, entity));
+        const auto componentData = static_cast<uint8_t *>(coordinator->tryGetComponentById(m_componentType, entity));
         if (!componentData) {
             ImGui::Text("Entity %d does not have component type %d", entity, m_componentType);
             return;
@@ -101,7 +101,7 @@ namespace nexo::editor {
         {
             for (const auto& field : m_description->fields) {
                 // Move to pointer to next field data
-                auto currentComponentData = componentData + field.offset;
+                const auto currentComponentData = componentData + field.offset;
                 // Show the field in the UI
                 showField(field, currentComponentData);
             }

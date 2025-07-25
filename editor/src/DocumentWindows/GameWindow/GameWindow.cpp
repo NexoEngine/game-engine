@@ -16,7 +16,7 @@
 
 namespace nexo::editor {
 
-    void GameWindow::setSceneId(unsigned int sceneId)
+    void GameWindow::setSceneId(const unsigned int sceneId)
     {
         m_sceneId = sceneId;
     }

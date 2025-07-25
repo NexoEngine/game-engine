@@ -18,7 +18,6 @@
 #include "LightFactory.hpp"
 #include "components/Camera.hpp"
 #include "components/MaterialComponent.hpp"
-#include "components/Render3D.hpp"
 #include "components/StaticMesh.hpp"
 
 namespace nexo::editor::utils {

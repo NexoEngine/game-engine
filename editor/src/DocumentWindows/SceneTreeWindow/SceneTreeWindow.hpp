@@ -80,7 +80,7 @@ namespace nexo::editor
         std::vector<SceneObject> children; ///< Child objects (if any).
 
         explicit SceneObject(std::string name = "", std::vector<SceneObject> children = {},
-                             SelectionType type = SelectionType::NONE, EntityProperties data = {})
+                             const SelectionType type = SelectionType::NONE, const EntityProperties data = {})
             : uiName(std::move(name)), type(type), data(data), children(std::move(children))
         {
         }
@@ -129,7 +129,7 @@ namespace nexo::editor
                 ecs::Entity parentEntity,
                 SceneObject& parentNode,
                 std::unordered_set<ecs::Entity>& processedEntities);
-            SceneObject createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) const;
+            static SceneObject createEntityNode(scene::SceneId sceneId, WindowId uiId, ecs::Entity entity) ;
 
         private:
 	        SceneObject root_;    ///< Root node of the scene tree.
@@ -430,27 +430,27 @@ namespace nexo::editor
         * @brief Handles drag source setup for scene objects.
         * @param object The scene object being dragged.
         */
-        void handleDragSource(const SceneObject& object);
+        static void handleDragSource(const SceneObject& object);
 
         /**
         * @brief Handles drop target setup for scene objects.
         * @param object The scene object that can receive drops.
         */
-        void handleDropTarget(const SceneObject& object);
+        static void handleDropTarget(const SceneObject& object);
 
         /**
         * @brief Processes the drop operation from the scene tree itself.
         * @param dropTarget The target scene object receiving the drop.
         * @param payload The drag-and-drop payload data.
         */
-        void handleDropFromSceneTree(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+        static void handleDropFromSceneTree(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
 
         /**
         * @brief Processes the drop operation from the asset manager.
         * @param dropTarget The target scene object receiving the drop.
         * @param payload The drag-and-drop payload data.
         */
-        void handleDropFromAssetManager(const SceneObject& dropTarget, const struct AssetDragDropPayload& payload);
+        static void handleDropFromAssetManager(const SceneObject& dropTarget, const AssetDragDropPayload& payload);
 
         /**
         * @brief Validates if a drop operation is allowed.
@@ -458,7 +458,7 @@ namespace nexo::editor
         * @param payload The drag-and-drop payload data.
         * @return true if the drop is valid, false otherwise.
         */
-        static bool canAcceptDrop(const SceneObject& dropTarget, const struct SceneTreeDragDropPayload& payload);
+        static bool canAcceptDrop(const SceneObject& dropTarget, const SceneTreeDragDropPayload& payload);
     };
 
     /**

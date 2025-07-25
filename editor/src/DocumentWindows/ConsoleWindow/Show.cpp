@@ -82,9 +82,9 @@ namespace nexo::editor {
         m_logPadding += ImGui::GetStyle().ItemSpacing.x;
     }
 
-    void ConsoleWindow::displayLog(loguru::Verbosity verbosity, const std::string &msg) const
+    void ConsoleWindow::displayLog(const loguru::Verbosity verbosity, const std::string &msg) const
     {
-        ImVec4 color = getVerbosityColor(verbosity);
+        const ImVec4 color = getVerbosityColor(verbosity);
         ImGui::PushStyleColor(ImGuiCol_Text, color);
 
         const std::string tag = verbosityToString(verbosity);

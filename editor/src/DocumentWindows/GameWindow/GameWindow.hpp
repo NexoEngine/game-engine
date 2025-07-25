@@ -17,7 +17,6 @@
 #include "ADocumentWindow.hpp"
 #include "../PopupManager.hpp"
 #include "ecs/Definitions.hpp"
-#include <glm/glm.hpp>
 #include <string>
 
 namespace nexo::editor

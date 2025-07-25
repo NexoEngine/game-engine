@@ -26,7 +26,7 @@
 
 namespace nexo::editor {
 
-    void MaterialProperty::cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out) const
+    void MaterialProperty::cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out)
     {
         assets::AssetCatalog::getInstance().deleteAsset(materialRef);
         materialRef = nullptr;
@@ -37,7 +37,7 @@ namespace nexo::editor {
         ImGui::CloseCurrentPopup();
     }
 
-    void MaterialProperty::createMaterialPopup(const ecs::Entity entity) const
+    void MaterialProperty::createMaterialPopup(const ecs::Entity entity)
     {
         ImGui::Text("Create New Material");
         ImGui::Separator();
@@ -70,7 +70,7 @@ namespace nexo::editor {
             ImGui::InputText("Name", materialName, IM_ARRAYSIZE(materialName));
             ImGui::Spacing();
 
-            auto material = materialRef.lock();
+            const auto material = materialRef.lock();
             components::Material& materialData = *material->getData();
 
             if (ImNexo::MaterialInspector(materialData))
@@ -86,13 +86,12 @@ namespace nexo::editor {
 
             if (!out.sceneGenerated)
                 utils::genScenePreview("Material Creation Scene", {previewWidth - 4, totalHeight}, entity, out);
-            Application::SceneInfo sceneInfo{out.sceneId, RenderingType::FRAMEBUFFER};
+            const Application::SceneInfo sceneInfo{out.sceneId, RenderingType::FRAMEBUFFER};
             auto &materialComp = Application::m_coordinator->getComponent<components::MaterialComponent>(out.entityCopy);
             materialComp.material = materialRef;
             Application::getInstance().run(sceneInfo);
             const auto &cameraComp = Application::m_coordinator->getComponent<components::CameraComponent>(out.cameraId);
             const unsigned int textureId = cameraComp.m_renderTarget->getColorAttachmentId();
-
 
             const float aspectRatio = (previewWidth - 8) / totalHeight;
 
@@ -121,14 +120,14 @@ namespace nexo::editor {
                 }
                 const auto &sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
                 std::string sceneName = Application::getInstance().getSceneManager().getScene(sceneTag.id).getName();
-                auto hashPos = sceneName.find('#');
+                const auto hashPos = sceneName.find('#');
                 if (hashPos != std::string::npos) {
                     sceneName.erase(hashPos);
                 }
-                assets::AssetLocation finalLocation(std::format("{}@{}/", name, sceneName));
+                const assets::AssetLocation finalLocation(std::format("{}@{}/", name, sceneName));
 
                 // Create a new material asset by copying the preview material
-                auto newMaterialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+                const auto newMaterialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
                     finalLocation,
                     std::make_unique<components::Material>(*materialRef.lock()->getData())
                 );
@@ -146,7 +145,7 @@ namespace nexo::editor {
     }
 
 
-    void MaterialProperty::show(ecs::Entity entity)
+    void MaterialProperty::show(const ecs::Entity entity)
     {
         if (Application::m_coordinator->entityHasComponent<components::CameraComponent>(entity) ||
             Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
@@ -155,7 +154,7 @@ namespace nexo::editor {
         const auto &materialComponent = Application::getEntityComponent<components::MaterialComponent>(entity);
         if (ImNexo::Header("##MaterialNode", "Material Component"))
         {
-            ImTextureID textureID = ThumbnailCache::getInstance().getMaterialThumbnail(materialComponent.material);
+            const ImTextureID textureID = ThumbnailCache::getInstance().getMaterialThumbnail(materialComponent.material);
             ImNexo::Image(textureID, ImVec2(64, 64));
             ImGui::SameLine();
 

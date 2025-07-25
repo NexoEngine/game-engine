@@ -14,6 +14,7 @@
 
 #include "SceneTreeWindow.hpp"
 #include "utils/Config.hpp"
+#include <imgui_internal.h>
 
 namespace nexo::editor {
 

@@ -150,7 +150,7 @@ namespace nexo::editor {
                         registry.setDockId(currentWindowName, dockId);
                     }
                 }
-            } else if (inWindowSection && !isHashedWindow && !line.empty() && line[0] == '[') {
+            } else if (inWindowSection && !line.empty() && line[0] == '[') {
                 // Reset state when we hit a new section
                 inWindowSection = false;
                 isHashedWindow = false;
