@@ -22,6 +22,7 @@ set(SRCS
         editor/src/context/ActionGroup.cpp
         editor/src/context/actions/EntityActions.cpp
         editor/src/context/actions/ComponentRestoreFactory.cpp
+        editor/src/context/actions/AssetActions.cpp
         editor/src/ImNexo/EntityProperties.cpp
         editor/src/ImNexo/Components.cpp
         editor/src/ImNexo/Elements.cpp

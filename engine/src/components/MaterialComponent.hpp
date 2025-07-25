@@ -18,5 +18,18 @@
 namespace nexo::components {
     struct MaterialComponent {
         assets::AssetRef<assets::Material> material;
+        struct Memento {
+            assets::AssetRef<assets::Material> material;
+        };
+
+        void restore(const Memento& memento)
+        {
+            material = memento.material;
+        }
+
+        [[nodiscard]] Memento save() const
+        {
+            return {material};
+        }
     };
 }
