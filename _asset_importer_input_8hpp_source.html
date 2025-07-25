@@ -117,13 +117,13 @@ $(document).ready(function(){initNavTree('_asset_importer_input_8hpp_source.html
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="comment">// Import from memory buffer, importer should read from the buffer</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structnexo_1_1assets_1_1_importer_memory_input.html">   29</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1assets_1_1_importer_memory_input.html">ImporterMemoryInput</a> {</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        std::vector&lt;uint8_t&gt; memoryData;          <span class="comment">//&lt; Memory buffer</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::optional&lt;std::string&gt; fileExtension; <span class="comment">//&lt; For format detection with memory sources (MUST start with a dot, e.g.: .png)</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::string formatHint; <span class="comment">//&lt; For format detection with memory sources (can be ARGB8888, .obj, etc.)</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    };</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">using</span> ImporterInputVariant = std::variant&lt;ImporterFileInput, ImporterMemoryInput&gt;;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>} <span class="comment">// namespace nexo::assets</span></div>
-<div class="ttc" id="anamespacenexo_1_1assets_html"><div class="ttname"><a href="namespacenexo_1_1assets.html">nexo::assets</a></div><div class="ttdoc">AssetRef.hpp /////////////////////////////////////////////////////////////.</div><div class="ttdef"><b>Definition:</b> Asset.cpp:18</div></div>
+<div class="ttc" id="anamespacenexo_1_1assets_html"><div class="ttname"><a href="namespacenexo_1_1assets.html">nexo::assets</a></div><div class="ttdoc">AssetRef.hpp /////////////////////////////////////////////////////////////.</div><div class="ttdef"><b>Definition:</b> Asset.cpp:17</div></div>
 <div class="ttc" id="astructnexo_1_1assets_1_1_importer_file_input_html"><div class="ttname"><a href="structnexo_1_1assets_1_1_importer_file_input.html">nexo::assets::ImporterFileInput</a></div><div class="ttdef"><b>Definition:</b> AssetImporterInput.hpp:24</div></div>
 <div class="ttc" id="astructnexo_1_1assets_1_1_importer_memory_input_html"><div class="ttname"><a href="structnexo_1_1assets_1_1_importer_memory_input.html">nexo::assets::ImporterMemoryInput</a></div><div class="ttdef"><b>Definition:</b> AssetImporterInput.hpp:29</div></div>
 </div><!-- fragment --></div><!-- contents -->

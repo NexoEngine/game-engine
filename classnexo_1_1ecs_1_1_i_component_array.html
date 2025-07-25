@@ -92,17 +92,18 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_i_component_array
 </div><!--header-->
 <div class="contents">
 
-<p>Interface for a component array in the ECS framework.  
+<p>Base interface for all component array types.  
  <a href="classnexo_1_1ecs_1_1_i_component_array.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="engine_2src_2ecs_2_components_8hpp_source.html">Components.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_component_array_8hpp_source.html">ComponentArray.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::ecs::IComponentArray:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_i_component_array__inherit__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_i_component_array_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1ecs_1_1_i_component_array_inherit__map" id="anexo_1_1ecs_1_1_i_component_array_inherit__map">
-<area shape="rect" title="Interface for a component array in the ECS framework." alt="" coords="18,5,201,97"/>
-<area shape="rect" href="classnexo_1_1ecs_1_1_component_array.html" title=" " alt="" coords="5,145,213,281"/>
+<area shape="rect" title="Base interface for all component array types." alt="" coords="114,5,297,259"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_component_array.html" title="Stores and manages components of a specific type T." alt="" coords="5,307,184,545"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_type_erased_component_array.html" title="A type&#45;erased component array that can store components of any size." alt="" coords="208,307,424,545"/>
 </map>
 </div>
 <div class="dynheader">
@@ -110,19 +111,91 @@ Collaboration diagram for nexo::ecs::IComponentArray:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_i_component_array__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_i_component_array_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_i_component_array_coll__map" id="anexo_1_1ecs_1_1_i_component_array_coll__map">
-<area shape="rect" title="Interface for a component array in the ECS framework." alt="" coords="5,5,188,97"/>
+<area shape="rect" title="Base interface for all component array types." alt="" coords="5,5,188,259"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ae85d2af71db6f7c6ec8d29143b76b94a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#ae85d2af71db6f7c6ec8d29143b76b94a">hasComponent</a> (Entity entity) const =0</td></tr>
+<tr class="memdesc:ae85d2af71db6f7c6ec8d29143b76b94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if an entity has a component in this array.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#ae85d2af71db6f7c6ec8d29143b76b94a">More...</a><br /></td></tr>
+<tr class="separator:ae85d2af71db6f7c6ec8d29143b76b94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae9e2e1b3752e21c790a3c0a5faff4f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#aae9e2e1b3752e21c790a3c0a5faff4f0">entityDestroyed</a> (Entity entity)=0</td></tr>
+<tr class="memdesc:aae9e2e1b3752e21c790a3c0a5faff4f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles cleanup when an entity is destroyed.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#aae9e2e1b3752e21c790a3c0a5faff4f0">More...</a><br /></td></tr>
 <tr class="separator:aae9e2e1b3752e21c790a3c0a5faff4f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17c4f2142a5255d86b0b8c31e77e0a9d"><td class="memItemLeft" align="right" valign="top"><a id="a17c4f2142a5255d86b0b8c31e77e0a9d" name="a17c4f2142a5255d86b0b8c31e77e0a9d"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>duplicateComponent</b> (Entity sourceEntity, Entity destEntity)=0</td></tr>
+<tr class="separator:a17c4f2142a5255d86b0b8c31e77e0a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f5e7d888b6d334ff046213deb81d15e"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a5f5e7d888b6d334ff046213deb81d15e">getComponentSize</a> () const =0</td></tr>
+<tr class="memdesc:a5f5e7d888b6d334ff046213deb81d15e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of each component in bytes.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a5f5e7d888b6d334ff046213deb81d15e">More...</a><br /></td></tr>
+<tr class="separator:a5f5e7d888b6d334ff046213deb81d15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a219203625a91d5fcfae88b56bf244015"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a219203625a91d5fcfae88b56bf244015">size</a> () const =0</td></tr>
+<tr class="memdesc:a219203625a91d5fcfae88b56bf244015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total number of components in the array.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a219203625a91d5fcfae88b56bf244015">More...</a><br /></td></tr>
+<tr class="separator:a219203625a91d5fcfae88b56bf244015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af56cc22ef5a2bf878b33571efeb5b8f5"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#af56cc22ef5a2bf878b33571efeb5b8f5">getRawComponent</a> (Entity entity)=0</td></tr>
+<tr class="memdesc:af56cc22ef5a2bf878b33571efeb5b8f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets raw pointer to component data for an entity.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#af56cc22ef5a2bf878b33571efeb5b8f5">More...</a><br /></td></tr>
+<tr class="separator:af56cc22ef5a2bf878b33571efeb5b8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22565874d75bb790c198f516274c7e1d"><td class="memItemLeft" align="right" valign="top">virtual const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a22565874d75bb790c198f516274c7e1d">getRawComponent</a> (Entity entity) const =0</td></tr>
+<tr class="memdesc:a22565874d75bb790c198f516274c7e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets const raw pointer to component data for an entity.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a22565874d75bb790c198f516274c7e1d">More...</a><br /></td></tr>
+<tr class="separator:a22565874d75bb790c198f516274c7e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c15ac024c95d422db8ad119d9aa29f"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a39c15ac024c95d422db8ad119d9aa29f">getRawData</a> ()=0</td></tr>
+<tr class="memdesc:a39c15ac024c95d422db8ad119d9aa29f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets raw pointer to all component data.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a39c15ac024c95d422db8ad119d9aa29f">More...</a><br /></td></tr>
+<tr class="separator:a39c15ac024c95d422db8ad119d9aa29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04d48c3aa7111d59c908b2d36b6ebdaa"><td class="memItemLeft" align="right" valign="top">virtual const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a04d48c3aa7111d59c908b2d36b6ebdaa">getRawData</a> () const =0</td></tr>
+<tr class="memdesc:a04d48c3aa7111d59c908b2d36b6ebdaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets const raw pointer to all component data.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a04d48c3aa7111d59c908b2d36b6ebdaa">More...</a><br /></td></tr>
+<tr class="separator:a04d48c3aa7111d59c908b2d36b6ebdaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba5e4d4db54a1e20852202a251bf3660"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#aba5e4d4db54a1e20852202a251bf3660">insertRaw</a> (Entity entity, const void *componentData)=0</td></tr>
+<tr class="memdesc:aba5e4d4db54a1e20852202a251bf3660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a raw new component for the given entity.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#aba5e4d4db54a1e20852202a251bf3660">More...</a><br /></td></tr>
+<tr class="separator:aba5e4d4db54a1e20852202a251bf3660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cde4df53e839574e5362d93fde1ffac"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a2cde4df53e839574e5362d93fde1ffac">remove</a> (Entity entity)=0</td></tr>
+<tr class="memdesc:a2cde4df53e839574e5362d93fde1ffac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the component for the given entity.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a2cde4df53e839574e5362d93fde1ffac">More...</a><br /></td></tr>
+<tr class="separator:a2cde4df53e839574e5362d93fde1ffac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ad940d87810d7f9a2599b9e41fbcb58"><td class="memItemLeft" align="right" valign="top">virtual std::span&lt; const Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html#a2ad940d87810d7f9a2599b9e41fbcb58">entities</a> () const =0</td></tr>
+<tr class="memdesc:a2ad940d87810d7f9a2599b9e41fbcb58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a span of all entities with this component.  <a href="classnexo_1_1ecs_1_1_i_component_array.html#a2ad940d87810d7f9a2599b9e41fbcb58">More...</a><br /></td></tr>
+<tr class="separator:a2ad940d87810d7f9a2599b9e41fbcb58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Interface for a component array in the ECS framework. </p>
-<p >This class defines the interface for component arrays, which are used to store components of entities in the ECS system. It provides the foundation for managing the lifecycle of components associated with entities. </p>
+<div class="textblock"><p >Base interface for all component array types. </p>
+<p >Provides the common interface that all concrete component arrays must implement, allowing type-erased storage and manipulation of components.</p>
+<dl class="section note"><dt>Note</dt><dd>This class is not thread-safe. Access to a <a class="el" href="classnexo_1_1ecs_1_1_component_array.html" title="Stores and manages components of a specific type T.">ComponentArray</a> should be synchronized externally when used in multi-threaded contexts. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae85d2af71db6f7c6ec8d29143b76b94a" name="ae85d2af71db6f7c6ec8d29143b76b94a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae85d2af71db6f7c6ec8d29143b76b94a">&#9670;&nbsp;</a></span>hasComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool nexo::ecs::IComponentArray::hasComponent </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if an entity has a component in this array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the entity has a component, false otherwise </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a2ead4068e18d4267132ff4e20006c02e">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a7cef1b628918596661ecbab37de1093e">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
 <a id="aae9e2e1b3752e21c790a3c0a5faff4f0" name="aae9e2e1b3752e21c790a3c0a5faff4f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aae9e2e1b3752e21c790a3c0a5faff4f0">&#9670;&nbsp;</a></span>entityDestroyed()</h2>
 
@@ -147,12 +220,344 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a8202970e2ab67c411825c9c8029351aa">nexo::ecs::ComponentArray&lt; T &gt;</a>.</p>
+<p>Handles cleanup when an entity is destroyed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity being destroyed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#af662c50434b60615f648a8b3d46181d1">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a4310b637bb301291073fbd58eb4a5818">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a5f5e7d888b6d334ff046213deb81d15e" name="a5f5e7d888b6d334ff046213deb81d15e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f5e7d888b6d334ff046213deb81d15e">&#9670;&nbsp;</a></span>getComponentSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t nexo::ecs::IComponentArray::getComponentSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the size of each component in bytes. </p>
+<dl class="section return"><dt>Returns</dt><dd>Size of individual component in bytes </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a4c1e9de5769667add7ade67806321502">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a1df6044df083bcfd2be512487c20cb76">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a219203625a91d5fcfae88b56bf244015" name="a219203625a91d5fcfae88b56bf244015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a219203625a91d5fcfae88b56bf244015">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t nexo::ecs::IComponentArray::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the total number of components in the array. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of active components </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#aba9e5ec857c4467e3c6fa83facdb30cb">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#ab8bab277a2ad452e8e97f39f657b6a9e">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="af56cc22ef5a2bf878b33571efeb5b8f5" name="af56cc22ef5a2bf878b33571efeb5b8f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af56cc22ef5a2bf878b33571efeb5b8f5">&#9670;&nbsp;</a></span>getRawComponent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void * nexo::ecs::IComponentArray::getRawComponent </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets raw pointer to component data for an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to get the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Raw pointer to component data, or nullptr if not found </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a87225ed8042afb3a6e51f79d54189c54">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#ad1b1009267292081db6cd5efee3855d4">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a22565874d75bb790c198f516274c7e1d" name="a22565874d75bb790c198f516274c7e1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22565874d75bb790c198f516274c7e1d">&#9670;&nbsp;</a></span>getRawComponent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const void * nexo::ecs::IComponentArray::getRawComponent </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets const raw pointer to component data for an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to get the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Const raw pointer to component data, or nullptr if not found </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a02098260f0c3065e3533ca232bf324d6">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#aef434461c8846c411ce9e6140fed6718">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a39c15ac024c95d422db8ad119d9aa29f" name="a39c15ac024c95d422db8ad119d9aa29f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39c15ac024c95d422db8ad119d9aa29f">&#9670;&nbsp;</a></span>getRawData() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void * nexo::ecs::IComponentArray::getRawData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets raw pointer to all component data. </p>
+<dl class="section return"><dt>Returns</dt><dd>Raw pointer to contiguous component data </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#ab302b6e7cb5cec236e9c306ec196d28a">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a16b1a72f467fc4c662c27d9e311ce1af">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a04d48c3aa7111d59c908b2d36b6ebdaa" name="a04d48c3aa7111d59c908b2d36b6ebdaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04d48c3aa7111d59c908b2d36b6ebdaa">&#9670;&nbsp;</a></span>getRawData() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const void * nexo::ecs::IComponentArray::getRawData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets const raw pointer to all component data. </p>
+<dl class="section return"><dt>Returns</dt><dd>Const raw pointer to contiguous component data </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#acab597c445acfd6b1a599ba4d5543ca7">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#adb0a8754de714c5668dd4e5a0e0324d6">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="aba5e4d4db54a1e20852202a251bf3660" name="aba5e4d4db54a1e20852202a251bf3660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba5e4d4db54a1e20852202a251bf3660">&#9670;&nbsp;</a></span>insertRaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void nexo::ecs::IComponentArray::insertRaw </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>componentData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inserts a raw new component for the given entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the component to </td></tr>
+    <tr><td class="paramname">componentData</td><td>Pointer to the raw component data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_out_of_range.html">OutOfRange</a></td><td>if entity ID exceeds MAX_ENTITIES</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The entity must be a valid entity ID </dd>
+<dd>
+componentData must point to valid memory of component's size </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a5118b9d05f8e8d0b21c3eb769ba2ae7d">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a4f8716c84dccf0d55c5db089f592eccc">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a2cde4df53e839574e5362d93fde1ffac" name="a2cde4df53e839574e5362d93fde1ffac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cde4df53e839574e5362d93fde1ffac">&#9670;&nbsp;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void nexo::ecs::IComponentArray::remove </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes the component for the given entity. </p>
+<p >If the entity is grouped (i.e. within the first m_groupSize entries), then adjusts the group boundary appropriately.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">ComponentNotFoundException</td><td>if the entity doesn't have the component</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The entity must have the component </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#a4d40803ff253a6777b1183aea947de66">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a21f1fdd1d5f086cf9520c564a0a008ca">nexo::ecs::TypeErasedComponentArray</a>.</p>
+
+</div>
+</div>
+<a id="a2ad940d87810d7f9a2599b9e41fbcb58" name="a2ad940d87810d7f9a2599b9e41fbcb58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ad940d87810d7f9a2599b9e41fbcb58">&#9670;&nbsp;</a></span>entities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::span&lt; const Entity &gt; nexo::ecs::IComponentArray::entities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a span of all entities with this component. </p>
+<dl class="section return"><dt>Returns</dt><dd>Span of entity IDs </dd></dl>
+
+<p>Implemented in <a class="el" href="classnexo_1_1ecs_1_1_component_array.html#aa54da721609a3b6b12c4582d3846e632">nexo::ecs::ComponentArray&lt; T, capacity &gt;</a>, and <a class="el" href="classnexo_1_1ecs_1_1_type_erased_component_array.html#a8ffa8227be834233a5eabaff289ebb63">nexo::ecs::TypeErasedComponentArray</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>engine/src/ecs/<a class="el" href="engine_2src_2ecs_2_components_8hpp_source.html">Components.hpp</a></li>
+<li>engine/src/ecs/<a class="el" href="_component_array_8hpp_source.html">ComponentArray.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

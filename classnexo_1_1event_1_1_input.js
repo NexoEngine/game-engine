@@ -1,6 +1,6 @@
 var classnexo_1_1event_1_1_input =
 [
-    [ "Input", "classnexo_1_1event_1_1_input.html#a2339358587c8272224fd090ae951d0f6", null ],
+    [ "Input", "classnexo_1_1event_1_1_input.html#a58f71732091895e2c5be2580b10b8ac9", null ],
     [ "isKeyPressed", "classnexo_1_1event_1_1_input.html#ac304d2e2f5dcb1fc8482ff88a6350ca6", null ],
     [ "isKeyReleased", "classnexo_1_1event_1_1_input.html#a6f933de797fa0da6cf6ae04c25bd2bf4", null ],
     [ "isKeyRepeat", "classnexo_1_1event_1_1_input.html#aa4bec048a3af124e2e49b981db7c9843", null ],

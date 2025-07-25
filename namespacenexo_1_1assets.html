@@ -143,6 +143,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A non-templated asset reference for generic asset storage.  <a href="classnexo_1_1assets_1_1_generic_asset_ref.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_i_asset.html">IAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual interface for all assets.  <a href="classnexo_1_1assets_1_1_i_asset.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1assets_1_1_importer_file_input.html">ImporterFileInput</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,6 +153,13 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_invalid_name.html">InvalidName</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classnexo_1_1_exception.html">Exception</a> thrown when a name fails validation.  <a href="classnexo_1_1assets_1_1_invalid_name.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_material.html">Material</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a material asset.  <a href="classnexo_1_1assets_1_1_material.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1assets_1_1_mesh.html">Mesh</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1assets_1_1_mesh_node.html">MeshNode</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_mock_asset_catalog.html">MockAssetCatalog</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,8 +171,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_model.html">Model</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a 3D model asset.  <a href="classnexo_1_1assets_1_1_model.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1assets_1_1_model_data.html">ModelData</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_model_importer.html">ModelImporter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,15 +219,16 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a496d7a7f3c68e839788098391b929616"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> { <br />
 &#160;&#160;<b>UNKNOWN</b>
 , <b>TEXTURE</b>
+, <b>MATERIAL</b>
 , <b>MODEL</b>
-, <b>SOUND</b>
 , <br />
-&#160;&#160;<b>MUSIC</b>
+&#160;&#160;<b>SOUND</b>
+, <b>MUSIC</b>
 , <b>FONT</b>
 , <b>SHADER</b>
-, <b>SCRIPT</b>
 , <br />
-&#160;&#160;<b>_COUNT</b>
+&#160;&#160;<b>SCRIPT</b>
+, <b>_COUNT</b>
 <br />
  }</td></tr>
 <tr class="memdesc:a496d7a7f3c68e839788098391b929616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset types.  <a href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">More...</a><br /></td></tr>
@@ -243,9 +250,6 @@ Functions</h2></td></tr>
 <tr class="memitem:af8ca581cae26a03bd71bf3608478c3d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacenexo_1_1assets.html#af8ca581cae26a03bd71bf3608478c3d5">from_json</a> (const nlohmann::json &amp;j, <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> &amp;type)</td></tr>
 <tr class="memdesc:af8ca581cae26a03bd71bf3608478c3d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a JSON value to its corresponding AssetType.  <a href="namespacenexo_1_1assets.html#af8ca581cae26a03bd71bf3608478c3d5">More...</a><br /></td></tr>
 <tr class="separator:af8ca581cae26a03bd71bf3608478c3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0831a9fdfce0af8d8751163bf14c572"><td class="memItemLeft" align="right" valign="top"><a id="af0831a9fdfce0af8d8751163bf14c572" name="af0831a9fdfce0af8d8751163bf14c572"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>for</b> (const auto &amp;asset:m_assets|std::views::values)</td></tr>
-<tr class="separator:af0831a9fdfce0af8d8751163bf14c572"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4971cca731b33c3da1b7dcea97282967"><td class="memTemplParams" colspan="2"><a id="a4971cca731b33c3da1b7dcea97282967" name="a4971cca731b33c3da1b7dcea97282967"></a>
 template&lt;typename <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> &gt; <br />
 requires std::derived_from&lt;<a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a>, <a class="el" href="classnexo_1_1assets_1_1_i_asset.html">IAsset</a>&gt; <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">AssetRef</a>&lt;<a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a>&gt; AssetImporter::importAsset(const <a class="el" href="classnexo_1_1assets_1_1_asset_location.html">AssetLocation</a>&amp; location, const ImporterInputVariant&amp; inputVariant)</td></tr>
@@ -511,12 +515,12 @@ constexpr unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>A
 <tr class="memitem:a0c119bcd6fbbba75b280ed53b7695632"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacenexo_1_1assets.html#a0c119bcd6fbbba75b280ed53b7695632">AssetTypeNames</a> []</td></tr>
 <tr class="memdesc:a0c119bcd6fbbba75b280ed53b7695632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of asset type names.  <a href="namespacenexo_1_1assets.html#a0c119bcd6fbbba75b280ed53b7695632">More...</a><br /></td></tr>
 <tr class="separator:a0c119bcd6fbbba75b280ed53b7695632"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4354aaa6d00f36483758c2042b821110"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> &gt; </td></tr>
-<tr class="memitem:a4354aaa6d00f36483758c2042b821110"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacenexo_1_1assets.html#a4354aaa6d00f36483758c2042b821110">const</a></td></tr>
-<tr class="separator:a4354aaa6d00f36483758c2042b821110"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7366e13b295b7202a2199f565147b4c3"><td class="memItemLeft" align="right" valign="top"><a id="a7366e13b295b7202a2199f565147b4c3" name="a7366e13b295b7202a2199f565147b4c3"></a>
-std::vector&lt; <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">AssetRef</a>&lt; <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>assets</b></td></tr>
-<tr class="separator:a7366e13b295b7202a2199f565147b4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad762b08bc7e1db8549a0e8905235377a"><td class="memItemLeft" align="right" valign="top"><a id="ad762b08bc7e1db8549a0e8905235377a" name="ad762b08bc7e1db8549a0e8905235377a"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>OPACITY_THRESHOLD</b> = 0.99f</td></tr>
+<tr class="separator:ad762b08bc7e1db8549a0e8905235377a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28346174a2612a49685b18fa966b37a7"><td class="memItemLeft" align="right" valign="top"><a id="a28346174a2612a49685b18fa966b37a7" name="a28346174a2612a49685b18fa966b37a7"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>TRANSPARENCY_EPSILON</b> = 0.01f</td></tr>
+<tr class="separator:a28346174a2612a49685b18fa966b37a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p ><a class="el" href="_asset_ref_8hpp_source.html">AssetRef.hpp</a> /////////////////////////////////////////////////////////////. </p>
@@ -716,6 +720,7 @@ std::vector&lt; <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">Asse
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">        <span class="stringliteral">&quot;UNKNOWN&quot;</span>,</div>
 <div class="line">        <span class="stringliteral">&quot;TEXTURE&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;MATERIAL&quot;</span>,</div>
 <div class="line">        <span class="stringliteral">&quot;MODEL&quot;</span>,</div>
 <div class="line">        <span class="stringliteral">&quot;SOUND&quot;</span>,</div>
 <div class="line">        <span class="stringliteral">&quot;MUSIC&quot;</span>,</div>
@@ -727,25 +732,6 @@ std::vector&lt; <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">Asse
 <p>Array of asset type names. </p>
 <dl class="section note"><dt>Note</dt><dd>The order of the array must match the order of the AssetType enum. </dd></dl>
 
-</div>
-</div>
-<a id="a4354aaa6d00f36483758c2042b821110" name="a4354aaa6d00f36483758c2042b821110"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4354aaa6d00f36483758c2042b821110">&#9670;&nbsp;</a></span>const</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a> &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">nexo::assets::const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">{</div>
-<div class="line">        </div>
-<div class="line">        <span class="keyword">static_assert</span>(<span class="keyword">true</span>, <span class="stringliteral">&quot;Filtering not implemented yet&quot;</span>)</div>
-</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

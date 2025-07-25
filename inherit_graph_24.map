@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1_camera_factory.html" title=" " alt="" coords="5,5,148,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_i_asset.html" title="Pure virtual interface for all assets." alt="" coords="5,180,144,207"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="202,5,373,61"/>
+<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="220,85,355,141"/>
+<area shape="rect" id="node6" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="205,165,370,221"/>
+<area shape="rect" id="node8" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="201,245,373,301"/>
+<area shape="rect" id="node10" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="192,325,383,366"/>
+<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_material.html" title="Represents a material asset." alt="" coords="444,20,591,47"/>
+<area shape="rect" id="node5" href="$classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="431,93,604,134"/>
+<area shape="rect" id="node7" href="$classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="450,180,585,207"/>
+<area shape="rect" id="node9" href="$classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="446,260,589,287"/>
 </map>

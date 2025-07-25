@@ -1,5 +1,6 @@
 var structnexo_1_1components_1_1_camera_component =
 [
+    [ "Memento", "structnexo_1_1components_1_1_camera_component_1_1_memento.html", null ],
     [ "getProjectionMatrix", "structnexo_1_1components_1_1_camera_component.html#a2470881fce92a032b8b85300e6f5ba8a", null ],
     [ "getViewMatrix", "structnexo_1_1components_1_1_camera_component.html#ad160c2ca21163927cefc2b5552b5518a", null ],
     [ "resize", "structnexo_1_1components_1_1_camera_component.html#a27537db1c4416a49b2d6339126bd56cc", null ],
@@ -12,7 +13,8 @@ var structnexo_1_1components_1_1_camera_component =
     [ "type", "structnexo_1_1components_1_1_camera_component.html#afca6dcaf1f7674280dc9e4e5bda763b8", null ],
     [ "clearColor", "structnexo_1_1components_1_1_camera_component.html#aeff2bfea509cdddcd560ee69818f401e", null ],
     [ "active", "structnexo_1_1components_1_1_camera_component.html#a76ca872d4c8efedbd7d74cb1a365c3b7", null ],
+    [ "render", "structnexo_1_1components_1_1_camera_component.html#acb2c2bc9b58b814222b8b82b8f63c86b", null ],
     [ "main", "structnexo_1_1components_1_1_camera_component.html#a75ac99a57add4d7ff4e211cad2c1d938", null ],
     [ "resizing", "structnexo_1_1components_1_1_camera_component.html#a0feb8cea1db172666b0585be9d22abc1", null ],
-    [ "m_renderTarget", "structnexo_1_1components_1_1_camera_component.html#aa875b42402d55c3d8ca956ec83f8010b", null ]
+    [ "m_renderTarget", "structnexo_1_1components_1_1_camera_component.html#aaf9475d8c7368c05868610d89e371c68", null ]
 ];

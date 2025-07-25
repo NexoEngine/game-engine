@@ -1,0 +1,4 @@
+<map id="nexo::ecs::TypeErasedComponentArray" name="nexo::ecs::TypeErasedComponentArray">
+<area shape="rect" id="node1" title="A type&#45;erased component array that can store components of any size." alt="" coords="5,307,221,545"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_i_component_array.html" title="Base interface for all component array types." alt="" coords="22,5,205,259"/>
+</map>

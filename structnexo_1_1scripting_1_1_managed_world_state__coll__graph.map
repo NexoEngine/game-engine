@@ -1,0 +1,5 @@
+<map id="nexo::scripting::ManagedWorldState" name="nexo::scripting::ManagedWorldState">
+<area shape="rect" id="node1" title="Represents the state of the world in the game engine. This structure is 1 to 1 equivalent to the Worl..." alt="" coords="99,175,261,267"/>
+<area shape="rect" id="node2" href="$structnexo_1_1scripting_1_1_managed_world_state_1_1_world_time.html" title=" " alt="" coords="5,5,168,112"/>
+<area shape="rect" id="node3" href="$structnexo_1_1scripting_1_1_managed_world_state_1_1_world_stats.html" title=" " alt="" coords="192,13,355,105"/>
+</map>

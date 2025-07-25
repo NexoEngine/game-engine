@@ -1,4 +1,5 @@
 <map id="nexo::ecs::IComponentArray" name="nexo::ecs::IComponentArray">
-<area shape="rect" id="node1" title="Interface for a component array in the ECS framework." alt="" coords="18,5,201,97"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_component_array.html" title=" " alt="" coords="5,145,213,281"/>
+<area shape="rect" id="node1" title="Base interface for all component array types." alt="" coords="114,5,297,259"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_component_array.html" title="Stores and manages components of a specific type T." alt="" coords="5,307,184,545"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_type_erased_component_array.html" title="A type&#45;erased component array that can store components of any size." alt="" coords="208,307,424,545"/>
 </map>

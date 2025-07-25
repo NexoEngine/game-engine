@@ -103,39 +103,61 @@ Collaboration diagram for nexo::editor::Selector:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_selector__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_selector_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_selector_coll__map" id="anexo_1_1editor_1_1_selector_coll__map">
-<area shape="rect" title="Singleton class managing entity selection state in the editor." alt="" coords="5,5,152,244"/>
+<area shape="rect" title="Singleton class managing entity selection state in the editor." alt="" coords="5,5,173,244"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad0c5233842bf6e2efc6db9dd6f8471f4"><td class="memItemLeft" align="right" valign="top"><a id="ad0c5233842bf6e2efc6db9dd6f8471f4" name="ad0c5233842bf6e2efc6db9dd6f8471f4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedEntity</b> () const</td></tr>
-<tr class="separator:ad0c5233842bf6e2efc6db9dd6f8471f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56417be6c1ecacaca8002521a5ea91e1"><td class="memItemLeft" align="right" valign="top"><a id="a56417be6c1ecacaca8002521a5ea91e1" name="a56417be6c1ecacaca8002521a5ea91e1"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedUuid</b> () const</td></tr>
-<tr class="separator:a56417be6c1ecacaca8002521a5ea91e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e94ddcba8aa18153104652353deec28"><td class="memItemLeft" align="right" valign="top"><a id="a0e94ddcba8aa18153104652353deec28" name="a0e94ddcba8aa18153104652353deec28"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setSelectedEntity</b> (std::string_view uuid, int entity)</td></tr>
-<tr class="separator:a0e94ddcba8aa18153104652353deec28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69c915e7ee069c68248995bd4f1e8951"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a69c915e7ee069c68248995bd4f1e8951">getPrimaryEntity</a> () const</td></tr>
+<tr class="memdesc:a69c915e7ee069c68248995bd4f1e8951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the primary selected entity.  <a href="classnexo_1_1editor_1_1_selector.html#a69c915e7ee069c68248995bd4f1e8951">More...</a><br /></td></tr>
+<tr class="separator:a69c915e7ee069c68248995bd4f1e8951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef9b1026ec90611ac37ae4895511f082"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#aef9b1026ec90611ac37ae4895511f082">getSelectedEntities</a> () const</td></tr>
+<tr class="memdesc:aef9b1026ec90611ac37ae4895511f082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all selected entities.  <a href="classnexo_1_1editor_1_1_selector.html#aef9b1026ec90611ac37ae4895511f082">More...</a><br /></td></tr>
+<tr class="separator:aef9b1026ec90611ac37ae4895511f082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b80a008f6fa32fe0deed6387b4fcaa7"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a9b80a008f6fa32fe0deed6387b4fcaa7">getPrimaryUuid</a> () const</td></tr>
+<tr class="memdesc:a9b80a008f6fa32fe0deed6387b4fcaa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the UUID of the primary entity.  <a href="classnexo_1_1editor_1_1_selector.html#a9b80a008f6fa32fe0deed6387b4fcaa7">More...</a><br /></td></tr>
+<tr class="separator:a9b80a008f6fa32fe0deed6387b4fcaa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5255e0f84a3c1b6f603751279e3da9fb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a5255e0f84a3c1b6f603751279e3da9fb">getSelectedUuids</a> () const</td></tr>
+<tr class="memdesc:a5255e0f84a3c1b6f603751279e3da9fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all selected entity UUIDs.  <a href="classnexo_1_1editor_1_1_selector.html#a5255e0f84a3c1b6f603751279e3da9fb">More...</a><br /></td></tr>
+<tr class="separator:a5255e0f84a3c1b6f603751279e3da9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac501c0895f3174d03a4140add11eb058"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#ac501c0895f3174d03a4140add11eb058">selectEntity</a> (std::string_view uuid, int entity, SelectionType type=SelectionType::ENTITY)</td></tr>
+<tr class="memdesc:ac501c0895f3174d03a4140add11eb058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a single entity, replacing the current selection.  <a href="classnexo_1_1editor_1_1_selector.html#ac501c0895f3174d03a4140add11eb058">More...</a><br /></td></tr>
+<tr class="separator:ac501c0895f3174d03a4140add11eb058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d988f9d76b63a68824135c02df0f23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#ac9d988f9d76b63a68824135c02df0f23">addToSelection</a> (std::string_view uuid, int entity, SelectionType type=SelectionType::ENTITY)</td></tr>
+<tr class="memdesc:ac9d988f9d76b63a68824135c02df0f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entity to the current selection.  <a href="classnexo_1_1editor_1_1_selector.html#ac9d988f9d76b63a68824135c02df0f23">More...</a><br /></td></tr>
+<tr class="separator:ac9d988f9d76b63a68824135c02df0f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5451497c42628da4559bd58ccb86b22"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#ad5451497c42628da4559bd58ccb86b22">toggleSelection</a> (std::string_view uuid, int entity, SelectionType type=SelectionType::ENTITY)</td></tr>
+<tr class="memdesc:ad5451497c42628da4559bd58ccb86b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggle selection state of an entity.  <a href="classnexo_1_1editor_1_1_selector.html#ad5451497c42628da4559bd58ccb86b22">More...</a><br /></td></tr>
+<tr class="separator:ad5451497c42628da4559bd58ccb86b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a262b2235757487c6d5f39ef7713486ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a262b2235757487c6d5f39ef7713486ff">removeFromSelection</a> (int entity)</td></tr>
+<tr class="memdesc:a262b2235757487c6d5f39ef7713486ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entity from the selection.  <a href="classnexo_1_1editor_1_1_selector.html#a262b2235757487c6d5f39ef7713486ff">More...</a><br /></td></tr>
+<tr class="separator:a262b2235757487c6d5f39ef7713486ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe16c2df11f47b5713a8a8c036ef63bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#abe16c2df11f47b5713a8a8c036ef63bc">setSelectedScene</a> (int scene)</td></tr>
 <tr class="memdesc:abe16c2df11f47b5713a8a8c036ef63bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the currently selected scene.  <a href="classnexo_1_1editor_1_1_selector.html#abe16c2df11f47b5713a8a8c036ef63bc">More...</a><br /></td></tr>
 <tr class="separator:abe16c2df11f47b5713a8a8c036ef63bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74cf9441a2f34b1e344d2ce894854843"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a74cf9441a2f34b1e344d2ce894854843">getSelectedScene</a> () const</td></tr>
 <tr class="memdesc:a74cf9441a2f34b1e344d2ce894854843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the currently selected scene.  <a href="classnexo_1_1editor_1_1_selector.html#a74cf9441a2f34b1e344d2ce894854843">More...</a><br /></td></tr>
 <tr class="separator:a74cf9441a2f34b1e344d2ce894854843"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4727aec0ebcb8a80817051f559df35cc"><td class="memItemLeft" align="right" valign="top"><a id="a4727aec0ebcb8a80817051f559df35cc" name="a4727aec0ebcb8a80817051f559df35cc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unselectEntity</b> ()</td></tr>
-<tr class="separator:a4727aec0ebcb8a80817051f559df35cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7901cdd97d1ec1c1e091165dc1b29aa9"><td class="memItemLeft" align="right" valign="top"><a id="a7901cdd97d1ec1c1e091165dc1b29aa9" name="a7901cdd97d1ec1c1e091165dc1b29aa9"></a>
-SelectionType&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectionType</b> () const</td></tr>
-<tr class="separator:a7901cdd97d1ec1c1e091165dc1b29aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a60930b81dba549f49e292f04aaf4b5"><td class="memItemLeft" align="right" valign="top"><a id="a5a60930b81dba549f49e292f04aaf4b5" name="a5a60930b81dba549f49e292f04aaf4b5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setSelectionType</b> (SelectionType type)</td></tr>
+<tr class="memitem:af4ba54eb1e82578c6b706ebe2985d7db"><td class="memItemLeft" align="right" valign="top"><a id="af4ba54eb1e82578c6b706ebe2985d7db" name="af4ba54eb1e82578c6b706ebe2985d7db"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearSelection</b> ()</td></tr>
+<tr class="memdesc:af4ba54eb1e82578c6b706ebe2985d7db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the current entity selection. <br /></td></tr>
+<tr class="separator:af4ba54eb1e82578c6b706ebe2985d7db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36629afa5867b0bcd92618a75b7e8e65"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a36629afa5867b0bcd92618a75b7e8e65">isEntitySelected</a> (int entity) const</td></tr>
+<tr class="memdesc:a36629afa5867b0bcd92618a75b7e8e65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a specific entity is currently selected.  <a href="classnexo_1_1editor_1_1_selector.html#a36629afa5867b0bcd92618a75b7e8e65">More...</a><br /></td></tr>
+<tr class="separator:a36629afa5867b0bcd92618a75b7e8e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6ae8da39063721e88eda04443f2d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#afeb6ae8da39063721e88eda04443f2d3">hasSelection</a> () const</td></tr>
+<tr class="memdesc:afeb6ae8da39063721e88eda04443f2d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if any entity is currently selected.  <a href="classnexo_1_1editor_1_1_selector.html#afeb6ae8da39063721e88eda04443f2d3">More...</a><br /></td></tr>
+<tr class="separator:afeb6ae8da39063721e88eda04443f2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a432e3d08381bdb3e7dfff4d199b217ac"><td class="memItemLeft" align="right" valign="top">SelectionType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a432e3d08381bdb3e7dfff4d199b217ac">getPrimarySelectionType</a> () const</td></tr>
+<tr class="memdesc:a432e3d08381bdb3e7dfff4d199b217ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the primary selection type.  <a href="classnexo_1_1editor_1_1_selector.html#a432e3d08381bdb3e7dfff4d199b217ac">More...</a><br /></td></tr>
+<tr class="separator:a432e3d08381bdb3e7dfff4d199b217ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cb9fa243584e4ebfbcd8aaf96b8c0f"><td class="memItemLeft" align="right" valign="top"><a id="a21cb9fa243584e4ebfbcd8aaf96b8c0f" name="a21cb9fa243584e4ebfbcd8aaf96b8c0f"></a>
+SelectionType&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectionType</b> (int entity) const</td></tr>
+<tr class="separator:a21cb9fa243584e4ebfbcd8aaf96b8c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a60930b81dba549f49e292f04aaf4b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a5a60930b81dba549f49e292f04aaf4b5">setSelectionType</a> (SelectionType type)</td></tr>
+<tr class="memdesc:a5a60930b81dba549f49e292f04aaf4b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the selection type (only applied to subsequent selections)  <a href="classnexo_1_1editor_1_1_selector.html#a5a60930b81dba549f49e292f04aaf4b5">More...</a><br /></td></tr>
 <tr class="separator:a5a60930b81dba549f49e292f04aaf4b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a119be888d117fba9289b0cc1423f2c37"><td class="memItemLeft" align="right" valign="top"><a id="a119be888d117fba9289b0cc1423f2c37" name="a119be888d117fba9289b0cc1423f2c37"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isEntitySelected</b> () const</td></tr>
-<tr class="separator:a119be888d117fba9289b0cc1423f2c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b452472b17c2f3edc77f043b21263aa"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_selector.html#a7b452472b17c2f3edc77f043b21263aa">getUiHandle</a> (const std::string &amp;uuid, const std::string &amp;defaultHandle)</td></tr>
 <tr class="memdesc:a7b452472b17c2f3edc77f043b21263aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the UI handle associated with a UUID.  <a href="classnexo_1_1editor_1_1_selector.html#a7b452472b17c2f3edc77f043b21263aa">More...</a><br /></td></tr>
 <tr class="separator:a7b452472b17c2f3edc77f043b21263aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,8 +173,256 @@ static <a class="el" href="classnexo_1_1editor_1_1_selector.html">Selector</a> &
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Singleton class managing entity selection state in the editor. </p>
-<p >The <a class="el" href="classnexo_1_1editor_1_1_selector.html" title="Singleton class managing entity selection state in the editor.">Selector</a> class tracks the currently selected entity, its type, and provides methods to manipulate the selection state. It also maintains entity UUID to UI handle mappings for consistent labeling in the interface. </p>
+<p >The <a class="el" href="classnexo_1_1editor_1_1_selector.html" title="Singleton class managing entity selection state in the editor.">Selector</a> class tracks the currently selected entities, their types, and provides methods to manipulate the selection state. It also maintains entity UUID to UI handle mappings for consistent labeling in the interface. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a69c915e7ee069c68248995bd4f1e8951" name="a69c915e7ee069c68248995bd4f1e8951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c915e7ee069c68248995bd4f1e8951">&#9670;&nbsp;</a></span>getPrimaryEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int nexo::editor::Selector::getPrimaryEntity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the primary selected entity. </p>
+<p >The primary entity is the entity that gizmos and other operations will primarily act on when multiple entities are selected. This returns the last entity selected if there are multiple selections.</p>
+<dl class="section return"><dt>Returns</dt><dd>int The entity ID of the primary selection, or -1 if no entity is selected </dd></dl>
+
+</div>
+</div>
+<a id="aef9b1026ec90611ac37ae4895511f082" name="aef9b1026ec90611ac37ae4895511f082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef9b1026ec90611ac37ae4895511f082">&#9670;&nbsp;</a></span>getSelectedEntities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; nexo::editor::Selector::getSelectedEntities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets all selected entities. </p>
+<dl class="section return"><dt>Returns</dt><dd>const std::vector&lt;int&gt;&amp; A reference to the vector of all selected entity IDs </dd></dl>
+
+</div>
+</div>
+<a id="a9b80a008f6fa32fe0deed6387b4fcaa7" name="a9b80a008f6fa32fe0deed6387b4fcaa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b80a008f6fa32fe0deed6387b4fcaa7">&#9670;&nbsp;</a></span>getPrimaryUuid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; nexo::editor::Selector::getPrimaryUuid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the UUID of the primary entity. </p>
+<dl class="section return"><dt>Returns</dt><dd>const std::string&amp; The UUID of the primary entity </dd></dl>
+
+</div>
+</div>
+<a id="a5255e0f84a3c1b6f603751279e3da9fb" name="a5255e0f84a3c1b6f603751279e3da9fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5255e0f84a3c1b6f603751279e3da9fb">&#9670;&nbsp;</a></span>getSelectedUuids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; nexo::editor::Selector::getSelectedUuids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets all selected entity UUIDs. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::string&gt; Vector containing UUIDs of all selected entities </dd></dl>
+
+</div>
+</div>
+<a id="ac501c0895f3174d03a4140add11eb058" name="ac501c0895f3174d03a4140add11eb058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac501c0895f3174d03a4140add11eb058">&#9670;&nbsp;</a></span>selectEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::Selector::selectEntity </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uuid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SelectionType&#160;</td>
+          <td class="paramname"><em>type</em> = <code>SelectionType::ENTITY</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects a single entity, replacing the current selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">uuid</td><td>The UUID of the entity to select </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entity</td><td>The entity ID to select </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>The type of entity being selected </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac9d988f9d76b63a68824135c02df0f23" name="ac9d988f9d76b63a68824135c02df0f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d988f9d76b63a68824135c02df0f23">&#9670;&nbsp;</a></span>addToSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::editor::Selector::addToSelection </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uuid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SelectionType&#160;</td>
+          <td class="paramname"><em>type</em> = <code>SelectionType::ENTITY</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds an entity to the current selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">uuid</td><td>The UUID of the entity to add </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entity</td><td>The entity ID to add </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>The type of entity being added </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the entity was successfully added to the selection </dd>
+<dd>
+false If the entity was already selected </dd></dl>
+
+</div>
+</div>
+<a id="ad5451497c42628da4559bd58ccb86b22" name="ad5451497c42628da4559bd58ccb86b22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5451497c42628da4559bd58ccb86b22">&#9670;&nbsp;</a></span>toggleSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::editor::Selector::toggleSelection </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uuid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SelectionType&#160;</td>
+          <td class="paramname"><em>type</em> = <code>SelectionType::ENTITY</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Toggle selection state of an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">uuid</td><td>The UUID of the entity to toggle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">entity</td><td>The entity ID to toggle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>The type of entity being toggled </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the entity is now selected </dd>
+<dd>
+false If the entity is now deselected </dd></dl>
+
+</div>
+</div>
+<a id="a262b2235757487c6d5f39ef7713486ff" name="a262b2235757487c6d5f39ef7713486ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a262b2235757487c6d5f39ef7713486ff">&#9670;&nbsp;</a></span>removeFromSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::editor::Selector::removeFromSelection </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an entity from the selection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">entity</td><td>The entity ID to remove </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the entity was successfully removed from the selection </dd>
+<dd>
+false If the entity wasn't selected </dd></dl>
+
+</div>
+</div>
 <a id="abe16c2df11f47b5713a8a8c036ef63bc" name="abe16c2df11f47b5713a8a8c036ef63bc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abe16c2df11f47b5713a8a8c036ef63bc">&#9670;&nbsp;</a></span>setSelectedScene()</h2>
 
@@ -196,6 +466,103 @@ static <a class="el" href="classnexo_1_1editor_1_1_selector.html">Selector</a> &
 
 <p>Gets the currently selected scene. </p>
 <dl class="section return"><dt>Returns</dt><dd>int The entity ID of the selected scene, or -1 if no scene is selected </dd></dl>
+
+</div>
+</div>
+<a id="a36629afa5867b0bcd92618a75b7e8e65" name="a36629afa5867b0bcd92618a75b7e8e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36629afa5867b0bcd92618a75b7e8e65">&#9670;&nbsp;</a></span>isEntitySelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::editor::Selector::isEntitySelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if a specific entity is currently selected. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity ID to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the entity is selected </dd>
+<dd>
+false If the entity is not selected </dd></dl>
+
+</div>
+</div>
+<a id="afeb6ae8da39063721e88eda04443f2d3" name="afeb6ae8da39063721e88eda04443f2d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb6ae8da39063721e88eda04443f2d3">&#9670;&nbsp;</a></span>hasSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::editor::Selector::hasSelection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if any entity is currently selected. </p>
+<dl class="section return"><dt>Returns</dt><dd>true If at least one entity is selected </dd>
+<dd>
+false If no entities are selected </dd></dl>
+
+</div>
+</div>
+<a id="a432e3d08381bdb3e7dfff4d199b217ac" name="a432e3d08381bdb3e7dfff4d199b217ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a432e3d08381bdb3e7dfff4d199b217ac">&#9670;&nbsp;</a></span>getPrimarySelectionType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SelectionType nexo::editor::Selector::getPrimarySelectionType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the primary selection type. </p>
+<dl class="section return"><dt>Returns</dt><dd>SelectionType The type of the primary selected entity </dd></dl>
+
+</div>
+</div>
+<a id="a5a60930b81dba549f49e292f04aaf4b5" name="a5a60930b81dba549f49e292f04aaf4b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a60930b81dba549f49e292f04aaf4b5">&#9670;&nbsp;</a></span>setSelectionType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::Selector::setSelectionType </td>
+          <td>(</td>
+          <td class="paramtype">SelectionType&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the selection type (only applied to subsequent selections) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>The selection type to set </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

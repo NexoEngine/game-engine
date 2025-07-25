@@ -1,5 +1,5 @@
 <map id="nexo::editor::SceneObject" name="nexo::editor::SceneObject">
 <area shape="rect" id="node1" title="Represents an object in the scene tree." alt="" coords="16,300,184,421"/>
-<area shape="rect" id="node2" href="$structnexo_1_1editor_1_1_entity_properties.html" title=" " alt="" coords="8,160,192,237"/>
-<area shape="rect" id="node3" href="$structnexo_1_1editor_1_1_scene_properties.html" title=" " alt="" coords="5,5,195,97"/>
+<area shape="rect" id="node2" href="$structnexo_1_1editor_1_1_entity_properties.html" title="Links an entity with its parent scene information." alt="" coords="8,160,192,237"/>
+<area shape="rect" id="node3" href="$structnexo_1_1editor_1_1_scene_properties.html" title="Stores scene identification information." alt="" coords="5,5,195,97"/>
 </map>

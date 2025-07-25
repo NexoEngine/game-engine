@@ -1,4 +1,5 @@
 <map id="nexo::ecs::EntityManagerTest" name="nexo::ecs::EntityManagerTest">
-<area shape="rect" id="node1" title=" " alt="" coords="5,131,196,208"/>
-<area shape="rect" id="node2" title=" " alt="" coords="54,5,147,83"/>
+<area shape="rect" id="node1" title=" " alt="" coords="33,233,223,311"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,49,99,127"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_entity_manager.html" title="Manages entities in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="123,5,287,171"/>
 </map>

@@ -1,0 +1,5 @@
+<map id="nexo::renderer::NxIndexBuffer" name="nexo::renderer::NxIndexBuffer">
+<area shape="rect" id="node1" title="Abstract class representing an index buffer in the graphics pipeline." alt="" coords="5,5,195,156"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_mock_index_buffer.html" title=" " alt="" coords="15,204,185,428"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_nx_open_gl_index_buffer.html" title=" " alt="" coords="209,226,383,406"/>
+</map>

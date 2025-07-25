@@ -1,4 +1,7 @@
 <map id="nexo::system::PointLightsSystem" name="nexo::system::PointLightsSystem">
-<area shape="rect" id="node1" title="System responsible for updating point lights in the scene." alt="" coords="5,145,175,237"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="27,5,153,97"/>
+<area shape="rect" id="node1" title="System responsible for updating point lights in the scene." alt="" coords="125,631,294,723"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="56,388,363,583"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_a_group_system.html" title="Abstract base class for all group&#45;based systems." alt="" coords="5,197,176,274"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="27,5,154,83"/>
+<area shape="rect" id="node5" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="200,131,459,340"/>
 </map>

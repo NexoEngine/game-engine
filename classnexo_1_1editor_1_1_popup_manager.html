@@ -87,7 +87,9 @@ $(document).ready(function(){initNavTree('classnexo_1_1editor_1_1_popup_manager.
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classnexo_1_1editor_1_1_popup_manager-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::editor::PopupManager Class Reference</div></div>
 </div><!--header-->
@@ -102,34 +104,55 @@ Collaboration diagram for nexo::editor::PopupManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_popup_manager__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_popup_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_popup_manager_coll__map" id="anexo_1_1editor_1_1_popup_manager_coll__map">
-<area shape="rect" title="Manages the state of popups within the UI." alt="" coords="5,5,185,141"/>
+<area shape="rect" title="Manages the state of popups within the UI." alt="" coords="5,5,188,171"/>
 </map>
 </div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1editor_1_1_popup_manager_1_1_popup_props.html">PopupProps</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Properties of a popup.  <a href="structnexo_1_1editor_1_1_popup_manager_1_1_popup_props.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a63ec18121c7c9c03522667ce69d14416"><td class="memItemLeft" align="right" valign="top"><a id="a63ec18121c7c9c03522667ce69d14416" name="a63ec18121c7c9c03522667ce69d14416"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>PopupCallback</b> = std::function&lt; void()&gt;</td></tr>
+<tr class="separator:a63ec18121c7c9c03522667ce69d14416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a62247d5ad82357f0ea3499b371650429"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a62247d5ad82357f0ea3499b371650429">openPopup</a> (const std::string &amp;popupName)</td></tr>
-<tr class="memdesc:a62247d5ad82357f0ea3499b371650429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a popup by name.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a62247d5ad82357f0ea3499b371650429">More...</a><br /></td></tr>
-<tr class="separator:a62247d5ad82357f0ea3499b371650429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309ccead1bd6ad6edb27549cf3065527"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a309ccead1bd6ad6edb27549cf3065527">openPopup</a> (const std::string &amp;popupName, const ImVec2 &amp;popupSize=ImVec2(0, 0))</td></tr>
+<tr class="memdesc:a309ccead1bd6ad6edb27549cf3065527"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a popup by name.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a309ccead1bd6ad6edb27549cf3065527">More...</a><br /></td></tr>
+<tr class="separator:a309ccead1bd6ad6edb27549cf3065527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab010975f4246d729d808257e19a413aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#ab010975f4246d729d808257e19a413aa">openPopupWithCallback</a> (const std::string &amp;popupName, PopupCallback callback, const ImVec2 &amp;popupSize=ImVec2(0, 0))</td></tr>
+<tr class="memdesc:ab010975f4246d729d808257e19a413aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a popup with an associated callback function.  <a href="classnexo_1_1editor_1_1_popup_manager.html#ab010975f4246d729d808257e19a413aa">More...</a><br /></td></tr>
+<tr class="separator:ab010975f4246d729d808257e19a413aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace03bc69c9156d25599530e991b8ec4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#ace03bc69c9156d25599530e991b8ec4f">showPopupModal</a> (const std::string &amp;popupModalName)</td></tr>
 <tr class="memdesc:ace03bc69c9156d25599530e991b8ec4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays a modal popup.  <a href="classnexo_1_1editor_1_1_popup_manager.html#ace03bc69c9156d25599530e991b8ec4f">More...</a><br /></td></tr>
 <tr class="separator:ace03bc69c9156d25599530e991b8ec4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9f2c96cacf4143fa59797b5d155dafa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#ae9f2c96cacf4143fa59797b5d155dafa">showPopup</a> (const std::string &amp;popupName)</td></tr>
 <tr class="memdesc:ae9f2c96cacf4143fa59797b5d155dafa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays a non-modal popup.  <a href="classnexo_1_1editor_1_1_popup_manager.html#ae9f2c96cacf4143fa59797b5d155dafa">More...</a><br /></td></tr>
 <tr class="separator:ae9f2c96cacf4143fa59797b5d155dafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f4a6cbc6feebce7c1d4d9bfd4ba659d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a4f4a6cbc6feebce7c1d4d9bfd4ba659d">closePopup</a> () const</td></tr>
-<tr class="memdesc:a4f4a6cbc6feebce7c1d4d9bfd4ba659d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the current popup.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a4f4a6cbc6feebce7c1d4d9bfd4ba659d">More...</a><br /></td></tr>
-<tr class="separator:a4f4a6cbc6feebce7c1d4d9bfd4ba659d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d4af1be1e6f0a3b066ebc2a550d03ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a8d4af1be1e6f0a3b066ebc2a550d03ed">closePopupInContext</a> () const</td></tr>
-<tr class="memdesc:a8d4af1be1e6f0a3b066ebc2a550d03ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the current popup in its context.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a8d4af1be1e6f0a3b066ebc2a550d03ed">More...</a><br /></td></tr>
-<tr class="separator:a8d4af1be1e6f0a3b066ebc2a550d03ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2ed89420b5ce26b7e05a9bd24a828b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a7d2ed89420b5ce26b7e05a9bd24a828b">runPopupCallback</a> (const std::string &amp;popupName) const</td></tr>
+<tr class="memdesc:a7d2ed89420b5ce26b7e05a9bd24a828b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the callback associated with a popup.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a7d2ed89420b5ce26b7e05a9bd24a828b">More...</a><br /></td></tr>
+<tr class="separator:a7d2ed89420b5ce26b7e05a9bd24a828b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ab232a58791b5cacd2e56f22efa866de0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#ab232a58791b5cacd2e56f22efa866de0">closePopup</a> ()</td></tr>
+<tr class="memdesc:ab232a58791b5cacd2e56f22efa866de0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the current popup.  <a href="classnexo_1_1editor_1_1_popup_manager.html#ab232a58791b5cacd2e56f22efa866de0">More...</a><br /></td></tr>
+<tr class="separator:ab232a58791b5cacd2e56f22efa866de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ef6556d4ea43714628c17e586379ac"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a83ef6556d4ea43714628c17e586379ac">closePopupInContext</a> ()</td></tr>
+<tr class="memdesc:a83ef6556d4ea43714628c17e586379ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the current popup in its context.  <a href="classnexo_1_1editor_1_1_popup_manager.html#a83ef6556d4ea43714628c17e586379ac">More...</a><br /></td></tr>
+<tr class="separator:a83ef6556d4ea43714628c17e586379ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manages the state of popups within the UI. </p>
 <p >The <a class="el" href="classnexo_1_1editor_1_1_popup_manager.html" title="Manages the state of popups within the UI.">PopupManager</a> allows you to open, display, and close popups by name. It internally stores popup states and uses ImGui to render popups. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a62247d5ad82357f0ea3499b371650429" name="a62247d5ad82357f0ea3499b371650429"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62247d5ad82357f0ea3499b371650429">&#9670;&nbsp;</a></span>openPopup()</h2>
+<a id="a309ccead1bd6ad6edb27549cf3065527" name="a309ccead1bd6ad6edb27549cf3065527"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309ccead1bd6ad6edb27549cf3065527">&#9670;&nbsp;</a></span>openPopup()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -138,8 +161,18 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void nexo::editor::PopupManager::openPopup </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>popupName</em></td><td>)</td>
+          <td class="paramname"><em>popupName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const ImVec2 &amp;&#160;</td>
+          <td class="paramname"><em>popupSize</em> = <code>ImVec2(0,&#160;0)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -149,6 +182,52 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">popupName</td><td>The unique name of the popup. </td></tr>
+    <tr><td class="paramname">popupSize</td><td>Optional size for the popup window (0,0 for auto-size). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab010975f4246d729d808257e19a413aa" name="ab010975f4246d729d808257e19a413aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab010975f4246d729d808257e19a413aa">&#9670;&nbsp;</a></span>openPopupWithCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::PopupManager::openPopupWithCallback </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>popupName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PopupCallback&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ImVec2 &amp;&#160;</td>
+          <td class="paramname"><em>popupSize</em> = <code>ImVec2(0,&#160;0)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opens a popup with an associated callback function. </p>
+<p >Marks the popup as active and associates a callback function with it. The callback can later be executed via <a class="el" href="classnexo_1_1editor_1_1_popup_manager.html#a7d2ed89420b5ce26b7e05a9bd24a828b" title="Executes the callback associated with a popup.">runPopupCallback()</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">popupName</td><td>The unique name of the popup. </td></tr>
+    <tr><td class="paramname">callback</td><td>Function to be called when the popup is processed. </td></tr>
+    <tr><td class="paramname">popupSize</td><td>Optional size for the popup window (0,0 for auto-size). </td></tr>
   </table>
   </dd>
 </dl>
@@ -211,19 +290,27 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4f4a6cbc6feebce7c1d4d9bfd4ba659d" name="a4f4a6cbc6feebce7c1d4d9bfd4ba659d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f4a6cbc6feebce7c1d4d9bfd4ba659d">&#9670;&nbsp;</a></span>closePopup()</h2>
+<a id="ab232a58791b5cacd2e56f22efa866de0" name="ab232a58791b5cacd2e56f22efa866de0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab232a58791b5cacd2e56f22efa866de0">&#9670;&nbsp;</a></span>closePopup()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void nexo::editor::PopupManager::closePopup </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Closes the current popup. </p>
@@ -231,23 +318,58 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8d4af1be1e6f0a3b066ebc2a550d03ed" name="a8d4af1be1e6f0a3b066ebc2a550d03ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d4af1be1e6f0a3b066ebc2a550d03ed">&#9670;&nbsp;</a></span>closePopupInContext()</h2>
+<a id="a83ef6556d4ea43714628c17e586379ac" name="a83ef6556d4ea43714628c17e586379ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ef6556d4ea43714628c17e586379ac">&#9670;&nbsp;</a></span>closePopupInContext()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void nexo::editor::PopupManager::closePopupInContext </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Closes the current popup in its context. </p>
+<p >Requests ImGui to close the current popup. </p>
+
+</div>
+</div>
+<a id="a7d2ed89420b5ce26b7e05a9bd24a828b" name="a7d2ed89420b5ce26b7e05a9bd24a828b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2ed89420b5ce26b7e05a9bd24a828b">&#9670;&nbsp;</a></span>runPopupCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::PopupManager::runPopupCallback </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>popupName</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Closes the current popup in its context. </p>
-<p >Requests ImGui to close the current popup. </p>
+<p>Executes the callback associated with a popup. </p>
+<p >If a callback function was registered with the specified popup, this method will execute it.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">popupName</td><td>The name of the popup whose callback should be executed. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

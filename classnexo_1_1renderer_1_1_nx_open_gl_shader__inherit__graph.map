@@ -1,0 +1,4 @@
+<map id="nexo::renderer::NxOpenGlShader" name="nexo::renderer::NxOpenGlShader">
+<area shape="rect" id="node1" title="Implementation of the Shader interface using OpenGL." alt="" coords="5,380,173,619"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_nx_shader.html" title="Abstract class representing a shader program in the rendering pipeline." alt="" coords="7,5,172,332"/>
+</map>

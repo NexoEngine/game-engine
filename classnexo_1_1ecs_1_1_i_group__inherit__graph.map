@@ -1,0 +1,4 @@
+<map id="nexo::ecs::IGroup" name="nexo::ecs::IGroup">
+<area shape="rect" id="node1" title="Interface for ECS groups." alt="" coords="33,5,183,127"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_group.html" title="Group class for a view over entities with both owned and non‑owned components." alt="" coords="5,175,211,413"/>
+</map>

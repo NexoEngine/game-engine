@@ -170,7 +170,7 @@ $(document).ready(function(){initNavTree('ecs_readme.html',''); initResizable();
 </blockquote>
 <p>### Second, the <b>ComponentManager</b>: This one is a bit trickier, its goal is to handle all the different components (which are basically structs). <br  />
 </p>
-<h4><b><a class="el" href="class_component_array_3_01_t_01_4.html" title="Templated class that manages a specific type of component for all entities.">ComponentArray&lt;T&gt;</a></b></h4>
+<h4><b>ComponentArray&lt;T&gt;</b></h4>
 <p >&gt;This class is a template class, meaning it's designed to store components of any type (T). It's used to manage a specific type of component for all entities. Each ComponentArray instance corresponds to a different type of component in the ECS architecture. Its primary functions include: &gt;&gt;<b>Inserting Components:</b> When a new component is added to an entity, it's stored in an array. The class maintains a mapping between the entity ID and its index in this array, ensuring fast access. </p><blockquote class="doxtable">
 <blockquote class="doxtable">
 <p >&gt;<b>Removing Components:</b> When a component is removed from an entity, this class updates its internal structures to reflect this change, keeping the array packed by moving the last element to the position of the removed element. </p>
@@ -237,7 +237,7 @@ $(document).ready(function(){initNavTree('ecs_readme.html',''); initResizable();
 <div class="line">struct Velocity {</div>
 <div class="line">    float x, y, z;</div>
 <div class="line">};</div>
-</div><!-- fragment --><p> Then we set up the <code><a class="el" href="class_movement_system.html">MovementSystem</a></code>: </p><div class="fragment"><div class="line"> {c++}</div>
+</div><!-- fragment --><p> Then we set up the <code>MovementSystem</code>: </p><div class="fragment"><div class="line"> {c++}</div>
 <div class="line">class MovementSystem : public nexo::ecs::System {</div>
 <div class="line">    public:</div>
 <div class="line">        void update(float deltaTime) {</div>

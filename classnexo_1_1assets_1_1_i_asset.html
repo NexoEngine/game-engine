@@ -93,19 +93,26 @@ $(document).ready(function(){initNavTree('classnexo_1_1assets_1_1_i_asset.html',
   <div class="headertitle"><div class="title">nexo::assets::IAsset Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Pure virtual interface for all assets.  
+ <a href="classnexo_1_1assets_1_1_i_asset.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_asset_8hpp_source.html">Asset.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nexo::assets::IAsset:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1assets_1_1_i_asset__inherit__graph.png" border="0" usemap="#anexo_1_1assets_1_1_i_asset_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1assets_1_1_i_asset_inherit__map" id="anexo_1_1assets_1_1_i_asset_inherit__map">
-<area shape="rect" title=" " alt="" coords="296,5,435,215"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="27,263,162,472"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="187,263,351,472"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="375,263,547,472"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="571,270,762,465"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="5,520,179,612"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="203,520,338,612"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="390,520,533,612"/>
+<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="376,5,515,185"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,233,176,501"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="203,233,338,501"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="363,233,528,501"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="553,233,725,501"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="749,241,939,494"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_material.html" title="Represents a material asset." alt="" coords="13,579,160,671"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="184,579,357,671"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="382,579,517,671"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="567,549,710,700"/>
 </map>
 </div>
 <div class="dynheader">
@@ -113,7 +120,7 @@ Collaboration diagram for nexo::assets::IAsset:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1assets_1_1_i_asset__coll__graph.png" border="0" usemap="#anexo_1_1assets_1_1_i_asset_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1assets_1_1_i_asset_coll__map" id="anexo_1_1assets_1_1_i_asset_coll__map">
-<area shape="rect" title=" " alt="" coords="30,520,169,729"/>
+<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="30,520,169,700"/>
 <area shape="rect" href="structnexo_1_1assets_1_1_asset_metadata.html" title=" " alt="" coords="5,336,193,457"/>
 <area shape="rect" href="classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="7,5,191,273"/>
 </map>
@@ -121,30 +128,24 @@ Collaboration diagram for nexo::assets::IAsset:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8e98efcee56cc8662cf4588590b89f62"><td class="memItemLeft" align="right" valign="top"><a id="a8e98efcee56cc8662cf4588590b89f62" name="a8e98efcee56cc8662cf4588590b89f62"></a>
-virtual const <a class="el" href="structnexo_1_1assets_1_1_asset_metadata.html">AssetMetadata</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMetadata</b> () const</td></tr>
-<tr class="separator:a8e98efcee56cc8662cf4588590b89f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa1992804c965e47462cf997b92e2cc4"><td class="memItemLeft" align="right" valign="top"><a id="afa1992804c965e47462cf997b92e2cc4" name="afa1992804c965e47462cf997b92e2cc4"></a>
-virtual <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getType</b> () const</td></tr>
-<tr class="separator:afa1992804c965e47462cf997b92e2cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5348ebdc137f5994a40d6f3049fd1836"><td class="memItemLeft" align="right" valign="top"><a id="a5348ebdc137f5994a40d6f3049fd1836" name="a5348ebdc137f5994a40d6f3049fd1836"></a>
-virtual <a class="el" href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">AssetID</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getID</b> () const</td></tr>
-<tr class="separator:a5348ebdc137f5994a40d6f3049fd1836"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a203f84f6cd2a81d2002ba57a16d09b2e"><td class="memItemLeft" align="right" valign="top"><a id="a203f84f6cd2a81d2002ba57a16d09b2e" name="a203f84f6cd2a81d2002ba57a16d09b2e"></a>
-virtual AssetStatus&#160;</td><td class="memItemRight" valign="bottom"><b>getStatus</b> () const</td></tr>
-<tr class="separator:a203f84f6cd2a81d2002ba57a16d09b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a256e581ddebaf9f5772162f1803d0cef"><td class="memItemLeft" align="right" valign="top"><a id="a256e581ddebaf9f5772162f1803d0cef" name="a256e581ddebaf9f5772162f1803d0cef"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLoaded</b> () const</td></tr>
-<tr class="separator:a256e581ddebaf9f5772162f1803d0cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08e4ad992e702d9c2f0059b92838c703"><td class="memItemLeft" align="right" valign="top"><a id="a08e4ad992e702d9c2f0059b92838c703" name="a08e4ad992e702d9c2f0059b92838c703"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isErrored</b> () const</td></tr>
-<tr class="separator:a08e4ad992e702d9c2f0059b92838c703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabb292eca48bb8960c61d94ecf5ef413"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_i_asset.html#aabb292eca48bb8960c61d94ecf5ef413">getRawData</a> () const =0</td></tr>
-<tr class="memdesc:aabb292eca48bb8960c61d94ecf5ef413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the asset data pointer.  <a href="classnexo_1_1assets_1_1_i_asset.html#aabb292eca48bb8960c61d94ecf5ef413">More...</a><br /></td></tr>
-<tr class="separator:aabb292eca48bb8960c61d94ecf5ef413"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c4ecff3585aa0835c25b2ac14d041de"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classnexo_1_1assets_1_1_i_asset.html">IAsset</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1assets_1_1_i_asset.html#a2c4ecff3585aa0835c25b2ac14d041de">setRawData</a> (void *rawData)=0</td></tr>
-<tr class="memdesc:a2c4ecff3585aa0835c25b2ac14d041de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the asset data pointer.  <a href="classnexo_1_1assets_1_1_i_asset.html#a2c4ecff3585aa0835c25b2ac14d041de">More...</a><br /></td></tr>
-<tr class="separator:a2c4ecff3585aa0835c25b2ac14d041de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62a67c651ec7e69c911be5ee21c87f86"><td class="memItemLeft" align="right" valign="top"><a id="a62a67c651ec7e69c911be5ee21c87f86" name="a62a67c651ec7e69c911be5ee21c87f86"></a>
+virtual const <a class="el" href="structnexo_1_1assets_1_1_asset_metadata.html">AssetMetadata</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMetadata</b> () const =0</td></tr>
+<tr class="separator:a62a67c651ec7e69c911be5ee21c87f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cec9707b4d42b7ca50f34a6b7045d5e"><td class="memItemLeft" align="right" valign="top"><a id="a7cec9707b4d42b7ca50f34a6b7045d5e" name="a7cec9707b4d42b7ca50f34a6b7045d5e"></a>
+virtual <a class="el" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">AssetType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getType</b> () const =0</td></tr>
+<tr class="separator:a7cec9707b4d42b7ca50f34a6b7045d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40a07a7d39d89436f7677b7cabad2d61"><td class="memItemLeft" align="right" valign="top"><a id="a40a07a7d39d89436f7677b7cabad2d61" name="a40a07a7d39d89436f7677b7cabad2d61"></a>
+virtual <a class="el" href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">AssetID</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getID</b> () const =0</td></tr>
+<tr class="separator:a40a07a7d39d89436f7677b7cabad2d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f14db2975afd3c695adb7a3ed1add1"><td class="memItemLeft" align="right" valign="top"><a id="a59f14db2975afd3c695adb7a3ed1add1" name="a59f14db2975afd3c695adb7a3ed1add1"></a>
+virtual AssetStatus&#160;</td><td class="memItemRight" valign="bottom"><b>getStatus</b> () const =0</td></tr>
+<tr class="separator:a59f14db2975afd3c695adb7a3ed1add1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abebea2a13671877090e313217e729cda"><td class="memItemLeft" align="right" valign="top"><a id="abebea2a13671877090e313217e729cda" name="abebea2a13671877090e313217e729cda"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLoaded</b> () const =0</td></tr>
+<tr class="separator:abebea2a13671877090e313217e729cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a00efb522f86f306fc70996e0350a5d"><td class="memItemLeft" align="right" valign="top"><a id="a0a00efb522f86f306fc70996e0350a5d" name="a0a00efb522f86f306fc70996e0350a5d"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isErrored</b> () const =0</td></tr>
+<tr class="separator:a0a00efb522f86f306fc70996e0350a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -161,75 +162,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AssetCatalog</b></td
 class&#160;</td><td class="memItemRight" valign="bottom"><b>AssetImporter</b></td></tr>
 <tr class="separator:ac76cdf627cd7a2e9dcef09464a42b307"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="aabb292eca48bb8960c61d94ecf5ef413" name="aabb292eca48bb8960c61d94ecf5ef413"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabb292eca48bb8960c61d94ecf5ef413">&#9670;&nbsp;</a></span>getRawData()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void * nexo::assets::IAsset::getRawData </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the asset data pointer. </p>
-<dl class="section return"><dt>Returns</dt><dd>Raw pointer to the asset data </dd></dl>
-
-<p>Implemented in <a class="el" href="classnexo_1_1assets_1_1_asset.html#a859452bcc319742aec41d4a161a919f9">nexo::assets::Asset&lt; TAssetData, TAssetType &gt;</a>, <a class="el" href="classnexo_1_1assets_1_1_asset.html#a859452bcc319742aec41d4a161a919f9">nexo::assets::Asset&lt; void *, AssetType::SHADER &gt;</a>, <a class="el" href="classnexo_1_1assets_1_1_asset.html#a859452bcc319742aec41d4a161a919f9">nexo::assets::Asset&lt; ModelData, AssetType::MODEL &gt;</a>, and <a class="el" href="classnexo_1_1assets_1_1_asset.html#a859452bcc319742aec41d4a161a919f9">nexo::assets::Asset&lt; TextureData, AssetType::TEXTURE &gt;</a>.</p>
-
-</div>
-</div>
-<a id="a2c4ecff3585aa0835c25b2ac14d041de" name="a2c4ecff3585aa0835c25b2ac14d041de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c4ecff3585aa0835c25b2ac14d041de">&#9670;&nbsp;</a></span>setRawData()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classnexo_1_1assets_1_1_i_asset.html">IAsset</a> &amp; nexo::assets::IAsset::setRawData </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>rawData</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set the asset data pointer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">rawData</td><td>Raw pointer to the asset data </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>This transfers ownership of the data to the asset, which will delete it in its destructor </dd></dl>
-
-<p>Implemented in <a class="el" href="classnexo_1_1assets_1_1_asset.html#a821142f3d8686269853d1f5c43631e00">nexo::assets::Asset&lt; TAssetData, TAssetType &gt;</a>, <a class="el" href="classnexo_1_1assets_1_1_asset.html#a821142f3d8686269853d1f5c43631e00">nexo::assets::Asset&lt; void *, AssetType::SHADER &gt;</a>, <a class="el" href="classnexo_1_1assets_1_1_asset.html#a821142f3d8686269853d1f5c43631e00">nexo::assets::Asset&lt; ModelData, AssetType::MODEL &gt;</a>, and <a class="el" href="classnexo_1_1assets_1_1_asset.html#a821142f3d8686269853d1f5c43631e00">nexo::assets::Asset&lt; TextureData, AssetType::TEXTURE &gt;</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Pure virtual interface for all assets. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>engine/src/assets/<a class="el" href="_asset_8hpp_source.html">Asset.hpp</a></li>
 </ul>
 </div><!-- contents -->

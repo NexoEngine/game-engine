@@ -102,17 +102,25 @@ $(document).ready(function(){initNavTree('_point_lights_system_8hpp_source.html'
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;ecs/System.hpp&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>nexo::system {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_point_lights_system.html">   33</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_point_lights_system.html">PointLightsSystem</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_system.html">ecs::System</a> {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordtype">void</span> update() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    };</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
-<div class="ttc" id="aclassnexo_1_1ecs_1_1_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_system.html">nexo::ecs::System</a></div><div class="ttdoc">Base class for systems in an ECS (Entity-Component-System) architecture.</div><div class="ttdef"><b>Definition:</b> System.hpp:37</div></div>
-<div class="ttc" id="aclassnexo_1_1system_1_1_point_lights_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_point_lights_system.html">nexo::system::PointLightsSystem</a></div><div class="ttdoc">System responsible for updating point lights in the scene.</div><div class="ttdef"><b>Definition:</b> PointLightsSystem.hpp:33</div></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;components/Light.hpp&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;components/RenderContext.hpp&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;components/SceneComponents.hpp&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;ecs/GroupSystem.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>nexo::system {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_point_lights_system.html">   39</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_point_lights_system.html">PointLightsSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_group_system.html">ecs::GroupSystem</a>&lt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        ecs::Owned&lt;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            ecs::Read&lt;components::PointLightComponent&gt;&gt;,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        ecs::NonOwned&lt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            ecs::Read&lt;components::SceneTag&gt;&gt;,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        ecs::WriteSingleton&lt;components::RenderContext&gt;&gt; {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordtype">void</span> update();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
+<div class="ttc" id="aclassnexo_1_1ecs_1_1_group_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_group_system.html">nexo::ecs::GroupSystem</a></div><div class="ttdoc">System that uses component groups for optimized access with enforced permissions.</div><div class="ttdef"><b>Definition:</b> GroupSystem.hpp:40</div></div>
+<div class="ttc" id="aclassnexo_1_1system_1_1_point_lights_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_point_lights_system.html">nexo::system::PointLightsSystem</a></div><div class="ttdoc">System responsible for updating point lights in the scene.</div><div class="ttdef"><b>Definition:</b> PointLightsSystem.hpp:44</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

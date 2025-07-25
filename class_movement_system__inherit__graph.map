@@ -1,4 +1,0 @@
-<map id="MovementSystem" name="MovementSystem">
-<area shape="rect" id="node1" title=" " alt="" coords="5,145,132,223"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,5,132,97"/>
-</map>

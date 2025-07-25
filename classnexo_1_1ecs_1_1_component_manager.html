@@ -87,12 +87,13 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_component_manager
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classnexo_1_1ecs_1_1_component_manager-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::ecs::ComponentManager Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Manages the registration and handling of components in an ECS architecture.  
+<p>Central manager for all component types and their arrays.  
  <a href="classnexo_1_1ecs_1_1_component_manager.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="engine_2src_2ecs_2_components_8hpp_source.html">Components.hpp</a>&gt;</code></p>
@@ -101,54 +102,227 @@ Collaboration diagram for nexo::ecs::ComponentManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_component_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_component_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_component_manager_coll__map" id="anexo_1_1ecs_1_1_component_manager_coll__map">
-<area shape="rect" title="Manages the registration and handling of components in an ECS architecture." alt="" coords="5,5,204,215"/>
+<area shape="rect" title="Central manager for all component types and their arrays." alt="" coords="5,5,233,244"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a8d5beaf564d488640b6751c475d9cc44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a8d5beaf564d488640b6751c475d9cc44">ComponentManager</a> (const <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a8d5beaf564d488640b6751c475d9cc44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor (deleted)  <a href="classnexo_1_1ecs_1_1_component_manager.html#a8d5beaf564d488640b6751c475d9cc44">More...</a><br /></td></tr>
+<tr class="separator:a8d5beaf564d488640b6751c475d9cc44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade56b798c2b52506757a7a08f09f104c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ade56b798c2b52506757a7a08f09f104c">operator=</a> (const <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;)=delete</td></tr>
+<tr class="memdesc:ade56b798c2b52506757a7a08f09f104c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator (deleted)  <a href="classnexo_1_1ecs_1_1_component_manager.html#ade56b798c2b52506757a7a08f09f104c">More...</a><br /></td></tr>
+<tr class="separator:ade56b798c2b52506757a7a08f09f104c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68b67f133f7782d72e5d0342b6e55f0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ac68b67f133f7782d72e5d0342b6e55f0">ComponentManager</a> (<a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:ac68b67f133f7782d72e5d0342b6e55f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor.  <a href="classnexo_1_1ecs_1_1_component_manager.html#ac68b67f133f7782d72e5d0342b6e55f0">More...</a><br /></td></tr>
+<tr class="separator:ac68b67f133f7782d72e5d0342b6e55f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d95bd4170f4ab701af50a931cc5e93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ab6d95bd4170f4ab701af50a931cc5e93">operator=</a> (<a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="memdesc:ab6d95bd4170f4ab701af50a931cc5e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator.  <a href="classnexo_1_1ecs_1_1_component_manager.html#ab6d95bd4170f4ab701af50a931cc5e93">More...</a><br /></td></tr>
+<tr class="separator:ab6d95bd4170f4ab701af50a931cc5e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e52b770dd9e37578b57c21c372e983f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a9e52b770dd9e37578b57c21c372e983f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a9e52b770dd9e37578b57c21c372e983f">registerComponent</a> ()</td></tr>
-<tr class="memdesc:a9e52b770dd9e37578b57c21c372e983f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new component type in the system.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a9e52b770dd9e37578b57c21c372e983f">More...</a><br /></td></tr>
+<tr class="memdesc:a9e52b770dd9e37578b57c21c372e983f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a component type in the ECS.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a9e52b770dd9e37578b57c21c372e983f">More...</a><br /></td></tr>
 <tr class="separator:a9e52b770dd9e37578b57c21c372e983f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac63d2829432da01f2ff617cbeede59af"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ac63d2829432da01f2ff617cbeede59af"><td class="memTemplItemLeft" align="right" valign="top">ComponentType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ac63d2829432da01f2ff617cbeede59af">getComponentType</a> ()</td></tr>
-<tr class="memdesc:ac63d2829432da01f2ff617cbeede59af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the ComponentType ID for a specific component type.  <a href="classnexo_1_1ecs_1_1_component_manager.html#ac63d2829432da01f2ff617cbeede59af">More...</a><br /></td></tr>
-<tr class="separator:ac63d2829432da01f2ff617cbeede59af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bf98021ae7913f360e2563b30094479"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a5bf98021ae7913f360e2563b30094479"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a5bf98021ae7913f360e2563b30094479">addComponent</a> (Entity entity, T component)</td></tr>
-<tr class="memdesc:a5bf98021ae7913f360e2563b30094479"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a component of a specific type to an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a5bf98021ae7913f360e2563b30094479">More...</a><br /></td></tr>
-<tr class="separator:a5bf98021ae7913f360e2563b30094479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2474a63d35278bb0b8813819ed1f54e6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a2474a63d35278bb0b8813819ed1f54e6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a2474a63d35278bb0b8813819ed1f54e6">removeComponent</a> (Entity entity)</td></tr>
-<tr class="memdesc:a2474a63d35278bb0b8813819ed1f54e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a component of a specific type from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a2474a63d35278bb0b8813819ed1f54e6">More...</a><br /></td></tr>
-<tr class="separator:a2474a63d35278bb0b8813819ed1f54e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a115aaf2c5cc5af415955cfc868cb7738"><td class="memTemplParams" colspan="2"><a id="a115aaf2c5cc5af415955cfc868cb7738" name="a115aaf2c5cc5af415955cfc868cb7738"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a115aaf2c5cc5af415955cfc868cb7738"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tryRemoveComponent</b> (Entity entity)</td></tr>
-<tr class="separator:a115aaf2c5cc5af415955cfc868cb7738"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa05b49b6337f334204ba6f3d80ab69c8"><td class="memItemLeft" align="right" valign="top"><a id="aa05b49b6337f334204ba6f3d80ab69c8" name="aa05b49b6337f334204ba6f3d80ab69c8"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>registerComponent</b> (const size_t componentSize, const size_t initialCapacity=1024)</td></tr>
+<tr class="separator:aa05b49b6337f334204ba6f3d80ab69c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4e3999b1476455789f2478af97d6eb7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa4e3999b1476455789f2478af97d6eb7"><td class="memTemplItemLeft" align="right" valign="top">ComponentType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#aa4e3999b1476455789f2478af97d6eb7">getComponentType</a> () const</td></tr>
+<tr class="memdesc:aa4e3999b1476455789f2478af97d6eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique identifier for a component type.  <a href="classnexo_1_1ecs_1_1_component_manager.html#aa4e3999b1476455789f2478af97d6eb7">More...</a><br /></td></tr>
+<tr class="separator:aa4e3999b1476455789f2478af97d6eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7d0486f69c5b398267d9bd8f5d657af"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad7d0486f69c5b398267d9bd8f5d657af"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ad7d0486f69c5b398267d9bd8f5d657af">addComponent</a> (Entity entity, T component, const Signature oldSignature, const Signature newSignature)</td></tr>
+<tr class="memdesc:ad7d0486f69c5b398267d9bd8f5d657af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a component to an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#ad7d0486f69c5b398267d9bd8f5d657af">More...</a><br /></td></tr>
+<tr class="separator:ad7d0486f69c5b398267d9bd8f5d657af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab64b909bc0bc5d402cd9c92cb949e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#abab64b909bc0bc5d402cd9c92cb949e3">addComponent</a> (const Entity entity, const ComponentType componentType, const void *componentData, const Signature oldSignature, const Signature newSignature)</td></tr>
+<tr class="memdesc:abab64b909bc0bc5d402cd9c92cb949e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a component to an entity using type ID and raw data.  <a href="classnexo_1_1ecs_1_1_component_manager.html#abab64b909bc0bc5d402cd9c92cb949e3">More...</a><br /></td></tr>
+<tr class="separator:abab64b909bc0bc5d402cd9c92cb949e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9f13f6e045b40e5af0dc2be860f71f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ae9f13f6e045b40e5af0dc2be860f71f7">removeComponent</a> (const Entity entity, const ComponentType componentType, const Signature previousSignature, const Signature newSignature)</td></tr>
+<tr class="memdesc:ae9f13f6e045b40e5af0dc2be860f71f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a component from an entity using type ID.  <a href="classnexo_1_1ecs_1_1_component_manager.html#ae9f13f6e045b40e5af0dc2be860f71f7">More...</a><br /></td></tr>
+<tr class="separator:ae9f13f6e045b40e5af0dc2be860f71f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eeffc28c3cf989b9619270112cac46d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4eeffc28c3cf989b9619270112cac46d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a4eeffc28c3cf989b9619270112cac46d">removeComponent</a> (Entity entity, const Signature previousSignature, const Signature newSignature)</td></tr>
+<tr class="memdesc:a4eeffc28c3cf989b9619270112cac46d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a component from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a4eeffc28c3cf989b9619270112cac46d">More...</a><br /></td></tr>
+<tr class="separator:a4eeffc28c3cf989b9619270112cac46d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa7f5c7c18641a48dbc0e3beda910b3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aafa7f5c7c18641a48dbc0e3beda910b3"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#aafa7f5c7c18641a48dbc0e3beda910b3">tryRemoveComponent</a> (Entity entity, const Signature previousSignature, const Signature newSignature)</td></tr>
+<tr class="memdesc:aafa7f5c7c18641a48dbc0e3beda910b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to remove a component from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#aafa7f5c7c18641a48dbc0e3beda910b3">More...</a><br /></td></tr>
+<tr class="separator:aafa7f5c7c18641a48dbc0e3beda910b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52b7e48163c09839674d1e97ba3fd072"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a52b7e48163c09839674d1e97ba3fd072"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a52b7e48163c09839674d1e97ba3fd072">getComponent</a> (Entity entity)</td></tr>
-<tr class="memdesc:a52b7e48163c09839674d1e97ba3fd072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a reference to a component of a specific type from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a52b7e48163c09839674d1e97ba3fd072">More...</a><br /></td></tr>
+<tr class="memdesc:a52b7e48163c09839674d1e97ba3fd072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a component from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a52b7e48163c09839674d1e97ba3fd072">More...</a><br /></td></tr>
 <tr class="separator:a52b7e48163c09839674d1e97ba3fd072"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memTemplParams" colspan="2"><a id="a0e4bc8dd63d9c0a2a3d82701aec6afe9" name="a0e4bc8dd63d9c0a2a3d82701aec6afe9"></a>
+<tr class="memitem:a64153e1ec6e1409362a472fb67aabccc"><td class="memTemplParams" colspan="2"><a id="a64153e1ec6e1409362a472fb67aabccc" name="a64153e1ec6e1409362a472fb67aabccc"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tryGetComponent</b> (Entity entity)</td></tr>
+<tr class="memitem:a64153e1ec6e1409362a472fb67aabccc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>duplicateComponent</b> (Entity sourceEntity, Entity destEntity, const Signature oldSignature, const Signature newSignature)</td></tr>
+<tr class="separator:a64153e1ec6e1409362a472fb67aabccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a05e38c5385def4e24bc59fb627ec9c"><td class="memItemLeft" align="right" valign="top"><a id="a0a05e38c5385def4e24bc59fb627ec9c" name="a0a05e38c5385def4e24bc59fb627ec9c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>duplicateComponent</b> (ComponentType componentType, Entity sourceEntity, Entity destEntity, const Signature oldSignature, const Signature newSignature)</td></tr>
+<tr class="separator:a0a05e38c5385def4e24bc59fb627ec9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d94ac8a5a65c674f545d33f996695f"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a45d94ac8a5a65c674f545d33f996695f">getComponentArray</a> (const ComponentType typeID) const</td></tr>
+<tr class="memdesc:a45d94ac8a5a65c674f545d33f996695f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the component array for a specific component type with ComponentType (const version)  <a href="classnexo_1_1ecs_1_1_component_manager.html#a45d94ac8a5a65c674f545d33f996695f">More...</a><br /></td></tr>
+<tr class="separator:a45d94ac8a5a65c674f545d33f996695f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604cb2cf3cc6ba801c2d9bd9a3da9be1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a604cb2cf3cc6ba801c2d9bd9a3da9be1"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_component_array.html">ComponentArray</a>&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a604cb2cf3cc6ba801c2d9bd9a3da9be1">getComponentArray</a> ()</td></tr>
+<tr class="memdesc:a604cb2cf3cc6ba801c2d9bd9a3da9be1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the component array for a specific component type.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a604cb2cf3cc6ba801c2d9bd9a3da9be1">More...</a><br /></td></tr>
+<tr class="separator:a604cb2cf3cc6ba801c2d9bd9a3da9be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace13b6341237045a28624c7e6b2fe124"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ace13b6341237045a28624c7e6b2fe124"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classnexo_1_1ecs_1_1_component_array.html">ComponentArray</a>&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#ace13b6341237045a28624c7e6b2fe124">getComponentArray</a> () const</td></tr>
+<tr class="memdesc:ace13b6341237045a28624c7e6b2fe124"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the component array for a specific component type (const version)  <a href="classnexo_1_1ecs_1_1_component_manager.html#ace13b6341237045a28624c7e6b2fe124">More...</a><br /></td></tr>
+<tr class="separator:ace13b6341237045a28624c7e6b2fe124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a0e4bc8dd63d9c0a2a3d82701aec6afe9">tryGetComponent</a> (Entity entity)</td></tr>
+<tr class="memdesc:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Safely attempts to get a component from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a0e4bc8dd63d9c0a2a3d82701aec6afe9">More...</a><br /></td></tr>
 <tr class="separator:a0e4bc8dd63d9c0a2a3d82701aec6afe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d3672819f8350d2ebef7785a35f21c0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a4d3672819f8350d2ebef7785a35f21c0">getAllComponents</a> (Entity entity)</td></tr>
-<tr class="memdesc:a4d3672819f8350d2ebef7785a35f21c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a reference to all components of a specific type from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a4d3672819f8350d2ebef7785a35f21c0">More...</a><br /></td></tr>
-<tr class="separator:a4d3672819f8350d2ebef7785a35f21c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7039d05ccfd3d6d36b92746bae40502"><td class="memItemLeft" align="right" valign="top"><a id="ac7039d05ccfd3d6d36b92746bae40502" name="ac7039d05ccfd3d6d36b92746bae40502"></a>
-std::optional&lt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tryGetAllComponents</b> (const Entity entity)</td></tr>
-<tr class="separator:ac7039d05ccfd3d6d36b92746bae40502"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32281b3ca36e25471aacecd0317775bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a32281b3ca36e25471aacecd0317775bd">entityDestroyed</a> (Entity entity) const</td></tr>
-<tr class="memdesc:a32281b3ca36e25471aacecd0317775bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the destruction of an entity by ensuring all associated components are removed.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a32281b3ca36e25471aacecd0317775bd">More...</a><br /></td></tr>
-<tr class="separator:a32281b3ca36e25471aacecd0317775bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e2a975dc1d784c0270aa247e28fea4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a82e2a975dc1d784c0270aa247e28fea4">tryGetComponent</a> (const Entity entity, const ComponentType typeID) const</td></tr>
+<tr class="memdesc:a82e2a975dc1d784c0270aa247e28fea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Safely attempts to get a component from an entity.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a82e2a975dc1d784c0270aa247e28fea4">More...</a><br /></td></tr>
+<tr class="separator:a82e2a975dc1d784c0270aa247e28fea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6b0c9e7b3a9f526c9cdb17f607db68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a8f6b0c9e7b3a9f526c9cdb17f607db68">entityDestroyed</a> (Entity entity, const Signature &amp;entitySignature)</td></tr>
+<tr class="memdesc:a8f6b0c9e7b3a9f526c9cdb17f607db68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all component arrays that an entity has been destroyed.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a8f6b0c9e7b3a9f526c9cdb17f607db68">More...</a><br /></td></tr>
+<tr class="separator:a8f6b0c9e7b3a9f526c9cdb17f607db68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad7c5cf5aa964c91763d0564804b9cb4"><td class="memTemplParams" colspan="2">template&lt;typename... Owned&gt; </td></tr>
+<tr class="memitem:aad7c5cf5aa964c91763d0564804b9cb4"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#aad7c5cf5aa964c91763d0564804b9cb4">registerGroup</a> (const auto &amp;nonOwned)</td></tr>
+<tr class="memdesc:aad7c5cf5aa964c91763d0564804b9cb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates or retrieves a group for specific component combinations.  <a href="classnexo_1_1ecs_1_1_component_manager.html#aad7c5cf5aa964c91763d0564804b9cb4">More...</a><br /></td></tr>
+<tr class="separator:aad7c5cf5aa964c91763d0564804b9cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabebf922f779a6465942e9b775c2611a"><td class="memTemplParams" colspan="2">template&lt;typename... Owned&gt; </td></tr>
+<tr class="memitem:aabebf922f779a6465942e9b775c2611a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#aabebf922f779a6465942e9b775c2611a">getGroup</a> (const auto &amp;nonOwned)</td></tr>
+<tr class="memdesc:aabebf922f779a6465942e9b775c2611a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves an existing group for specific component combinations.  <a href="classnexo_1_1ecs_1_1_component_manager.html#aabebf922f779a6465942e9b775c2611a">More...</a><br /></td></tr>
+<tr class="separator:aabebf922f779a6465942e9b775c2611a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a3262653963f6cadb33d9b3649bbc5225"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html#a3262653963f6cadb33d9b3649bbc5225">hasCommonOwnedComponents</a> (const <a class="el" href="structnexo_1_1ecs_1_1_group_key.html">GroupKey</a> &amp;key1, const <a class="el" href="structnexo_1_1ecs_1_1_group_key.html">GroupKey</a> &amp;key2)</td></tr>
+<tr class="memdesc:a3262653963f6cadb33d9b3649bbc5225"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two groups share any common owned components.  <a href="classnexo_1_1ecs_1_1_component_manager.html#a3262653963f6cadb33d9b3649bbc5225">More...</a><br /></td></tr>
+<tr class="separator:a3262653963f6cadb33d9b3649bbc5225"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Manages the registration and handling of components in an ECS architecture. </p>
-<p >The <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Manages the registration and handling of components in an ECS architecture.">ComponentManager</a> is responsible for managing different types of components in the ECS framework. It allows the registration of component types, adding and removing components to entities, and accessing components of entities. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><p >Central manager for all component types and their arrays. </p>
+<p >The <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Central manager for all component types and their arrays.">ComponentManager</a> is responsible for:</p><ul>
+<li>Registering component types in the ECS</li>
+<li>Creating and maintaining component arrays</li>
+<li>Adding/removing components from entities</li>
+<li>Managing component group registrations</li>
+<li>Handling entity destruction with respect to components </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a8d5beaf564d488640b6751c475d9cc44" name="a8d5beaf564d488640b6751c475d9cc44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5beaf564d488640b6751c475d9cc44">&#9670;&nbsp;</a></span>ComponentManager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">nexo::ecs::ComponentManager::ComponentManager </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy constructor (deleted) </p>
+<p ><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Central manager for all component types and their arrays.">ComponentManager</a> is not copyable to prevent duplication of component data. </p>
+
+</div>
+</div>
+<a id="ac68b67f133f7782d72e5d0342b6e55f0" name="ac68b67f133f7782d72e5d0342b6e55f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68b67f133f7782d72e5d0342b6e55f0">&#9670;&nbsp;</a></span>ComponentManager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">nexo::ecs::ComponentManager::ComponentManager </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move constructor. </p>
+<p >Allows transferring ownership of component arrays to a new manager. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ade56b798c2b52506757a7a08f09f104c" name="ade56b798c2b52506757a7a08f09f104c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade56b798c2b52506757a7a08f09f104c">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp; nexo::ecs::ComponentManager::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy assignment operator (deleted) </p>
+<p ><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html" title="Central manager for all component types and their arrays.">ComponentManager</a> is not copyable to prevent duplication of component data. </p>
+
+</div>
+</div>
+<a id="ab6d95bd4170f4ab701af50a931cc5e93" name="ab6d95bd4170f4ab701af50a931cc5e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d95bd4170f4ab701af50a931cc5e93">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp; nexo::ecs::ComponentManager::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1ecs_1_1_component_manager.html">ComponentManager</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move assignment operator. </p>
+<p >Allows transferring ownership of component arrays to a new manager. </p>
+
+</div>
+</div>
 <a id="a9e52b770dd9e37578b57c21c372e983f" name="a9e52b770dd9e37578b57c21c372e983f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e52b770dd9e37578b57c21c372e983f">&#9670;&nbsp;</a></span>registerComponent()</h2>
 
@@ -174,13 +348,19 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Registers a new component type in the system. </p>
-<p >Each component type is associated with a unique ComponentType ID and a <a class="el" href="classnexo_1_1ecs_1_1_component_array.html">ComponentArray</a> to manage instances of the component. </p>
+<p>Registers a component type in the ECS. </p>
+<p >Creates a new component array for the specified component type. If the component type is already registered, a warning is logged.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type to register </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="ac63d2829432da01f2ff617cbeede59af" name="ac63d2829432da01f2ff617cbeede59af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac63d2829432da01f2ff617cbeede59af">&#9670;&nbsp;</a></span>getComponentType()</h2>
+<a id="aa4e3999b1476455789f2478af97d6eb7" name="aa4e3999b1476455789f2478af97d6eb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4e3999b1476455789f2478af97d6eb7">&#9670;&nbsp;</a></span>getComponentType()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -194,7 +374,7 @@ template&lt;typename T &gt; </div>
           <td class="memname">ComponentType nexo::ecs::ComponentManager::getComponentType </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -204,13 +384,25 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Retrieves the ComponentType ID for a specific component type. </p>
-<dl class="section return"><dt>Returns</dt><dd>ComponentType - The unique ID associated with the component type. </dd></dl>
+<p>Gets the unique identifier for a component type. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The component type ID </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_registered.html">ComponentNotRegistered</a></td><td>if the component type is not registered </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a5bf98021ae7913f360e2563b30094479" name="a5bf98021ae7913f360e2563b30094479"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bf98021ae7913f360e2563b30094479">&#9670;&nbsp;</a></span>addComponent()</h2>
+<a id="ad7d0486f69c5b398267d9bd8f5d657af" name="ad7d0486f69c5b398267d9bd8f5d657af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d0486f69c5b398267d9bd8f5d657af">&#9670;&nbsp;</a></span>addComponent() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -230,7 +422,19 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">T&#160;</td>
-          <td class="paramname"><em>component</em>&#160;</td>
+          <td class="paramname"><em>component</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>oldSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -245,19 +449,159 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Adds a component of a specific type to an entity. </p>
+<p>Adds a component to an entity. </p>
+<p >Adds the component to the appropriate component array and updates any groups that match the entity's new signature.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">entity</td><td>- The entity to which the component will be added. </td></tr>
-    <tr><td class="paramname">component</td><td>- The component to add to the entity. </td></tr>
+    <tr><td class="paramname">entity</td><td>The entity to add the component to </td></tr>
+    <tr><td class="paramname">component</td><td>The component instance to add </td></tr>
+    <tr><td class="paramname">oldSignature</td><td>The entity's current component signature </td></tr>
+    <tr><td class="paramname">newSignature</td><td>The entity's new component signature </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a2474a63d35278bb0b8813819ed1f54e6" name="a2474a63d35278bb0b8813819ed1f54e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2474a63d35278bb0b8813819ed1f54e6">&#9670;&nbsp;</a></span>removeComponent()</h2>
+<a id="abab64b909bc0bc5d402cd9c92cb949e3" name="abab64b909bc0bc5d402cd9c92cb949e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab64b909bc0bc5d402cd9c92cb949e3">&#9670;&nbsp;</a></span>addComponent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::ecs::ComponentManager::addComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ComponentType&#160;</td>
+          <td class="paramname"><em>componentType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>componentData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>oldSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Adds a component to an entity using type ID and raw data. </p>
+<p >Adds the component using the component type ID and raw data pointer, useful for runtime component type handling. Updates any groups that match the entity's new signature.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the component to </td></tr>
+    <tr><td class="paramname">componentType</td><td>The type ID of the component to add </td></tr>
+    <tr><td class="paramname">componentData</td><td>Pointer to the raw component data </td></tr>
+    <tr><td class="paramname">oldSignature</td><td>The entity's signature before adding the component </td></tr>
+    <tr><td class="paramname">newSignature</td><td>The entity's signature after adding the component</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>componentType must be a valid registered component type </dd>
+<dd>
+componentData must point to valid memory of the component's size </dd></dl>
+
+</div>
+</div>
+<a id="ae9f13f6e045b40e5af0dc2be860f71f7" name="ae9f13f6e045b40e5af0dc2be860f71f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f13f6e045b40e5af0dc2be860f71f7">&#9670;&nbsp;</a></span>removeComponent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::ecs::ComponentManager::removeComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ComponentType&#160;</td>
+          <td class="paramname"><em>componentType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>previousSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes a component from an entity using type ID. </p>
+<p >Removes the component using the component type ID and updates any groups that depend on the component.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the component from </td></tr>
+    <tr><td class="paramname">componentType</td><td>The type ID of the component to remove </td></tr>
+    <tr><td class="paramname">previousSignature</td><td>The entity's signature before removal </td></tr>
+    <tr><td class="paramname">newSignature</td><td>The entity's signature after removal</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>componentType must be a valid registered component type </dd></dl>
+
+</div>
+</div>
+<a id="a4eeffc28c3cf989b9619270112cac46d" name="a4eeffc28c3cf989b9619270112cac46d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eeffc28c3cf989b9619270112cac46d">&#9670;&nbsp;</a></span>removeComponent() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,8 +615,24 @@ template&lt;typename T &gt; </div>
           <td class="memname">void nexo::ecs::ComponentManager::removeComponent </td>
           <td>(</td>
           <td class="paramtype">Entity&#160;</td>
-          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>previousSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -282,13 +642,84 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Removes a component of a specific type from an entity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">entity</td><td>- The entity from which the component will be removed. </td></tr>
+<p>Removes a component from an entity. </p>
+<p >Removes the entity from any groups that required the component and then removes the component from its array.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the component from </td></tr>
+    <tr><td class="paramname">previousSignature</td><td>The entity's signature before removal </td></tr>
+    <tr><td class="paramname">newSignature</td><td>The entity's signature after removal </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aafa7f5c7c18641a48dbc0e3beda910b3" name="aafa7f5c7c18641a48dbc0e3beda910b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa7f5c7c18641a48dbc0e3beda910b3">&#9670;&nbsp;</a></span>tryRemoveComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::ecs::ComponentManager::tryRemoveComponent </td>
+          <td>(</td>
+          <td class="paramtype">Entity&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>previousSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attempts to remove a component from an entity. </p>
+<p >Checks if the entity has the component first, then removes it if it exists. Updates groups as needed.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the component from </td></tr>
+    <tr><td class="paramname">previousSignature</td><td>The entity's signature before the attempted removal </td></tr>
+    <tr><td class="paramname">newSignature</td><td>The entity's signature after the attempted removal </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the component was removed, false if it didn't exist </dd></dl>
 
 </div>
 </div>
@@ -318,19 +749,31 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Retrieves a reference to a component of a specific type from an entity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">entity</td><td>- The entity whose component is to be retrieved. </td></tr>
+<p>Gets a component from an entity. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>T&amp; - A reference to the requested component. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to get the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the component </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_found.html">ComponentNotFound</a></td><td>if the entity doesn't have the component </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a4d3672819f8350d2ebef7785a35f21c0" name="a4d3672819f8350d2ebef7785a35f21c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d3672819f8350d2ebef7785a35f21c0">&#9670;&nbsp;</a></span>getAllComponents()</h2>
+<a id="a45d94ac8a5a65c674f545d33f996695f" name="a45d94ac8a5a65c674f545d33f996695f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45d94ac8a5a65c674f545d33f996695f">&#9670;&nbsp;</a></span>getComponentArray() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -339,7 +782,134 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; &gt; nexo::ecs::ComponentManager::getAllComponents </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_component_array.html">IComponentArray</a> &gt; nexo::ecs::ComponentManager::getComponentArray </td>
+          <td>(</td>
+          <td class="paramtype">const ComponentType&#160;</td>
+          <td class="paramname"><em>typeID</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the component array for a specific component type with ComponentType (const version) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">typeID</td><td>The component type ID </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Const shared pointer to the component array </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_registered.html">ComponentNotRegistered</a></td><td>if the component type is not registered </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a604cb2cf3cc6ba801c2d9bd9a3da9be1" name="a604cb2cf3cc6ba801c2d9bd9a3da9be1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a604cb2cf3cc6ba801c2d9bd9a3da9be1">&#9670;&nbsp;</a></span>getComponentArray() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_component_array.html">ComponentArray</a>&lt; T &gt; &gt; nexo::ecs::ComponentManager::getComponentArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the component array for a specific component type. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Shared pointer to the component array </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_registered.html">ComponentNotRegistered</a></td><td>if the component type is not registered </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ace13b6341237045a28624c7e6b2fe124" name="ace13b6341237045a28624c7e6b2fe124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace13b6341237045a28624c7e6b2fe124">&#9670;&nbsp;</a></span>getComponentArray() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classnexo_1_1ecs_1_1_component_array.html">ComponentArray</a>&lt; T &gt; &gt; nexo::ecs::ComponentManager::getComponentArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the component array for a specific component type (const version) </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Const shared pointer to the component array </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_registered.html">ComponentNotRegistered</a></td><td>if the component type is not registered </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0e4bc8dd63d9c0a2a3d82701aec6afe9" name="a0e4bc8dd63d9c0a2a3d82701aec6afe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e4bc8dd63d9c0a2a3d82701aec6afe9">&#9670;&nbsp;</a></span>tryGetComponent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; nexo::ecs::ComponentManager::tryGetComponent </td>
           <td>(</td>
           <td class="paramtype">Entity&#160;</td>
           <td class="paramname"><em>entity</em></td><td>)</td>
@@ -353,18 +923,71 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Retrieves a reference to all components of a specific type from an entity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">entity</td><td>- The entity whose component is to be retrieved. </td></tr>
+<p>Safely attempts to get a component from an entity. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The component type </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to get the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Optional reference to the component, or nullopt if not found </dd></dl>
 
 </div>
 </div>
-<a id="a32281b3ca36e25471aacecd0317775bd" name="a32281b3ca36e25471aacecd0317775bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32281b3ca36e25471aacecd0317775bd">&#9670;&nbsp;</a></span>entityDestroyed()</h2>
+<a id="a82e2a975dc1d784c0270aa247e28fea4" name="a82e2a975dc1d784c0270aa247e28fea4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e2a975dc1d784c0270aa247e28fea4">&#9670;&nbsp;</a></span>tryGetComponent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * nexo::ecs::ComponentManager::tryGetComponent </td>
+          <td>(</td>
+          <td class="paramtype">const Entity&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ComponentType&#160;</td>
+          <td class="paramname"><em>typeID</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Safely attempts to get a component from an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to get the component from </td></tr>
+    <tr><td class="paramname">typeID</td><td>The component type ID </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the component if it exists, or nullptr if not found </dd></dl>
+
+</div>
+</div>
+<a id="a8f6b0c9e7b3a9f526c9cdb17f607db68" name="a8f6b0c9e7b3a9f526c9cdb17f607db68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6b0c9e7b3a9f526c9cdb17f607db68">&#9670;&nbsp;</a></span>entityDestroyed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -373,19 +996,179 @@ template&lt;typename T &gt; </div>
           <td class="memname">void nexo::ecs::ComponentManager::entityDestroyed </td>
           <td>(</td>
           <td class="paramtype">Entity&#160;</td>
-          <td class="paramname"><em>entity</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Signature &amp;&#160;</td>
+          <td class="paramname"><em>entitySignature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Handles the destruction of an entity by ensuring all associated components are removed. </p>
+<p>Notifies all component arrays that an entity has been destroyed. </p>
+<p >Removes the entity from all component arrays it exists in.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">entity</td><td>- The entity that has been destroyed. </td></tr>
+    <tr><td class="paramname">entity</td><td>The destroyed entity </td></tr>
+    <tr><td class="paramname">entitySignature</td><td>Signature of the entity to be destroyed </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aad7c5cf5aa964c91763d0564804b9cb4" name="aad7c5cf5aa964c91763d0564804b9cb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7c5cf5aa964c91763d0564804b9cb4">&#9670;&nbsp;</a></span>registerGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Owned&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto nexo::ecs::ComponentManager::registerGroup </td>
+          <td>(</td>
+          <td class="paramtype">const auto &amp;&#160;</td>
+          <td class="paramname"><em>nonOwned</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates or retrieves a group for specific component combinations. </p>
+<p >Creates a group that provides optimized access to entities having a specific combination of components, or returns an existing one. Components specified in the template parameter pack are "owned" (internal to the group), while those in the nonOwned parameter are "non-owned" (externally referenced).</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname"><a class="el" href="structnexo_1_1ecs_1_1_owned.html" title="Type wrapper for owned components in a group system.">Owned</a></td><td>Component types that are owned by the group </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nonOwned</td><td>A get_t&lt;...&gt; tag specifying non-owned component types </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A shared pointer to the group (either existing or newly created) </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_component_not_registered.html">ComponentNotRegistered</a></td><td>if any component type is not registered </td></tr>
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_overlapping_groups_exception.html">OverlappingGroupsException</a></td><td>if the new group would have overlapping owned components with an existing group </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aabebf922f779a6465942e9b775c2611a" name="aabebf922f779a6465942e9b775c2611a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabebf922f779a6465942e9b775c2611a">&#9670;&nbsp;</a></span>getGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Owned&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto nexo::ecs::ComponentManager::getGroup </td>
+          <td>(</td>
+          <td class="paramtype">const auto &amp;&#160;</td>
+          <td class="paramname"><em>nonOwned</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves an existing group for specific component combinations. </p>
+<p >Gets a previously registered group that matches the specified owned and non-owned component types.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname"><a class="el" href="structnexo_1_1ecs_1_1_owned.html" title="Type wrapper for owned components in a group system.">Owned</a></td><td>Component types that are owned by the group </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nonOwned</td><td>A get_t&lt;...&gt; tag specifying non-owned component types </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A shared pointer to the existing group </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the group doesn't exist </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3262653963f6cadb33d9b3649bbc5225" name="a3262653963f6cadb33d9b3649bbc5225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3262653963f6cadb33d9b3649bbc5225">&#9670;&nbsp;</a></span>hasCommonOwnedComponents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool nexo::ecs::ComponentManager::hasCommonOwnedComponents </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1ecs_1_1_group_key.html">GroupKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>key1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1ecs_1_1_group_key.html">GroupKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>key2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if two groups share any common owned components. </p>
+<p >Determines if two groups have any overlap in their owned components. This is useful for determining if two groups might affect each other's sorting or partitioning when entities are updated.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key1</td><td>First group key to compare </td></tr>
+    <tr><td class="paramname">key2</td><td>Second group key to compare </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the keys share at least one owned component, false otherwise </dd></dl>
 
 </div>
 </div>

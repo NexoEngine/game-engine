@@ -96,14 +96,17 @@ Inheritance diagram for nexo::editor::IDocumentWindow:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_i_document_window__inherit__graph.png" border="0" usemap="#anexo_1_1editor_1_1_i_document_window_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1editor_1_1_i_document_window_inherit__map" id="anexo_1_1editor_1_1_i_document_window_inherit__map">
-<area shape="rect" title=" " alt="" coords="499,5,702,215"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="497,263,704,531"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,615,183,766"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_console_window.html" title=" " alt="" coords="207,601,394,781"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,601,581,781"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="605,579,799,803"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="823,623,1016,759"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1041,615,1243,766"/>
+<area shape="rect" title=" " alt="" coords="809,5,1011,259"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="807,307,1013,736"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,821,183,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_console_window.html" title="Console window for displaying and managing application logs." alt="" coords="207,821,394,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,813,581,993"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_game_window.html" title=" " alt="" coords="605,821,780,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="805,784,1015,1023"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="1040,835,1233,971"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_primitive_window.html" title=" " alt="" coords="1257,828,1448,979"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1473,806,1675,1001"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_test_window.html" title=" " alt="" coords="1699,835,1865,971"/>
 </map>
 </div>
 <div class="dynheader">
@@ -111,7 +114,7 @@ Collaboration diagram for nexo::editor::IDocumentWindow:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_i_document_window__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_i_document_window_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_i_document_window_coll__map" id="anexo_1_1editor_1_1_i_document_window_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,208,215"/>
+<area shape="rect" title=" " alt="" coords="5,5,208,259"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -131,14 +134,23 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFocused</b>
 <tr class="memitem:ac9d1609bac5333f07002ebb9782c49e4"><td class="memItemLeft" align="right" valign="top"><a id="ac9d1609bac5333f07002ebb9782c49e4" name="ac9d1609bac5333f07002ebb9782c49e4"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isOpened</b> () const =0</td></tr>
 <tr class="separator:ac9d1609bac5333f07002ebb9782c49e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dc65a5e8430955dfd66945b353c3cad"><td class="memItemLeft" align="right" valign="top"><a id="a7dc65a5e8430955dfd66945b353c3cad" name="a7dc65a5e8430955dfd66945b353c3cad"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setOpened</b> (bool opened)=0</td></tr>
+<tr class="separator:a7dc65a5e8430955dfd66945b353c3cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10fe9e84b54344da97ccefb75b943f4c"><td class="memItemLeft" align="right" valign="top"><a id="a10fe9e84b54344da97ccefb75b943f4c" name="a10fe9e84b54344da97ccefb75b943f4c"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isHovered</b> () const =0</td></tr>
 <tr class="separator:a10fe9e84b54344da97ccefb75b943f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7089497ad5907a76180c7b7852c7e4e1"><td class="memItemLeft" align="right" valign="top"><a id="a7089497ad5907a76180c7b7852c7e4e1" name="a7089497ad5907a76180c7b7852c7e4e1"></a>
+virtual const ImVec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getContentSize</b> () const =0</td></tr>
+<tr class="separator:a7089497ad5907a76180c7b7852c7e4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d6304f822c29a1d11ca4d332cdc9d89"><td class="memItemLeft" align="right" valign="top">virtual bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_i_document_window.html#a8d6304f822c29a1d11ca4d332cdc9d89">getOpened</a> ()=0</td></tr>
 <tr class="separator:a8d6304f822c29a1d11ca4d332cdc9d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d0d7d8f67e04c1557ba32e284ceee0f"><td class="memItemLeft" align="right" valign="top"><a id="a6d0d7d8f67e04c1557ba32e284ceee0f" name="a6d0d7d8f67e04c1557ba32e284ceee0f"></a>
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getWindowName</b> () const =0</td></tr>
 <tr class="separator:a6d0d7d8f67e04c1557ba32e284ceee0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d08f0e247cb8dbc5cac2a4c6208b650"><td class="memItemLeft" align="right" valign="top"><a id="a8d08f0e247cb8dbc5cac2a4c6208b650" name="a8d08f0e247cb8dbc5cac2a4c6208b650"></a>
+virtual const <a class="el" href="classnexo_1_1editor_1_1_window_state.html">WindowState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getWindowState</b> () const =0</td></tr>
+<tr class="separator:a8d08f0e247cb8dbc5cac2a4c6208b650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a50224cf74a6c333da0a4b98a086030b1" name="a50224cf74a6c333da0a4b98a086030b1"></a>

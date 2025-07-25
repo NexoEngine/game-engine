@@ -48,7 +48,8 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ]
+        [ "Variables", "functions_vars.html", null ],
+        [ "Typedefs", "functions_type.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -61,12 +62,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_2editor_2src_2_editor_8cpp-example.html",
-"classnexo_1_1assets_1_1_asset_location.html#a3248be561feca7970cfb6c09b72bd4b9",
-"classnexo_1_1editor_1_1_backend_renderer_api_font_init_failed.html",
-"classnexo_1_1event_1_1_input.html#acf66dd60e46b6554803693e8cf3b736d",
-"classnexo_1_1renderer_1_1_renderer2_d.html#ad7719821bc279ca56f7533f7562b45d6",
-"functions_i.html",
-"structnexo_1_1editor_1_1_drag_float.html#a3049a99ce5fbd5d409365e03221c2700"
+"class_im_nexo_1_1_style_var_guard.html#afb1a0587eec60eea414116a85baad774",
+"classnexo_1_1ecs_1_1_component_array.html#a141b667f540995b991f4eb07165a673d",
+"classnexo_1_1ecs_1_1_group_1_1_partition_view.html#a27949d5ee4395f518c5b6b49f228be13",
+"classnexo_1_1editor_1_1_asset_manager_window.html",
+"classnexo_1_1editor_1_1_thumbnail_cache.html#a5be563b9c0e830250874335b9abc0626",
+"classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#ae8364ba524231e6930cf13040b00f6cd",
+"classnexo_1_1scripting_1_1_host_string.html",
+"struct_im_nexo_1_1_channels.html#a5b8cbf2fd9f1f7e2997bc8fe27cea83c",
+"structnexo_1_1ecs_1_1_is_read_singleton.html",
+"structnexo_1_1scripting_1_1_managed_world_state_1_1_world_stats.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

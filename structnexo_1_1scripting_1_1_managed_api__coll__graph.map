@@ -1,0 +1,6 @@
+<map id="nexo::scripting::ManagedApi" name="nexo::scripting::ManagedApi">
+<area shape="rect" id="node1" title="ManagedApi struct to hold function pointers to managed API functions." alt="" coords="216,233,399,311"/>
+<area shape="rect" id="node2" href="$structnexo_1_1scripting_1_1_managed_api_1_1_native_interop_api.html" title=" " alt="" coords="5,27,180,149"/>
+<area shape="rect" id="node3" href="$structnexo_1_1scripting_1_1_managed_api_1_1_lib_api.html" title=" " alt="" coords="204,5,411,171"/>
+<area shape="rect" id="node4" href="$structnexo_1_1scripting_1_1_managed_api_1_1_system_base_api.html" title=" " alt="" coords="435,20,598,156"/>
+</map>

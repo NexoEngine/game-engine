@@ -1,0 +1,5 @@
+<map id="nexo::WorldState" name="nexo::WorldState">
+<area shape="rect" id="node1" title=" " alt="" coords="145,160,263,237"/>
+<area shape="rect" id="node2" href="$structnexo_1_1_world_state_1_1_world_time.html" title=" " alt="" coords="5,5,192,97"/>
+<area shape="rect" id="node3" href="$structnexo_1_1_world_state_1_1_world_stats.html" title=" " alt="" coords="216,13,405,90"/>
+</map>

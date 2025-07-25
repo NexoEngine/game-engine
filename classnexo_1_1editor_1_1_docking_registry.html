@@ -91,12 +91,17 @@ $(document).ready(function(){initNavTree('classnexo_1_1editor_1_1_docking_regist
   <div class="headertitle"><div class="title">nexo::editor::DockingRegistry Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manages associations between window names and their docking identifiers.  
+ <a href="classnexo_1_1editor_1_1_docking_registry.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_docking_registry_8hpp_source.html">DockingRegistry.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for nexo::editor::DockingRegistry:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_docking_registry__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_docking_registry_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_docking_registry_coll__map" id="anexo_1_1editor_1_1_docking_registry_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,192,97"/>
+<area shape="rect" title="Manages associations between window names and their docking identifiers." alt="" coords="5,5,192,112"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -108,8 +113,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6de505699cb79f8a6490045e2c3ec991"><td class="memItemLeft" align="right" valign="top">std::optional&lt; ImGuiID &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_docking_registry.html#a6de505699cb79f8a6490045e2c3ec991">getDockId</a> (const std::string &amp;name) const</td></tr>
 <tr class="memdesc:a6de505699cb79f8a6490045e2c3ec991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the dock ID associated with the specified name.  <a href="classnexo_1_1editor_1_1_docking_registry.html#a6de505699cb79f8a6490045e2c3ec991">More...</a><br /></td></tr>
 <tr class="separator:a6de505699cb79f8a6490045e2c3ec991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae19fe390178c3d869cc125ff47bac9d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_docking_registry.html#ae19fe390178c3d869cc125ff47bac9d4">resetDockId</a> (const std::string &amp;name)</td></tr>
+<tr class="memdesc:ae19fe390178c3d869cc125ff47bac9d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a dock ID association for the specified name.  <a href="classnexo_1_1editor_1_1_docking_registry.html#ae19fe390178c3d869cc125ff47bac9d4">More...</a><br /></td></tr>
+<tr class="separator:ae19fe390178c3d869cc125ff47bac9d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Manages associations between window names and their docking identifiers. </p>
+<p >The <a class="el" href="classnexo_1_1editor_1_1_docking_registry.html" title="Manages associations between window names and their docking identifiers.">DockingRegistry</a> maintains a mapping between window names and ImGui dock IDs, allowing the editor to track and restore docking configurations across sessions. This class is central to the editor's window layout management system, enabling persistent window arrangements and proper docking behavior.</p>
+<p >It uses a <a class="el" href="structnexo_1_1editor_1_1_transparent_string_hash.html">TransparentStringHash</a> for efficient string lookups and provides methods for setting, retrieving, and removing dock ID associations. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a736b8e0bbcdaf9ce403ea4feed1d7a54" name="a736b8e0bbcdaf9ce403ea4feed1d7a54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a736b8e0bbcdaf9ce403ea4feed1d7a54">&#9670;&nbsp;</a></span>setDockId()</h2>
 
@@ -173,6 +185,34 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::optional&lt;ImGuiID&gt; Optional containing the dock ID if found; otherwise, std::nullopt. </dd></dl>
+
+</div>
+</div>
+<a id="ae19fe390178c3d869cc125ff47bac9d4" name="ae19fe390178c3d869cc125ff47bac9d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae19fe390178c3d869cc125ff47bac9d4">&#9670;&nbsp;</a></span>resetDockId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::DockingRegistry::resetDockId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a dock ID association for the specified name. </p>
+<p >This method removes the association between the given name and its dock ID from the registry. If the name does not exist in the registry, this method has no effect.</p>
+<p >Removing a dock ID is useful when a window is closed or when its docking configuration needs to be reset to default.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name identifier of the dock association to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

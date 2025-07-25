@@ -1,5 +1,6 @@
 <map id="nexo::components::RenderContext" name="nexo::components::RenderContext">
-<area shape="rect" id="node1" title=" " alt="" coords="113,292,287,443"/>
-<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_renderer3_d.html" title="Provides a high&#45;performance 3D rendering system for drawing cubes, textured objects,..." alt="" coords="5,5,181,229"/>
-<area shape="rect" id="node3" href="$structnexo_1_1components_1_1_light_context.html" title=" " alt="" coords="205,35,411,200"/>
+<area shape="rect" id="node1" title=" " alt="" coords="85,417,259,641"/>
+<area shape="rect" id="node2" href="$structnexo_1_1components_1_1_render_context_1_1_grid_params.html" title=" " alt="" coords="5,219,179,355"/>
+<area shape="rect" id="node3" href="$structnexo_1_1components_1_1_light_context.html" title=" " alt="" coords="203,219,408,355"/>
+<area shape="rect" id="node4" href="$structnexo_1_1components_1_1_directional_light_component.html" title=" " alt="" coords="207,5,404,156"/>
 </map>

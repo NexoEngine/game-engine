@@ -86,6 +86,8 @@ $(document).ready(function(){initNavTree('structnexo_1_1components_1_1_perspecti
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structnexo_1_1components_1_1_perspective_camera_controller-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::components::PerspectiveCameraController Struct Reference</div></div>
@@ -101,10 +103,24 @@ Collaboration diagram for nexo::components::PerspectiveCameraController:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1components_1_1_perspective_camera_controller__coll__graph.png" border="0" usemap="#anexo_1_1components_1_1_perspective_camera_controller_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1components_1_1_perspective_camera_controller_coll__map" id="anexo_1_1components_1_1_perspective_camera_controller_coll__map">
-<area shape="rect" title="Component used to control a perspective camera using mouse input." alt="" coords="5,5,216,141"/>
+<area shape="rect" title="Component used to control a perspective camera using mouse input." alt="" coords="5,5,216,185"/>
 </map>
 </div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnexo_1_1components_1_1_perspective_camera_controller_1_1_memento.html">Memento</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a70c4b5292af985e43bbc976aa57ef2ad"><td class="memItemLeft" align="right" valign="top"><a id="a70c4b5292af985e43bbc976aa57ef2ad" name="a70c4b5292af985e43bbc976aa57ef2ad"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>restore</b> (const <a class="el" href="structnexo_1_1components_1_1_perspective_camera_controller_1_1_memento.html">Memento</a> &amp;memento)</td></tr>
+<tr class="separator:a70c4b5292af985e43bbc976aa57ef2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3dece19d22c0eeb3ccddbe695b74d88"><td class="memItemLeft" align="right" valign="top"><a id="ab3dece19d22c0eeb3ccddbe695b74d88" name="ab3dece19d22c0eeb3ccddbe695b74d88"></a>
+<a class="el" href="structnexo_1_1components_1_1_perspective_camera_controller_1_1_memento.html">Memento</a>&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> () const</td></tr>
+<tr class="separator:ab3dece19d22c0eeb3ccddbe695b74d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a0fb1653c468419151c2c2ec7fb055bb0"><td class="memItemLeft" align="right" valign="top"><a id="a0fb1653c468419151c2c2ec7fb055bb0" name="a0fb1653c468419151c2c2ec7fb055bb0"></a>
@@ -115,14 +131,16 @@ glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><b>lastMousePositio
 float&#160;</td><td class="memItemRight" valign="bottom"><b>mouseSensitivity</b> = 0.1f</td></tr>
 <tr class="memdesc:a061a9e2680e11522d6fc748283b8d71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sensitivity factor for mouse movement. <br /></td></tr>
 <tr class="separator:a061a9e2680e11522d6fc748283b8d71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd91673d290f588cfe4f4e22bedc8005"><td class="memItemLeft" align="right" valign="top"><a id="afd91673d290f588cfe4f4e22bedc8005" name="afd91673d290f588cfe4f4e22bedc8005"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>yaw</b> = 0.0f</td></tr>
-<tr class="memdesc:afd91673d290f588cfe4f4e22bedc8005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Yaw angle in degrees. <br /></td></tr>
-<tr class="separator:afd91673d290f588cfe4f4e22bedc8005"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa076e8183128bf4505952c0e20f986a8"><td class="memItemLeft" align="right" valign="top"><a id="aa076e8183128bf4505952c0e20f986a8" name="aa076e8183128bf4505952c0e20f986a8"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>pitch</b> = 0.0f</td></tr>
-<tr class="memdesc:aa076e8183128bf4505952c0e20f986a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pitch angle in degrees. <br /></td></tr>
-<tr class="separator:aa076e8183128bf4505952c0e20f986a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0225043ff118589efed2bf888d27cba6"><td class="memItemLeft" align="right" valign="top"><a id="a0225043ff118589efed2bf888d27cba6" name="a0225043ff118589efed2bf888d27cba6"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>translationSpeed</b> = 5.0f</td></tr>
+<tr class="memdesc:a0225043ff118589efed2bf888d27cba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Camera speed. <br /></td></tr>
+<tr class="separator:a0225043ff118589efed2bf888d27cba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4bbd36cf4c32c65da39e4bf621e86bf"><td class="memItemLeft" align="right" valign="top"><a id="aa4bbd36cf4c32c65da39e4bf621e86bf" name="aa4bbd36cf4c32c65da39e4bf621e86bf"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>wasMouseReleased</b> = true</td></tr>
+<tr class="separator:aa4bbd36cf4c32c65da39e4bf621e86bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56da8a8308dc980a910190b7f5c084a6"><td class="memItemLeft" align="right" valign="top"><a id="a56da8a8308dc980a910190b7f5c084a6" name="a56da8a8308dc980a910190b7f5c084a6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>wasActiveLastFrame</b> = true</td></tr>
+<tr class="separator:a56da8a8308dc980a910190b7f5c084a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Component used to control a perspective camera using mouse input. </p>

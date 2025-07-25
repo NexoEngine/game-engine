@@ -101,7 +101,7 @@ Collaboration diagram for nexo::ecs::SingletonComponentManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_manager_coll__map" id="anexo_1_1ecs_1_1_singleton_component_manager_coll__map">
-<area shape="rect" title="Manager for singleton components in the ECS." alt="" coords="5,5,224,127"/>
+<area shape="rect" title="Manager for singleton components in the ECS." alt="" coords="5,5,224,141"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -115,6 +115,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5cc1427c2ba204f9afd7db34605213a1"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a5cc1427c2ba204f9afd7db34605213a1">getSingletonComponent</a> ()</td></tr>
 <tr class="memdesc:a5cc1427c2ba204f9afd7db34605213a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a singleton component instance.  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a5cc1427c2ba204f9afd7db34605213a1">More...</a><br /></td></tr>
 <tr class="separator:a5cc1427c2ba204f9afd7db34605213a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d49f26005432b73fecb8c0289a32123"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4d49f26005432b73fecb8c0289a32123"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_singleton_component.html">ISingletonComponent</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a4d49f26005432b73fecb8c0289a32123">getRawSingletonComponent</a> ()</td></tr>
+<tr class="memdesc:a4d49f26005432b73fecb8c0289a32123"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a singleton component pointer (internal use only).  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a4d49f26005432b73fecb8c0289a32123">More...</a><br /></td></tr>
+<tr class="separator:a4d49f26005432b73fecb8c0289a32123"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a15d468a9c41db755f9232c5284364c9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a15d468a9c41db755f9232c5284364c9a">unregisterSingletonComponent</a> ()</td></tr>
 <tr class="memdesc:a15d468a9c41db755f9232c5284364c9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregisters a singleton component.  <a href="classnexo_1_1ecs_1_1_singleton_component_manager.html#a15d468a9c41db755f9232c5284364c9a">More...</a><br /></td></tr>
@@ -201,6 +205,48 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>T&amp; A reference to the registered singleton component. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_not_registered.html">SingletonComponentNotRegistered</a></td><td>if the component is not registered. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4d49f26005432b73fecb8c0289a32123" name="a4d49f26005432b73fecb8c0289a32123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d49f26005432b73fecb8c0289a32123">&#9670;&nbsp;</a></span>getRawSingletonComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_i_singleton_component.html">ISingletonComponent</a> &gt; nexo::ecs::SingletonComponentManager::getRawSingletonComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves a singleton component pointer (internal use only). </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the singleton component. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::shared_ptr&lt;ISingletonComponent&gt; A shared pointer to the registered singleton component. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component_not_registered.html">SingletonComponentNotRegistered</a></td><td>if the component is not registered. </td></tr>

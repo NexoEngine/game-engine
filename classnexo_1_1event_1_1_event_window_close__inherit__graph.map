@@ -1,6 +1,6 @@
 <map id="nexo::event::EventWindowClose" name="nexo::event::EventWindowClose">
 <area shape="rect" id="node1" title=" " alt="" coords="23,300,195,392"/>
-<area shape="rect" id="node4" href="$classnexo_1_1_application.html" title=" " alt="" coords="5,440,212,767"/>
+<area shape="rect" id="node4" href="$classnexo_1_1_application.html" title=" " alt="" coords="5,440,212,752"/>
 <area shape="rect" id="node2" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="31,145,187,252"/>
 <area shape="rect" id="node3" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="43,5,174,97"/>
 </map>

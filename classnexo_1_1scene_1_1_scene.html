@@ -101,7 +101,7 @@ Collaboration diagram for nexo::scene::Scene:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1scene_1_1_scene__coll__graph.png" border="0" usemap="#anexo_1_1scene_1_1_scene_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1scene_1_1_scene_coll__map" id="anexo_1_1scene_1_1_scene_coll__map">
-<area shape="rect" title="Represents a scene in the engine." alt="" coords="5,5,144,244"/>
+<area shape="rect" title="Represents a scene in the engine." alt="" coords="5,5,180,273"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -113,6 +113,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a18ef4a36a9de5ff5d9c2b9968a92feda">addEntity</a> (ecs::Entity entity)</td></tr>
 <tr class="memdesc:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an entity to the scene.  <a href="classnexo_1_1scene_1_1_scene.html#a18ef4a36a9de5ff5d9c2b9968a92feda">More...</a><br /></td></tr>
 <tr class="separator:a18ef4a36a9de5ff5d9c2b9968a92feda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d48a7d206be280bae8cbd1fdc74e209"><td class="memItemLeft" align="right" valign="top"><a id="a3d48a7d206be280bae8cbd1fdc74e209" name="a3d48a7d206be280bae8cbd1fdc74e209"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addChildEntityToScene</b> (const ecs::Entity entity)</td></tr>
+<tr class="separator:a3d48a7d206be280bae8cbd1fdc74e209"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a525a552fdb52853dbc3a87b57c428da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1scene_1_1_scene.html#a525a552fdb52853dbc3a87b57c428da3">removeEntity</a> (ecs::Entity entity)</td></tr>
 <tr class="memdesc:a525a552fdb52853dbc3a87b57c428da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entity from the scene.  <a href="classnexo_1_1scene_1_1_scene.html#a525a552fdb52853dbc3a87b57c428da3">More...</a><br /></td></tr>
 <tr class="separator:a525a552fdb52853dbc3a87b57c428da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,6 +143,9 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>getId</b> () 
 <tr class="memitem:a7c5abbeb0356084ae8236cc243f810ef"><td class="memItemLeft" align="right" valign="top"><a id="a7c5abbeb0356084ae8236cc243f810ef" name="a7c5abbeb0356084ae8236cc243f810ef"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getUuid</b> () const</td></tr>
 <tr class="separator:a7c5abbeb0356084ae8236cc243f810ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e011dd56cdd25c74b306f405b53dc4d"><td class="memItemLeft" align="right" valign="top"><a id="a7e011dd56cdd25c74b306f405b53dc4d" name="a7e011dd56cdd25c74b306f405b53dc4d"></a>
+const std::set&lt; ecs::Entity &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getEntities</b> () const</td></tr>
+<tr class="separator:a7e011dd56cdd25c74b306f405b53dc4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Represents a scene in the engine. </p>

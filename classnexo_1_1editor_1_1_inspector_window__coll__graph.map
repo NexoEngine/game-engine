@@ -1,6 +1,7 @@
 <map id="nexo::editor::InspectorWindow" name="nexo::editor::InspectorWindow">
-<area shape="rect" id="node1" title=" " alt="" coords="119,668,313,892"/>
-<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="113,365,319,619"/>
-<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,49,208,259"/>
-<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_window_registry.html" title=" " alt="" coords="232,5,419,303"/>
+<area shape="rect" id="node1" title=" " alt="" coords="212,829,423,1068"/>
+<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_a_document_window.html" title=" " alt="" coords="214,380,421,780"/>
+<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,35,208,288"/>
+<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_window_state.html" title=" " alt="" coords="232,86,403,237"/>
+<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_window_registry.html" title=" " alt="" coords="427,5,613,317"/>
 </map>

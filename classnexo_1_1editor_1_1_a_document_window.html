@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('classnexo_1_1editor_1_1_a_document_win
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classnexo_1_1editor_1_1_a_document_window-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::editor::ADocumentWindow Class Reference</div></div>
@@ -98,14 +99,17 @@ Inheritance diagram for nexo::editor::ADocumentWindow:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_a_document_window__inherit__graph.png" border="0" usemap="#anexo_1_1editor_1_1_a_document_window_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1editor_1_1_a_document_window_inherit__map" id="anexo_1_1editor_1_1_a_document_window_inherit__map">
-<area shape="rect" title=" " alt="" coords="497,263,704,531"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,615,183,766"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_console_window.html" title=" " alt="" coords="207,601,394,781"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,601,581,781"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="605,579,799,803"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="823,623,1016,759"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1041,615,1243,766"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="499,5,702,215"/>
+<area shape="rect" title=" " alt="" coords="807,307,1013,736"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,821,183,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_console_window.html" title="Console window for displaying and managing application logs." alt="" coords="207,821,394,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,813,581,993"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_game_window.html" title=" " alt="" coords="605,821,780,986"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="805,784,1015,1023"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="1040,835,1233,971"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_primitive_window.html" title=" " alt="" coords="1257,828,1448,979"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1473,806,1675,1001"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_test_window.html" title=" " alt="" coords="1699,835,1865,971"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="809,5,1011,259"/>
 </map>
 </div>
 <div class="dynheader">
@@ -113,31 +117,35 @@ Collaboration diagram for nexo::editor::ADocumentWindow:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_a_document_window__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_a_document_window_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_a_document_window_coll__map" id="anexo_1_1editor_1_1_a_document_window_coll__map">
-<area shape="rect" title=" " alt="" coords="113,365,319,619"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,49,208,259"/>
-<area shape="rect" href="classnexo_1_1editor_1_1_window_registry.html" title=" " alt="" coords="232,5,419,303"/>
+<area shape="rect" title=" " alt="" coords="214,380,421,780"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="5,35,208,288"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_window_state.html" title=" " alt="" coords="232,86,403,237"/>
+<area shape="rect" href="classnexo_1_1editor_1_1_window_registry.html" title=" " alt="" coords="427,5,613,317"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a83602816f156c605ecf86765c904adb4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">ADocumentWindow</a> (const std::string &amp;windowName, <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;windowRegistry)</td></tr>
-<tr class="memdesc:a83602816f156c605ecf86765c904adb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> instance with a unique window ID.  <a href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">More...</a><br /></td></tr>
-<tr class="separator:a83602816f156c605ecf86765c904adb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade88d5fd59fe62d66fe32998428a0add"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">ADocumentWindow</a> (std::string windowName, <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;windowRegistry)</td></tr>
+<tr class="memdesc:ade88d5fd59fe62d66fe32998428a0add"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> instance with a unique window ID.  <a href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">More...</a><br /></td></tr>
+<tr class="separator:ade88d5fd59fe62d66fe32998428a0add"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab16f13ac719d72a2b30adaf95a1cdc0f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#ab16f13ac719d72a2b30adaf95a1cdc0f">isFocused</a> () const override</td></tr>
 <tr class="separator:ab16f13ac719d72a2b30adaf95a1cdc0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e5214773cc5c2dd23cb81693c0854c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#a1e5214773cc5c2dd23cb81693c0854c9">isOpened</a> () const override</td></tr>
 <tr class="separator:a1e5214773cc5c2dd23cb81693c0854c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c79ccfd463c23a6560b667cd41636e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#aa6c79ccfd463c23a6560b667cd41636e">setOpened</a> (bool opened) override</td></tr>
+<tr class="separator:aa6c79ccfd463c23a6560b667cd41636e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afce38d9300c9432ea401aed3931090b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#afce38d9300c9432ea401aed3931090b2">isHovered</a> () const override</td></tr>
 <tr class="separator:afce38d9300c9432ea401aed3931090b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaeb0e2031fae2a3b029fef4d85261a9"><td class="memItemLeft" align="right" valign="top">const ImVec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#abaeb0e2031fae2a3b029fef4d85261a9">getContentSize</a> () const override</td></tr>
+<tr class="separator:abaeb0e2031fae2a3b029fef4d85261a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a625c21fadb1b79c13bd405d32277f7d6"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">getOpened</a> () override</td></tr>
 <tr class="memdesc:a625c21fadb1b79c13bd405d32277f7d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the open state of the document window.  <a href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">More...</a><br /></td></tr>
 <tr class="separator:a625c21fadb1b79c13bd405d32277f7d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a005d9b528c302efe403a323504a0e820"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#a005d9b528c302efe403a323504a0e820">getWindowName</a> () const override</td></tr>
 <tr class="separator:a005d9b528c302efe403a323504a0e820"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fc72930c47b531b6d62567bfacc85dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#a3fc72930c47b531b6d62567bfacc85dd">firstDockSetup</a> (const std::string &amp;windowName)</td></tr>
-<tr class="memdesc:a3fc72930c47b531b6d62567bfacc85dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the docking configuration for the document window on its first display.  <a href="classnexo_1_1editor_1_1_a_document_window.html#a3fc72930c47b531b6d62567bfacc85dd">More...</a><br /></td></tr>
-<tr class="separator:a3fc72930c47b531b6d62567bfacc85dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae75072bb5a8ae28b61c9755d210b3b8d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classnexo_1_1editor_1_1_window_state.html">WindowState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_a_document_window.html#ae75072bb5a8ae28b61c9755d210b3b8d">getWindowState</a> () const override</td></tr>
+<tr class="separator:ae75072bb5a8ae28b61c9755d210b3b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classnexo_1_1editor_1_1_i_document_window"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classnexo_1_1editor_1_1_i_document_window')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a></td></tr>
 <tr class="memitem:a50224cf74a6c333da0a4b98a086030b1 inherit pub_methods_classnexo_1_1editor_1_1_i_document_window"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_i_document_window.html#a50224cf74a6c333da0a4b98a086030b1">setup</a> ()=0</td></tr>
 <tr class="separator:a50224cf74a6c333da0a4b98a086030b1 inherit pub_methods_classnexo_1_1editor_1_1_i_document_window"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,6 +162,12 @@ Public Attributes</h2></td></tr>
 WindowId&#160;</td><td class="memItemRight" valign="bottom"><b>windowId</b></td></tr>
 <tr class="separator:a0342d3cc62d5bde93f72ef27b3831084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad14790ad1b2d4752d3fe91e648c6b3c6"><td class="memItemLeft" align="right" valign="top"><a id="ad14790ad1b2d4752d3fe91e648c6b3c6" name="ad14790ad1b2d4752d3fe91e648c6b3c6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>beginRender</b> (const std::string &amp;windowName)</td></tr>
+<tr class="separator:ad14790ad1b2d4752d3fe91e648c6b3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a7d9d145a4b1d074b2782af5e0f8f3a80"><td class="memItemLeft" align="right" valign="top"><a id="a7d9d145a4b1d074b2782af5e0f8f3a80" name="a7d9d145a4b1d074b2782af5e0f8f3a80"></a>
@@ -165,19 +179,43 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_focused</b> = false
 <tr class="memitem:ab52e1c9b03d9251a3df9f26d1a899391"><td class="memItemLeft" align="right" valign="top"><a id="ab52e1c9b03d9251a3df9f26d1a899391" name="ab52e1c9b03d9251a3df9f26d1a899391"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_hovered</b> = false</td></tr>
 <tr class="separator:ab52e1c9b03d9251a3df9f26d1a899391"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c672a189c5b5240c6a54c51d5d8a59"><td class="memItemLeft" align="right" valign="top"><a id="ad7c672a189c5b5240c6a54c51d5d8a59" name="ad7c672a189c5b5240c6a54c51d5d8a59"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_wasVisibleLastFrame</b> = false</td></tr>
+<tr class="separator:ad7c672a189c5b5240c6a54c51d5d8a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb67f5701319dc2678fec81e97d7715a"><td class="memItemLeft" align="right" valign="top"><a id="afb67f5701319dc2678fec81e97d7715a" name="afb67f5701319dc2678fec81e97d7715a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_isVisibleInDock</b> = true</td></tr>
+<tr class="separator:afb67f5701319dc2678fec81e97d7715a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53da0ed9253e377d3b3de20956dea778"><td class="memItemLeft" align="right" valign="top"><a id="a53da0ed9253e377d3b3de20956dea778" name="a53da0ed9253e377d3b3de20956dea778"></a>
+ImVec2&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowPos</b></td></tr>
+<tr class="separator:a53da0ed9253e377d3b3de20956dea778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc3a8b8dd41dfda2a163ea017a352532"><td class="memItemLeft" align="right" valign="top"><a id="afc3a8b8dd41dfda2a163ea017a352532" name="afc3a8b8dd41dfda2a163ea017a352532"></a>
+ImVec2&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowSize</b></td></tr>
+<tr class="separator:afc3a8b8dd41dfda2a163ea017a352532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf7a96738f29fd47481bd7dae8a69db"><td class="memItemLeft" align="right" valign="top"><a id="aaaf7a96738f29fd47481bd7dae8a69db" name="aaaf7a96738f29fd47481bd7dae8a69db"></a>
+ImVec2&#160;</td><td class="memItemRight" valign="bottom"><b>m_contentSizeMin</b></td></tr>
+<tr class="separator:aaaf7a96738f29fd47481bd7dae8a69db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ae339f21bc251033f10196afa35826a"><td class="memItemLeft" align="right" valign="top"><a id="a6ae339f21bc251033f10196afa35826a" name="a6ae339f21bc251033f10196afa35826a"></a>
+ImVec2&#160;</td><td class="memItemRight" valign="bottom"><b>m_contentSizeMax</b></td></tr>
+<tr class="separator:a6ae339f21bc251033f10196afa35826a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8f860756c1a3a72f55efd691fe0ee7"><td class="memItemLeft" align="right" valign="top"><a id="a7f8f860756c1a3a72f55efd691fe0ee7" name="a7f8f860756c1a3a72f55efd691fe0ee7"></a>
+ImVec2&#160;</td><td class="memItemRight" valign="bottom"><b>m_contentSize</b></td></tr>
+<tr class="separator:a7f8f860756c1a3a72f55efd691fe0ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13f0fe24f6b3e5ababa31dbf24d12b7b"><td class="memItemLeft" align="right" valign="top"><a id="a13f0fe24f6b3e5ababa31dbf24d12b7b" name="a13f0fe24f6b3e5ababa31dbf24d12b7b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_firstOpened</b> = true</td></tr>
 <tr class="separator:a13f0fe24f6b3e5ababa31dbf24d12b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74f8ec9958677492a3817362e9b426db"><td class="memItemLeft" align="right" valign="top"><a id="a74f8ec9958677492a3817362e9b426db" name="a74f8ec9958677492a3817362e9b426db"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</b></td></tr>
 <tr class="separator:a74f8ec9958677492a3817362e9b426db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a78d5d2d9cbfa531fb6244e2ddde230"><td class="memItemLeft" align="right" valign="top"><a id="a3a78d5d2d9cbfa531fb6244e2ddde230" name="a3a78d5d2d9cbfa531fb6244e2ddde230"></a>
+<a class="el" href="classnexo_1_1editor_1_1_window_state.html">WindowState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowState</b></td></tr>
+<tr class="separator:a3a78d5d2d9cbfa531fb6244e2ddde230"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a103fdca81c1474f33d7649b03f4cbfdc"><td class="memItemLeft" align="right" valign="top"><a id="a103fdca81c1474f33d7649b03f4cbfdc" name="a103fdca81c1474f33d7649b03f4cbfdc"></a>
 <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowRegistry</b></td></tr>
 <tr class="separator:a103fdca81c1474f33d7649b03f4cbfdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a83602816f156c605ecf86765c904adb4" name="a83602816f156c605ecf86765c904adb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83602816f156c605ecf86765c904adb4">&#9670;&nbsp;</a></span>ADocumentWindow()</h2>
+<a id="ade88d5fd59fe62d66fe32998428a0add" name="ade88d5fd59fe62d66fe32998428a0add"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade88d5fd59fe62d66fe32998428a0add">&#9670;&nbsp;</a></span>ADocumentWindow()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -188,7 +226,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
         <tr>
           <td class="memname">nexo::editor::ADocumentWindow::ADocumentWindow </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>windowName</em>, </td>
         </tr>
         <tr>
@@ -270,6 +308,34 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
 
 </div>
 </div>
+<a id="aa6c79ccfd463c23a6560b667cd41636e" name="aa6c79ccfd463c23a6560b667cd41636e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c79ccfd463c23a6560b667cd41636e">&#9670;&nbsp;</a></span>setOpened()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::ADocumentWindow::setOpened </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>opened</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a>.</p>
+
+</div>
+</div>
 <a id="afce38d9300c9432ea401aed3931090b2" name="afce38d9300c9432ea401aed3931090b2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afce38d9300c9432ea401aed3931090b2">&#9670;&nbsp;</a></span>isHovered()</h2>
 
@@ -281,6 +347,33 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
       <table class="memname">
         <tr>
           <td class="memname">bool nexo::editor::ADocumentWindow::isHovered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a>.</p>
+
+</div>
+</div>
+<a id="abaeb0e2031fae2a3b029fef4d85261a9" name="abaeb0e2031fae2a3b029fef4d85261a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaeb0e2031fae2a3b029fef4d85261a9">&#9670;&nbsp;</a></span>getContentSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ImVec2 &amp; nexo::editor::ADocumentWindow::getContentSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -355,8 +448,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
 
 </div>
 </div>
-<a id="a3fc72930c47b531b6d62567bfacc85dd" name="a3fc72930c47b531b6d62567bfacc85dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fc72930c47b531b6d62567bfacc85dd">&#9670;&nbsp;</a></span>firstDockSetup()</h2>
+<a id="ae75072bb5a8ae28b61c9755d210b3b8d" name="ae75072bb5a8ae28b61c9755d210b3b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae75072bb5a8ae28b61c9755d210b3b8d">&#9670;&nbsp;</a></span>getWindowState()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,33 +458,26 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void nexo::editor::ADocumentWindow::firstDockSetup </td>
+          <td class="memname">const <a class="el" href="classnexo_1_1editor_1_1_window_state.html">WindowState</a> &amp; nexo::editor::ADocumentWindow::getWindowState </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>windowName</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initializes the docking configuration for the document window on its first display. </p>
-<p >This function retrieves the current ImGui window and checks its docking state to ensure it aligns with the expected configuration from the <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a>. On the first open (when m_firstOpened is true), if the window is not actively docked or its current dock ID does not match the expected ID obtained via the provided window name, the function assigns the expected dock ID to the window. If the window is already docked but the dock IDs still differ, the current dock ID is saved to the <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a>. The m_firstOpened flag is then set to false so that the docking configuration is applied only once.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">windowName</td><td>The name used to look up the expected dock identifier in the <a class="el" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a>. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Implements <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>editor/src/<a class="el" href="_a_document_window_8hpp_source.html">ADocumentWindow.hpp</a></li>
+<li>editor/src/ADocumentWindow.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

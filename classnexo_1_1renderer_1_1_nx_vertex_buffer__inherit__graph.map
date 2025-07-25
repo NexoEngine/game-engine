@@ -1,0 +1,5 @@
+<map id="nexo::renderer::NxVertexBuffer" name="nexo::renderer::NxVertexBuffer">
+<area shape="rect" id="node1" title="Abstract class representing a vertex buffer in the graphics pipeline." alt="" coords="13,5,175,185"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_mock_vertex_buffer.html" title=" " alt="" coords="5,233,183,487"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html" title=" " alt="" coords="207,255,386,465"/>
+</map>

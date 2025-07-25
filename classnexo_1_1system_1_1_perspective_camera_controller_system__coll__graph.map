@@ -1,8 +1,12 @@
 <map id="nexo::system::PerspectiveCameraControllerSystem" name="nexo::system::PerspectiveCameraControllerSystem">
-<area shape="rect" id="node1" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="122,455,325,605"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,307,132,399"/>
-<area shape="rect" id="node3" title=" " alt="" coords="156,300,291,407"/>
-<area shape="rect" id="node4" href="$classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="315,307,513,399"/>
-<area shape="rect" id="node5" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="340,145,488,252"/>
-<area shape="rect" id="node6" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="349,5,479,97"/>
+<area shape="rect" id="node1" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="393,721,595,872"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="132,404,403,672"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="63,255,232,347"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,57,132,134"/>
+<area shape="rect" id="node5" href="$classnexo_1_1ecs_1_1_sparse_set.html" title="A sparse set implementation for efficient entity storage and lookup." alt="" coords="156,5,299,185"/>
+<area shape="rect" id="node6" title=" " alt="" coords="257,248,483,355"/>
+<area shape="rect" id="node7" title=" " alt="" coords="427,470,561,606"/>
+<area shape="rect" id="node8" href="$classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="585,492,782,584"/>
+<area shape="rect" id="node9" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="609,248,757,355"/>
+<area shape="rect" id="node10" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="618,49,749,141"/>
 </map>

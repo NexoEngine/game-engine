@@ -96,7 +96,8 @@ Collaboration diagram for nexo::components::LightContext:</div>
 <div class="dyncontent">
 <div class="center"><img src="structnexo_1_1components_1_1_light_context__coll__graph.png" border="0" usemap="#anexo_1_1components_1_1_light_context_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1components_1_1_light_context_coll__map" id="anexo_1_1components_1_1_light_context_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,211,171"/>
+<area shape="rect" title=" " alt="" coords="5,219,211,355"/>
+<area shape="rect" href="structnexo_1_1components_1_1_directional_light_component.html" title=" " alt="" coords="9,5,207,156"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -105,24 +106,21 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a367ef357ac5c3d99a1e1eaf16053c483"><td class="memItemLeft" align="right" valign="top"><a id="a367ef357ac5c3d99a1e1eaf16053c483" name="a367ef357ac5c3d99a1e1eaf16053c483"></a>
 glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>ambientLight</b></td></tr>
 <tr class="separator:a367ef357ac5c3d99a1e1eaf16053c483"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a95bf6d93c64881b44f9fefeb6c7150"><td class="memItemLeft" align="right" valign="top"><a id="a0a95bf6d93c64881b44f9fefeb6c7150" name="a0a95bf6d93c64881b44f9fefeb6c7150"></a>
-std::array&lt; <a class="el" href="structnexo_1_1components_1_1_point_light_component.html">PointLightComponent</a>, MAX_POINT_LIGHTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pointLights</b></td></tr>
-<tr class="separator:a0a95bf6d93c64881b44f9fefeb6c7150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa40bf07e0edbabd474c639265ef072b0"><td class="memItemLeft" align="right" valign="top"><a id="aa40bf07e0edbabd474c639265ef072b0" name="aa40bf07e0edbabd474c639265ef072b0"></a>
+std::array&lt; ecs::Entity, MAX_POINT_LIGHTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pointLights</b></td></tr>
+<tr class="separator:aa40bf07e0edbabd474c639265ef072b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff4c189493630e92b7dc97be3f95935b"><td class="memItemLeft" align="right" valign="top"><a id="aff4c189493630e92b7dc97be3f95935b" name="aff4c189493630e92b7dc97be3f95935b"></a>
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>pointLightCount</b> = 0</td></tr>
 <tr class="separator:aff4c189493630e92b7dc97be3f95935b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aededc4dd4a3c05ca9948c2bffe309e4e"><td class="memItemLeft" align="right" valign="top"><a id="aededc4dd4a3c05ca9948c2bffe309e4e" name="aededc4dd4a3c05ca9948c2bffe309e4e"></a>
-std::array&lt; <a class="el" href="structnexo_1_1components_1_1_spot_light_component.html">SpotLightComponent</a>, MAX_SPOT_LIGHTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>spotLights</b></td></tr>
-<tr class="separator:aededc4dd4a3c05ca9948c2bffe309e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b3bac54973ba20525db774f02201f07"><td class="memItemLeft" align="right" valign="top"><a id="a2b3bac54973ba20525db774f02201f07" name="a2b3bac54973ba20525db774f02201f07"></a>
+std::array&lt; ecs::Entity, MAX_SPOT_LIGHTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>spotLights</b></td></tr>
+<tr class="separator:a2b3bac54973ba20525db774f02201f07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ff062c3ca446005b5adb25fc85b2985"><td class="memItemLeft" align="right" valign="top"><a id="a2ff062c3ca446005b5adb25fc85b2985" name="a2ff062c3ca446005b5adb25fc85b2985"></a>
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>spotLightCount</b> = 0</td></tr>
 <tr class="separator:a2ff062c3ca446005b5adb25fc85b2985"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a412bfe799ca9c541410b3cad37d06864"><td class="memItemLeft" align="right" valign="top"><a id="a412bfe799ca9c541410b3cad37d06864" name="a412bfe799ca9c541410b3cad37d06864"></a>
-std::array&lt; <a class="el" href="structnexo_1_1components_1_1_directional_light_component.html">DirectionalLightComponent</a>, MAX_DIRECTIONAL_LIGHTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>directionalLights</b></td></tr>
-<tr class="separator:a412bfe799ca9c541410b3cad37d06864"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5711b594924f7eace825f371e8e2943e"><td class="memItemLeft" align="right" valign="top"><a id="a5711b594924f7eace825f371e8e2943e" name="a5711b594924f7eace825f371e8e2943e"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>directionalLightCount</b> = 0</td></tr>
-<tr class="separator:a5711b594924f7eace825f371e8e2943e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20e4a25119ac91f8dde30dbd320c9fc7"><td class="memItemLeft" align="right" valign="top"><a id="a20e4a25119ac91f8dde30dbd320c9fc7" name="a20e4a25119ac91f8dde30dbd320c9fc7"></a>
+<a class="el" href="structnexo_1_1components_1_1_directional_light_component.html">DirectionalLightComponent</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dirLight</b></td></tr>
+<tr class="separator:a20e4a25119ac91f8dde30dbd320c9fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>engine/src/components/<a class="el" href="engine_2src_2components_2_light_8hpp_source.html">Light.hpp</a></li>

@@ -1,0 +1,3 @@
+<map id="nexo::renderer::NxSubTexture2D" name="nexo::renderer::NxSubTexture2D">
+<area shape="rect" id="node1" title="Represents a portion of a 2D texture, useful for sprite rendering." alt="" coords="5,5,212,127"/>
+</map>

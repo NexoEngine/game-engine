@@ -1,3 +1,95 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structnexo_1_1assets_1_1_importer_file_input.html" title=" " alt="" coords="5,5,175,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="651,5,850,32"/>
+<area shape="rect" id="node2" href="$classnexo_1_1_application.html" title=" " alt="" coords="1018,525,1137,552"/>
+<area shape="rect" id="node3" title=" " alt="" coords="643,998,859,1039"/>
+<area shape="rect" id="node4" href="$classnexo_1_1system_1_1_perspective_camera_controller_system.html" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="991,882,1163,923"/>
+<area shape="rect" id="node5" href="$classnexo_1_1system_1_1_perspective_camera_target_system.html" title="System for controlling perspective cameras that orbit around a target." alt="" coords="991,998,1163,1039"/>
+<area shape="rect" id="node6" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="5,421,136,448"/>
+<area shape="rect" id="node7" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="287,54,435,95"/>
+<area shape="rect" id="node9" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="293,381,428,422"/>
+<area shape="rect" id="node11" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="297,119,424,161"/>
+<area shape="rect" id="node13" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="297,185,424,226"/>
+<area shape="rect" id="node15" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="288,446,433,487"/>
+<area shape="rect" id="node17" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="287,773,435,814"/>
+<area shape="rect" id="node19" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="286,511,435,553"/>
+<area shape="rect" id="node21" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="271,577,450,618"/>
+<area shape="rect" id="node24" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="283,642,439,683"/>
+<area shape="rect" id="node26" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="279,707,442,749"/>
+<area shape="rect" id="node28" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="297,250,424,291"/>
+<area shape="rect" id="node30" href="$classnexo_1_1event_1_1_event.html" title="Templated event class." alt="" coords="297,315,424,357"/>
+<area shape="rect" id="node8" href="$classnexo_1_1event_1_1_another_test_event.html" title=" " alt="" coords="669,57,833,98"/>
+<area shape="rect" id="node10" href="$classnexo_1_1event_1_1_event_any_signal.html" title=" " alt="" coords="659,365,843,392"/>
+<area shape="rect" id="node12" href="$classnexo_1_1event_1_1_event_file_drop.html" title=" " alt="" coords="663,127,838,153"/>
+<area shape="rect" id="node14" href="$classnexo_1_1event_1_1_event_key.html" title=" " alt="" coords="677,192,825,219"/>
+<area shape="rect" id="node16" href="$classnexo_1_1event_1_1_event_mouse_click.html" title=" " alt="" coords="653,416,848,443"/>
+<area shape="rect" id="node18" href="$classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="652,780,849,807"/>
+<area shape="rect" id="node20" href="$classnexo_1_1event_1_1_event_mouse_scroll.html" title=" " alt="" coords="651,467,850,493"/>
+<area shape="rect" id="node22" href="$classnexo_1_1event_1_1_event_signal.html" title=" " alt="" coords="669,518,832,559"/>
+<area shape="rect" id="node23" href="$classnexo_1_1event_1_1_event_signal.html" title="Template class to handle a specific signal." alt="" coords="669,583,832,625"/>
+<area shape="rect" id="node25" href="$classnexo_1_1event_1_1_event_window_close.html" title=" " alt="" coords="665,649,837,690"/>
+<area shape="rect" id="node27" href="$classnexo_1_1event_1_1_event_window_resize.html" title=" " alt="" coords="665,714,837,755"/>
+<area shape="rect" id="node29" href="$classnexo_1_1event_1_1_test_event.html" title=" " alt="" coords="675,257,827,284"/>
+<area shape="rect" id="node31" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="227,1947,494,2061"/>
+<area shape="rect" id="node32" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="597,1998,904,2098"/>
+<area shape="rect" id="node33" href="$classnexo_1_1system_1_1_ambient_light_system.html" title="System responsible for updating ambient light data in the scene." alt="" coords="987,2027,1167,2069"/>
+<area shape="rect" id="node34" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="184,2085,537,2229"/>
+<area shape="rect" id="node35" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="585,2122,916,2251"/>
+<area shape="rect" id="node36" href="$classnexo_1_1system_1_1_render_billboard_system.html" title=" " alt="" coords="980,2166,1175,2207"/>
+<area shape="rect" id="node37" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="199,2253,523,2382"/>
+<area shape="rect" id="node38" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="615,2275,886,2405"/>
+<area shape="rect" id="node39" href="$classnexo_1_1system_1_1_camera_context_system.html" title="System responsible for updating the camera context." alt="" coords="981,2319,1173,2361"/>
+<area shape="rect" id="node40" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="213,2407,509,2521"/>
+<area shape="rect" id="node41" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="596,2429,905,2529"/>
+<area shape="rect" id="node42" href="$classnexo_1_1system_1_1_directional_lights_system.html" title="System responsible for updating directional lights in the scene." alt="" coords="995,2458,1159,2499"/>
+<area shape="rect" id="node43" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="231,2545,490,2660"/>
+<area shape="rect" id="node44" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="597,2553,904,2653"/>
+<area shape="rect" id="node45" href="$classnexo_1_1system_1_1_point_lights_system.html" title="System responsible for updating point lights in the scene." alt="" coords="993,2582,1162,2623"/>
+<area shape="rect" id="node46" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="189,2684,532,2799"/>
+<area shape="rect" id="node47" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="629,2677,873,2806"/>
+<area shape="rect" id="node48" href="$classnexo_1_1system_1_1_transform_hierarchy_system.html" title="System that handles hierarchical transformations for entities with parents." alt="" coords="969,2721,1186,2762"/>
+<area shape="rect" id="node49" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="231,2823,490,2937"/>
+<area shape="rect" id="node50" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="597,2830,904,2930"/>
+<area shape="rect" id="node51" href="$classnexo_1_1system_1_1_spot_lights_system.html" title="System responsible for updating spot lights in the scene." alt="" coords="994,2859,1161,2901"/>
+<area shape="rect" id="node52" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="212,3012,509,3156"/>
+<area shape="rect" id="node53" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="592,3006,909,3135"/>
+<area shape="rect" id="node54" href="$classnexo_1_1system_1_1_render_command_system.html" title="System responsible for rendering the scene." alt="" coords="976,3050,1179,3091"/>
+<area shape="rect" id="node55" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="209,3180,512,3295"/>
+<area shape="rect" id="node56" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="617,3159,884,3289"/>
+<area shape="rect" id="node57" href="$class_group_benchmark_system.html" title=" " alt="" coords="994,3211,1161,3237"/>
+<area shape="rect" id="node58" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="227,3319,494,3404"/>
+<area shape="rect" id="node59" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="639,3312,862,3368"/>
+<area shape="rect" id="node60" href="$classnexo_1_1ecs_1_1_read_only_system.html" title=" " alt="" coords="986,3327,1169,3353"/>
+<area shape="rect" id="node61" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="215,3432,506,3517"/>
+<area shape="rect" id="node62" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="627,3488,874,3544"/>
+<area shape="rect" id="node64" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="625,3393,876,3463"/>
+<area shape="rect" id="node63" href="$classnexo_1_1ecs_1_1_position_system.html" title=" " alt="" coords="991,3503,1164,3529"/>
+<area shape="rect" id="node65" href="$classnexo_1_1ecs_1_1_system_with_singleton.html" title=" " alt="" coords="974,3415,1181,3441"/>
+<area shape="rect" id="node66" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="239,3550,482,3650"/>
+<area shape="rect" id="node67" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="652,3569,849,3639"/>
+<area shape="rect" id="node68" href="$classnexo_1_1ecs_1_1_mixed_access_system.html" title=" " alt="" coords="975,3591,1179,3617"/>
+<area shape="rect" id="node69" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="233,1837,488,1923"/>
+<area shape="rect" id="node70" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="634,1933,867,1974"/>
+<area shape="rect" id="node71" href="$classnexo_1_1ecs_1_1_system_with_unregistered_component.html" title=" " alt="" coords="964,1874,1191,1915"/>
+<area shape="rect" id="node72" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="233,3674,488,3745"/>
+<area shape="rect" id="node73" href="$classnexo_1_1ecs_1_1_group_system.html" title="System that uses component groups for optimized access with enforced permissions." alt="" coords="631,3672,870,3728"/>
+<area shape="rect" id="node74" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="7,2235,134,2261"/>
+<area shape="rect" id="node75" href="$classnexo_1_1ecs_1_1_a_group_system.html" title="Abstract base class for all group&#45;based systems." alt="" coords="275,2961,446,2988"/>
+<area shape="rect" id="node77" href="$classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="276,1508,445,1535"/>
+<area shape="rect" id="node76" href="$classnexo_1_1ecs_1_1_mock_group_system.html" title=" " alt="" coords="654,2955,847,2981"/>
+<area shape="rect" id="node78" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="617,1282,884,1382"/>
+<area shape="rect" id="node80" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="666,1405,835,1461"/>
+<area shape="rect" id="node82" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="660,1486,841,1557"/>
+<area shape="rect" id="node84" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="665,1815,836,1857"/>
+<area shape="rect" id="node85" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="615,831,886,975"/>
+<area shape="rect" id="node86" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="609,1129,892,1258"/>
+<area shape="rect" id="node87" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="658,1581,843,1667"/>
+<area shape="rect" id="node89" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="634,1691,867,1791"/>
+<area shape="rect" id="node91" href="$classnexo_1_1ecs_1_1_mock_query_system.html" title=" " alt="" coords="655,1881,847,1908"/>
+<area shape="rect" id="node92" href="$classnexo_1_1ecs_1_1_query_system.html" title="System that directly queries component arrays." alt="" coords="671,1063,831,1105"/>
+<area shape="rect" id="node79" href="$class_query_benchmark_system.html" title=" " alt="" coords="994,1319,1161,1345"/>
+<area shape="rect" id="node81" href="$classnexo_1_1ecs_1_1_movement_system.html" title=" " alt="" coords="984,1420,1171,1447"/>
+<area shape="rect" id="node83" href="$classnexo_1_1ecs_1_1_physics_system.html" title=" " alt="" coords="991,1508,1163,1535"/>
+<area shape="rect" id="node88" href="$classnexo_1_1system_1_1_physics_system.html" title=" " alt="" coords="981,1611,1174,1637"/>
+<area shape="rect" id="node90" href="$classnexo_1_1system_1_1_transform_matrix_system.html" title=" " alt="" coords="979,1721,1176,1762"/>
+<area shape="rect" id="node93" title=" " alt="" coords="250,1413,471,1454"/>
 </map>

@@ -1,0 +1,5 @@
+<map id="nexo::event::EventFileDrop" name="nexo::event::EventFileDrop">
+<area shape="rect" id="node1" title=" " alt="" coords="5,300,180,377"/>
+<area shape="rect" id="node2" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="29,145,156,252"/>
+<area shape="rect" id="node3" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="27,5,158,97"/>
+</map>

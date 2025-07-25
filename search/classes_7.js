@@ -1,21 +1,14 @@
 var searchData=
 [
-  ['iasset_0',['IAsset',['../classnexo_1_1assets_1_1_i_asset.html',1,'nexo::assets']]],
-  ['icomponentarray_1',['IComponentArray',['../classnexo_1_1ecs_1_1_i_component_array.html',1,'nexo::ecs']]],
-  ['idocumentwindow_2',['IDocumentWindow',['../classnexo_1_1editor_1_1_i_document_window.html',1,'nexo::editor']]],
-  ['ientityproperty_3',['IEntityProperty',['../classnexo_1_1editor_1_1_i_entity_property.html',1,'nexo::editor']]],
-  ['ievent_4',['IEvent',['../classnexo_1_1event_1_1_i_event.html',1,'nexo::event']]],
-  ['imguibackend_5',['ImGuiBackend',['../classnexo_1_1editor_1_1_im_gui_backend.html',1,'nexo::editor']]],
-  ['importerdetails_6',['ImporterDetails',['../structnexo_1_1assets_1_1_asset_importer_1_1_importer_details.html',1,'nexo::assets::AssetImporter']]],
-  ['importerfileinput_7',['ImporterFileInput',['../structnexo_1_1assets_1_1_importer_file_input.html',1,'nexo::assets']]],
-  ['importermemoryinput_8',['ImporterMemoryInput',['../structnexo_1_1assets_1_1_importer_memory_input.html',1,'nexo::assets']]],
-  ['inactivescene_9',['InActiveScene',['../structnexo_1_1components_1_1_in_active_scene.html',1,'nexo::components']]],
-  ['indexbuffer_10',['IndexBuffer',['../classnexo_1_1renderer_1_1_index_buffer.html',1,'nexo::renderer']]],
-  ['input_11',['Input',['../classnexo_1_1event_1_1_input.html',1,'nexo::event']]],
-  ['inputopengl_12',['InputOpenGl',['../classnexo_1_1event_1_1_input_open_gl.html',1,'nexo::event']]],
-  ['inspectorwindow_13',['InspectorWindow',['../classnexo_1_1editor_1_1_inspector_window.html',1,'nexo::editor']]],
-  ['invalidassetlocation_14',['InvalidAssetLocation',['../classnexo_1_1assets_1_1_invalid_asset_location.html',1,'nexo::assets']]],
-  ['invalidname_15',['InvalidName',['../classnexo_1_1assets_1_1_invalid_name.html',1,'nexo::assets']]],
-  ['invalidvalue_16',['InvalidValue',['../classnexo_1_1renderer_1_1_invalid_value.html',1,'nexo::renderer']]],
-  ['isingletoncomponent_17',['ISingletonComponent',['../classnexo_1_1ecs_1_1_i_singleton_component.html',1,'nexo::ecs']]]
+  ['has_5fmemento_5ftype_0',['has_memento_type',['../structnexo_1_1ecs_1_1has__memento__type.html',1,'nexo::ecs']]],
+  ['has_5fmemento_5ftype_3c_20t_2c_20std_3a_3avoid_5ft_3c_20typename_20t_3a_3amemento_20_3e_20_3e_1',['has_memento_type&lt; T, std::void_t&lt; typename T::Memento &gt; &gt;',['../structnexo_1_1ecs_1_1has__memento__type_3_01_t_00_01std_1_1void__t_3_01typename_01_t_1_1_memento_01_4_01_4.html',1,'nexo::ecs']]],
+  ['has_5frestore_5fmethod_2',['has_restore_method',['../structnexo_1_1ecs_1_1has__restore__method.html',1,'nexo::ecs']]],
+  ['has_5frestore_5fmethod_3c_20t_2c_20std_3a_3avoid_5ft_3c_20decltype_28std_3a_3adeclval_3c_20typename_20t_3a_3amemento_20_3e_28_29_2erestore_28_29_29_3e_20_3e_3',['has_restore_method&lt; T, std::void_t&lt; decltype(std::declval&lt; typename T::Memento &gt;().restore())&gt; &gt;',['../structnexo_1_1ecs_1_1has__restore__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declveb51b2c7ae0cc4ed83d203bd499a6d61.html',1,'nexo::ecs']]],
+  ['has_5fsave_5fmethod_4',['has_save_method',['../structnexo_1_1ecs_1_1has__save__method.html',1,'nexo::ecs']]],
+  ['has_5fsave_5fmethod_3c_20t_2c_20std_3a_3avoid_5ft_3c_20decltype_28std_3a_3adeclval_3c_20const_20t_20_26_20_3e_28_29_2esave_28_29_29_3e_20_3e_5',['has_save_method&lt; T, std::void_t&lt; decltype(std::declval&lt; const T &amp; &gt;().save())&gt; &gt;',['../structnexo_1_1ecs_1_1has__save__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval_a396539989758d2b1216eacb1f4524ec.html',1,'nexo::ecs']]],
+  ['hash_3c_20nexo_3a_3aecs_3a_3agroupkey_20_3e_6',['hash&lt; nexo::ecs::GroupKey &gt;',['../structstd_1_1hash_3_01nexo_1_1ecs_1_1_group_key_01_4.html',1,'std']]],
+  ['healthcomponent_7',['HealthComponent',['../structnexo_1_1ecs_1_1_health_component.html',1,'nexo::ecs']]],
+  ['hostfxrfn_8',['HostfxrFn',['../structnexo_1_1scripting_1_1_hostfxr_fn.html',1,'nexo::scripting']]],
+  ['hosthandler_9',['HostHandler',['../classnexo_1_1scripting_1_1_host_handler.html',1,'nexo::scripting']]],
+  ['hoststring_10',['HostString',['../classnexo_1_1scripting_1_1_host_string.html',1,'nexo::scripting']]]
 ];

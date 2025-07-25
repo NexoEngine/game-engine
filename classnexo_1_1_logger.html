@@ -96,20 +96,205 @@ Collaboration diagram for nexo::Logger:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1_logger__coll__graph.png" border="0" usemap="#anexo_1_1_logger_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1_logger_coll__map" id="anexo_1_1_logger_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,131,97"/>
+<area shape="rect" title=" " alt="" coords="5,5,131,156"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ab1666b765d8b219a8a8517b6cc97f466"><td class="memItemLeft" align="right" valign="top"><a id="ab1666b765d8b219a8a8517b6cc97f466" name="ab1666b765d8b219a8a8517b6cc97f466"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>setCallback</b> (std::function&lt; void(LogLevel, const std::string &amp;)&gt; callback)</td></tr>
-<tr class="separator:ab1666b765d8b219a8a8517b6cc97f466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69dea08f58582dd410524102ac7c2c68"><td class="memItemLeft" align="right" valign="top"><a id="a69dea08f58582dd410524102ac7c2c68" name="a69dea08f58582dd410524102ac7c2c68"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>setCallback</b> (std::function&lt; void(LogLevel, const std::source_location &amp;loc, const std::string &amp;)&gt; callback)</td></tr>
+<tr class="separator:a69dea08f58582dd410524102ac7c2c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92537c606ddc685a51505a98ffab0205"><td class="memTemplParams" colspan="2"><a id="a92537c606ddc685a51505a98ffab0205" name="a92537c606ddc685a51505a98ffab0205"></a>
 template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a92537c606ddc685a51505a98ffab0205"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>logWithFormat</b> (const LogLevel level, const std::source_location loc, const std::string_view fmt, Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a92537c606ddc685a51505a98ffab0205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2bfbc520734eb74d0e28b0dac8225e5"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:ad2bfbc520734eb74d0e28b0dac8225e5"><td class="memTemplItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1_logger.html#ad2bfbc520734eb74d0e28b0dac8225e5">generateKey</a> (const std::string_view fmt, const std::string &amp;location, Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:ad2bfbc520734eb74d0e28b0dac8225e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a key incorporating format string and parameter values.  <a href="classnexo_1_1_logger.html#ad2bfbc520734eb74d0e28b0dac8225e5">More...</a><br /></td></tr>
+<tr class="separator:ad2bfbc520734eb74d0e28b0dac8225e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead9ce3bb9ee192a8a9adfd9deab7468"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:aead9ce3bb9ee192a8a9adfd9deab7468"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1_logger.html#aead9ce3bb9ee192a8a9adfd9deab7468">logOnce</a> (const LogLevel level, const std::source_location loc, const std::string_view fmt, const std::string &amp;key, Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:aead9ce3bb9ee192a8a9adfd9deab7468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log a message only once until reset.  <a href="classnexo_1_1_logger.html#aead9ce3bb9ee192a8a9adfd9deab7468">More...</a><br /></td></tr>
+<tr class="separator:aead9ce3bb9ee192a8a9adfd9deab7468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb623e003fae04e5392b8436abf03be6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_logger.html#acb623e003fae04e5392b8436abf03be6">resetOnce</a> (const std::string &amp;key)</td></tr>
+<tr class="memdesc:acb623e003fae04e5392b8436abf03be6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset a specific log message so it can be logged again with logOnce.  <a href="classnexo_1_1_logger.html#acb623e003fae04e5392b8436abf03be6">More...</a><br /></td></tr>
+<tr class="separator:acb623e003fae04e5392b8436abf03be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f11c274ac878ea221791e2f98604623"><td class="memItemLeft" align="right" valign="top"><a id="a1f11c274ac878ea221791e2f98604623" name="a1f11c274ac878ea221791e2f98604623"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>resetAllOnce</b> ()</td></tr>
+<tr class="memdesc:a1f11c274ac878ea221791e2f98604623"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset all log messages so they can be logged again with logOnce. <br /></td></tr>
+<tr class="separator:a1f11c274ac878ea221791e2f98604623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad2bfbc520734eb74d0e28b0dac8225e5" name="ad2bfbc520734eb74d0e28b0dac8225e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2bfbc520734eb74d0e28b0dac8225e5">&#9670;&nbsp;</a></span>generateKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::string nexo::Logger::generateKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string_view&#160;</td>
+          <td class="paramname"><em>fmt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>location</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate a key incorporating format string and parameter values. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Args</td><td>Variadic template for format arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fmt</td><td>Format string </td></tr>
+    <tr><td class="paramname">args</td><td>Format arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::string Key incorporating the parameters </dd></dl>
+
+</div>
+</div>
+<a id="aead9ce3bb9ee192a8a9adfd9deab7468" name="aead9ce3bb9ee192a8a9adfd9deab7468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aead9ce3bb9ee192a8a9adfd9deab7468">&#9670;&nbsp;</a></span>logOnce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void nexo::Logger::logOnce </td>
+          <td>(</td>
+          <td class="paramtype">const LogLevel&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::source_location&#160;</td>
+          <td class="paramname"><em>loc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string_view&#160;</td>
+          <td class="paramname"><em>fmt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Log a message only once until reset. </p>
+<p >This method logs a message only the first time it is called with a given key. The key incorporates both the format string and the parameter values.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Args</td><td>Variadic template for format arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Log level </td></tr>
+    <tr><td class="paramname">loc</td><td>Source location of the log call </td></tr>
+    <tr><td class="paramname">fmt</td><td>Format string </td></tr>
+    <tr><td class="paramname">key</td><td>Key including format string and parameter values </td></tr>
+    <tr><td class="paramname">args</td><td>Format arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acb623e003fae04e5392b8436abf03be6" name="acb623e003fae04e5392b8436abf03be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb623e003fae04e5392b8436abf03be6">&#9670;&nbsp;</a></span>resetOnce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void nexo::Logger::resetOnce </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reset a specific log message so it can be logged again with logOnce. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The unique identifier for the log message to reset </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>common/<a class="el" href="_logger_8hpp_source.html">Logger.hpp</a></li>
 </ul>

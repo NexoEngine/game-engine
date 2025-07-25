@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_buffer_layout.html" title="Defines the structure and layout of elements in a vertex buffer." alt="" coords="5,5,187,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,87,100,113"/>
+<area shape="rect" id="node2" href="$structnexo_1_1ecs_1_1has__restore__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declveb51b2c7ae0cc4ed83d203bd499a6d61.html" title=" " alt="" coords="148,5,327,91"/>
+<area shape="rect" id="node3" href="$structnexo_1_1ecs_1_1has__save__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval_a396539989758d2b1216eacb1f4524ec.html" title=" " alt="" coords="153,115,322,186"/>
 </map>

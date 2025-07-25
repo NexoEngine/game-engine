@@ -1,0 +1,11 @@
+<map id="nexo::scripting::HostHandler" name="nexo::scripting::HostHandler">
+<area shape="rect" id="node1" title=" " alt="" coords="365,520,618,979"/>
+<area shape="rect" id="node2" href="$structnexo_1_1scripting_1_1_host_handler_1_1_parameters.html" title=" " alt="" coords="5,277,188,413"/>
+<area shape="rect" id="node3" href="$classnexo_1_1scripting_1_1_host_string.html" title=" " alt="" coords="212,233,384,457"/>
+<area shape="rect" id="node4" href="$structnexo_1_1scripting_1_1_hostfxr_fn.html" title=" " alt="" coords="408,270,575,421"/>
+<area shape="rect" id="node5" href="$structnexo_1_1scripting_1_1_coreclr_delegate.html" title=" " alt="" coords="599,277,771,413"/>
+<area shape="rect" id="node6" href="$structnexo_1_1scripting_1_1_managed_api.html" title="ManagedApi struct to hold function pointers to managed API functions." alt="" coords="795,307,977,384"/>
+<area shape="rect" id="node7" href="$structnexo_1_1scripting_1_1_managed_api_1_1_native_interop_api.html" title=" " alt="" coords="584,27,759,149"/>
+<area shape="rect" id="node8" href="$structnexo_1_1scripting_1_1_managed_api_1_1_lib_api.html" title=" " alt="" coords="783,5,989,171"/>
+<area shape="rect" id="node9" href="$structnexo_1_1scripting_1_1_managed_api_1_1_system_base_api.html" title=" " alt="" coords="1014,20,1177,156"/>
+</map>

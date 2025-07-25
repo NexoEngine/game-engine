@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RType: editor/src/Components/Widgets.hpp Source File</title>
+<title>RType: editor/src/ImNexo/Widgets.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -103,40 +103,67 @@ $(document).ready(function(){initNavTree('_widgets_8hpp_source.html',''); initRe
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;components/Render3D.hpp&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;renderer/Texture.hpp&quot;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>nexo::editor {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_widgets.html">   31</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_widgets.html">Widgets</a> {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_widgets.html#ad900fd9d827ed126e05cca4687613854">drawColorEditor</a>(</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <span class="keyword">const</span> std::string &amp;label,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                glm::vec4 *selectedEntityColor,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                ImGuiColorEditFlags *colorPickerMode,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                <span class="keywordtype">bool</span> *showPicker,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_widgets.html#a0684b73d419b894b1421d186520006ac">drawTextureButton</a>(<span class="keyword">const</span> std::string &amp;label, std::shared_ptr&lt;renderer::Texture2D&gt; &amp;texture);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_widgets.html#a37328c3bc0ff3922630858c2a6ea3fb5">drawMaterialInspector</a>(<a class="code hl_struct" href="structnexo_1_1components_1_1_material.html">components::Material</a> *material);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;EntityFactory3D.hpp&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;Components.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;DocumentWindows/PopupManager.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>ImNexo {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span> ColorEditor(</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> std::string &amp;label,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        glm::vec4 *selectedEntityColor,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        ImGuiColorEditFlags *colorPickerMode,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">bool</span> *showPicker,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    );</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html">   52</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_im_nexo_1_1_button_props.html">ButtonProps</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#a2ea22a10d0b1cbb79516784934a0eb8d">   53</a></span>        std::string <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#a2ea22a10d0b1cbb79516784934a0eb8d">uniqueId</a>;       </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#a3380ae0a919975112c5331db3d018b09">   54</a></span>        std::string <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#a3380ae0a919975112c5331db3d018b09">icon</a>;           </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#a4b51b00c7e619e186ef06e8f6c6d9800">   55</a></span>        std::function&lt;void()&gt; <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#a4b51b00c7e619e186ef06e8f6c6d9800">onClick</a> = <span class="keyword">nullptr</span>;      </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#a2043e31ad5e86a6ec12569b98294113d">   56</a></span>        std::function&lt;void()&gt; <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#a2043e31ad5e86a6ec12569b98294113d">onRightClick</a> = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#a6f3968344e4d5d4c8ef3bd59b493c33a">   57</a></span>        std::string <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#a6f3968344e4d5d4c8ef3bd59b493c33a">tooltip</a>;   </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_button_props.html#adb3499a638fc775a6e67bb59333de5b5">   65</a></span>        std::vector&lt;GradientStop&gt; <a class="code hl_variable" href="struct_im_nexo_1_1_button_props.html#adb3499a638fc775a6e67bb59333de5b5">buttonGradient</a> = {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            {0.0f, IM_COL32(50, 50, 70, 230)},</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            {1.0f, IM_COL32(30, 30, 45, 230)}</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        };</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    };</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">enum class</span> DropdownOrientation {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        DOWN,   <span class="comment">// Dropdown appears below the button</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        UP,     <span class="comment">// Dropdown appears above the button</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        RIGHT,  <span class="comment">// Dropdown appears to the right of the button</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        LEFT    <span class="comment">// Dropdown appears to the left of the button</span></div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    };</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_widgets_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_widgets.html">nexo::editor::Widgets</a></div><div class="ttdoc">A collection of custom ImGui widget drawing functions.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:31</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_widgets_html_a0684b73d419b894b1421d186520006ac"><div class="ttname"><a href="classnexo_1_1editor_1_1_widgets.html#a0684b73d419b894b1421d186520006ac">nexo::editor::Widgets::drawTextureButton</a></div><div class="ttdeci">static bool drawTextureButton(const std::string &amp;label, std::shared_ptr&lt; renderer::Texture2D &gt; &amp;texture)</div><div class="ttdoc">Draws a texture button that displays a texture preview.</div><div class="ttdef"><b>Definition:</b> Widgets.cpp:81</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_widgets_html_a37328c3bc0ff3922630858c2a6ea3fb5"><div class="ttname"><a href="classnexo_1_1editor_1_1_widgets.html#a37328c3bc0ff3922630858c2a6ea3fb5">nexo::editor::Widgets::drawMaterialInspector</a></div><div class="ttdeci">static bool drawMaterialInspector(components::Material *material)</div><div class="ttdoc">Draws a material inspector widget for editing material properties.</div><div class="ttdef"><b>Definition:</b> Widgets.cpp:119</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_widgets_html_ad900fd9d827ed126e05cca4687613854"><div class="ttname"><a href="classnexo_1_1editor_1_1_widgets.html#ad900fd9d827ed126e05cca4687613854">nexo::editor::Widgets::drawColorEditor</a></div><div class="ttdeci">static bool drawColorEditor(const std::string &amp;label, glm::vec4 *selectedEntityColor, ImGuiColorEditFlags *colorPickerMode, bool *showPicker, ImGuiColorEditFlags colorButtonFlags=ImGuiColorEditFlags_None)</div><div class="ttdoc">Draws a color editor with a button and an optional inline color picker.</div><div class="ttdef"><b>Definition:</b> Widgets.cpp:25</div></div>
-<div class="ttc" id="astructnexo_1_1components_1_1_material_html"><div class="ttname"><a href="structnexo_1_1components_1_1_material.html">nexo::components::Material</a></div><div class="ttdef"><b>Definition:</b> Render3D.hpp:23</div></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> ButtonDropDown(</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">const</span> ImVec2&amp; buttonPos,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        ImVec2 buttonSize,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">const</span> std::vector&lt;ButtonProps&gt; &amp;buttonProps,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordtype">bool</span> &amp;closure,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        DropdownOrientation orientation = DropdownOrientation::DOWN</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    );</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> PrimitiveSubMenu(<span class="keywordtype">int</span> sceneId, <a class="code hl_class" href="classnexo_1_1editor_1_1_popup_manager.html">nexo::editor::PopupManager</a> &amp;popupManager);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">void</span> PrimitiveCustomizationMenu(<span class="keywordtype">int</span> sceneId, nexo::Primitives primitive);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_popup_manager_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_popup_manager.html">nexo::editor::PopupManager</a></div><div class="ttdoc">Manages the state of popups within the UI.</div><div class="ttdef"><b>Definition:</b> PopupManager.hpp:29</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html">ImNexo::ButtonProps</a></div><div class="ttdoc">Configuration properties for a button in a dropdown menu.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:52</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_a2043e31ad5e86a6ec12569b98294113d"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#a2043e31ad5e86a6ec12569b98294113d">ImNexo::ButtonProps::onRightClick</a></div><div class="ttdeci">std::function&lt; void()&gt; onRightClick</div><div class="ttdoc">Callback executed when button is right-clicked.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:56</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_a2ea22a10d0b1cbb79516784934a0eb8d"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#a2ea22a10d0b1cbb79516784934a0eb8d">ImNexo::ButtonProps::uniqueId</a></div><div class="ttdeci">std::string uniqueId</div><div class="ttdoc">Unique identifier for ImGui tracking.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:53</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_a3380ae0a919975112c5331db3d018b09"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#a3380ae0a919975112c5331db3d018b09">ImNexo::ButtonProps::icon</a></div><div class="ttdeci">std::string icon</div><div class="ttdoc">Icon to display on the button (typically FontAwesome)</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:54</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_a4b51b00c7e619e186ef06e8f6c6d9800"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#a4b51b00c7e619e186ef06e8f6c6d9800">ImNexo::ButtonProps::onClick</a></div><div class="ttdeci">std::function&lt; void()&gt; onClick</div><div class="ttdoc">Callback executed when button is left-clicked.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:55</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_a6f3968344e4d5d4c8ef3bd59b493c33a"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#a6f3968344e4d5d4c8ef3bd59b493c33a">ImNexo::ButtonProps::tooltip</a></div><div class="ttdeci">std::string tooltip</div><div class="ttdoc">Tooltip text displayed when hovering.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:57</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html_adb3499a638fc775a6e67bb59333de5b5"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html#adb3499a638fc775a6e67bb59333de5b5">ImNexo::ButtonProps::buttonGradient</a></div><div class="ttdeci">std::vector&lt; GradientStop &gt; buttonGradient</div><div class="ttdoc">Gradient colors for button styling.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:65</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bac5aa69239d34ac960582aca466258e.html">editor</a></li><li class="navelem"><a class="el" href="dir_b7d7d6b8a78807b328f73545b8904b59.html">src</a></li><li class="navelem"><a class="el" href="dir_396ec102f11c70d8adc4496a9938d92d.html">Components</a></li><li class="navelem"><b>Widgets.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_bac5aa69239d34ac960582aca466258e.html">editor</a></li><li class="navelem"><a class="el" href="dir_b7d7d6b8a78807b328f73545b8904b59.html">src</a></li><li class="navelem"><a class="el" href="dir_b4c725cb608f7d104bdfbb5237e14fd6.html">ImNexo</a></li><li class="navelem"><b>Widgets.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2 </li>
   </ul>
 </div>

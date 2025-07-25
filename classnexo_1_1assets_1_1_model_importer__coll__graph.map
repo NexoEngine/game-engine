@@ -1,9 +1,4 @@
 <map id="nexo::assets::ModelImporter" name="nexo::assets::ModelImporter">
-<area shape="rect" id="node1" title=" " alt="" coords="80,1236,263,1357"/>
-<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset_importer_base.html" title="Interface for importing assets into the engine." alt="" coords="5,1037,217,1173"/>
-<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="241,1059,376,1151"/>
-<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="227,779,391,988"/>
-<area shape="rect" id="node5" href="$classnexo_1_1assets_1_1_i_asset.html" title=" " alt="" coords="239,520,378,729"/>
-<area shape="rect" id="node6" href="$structnexo_1_1assets_1_1_asset_metadata.html" title=" " alt="" coords="215,336,403,457"/>
-<area shape="rect" id="node7" href="$classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="217,5,401,273"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,189,223,472"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset_importer_base.html" title="Interface for importing assets into the engine." alt="" coords="8,5,220,141"/>
 </map>

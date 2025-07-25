@@ -101,7 +101,7 @@ Collaboration diagram for nexo::ecs::EntityManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_entity_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_entity_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_entity_manager_coll__map" id="anexo_1_1ecs_1_1_entity_manager_coll__map">
-<area shape="rect" title="Manages entities in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,5,169,156"/>
+<area shape="rect" title="Manages entities in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,5,169,171"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -122,9 +122,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a29cb4e540ee8c4c8cd77d619ea2afcba"><td class="memItemLeft" align="right" valign="top">Signature&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_entity_manager.html#a29cb4e540ee8c4c8cd77d619ea2afcba">getSignature</a> (Entity entity) const</td></tr>
 <tr class="memdesc:a29cb4e540ee8c4c8cd77d619ea2afcba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the signature of an entity.  <a href="classnexo_1_1ecs_1_1_entity_manager.html#a29cb4e540ee8c4c8cd77d619ea2afcba">More...</a><br /></td></tr>
 <tr class="separator:a29cb4e540ee8c4c8cd77d619ea2afcba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a808d164a09d46bb080e6fe812284de42"><td class="memItemLeft" align="right" valign="top"><a id="a808d164a09d46bb080e6fe812284de42" name="a808d164a09d46bb080e6fe812284de42"></a>
-std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getLivingEntityCount</b> () const</td></tr>
-<tr class="separator:a808d164a09d46bb080e6fe812284de42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcf0a40641220a82291390b48d4921ff"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_entity_manager.html#abcf0a40641220a82291390b48d4921ff">getLivingEntityCount</a> () const</td></tr>
+<tr class="memdesc:abcf0a40641220a82291390b48d4921ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of currently active entities.  <a href="classnexo_1_1ecs_1_1_entity_manager.html#abcf0a40641220a82291390b48d4921ff">More...</a><br /></td></tr>
+<tr class="separator:abcf0a40641220a82291390b48d4921ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac511b270e17587dccbcfc97918f93d31"><td class="memItemLeft" align="right" valign="top">std::span&lt; const Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_entity_manager.html#ac511b270e17587dccbcfc97918f93d31">getLivingEntities</a> () const</td></tr>
+<tr class="memdesc:ac511b270e17587dccbcfc97918f93d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a view of all currently active entities.  <a href="classnexo_1_1ecs_1_1_entity_manager.html#ac511b270e17587dccbcfc97918f93d31">More...</a><br /></td></tr>
+<tr class="separator:ac511b270e17587dccbcfc97918f93d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manages entities in an ECS (Entity-Component-System) architecture. </p>
@@ -258,6 +261,46 @@ std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getLivingEnt
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Signature - The signature of the entity. </dd></dl>
+
+</div>
+</div>
+<a id="abcf0a40641220a82291390b48d4921ff" name="abcf0a40641220a82291390b48d4921ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcf0a40641220a82291390b48d4921ff">&#9670;&nbsp;</a></span>getLivingEntityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t nexo::ecs::EntityManager::getLivingEntityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of currently active entities. </p>
+<dl class="section return"><dt>Returns</dt><dd>size_t The count of living entities </dd></dl>
+
+</div>
+</div>
+<a id="ac511b270e17587dccbcfc97918f93d31" name="ac511b270e17587dccbcfc97918f93d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac511b270e17587dccbcfc97918f93d31">&#9670;&nbsp;</a></span>getLivingEntities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const Entity &gt; nexo::ecs::EntityManager::getLivingEntities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves a view of all currently active entities. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::span&lt;const Entity&gt; A span containing all living entity IDs </dd></dl>
 
 </div>
 </div>

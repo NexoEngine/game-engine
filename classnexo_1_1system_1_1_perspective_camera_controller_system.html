@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('classnexo_1_1system_1_1_perspective_ca
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classnexo_1_1system_1_1_perspective_camera_controller_system-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">nexo::system::PerspectiveCameraControllerSystem Class Reference</div></div>
+  <div class="headertitle"><div class="title">nexo::system::PerspectiveCameraControllerSystem Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -101,12 +101,15 @@ Inheritance diagram for nexo::system::PerspectiveCameraControllerSystem:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1system_1_1_perspective_camera_controller_system__inherit__graph.png" border="0" usemap="#anexo_1_1system_1_1_perspective_camera_controller_system_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1system_1_1_perspective_camera_controller_system_inherit__map" id="anexo_1_1system_1_1_perspective_camera_controller_system_inherit__map">
-<area shape="rect" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="122,455,325,605"/>
-<area shape="rect" href="classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,307,132,399"/>
-<area shape="rect" title=" " alt="" coords="156,300,291,407"/>
-<area shape="rect" href="classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="315,307,513,399"/>
-<area shape="rect" href="classnexo_1_1event_1_1_event.html" title=" " alt="" coords="340,145,488,252"/>
-<area shape="rect" href="classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="349,5,479,97"/>
+<area shape="rect" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="335,616,538,767"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="75,300,345,568"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="5,153,175,245"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="27,13,153,90"/>
+<area shape="rect" title=" " alt="" coords="199,145,426,252"/>
+<area shape="rect" title=" " alt="" coords="370,366,503,502"/>
+<area shape="rect" href="classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="527,388,725,480"/>
+<area shape="rect" href="classnexo_1_1event_1_1_event.html" title=" " alt="" coords="552,145,700,252"/>
+<area shape="rect" href="classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="561,5,691,97"/>
 </map>
 </div>
 <div class="dynheader">
@@ -114,48 +117,83 @@ Collaboration diagram for nexo::system::PerspectiveCameraControllerSystem:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1system_1_1_perspective_camera_controller_system__coll__graph.png" border="0" usemap="#anexo_1_1system_1_1_perspective_camera_controller_system_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1system_1_1_perspective_camera_controller_system_coll__map" id="anexo_1_1system_1_1_perspective_camera_controller_system_coll__map">
-<area shape="rect" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="122,455,325,605"/>
-<area shape="rect" href="classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,307,132,399"/>
-<area shape="rect" title=" " alt="" coords="156,300,291,407"/>
-<area shape="rect" href="classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="315,307,513,399"/>
-<area shape="rect" href="classnexo_1_1event_1_1_event.html" title=" " alt="" coords="340,145,488,252"/>
-<area shape="rect" href="classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="349,5,479,97"/>
+<area shape="rect" title="System for controlling perspective cameras via keyboard and mouse input." alt="" coords="393,721,595,872"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="132,404,403,672"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="63,255,232,347"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,57,132,134"/>
+<area shape="rect" href="classnexo_1_1ecs_1_1_sparse_set.html" title="A sparse set implementation for efficient entity storage and lookup." alt="" coords="156,5,299,185"/>
+<area shape="rect" title=" " alt="" coords="257,248,483,355"/>
+<area shape="rect" title=" " alt="" coords="427,470,561,606"/>
+<area shape="rect" href="classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="585,492,782,584"/>
+<area shape="rect" href="classnexo_1_1event_1_1_event.html" title=" " alt="" coords="609,248,757,355"/>
+<area shape="rect" href="classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="618,49,749,141"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a88d35d56d06eb97248014ff8cc3efbb7"><td class="memItemLeft" align="right" valign="top"><a id="a88d35d56d06eb97248014ff8cc3efbb7" name="a88d35d56d06eb97248014ff8cc3efbb7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (<a class="el" href="classnexo_1_1_timestep.html">Timestep</a> ts) const</td></tr>
-<tr class="separator:a88d35d56d06eb97248014ff8cc3efbb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d21034d8f9be5103fcbe4aa91db165f"><td class="memItemLeft" align="right" valign="top"><a id="a8d21034d8f9be5103fcbe4aa91db165f" name="a8d21034d8f9be5103fcbe4aa91db165f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (<a class="el" href="classnexo_1_1_timestep.html">Timestep</a> ts)</td></tr>
+<tr class="separator:a8d21034d8f9be5103fcbe4aa91db165f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af98cda414ca0ffae307f67206a511828"><td class="memItemLeft" align="right" valign="top"><a id="af98cda414ca0ffae307f67206a511828" name="af98cda414ca0ffae307f67206a511828"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handleEvent</b> (<a class="el" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> &amp;event) override</td></tr>
 <tr class="separator:af98cda414ca0ffae307f67206a511828"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0aed24491b8c8fb7abc806f0c999f8f"><td class="memItemLeft" align="right" valign="top"><a id="aa0aed24491b8c8fb7abc806f0c999f8f" name="aa0aed24491b8c8fb7abc806f0c999f8f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handleEvent</b> (<a class="el" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> &amp;event) override</td></tr>
 <tr class="separator:aa0aed24491b8c8fb7abc806f0c999f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classnexo_1_1ecs_1_1_query_system"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classnexo_1_1ecs_1_1_query_system')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classnexo_1_1ecs_1_1_query_system.html">nexo::ecs::QuerySystem&lt; ecs::Write&lt; components::CameraComponent &gt;, ecs::Write&lt; components::PerspectiveCameraController &gt;, ecs::Read&lt; components::SceneTag &gt;, ecs::Write&lt; components::TransformComponent &gt;, ecs::ReadSingleton&lt; components::RenderContext &gt; &gt;</a></td></tr>
+<tr class="memitem:adde3329a7037b77ec249a793946a3513 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#adde3329a7037b77ec249a793946a3513">QuerySystem</a> ()</td></tr>
+<tr class="memdesc:adde3329a7037b77ec249a793946a3513 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new QuerySystem.  <a href="classnexo_1_1ecs_1_1_query_system.html#adde3329a7037b77ec249a793946a3513">More...</a><br /></td></tr>
+<tr class="separator:adde3329a7037b77ec249a793946a3513 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef5863a4164d498f87e520a972c03a2b inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">std::conditional_t&lt; hasReadAccess&lt; T &gt;(), const T &amp;, T &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#aef5863a4164d498f87e520a972c03a2b">getComponent</a> (Entity entity)</td></tr>
+<tr class="memdesc:aef5863a4164d498f87e520a972c03a2b inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a component for an entity with access type determined at compile time.  <a href="classnexo_1_1ecs_1_1_query_system.html#aef5863a4164d498f87e520a972c03a2b">More...</a><br /></td></tr>
+<tr class="separator:aef5863a4164d498f87e520a972c03a2b inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a591d4c06166ac378fc49b681bcd54423 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">const Signature &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#a591d4c06166ac378fc49b681bcd54423">getSignature</a> () const override</td></tr>
+<tr class="memdesc:a591d4c06166ac378fc49b681bcd54423 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the component signature for this system.  <a href="classnexo_1_1ecs_1_1_query_system.html#a591d4c06166ac378fc49b681bcd54423">More...</a><br /></td></tr>
+<tr class="separator:a591d4c06166ac378fc49b681bcd54423 inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c8f758f6530f60e00ce6ccd2ac311fe inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">Signature &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#a7c8f758f6530f60e00ce6ccd2ac311fe">getSignature</a> ()</td></tr>
+<tr class="memdesc:a7c8f758f6530f60e00ce6ccd2ac311fe inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a mutable reference to the component signature for this system.  <a href="classnexo_1_1ecs_1_1_query_system.html#a7c8f758f6530f60e00ce6ccd2ac311fe">More...</a><br /></td></tr>
+<tr class="separator:a7c8f758f6530f60e00ce6ccd2ac311fe inherit pub_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_attribs_classnexo_1_1ecs_1_1_system"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classnexo_1_1ecs_1_1_system')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classnexo_1_1ecs_1_1_system.html">nexo::ecs::System</a></td></tr>
-<tr class="memitem:a8da649d0fa83558c62aa6cebb4a4053f inherit pub_attribs_classnexo_1_1ecs_1_1_system"><td class="memItemLeft" align="right" valign="top"><a id="a8da649d0fa83558c62aa6cebb4a4053f" name="a8da649d0fa83558c62aa6cebb4a4053f"></a>
-std::set&lt; Entity &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>entities</b></td></tr>
-<tr class="separator:a8da649d0fa83558c62aa6cebb4a4053f inherit pub_attribs_classnexo_1_1ecs_1_1_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_classnexo_1_1ecs_1_1_a_query_system"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classnexo_1_1ecs_1_1_a_query_system')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classnexo_1_1ecs_1_1_a_query_system.html">nexo::ecs::AQuerySystem</a></td></tr>
+<tr class="memitem:a9881e7012946b82d9355ef2919025f40 inherit pub_attribs_classnexo_1_1ecs_1_1_a_query_system"><td class="memItemLeft" align="right" valign="top"><a id="a9881e7012946b82d9355ef2919025f40" name="a9881e7012946b82d9355ef2919025f40"></a>
+<a class="el" href="classnexo_1_1ecs_1_1_sparse_set.html">SparseSet</a>&#160;</td><td class="memItemRight" valign="bottom"><b>entities</b></td></tr>
+<tr class="memdesc:a9881e7012946b82d9355ef2919025f40 inherit pub_attribs_classnexo_1_1ecs_1_1_a_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entities that match this system's signature. <br /></td></tr>
+<tr class="separator:a9881e7012946b82d9355ef2919025f40 inherit pub_attribs_classnexo_1_1ecs_1_1_a_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classnexo_1_1ecs_1_1_system"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classnexo_1_1ecs_1_1_system')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classnexo_1_1ecs_1_1_system.html">nexo::ecs::System</a></td></tr>
 <tr class="memitem:aa2ceafd4b0b2bf3a6dcc8d20bb3751b4 inherit pub_static_attribs_classnexo_1_1ecs_1_1_system"><td class="memItemLeft" align="right" valign="top"><a id="aa2ceafd4b0b2bf3a6dcc8d20bb3751b4" name="aa2ceafd4b0b2bf3a6dcc8d20bb3751b4"></a>
 static std::shared_ptr&lt; <a class="el" href="classnexo_1_1ecs_1_1_coordinator.html">Coordinator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>coord</b> = nullptr</td></tr>
+<tr class="memdesc:aa2ceafd4b0b2bf3a6dcc8d20bb3751b4 inherit pub_static_attribs_classnexo_1_1ecs_1_1_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global coordinator instance shared by all systems. <br /></td></tr>
 <tr class="separator:aa2ceafd4b0b2bf3a6dcc8d20bb3751b4 inherit pub_static_attribs_classnexo_1_1ecs_1_1_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classnexo_1_1ecs_1_1_query_system"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classnexo_1_1ecs_1_1_query_system')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classnexo_1_1ecs_1_1_query_system.html">nexo::ecs::QuerySystem&lt; ecs::Write&lt; components::CameraComponent &gt;, ecs::Write&lt; components::PerspectiveCameraController &gt;, ecs::Read&lt; components::SceneTag &gt;, ecs::Write&lt; components::TransformComponent &gt;, ecs::ReadSingleton&lt; components::RenderContext &gt; &gt;</a></td></tr>
+<tr class="memitem:ab393e665be3737a9d082081a1f429eaa inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#ab393e665be3737a9d082081a1f429eaa">cacheComponentArrayIfRegular</a> ()</td></tr>
+<tr class="memdesc:ab393e665be3737a9d082081a1f429eaa inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caches component arrays for faster access (only for regular components)  <a href="classnexo_1_1ecs_1_1_query_system.html#ab393e665be3737a9d082081a1f429eaa">More...</a><br /></td></tr>
+<tr class="separator:ab393e665be3737a9d082081a1f429eaa inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba3841d67838c38e2db9d48ae047123 inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_query_system.html#aeba3841d67838c38e2db9d48ae047123">setComponentSignatureIfRegular</a> (Signature &amp;signature)</td></tr>
+<tr class="memdesc:aeba3841d67838c38e2db9d48ae047123 inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the component bit in the system signature (only for regular components)  <a href="classnexo_1_1ecs_1_1_query_system.html#aeba3841d67838c38e2db9d48ae047123">More...</a><br /></td></tr>
+<tr class="separator:aeba3841d67838c38e2db9d48ae047123 inherit pro_methods_classnexo_1_1ecs_1_1_query_system"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >System for controlling perspective cameras via keyboard and mouse input. </p>
 <p >This system handles movement of perspective cameras based on keyboard input (e.g. WASD, space, tab) and adjusts camera orientation based on mouse movement. It also processes mouse scroll events for zooming.</p>
-<dl class="section note"><dt>Note</dt><dd>Required Components on camera entities:<ul>
-<li><a class="el" href="structnexo_1_1components_1_1_perspective_camera_controller.html" title="Component used to control a perspective camera using mouse input.">components::PerspectiveCameraController</a></li>
-<li><a class="el" href="structnexo_1_1components_1_1_scene_tag.html">components::SceneTag</a></li>
-<li><a class="el" href="structnexo_1_1components_1_1_camera_component.html" title="Represents the camera component.">components::CameraComponent</a></li>
-<li><a class="el" href="structnexo_1_1components_1_1_transform_component.html">components::TransformComponent</a> </li>
+<dl class="section note"><dt>Note</dt><dd>Component Access Rights:<ul>
+<li>WRITE access to <a class="el" href="structnexo_1_1components_1_1_camera_component.html" title="Represents the camera component.">components::CameraComponent</a></li>
+<li>WRITE access to <a class="el" href="structnexo_1_1components_1_1_perspective_camera_controller.html" title="Component used to control a perspective camera using mouse input.">components::PerspectiveCameraController</a></li>
+<li>READ access to <a class="el" href="structnexo_1_1components_1_1_scene_tag.html">components::SceneTag</a></li>
+<li>WRITE access to <a class="el" href="structnexo_1_1components_1_1_transform_component.html">components::TransformComponent</a></li>
+<li>READ access to <a class="el" href="structnexo_1_1components_1_1_render_context.html">components::RenderContext</a> (singleton)</li>
 </ul>
-</dd></dl>
+</dd>
+<dd>
+Event Listeners:<ul>
+<li><a class="el" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> - For camera zoom functionality</li>
+<li><a class="el" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> - For camera rotation functionality</li>
+</ul>
+</dd>
+<dd>
+The system only processes camera entities belonging to the currently active scene. </dd></dl>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>engine/src/systems/<a class="el" href="_camera_system_8hpp_source.html">CameraSystem.hpp</a></li>
 <li>engine/src/systems/CameraSystem.cpp</li>

@@ -1,0 +1,4 @@
+<map id="nexo::renderer::NxOpenGlRendererApi" name="nexo::renderer::NxOpenGlRendererApi">
+<area shape="rect" id="node1" title="Implementation of the RendererApi interface using OpenGL." alt="" coords="19,277,187,516"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_nx_renderer_api.html" title="Abstract interface for low&#45;level rendering API implementations." alt="" coords="5,5,200,229"/>
+</map>

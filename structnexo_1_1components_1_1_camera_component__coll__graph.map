@@ -1,3 +1,4 @@
 <map id="nexo::components::CameraComponent" name="nexo::components::CameraComponent">
-<area shape="rect" id="node1" title="Represents the camera component." alt="" coords="5,5,183,288"/>
+<area shape="rect" id="node1" title="Represents the camera component." alt="" coords="14,292,191,619"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_render_pipeline.html" title=" " alt="" coords="5,5,200,229"/>
 </map>

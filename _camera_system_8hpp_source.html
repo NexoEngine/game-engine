@@ -103,43 +103,68 @@ $(document).ready(function(){initNavTree('_camera_system_8hpp_source.html',''); 
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;ecs/System.hpp&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;Timestep.hpp&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;core/event/Event.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;core/event/WindowEvent.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>nexo::system {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_camera_context_system.html">   37</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_camera_context_system.html">CameraContextSystem</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_system.html">ecs::System</a> {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordtype">void</span> update() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    };</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">   55</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">PerspectiveCameraControllerSystem</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_system.html">ecs::System</a>, LISTENS_TO(</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        event::EventMouseScroll,</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        event::EventMouseMove) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">PerspectiveCameraControllerSystem</a>();</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordtype">void</span> update(<a class="code hl_class" href="classnexo_1_1_timestep.html">Timestep</a> ts) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> &amp;event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> &amp;event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    };</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">   79</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">PerspectiveCameraTargetSystem</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_system.html">ecs::System</a>, LISTENS_TO(</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        event::EventMouseScroll,</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        event::EventMouseMove) {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">PerspectiveCameraTargetSystem</a>();</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> &amp;event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> &amp;event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    };</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;ecs/GroupSystem.hpp&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;ecs/QuerySystem.hpp&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;Timestep.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;core/event/Event.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;core/event/WindowEvent.hpp&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;components/Camera.hpp&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;components/SceneComponents.hpp&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;components/RenderContext.hpp&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>nexo::system {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_camera_context_system.html">   44</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_camera_context_system.html">CameraContextSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_group_system.html">ecs::GroupSystem</a>&lt;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        ecs::Owned&lt;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            ecs::Read&lt;components::CameraComponent&gt;&gt;,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        ecs::NonOwned&lt;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            ecs::Read&lt;components::SceneTag&gt;,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            ecs::Read&lt;components::TransformComponent&gt;&gt;,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        ecs::WriteSingleton&lt;components::RenderContext&gt;&gt; {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordtype">void</span> update();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">   75</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">PerspectiveCameraControllerSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_query_system.html">ecs::QuerySystem</a>&lt;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                        ecs::Write&lt;components::CameraComponent&gt;,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                        ecs::Write&lt;components::PerspectiveCameraController&gt;,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                                        ecs::Read&lt;components::SceneTag&gt;,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                                        ecs::Write&lt;components::TransformComponent&gt;,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                                        ecs::ReadSingleton&lt;components::RenderContext&gt;&gt;,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                                    LISTENS_TO(</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                                        event::EventMouseScroll,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                        event::EventMouseMove) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">PerspectiveCameraControllerSystem</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordtype">void</span> update(<a class="code hl_class" href="classnexo_1_1_timestep.html">Timestep</a> ts);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> &amp;event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> &amp;event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    };</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">  112</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">PerspectiveCameraTargetSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_query_system.html">ecs::QuerySystem</a>&lt;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                                                    ecs::Write&lt;components::CameraComponent&gt;,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                                                    ecs::Write&lt;components::PerspectiveCameraTarget&gt;,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                                                    ecs::Read&lt;components::SceneTag&gt;,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                                    ecs::Write&lt;components::TransformComponent&gt;,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                                                    ecs::ReadSingleton&lt;components::RenderContext&gt;&gt;,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                                                LISTENS_TO(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                                    event::EventMouseScroll,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                                                    event::EventMouseMove) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <a class="code hl_class" href="classnexo_1_1system_1_1_perspective_camera_target_system.html">PerspectiveCameraTargetSystem</a>();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_move.html">event::EventMouseMove</a> &amp;event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_mouse_scroll.html">event::EventMouseScroll</a> &amp;event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    };</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
 <div class="ttc" id="aclassnexo_1_1_timestep_html"><div class="ttname"><a href="classnexo_1_1_timestep.html">nexo::Timestep</a></div><div class="ttdef"><b>Definition:</b> Timestep.hpp:17</div></div>
-<div class="ttc" id="aclassnexo_1_1ecs_1_1_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_system.html">nexo::ecs::System</a></div><div class="ttdoc">Base class for systems in an ECS (Entity-Component-System) architecture.</div><div class="ttdef"><b>Definition:</b> System.hpp:37</div></div>
+<div class="ttc" id="aclassnexo_1_1ecs_1_1_group_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_group_system.html">nexo::ecs::GroupSystem</a></div><div class="ttdoc">System that uses component groups for optimized access with enforced permissions.</div><div class="ttdef"><b>Definition:</b> GroupSystem.hpp:40</div></div>
+<div class="ttc" id="aclassnexo_1_1ecs_1_1_query_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_query_system.html">nexo::ecs::QuerySystem</a></div><div class="ttdoc">System that directly queries component arrays.</div><div class="ttdef"><b>Definition:</b> QuerySystem.hpp:79</div></div>
 <div class="ttc" id="aclassnexo_1_1event_1_1_event_mouse_move_html"><div class="ttname"><a href="classnexo_1_1event_1_1_event_mouse_move.html">nexo::event::EventMouseMove</a></div><div class="ttdef"><b>Definition:</b> WindowEvent.hpp:153</div></div>
 <div class="ttc" id="aclassnexo_1_1event_1_1_event_mouse_scroll_html"><div class="ttname"><a href="classnexo_1_1event_1_1_event_mouse_scroll.html">nexo::event::EventMouseScroll</a></div><div class="ttdef"><b>Definition:</b> WindowEvent.hpp:139</div></div>
-<div class="ttc" id="aclassnexo_1_1system_1_1_camera_context_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_camera_context_system.html">nexo::system::CameraContextSystem</a></div><div class="ttdoc">System responsible for updating the camera context.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:37</div></div>
-<div class="ttc" id="aclassnexo_1_1system_1_1_perspective_camera_controller_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">nexo::system::PerspectiveCameraControllerSystem</a></div><div class="ttdoc">System for controlling perspective cameras via keyboard and mouse input.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:57</div></div>
-<div class="ttc" id="aclassnexo_1_1system_1_1_perspective_camera_target_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_perspective_camera_target_system.html">nexo::system::PerspectiveCameraTargetSystem</a></div><div class="ttdoc">System for controlling perspective cameras that orbit around a target.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:81</div></div>
+<div class="ttc" id="aclassnexo_1_1system_1_1_camera_context_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_camera_context_system.html">nexo::system::CameraContextSystem</a></div><div class="ttdoc">System responsible for updating the camera context.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:50</div></div>
+<div class="ttc" id="aclassnexo_1_1system_1_1_perspective_camera_controller_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_perspective_camera_controller_system.html">nexo::system::PerspectiveCameraControllerSystem</a></div><div class="ttdoc">System for controlling perspective cameras via keyboard and mouse input.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:83</div></div>
+<div class="ttc" id="aclassnexo_1_1system_1_1_perspective_camera_target_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_perspective_camera_target_system.html">nexo::system::PerspectiveCameraTargetSystem</a></div><div class="ttdoc">System for controlling perspective cameras that orbit around a target.</div><div class="ttdef"><b>Definition:</b> CameraSystem.hpp:120</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -103,11 +103,11 @@ $(document).ready(function(){initNavTree('_asset_importer_base_8hpp_source.html'
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;Asset.hpp&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;AssetImporterContext.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;AssetImporterInput.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;AssetImporterContext.hpp&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;AssetImporterInput.hpp&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;iomanip&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacenexo_1_1assets.html">nexo::assets</a> {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
@@ -130,16 +130,28 @@ $(document).ready(function(){initNavTree('_asset_importer_base_8hpp_source.html'
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                    }</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                    <span class="comment">// Log the error</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    LOG(NEXO_ERROR, <span class="stringliteral">&quot;Failed to import asset from file &#39;{}&#39;: {}&quot;</span>, ctx.location.getPath(), e.what());</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            }</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    };</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace nexo::assets</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    <span class="keywordflow">if</span> (std::holds_alternative&lt;ImporterFileInput&gt;(ctx.input))</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                        LOG(NEXO_ERROR, <span class="stringliteral">&quot;Failed to import asset {} from file {}: {}&quot;</span>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                            std::quoted(ctx.location.getFullLocation()),</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                            std::quoted(std::get&lt;ImporterFileInput&gt;(ctx.input).filePath.generic_string()),</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                            e.what());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (std::holds_alternative&lt;ImporterMemoryInput&gt;(ctx.input))</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                        LOG(NEXO_ERROR, <span class="stringliteral">&quot;Failed to import asset {} from memory: {}&quot;</span>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                            std::quoted(ctx.location.getFullLocation()),</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                            e.what());</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                        LOG(NEXO_ERROR, <span class="stringliteral">&quot;Failed to import asset {}: {}&quot;</span>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                            std::quoted(ctx.location.getFullLocation()),</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                            e.what());</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    };</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>} <span class="comment">// namespace nexo::assets</span></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_asset_importer_base_html"><div class="ttname"><a href="classnexo_1_1assets_1_1_asset_importer_base.html">nexo::assets::AssetImporterBase</a></div><div class="ttdoc">Interface for importing assets into the engine.</div><div class="ttdef"><b>Definition:</b> AssetImporterBase.hpp:30</div></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_asset_importer_base_html_a0920e3dd0e5b2e2f296c7b03a94c3034"><div class="ttname"><a href="classnexo_1_1assets_1_1_asset_importer_base.html#a0920e3dd0e5b2e2f296c7b03a94c3034">nexo::assets::AssetImporterBase::importImpl</a></div><div class="ttdeci">virtual void importImpl(AssetImporterContext &amp;ctx)=0</div><div class="ttdoc">Imports an asset from a file.</div></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_asset_importer_base_html_a4c226bfa54ca1f879c1ea30b47012609"><div class="ttname"><a href="classnexo_1_1assets_1_1_asset_importer_base.html#a4c226bfa54ca1f879c1ea30b47012609">nexo::assets::AssetImporterBase::canRead</a></div><div class="ttdeci">virtual bool canRead(const ImporterInputVariant &amp;inputVariant)=0</div><div class="ttdoc">Checks if the importer can read the file at the given path.</div></div>
-<div class="ttc" id="anamespacenexo_1_1assets_html"><div class="ttname"><a href="namespacenexo_1_1assets.html">nexo::assets</a></div><div class="ttdoc">AssetRef.hpp /////////////////////////////////////////////////////////////.</div><div class="ttdef"><b>Definition:</b> Asset.cpp:18</div></div>
+<div class="ttc" id="anamespacenexo_1_1assets_html"><div class="ttname"><a href="namespacenexo_1_1assets.html">nexo::assets</a></div><div class="ttdoc">AssetRef.hpp /////////////////////////////////////////////////////////////.</div><div class="ttdef"><b>Definition:</b> Asset.cpp:17</div></div>
 <div class="ttc" id="astructnexo_1_1assets_1_1_asset_importer_context_html"><div class="ttname"><a href="structnexo_1_1assets_1_1_asset_importer_context.html">nexo::assets::AssetImporterContext</a></div><div class="ttdoc">Context class for asset importers.</div><div class="ttdef"><b>Definition:</b> AssetImporterContext.hpp:38</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

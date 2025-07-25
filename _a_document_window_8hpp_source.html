@@ -103,74 +103,82 @@ $(document).ready(function(){initNavTree('_a_document_window_8hpp_source.html','
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;IDocumentWindow.hpp&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;Nexo.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;WindowRegistry.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;imgui_internal.h&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>nexo::editor {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">    #define NEXO_WND_USTRID_INSPECTOR &quot;Inspector&quot;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">    #define NEXO_WND_USTRID_SCENE_TREE &quot;Scene Tree&quot;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">    #define NEXO_WND_USTRID_ASSET_MANAGER &quot;Asset Manager&quot;</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">    #define NEXO_WND_USTRID_CONSOLE &quot;Console&quot;</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">    #define NEXO_WND_USTRID_MATERIAL_INSPECTOR &quot;Material Inspector&quot;</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">    #define NEXO_WND_USTRID_DEFAULT_SCENE &quot;Default Scene&quot;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html">   32</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a> {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">   40</a></span>            <span class="keyword">explicit</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">ADocumentWindow</a>(<span class="keyword">const</span> std::string &amp;windowName, <a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;windowRegistry) : m_windowName(windowName), m_windowRegistry(windowRegistry)</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                windowId = nextWindowId++;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            };</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">~ADocumentWindow</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            [[nodiscard]] <span class="keywordtype">bool</span> isFocused()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_focused; }</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            [[nodiscard]] <span class="keywordtype">bool</span> isOpened()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_opened; }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            [[nodiscard]] <span class="keywordtype">bool</span> isHovered()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_hovered; }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">   59</a></span>            [[nodiscard]] <span class="keywordtype">bool</span> &amp;<a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">getOpened</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> m_opened; }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            [[nodiscard]] <span class="keyword">const</span> std::string &amp;getWindowName()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_windowName; }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html#a3fc72930c47b531b6d62567bfacc85dd">   74</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#a3fc72930c47b531b6d62567bfacc85dd">firstDockSetup</a>(<span class="keyword">const</span> std::string &amp;windowName)</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <span class="keywordflow">if</span> (ImGuiWindow* currentWindow = ImGui::GetCurrentWindow(); currentWindow)</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                    <span class="keyword">const</span> <span class="keywordtype">bool</span> isDocked = currentWindow-&gt;DockIsActive;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                    <span class="keyword">const</span> ImGuiID currentDockID = currentWindow-&gt;DockId;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keyword">auto</span> dockId = m_windowRegistry.<a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">getDockId</a>(windowName);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    <span class="keywordflow">if</span> (m_firstOpened &amp;&amp; (!isDocked || (dockId &amp;&amp; currentDockID != *dockId)))</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                        currentWindow-&gt;DockId = *dockId;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dockId &amp;&amp; currentDockID != *dockId)</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                        m_windowRegistry.<a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">setDockId</a>(windowName, currentDockID);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                    m_firstOpened = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            WindowId windowId;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keywordtype">bool</span> m_opened = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordtype">bool</span> m_focused = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordtype">bool</span> m_hovered = <span class="keyword">false</span>; <span class="comment">// TODO: make these update without user intervention</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;IDocumentWindow.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;Nexo.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;WindowRegistry.hpp&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;inputs/WindowState.hpp&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span>nexo::editor {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">    #define NEXO_WND_USTRID_INSPECTOR &quot;###Inspector&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">    #define NEXO_WND_USTRID_SCENE_TREE &quot;###Scene Tree&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">    #define NEXO_WND_USTRID_ASSET_MANAGER &quot;###Asset Manager&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">    #define NEXO_WND_USTRID_CONSOLE &quot;###Console&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">    #define NEXO_WND_USTRID_MATERIAL_INSPECTOR &quot;###Material Inspector&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">    #define NEXO_WND_USTRID_PRIMITIVE_WINDOW &quot;###Primitive Window&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">    #define NEXO_WND_USTRID_DEFAULT_SCENE &quot;###Default Scene&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">    #define NEXO_WND_USTRID_BOTTOM_BAR &quot;###CommandsBar&quot;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">    #define NEXO_WND_USTRID_TEST &quot;###TestWindow&quot;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">    #define NEXO_WND_USTRID_GAME_WINDOW &quot;###GameWindow&quot;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html">   37</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">   45</a></span>            <span class="keyword">explicit</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">ADocumentWindow</a>(std::string windowName, <a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;windowRegistry) : m_windowName(std::move(windowName)), m_windowRegistry(windowRegistry)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                windowId = nextWindowId++;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            };</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">~ADocumentWindow</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            [[nodiscard]] <span class="keywordtype">bool</span> isFocused()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_focused; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            [[nodiscard]] <span class="keywordtype">bool</span> isOpened()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_opened; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordtype">void</span> setOpened(<span class="keywordtype">bool</span> opened)<span class="keyword"> override </span>{ m_opened = opened; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            [[nodiscard]] <span class="keywordtype">bool</span> isHovered()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_hovered; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            [[nodiscard]] <span class="keyword">const</span> ImVec2 &amp;getContentSize()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_contentSize; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">   67</a></span>            [[nodiscard]] <span class="keywordtype">bool</span> &amp;<a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">getOpened</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> m_opened; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            [[nodiscard]] <span class="keyword">const</span> std::string &amp;getWindowName()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_windowName; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            [[nodiscard]] <span class="keyword">const</span> WindowState &amp;getWindowState()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> m_windowState; };</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            WindowId windowId;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordtype">bool</span> m_opened = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordtype">bool</span> m_focused = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordtype">bool</span> m_hovered = <span class="keyword">false</span>; <span class="comment">// TODO: make these update without user intervention</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordtype">bool</span> m_wasVisibleLastFrame = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordtype">bool</span> m_isVisibleInDock = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            ImVec2 m_windowPos;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            ImVec2 m_windowSize;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            ImVec2 m_contentSizeMin;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            ImVec2 m_contentSizeMax;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            ImVec2 m_contentSize;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordtype">bool</span> m_firstOpened = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            std::string m_windowName;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            WindowState m_windowState;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            WindowRegistry &amp;m_windowRegistry;</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordtype">bool</span> m_firstOpened = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            std::string m_windowName;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;m_windowRegistry;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    };</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:32</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_a3fc72930c47b531b6d62567bfacc85dd"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#a3fc72930c47b531b6d62567bfacc85dd">nexo::editor::ADocumentWindow::firstDockSetup</a></div><div class="ttdeci">void firstDockSetup(const std::string &amp;windowName)</div><div class="ttdoc">Initializes the docking configuration for the document window on its first display.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:74</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_a625c21fadb1b79c13bd405d32277f7d6"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">nexo::editor::ADocumentWindow::getOpened</a></div><div class="ttdeci">bool &amp; getOpened() override</div><div class="ttdoc">Retrieves the open state of the document window.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:59</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_a83602816f156c605ecf86765c904adb4"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">nexo::editor::ADocumentWindow::ADocumentWindow</a></div><div class="ttdeci">ADocumentWindow(const std::string &amp;windowName, WindowRegistry &amp;windowRegistry)</div><div class="ttdoc">Constructs a new ADocumentWindow instance with a unique window ID.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:40</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_i_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a></div><div class="ttdef"><b>Definition:</b> IDocumentWindow.hpp:24</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html">nexo::editor::WindowRegistry</a></div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:35</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a0ed98791adc8f744685090a4fdea114c"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">nexo::editor::WindowRegistry::setDockId</a></div><div class="ttdeci">void setDockId(const std::string &amp;name, ImGuiID id)</div><div class="ttdoc">Assigns a docking identifier to a window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:41</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a90c58ba036099b9bf9af637dbe10bf9f"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">nexo::editor::WindowRegistry::getDockId</a></div><div class="ttdeci">std::optional&lt; ImGuiID &gt; getDockId(const std::string &amp;name) const</div><div class="ttdoc">Retrieves the docking identifier associated with a specified window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:46</div></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordtype">void</span> beginRender(<span class="keyword">const</span> std::string &amp;windowName);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordtype">void</span> dockingUpdate(<span class="keyword">const</span> std::string &amp;windowName);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordtype">void</span> visibilityUpdate();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordtype">void</span> sizeUpdate();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    };</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:37</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_a625c21fadb1b79c13bd405d32277f7d6"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#a625c21fadb1b79c13bd405d32277f7d6">nexo::editor::ADocumentWindow::getOpened</a></div><div class="ttdeci">bool &amp; getOpened() override</div><div class="ttdoc">Retrieves the open state of the document window.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:67</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_ade88d5fd59fe62d66fe32998428a0add"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">nexo::editor::ADocumentWindow::ADocumentWindow</a></div><div class="ttdeci">ADocumentWindow(std::string windowName, WindowRegistry &amp;windowRegistry)</div><div class="ttdoc">Constructs a new ADocumentWindow instance with a unique window ID.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:45</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_i_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_i_document_window.html">nexo::editor::IDocumentWindow</a></div><div class="ttdef"><b>Definition:</b> IDocumentWindow.hpp:26</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html">nexo::editor::WindowRegistry</a></div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:62</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

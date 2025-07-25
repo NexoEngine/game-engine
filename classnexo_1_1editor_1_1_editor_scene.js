@@ -4,6 +4,7 @@ var classnexo_1_1editor_1_1_editor_scene =
     [ "show", "classnexo_1_1editor_1_1_editor_scene.html#aaeae368cb61cae9ccfe095da7219a6f5", null ],
     [ "update", "classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93", null ],
     [ "getSceneId", "classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6", null ],
-    [ "deleteCamera", "classnexo_1_1editor_1_1_editor_scene.html#a6f533db994ba5bc70471342ee0e5b3ee", null ],
-    [ "ADocumentWindow", "classnexo_1_1editor_1_1_editor_scene.html#a83602816f156c605ecf86765c904adb4", null ]
+    [ "setCamera", "classnexo_1_1editor_1_1_editor_scene.html#aa41f303670ee80a8e95a6e43e7dc101c", null ],
+    [ "setDefault", "classnexo_1_1editor_1_1_editor_scene.html#a9718cba30f9675dabd19af8909e38cc0", null ],
+    [ "ADocumentWindow", "classnexo_1_1editor_1_1_editor_scene.html#ade88d5fd59fe62d66fe32998428a0add", null ]
 ];

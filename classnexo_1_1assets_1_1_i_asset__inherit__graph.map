@@ -1,10 +1,12 @@
 <map id="nexo::assets::IAsset" name="nexo::assets::IAsset">
-<area shape="rect" id="node1" title=" " alt="" coords="296,5,435,215"/>
-<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="27,263,162,472"/>
-<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="187,263,351,472"/>
-<area shape="rect" id="node6" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="375,263,547,472"/>
-<area shape="rect" id="node8" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="571,270,762,465"/>
-<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="5,520,179,612"/>
-<area shape="rect" id="node5" href="$classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="203,520,338,612"/>
-<area shape="rect" id="node7" href="$classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="390,520,533,612"/>
+<area shape="rect" id="node1" title="Pure virtual interface for all assets." alt="" coords="376,5,515,185"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,233,176,501"/>
+<area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="203,233,338,501"/>
+<area shape="rect" id="node6" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="363,233,528,501"/>
+<area shape="rect" id="node8" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="553,233,725,501"/>
+<area shape="rect" id="node10" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="749,241,939,494"/>
+<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_material.html" title="Represents a material asset." alt="" coords="13,579,160,671"/>
+<area shape="rect" id="node5" href="$classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="184,579,357,671"/>
+<area shape="rect" id="node7" href="$classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="382,579,517,671"/>
+<area shape="rect" id="node9" href="$classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="567,549,710,700"/>
 </map>

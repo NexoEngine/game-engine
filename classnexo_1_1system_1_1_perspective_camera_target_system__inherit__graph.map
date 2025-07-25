@@ -1,8 +1,11 @@
 <map id="nexo::system::PerspectiveCameraTargetSystem" name="nexo::system::PerspectiveCameraTargetSystem">
-<area shape="rect" id="node1" title="System for controlling perspective cameras that orbit around a target." alt="" coords="147,440,383,561"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,300,132,392"/>
-<area shape="rect" id="node3" title=" " alt="" coords="157,300,373,392"/>
-<area shape="rect" id="node4" href="$classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="397,300,594,392"/>
-<area shape="rect" id="node5" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="421,145,569,252"/>
-<area shape="rect" id="node6" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="430,5,561,97"/>
+<area shape="rect" id="node1" title="System for controlling perspective cameras that orbit around a target." alt="" coords="356,601,592,723"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="59,300,342,553"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="5,153,175,245"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="27,13,153,90"/>
+<area shape="rect" id="node5" title=" " alt="" coords="199,145,426,252"/>
+<area shape="rect" id="node6" title=" " alt="" coords="366,381,582,473"/>
+<area shape="rect" id="node7" href="$classnexo_1_1event_1_1_event_mouse_move.html" title=" " alt="" coords="606,381,803,473"/>
+<area shape="rect" id="node8" href="$classnexo_1_1event_1_1_event.html" title=" " alt="" coords="631,145,779,252"/>
+<area shape="rect" id="node9" href="$classnexo_1_1event_1_1_i_event.html" title="Base interface for all events." alt="" coords="639,5,770,97"/>
 </map>

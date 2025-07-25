@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_validated_name.html" title="Base class for validated names." alt="" coords="5,5,195,47"/>
+<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_generic_asset_ref.html" title="A non&#45;templated asset reference for generic asset storage." alt="" coords="5,13,204,39"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset_ref.html" title="Template class representing a lightweight reference to an asset." alt="" coords="252,5,407,47"/>
 </map>

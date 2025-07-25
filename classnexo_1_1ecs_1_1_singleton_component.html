@@ -101,7 +101,7 @@ Inheritance diagram for nexo::ecs::SingletonComponent&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component__inherit__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map" id="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_inherit__map">
-<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,223"/>
+<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,311"/>
 <area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="18,5,225,83"/>
 </map>
 </div>
@@ -110,7 +110,7 @@ Collaboration diagram for nexo::ecs::SingletonComponent&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_singleton_component__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map" id="anexo_1_1ecs_1_1_singleton_component_3_01_t_01_4_coll__map">
-<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,223"/>
+<area shape="rect" title="Template class representing a singleton component." alt="" coords="5,131,237,311"/>
 <area shape="rect" href="classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="18,5,225,83"/>
 </map>
 </div>
@@ -122,8 +122,20 @@ requires (std::is_constructible_v&lt;T, Args...&gt; &amp;&amp; (!std::is_same_v&
 <tr class="memitem:a3797410bf9b419b7817ae47b765f935e"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html#a3797410bf9b419b7817ae47b765f935e">SingletonComponent</a> (Args &amp;&amp;... args)</td></tr>
 <tr class="memdesc:a3797410bf9b419b7817ae47b765f935e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Templated constructor that perfectly forwards arguments to construct the instance.  <a href="classnexo_1_1ecs_1_1_singleton_component.html#a3797410bf9b419b7817ae47b765f935e">More...</a><br /></td></tr>
 <tr class="separator:a3797410bf9b419b7817ae47b765f935e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2736299eb20ad0f39657b51ca8e38c91"><td class="memItemLeft" align="right" valign="top"><a id="a2736299eb20ad0f39657b51ca8e38c91" name="a2736299eb20ad0f39657b51ca8e38c91"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getInstance</b> ()</td></tr>
+<tr class="memitem:a02b9aaf81da2c2ad4faf981411f633c9"><td class="memItemLeft" align="right" valign="top"><a id="a02b9aaf81da2c2ad4faf981411f633c9" name="a02b9aaf81da2c2ad4faf981411f633c9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SingletonComponent</b> (const <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;)=delete</td></tr>
+<tr class="separator:a02b9aaf81da2c2ad4faf981411f633c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad171e542bd6447ca48f8a41c5b32cc03"><td class="memItemLeft" align="right" valign="top"><a id="ad171e542bd6447ca48f8a41c5b32cc03" name="ad171e542bd6447ca48f8a41c5b32cc03"></a>
+<a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;)=delete</td></tr>
+<tr class="separator:ad171e542bd6447ca48f8a41c5b32cc03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a873a8da77d98a8d4c118926570e94fbb"><td class="memItemLeft" align="right" valign="top"><a id="a873a8da77d98a8d4c118926570e94fbb" name="a873a8da77d98a8d4c118926570e94fbb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SingletonComponent</b> (<a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a873a8da77d98a8d4c118926570e94fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7f178e76d27fc6f8ee9f5ecebd44622"><td class="memItemLeft" align="right" valign="top"><a id="ac7f178e76d27fc6f8ee9f5ecebd44622" name="ac7f178e76d27fc6f8ee9f5ecebd44622"></a>
+<a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">SingletonComponent</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:ac7f178e76d27fc6f8ee9f5ecebd44622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2736299eb20ad0f39657b51ca8e38c91"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html#a2736299eb20ad0f39657b51ca8e38c91">getInstance</a> ()</td></tr>
+<tr class="memdesc:a2736299eb20ad0f39657b51ca8e38c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton component instance.  <a href="classnexo_1_1ecs_1_1_singleton_component.html#a2736299eb20ad0f39657b51ca8e38c91">More...</a><br /></td></tr>
 <tr class="separator:a2736299eb20ad0f39657b51ca8e38c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -180,6 +192,37 @@ requires (std::is_constructible_v&lt;T, Args...&gt; &amp;&amp; (!std::is_same_v&
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2736299eb20ad0f39657b51ca8e38c91" name="a2736299eb20ad0f39657b51ca8e38c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2736299eb20ad0f39657b51ca8e38c91">&#9670;&nbsp;</a></span>getInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classnexo_1_1ecs_1_1_singleton_component.html">nexo::ecs::SingletonComponent</a>&lt; T &gt;::getInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the singleton component instance. </p>
+<dl class="section return"><dt>Returns</dt><dd>T&amp; Reference to the instance of the singleton component </dd></dl>
 
 </div>
 </div>

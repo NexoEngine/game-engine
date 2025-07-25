@@ -101,46 +101,51 @@ Collaboration diagram for nexo::ecs::SystemManager:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1ecs_1_1_system_manager__coll__graph.png" border="0" usemap="#anexo_1_1ecs_1_1_system_manager_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1ecs_1_1_system_manager_coll__map" id="anexo_1_1ecs_1_1_system_manager_coll__map">
-<area shape="rect" title="Manages systems in the ECS architecture." alt="" coords="5,5,184,127"/>
+<area shape="rect" title="Manages systems in the ECS architecture." alt="" coords="5,5,184,141"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad94ee8de91ef2bde80757a32b8f8d8b5"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ad94ee8de91ef2bde80757a32b8f8d8b5"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#ad94ee8de91ef2bde80757a32b8f8d8b5">registerSystem</a> ()</td></tr>
-<tr class="memdesc:ad94ee8de91ef2bde80757a32b8f8d8b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new system of type T in the ECS framework.  <a href="classnexo_1_1ecs_1_1_system_manager.html#ad94ee8de91ef2bde80757a32b8f8d8b5">More...</a><br /></td></tr>
-<tr class="separator:ad94ee8de91ef2bde80757a32b8f8d8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59fbd542200df9cc3e64f504e729fa2f"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a59fbd542200df9cc3e64f504e729fa2f"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#a59fbd542200df9cc3e64f504e729fa2f">registerQuerySystem</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a59fbd542200df9cc3e64f504e729fa2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new system of type T in the ECS framework.  <a href="classnexo_1_1ecs_1_1_system_manager.html#a59fbd542200df9cc3e64f504e729fa2f">More...</a><br /></td></tr>
+<tr class="separator:a59fbd542200df9cc3e64f504e729fa2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ebdb1948b9e074e7b8ab2842184047"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ab1ebdb1948b9e074e7b8ab2842184047"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#ab1ebdb1948b9e074e7b8ab2842184047">registerGroupSystem</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:ab1ebdb1948b9e074e7b8ab2842184047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new group-based system of type T in the ECS framework.  <a href="classnexo_1_1ecs_1_1_system_manager.html#ab1ebdb1948b9e074e7b8ab2842184047">More...</a><br /></td></tr>
+<tr class="separator:ab1ebdb1948b9e074e7b8ab2842184047"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e7e9c5bbf3edeadd0e3367094bed609"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a6e7e9c5bbf3edeadd0e3367094bed609"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#a6e7e9c5bbf3edeadd0e3367094bed609">setSignature</a> (Signature signature)</td></tr>
 <tr class="memdesc:a6e7e9c5bbf3edeadd0e3367094bed609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the signature for a system.  <a href="classnexo_1_1ecs_1_1_system_manager.html#a6e7e9c5bbf3edeadd0e3367094bed609">More...</a><br /></td></tr>
 <tr class="separator:a6e7e9c5bbf3edeadd0e3367094bed609"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19e5cb1d954ce20c4aa73f009a97887e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#a19e5cb1d954ce20c4aa73f009a97887e">entityDestroyed</a> (Entity entity) const</td></tr>
-<tr class="memdesc:a19e5cb1d954ce20c4aa73f009a97887e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the destruction of an entity by removing it from all systems.  <a href="classnexo_1_1ecs_1_1_system_manager.html#a19e5cb1d954ce20c4aa73f009a97887e">More...</a><br /></td></tr>
-<tr class="separator:a19e5cb1d954ce20c4aa73f009a97887e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adeb97ab53cd3178b23378f161c733b6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#adeb97ab53cd3178b23378f161c733b6a">entitySignatureChanged</a> (Entity entity, Signature entitySignature)</td></tr>
-<tr class="memdesc:adeb97ab53cd3178b23378f161c733b6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the systems with an entity when its signature changes.  <a href="classnexo_1_1ecs_1_1_system_manager.html#adeb97ab53cd3178b23378f161c733b6a">More...</a><br /></td></tr>
-<tr class="separator:adeb97ab53cd3178b23378f161c733b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a780154090b8418c0a80409d40b33ad8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#a780154090b8418c0a80409d40b33ad8e">entityDestroyed</a> (Entity entity, Signature signature) const</td></tr>
+<tr class="memdesc:a780154090b8418c0a80409d40b33ad8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the destruction of an entity by removing it from all systems.  <a href="classnexo_1_1ecs_1_1_system_manager.html#a780154090b8418c0a80409d40b33ad8e">More...</a><br /></td></tr>
+<tr class="separator:a780154090b8418c0a80409d40b33ad8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67209642bef172f7ee1e0a8a037a15c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_system_manager.html#a67209642bef172f7ee1e0a8a037a15c6">entitySignatureChanged</a> (Entity entity, Signature oldSignature, Signature newSignature)</td></tr>
+<tr class="memdesc:a67209642bef172f7ee1e0a8a037a15c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the systems with an entity when its signature changes.  <a href="classnexo_1_1ecs_1_1_system_manager.html#a67209642bef172f7ee1e0a8a037a15c6">More...</a><br /></td></tr>
+<tr class="separator:a67209642bef172f7ee1e0a8a037a15c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manages systems in the ECS architecture. </p>
 <p >This class is responsible for registering systems, setting their signatures, and updating systems with relevant entities based on entity signature changes. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad94ee8de91ef2bde80757a32b8f8d8b5" name="ad94ee8de91ef2bde80757a32b8f8d8b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad94ee8de91ef2bde80757a32b8f8d8b5">&#9670;&nbsp;</a></span>registerSystem()</h2>
+<a id="a59fbd542200df9cc3e64f504e729fa2f" name="a59fbd542200df9cc3e64f504e729fa2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59fbd542200df9cc3e64f504e729fa2f">&#9670;&nbsp;</a></span>registerQuerySystem()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;typename T , typename... Args&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; T &gt; nexo::ecs::SystemManager::registerSystem </td>
+          <td class="memname">std::shared_ptr&lt; T &gt; nexo::ecs::SystemManager::registerQuerySystem </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -159,6 +164,50 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::shared_ptr&lt;T&gt; - Shared pointer to the newly registered system. </dd></dl>
+
+</div>
+</div>
+<a id="ab1ebdb1948b9e074e7b8ab2842184047" name="ab1ebdb1948b9e074e7b8ab2842184047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ebdb1948b9e074e7b8ab2842184047">&#9670;&nbsp;</a></span>registerGroupSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; T &gt; nexo::ecs::SystemManager::registerGroupSystem </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers a new group-based system of type T in the ECS framework. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the system to be registered (must derive from <a class="el" href="classnexo_1_1ecs_1_1_a_group_system.html" title="Abstract base class for all group-based systems.">AGroupSystem</a>) </td></tr>
+    <tr><td class="paramname">Args</td><td>Constructor argument types for the system </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Constructor arguments for the system </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::shared_ptr&lt;T&gt; Shared pointer to the newly registered system </dd></dl>
 
 </div>
 </div>
@@ -204,8 +253,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a19e5cb1d954ce20c4aa73f009a97887e" name="a19e5cb1d954ce20c4aa73f009a97887e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19e5cb1d954ce20c4aa73f009a97887e">&#9670;&nbsp;</a></span>entityDestroyed()</h2>
+<a id="a780154090b8418c0a80409d40b33ad8e" name="a780154090b8418c0a80409d40b33ad8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a780154090b8418c0a80409d40b33ad8e">&#9670;&nbsp;</a></span>entityDestroyed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -214,8 +263,18 @@ template&lt;typename T &gt; </div>
           <td class="memname">void nexo::ecs::SystemManager::entityDestroyed </td>
           <td>(</td>
           <td class="paramtype">Entity&#160;</td>
-          <td class="paramname"><em>entity</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Signature&#160;</td>
+          <td class="paramname"><em>signature</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -224,14 +283,15 @@ template&lt;typename T &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">entity</td><td>- The ID of the destroyed entity. </td></tr>
+    <tr><td class="paramname">signature</td><td>- The signature of the entity. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="adeb97ab53cd3178b23378f161c733b6a" name="adeb97ab53cd3178b23378f161c733b6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adeb97ab53cd3178b23378f161c733b6a">&#9670;&nbsp;</a></span>entitySignatureChanged()</h2>
+<a id="a67209642bef172f7ee1e0a8a037a15c6" name="a67209642bef172f7ee1e0a8a037a15c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67209642bef172f7ee1e0a8a037a15c6">&#9670;&nbsp;</a></span>entitySignatureChanged()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -246,7 +306,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Signature&#160;</td>
-          <td class="paramname"><em>entitySignature</em>&#160;</td>
+          <td class="paramname"><em>oldSignature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Signature&#160;</td>
+          <td class="paramname"><em>newSignature</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -260,7 +326,8 @@ template&lt;typename T &gt; </div>
 <p >This ensures that systems process only relevant entities based on their current components. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">entity</td><td>- The ID of the entity whose signature has changed. </td></tr>
-    <tr><td class="paramname">entitySignature</td><td>- The new signature of the entity. </td></tr>
+    <tr><td class="paramname">oldSignature</td><td>- The old signature of the entity. </td></tr>
+    <tr><td class="paramname">newSignature</td><td>- The new signature of the entity. </td></tr>
   </table>
   </dd>
 </dl>

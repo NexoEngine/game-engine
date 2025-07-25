@@ -101,7 +101,7 @@ Collaboration diagram for nexo::EntityFactory3D:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1_entity_factory3_d__coll__graph.png" border="0" usemap="#anexo_1_1_entity_factory3_d_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1_entity_factory3_d_coll__map" id="anexo_1_1_entity_factory3_d_coll__map">
-<area shape="rect" title="Factory class for creating 3D entities." alt="" coords="5,5,152,112"/>
+<area shape="rect" title="Factory class for creating 3D entities." alt="" coords="5,5,159,273"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -113,9 +113,42 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a49f4514b3bf6e071b0b62d0c74844065"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a49f4514b3bf6e071b0b62d0c74844065">createCube</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material)</td></tr>
 <tr class="memdesc:a49f4514b3bf6e071b0b62d0c74844065"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a cube entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a49f4514b3bf6e071b0b62d0c74844065">More...</a><br /></td></tr>
 <tr class="separator:a49f4514b3bf6e071b0b62d0c74844065"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3724cb8619f38d84c71c3ca88ae1b24"><td class="memItemLeft" align="right" valign="top"><a id="ae3724cb8619f38d84c71c3ca88ae1b24" name="ae3724cb8619f38d84c71c3ca88ae1b24"></a>
-static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><b>createModel</b> (const std::string &amp;path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)</td></tr>
-<tr class="separator:ae3724cb8619f38d84c71c3ca88ae1b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae11e98334947af32b6d5d6f0e404623b"><td class="memItemLeft" align="right" valign="top"><a id="ae11e98334947af32b6d5d6f0e404623b" name="ae11e98334947af32b6d5d6f0e404623b"></a>
+static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><b>createModel</b> (<a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef</a>&lt; <a class="el" href="classnexo_1_1assets_1_1_model.html">assets::Model</a> &gt; modelAsset, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)</td></tr>
+<tr class="separator:ae11e98334947af32b6d5d6f0e404623b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1726859b3d57560765ae26d62c74a557"><td class="memItemLeft" align="right" valign="top"><a id="a1726859b3d57560765ae26d62c74a557" name="a1726859b3d57560765ae26d62c74a557"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>processModelNode</b> (ecs::Entity parentEntity, const <a class="el" href="structnexo_1_1assets_1_1_mesh_node.html">assets::MeshNode</a> &amp;node)</td></tr>
+<tr class="separator:a1726859b3d57560765ae26d62c74a557"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059414d7220fde095216c0a39ce8005b"><td class="memItemLeft" align="right" valign="top"><a id="a059414d7220fde095216c0a39ce8005b" name="a059414d7220fde095216c0a39ce8005b"></a>
+static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><b>createBillboard</b> (const glm::vec3 &amp;pos, const glm::vec3 &amp;size, const glm::vec4 &amp;color)</td></tr>
+<tr class="separator:a059414d7220fde095216c0a39ce8005b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae33e9a2efdd5ddeada4e5bcfa0a9899a"><td class="memItemLeft" align="right" valign="top"><a id="ae33e9a2efdd5ddeada4e5bcfa0a9899a" name="ae33e9a2efdd5ddeada4e5bcfa0a9899a"></a>
+static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><b>createBillboard</b> (const glm::vec3 &amp;pos, const glm::vec3 &amp;size, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material)</td></tr>
+<tr class="separator:ae33e9a2efdd5ddeada4e5bcfa0a9899a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29b202dae133b849afa275c8654cf7a3"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a29b202dae133b849afa275c8654cf7a3">createTetrahedron</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color={1.0f, 0.0f, 0.0f, 1.0f})</td></tr>
+<tr class="memdesc:a29b202dae133b849afa275c8654cf7a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a tetrahedron entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a29b202dae133b849afa275c8654cf7a3">More...</a><br /></td></tr>
+<tr class="separator:a29b202dae133b849afa275c8654cf7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ca88fb8c15860f0f58659d5c6ca5e9a"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a8ca88fb8c15860f0f58659d5c6ca5e9a">createTetrahedron</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material)</td></tr>
+<tr class="memdesc:a8ca88fb8c15860f0f58659d5c6ca5e9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a tetrahedron entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a8ca88fb8c15860f0f58659d5c6ca5e9a">More...</a><br /></td></tr>
+<tr class="separator:a8ca88fb8c15860f0f58659d5c6ca5e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a581b036fef3517f52e013a3d543651d0"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a581b036fef3517f52e013a3d543651d0">createPyramid</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color={1.0f, 0.0f, 0.0f, 1.0f})</td></tr>
+<tr class="memdesc:a581b036fef3517f52e013a3d543651d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a pyramid entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a581b036fef3517f52e013a3d543651d0">More...</a><br /></td></tr>
+<tr class="separator:a581b036fef3517f52e013a3d543651d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87f5f7f1d191e2f82e65f30ab4153871"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a87f5f7f1d191e2f82e65f30ab4153871">createPyramid</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material)</td></tr>
+<tr class="memdesc:a87f5f7f1d191e2f82e65f30ab4153871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a pyramid entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a87f5f7f1d191e2f82e65f30ab4153871">More...</a><br /></td></tr>
+<tr class="separator:a87f5f7f1d191e2f82e65f30ab4153871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd738ecd80069eaffa0a9f37b56b4ef"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#aabd738ecd80069eaffa0a9f37b56b4ef">createCylinder</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color={1.0f, 0.0f, 0.0f, 1.0f}, unsigned int nbSegment=12)</td></tr>
+<tr class="memdesc:aabd738ecd80069eaffa0a9f37b56b4ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a cylinder entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#aabd738ecd80069eaffa0a9f37b56b4ef">More...</a><br /></td></tr>
+<tr class="separator:aabd738ecd80069eaffa0a9f37b56b4ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451b309c88fa8d39bc8cc92f04b61242"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a451b309c88fa8d39bc8cc92f04b61242">createCylinder</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, unsigned int nbSegment=12)</td></tr>
+<tr class="memdesc:a451b309c88fa8d39bc8cc92f04b61242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a cylinder entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a451b309c88fa8d39bc8cc92f04b61242">More...</a><br /></td></tr>
+<tr class="separator:a451b309c88fa8d39bc8cc92f04b61242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2324f13063f3031eccbe22656d701b3b"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#a2324f13063f3031eccbe22656d701b3b">createSphere</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color={1.0f, 0.0f, 0.0f, 1.0f}, unsigned int nbSubdivision=2)</td></tr>
+<tr class="memdesc:a2324f13063f3031eccbe22656d701b3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a sphere entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#a2324f13063f3031eccbe22656d701b3b">More...</a><br /></td></tr>
+<tr class="separator:a2324f13063f3031eccbe22656d701b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d5d9b67ce6495b457e867bae38a1b2"><td class="memItemLeft" align="right" valign="top">static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1_entity_factory3_d.html#ac1d5d9b67ce6495b457e867bae38a1b2">createSphere</a> (glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;material, unsigned int nbSubdivision=2)</td></tr>
+<tr class="memdesc:ac1d5d9b67ce6495b457e867bae38a1b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a sphere entity with a specified material.  <a href="classnexo_1_1_entity_factory3_d.html#ac1d5d9b67ce6495b457e867bae38a1b2">More...</a><br /></td></tr>
+<tr class="separator:ac1d5d9b67ce6495b457e867bae38a1b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Factory class for creating 3D entities. </p>
@@ -240,6 +273,522 @@ static ecs::Entity&#160;</td><td class="memItemRight" valign="bottom"><b>createM
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created cube entity. </dd></dl>
+
+</div>
+</div>
+<a id="a29b202dae133b849afa275c8654cf7a3" name="a29b202dae133b849afa275c8654cf7a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29b202dae133b849afa275c8654cf7a3">&#9670;&nbsp;</a></span>createTetrahedron() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createTetrahedron </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec4&#160;</td>
+          <td class="paramname"><em>color</em> = <code>{1.0f,&#160;0.0f,&#160;0.0f,&#160;1.0f}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a tetrahedron entity with a specified material. </p>
+<p >Constructs a tetrahedron at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the tetrahedron. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the tetrahedron. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the tetrahedron (in Euler angles). </td></tr>
+    <tr><td class="paramname">color</td><td>The color of the tetrahedron's material (default is red). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created tetrahedron entity. </dd></dl>
+
+</div>
+</div>
+<a id="a8ca88fb8c15860f0f58659d5c6ca5e9a" name="a8ca88fb8c15860f0f58659d5c6ca5e9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ca88fb8c15860f0f58659d5c6ca5e9a">&#9670;&nbsp;</a></span>createTetrahedron() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createTetrahedron </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a tetrahedron entity with a specified material. </p>
+<p >Constructs a tetrahedron at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the tetrahedron. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the tetrahedron. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the tetrahedron (in Euler angles). </td></tr>
+    <tr><td class="paramname">material</td><td>The material to apply to the tetrahedron. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created tetrahedron entity. </dd></dl>
+
+</div>
+</div>
+<a id="a581b036fef3517f52e013a3d543651d0" name="a581b036fef3517f52e013a3d543651d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a581b036fef3517f52e013a3d543651d0">&#9670;&nbsp;</a></span>createPyramid() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createPyramid </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec4&#160;</td>
+          <td class="paramname"><em>color</em> = <code>{1.0f,&#160;0.0f,&#160;0.0f,&#160;1.0f}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a pyramid entity with a specified material. </p>
+<p >Constructs a pyramid at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the pyramid. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the pyramid. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the pyramid (in Euler angles). </td></tr>
+    <tr><td class="paramname">color</td><td>The color of the pyramid's material (default is red). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created pyramid entity. </dd></dl>
+
+</div>
+</div>
+<a id="a87f5f7f1d191e2f82e65f30ab4153871" name="a87f5f7f1d191e2f82e65f30ab4153871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87f5f7f1d191e2f82e65f30ab4153871">&#9670;&nbsp;</a></span>createPyramid() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createPyramid </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a pyramid entity with a specified material. </p>
+<p >Constructs a pyramid at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the pyramid. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the pyramid. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the pyramid (in Euler angles). </td></tr>
+    <tr><td class="paramname">material</td><td>The material to apply to the pyramid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created pyramid entity. </dd></dl>
+
+</div>
+</div>
+<a id="aabd738ecd80069eaffa0a9f37b56b4ef" name="aabd738ecd80069eaffa0a9f37b56b4ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd738ecd80069eaffa0a9f37b56b4ef">&#9670;&nbsp;</a></span>createCylinder() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createCylinder </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec4&#160;</td>
+          <td class="paramname"><em>color</em> = <code>{1.0f,&#160;0.0f,&#160;0.0f,&#160;1.0f}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nbSegment</em> = <code>12</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a cylinder entity with a specified material. </p>
+<p >Constructs a cylinder at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the cylinder. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the cylinder. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the cylinder (in Euler angles). </td></tr>
+    <tr><td class="paramname">color</td><td>The color of the cylinder's material (default is red). </td></tr>
+    <tr><td class="paramname">nbSegment</td><td>The number of segments for the cylinder's mesh (default is 12). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created cylinder entity. </dd></dl>
+
+</div>
+</div>
+<a id="a451b309c88fa8d39bc8cc92f04b61242" name="a451b309c88fa8d39bc8cc92f04b61242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a451b309c88fa8d39bc8cc92f04b61242">&#9670;&nbsp;</a></span>createCylinder() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createCylinder </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nbSegment</em> = <code>12</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a cylinder entity with a specified material. </p>
+<p >Constructs a cylinder at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the cylinder. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the cylinder. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the cylinder (in Euler angles). </td></tr>
+    <tr><td class="paramname">material</td><td>The material to apply to the cylinder. </td></tr>
+    <tr><td class="paramname">nbSegment</td><td>The number of segments for the cylinder's mesh (default is 12). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created cylinder entity. </dd></dl>
+
+</div>
+</div>
+<a id="a2324f13063f3031eccbe22656d701b3b" name="a2324f13063f3031eccbe22656d701b3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2324f13063f3031eccbe22656d701b3b">&#9670;&nbsp;</a></span>createSphere() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createSphere </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec4&#160;</td>
+          <td class="paramname"><em>color</em> = <code>{1.0f,&#160;0.0f,&#160;0.0f,&#160;1.0f}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nbSubdivision</em> = <code>2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a sphere entity with a specified material. </p>
+<p >Constructs a sphere at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the sphere. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the sphere. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the sphere (in Euler angles). </td></tr>
+    <tr><td class="paramname">color</td><td>The color of the sphere's material (default is red). </td></tr>
+    <tr><td class="paramname">nbSubdivision</td><td>The number of subdivisions for the sphere's mesh (default is 2). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created sphere entity. </dd></dl>
+
+</div>
+</div>
+<a id="ac1d5d9b67ce6495b457e867bae38a1b2" name="ac1d5d9b67ce6495b457e867bae38a1b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1d5d9b67ce6495b457e867bae38a1b2">&#9670;&nbsp;</a></span>createSphere() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::Entity nexo::EntityFactory3D::createSphere </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structnexo_1_1components_1_1_material.html">components::Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nbSubdivision</em> = <code>2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a sphere entity with a specified material. </p>
+<p >Constructs a sphere at the given position, with the specified size, rotation, and material.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The position of the sphere. </td></tr>
+    <tr><td class="paramname">size</td><td>The dimensions (width, height, depth) of the sphere. </td></tr>
+    <tr><td class="paramname">rotation</td><td>The rotation of the sphere (in Euler angles). </td></tr>
+    <tr><td class="paramname">material</td><td>The material to apply to the sphere. </td></tr>
+    <tr><td class="paramname">nbSubdivision</td><td>The number of subdivisions for the sphere's mesh (default is 2). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ecs::Entity The newly created sphere entity. </dd></dl>
 
 </div>
 </div>

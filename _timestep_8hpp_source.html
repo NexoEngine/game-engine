@@ -105,17 +105,18 @@ $(document).ready(function(){initNavTree('_timestep_8hpp_source.html',''); initR
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>nexo {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classnexo_1_1_timestep.html">   17</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1_timestep.html">Timestep</a> {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <a class="code hl_class" href="classnexo_1_1_timestep.html">Timestep</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> time = 0.0f) : m_time(time) {};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keyword">explicit</span>(<span class="keyword">false</span>) <a class="code hl_class" href="classnexo_1_1_timestep.html">Timestep</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> time = 0.0f) : m_time(time) {}</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <span class="keyword">operator</span> float()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_time; };</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            [[nodiscard]] <span class="keywordtype">float</span> getSeconds()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_time; };</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            [[nodiscard]] <span class="keywordtype">float</span> getMilliseconds()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_time * 1000.0f; };</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordtype">float</span> m_time = 0.0f;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    };</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <span class="keyword">explicit</span> <span class="keyword">operator</span> float()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_time; }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keyword">explicit</span> <span class="keyword">operator</span> double()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_time; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            [[nodiscard]] <span class="keywordtype">double</span> getSeconds()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_time; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            [[nodiscard]] <span class="keywordtype">double</span> getMilliseconds()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_time * 1000.0f; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordtype">double</span> m_time = 0.0f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
 <div class="ttc" id="aclassnexo_1_1_timestep_html"><div class="ttname"><a href="classnexo_1_1_timestep.html">nexo::Timestep</a></div><div class="ttdef"><b>Definition:</b> Timestep.hpp:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

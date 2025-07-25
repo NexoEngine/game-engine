@@ -1,0 +1,12 @@
+<map id="nexo::editor::Action" name="nexo::editor::Action">
+<area shape="rect" id="node1" title=" " alt="" coords="897,5,1028,112"/>
+<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_action_group.html" title=" " alt="" coords="5,160,171,296"/>
+<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_component_add_action.html" title=" " alt="" coords="195,167,378,289"/>
+<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_component_change_action.html" title=" " alt="" coords="403,167,605,289"/>
+<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_component_remove_action.html" title=" " alt="" coords="630,167,837,289"/>
+<area shape="rect" id="node6" href="$classnexo_1_1editor_1_1_component_restore_action.html" title=" " alt="" coords="861,167,1065,289"/>
+<area shape="rect" id="node7" href="$classnexo_1_1editor_1_1_entity_creation_action.html" title=" " alt="" coords="1089,167,1263,289"/>
+<area shape="rect" id="node8" href="$classnexo_1_1editor_1_1_entity_deletion_action.html" title=" " alt="" coords="1287,167,1459,289"/>
+<area shape="rect" id="node9" href="$classnexo_1_1editor_1_1_entity_parent_change_action.html" title=" " alt="" coords="1484,167,1676,289"/>
+<area shape="rect" id="node10" href="$classnexo_1_1editor_1_1_state_action.html" title=" " alt="" coords="1701,175,1891,281"/>
+</map>

@@ -1,4 +1,0 @@
-<map id="nexo::system::RenderSystem" name="nexo::system::RenderSystem">
-<area shape="rect" id="node1" title="System responsible for rendering the scene." alt="" coords="5,145,193,223"/>
-<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="36,5,163,97"/>
-</map>

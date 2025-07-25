@@ -106,25 +106,25 @@ $(document).ready(function(){initNavTree('_vertex_array_8hpp_source.html',''); i
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>nexo::renderer {</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_vertex_array.html">   36</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_vertex_array.html">VertexArray</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">   36</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">NxVertexArray</a> {</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_vertex_array.html">~VertexArray</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">~NxVertexArray</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> bind() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> unbind() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> addVertexBuffer(<span class="keyword">const</span> std::shared_ptr&lt;VertexBuffer&gt; &amp;vertexBuffer) = 0;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> setIndexBuffer(<span class="keyword">const</span> std::shared_ptr&lt;IndexBuffer&gt; &amp;indexBuffer) = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> addVertexBuffer(<span class="keyword">const</span> std::shared_ptr&lt;NxVertexBuffer&gt; &amp;vertexBuffer) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> setIndexBuffer(<span class="keyword">const</span> std::shared_ptr&lt;NxIndexBuffer&gt; &amp;indexBuffer) = 0;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;VertexBuffer&gt;&gt; &amp;getVertexBuffers() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">const</span> std::shared_ptr&lt;IndexBuffer&gt; &amp;getIndexBuffer() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;NxVertexBuffer&gt;&gt; &amp;getVertexBuffers() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">const</span> std::shared_ptr&lt;NxIndexBuffer&gt; &amp;getIndexBuffer() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    };</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::shared_ptr&lt;VertexArray&gt; createVertexArray();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::shared_ptr&lt;NxVertexArray&gt; createVertexArray();</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_vertex_array_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_vertex_array.html">nexo::renderer::VertexArray</a></div><div class="ttdoc">Abstract class representing a vertex array in the rendering system.</div><div class="ttdef"><b>Definition:</b> VertexArray.hpp:36</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_array_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_array.html">nexo::renderer::NxVertexArray</a></div><div class="ttdoc">Abstract class representing a vertex array in the rendering system.</div><div class="ttdef"><b>Definition:</b> VertexArray.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

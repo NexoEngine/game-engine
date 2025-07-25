@@ -1,0 +1,7 @@
+<map id="nexo::ecs::ReadOnlySystem" name="nexo::ecs::ReadOnlySystem">
+<area shape="rect" id="node1" title=" " alt="" coords="107,557,317,635"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_group_system.html" title=" " alt="" coords="101,359,323,509"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_a_group_system.html" title="Abstract base class for all group&#45;based systems." alt="" coords="5,182,176,259"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="27,5,154,83"/>
+<area shape="rect" id="node5" href="$classnexo_1_1ecs_1_1_singleton_component_mixin.html" title=" " alt="" coords="200,131,467,311"/>
+</map>

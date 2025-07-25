@@ -1,4 +1,5 @@
 <map id="nexo::ecs::ComponentManagerTest" name="nexo::ecs::ComponentManagerTest">
-<area shape="rect" id="node1" title=" " alt="" coords="5,131,229,208"/>
-<area shape="rect" id="node2" title=" " alt="" coords="71,5,164,83"/>
+<area shape="rect" id="node1" title=" " alt="" coords="32,307,256,384"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,86,99,163"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_component_manager.html" title="Central manager for all component types and their arrays." alt="" coords="123,5,351,244"/>
 </map>

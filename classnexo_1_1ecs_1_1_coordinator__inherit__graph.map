@@ -1,4 +1,5 @@
 <map id="nexo::ecs::Coordinator" name="nexo::ecs::Coordinator">
-<area shape="rect" id="node1" title="Central orchestrator for the Entity&#45;Component&#45;System (ECS) architecture." alt="" coords="5,5,209,229"/>
-<area shape="rect" id="node2" href="$classnexo_1_1scene_1_1_mock_coordinator.html" title=" " alt="" coords="10,277,205,369"/>
+<area shape="rect" id="node1" title="Central orchestrator for the Entity&#45;Component&#45;System (ECS) architecture." alt="" coords="99,5,303,229"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_mock_coordinator.html" title=" " alt="" coords="5,285,185,362"/>
+<area shape="rect" id="node3" href="$classnexo_1_1scene_1_1_mock_coordinator.html" title=" " alt="" coords="210,277,405,369"/>
 </map>

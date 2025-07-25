@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RType: editor/src/DocumentWindows/EditorScene.hpp Source File</title>
+<title>RType: editor/src/DocumentWindows/EditorScene/EditorScene.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -102,71 +102,195 @@ $(document).ready(function(){initNavTree('_editor_scene_8hpp_source.html',''); i
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;ADocumentWindow.hpp&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;IDocumentWindow.hpp&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;core/scene/SceneManager.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;ImGuizmo.h&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>nexo::editor {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_editor_scene.html">   23</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_editor_scene.html">EditorScene</a> : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keyword">using</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">ADocumentWindow::ADocumentWindow</a>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#ababe6b2699e3ee6394117b663b333d10">setup</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordtype">void</span> shutdown() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#aaeae368cb61cae9ccfe095da7219a6f5">show</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;ImGuizmo.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;ADocumentWindow.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;Definitions.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;inputs/WindowState.hpp&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;core/scene/SceneManager.hpp&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;../PopupManager.hpp&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;ImNexo/Widgets.hpp&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;format&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;DocumentWindows/AssetManager/AssetManagerWindow.hpp&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span>nexo::editor</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_editor_scene.html">   30</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_editor_scene.html">EditorScene</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">using</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">ADocumentWindow::ADocumentWindow</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#ababe6b2699e3ee6394117b663b333d10">setup</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="comment">// No-op method in this class</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordtype">void</span> shutdown() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93">update</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">   66</a></span>            [[nodiscard]] scene::SceneId <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">getSceneId</a>()<span class="keyword"> const </span>{<span class="keywordflow">return</span> m_sceneId;};</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#a6f533db994ba5bc70471342ee0e5b3ee">deleteCamera</a>(ecs::Entity cameraId);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordtype">void</span> setDefault() { m_defaultScene = <span class="keyword">true</span>; };</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordtype">bool</span> m_defaultScene = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            ImVec2 m_viewSize = {0, 0};</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            ImVec2 m_viewPosition = {0, 0};</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            ImVec2 m_viewportBounds[2];</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            ImGuizmo::MODE m_currentGizmoMode = ImGuizmo::WORLD;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keywordtype">int</span> m_sceneId = -1;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            std::string m_sceneUuid;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::set&lt;ecs::Entity&gt; m_cameras;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordtype">int</span> m_activeCamera = -1;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordtype">void</span> setupWindow();</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordtype">void</span> setupImguizmo() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordtype">void</span> setupScene();</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordtype">void</span> loadDefaultEntities() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordtype">void</span> handleKeyEvents() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordtype">void</span> renderToolbar() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordtype">void</span> renderGizmo() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keywordtype">void</span> renderView();</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    };</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:32</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_a83602816f156c605ecf86765c904adb4"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#a83602816f156c605ecf86765c904adb4">nexo::editor::ADocumentWindow::ADocumentWindow</a></div><div class="ttdeci">ADocumentWindow(const std::string &amp;windowName, WindowRegistry &amp;windowRegistry)</div><div class="ttdoc">Constructs a new ADocumentWindow instance with a unique window ID.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:40</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html">nexo::editor::EditorScene</a></div><div class="ttdef"><b>Definition:</b> EditorScene.hpp:23</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_a0b3b0d6d76485979194a1955854314f6"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">nexo::editor::EditorScene::getSceneId</a></div><div class="ttdeci">scene::SceneId getSceneId() const</div><div class="ttdoc">Retrieves the unique identifier of the scene.</div><div class="ttdef"><b>Definition:</b> EditorScene.hpp:66</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_a6f533db994ba5bc70471342ee0e5b3ee"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#a6f533db994ba5bc70471342ee0e5b3ee">nexo::editor::EditorScene::deleteCamera</a></div><div class="ttdeci">void deleteCamera(ecs::Entity cameraId)</div><div class="ttdoc">Removes a camera from the scene and updates the active camera.</div><div class="ttdef"><b>Definition:</b> EditorScene.cpp:106</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_aaeae368cb61cae9ccfe095da7219a6f5"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#aaeae368cb61cae9ccfe095da7219a6f5">nexo::editor::EditorScene::show</a></div><div class="ttdeci">void show() override</div><div class="ttdoc">Displays the main scene window and updates the active scene selection.</div><div class="ttdef"><b>Definition:</b> EditorScene.cpp:194</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_ab4f4a26b6baeaea05952c64bb2affb93"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93">nexo::editor::EditorScene::update</a></div><div class="ttdeci">void update() override</div><div class="ttdoc">Updates the scene by processing input events and rendering the current frame.</div><div class="ttdef"><b>Definition:</b> EditorScene.cpp:234</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_ababe6b2699e3ee6394117b663b333d10"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#ababe6b2699e3ee6394117b663b333d10">nexo::editor::EditorScene::setup</a></div><div class="ttdeci">void setup() override</div><div class="ttdoc">Initializes the main scene.</div><div class="ttdef"><b>Definition:</b> EditorScene.cpp:37</div></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#aaeae368cb61cae9ccfe095da7219a6f5">show</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93">update</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">   76</a></span>        [[nodiscard]] scene::SceneId <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">getSceneId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_sceneId; };</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#aa41f303670ee80a8e95a6e43e7dc101c">setCamera</a>(ecs::Entity cameraId);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_editor_scene.html#a9718cba30f9675dabd19af8909e38cc0">   94</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_editor_scene.html#a9718cba30f9675dabd19af8909e38cc0">setDefault</a>() { m_defaultScene = <span class="keyword">true</span>; };</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordtype">bool</span> m_defaultScene = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        ImVec2 m_viewportBounds[2];</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        ImGuizmo::MODE m_currentGizmoMode = ImGuizmo::WORLD;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordtype">bool</span> m_snapTranslateOn = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        glm::vec3 m_snapTranslate = {10.0f, 10.0f, 10.0f};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordtype">bool</span> m_snapRotateOn = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordtype">float</span> m_angleSnap = 90.0f;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordtype">bool</span> m_snapToGrid = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordtype">bool</span> m_wireframeEnabled = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordtype">int</span> m_sceneId = -1;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        std::string m_sceneUuid;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordtype">int</span> m_activeCamera = -1;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">int</span> m_editorCamera = -1;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        PopupManager m_popupManager;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keyword">const</span> std::vector&lt;ImNexo::GradientStop&gt; m_buttonGradient = {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            {0.0f, IM_COL32(50, 50, 70, 230)},</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            {1.0f, IM_COL32(30, 30, 45, 230)}</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        };</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="comment">// Game window focus scheduling</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordtype">bool</span> m_shouldFocusGameWindow = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::string m_gameWindowToFocus;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="comment">// Deferred dock split operation</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordtype">bool</span> m_shouldSplitDock = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        std::string m_gameWindowNameToSplit;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="comment">// Selected button gradient - lighter blue gradient</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keyword">const</span> std::vector&lt;ImNexo::GradientStop&gt; m_selectedGradient = {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            {0.0f, IM_COL32(70, 70, 120, 230)},</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            {1.0f, IM_COL32(50, 50, 100, 230)}</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        };</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordtype">void</span> setupWindow();</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordtype">void</span> setupScene();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordtype">void</span> hideAllButSelectionCallback() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordtype">void</span> selectAllCallback();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordtype">void</span> unhideAllCallback() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordtype">void</span> deleteCallback();</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordtype">void</span> setupGlobalState();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordtype">void</span> setupGizmoState();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordtype">void</span> setupGizmoTranslateState();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordtype">void</span> setupGizmoRotateState();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordtype">void</span> setupGizmoScaleState();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordtype">void</span> setupShortcuts();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordtype">void</span> loadDefaultEntities() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordtype">void</span> renderToolbar();</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">void</span> initialToolbarSetup(<span class="keywordtype">float</span> buttonWidth) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordtype">void</span> renderEditorCameraToolbarButton();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordtype">bool</span> renderGizmoModeToolbarButton(</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keywordtype">bool</span> showGizmoModeMenu,</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <a class="code hl_struct" href="struct_im_nexo_1_1_button_props.html">ImNexo::ButtonProps</a>&amp; activeGizmoMode,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <a class="code hl_struct" href="struct_im_nexo_1_1_button_props.html">ImNexo::ButtonProps</a>&amp; inactiveGizmoMode</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        );</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keywordtype">void</span> renderPrimitiveSubMenu(<span class="keyword">const</span> ImVec2&amp; primitiveButtonPos, <span class="keyword">const</span> ImVec2&amp; buttonSize,</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                                    <span class="keywordtype">bool</span>&amp; showPrimitiveMenu);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordtype">void</span> renderSnapSubMenu(<span class="keyword">const</span> ImVec2&amp; snapButtonPos, <span class="keyword">const</span> ImVec2&amp; buttonSize, <span class="keywordtype">bool</span>&amp; showSnapMenu);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordtype">void</span> snapSettingsPopup();</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordtype">void</span> gridSettingsPopup();</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> renderToolbarButton(</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="keyword">const</span> std::string&amp; uniqueId,</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keyword">const</span> std::string&amp; icon,</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keyword">const</span> std::string&amp; tooltip,</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keyword">const</span> std::vector&lt;ImNexo::GradientStop&gt;&amp; gradientStop,</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keywordtype">bool</span>* rightClicked = <span class="keyword">nullptr</span></div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        );</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        ImGuizmo::OPERATION getLastGuizmoOperation();</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keywordtype">void</span> renderGizmo();</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordtype">void</span> setupGizmoContext(<span class="keyword">const</span> components::CameraComponent&amp; camera) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordtype">float</span>* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keyword">static</span> <span class="keywordtype">void</span> captureInitialTransformStates(<span class="keyword">const</span> std::vector&lt;int&gt;&amp; entities);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        <span class="keywordtype">void</span> applyTransformToEntities(</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            ecs::Entity sourceEntity,</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            <span class="keyword">const</span> glm::mat4&amp; oldWorldMatrix,</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            <span class="keyword">const</span> glm::mat4&amp; newWorldMatrix,</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keyword">const</span> std::vector&lt;int&gt;&amp; targetEntities) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="keyword">static</span> <span class="keywordtype">void</span> createTransformUndoActions(<span class="keyword">const</span> std::vector&lt;int&gt;&amp; entities);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> s_wasUsingGizmo;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keyword">static</span> ImGuizmo::OPERATION s_lastOperation;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keyword">static</span> std::unordered_map&lt;ecs::Entity, components::TransformComponent::Memento&gt; s_initialTransformStates;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        <span class="keywordtype">void</span> renderView();</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="keywordtype">void</span> renderNoActiveCamera() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <span class="keywordtype">void</span> renderPrimitiveCreationPopup(<span class="keyword">const</span> Primitives&amp; primitive) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordtype">void</span> renderNewEntityPopup();</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keywordtype">void</span> handleSelection();</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordtype">void</span> handleDropTarget();</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordtype">void</span> handleDropModel(<span class="keyword">const</span> AssetDragDropPayload &amp;payload);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordtype">void</span> handleDropTexture(<span class="keyword">const</span> AssetDragDropPayload &amp;payload);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordtype">void</span> handleDropMaterial(<span class="keyword">const</span> AssetDragDropPayload &amp;payload);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <span class="keywordtype">int</span> sampleEntityTexture(<span class="keywordtype">float</span> mx, <span class="keywordtype">float</span> my) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        ecs::Entity findRootParent(ecs::Entity entityId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keywordtype">void</span> selectEntityHierarchy(ecs::Entity entityId, <span class="keyword">const</span> <span class="keywordtype">bool</span> isCtrlPressed);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keywordtype">void</span> selectModelChildren(<span class="keyword">const</span> std::vector&lt;ecs::Entity&gt;&amp; children, <span class="keyword">const</span> <span class="keywordtype">bool</span> isCtrlPressed);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordtype">void</span> updateSelection(<span class="keywordtype">int</span> entityId, <span class="keywordtype">bool</span> isShiftPressed, <span class="keywordtype">bool</span> isCtrlPressed);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="keywordtype">void</span> updateWindowState();</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keywordtype">void</span> createOrFocusGameWindow();</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keyword">enum class</span> EditorState</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        {</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            GLOBAL,</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            GIZMO,</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            GIZMO_TRANSLATE,</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            GIZMO_ROTATE,</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            GIZMO_SCALE,</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>            NB_STATE</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        };</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        WindowState m_globalState;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        WindowState m_gizmoState;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        WindowState m_gizmoTranslateState;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        WindowState m_gizmoRotateState;</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        WindowState m_gizmoScaleState;</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    };</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>}</div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:37</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_ade88d5fd59fe62d66fe32998428a0add"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">nexo::editor::ADocumentWindow::ADocumentWindow</a></div><div class="ttdeci">ADocumentWindow(std::string windowName, WindowRegistry &amp;windowRegistry)</div><div class="ttdoc">Constructs a new ADocumentWindow instance with a unique window ID.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:45</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html">nexo::editor::EditorScene</a></div><div class="ttdef"><b>Definition:</b> EditorScene.hpp:31</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_a0b3b0d6d76485979194a1955854314f6"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#a0b3b0d6d76485979194a1955854314f6">nexo::editor::EditorScene::getSceneId</a></div><div class="ttdeci">scene::SceneId getSceneId() const</div><div class="ttdoc">Retrieves the unique identifier of the scene.</div><div class="ttdef"><b>Definition:</b> EditorScene.hpp:76</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_a9718cba30f9675dabd19af8909e38cc0"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#a9718cba30f9675dabd19af8909e38cc0">nexo::editor::EditorScene::setDefault</a></div><div class="ttdeci">void setDefault()</div><div class="ttdoc">Marks this scene as the default scene.</div><div class="ttdef"><b>Definition:</b> EditorScene.hpp:94</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_aa41f303670ee80a8e95a6e43e7dc101c"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#aa41f303670ee80a8e95a6e43e7dc101c">nexo::editor::EditorScene::setCamera</a></div><div class="ttdeci">void setCamera(ecs::Entity cameraId)</div><div class="ttdoc">Sets the active camera for this scene.</div><div class="ttdef"><b>Definition:</b> Init.cpp:281</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_aaeae368cb61cae9ccfe095da7219a6f5"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#aaeae368cb61cae9ccfe095da7219a6f5">nexo::editor::EditorScene::show</a></div><div class="ttdeci">void show() override</div><div class="ttdoc">Displays the main scene window and updates the active scene selection.</div><div class="ttdef"><b>Definition:</b> Show.cpp:160</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_ab4f4a26b6baeaea05952c64bb2affb93"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93">nexo::editor::EditorScene::update</a></div><div class="ttdeci">void update() override</div><div class="ttdoc">Updates the scene by processing input events and rendering the current frame.</div><div class="ttdef"><b>Definition:</b> Update.cpp:181</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_editor_scene_html_ababe6b2699e3ee6394117b663b333d10"><div class="ttname"><a href="classnexo_1_1editor_1_1_editor_scene.html#ababe6b2699e3ee6394117b663b333d10">nexo::editor::EditorScene::setup</a></div><div class="ttdeci">void setup() override</div><div class="ttdoc">Initializes the main scene.</div><div class="ttdef"><b>Definition:</b> Init.cpp:30</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_button_props_html"><div class="ttname"><a href="struct_im_nexo_1_1_button_props.html">ImNexo::ButtonProps</a></div><div class="ttdoc">Configuration properties for a button in a dropdown menu.</div><div class="ttdef"><b>Definition:</b> Widgets.hpp:52</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bac5aa69239d34ac960582aca466258e.html">editor</a></li><li class="navelem"><a class="el" href="dir_b7d7d6b8a78807b328f73545b8904b59.html">src</a></li><li class="navelem"><a class="el" href="dir_c507ba15099e8b2d7980b09eaccbd969.html">DocumentWindows</a></li><li class="navelem"><b>EditorScene.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_bac5aa69239d34ac960582aca466258e.html">editor</a></li><li class="navelem"><a class="el" href="dir_b7d7d6b8a78807b328f73545b8904b59.html">src</a></li><li class="navelem"><a class="el" href="dir_c507ba15099e8b2d7980b09eaccbd969.html">DocumentWindows</a></li><li class="navelem"><a class="el" href="dir_eed13621f9dae2cd3fa1cf9e34e90b9d.html">EditorScene</a></li><li class="navelem"><b>EditorScene.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2 </li>
   </ul>
 </div>

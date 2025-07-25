@@ -1,0 +1,8 @@
+<map id="QueryBenchmarkSystem" name="QueryBenchmarkSystem">
+<area shape="rect" id="node1" title=" " alt="" coords="175,692,341,769"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_query_system.html" title=" " alt="" coords="125,419,391,643"/>
+<area shape="rect" id="node3" href="$classnexo_1_1ecs_1_1_a_query_system.html" title="Base abstract for all query&#45;based systems." alt="" coords="63,263,232,355"/>
+<area shape="rect" id="node4" href="$classnexo_1_1ecs_1_1_system.html" title="Base class for systems in an ECS (Entity&#45;Component&#45;System) architecture." alt="" coords="5,57,132,134"/>
+<area shape="rect" id="node5" href="$classnexo_1_1ecs_1_1_sparse_set.html" title="A sparse set implementation for efficient entity storage and lookup." alt="" coords="156,5,299,185"/>
+<area shape="rect" id="node6" title=" " alt="" coords="257,248,483,369"/>
+</map>

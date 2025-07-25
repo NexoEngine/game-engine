@@ -1,4 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1assets_1_1_asset_importer.html" title="Registry for asset importers, allowing to import assets from various sources." alt="" coords="5,5,188,32"/>
-<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_mock_asset_importer.html" title=" " alt="" coords="236,5,451,32"/>
+<area shape="rect" id="node1" href="$struct_im_nexo_1_1_button_props.html" title="Configuration properties for a button in a dropdown menu." alt="" coords="5,5,151,32"/>
 </map>

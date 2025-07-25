@@ -97,28 +97,42 @@ Collaboration diagram for nexo::editor::WindowRegistry:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_window_registry__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_window_registry_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_window_registry_coll__map" id="anexo_1_1editor_1_1_window_registry_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,192,303"/>
+<area shape="rect" title=" " alt="" coords="5,5,192,317"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a6d5d02a0ea66e53a32b0b2e4419a5212"><td class="memItemLeft" align="right" valign="top"><a id="a6d5d02a0ea66e53a32b0b2e4419a5212" name="a6d5d02a0ea66e53a32b0b2e4419a5212"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasWindow</b> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;windowName) <a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a></td></tr>
+<tr class="separator:a6d5d02a0ea66e53a32b0b2e4419a5212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b7aa383f22d28833b40fada263d180d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; <br />
 requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a>&gt;</td></tr>
 <tr class="memitem:a6b7aa383f22d28833b40fada263d180d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">registerWindow</a> (std::shared_ptr&lt; T &gt; window)</td></tr>
 <tr class="memdesc:a6b7aa383f22d28833b40fada263d180d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a document window instance to the registry.  <a href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">More...</a><br /></td></tr>
 <tr class="separator:a6b7aa383f22d28833b40fada263d180d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c392da3f437f9ff19bb4f4d73e80650"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a>&gt;</td></tr>
+<tr class="memitem:a9c392da3f437f9ff19bb4f4d73e80650"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">unregisterWindow</a> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;windowName)</td></tr>
+<tr class="memdesc:a9c392da3f437f9ff19bb4f4d73e80650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a window from the registry.  <a href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">More...</a><br /></td></tr>
+<tr class="separator:a9c392da3f437f9ff19bb4f4d73e80650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memItemLeft" align="right" valign="top"><a id="aa6671afc23b43bce00ffa338dbb93f8c" name="aa6671afc23b43bce00ffa338dbb93f8c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (it==m_windows.end())</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>==m_windows.end())</td></tr>
 <tr class="separator:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac43bfbdd289fd974f26b47a719bfb3e2"><td class="memItemLeft" align="right" valign="top"><a id="ac43bfbdd289fd974f26b47a719bfb3e2" name="ac43bfbdd289fd974f26b47a719bfb3e2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (found==windowsOfType.end())</td></tr>
 <tr class="separator:ac43bfbdd289fd974f26b47a719bfb3e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memItemLeft" align="right" valign="top"><a id="aa6671afc23b43bce00ffa338dbb93f8c" name="aa6671afc23b43bce00ffa338dbb93f8c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (it==m_windows.end())</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>==m_windows.end())</td></tr>
 <tr class="separator:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a157887453a1a1aabbae17d8c62ef8050"><td class="memItemLeft" align="right" valign="top"><a id="a157887453a1a1aabbae17d8c62ef8050" name="a157887453a1a1aabbae17d8c62ef8050"></a>
-return&#160;</td><td class="memItemRight" valign="bottom"><b>std::ranges::transform_view</b> (std::ranges::ref_view(it-&gt;second), caster)</td></tr>
+return&#160;</td><td class="memItemRight" valign="bottom"><b>std::ranges::transform_view</b> (std::ranges::ref_view(<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>-&gt;second), caster)</td></tr>
+<tr class="separator:a157887453a1a1aabbae17d8c62ef8050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memItemLeft" align="right" valign="top"><a id="aa6671afc23b43bce00ffa338dbb93f8c" name="aa6671afc23b43bce00ffa338dbb93f8c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>if</b> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>==m_windows.end())</td></tr>
+<tr class="separator:aa6671afc23b43bce00ffa338dbb93f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a157887453a1a1aabbae17d8c62ef8050"><td class="memItemLeft" align="right" valign="top"><a id="a157887453a1a1aabbae17d8c62ef8050" name="a157887453a1a1aabbae17d8c62ef8050"></a>
+return&#160;</td><td class="memItemRight" valign="bottom"><b>std::ranges::transform_view</b> (std::ranges::ref_view(<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>-&gt;second), caster)</td></tr>
 <tr class="separator:a157887453a1a1aabbae17d8c62ef8050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ed98791adc8f744685090a4fdea114c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">setDockId</a> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;name, ImGuiID id)</td></tr>
 <tr class="memdesc:a0ed98791adc8f744685090a4fdea114c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns a docking identifier to a window.  <a href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">More...</a><br /></td></tr>
@@ -126,6 +140,12 @@ return&#160;</td><td class="memItemRight" valign="bottom"><b>std::ranges::transf
 <tr class="memitem:a90c58ba036099b9bf9af637dbe10bf9f"><td class="memItemLeft" align="right" valign="top">std::optional&lt; ImGuiID &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">getDockId</a> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;name) <a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a></td></tr>
 <tr class="memdesc:a90c58ba036099b9bf9af637dbe10bf9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the docking identifier associated with a specified window.  <a href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">More...</a><br /></td></tr>
 <tr class="separator:a90c58ba036099b9bf9af637dbe10bf9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addc09045af6c65b29b5d5c4754384096"><td class="memItemLeft" align="right" valign="top"><a id="addc09045af6c65b29b5d5c4754384096" name="addc09045af6c65b29b5d5c4754384096"></a>
+std::shared_ptr&lt; <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFocusedWindow</b> () <a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a></td></tr>
+<tr class="separator:addc09045af6c65b29b5d5c4754384096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c86999f2263ab95f426d944d245d443"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">resetDockId</a> (<a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;name)</td></tr>
+<tr class="memdesc:a8c86999f2263ab95f426d944d245d443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a window's docking identifier.  <a href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">More...</a><br /></td></tr>
+<tr class="separator:a8c86999f2263ab95f426d944d245d443"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38bbbe6bebf332fade0d9fd46a9925d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">setup</a> () <a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a></td></tr>
 <tr class="memdesc:a38bbbe6bebf332fade0d9fd46a9925d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all managed windows.  <a href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">More...</a><br /></td></tr>
 <tr class="separator:a38bbbe6bebf332fade0d9fd46a9925d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,16 +167,16 @@ requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_d
 <tr class="memdesc:a1a25c51fb4d4602de0312b70fb7e4e50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a registered window of the specified type and name.  <a href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">More...</a><br /></td></tr>
 <tr class="separator:a1a25c51fb4d4602de0312b70fb7e4e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac84b6f09068df69edc6a4912ec19bd0e"><td class="memItemLeft" align="right" valign="top"><a id="ac84b6f09068df69edc6a4912ec19bd0e" name="ac84b6f09068df69edc6a4912ec19bd0e"></a>
-auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>windowsOfType</b> = it-&gt;second</td></tr>
+auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>windowsOfType</b> = <a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a>-&gt;second</td></tr>
 <tr class="separator:ac84b6f09068df69edc6a4912ec19bd0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fc9fb8a52214172047dd4f1ee6617e5"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a9fc9fb8a52214172047dd4f1ee6617e5">found</a></td></tr>
 <tr class="separator:a9fc9fb8a52214172047dd4f1ee6617e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30d947d518632b32841050161aef8038"><td class="memItemLeft" align="right" valign="top"><a id="a30d947d518632b32841050161aef8038" name="a30d947d518632b32841050161aef8038"></a>
 return std::static_pointer_cast&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>found</b></td></tr>
 <tr class="separator:a30d947d518632b32841050161aef8038"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95589200b8e7f931ac1f677953814f73"><td class="memItemLeft" align="right" valign="top"><a id="a95589200b8e7f931ac1f677953814f73" name="a95589200b8e7f931ac1f677953814f73"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>it</b> = m_windows.find(typeid(T))</td></tr>
-<tr class="separator:a95589200b8e7f931ac1f677953814f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b5f6360d527126e122179bb684fecaf"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a> = m_windows.find(typeid(T))</td></tr>
+<tr class="memdesc:a1b5f6360d527126e122179bb684fecaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a mutable range view of document windows cast to a specified derived type.  <a href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">More...</a><br /></td></tr>
+<tr class="separator:a1b5f6360d527126e122179bb684fecaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a6b7aa383f22d28833b40fada263d180d" name="a6b7aa383f22d28833b40fada263d180d"></a>
@@ -197,6 +217,50 @@ requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_d
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">window</td><td>A shared pointer to the window instance to be registered. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9c392da3f437f9ff19bb4f4d73e80650" name="a9c392da3f437f9ff19bb4f4d73e80650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c392da3f437f9ff19bb4f4d73e80650">&#9670;&nbsp;</a></span>unregisterWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a>&gt;</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::WindowRegistry::unregisterWindow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;&#160;</td>
+          <td class="paramname"><em>windowName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes a window from the registry. </p>
+<p >This function searches for a window of type T with the specified name and removes it from the registry if found. If no window matches the criteria, a warning message is logged but no exception is thrown.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The concrete window type derived from <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">windowName</td><td>The name of the window to unregister. </td></tr>
   </table>
   </dd>
 </dl>
@@ -266,6 +330,33 @@ requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_d
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::optional&lt;ImGuiID&gt; The docking identifier if it exists; otherwise, an empty optional. </dd></dl>
+
+</div>
+</div>
+<a id="a8c86999f2263ab95f426d944d245d443" name="a8c86999f2263ab95f426d944d245d443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c86999f2263ab95f426d944d245d443">&#9670;&nbsp;</a></span>resetDockId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::editor::WindowRegistry::resetDockId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">const</a> std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a window's docking identifier. </p>
+<p >This function removes any docking identifier association for the specified window, allowing it to be positioned freely or receive a new docking assignment. If no docking ID exists for the window, this operation has no effect.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name of the window whose docking ID should be removed. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -365,7 +456,8 @@ requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_d
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">{</div>
-<div class="line">                <span class="keyword">auto</span> it = m_windows.find(<span class="keyword">typeid</span>(T))</div>
+<div class="line">                <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">it</a> = m_windows.find(<span class="keyword">typeid</span>(T))</div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a1b5f6360d527126e122179bb684fecaf"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a1b5f6360d527126e122179bb684fecaf">nexo::editor::WindowRegistry::it</a></div><div class="ttdeci">auto it</div><div class="ttdoc">Retrieves a mutable range view of document windows cast to a specified derived type.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:194</div></div>
 </div><!-- fragment -->
 <p>Retrieves a registered window of the specified type and name. </p>
 <p >Retrieves a range view of document windows cast to a specified derived type.</p>
@@ -410,6 +502,31 @@ requires std::derived_from&lt;T, <a class="el" href="classnexo_1_1editor_1_1_i_d
 <div class="line">                    <span class="keywordflow">return</span> w-&gt;getWindowName() == windowName;</div>
 <div class="line">                })</div>
 </div><!-- fragment -->
+</div>
+</div>
+<a id="a1b5f6360d527126e122179bb684fecaf" name="a1b5f6360d527126e122179bb684fecaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b5f6360d527126e122179bb684fecaf">&#9670;&nbsp;</a></span>it</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto nexo::editor::WindowRegistry::it = m_windows.find(typeid(T))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves a mutable range view of document windows cast to a specified derived type. </p>
+<p >Similar to the const version, but returns a transform_view that allows modifying the underlying windows. The transformation is performed using the non-const castWindow&lt;T&gt; helper function, which casts each std::shared_ptr&lt;IDocumentWindow&gt; to a std::shared_ptr&lt;T&gt;.</p>
+<p >If no windows of the requested type T are found in m_windows, an empty range is returned.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The derived type of <a class="el" href="classnexo_1_1editor_1_1_i_document_window.html">IDocumentWindow</a> to retrieve. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A transform_view range over the mutable vector of document windows cast to std::shared_ptr&lt;T&gt;. </dd></dl>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

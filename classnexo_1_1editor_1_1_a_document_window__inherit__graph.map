@@ -1,10 +1,13 @@
 <map id="nexo::editor::ADocumentWindow" name="nexo::editor::ADocumentWindow">
-<area shape="rect" id="node1" title=" " alt="" coords="497,263,704,531"/>
-<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,615,183,766"/>
-<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_console_window.html" title=" " alt="" coords="207,601,394,781"/>
-<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,601,581,781"/>
-<area shape="rect" id="node6" href="$classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="605,579,799,803"/>
-<area shape="rect" id="node7" href="$classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="823,623,1016,759"/>
-<area shape="rect" id="node8" href="$classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1041,615,1243,766"/>
-<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="499,5,702,215"/>
+<area shape="rect" id="node1" title=" " alt="" coords="807,307,1013,736"/>
+<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_asset_manager_window.html" title=" " alt="" coords="5,821,183,986"/>
+<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_console_window.html" title="Console window for displaying and managing application logs." alt="" coords="207,821,394,986"/>
+<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_editor_scene.html" title=" " alt="" coords="418,813,581,993"/>
+<area shape="rect" id="node6" href="$classnexo_1_1editor_1_1_game_window.html" title=" " alt="" coords="605,821,780,986"/>
+<area shape="rect" id="node7" href="$classnexo_1_1editor_1_1_inspector_window.html" title=" " alt="" coords="805,784,1015,1023"/>
+<area shape="rect" id="node8" href="$classnexo_1_1editor_1_1_material_inspector.html" title=" " alt="" coords="1040,835,1233,971"/>
+<area shape="rect" id="node9" href="$classnexo_1_1editor_1_1_primitive_window.html" title=" " alt="" coords="1257,828,1448,979"/>
+<area shape="rect" id="node10" href="$classnexo_1_1editor_1_1_scene_tree_window.html" title="Document window for displaying and interacting with the scene tree." alt="" coords="1473,806,1675,1001"/>
+<area shape="rect" id="node11" href="$classnexo_1_1editor_1_1_test_window.html" title=" " alt="" coords="1699,835,1865,971"/>
+<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_i_document_window.html" title=" " alt="" coords="809,5,1011,259"/>
 </map>

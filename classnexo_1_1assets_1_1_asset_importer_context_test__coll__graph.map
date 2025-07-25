@@ -1,6 +1,6 @@
 <map id="nexo::assets::AssetImporterContextTest" name="nexo::assets::AssetImporterContextTest">
-<area shape="rect" id="node1" title=" " alt="" coords="17,652,199,759"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,424,99,501"/>
-<area shape="rect" id="node3" href="$structnexo_1_1assets_1_1_asset_importer_context.html" title="Context class for asset importers." alt="" coords="123,336,347,589"/>
+<area shape="rect" id="node1" title=" " alt="" coords="17,667,199,773"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,431,99,509"/>
+<area shape="rect" id="node3" href="$structnexo_1_1assets_1_1_asset_importer_context.html" title="Context class for asset importers." alt="" coords="123,336,347,604"/>
 <area shape="rect" id="node4" href="$classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="143,5,327,273"/>
 </map>

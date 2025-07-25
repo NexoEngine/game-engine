@@ -1,0 +1,5 @@
+<map id="nexo::renderer::NxRenderer3DStorage" name="nexo::renderer::NxRenderer3DStorage">
+<area shape="rect" id="node1" title="Holds internal data and resources used by NxRenderer3D." alt="" coords="92,219,275,545"/>
+<area shape="rect" id="node2" href="$structnexo_1_1renderer_1_1_nx_vertex.html" title=" " alt="" coords="5,5,167,156"/>
+<area shape="rect" id="node3" href="$structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html" title=" " alt="" coords="191,20,373,141"/>
+</map>

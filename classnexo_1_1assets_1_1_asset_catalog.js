@@ -4,11 +4,14 @@ var classnexo_1_1assets_1_1_asset_catalog =
     [ "~AssetCatalog", "classnexo_1_1assets_1_1_asset_catalog.html#a6a562ca443952d09f23e01cb6d67c151", null ],
     [ "deleteAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a62ce26fdd2b1c1818e752a7bacfb1103", null ],
     [ "deleteAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a945f695a3d204f93a25e3ba48301d31d", null ],
+    [ "moveAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a533644701f5bc358f5e35170b265fa45", null ],
+    [ "moveAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a535ec2b6557e583bdbf14ec858697437", null ],
     [ "getAsset", "classnexo_1_1assets_1_1_asset_catalog.html#ab1a4141f9a5c7055504fb301e56c8108", null ],
     [ "getAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a786a12fd1a7b18ae4a36dce280913833", null ],
     [ "getAssets", "classnexo_1_1assets_1_1_asset_catalog.html#a91d859a07c53f0c449b851d9d354f08b", null ],
     [ "getAssetsView", "classnexo_1_1assets_1_1_asset_catalog.html#a486b8248d32ca979ad8a2976c21f8a74", null ],
-    [ "getAssetsOfTypeView", "classnexo_1_1assets_1_1_asset_catalog.html#af296c5150bfff225ab4db1b79dea97cd", null ],
-    [ "registerAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a0cbc9c2c432805642067988a9c90228b", null ],
-    [ "const", "classnexo_1_1assets_1_1_asset_catalog.html#a836ec759471f0f0899390592db714cd2", null ]
+    [ "getAssetsOfType", "classnexo_1_1assets_1_1_asset_catalog.html#a942da81fb7e491d978bd38efb331b707", null ],
+    [ "getAssetsOfTypeView", "classnexo_1_1assets_1_1_asset_catalog.html#a3d2bbee32f487ad07ed080147654c0a6", null ],
+    [ "registerAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a24de493ffee7b1c9deb9a8e370d92c91", null ],
+    [ "createAsset", "classnexo_1_1assets_1_1_asset_catalog.html#a764daf25671758c55640db161bedb938", null ]
 ];

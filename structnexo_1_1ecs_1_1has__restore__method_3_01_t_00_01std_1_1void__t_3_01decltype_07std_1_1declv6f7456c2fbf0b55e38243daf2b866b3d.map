@@ -1,0 +1,4 @@
+<map id="nexo::ecs::has_restore_method&lt; T, std::void_t&lt; decltype(std::declval&lt; typename T::Memento &gt;().restore())&gt; &gt;" name="nexo::ecs::has_restore_method&lt; T, std::void_t&lt; decltype(std::declval&lt; typename T::Memento &gt;().restore())&gt; &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,160,184,296"/>
+<area shape="rect" id="node2" title=" " alt="" coords="9,5,180,112"/>
+</map>
