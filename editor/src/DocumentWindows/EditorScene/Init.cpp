@@ -227,7 +227,7 @@ namespace nexo::editor
             {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
             {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
         };
-        for (int i = 0; const auto& [pos, size, rotation] : tunnels)
+        for (const auto& [pos, size, rotation] : tunnels)
         {
             createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
         }
