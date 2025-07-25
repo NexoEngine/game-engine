@@ -20,6 +20,8 @@
 #include "Masks.hpp"
 #include "Passes.hpp"
 
+#include <glad/glad.h>
+
 namespace nexo::renderer {
     GridPass::GridPass() : RenderPass(Passes::GRID, "Grid pass")
     {
@@ -33,6 +35,8 @@ namespace nexo::renderer {
             return;
 
         renderTarget->bind();
+        constexpr GLenum singleDrawBuffer[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, singleDrawBuffer);
         renderer::NxRenderCommand::setDepthMask(false);
         renderer::NxRenderCommand::setCulling(false);
         const auto &drawCommands = pipeline.getDrawCommands();
@@ -45,6 +49,8 @@ namespace nexo::renderer {
         renderer::NxRenderCommand::setCulling(true);
         renderer::NxRenderCommand::setCulledFace(CulledFace::BACK);
 
+        constexpr GLenum allBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, allBuffers);
         renderTarget->unbind();
     }
 }
