@@ -236,31 +236,26 @@ TEST_F(RenderPipelineTest, ExecutePipeline) {
     PassId id1 = pipeline.addRenderPass(pass1);
     PassId id2 = pipeline.addRenderPass(pass2);
 
-    std::cout << "la" << std::endl;
     // Setup pass1 -> pass2
     pipeline.addPrerequisite(id2, id1);
     pipeline.addEffect(id1, id2);
-    std::cout << "la2" << std::endl;
 
 
     // Make sure pass2 is the final output to ensure it gets executed
     pipeline.setFinalOutputPass(id2);
     pipeline.setRenderTarget(renderTarget);
-    std::cout << "la3" << std::endl;
 
 
     // Verify the setup is correct
     EXPECT_EQ(pipeline.getFinalOutputPass(), static_cast<int>(id2));
-    std::cout << "la7" << std::endl;
 
 
     // Execute the pipeline
     pipeline.execute();
-    std::cout << "la5" << std::endl;
 
 }
 
-TEST_F(RenderPipelineTest, SetandGetRenderTarget) {
+TEST_F(RenderPipelineTest, SetAndGetRenderTarget) {
     auto pass = createMockPass("Pass1");
     auto framebuffer = createMockFramebuffer();
 
