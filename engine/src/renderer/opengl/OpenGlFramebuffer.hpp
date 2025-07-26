@@ -34,7 +34,8 @@ namespace nexo::renderer {
             return GL_UNSIGNED_INT;
         else if constexpr (std::is_same_v<T, glm::vec4>)
         	return GL_RGBA;
-        return 0;
+        else
+            return 0;
     }
 
     static int framebufferTextureFormatToOpenGlFormat(NxFrameBufferTextureFormats format)
