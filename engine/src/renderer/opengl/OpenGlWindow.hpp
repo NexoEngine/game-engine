@@ -81,6 +81,12 @@ namespace nexo::renderer {
 
             void setWindowIcon(const std::filesystem::path& iconPath) override;
 
+            void setTitle(const std::string& title) override;
+            [[nodiscard]] const std::string& getTitle() const override;
+
+            void setDarkMode(bool enabled) override;
+            [[nodiscard]] bool isDarkMode() const override;
+
             /**
             * @brief Enables or disables vertical synchronization (VSync).
             *
