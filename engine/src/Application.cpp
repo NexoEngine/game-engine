@@ -311,9 +311,6 @@ namespace nexo {
 
         m_scriptingSystem->update();
 
-        constexpr float fixedTimestep = 1.0f / 60.0f;
-        static float physicsAccumulator = 0.0f;
-
         if (!m_isMinimized)
         {
          	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);

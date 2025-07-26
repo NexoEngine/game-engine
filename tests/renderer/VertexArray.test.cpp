@@ -54,7 +54,10 @@ namespace nexo::renderer {
             1.0f, 1.0f, 1.0f, 1.0f, // Color
             3, // Texture index
         };
-        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(vertices, sizeof(vertices));
+        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(
+            vertices,
+            static_cast<unsigned int>(sizeof(vertices))
+        );
         NxBufferLayout layout = {
             {NxShaderDataType::FLOAT3, "Position"},
             {NxShaderDataType::FLOAT4, "Color", true},
@@ -109,7 +112,10 @@ namespace nexo::renderer {
             1.0f, 1.0f, 1.0f, 1.0f, // Color
             3, // Texture index
         };
-        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(vertices, sizeof(vertices));
+        auto vertexBuffer = std::make_shared<NxOpenGlVertexBuffer>(
+            vertices,
+            static_cast<unsigned int>(sizeof(vertices))
+        );
 
         // Empty layout
         EXPECT_THROW(
@@ -129,13 +135,13 @@ namespace nexo::renderer {
         auto vertexArray = std::make_shared<NxOpenGlVertexArray>();
 
         float positions[] = {0.0f, 1.0f, 2.0f};
-        auto positionBuffer = std::make_shared<NxOpenGlVertexBuffer>(positions, sizeof(positions));
+        auto positionBuffer = std::make_shared<NxOpenGlVertexBuffer>(positions, static_cast<unsigned int>(sizeof(positions)));
         positionBuffer->setLayout({
             {NxShaderDataType::FLOAT3, "Position"}
         });
 
         float colors[] = {1.0f, 0.0f, 0.0f};
-        auto colorBuffer = std::make_shared<NxOpenGlVertexBuffer>(colors, sizeof(colors));
+        auto colorBuffer = std::make_shared<NxOpenGlVertexBuffer>(colors, static_cast<unsigned int>(sizeof(colors)));
         colorBuffer->setLayout({
             {NxShaderDataType::FLOAT3, "Color"}
         });

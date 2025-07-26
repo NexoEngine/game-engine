@@ -53,9 +53,15 @@ namespace nexo::editor
                                                                 renderTarget);
         auto& cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
-        auto maskPass = std::make_shared<renderer::MaskPass>(m_contentSize.x, m_contentSize.y);
-        auto outlinePass = std::make_shared<renderer::OutlinePass>(m_contentSize.x, m_contentSize.y);
-        auto gridPass = std::make_shared<renderer::GridPass>(m_contentSize.x, m_contentSize.y);
+        auto maskPass = std::make_shared<renderer::MaskPass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
+        auto outlinePass = std::make_shared<renderer::OutlinePass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
+        auto gridPass = std::make_shared<renderer::GridPass>(
+                                static_cast<unsigned int>(m_contentSize.x),
+                                static_cast<unsigned int>(m_contentSize.y));
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
         const renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
@@ -227,7 +233,7 @@ namespace nexo::editor
             {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
             {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
         };
-        for (int i = 0; const auto& [pos, size, rotation] : tunnels)
+        for (const auto& [pos, size, rotation] : tunnels)
         {
             createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
         }
