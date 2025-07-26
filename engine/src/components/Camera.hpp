@@ -19,8 +19,6 @@
 #include "ecs/Definitions.hpp"
 #include "renderer/RenderPipeline.hpp"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 
 namespace nexo::components {
 
@@ -85,7 +83,7 @@ namespace nexo::components {
          * @param newWidth The new width for the viewport.
          * @param newHeight The new height for the viewport.
          */
-        void resize(const unsigned int newWidth, const unsigned int newHeight);
+        void resize(unsigned int newWidth, unsigned int newHeight);
 
         struct Memento {
             unsigned int width;

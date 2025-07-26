@@ -125,7 +125,7 @@ namespace nexo::ecs {
 			template <typename T>
 			T &getSingletonComponent()
 			{
-			    ComponentType typeName = getUniqueComponentTypeID<T>();
+			    const ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
@@ -144,7 +144,7 @@ namespace nexo::ecs {
 			template <typename T>
 			std::shared_ptr<ISingletonComponent> getRawSingletonComponent()
 			{
-			    ComponentType typeName = getUniqueComponentTypeID<T>();
+			    const ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 
@@ -162,7 +162,7 @@ namespace nexo::ecs {
 			template <typename T>
 			void unregisterSingletonComponent()
 			{
-				ComponentType typeName = getUniqueComponentTypeID<T>();
+				const ComponentType typeName = getUniqueComponentTypeID<T>();
 				if (!m_singletonComponents.contains(typeName))
 					THROW_EXCEPTION(SingletonComponentNotRegistered);
 

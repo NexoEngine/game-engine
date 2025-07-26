@@ -21,6 +21,6 @@ namespace nexo::components {
     struct PhysicsBodyComponent {
         enum class Type { Static, Dynamic };
         JPH::BodyID bodyID;
-        Type type;
+        Type type{};
     };
 }

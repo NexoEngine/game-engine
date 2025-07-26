@@ -59,7 +59,7 @@ namespace nexo::ecs {
         return types;
     }
 
-    std::vector<std::type_index> Coordinator::getAllComponentTypeIndices(Entity entity) const
+    std::vector<std::type_index> Coordinator::getAllComponentTypeIndices(const Entity entity) const
     {
         const std::vector<ComponentType>& types = getAllComponentTypes(entity);
         std::vector<std::type_index> typeIndices;
@@ -110,31 +110,31 @@ namespace nexo::ecs {
 
     bool Coordinator::supportsMementoPattern(const std::any& component) const
     {
-        auto typeId = std::type_index(component.type());
-        auto it = m_supportsMementoPattern.find(typeId);
+        const auto typeId = std::type_index(component.type());
+        const auto it = m_supportsMementoPattern.find(typeId);
         return (it != m_supportsMementoPattern.end()) && it->second;
     }
 
     std::any Coordinator::saveComponent(const std::any& component) const
     {
-        auto typeId = std::type_index(component.type());
-        auto it = m_saveComponentFunctions.find(typeId);
+        const auto typeId = std::type_index(component.type());
+        const auto it = m_saveComponentFunctions.find(typeId);
         if (it != m_saveComponentFunctions.end())
             return it->second(component);
-        return std::any();
+        return {};
     }
 
     std::any Coordinator::restoreComponent(const std::any& memento, const std::type_index& componentType) const
     {
-        auto it = m_restoreComponentFunctions.find(componentType);
+        const auto it = m_restoreComponentFunctions.find(componentType);
         if (it != m_restoreComponentFunctions.end())
             return it->second(memento);
-        return std::any();
+        return {};
     }
 
-    void Coordinator::addComponentAny(Entity entity, const std::type_index& typeIndex, const std::any& component)
+    void Coordinator::addComponentAny(const Entity entity, const std::type_index& typeIndex, const std::any& component)
     {
-        auto it = m_addComponentFunctions.find(typeIndex);
+        const auto it = m_addComponentFunctions.find(typeIndex);
         if (it != m_addComponentFunctions.end())
             it->second(entity, component);
     }

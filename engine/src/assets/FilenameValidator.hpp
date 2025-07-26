@@ -32,7 +32,7 @@ namespace nexo::assets {
             "LPT8", "LPT9"
         };
 
-        [[nodiscard]] static std::optional<std::string> validate(std::string_view name)
+        [[nodiscard]] static std::optional<std::string> validate(const std::string_view name)
         {
             if (name.empty())
                 return "Cannot be empty.";

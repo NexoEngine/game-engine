@@ -14,6 +14,7 @@
 
 #include <ranges>
 #include <algorithm>
+#include <utf8cpp/utf8.h>
 
 #include "HostString.hpp"
 
@@ -56,7 +57,7 @@ namespace nexo::scripting {
             utf8::utf16to8(m_buffer.data(), m_buffer.data() + size(), std::back_inserter(utf8));
             return utf8;
         #else
-            return std::string(m_buffer.data(), size());
+            return {m_buffer.data(), size()};
         #endif
     }
 

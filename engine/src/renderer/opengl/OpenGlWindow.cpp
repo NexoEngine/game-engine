@@ -20,7 +20,6 @@
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 
-
 namespace nexo::renderer {
     static void glfwErrorCallback(const int errorCode, const char *errorStr)
     {

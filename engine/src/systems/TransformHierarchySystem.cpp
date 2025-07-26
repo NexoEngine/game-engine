@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "TransformHierarchySystem.hpp"
-#include "components/Model.hpp"
 #include "components/Parent.hpp"
 #include "components/Transform.hpp"
 #include "components/SceneComponents.hpp"

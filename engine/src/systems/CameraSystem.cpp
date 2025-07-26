@@ -154,12 +154,12 @@ namespace nexo::system {
             auto &controller = getComponent<components::PerspectiveCameraController>(entity);
             const auto &sceneTag = getComponent<components::SceneTag>(entity);
             const auto &cameraComponent = getComponent<components::CameraComponent>(entity);
-            bool isActiveScene = sceneTag.isActive && sceneTag.id == sceneRendered;
-            bool isActiveCamera = isActiveScene && cameraComponent.active;
-            bool mouseDown = event::isMouseDown(NEXO_MOUSE_LEFT);
+            const bool isActiveScene = sceneTag.isActive && sceneTag.id == sceneRendered;
+            const bool isActiveCamera = isActiveScene && cameraComponent.active;
+            const bool mouseDown = event::isMouseDown(NEXO_MOUSE_LEFT);
 
             // Check for scene transition - if the camera wasn't active before but is now
-            bool sceneTransition = isActiveCamera && !controller.wasActiveLastFrame;
+            const bool sceneTransition = isActiveCamera && !controller.wasActiveLastFrame;
             controller.wasActiveLastFrame = isActiveCamera;
 
             // Reset position on scene transition to prevent abrupt rotation
@@ -196,10 +196,10 @@ namespace nexo::system {
             glm::quat pitchRotation = glm::angleAxis(glm::radians(-mouseDelta.y), right);
             glm::quat yawRotation = glm::angleAxis(glm::radians(-mouseDelta.x), glm::vec3(0.0f, 1.0f, 0.0f)); // World up for yaw
             glm::quat newQuat = glm::normalize(yawRotation * pitchRotation * transform.quat);
-            glm::vec3 newFront = newQuat * glm::vec3(0.0f, 0.0f, -1.0f);
+            const glm::vec3 newFront = newQuat * glm::vec3(0.0f, 0.0f, -1.0f);
 
             // Check if the resulting orientation would flip the camera (pitch constraint)
-            float pitchAngle = glm::degrees(std::asin(newFront.y));
+            const float pitchAngle = glm::degrees(std::asin(newFront.y));
             if (pitchAngle < -85.0f || pitchAngle > 85.0f)
                 transform.quat = glm::normalize(yawRotation * transform.quat);
             else
@@ -288,7 +288,7 @@ namespace nexo::system {
 
 			// Prevent excessive pitch rotation when the camera is nearly vertical.
 			glm::vec3 front = glm::normalize(transformTargetComponent.pos - transformCameraComponent.pos);
-			auto sgn = [](float x) { return (x >= 0.0f ? 1.0f : -1.0f); };
+			auto sgn = [](const float x) { return (x >= 0.0f ? 1.0f : -1.0f); };
 			if (glm::dot(front, glm::vec3(0, 1, 0)) * sgn(yAngle) > 0.99f)
 				yAngle = 0.0f;
 

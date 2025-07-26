@@ -91,7 +91,7 @@ namespace nexo::renderer {
             */
             static void setClearColor(const glm::vec4 &color) { _rendererApi->setClearColor(color); };
 
-            static void setClearDepth(float depth) { _rendererApi->setClearDepth(depth); };
+            static void setClearDepth(const float depth) { _rendererApi->setClearDepth(depth); };
 
             /**
              * @brief Clears the screen using the current clear color.
@@ -212,17 +212,17 @@ namespace nexo::renderer {
                 _rendererApi->setStencilOp(sfail, dpfail, dppass);
             }
 
-            static void setCulling(bool enable)
+            static void setCulling(const bool enable)
             {
                 _rendererApi->setCulling(enable);
             }
 
-            static void setCulledFace(CulledFace face)
+            static void setCulledFace(const CulledFace face)
             {
                 _rendererApi->setCulledFace(face);
             }
 
-            static void setWindingOrder(WindingOrder order)
+            static void setWindingOrder(const WindingOrder order)
             {
                 _rendererApi->setWindingOrder(order);
             }

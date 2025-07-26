@@ -49,7 +49,7 @@ namespace nexo::scripting {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
-        ecs::Entity NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
+        ecs::Entity NxCreateCube(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
             auto& app = Application::getInstance();
             const ecs::Entity basicCube = EntityFactory3D::createCube(position, size, rotation, color);
@@ -57,7 +57,7 @@ namespace nexo::scripting {
             return basicCube;
         }
 
-        ecs::Entity NxCreateTetrahedron(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
+        ecs::Entity NxCreateTetrahedron(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createTetrahedron(position, size, rotation, color);
@@ -65,7 +65,7 @@ namespace nexo::scripting {
             return entity;
         }
 
-        ecs::Entity NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
+        ecs::Entity NxCreatePyramid(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createPyramid(position, size, rotation, color);
@@ -73,7 +73,7 @@ namespace nexo::scripting {
             return entity;
         }
 
-        ecs::Entity NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment)
+        ecs::Entity NxCreateCylinder(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color, const UInt32 nbSegment)
         {
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createCylinder(position, size, rotation, color, nbSegment);
@@ -81,7 +81,7 @@ namespace nexo::scripting {
             return entity;
         }
 
-        ecs::Entity NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision)
+        ecs::Entity NxCreateSphere(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color, const UInt32 nbSubdivision)
         {
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createSphere(position, size, rotation, color, nbSubdivision);
@@ -101,7 +101,7 @@ namespace nexo::scripting {
 
         void* NxGetComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
-            auto& coordinator = *Application::m_coordinator;
+            const auto& coordinator = *Application::m_coordinator;
             const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
         }
@@ -181,7 +181,7 @@ namespace nexo::scripting {
 
         ComponentTypeIds NxGetComponentTypeIds()
         {
-            auto& coordinator = *Application::m_coordinator;
+            const auto& coordinator = *Application::m_coordinator;
 
             return ComponentTypeIds {
                 .Transform = coordinator.getComponentType<components::TransformComponent>(),
@@ -201,7 +201,7 @@ namespace nexo::scripting {
 
         void NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType)
         {
-            auto& app = Application::getInstance();
+            const auto& app = Application::getInstance();
             auto physicsSystem = app.getPhysicsSystem();
 
             if (!physicsSystem) {
@@ -214,18 +214,18 @@ namespace nexo::scripting {
             transform.size = {size.x, size.y, size.z};
             transform.quat = glm::quat(glm::radians(glm::vec3(rotation.x, rotation.y, rotation.z)));
 
-            system::ShapeType cppShapeType = static_cast<system::ShapeType>(shapeType);
-            JPH::EMotionType cppMotionType = static_cast<JPH::EMotionType>(motionType);
+            auto cppShapeType = static_cast<system::ShapeType>(shapeType);
+            auto cppMotionType = static_cast<JPH::EMotionType>(motionType);
 
             physicsSystem->createBodyFromShape(entity, transform, cppShapeType, cppMotionType);
 
             LOG(NEXO_DEV, "Physics body created");
         }
 
-        void NxApplyForce(ecs::Entity entity, Vector3 force)
+        void NxApplyForce(ecs::Entity entity, const Vector3 force)
         {
-            auto& app = Application::getInstance();
-            auto physicsSystem = app.getPhysicsSystem();
+            const auto& app = Application::getInstance();
+            const auto physicsSystem = app.getPhysicsSystem();
             if (!physicsSystem) {
                 LOG(NEXO_ERROR, "Physics system not available");
                 return;
@@ -235,9 +235,9 @@ namespace nexo::scripting {
                 LOG(NEXO_ERROR, "Entity {} has no PhysicsBodyComponent", entity);
                 return;
             }
-            auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
-            JPH::BodyID joltBodyID = bodyComp.bodyID;
-            JPH::Vec3 joltForce(force.x, force.y, force.z);
+            const auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
+            const JPH::BodyID joltBodyID = bodyComp.bodyID;
+            const JPH::Vec3 joltForce(force.x, force.y, force.z);
             physicsSystem->applyForce(joltBodyID, joltForce);
         }
     }

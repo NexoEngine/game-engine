@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <optional>
 #include "Shader.hpp"
 
 namespace nexo::renderer {

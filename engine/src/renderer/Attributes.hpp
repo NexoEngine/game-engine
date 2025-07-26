@@ -15,7 +15,6 @@
 
 #include <cstdint>
 
-
 namespace nexo::renderer {
 
    	struct RequiredAttributes {
@@ -36,7 +35,7 @@ namespace nexo::renderer {
             return bitsUnion.bits == o.bitsUnion.bits;
         }
 
-        bool compatibleWith(RequiredAttributes const& o) const {
+        [[nodiscard]] bool compatibleWith(RequiredAttributes const& o) const {
             return (bitsUnion.bits & o.bitsUnion.bits) == bitsUnion.bits;
         }
 	};

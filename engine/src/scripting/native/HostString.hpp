@@ -19,7 +19,6 @@
 #include <iterator>
 
 #include <hostfxr.h>
-#include <utf8cpp/utf8.h>
 
 namespace nexo::scripting {
 

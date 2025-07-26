@@ -73,7 +73,7 @@ namespace nexo::assets {
              *
              * @throws NxTextureInvalidSize If the dimensions exceed the maximum texture size.
              */
-            Texture(unsigned int width, unsigned int height)
+            Texture(const unsigned int width, const unsigned int height)
                 : Asset()
             {
                 const auto texture = renderer::NxTexture2D::create(width, height);

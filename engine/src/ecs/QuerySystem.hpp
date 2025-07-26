@@ -20,7 +20,6 @@
 #include "ComponentArray.hpp"
 #include "Coordinator.hpp"
 #include "SingletonComponentMixin.hpp"
-#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 

@@ -25,7 +25,6 @@
 #include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
-#include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/StaticMesh.hpp"
@@ -75,7 +74,6 @@ namespace nexo {
 
     void Application::registerEcsComponents() const
     {
-
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RootComponent>();
         m_coordinator->registerComponent<components::RenderComponent>();
@@ -402,7 +400,7 @@ namespace nexo {
             return;
 
         // Create a copy of the children vector since we'll be modifying it during iteration
-        std::vector<ecs::Entity> childrenCopy = transform->get().children;
+        const std::vector<ecs::Entity> childrenCopy = transform->get().children;
 
         // Delete each child entity recursively
         for (const auto& childEntity : childrenCopy)
