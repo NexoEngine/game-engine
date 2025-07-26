@@ -71,7 +71,7 @@ namespace nexo::renderer {
 
         const char *typeToken = "#type";
         size_t pos = src.find(typeToken, 0);
-        unsigned int currentLine = 1;
+        size_t currentLine = 1;
         while (pos != std::string::npos)
         {
             constexpr size_t typeTokenLength = 5;
