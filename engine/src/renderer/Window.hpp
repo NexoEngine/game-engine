@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <memory>
 #include <functional>
+#include <utility>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -35,8 +36,9 @@ namespace nexo::renderer {
     {
         unsigned int width;
         unsigned int height;
-        const char *title;
-        bool vsync{};
+        std::string title;
+        bool vsync = true;
+        bool isDarkMode = false;
 
         ResizeCallback resizeCallback;
         CloseCallback closeCallback;
@@ -46,7 +48,7 @@ namespace nexo::renderer {
         MouseMoveCallback mouseMoveCallback;
         FileDropCallback fileDropCallback;
 
-        NxWindowProperty(const unsigned int w, const unsigned h, const char * t) : width(w), height(h), title(t) {}
+        NxWindowProperty(const unsigned int w, const unsigned h, std::string t) : width(w), height(h), title(std::move(t)) {}
     };
 
     /**
@@ -81,6 +83,13 @@ namespace nexo::renderer {
             virtual void getDpiScale(float *x, float *y) const = 0;
 
             virtual void setWindowIcon(const std::filesystem::path& iconPath) = 0;
+
+            virtual void setTitle(const std::string& title) = 0;
+            [[nodiscard]] virtual const std::string& getTitle() const = 0;
+
+            virtual void setDarkMode(bool enabled) = 0;
+            [[nodiscard]] virtual bool isDarkMode() const = 0;
+
             virtual void setVsync(bool enabled) = 0;
             [[nodiscard]] virtual bool isVsync() const = 0;
 
