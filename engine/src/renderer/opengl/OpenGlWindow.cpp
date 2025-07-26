@@ -20,6 +20,15 @@
 #include "renderer/RendererExceptions.hpp"
 #include "Logger.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+    #include <dwmapi.h>
+    #define GLFW_EXPOSE_NATIVE_WIN32
+    #define GLFW_EXPOSE_NATIVE_WGL
+    #define GLFW_NATIVE_INCLUDE_NONE
+    #include <GLFW/glfw3native.h>
+    #pragma comment (lib, "Dwmapi")
+#endif
+
 namespace nexo::renderer {
     static void glfwErrorCallback(const int errorCode, const char *errorStr)
     {
@@ -113,12 +122,13 @@ namespace nexo::renderer {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        _openGlWindow = glfwCreateWindow(static_cast<int>(_props.width), static_cast<int>(_props.height), _props.title, nullptr, nullptr);
+        _openGlWindow = glfwCreateWindow(static_cast<int>(_props.width), static_cast<int>(_props.height), _props.title.c_str(), nullptr, nullptr);
         if (!_openGlWindow)
             THROW_EXCEPTION(NxGraphicsApiWindowInitFailure, "OPENGL");
         glfwMakeContextCurrent(_openGlWindow);
         glfwSetWindowUserPointer(_openGlWindow, &_props);
         setVsync(true);
+        setDarkMode(false);
         setupCallback();
         LOG(NEXO_DEV, "Opengl window ({}, {}) initialized", _props.width, _props.height);
     }
@@ -154,15 +164,14 @@ namespace nexo::renderer {
         glfwGetWindowContentScale(_openGlWindow, x, y);
     }
 
-    void NxOpenGlWindow::setWindowIcon(const std::filesystem::path& iconPath)
+    void NxOpenGlWindow::setWindowIcon(const std::filesystem::path &iconPath)
     {
         GLFWimage icon;
         const auto iconStringPath = iconPath.string();
-        icon.pixels = stbi_load(iconStringPath.c_str(), &icon.width, &icon.height, nullptr, 4);
+        icon.pixels               = stbi_load(iconStringPath.c_str(), &icon.width, &icon.height, nullptr, 4);
         if (!icon.pixels) {
             THROW_EXCEPTION(NxStbiLoadException,
-                std::format("Failed to load icon '{}': {}",
-                    iconStringPath, stbi_failure_reason()));
+                            std::format("Failed to load icon '{}': {}", iconStringPath, stbi_failure_reason()));
         }
         if (icon.width == 0 || icon.height == 0) {
             LOG(NEXO_WARN, "Icon '{}' has a size of 0x0", iconStringPath);
@@ -170,6 +179,45 @@ namespace nexo::renderer {
         LOG(NEXO_DEV, "Window icon loaded from '{}', size {}x{}", iconStringPath, icon.width, icon.height);
         glfwSetWindowIcon(_openGlWindow, 1, &icon);
         stbi_image_free(icon.pixels);
+    }
+
+    void NxOpenGlWindow::setTitle(const std::string &title)
+    {
+        _props.title = title;
+        glfwSetWindowTitle(_openGlWindow, _props.title.c_str());
+        LOG(NEXO_DEV, "Window title set to '{}'", _props.title);
+    }
+
+    const std::string &NxOpenGlWindow::getTitle() const
+    {
+        return _props.title;
+    }
+
+    void NxOpenGlWindow::setDarkMode(const bool enabled)
+    {
+#if defined(_WIN32) || defined(_WIN64)
+        HWND hWnd = glfwGetWin32Window(_openGlWindow);
+        if (hWnd == nullptr) {
+            LOG(NEXO_ERROR, "[GLFW ERROR] Failed to get Win32 window handle for dark mode setting");
+            return;
+        }
+
+        const BOOL useDarkMode                 = enabled ? TRUE : FALSE;
+        const BOOL setImmersiveDarkModeSuccess = SUCCEEDED(DwmSetWindowAttribute(
+            hWnd, DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE, &_props.isDarkMode, sizeof(useDarkMode)));
+        if (!setImmersiveDarkModeSuccess) {
+            LOG(NEXO_ERROR, "[GLFW ERROR] Failed to set enable/disable immersive dark mode for window: {}",
+                GetLastError());
+            return;
+        }
+#endif
+        LOG(NEXO_DEV, "Setting dark mode to {}", enabled ? "enabled" : "disabled");
+        _props.isDarkMode = enabled;
+    }
+
+    bool NxOpenGlWindow::isDarkMode() const
+    {
+        return _props.isDarkMode;
     }
 
     void NxOpenGlWindow::setErrorCallback(void *fctPtr)
