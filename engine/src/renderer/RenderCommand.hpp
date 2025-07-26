@@ -119,12 +119,12 @@ namespace nexo::renderer {
              * Usage:
              * - Use this method to draw meshes or primitives with indexed geometry.
              */
-            static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const unsigned int indexCount = 0)
+            static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const size_t indexCount = 0)
             {
                 _rendererApi->drawIndexed(vertexArray, indexCount);
             }
 
-            static void drawUnIndexed(const unsigned int verticesCount)
+            static void drawUnIndexed(const size_t verticesCount)
             {
                 _rendererApi->drawUnIndexed(verticesCount);
             }
