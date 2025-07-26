@@ -191,12 +191,12 @@ namespace nexo::renderer {
             * Usage:
             * - Use this value for rendering indexed primitives.
             */
-            [[nodiscard]] unsigned int getCount() const override;
+            [[nodiscard]] size_t getCount() const override;
 
             [[nodiscard]] unsigned int getId() const override { return _id; };
         private:
             unsigned int _id{};
-            unsigned int _count = 0;
+            size_t _count = 0;
     };
 
 }
