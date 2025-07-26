@@ -24,45 +24,45 @@ namespace nexo::editor {
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::init(static_cast<GLFWwindow*>(window->window()));
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::shutdown()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::shutdown();
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::initFontAtlas()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::initFontAtlas();
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::begin()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::begin();
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::end([[maybe_unused]] const std::shared_ptr<renderer::NxWindow>& window)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             OpenGLImGuiBackend::end(static_cast<GLFWwindow*>(window->window()));
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
     void ImGuiBackend::setErrorCallback([[maybe_unused]] const std::shared_ptr<renderer::NxWindow> &window)
@@ -70,9 +70,9 @@ namespace nexo::editor {
         #ifdef NX_GRAPHICS_API_OPENGL
             const auto callback = OpenGLImGuiBackend::getErrorCallback();
             window->setErrorCallback(callback);
-            return;
+        #else
+            THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(BackendRendererApiNotSupported, "UNKNOWN");
     }
 
 }

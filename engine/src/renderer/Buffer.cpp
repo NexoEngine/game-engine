@@ -20,37 +20,31 @@
 
 namespace nexo::renderer {
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable: 4702) // Unreachable code
-#endif
-
     std::shared_ptr<NxVertexBuffer> createVertexBuffer(float *vertices, unsigned int size)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(vertices, size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<NxVertexBuffer> createVertexBuffer(unsigned int size)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<NxIndexBuffer> createIndexBuffer()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlIndexBuffer>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop) // Unreachable code
-#endif
 
 }

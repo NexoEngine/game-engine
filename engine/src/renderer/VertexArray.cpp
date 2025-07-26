@@ -19,21 +19,13 @@
 
 namespace nexo::renderer {
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable: 4702) // Unreachable code
-#endif
-
     std::shared_ptr<NxVertexArray> createVertexArray()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexArray>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop) // Unreachable code
-#endif
 
 }

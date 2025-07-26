@@ -22,25 +22,16 @@ namespace nexo::event {
 
     std::shared_ptr<Input> Input::_instance = nullptr;
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable: 4702) // Unreachable code
-#endif
-
     void Input::init(const std::shared_ptr<renderer::NxWindow>& window)
     {
-        if (!_instance)
-        {
-            #ifdef NX_GRAPHICS_API_OPENGL
-                _instance = std::make_shared<InputOpenGl>(window);
-                return;
-            #endif
-            THROW_EXCEPTION(renderer::NxUnknownGraphicsApi, "UNKNOWN");
-        }
-    }
+        if (_instance)
+            return;
 
-#if defined(_MSC_VER)
-    #pragma warning(pop) // Unreachable code
-#endif
+        #ifdef NX_GRAPHICS_API_OPENGL
+            _instance = std::make_shared<InputOpenGl>(window);
+        #else
+            THROW_EXCEPTION(renderer::NxUnknownGraphicsApi, "UNKNOWN");
+        #endif
+    }
 
 }
