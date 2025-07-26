@@ -39,7 +39,7 @@ namespace nexo::renderer {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
-	void NxOpenGlShaderStorageBuffer::setData(void* data, const unsigned int size)
+	void NxOpenGlShaderStorageBuffer::setData(void* data, size_t size)
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
