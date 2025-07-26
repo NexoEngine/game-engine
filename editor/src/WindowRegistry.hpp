@@ -193,7 +193,7 @@ namespace nexo::editor {
 
 			    const auto it = m_windows.find(typeid(T));
 			    if (it == m_windows.end()) {
-			        static constexpr std::vector<std::shared_ptr<IDocumentWindow>> empty;
+			        static const std::vector<std::shared_ptr<IDocumentWindow>> empty;
 			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);
 			    }
 			    return std::ranges::transform_view(std::ranges::ref_view(it->second), caster);
