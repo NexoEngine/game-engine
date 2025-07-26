@@ -18,7 +18,7 @@ namespace nexo {
         public:
             explicit(false) Timestep(const double time = 0.0f) : m_time(time) {}
 
-            explicit operator float() const { return m_time; }
+            explicit operator float() const { return static_cast<float>(m_time); }
             explicit operator double() const { return m_time; }
 
             [[nodiscard]] double getSeconds() const {return m_time; }
