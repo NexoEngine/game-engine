@@ -25,16 +25,13 @@ namespace nexo::renderer {
     #pragma warning(disable: 4702) // Unreachable code
 #endif
 
-    std::shared_ptr<NxWindow> NxWindow::create(int width, int height, const std::string &title)
+    std::shared_ptr<NxWindow> NxWindow::create(int width, int height, const char *title)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlWindow>(width, height, title);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif
 
 }
