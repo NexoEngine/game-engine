@@ -20,35 +20,23 @@
 #include "Masks.hpp"
 #include "Passes.hpp"
 
+#include <glad/glad.h>
+
 namespace nexo::renderer {
-    GridPass::GridPass(unsigned int width, unsigned int height) : RenderPass(Passes::GRID, "Grid pass")
+    GridPass::GridPass() : RenderPass(Passes::GRID, "Grid pass")
     {
-        renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {
-            renderer::NxFrameBufferTextureFormats::RGBA8,
-            renderer::NxFrameBufferTextureFormats::RED_INTEGER,
-            renderer::NxFrameBufferTextureFormats::Depth
-        };
-        framebufferSpecs.width = width;
-        framebufferSpecs.height = height;
-        m_output = renderer::NxFramebuffer::create(framebufferSpecs);
+
     }
 
     void GridPass::execute(RenderPipeline& pipeline)
     {
-        auto output = (m_isFinal) ? pipeline.getFinalRenderTarget() : m_output;
-        std::shared_ptr<NxFramebuffer> prevPass = nullptr;
-        for (const auto &prereq : prerequisites) {
-            const auto &prereqPass = pipeline.getRenderPass(prereq);
-            prevPass = pipeline.getOutput(prereqPass->getId());
-            break;
-        }
-        if (!prevPass)
+        std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
+        if (!renderTarget)
             return;
 
-        output->copy(prevPass);
-        output->bind();
-
+        renderTarget->bind();
+        constexpr GLenum singleDrawBuffer[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, singleDrawBuffer);
         renderer::NxRenderCommand::setDepthMask(false);
         renderer::NxRenderCommand::setCulling(false);
         const auto &drawCommands = pipeline.getDrawCommands();
@@ -61,14 +49,8 @@ namespace nexo::renderer {
         renderer::NxRenderCommand::setCulling(true);
         renderer::NxRenderCommand::setCulledFace(CulledFace::BACK);
 
-        output->unbind();
-        pipeline.setOutput(id, output);
-    }
-
-    void GridPass::resize(unsigned int width, unsigned int height)
-    {
-        if (!m_output)
-            return;
-        m_output->resize(width, height);
+        constexpr GLenum allBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, allBuffers);
+        renderTarget->unbind();
     }
 }

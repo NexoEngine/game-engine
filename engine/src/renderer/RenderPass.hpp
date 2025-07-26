@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include "Framebuffer.hpp"
 
 
 namespace nexo::renderer {
@@ -29,7 +30,7 @@ namespace nexo::renderer {
 
             // The actual rendering work
             virtual void execute(RenderPipeline& pipeline) = 0;
-            virtual void resize(unsigned int width, unsigned int height) = 0;
+            virtual void resize([[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) {};
             void setFinal(bool isFinal) {m_isFinal = isFinal;};
             bool isFinal() const {return m_isFinal;}
 
@@ -39,6 +40,8 @@ namespace nexo::renderer {
             const std::vector<PassId> &getPrerequisites() const { return prerequisites; }
             std::vector<PassId> &getEffects() { return effects; }
             const std::vector<PassId> &getEffects() const { return effects; }
+
+            virtual std::shared_ptr<NxFramebuffer> getOutput() const { return nullptr; };
         protected:
             bool m_isFinal = false;
             PassId id;

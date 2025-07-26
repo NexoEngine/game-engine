@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MaskPass.hpp"
+#include <memory>
 #include "DrawCommand.hpp"
 #include "Framebuffer.hpp"
 #include "renderer/RenderPipeline.hpp"
@@ -28,13 +29,12 @@ namespace nexo::renderer {
         maskFramebufferSpecs.attachments = { renderer::NxFrameBufferTextureFormats::RGBA8, renderer::NxFrameBufferTextureFormats::DEPTH24STENCIL8 };
         maskFramebufferSpecs.width = width;  // Default size, will be resized as needed
         maskFramebufferSpecs.height = height;
-        m_output = renderer::NxFramebuffer::create(maskFramebufferSpecs);
+        m_mask = renderer::NxFramebuffer::create(maskFramebufferSpecs);
     }
 
     void MaskPass::execute(RenderPipeline& pipeline)
     {
-        auto output = (m_isFinal) ? pipeline.getFinalRenderTarget() : m_output;
-        output->bind();
+        m_mask->bind();
         renderer::NxRenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});
         renderer::NxRenderCommand::clear();
 
@@ -46,14 +46,18 @@ namespace nexo::renderer {
             if (cmd.filterMask & F_OUTLINE_MASK)
                 cmd.execute();
         }
-        output->unbind();
-        pipeline.setOutput(id, output);
+        m_mask->unbind();
     }
 
     void MaskPass::resize(unsigned int width, unsigned int height)
     {
-        if (!m_output)
+        if (!m_mask)
             return;
-        m_output->resize(width, height);
+        m_mask->resize(width, height);
+    }
+
+    std::shared_ptr<renderer::NxFramebuffer> MaskPass::getOutput() const
+    {
+        return m_mask;
     }
 }
