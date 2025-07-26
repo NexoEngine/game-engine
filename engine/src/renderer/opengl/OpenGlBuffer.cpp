@@ -78,7 +78,7 @@ namespace nexo::renderer {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    void NxOpenGlIndexBuffer::setData(unsigned int *indices, unsigned int count)
+    void NxOpenGlIndexBuffer::setData(unsigned int *indices, size_t count)
     {
         _count = count;
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
