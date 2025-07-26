@@ -883,18 +883,15 @@ namespace nexo::ecs {
 		 	 * @return std::shared_ptr<ComponentArray<T>> Pointer to the component array.
 		 	 */
 			template<typename T, std::size_t I = 0>
+	            requires (I < std::tuple_size_v<NonOwnedTuple>) // Ensure we don't go out of bounds
 			auto getNonOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
 			{
-				if constexpr (I < std::tuple_size_v<NonOwnedTuple>) {
-					using CurrentArrayPtr = std::tuple_element_t<I, NonOwnedTuple>;
-					using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
-					if constexpr (std::is_same_v<CurrentComponent, T>)
-						return std::get<I>(m_nonOwnedArrays);
-					else
-						return getNonOwnedImpl<T, I + 1>();
-				} else
-					static_assert(I < std::tuple_size_v<NonOwnedTuple>, "Component type not found in group non‑owned arrays");
-				return nullptr;
+				using CurrentArrayPtr = std::tuple_element_t<I, NonOwnedTuple>;
+				using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
+				if constexpr (std::is_same_v<CurrentComponent, T>)
+					return std::get<I>(m_nonOwnedArrays);
+				else
+					return getNonOwnedImpl<T, I + 1>();
 			}
 
 		 	/**
@@ -905,18 +902,15 @@ namespace nexo::ecs {
 		 	 * @return std::shared_ptr<ComponentArray<T>> Pointer to the component array.
 		 	 */
 			template<typename T, std::size_t I = 0>
+	            requires (I < std::tuple_size_v<OwnedTuple>) // Ensure we don't go out of bounds
 			auto getOwnedImpl() const -> std::shared_ptr<ComponentArray<T>>
 			{
-				if constexpr (I < std::tuple_size_v<OwnedTuple>) {
-					using CurrentArrayPtr = std::tuple_element_t<I, OwnedTuple>;
-					using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
-					if constexpr (std::is_same_v<CurrentComponent, T>)
-						return std::get<I>(m_ownedArrays);
-					else
-						return getOwnedImpl<T, I + 1>();
-				} else
-					static_assert(I < std::tuple_size_v<OwnedTuple>, "Component type not found in group owned arrays");
-				return nullptr;
+				using CurrentArrayPtr = std::tuple_element_t<I, OwnedTuple>;
+				using CurrentComponent = typename std::decay_t<decltype(*std::declval<CurrentArrayPtr>())>::component_type;
+				if constexpr (std::is_same_v<CurrentComponent, T>)
+					return std::get<I>(m_ownedArrays);
+				else
+					return getOwnedImpl<T, I + 1>();
 			}
 
 			/**
