@@ -42,6 +42,11 @@ namespace nexo::renderer {
         }
     }
 
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4702) // Unreachable code
+#endif
+
     std::shared_ptr<NxTexture2D> NxTexture2D::create(unsigned int width, unsigned int height)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
@@ -74,5 +79,9 @@ namespace nexo::renderer {
         #endif
         THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // Unreachable code
+#endif
 
 }
