@@ -85,7 +85,7 @@ namespace nexo::renderer {
      */
     struct NxFrameBufferAttachmentsSpecifications {
         NxFrameBufferAttachmentsSpecifications() = default;
-        NxFrameBufferAttachmentsSpecifications(std::initializer_list<NxFrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
+        NxFrameBufferAttachmentsSpecifications(const std::initializer_list<NxFrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
 
         std::vector<NxFrameBufferTextureSpecifications> attachments;
     };
@@ -177,7 +177,7 @@ namespace nexo::renderer {
 
             virtual void setClearColor(const glm::vec4 &color) = 0;
 
-            virtual void copy(const std::shared_ptr<NxFramebuffer> source) = 0;
+            virtual void copy(std::shared_ptr<NxFramebuffer> source) = 0;
 
             /**
              * @brief Retrieves the unique OpenGL ID of the framebuffer.
@@ -216,7 +216,7 @@ namespace nexo::renderer {
              * @return T The pixel data.
              */
             template<typename T>
-            T getPixel(unsigned int attachmentIndex, int x, int y) const
+            T getPixel(const unsigned int attachmentIndex, const int x, const int y) const
             {
                  T result;
                  getPixelWrapper(attachmentIndex, x, y, &result, typeid(T));

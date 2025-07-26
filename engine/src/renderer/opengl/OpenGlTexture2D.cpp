@@ -17,7 +17,6 @@
 #include <Exception.hpp>
 #include <RendererExceptions.hpp>
 
-#include "Logger.hpp"
 #include <stb_image.h>
 
 namespace nexo::renderer {

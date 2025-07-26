@@ -56,7 +56,7 @@ namespace nexo::scene {
 			* @param entity The entity identifier to add.
 			*/
 			void addEntity(ecs::Entity entity);
-			void addChildEntityToScene(const ecs::Entity entity);
+			void addChildEntityToScene(ecs::Entity entity);
 
 			/**
              * @brief Removes an entity from the scene.
@@ -90,7 +90,7 @@ namespace nexo::scene {
 			[[nodiscard]] bool isRendered() const { return m_rendered; }
 
 			[[nodiscard]] const std::string& getName() const {return m_sceneName;};
-			void setName(std::string_view newName) { m_sceneName = newName; }
+			void setName(const std::string_view newName) { m_sceneName = newName; }
 			[[nodiscard]] unsigned int getId() const {return m_id;};
 			[[nodiscard]] const std::string &getUuid() const {return m_uuid;}
 			[[nodiscard]] const std::set<ecs::Entity> &getEntities() const {return m_entities;};

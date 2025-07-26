@@ -217,13 +217,13 @@ namespace nexo::assets {
                 std::string& extractedPackName
             )
             {
-                if (auto packNameEndPos = fullLocation.find("::"); packNameEndPos != std::string::npos) {
+                if (const auto packNameEndPos = fullLocation.find("::"); packNameEndPos != std::string::npos) {
                     extractedPackName = fullLocation.substr(0, packNameEndPos);
                     fullLocation.remove_prefix(packNameEndPos + 2);
                 } else {
                     extractedPackName.clear();
                 }
-                if (auto pathStartPos = fullLocation.find('@'); pathStartPos != std::string::npos) {
+                if (const auto pathStartPos = fullLocation.find('@'); pathStartPos != std::string::npos) {
                     extractedPath = fullLocation.substr(pathStartPos + 1);
                     fullLocation.remove_suffix(fullLocation.size() - pathStartPos);
                 } else {

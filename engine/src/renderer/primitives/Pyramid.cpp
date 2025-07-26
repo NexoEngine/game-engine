@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-#include "renderer/RendererExceptions.hpp"
 
 #include <algorithm>
 #include <array>
@@ -22,7 +21,6 @@
 #include <Logger.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 namespace nexo::renderer
 {

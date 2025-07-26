@@ -32,7 +32,6 @@
     #define DIR_SEPARATOR L'\\'
 #else
     #include <dlfcn.h>
-    #include <limits.h>
 
     #define STR(s) s
     #define CH(c) c
@@ -130,7 +129,7 @@ namespace nexo::scripting {
 
             Status initialize(Parameters parameters);
 
-            const ManagedApi& getManagedApi() const
+            [[nodiscard]] const ManagedApi& getManagedApi() const
             {
                 return m_managedApi;
             }
@@ -157,7 +156,7 @@ namespace nexo::scripting {
             }
 
 
-            int runScriptExample();
+            int runScriptExample() const;
 
         protected:
 
@@ -173,8 +172,8 @@ namespace nexo::scripting {
 
         protected:
             Status m_status = UNINITIALIZED;
-            Parameters m_params;
-            HostString m_assembly_path;
+            Parameters m_params{};
+            HostString m_assembly_path{};
 
             HostfxrFn m_hostfxr_fn = {};
             CoreclrDelegate m_delegates = {};

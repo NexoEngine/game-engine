@@ -15,12 +15,13 @@
 #include "Framebuffer.hpp"
 #include <functional>
 #include <set>
+#include <utility>
 
 namespace nexo::renderer {
     PassId RenderPipeline::addRenderPass(std::shared_ptr<RenderPass> pass)
     {
         // If this is the first pass, set it as the final output
-        PassId id = pass->getId();
+        const PassId id = pass->getId();
         passes[id] = std::move(pass);
         if (passes.size() == 1)
             setFinalOutputPass(id);
@@ -28,44 +29,38 @@ namespace nexo::renderer {
         return id;
     }
 
-    void RenderPipeline::removeRenderPass(PassId id)
+    void RenderPipeline::removeRenderPass(const PassId id)
     {
         if (!passes.contains(id))
             return;
-        auto& pass = passes[id];
+        const auto &pass = passes[id];
 
         // Save prerequisites and effects before removal
         std::vector<PassId> prerequisites = pass->getPrerequisites();
         std::vector<PassId> effects = pass->getEffects();
 
         // For each prerequisite -> effect pair, create a new relationship
-        for (PassId prereqId : prerequisites) {
-            for (PassId effectId : effects) {
+        for (const PassId prereqId : prerequisites) {
+            for (const PassId effectId : effects) {
                 addPrerequisite(effectId, prereqId);
                 addEffect(prereqId, effectId);
             }
         }
 
         // Remove this pass from all prerequisites lists
-        for (auto& [passId, p] : passes) {
+        for (const auto &[passId, p] : passes) {
             auto& prereqs = p->getPrerequisites();
-            prereqs.erase(
-                std::remove(prereqs.begin(), prereqs.end(), id),
-                prereqs.end()
-            );
+            std::erase(prereqs, id);
         }
 
         // Remove this pass from all effects lists
-        for (auto& [passId, p] : passes) {
+        for (const auto& [passId, p] : passes) {
             auto& effs = p->getEffects();
-            effs.erase(
-                std::remove(effs.begin(), effs.end(), id),
-                effs.end()
-            );
+            std::erase(effs, id);
         }
 
         // First remove the pass, then find a new final output if needed
-        bool needNewFinalOutput = (finalOutputPass == static_cast<int>(id));
+        const bool needNewFinalOutput = (finalOutputPass == static_cast<int>(id));
 
         // Remove the pass from the maps
         passes.erase(id);
@@ -79,7 +74,7 @@ namespace nexo::renderer {
                 finalOutputPass = -1;
             } else {
                 // Prefer terminal passes (those with no effects)
-                auto terminalPasses = findTerminalPasses();
+                const auto terminalPasses = findTerminalPasses();
                 if (!terminalPasses.empty()) {
                     setFinalOutputPass(terminalPasses[0]);
                 } else {
@@ -91,7 +86,7 @@ namespace nexo::renderer {
         m_isDirty = true;
     }
 
-    void RenderPipeline::addPrerequisite(PassId pass, PassId prerequisite)
+    void RenderPipeline::addPrerequisite(const PassId pass, const PassId prerequisite)
     {
         if (!passes.contains(pass) || !passes.contains(prerequisite))
             return;
@@ -102,20 +97,17 @@ namespace nexo::renderer {
         m_isDirty = true;
     }
 
-    void RenderPipeline::removePrerequisite(PassId pass, PassId prerequisite)
+    void RenderPipeline::removePrerequisite(const PassId pass, const PassId prerequisite)
     {
         if (!passes.contains(pass))
             return;
 
         auto& prereqs = passes[pass]->getPrerequisites();
-        prereqs.erase(
-            std::remove(prereqs.begin(), prereqs.end(), prerequisite),
-            prereqs.end()
-        );
+        std::erase(prereqs, prerequisite);
         m_isDirty = true;
     }
 
-    void RenderPipeline::addEffect(PassId pass, PassId effect)
+    void RenderPipeline::addEffect(const PassId pass, const PassId effect)
     {
         if (!passes.contains(pass) || !passes.contains(effect))
             return;
@@ -126,28 +118,25 @@ namespace nexo::renderer {
         m_isDirty = true;
     }
 
-    void RenderPipeline::removeEffect(PassId pass, PassId effect)
+    void RenderPipeline::removeEffect(const PassId pass, const PassId effect)
     {
         if (!passes.contains(pass))
             return;
 
         auto& effects = passes[pass]->getEffects();
-        effects.erase(
-            std::remove(effects.begin(), effects.end(), effect),
-            effects.end()
-        );
+        std::erase(effects, effect);
         m_isDirty = true;
     }
 
-    std::shared_ptr<RenderPass> RenderPipeline::getRenderPass(PassId id)
+    std::shared_ptr<RenderPass> RenderPipeline::getRenderPass(const PassId id)
     {
-        auto it = passes.find(id);
+        const auto it = passes.find(id);
         if (it != passes.end())
             return it->second;
         return nullptr;
     }
 
-    std::shared_ptr<NxFramebuffer> RenderPipeline::getOutput(PassId id)
+    std::shared_ptr<NxFramebuffer> RenderPipeline::getOutput(const PassId id)
     {
         auto it = passOutputs.find(id);
         if (it != passOutputs.end())
@@ -155,23 +144,23 @@ namespace nexo::renderer {
         return nullptr;
     }
 
-    void RenderPipeline::setOutput(PassId id, std::shared_ptr<NxFramebuffer> output)
+    void RenderPipeline::setOutput(const PassId id, const std::shared_ptr<NxFramebuffer>& output)
     {
         passOutputs[id] = output;
     }
 
-    void RenderPipeline::setFinalOutputPass(PassId id)
+    void RenderPipeline::setFinalOutputPass(const PassId id)
     {
         if (passes.contains(id)) {
             if (finalOutputPass != -1 && passes.contains(finalOutputPass))
                 passes[finalOutputPass]->setFinal(false);
 
             passes[id]->setFinal(true);
-            finalOutputPass = id;
+            finalOutputPass = static_cast<int>(id);
         }
     }
 
-    void RenderPipeline::setFinalRenderTarget(std::shared_ptr<NxFramebuffer> finalRenderTarget)
+    void RenderPipeline::setFinalRenderTarget(const std::shared_ptr<NxFramebuffer> &finalRenderTarget)
     {
         m_finalRenderTarget = finalRenderTarget;
     }
@@ -192,15 +181,15 @@ namespace nexo::renderer {
         return terminals;
     }
 
-    bool RenderPipeline::hasPrerequisites(PassId id) const
+    bool RenderPipeline::hasPrerequisites(const PassId id) const
     {
-        auto it = passes.find(id);
+        const auto it = passes.find(id);
         return it != passes.end() && !it->second->getPrerequisites().empty();
     }
 
-    bool RenderPipeline::hasEffects(PassId id) const
+    bool RenderPipeline::hasEffects(const PassId id) const
     {
-        auto it = passes.find(id);
+        const auto it = passes.find(id);
         return it != passes.end() && !it->second->getEffects().empty();
     }
 
@@ -216,12 +205,12 @@ namespace nexo::renderer {
 
         std::set<PassId> visited;
         // DFS helper to build execution plan
-        std::function<void(PassId)> buildPlan = [&](PassId current) {
+        std::function<void(PassId)> buildPlan = [&](const PassId current) {
             if (visited.contains(current))
                 return;
 
             // First process all prerequisites
-            for (PassId prereq : passes[current]->getPrerequisites()) {
+            for (const PassId prereq : passes[current]->getPrerequisites()) {
                 if (passes.contains(prereq))
                     buildPlan(prereq);
             }
@@ -244,7 +233,7 @@ namespace nexo::renderer {
             }
 
             // Process each terminal pass
-            for (PassId term : terminals)
+            for (const PassId term : terminals)
                 buildPlan(term);
         }
         m_isDirty = false;
@@ -289,7 +278,7 @@ namespace nexo::renderer {
         return m_cameraClearColor;
     }
 
-    void RenderPipeline::resize(unsigned int width, unsigned int height) const
+    void RenderPipeline::resize(const unsigned int width, const unsigned int height) const
     {
         if (!m_finalRenderTarget)
             return;

@@ -14,6 +14,8 @@
 
 #include "Transform.hpp"
 
+#include <algorithm>
+
 namespace nexo::components {
     void TransformComponent::restore(const TransformComponent::Memento &memento)
     {
@@ -30,14 +32,14 @@ namespace nexo::components {
         return {pos, quat, size, localMatrix, localCenter, children};
     }
 
-    void TransformComponent::addChild(ecs::Entity childEntity)
+    void TransformComponent::addChild(const ecs::Entity childEntity)
     {
         if (std::ranges::find(children, childEntity) != children.end())
             return;
         children.push_back(childEntity);
     }
 
-    void TransformComponent::removeChild(ecs::Entity childEntity)
+    void TransformComponent::removeChild(const ecs::Entity childEntity)
     {
         children.erase(std::ranges::remove(children, childEntity).begin(), children.end());
     }

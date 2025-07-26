@@ -157,7 +157,7 @@ namespace nexo::renderer {
         glStencilOp(sfail, dpfail, dppass);
     }
 
-    void NxOpenGlRendererApi::setCulling(bool enable)
+    void NxOpenGlRendererApi::setCulling(const bool enable)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
@@ -167,7 +167,7 @@ namespace nexo::renderer {
             glDisable(GL_CULL_FACE);
     }
 
-    void NxOpenGlRendererApi::setCulledFace(CulledFace face)
+    void NxOpenGlRendererApi::setCulledFace(const CulledFace face)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
@@ -179,7 +179,7 @@ namespace nexo::renderer {
             glCullFace(GL_FRONT_AND_BACK);
     }
 
-    void NxOpenGlRendererApi::setWindingOrder(WindingOrder order)
+    void NxOpenGlRendererApi::setWindingOrder(const WindingOrder order)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");

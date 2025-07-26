@@ -16,7 +16,6 @@
 
 #include <coreclr_delegates.h>
 
-#include "Entity.hpp"
 #include "Exception.hpp"
 #include "ManagedTypedef.hpp"
 #include "components/Transform.hpp"
@@ -40,7 +39,7 @@ namespace nexo::scripting {
         using Type = Ret (CORECLR_DELEGATE_CALLTYPE *)(Args...);
 
         // Constructor explicitly accepting function pointers
-        explicit(false) ManagedApiFn(Type f) : func(f)
+        explicit(false) ManagedApiFn(const Type f) : func(f)
         {
             if (!func) {
                 THROW_EXCEPTION(InvalidManagedApi, std::format("Function pointer is null: {}", typeid(Type).name()));

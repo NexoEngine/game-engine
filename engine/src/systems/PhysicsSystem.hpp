@@ -18,18 +18,11 @@
 #include <Coordinator.hpp>
 #include <iostream>
 #include <Jolt/Jolt.h>
-#include <Jolt/RegisterTypes.h>
-#include <Jolt/Core/Factory.h>
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
-#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
-#include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
 #include <Entity.hpp>
 #include <GroupSystem.hpp>
@@ -54,11 +47,11 @@ namespace nexo::system
         constexpr JPH::uint NUM_LAYERS = 2;
     }
 
-    class MyContactListener : public JPH::ContactListener
+    class MyContactListener final : public JPH::ContactListener
     {
     public:
         // See: ContactListener
-        virtual JPH::ValidateResult OnContactValidate(
+        JPH::ValidateResult OnContactValidate(
             [[maybe_unused]] const JPH::Body& inBody1,
             [[maybe_unused]] const JPH::Body& inBody2,
             [[maybe_unused]] JPH::RVec3Arg inBaseOffset,
@@ -70,7 +63,7 @@ namespace nexo::system
             return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
         }
 
-        virtual void OnContactAdded(
+        void OnContactAdded(
             [[maybe_unused]] const JPH::Body& inBody1,
             [[maybe_unused]] const JPH::Body& inBody2,
             [[maybe_unused]] const JPH::ContactManifold& inManifold,
@@ -79,7 +72,7 @@ namespace nexo::system
             //cout << "A contact was added" << endl;
         }
 
-        virtual void OnContactPersisted(
+        void OnContactPersisted(
             [[maybe_unused]] const JPH::Body& inBody1,
             [[maybe_unused]] const JPH::Body& inBody2,
             [[maybe_unused]] const JPH::ContactManifold& inManifold,
@@ -88,7 +81,7 @@ namespace nexo::system
             //cout << "A contact was persisted" << endl;
         }
 
-        virtual void OnContactRemoved([[maybe_unused]] const JPH::SubShapeIDPair& inSubShapePair) override
+        void OnContactRemoved([[maybe_unused]] const JPH::SubShapeIDPair& inSubShapePair) override
         {
             //cout << "A contact was removed" << endl;
         }
@@ -105,12 +98,12 @@ namespace nexo::system
             mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
         }
 
-        virtual JPH::uint GetNumBroadPhaseLayers() const override
+        [[nodiscard]] JPH::uint GetNumBroadPhaseLayers() const override
         {
             return BroadPhaseLayers::NUM_LAYERS;
         }
 
-        virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
+        [[nodiscard]] JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
         {
             JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
             return mObjectToBroadPhase[inLayer];
@@ -129,13 +122,13 @@ namespace nexo::system
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
 
     private:
-        JPH::BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS];
+        JPH::BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS]{};
     };
 
-    class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
+    class ObjectVsBroadPhaseLayerFilterImpl final : public JPH::ObjectVsBroadPhaseLayerFilter
     {
     public:
-        virtual bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
+        [[nodiscard]] bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override
         {
             switch (inLayer1)
             {
@@ -150,10 +143,10 @@ namespace nexo::system
         }
     };
 
-    class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
+    class ObjectLayerPairFilterImpl final : public JPH::ObjectLayerPairFilter
     {
     public:
-        virtual bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
+        [[nodiscard]] bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override
         {
             switch (inObject1)
             {
@@ -170,14 +163,14 @@ namespace nexo::system
 
     enum class ShapeType { Box, Sphere, Cylinder, Tetrahedron, Pyramid };
 
-    class PhysicsSystem : public ecs::QuerySystem<
+    class PhysicsSystem final : public ecs::QuerySystem<
             ecs::Write<components::TransformComponent>,
             ecs::Write<components::PhysicsBodyComponent>
         >
     {
     public:
         PhysicsSystem();
-        ~PhysicsSystem();
+        ~PhysicsSystem() override;
 
         PhysicsSystem(const PhysicsSystem&) = delete;
         PhysicsSystem& operator=(const PhysicsSystem&) = delete;
@@ -185,12 +178,12 @@ namespace nexo::system
         void init();
         void update();
 
-        JPH::BodyID createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform);
-        JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform);
+        JPH::BodyID createDynamicBody(ecs::Entity entity, const components::TransformComponent& transform) const;
+        JPH::BodyID createStaticBody(ecs::Entity entity, const components::TransformComponent& transform) const;
 
-        JPH::BodyID createBody(const components::TransformComponent& transform, JPH::EMotionType motionType);
+        JPH::BodyID createBody(const components::TransformComponent& transform, JPH::EMotionType motionType) const;
         JPH::BodyID createBodyFromShape(ecs::Entity entity, const components::TransformComponent& transform,
-                                        ShapeType shapeType, JPH::EMotionType motionType);
+                                        ShapeType shapeType, JPH::EMotionType motionType) const;
 
 
         void syncTransformsToBodies(
@@ -198,20 +191,20 @@ namespace nexo::system
             ecs::Coordinator& coordinator
         ) const;
 
-        void applyForce(JPH::BodyID bodyID, const JPH::Vec3& force);
-        void setGravity(const JPH::Vec3& gravity);
-        void activateBody(JPH::BodyID bodyID);
-        void deactivateBody(JPH::BodyID bodyID);
+        void applyForce(JPH::BodyID bodyID, const JPH::Vec3& force) const;
+        void setGravity(const JPH::Vec3& gravity) const;
+        void activateBody(JPH::BodyID bodyID) const;
+        void deactivateBody(JPH::BodyID bodyID) const;
 
         JPH::BodyInterface* getBodyInterface() const { return bodyInterface; }
         const JPH::BodyLockInterface* getBodyLockInterface() const { return bodyLockInterface; }
 
     private:
-        JPH::TempAllocatorImpl* tempAllocator;
-        JPH::JobSystemThreadPool* jobSystem;
-        JPH::PhysicsSystem* physicsSystem;
-        JPH::BodyInterface* bodyInterface;
-        const JPH::BodyLockInterface* bodyLockInterface;
+        JPH::TempAllocatorImpl* tempAllocator{};
+        JPH::JobSystemThreadPool* jobSystem{};
+        JPH::PhysicsSystem* physicsSystem{};
+        JPH::BodyInterface* bodyInterface{};
+        const JPH::BodyLockInterface* bodyLockInterface{};
 
         BPLayerInterfaceImpl broadPhaseLayerInterface;
         ObjectVsBroadPhaseLayerFilterImpl objectVsBroadPhaseLayerFilter;

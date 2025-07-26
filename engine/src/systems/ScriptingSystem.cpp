@@ -20,16 +20,16 @@ namespace nexo::system {
 
     ScriptingSystem::ScriptingSystem()
     {
-        nexo::scripting::HostHandler::Parameters params;
-        params.errorCallback = [this](const nexo::scripting::HostString& message) {
+        scripting::HostHandler::Parameters params;
+        params.errorCallback = [this](const scripting::HostString& message) {
             LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
             m_latestScriptingError = message.to_utf8();
         };
 
-        nexo::scripting::HostHandler& host = nexo::scripting::HostHandler::getInstance();
+        scripting::HostHandler& host = scripting::HostHandler::getInstance();
 
         // Initialize the host
-        if (host.initialize(params) != nexo::scripting::HostHandler::SUCCESS) {
+        if (host.initialize(params) != scripting::HostHandler::SUCCESS) {
             LOG(NEXO_ERROR, "Failed to initialize host");
             THROW_EXCEPTION(scripting::ScriptingBackendInitFailed, m_latestScriptingError);
         }
@@ -38,7 +38,7 @@ namespace nexo::system {
     int ScriptingSystem::init()
     {
 
-        auto &scriptHost = scripting::HostHandler::getInstance();
+        const auto &scriptHost = scripting::HostHandler::getInstance();
 
         updateWorldState();
         if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeComponents(); ret != 0) {
@@ -64,10 +64,10 @@ namespace nexo::system {
     int ScriptingSystem::update()
     {
         const auto &scriptHost = scripting::HostHandler::getInstance();
-        auto &api = scriptHost.getManagedApi();
+        const auto &api = scriptHost.getManagedApi();
 
         updateWorldState();
-        if (auto ret = api.SystemBase.UpdateSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
+        if (const auto ret = api.SystemBase.UpdateSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
             LOG_ONCE(NEXO_ERROR, "Failed to update scripting systems");
             return ret;
         }
@@ -78,7 +78,7 @@ namespace nexo::system {
     int ScriptingSystem::shutdown()
     {
         const auto &scriptHost = scripting::HostHandler::getInstance();
-        auto &api = scriptHost.getManagedApi();
+        const auto &api = scriptHost.getManagedApi();
 
         updateWorldState();
         if (auto ret = api.SystemBase.ShutdownSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {

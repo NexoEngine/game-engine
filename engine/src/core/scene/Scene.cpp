@@ -16,7 +16,6 @@
 
 #include <utility>
 #include "components/Parent.hpp"
-#include "components/Render.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"

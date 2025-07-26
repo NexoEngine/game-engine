@@ -15,7 +15,6 @@
 #include "OpenGlFramebuffer.hpp"
 #include "Logger.hpp"
 
-#include <iostream>
 #include <utility>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -287,7 +286,7 @@ namespace nexo::renderer {
         glViewport(0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height));
     }
 
-    void NxOpenGlFramebuffer::bindAsTexture(unsigned int slot, unsigned int attachment)
+    void NxOpenGlFramebuffer::bindAsTexture(const unsigned int slot, unsigned int attachment)
     {
         if (attachment >= m_colorAttachments.size()) {
             LOG(NEXO_ERROR, "Attachment index {} out of bounds (max: {})", attachment, m_colorAttachments.size() - 1);
@@ -297,7 +296,7 @@ namespace nexo::renderer {
         glBindTexture(GL_TEXTURE_2D, getColorAttachmentId(attachment));
     }
 
-    void NxOpenGlFramebuffer::bindDepthAsTexture(unsigned int slot)
+    void NxOpenGlFramebuffer::bindDepthAsTexture(const unsigned int slot)
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_depthAttachment);
@@ -321,9 +320,9 @@ namespace nexo::renderer {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, source->getFramebufferId());
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_id);
 
-        unsigned int numAttachments = source->getNbColorAttachments();
+        const unsigned int numAttachments = source->getNbColorAttachments();
         for (unsigned int i = 0; i < numAttachments; i++) {
-            GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+            const GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
 
             // Set read and draw buffers
             glReadBuffer(attachment);
@@ -331,8 +330,8 @@ namespace nexo::renderer {
 
             // Blit this attachment
             glBlitFramebuffer(
-                0, 0, source->getSpecs().width, source->getSpecs().height,
-                0, 0, m_specs.width, m_specs.height,
+                0, 0, static_cast<int>(source->getSpecs().width), static_cast<int>(source->getSpecs().height),
+                0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height),
                 GL_COLOR_BUFFER_BIT,
                 GL_NEAREST
             );
@@ -347,13 +346,13 @@ namespace nexo::renderer {
         for (unsigned int i = 0; i < numAttachments; i++) {
             drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
         }
-        glDrawBuffers(numAttachments, drawBuffers.data());
+        glDrawBuffers(static_cast<int>(numAttachments), drawBuffers.data());
 
         // If depth and stencil are combined, copy them together
         if (source->hasDepthStencilAttachment() && this->hasDepthStencilAttachment()) {
             glBlitFramebuffer(
-                0, 0, source->getSpecs().width, source->getSpecs().height,
-                0, 0, m_specs.width, m_specs.height,
+                0, 0, static_cast<int>(source->getSpecs().width), static_cast<int>(source->getSpecs().height),
+                0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height),
                 GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT,
                 GL_NEAREST
             );
@@ -364,8 +363,8 @@ namespace nexo::renderer {
         // Copy depth buffer if both source and destination have it
         if (source->hasDepthAttachment() && this->hasDepthAttachment()) {
             glBlitFramebuffer(
-                0, 0, source->getSpecs().width, source->getSpecs().height,
-                0, 0, m_specs.width, m_specs.height,
+                0, 0, static_cast<int>(source->getSpecs().width), static_cast<int>(source->getSpecs().height),
+                0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height),
                 GL_DEPTH_BUFFER_BIT,
                 GL_NEAREST
             );
@@ -374,8 +373,8 @@ namespace nexo::renderer {
         // Copy stencil buffer if both source and destination have it
         if (source->hasStencilAttachment() && this->hasStencilAttachment()) {
             glBlitFramebuffer(
-                0, 0, source->getSpecs().width, source->getSpecs().height,
-                0, 0, m_specs.width, m_specs.height,
+                0, 0, static_cast<int>(source->getSpecs().width), static_cast<int>(source->getSpecs().height),
+                0, 0, static_cast<int>(m_specs.width), static_cast<int>(m_specs.height),
                 GL_STENCIL_BUFFER_BIT,
                 GL_NEAREST
             );
@@ -403,10 +402,10 @@ namespace nexo::renderer {
 
     glm::vec2 NxOpenGlFramebuffer::getSize() const
     {
-        return glm::vec2(m_specs.width, m_specs.height);
+        return {m_specs.width, m_specs.height};
     }
 
-    void NxOpenGlFramebuffer::getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const
+    void NxOpenGlFramebuffer::getPixelWrapper(const unsigned int attachementIndex, const int x, const int y, void *result, const std::type_info &ti) const
     {
         // Add more types here when necessary
         if (ti == typeid(int))
@@ -415,7 +414,7 @@ namespace nexo::renderer {
             THROW_EXCEPTION(NxFramebufferUnsupportedColorFormat, "OPENGL");
     }
 
-    void NxOpenGlFramebuffer::clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const
+    void NxOpenGlFramebuffer::clearAttachmentWrapper(const unsigned int attachmentIndex, const void *value, const std::type_info &ti) const
     {
         // Add more types here when necessary
         if (ti == typeid(int))

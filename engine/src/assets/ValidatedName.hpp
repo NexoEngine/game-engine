@@ -102,9 +102,9 @@ namespace nexo::assets {
     };
 
     template<Validator TValidator>
-    ValidatedName<TValidator>& ValidatedName<TValidator>::operator=(std::string_view name)
+    ValidatedName<TValidator>& ValidatedName<TValidator>::operator=(const std::string_view name)
     {
-        if (auto errorMessage = validate(name); errorMessage.has_value())
+        if (const auto errorMessage = validate(name); errorMessage.has_value())
             THROW_EXCEPTION(InvalidName, name, errorMessage.value());
         _value = name;
         return *this;
@@ -125,7 +125,7 @@ namespace nexo::assets {
     }
 
     template<Validator TValidator>
-    std::optional<std::string> ValidatedName<TValidator>::rename(std::string_view name)
+    std::optional<std::string> ValidatedName<TValidator>::rename(const std::string_view name)
     {
         if (auto errorMessage = validate(name); errorMessage.has_value())
             return errorMessage;

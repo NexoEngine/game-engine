@@ -19,7 +19,6 @@
 #include "renderer/RendererExceptions.hpp"
 #include "OpenGlShaderReflection.hpp"
 
-#include <cstring>
 #include <array>
 #include <vector>
 #include <glm/gtc/type_ptr.hpp>
@@ -39,7 +38,7 @@ namespace nexo::renderer {
     NxOpenGlShader::NxOpenGlShader(const std::string &path)
     {
         const std::string src = readFile(path);
-        auto shaderSources = preProcess(src, path);
+        const auto shaderSources = preProcess(src, path);
         compile(shaderSources);
 
         auto lastSlash = path.find_last_of("/\\");
@@ -72,7 +71,7 @@ namespace nexo::renderer {
 
         const char *typeToken = "#type";
         size_t pos = src.find(typeToken, 0);
-        int currentLine = 1;
+        unsigned int currentLine = 1;
         while (pos != std::string::npos)
         {
             constexpr size_t typeTokenLength = 5;
@@ -169,7 +168,7 @@ namespace nexo::renderer {
             // We don't need the program anymore.
             glDeleteProgram(m_id);
             // Don't leak shaders either.
-            for (auto id: glShaderIds)
+            for (const auto id: glShaderIds)
                 glDeleteShader(id);
 
             THROW_EXCEPTION(NxShaderCreationFailed, "OPENGL",
@@ -195,7 +194,7 @@ namespace nexo::renderer {
         };
 
         for (const auto& [location, info] : m_attributeInfos) {
-            auto it = attributeMappers.find(info.name);
+            const auto it = attributeMappers.find(info.name);
             if (it != attributeMappers.end()) {
                 it->second(m_requiredAttributes);
             }
@@ -213,21 +212,21 @@ namespace nexo::renderer {
     }
 
     int NxOpenGlShader::getUniformLocation(const std::string& name) const {
-        auto it = m_uniformInfos.find(name);
+        const auto it = m_uniformInfos.find(name);
         if (it != m_uniformInfos.end()) {
             return it->second.location;
         }
         return glGetUniformLocation(m_id, name.c_str());
     }
 
-    bool NxOpenGlShader::setUniformFloat(const std::string& name, float value) const
+    bool NxOpenGlShader::setUniformFloat(const std::string& name, const float value) const
     {
         if (!NxShader::hasUniform(name))
             return false;
         if (NxShader::setUniformFloat(name, value))
             return true; // Value was cached, no need to update
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -245,7 +244,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat(name, value))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -262,7 +261,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat2(name, values))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -279,8 +278,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat3(name, values))
             return true;
 
-
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -298,7 +296,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat3(name, values))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -315,7 +313,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat4(name, values))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -333,7 +331,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformFloat4(name, values))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -350,7 +348,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformMatrix(name, matrix))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -368,8 +366,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformMatrix(name, matrix))
             return true;
 
-
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -386,7 +383,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformInt(name, value))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -403,7 +400,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformBool(name, value))
             return true;
 
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -421,8 +418,7 @@ namespace nexo::renderer {
         if (NxShader::setUniformInt(name, value))
             return true;
 
-
-        int location = getUniformLocation(name);
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -436,7 +432,8 @@ namespace nexo::renderer {
     {
         if (!NxShader::hasUniform(name))
             return false;
-        int location = getUniformLocation(name);
+
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -451,7 +448,8 @@ namespace nexo::renderer {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name))
             return false;
-        int location = getUniformLocation(name);
+
+        const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
             return false;
@@ -461,21 +459,21 @@ namespace nexo::renderer {
         return true;
     }
 
-    void NxOpenGlShader::bindStorageBuffer(unsigned int index) const
+    void NxOpenGlShader::bindStorageBuffer(const unsigned int index) const
     {
     	if (index > m_storageBuffers.size())
      		THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
     	m_storageBuffers[index]->bind();
     }
 
-    void NxOpenGlShader::unbindStorageBuffer(unsigned int index) const
+    void NxOpenGlShader::unbindStorageBuffer(const unsigned int index) const
     {
     	if (index > m_storageBuffers.size())
      		THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
     	m_storageBuffers[index]->unbind();
     }
 
-    void NxOpenGlShader::bindStorageBufferBase(unsigned int index, unsigned int bindingLocation) const
+    void NxOpenGlShader::bindStorageBufferBase(const unsigned int index, const unsigned int bindingLocation) const
     {
    		if (index > m_storageBuffers.size())
     		THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
