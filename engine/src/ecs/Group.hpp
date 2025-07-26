@@ -153,13 +153,11 @@ namespace nexo::ecs {
 			 * The constructor computes the owned and non‑owned signatures and their combination.
 			 */
 			template<typename... NonOwning>
+	            requires (std::tuple_size_v<OwnedTuple> > 0) // Ensure at least one owned component for Group
 			Group(OwnedTuple ownedArrays, NonOwnedTuple nonOwnedArrays)
 			    : m_ownedArrays(std::move(ownedArrays))
 			    , m_nonOwnedArrays(std::move(nonOwnedArrays))
 			{
-				if (std::tuple_size_v<OwnedTuple> == 0)
-				    THROW_EXCEPTION(InternalError, "Group must have at least one owned component");
-
 				m_ownedSignature = std::apply([]([[maybe_unused]] auto&&... arrays) {
 				    Signature signature;
 				    ((signature.set(getComponentTypeID<typename std::decay_t<decltype(*arrays)>::component_type>())), ...);
