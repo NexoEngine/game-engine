@@ -55,12 +55,8 @@ namespace nexo::editor
         auto maskPass = std::make_shared<renderer::MaskPass>(
                                 static_cast<unsigned int>(m_contentSize.x),
                                 static_cast<unsigned int>(m_contentSize.y));
-        auto outlinePass = std::make_shared<renderer::OutlinePass>(
-                                static_cast<unsigned int>(m_contentSize.x),
-                                static_cast<unsigned int>(m_contentSize.y));
-        auto gridPass = std::make_shared<renderer::GridPass>(
-                                static_cast<unsigned int>(m_contentSize.x),
-                                static_cast<unsigned int>(m_contentSize.y));
+        auto outlinePass = std::make_shared<renderer::OutlinePass>();
+        auto gridPass = std::make_shared<renderer::GridPass>();
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
         const renderer::PassId maskId = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
