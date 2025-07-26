@@ -22,7 +22,7 @@ namespace nexo::renderer {
 
 	class NxOutOfRangeException final : public Exception {
         public:
-            explicit NxOutOfRangeException(size_t index, unsigned int size,
+            explicit NxOutOfRangeException(size_t index, size_t size,
                                          const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Index {} is out of range [0, {})", index, size), loc) {}
     };
