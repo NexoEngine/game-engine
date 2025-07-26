@@ -303,6 +303,12 @@ namespace nexo::ecs {
 	        std::shared_ptr<ActualGroupType> m_group = nullptr;
 
 	    private:
+
+#if defined(_MSC_VER)
+    #pragma warning(push) // createGroupImpl
+    #pragma warning(disable: 4702) // Unreachable code
+#endif
+
 			/**
 			* @brief Implementation to create a group with the extracted component types
 			*
@@ -328,5 +334,10 @@ namespace nexo::ecs {
 				}
 				return nullptr;
 			}
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // createGroupImpl
+#endif
+
     };
 }
