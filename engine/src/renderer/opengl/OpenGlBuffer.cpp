@@ -48,7 +48,7 @@ namespace nexo::renderer {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void NxOpenGlVertexBuffer::setData(void *data, const unsigned int size)
+    void NxOpenGlVertexBuffer::setData(void *data, size_t size)
     {
         glBindBuffer(GL_ARRAY_BUFFER, _id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
