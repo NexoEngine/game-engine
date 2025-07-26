@@ -211,7 +211,7 @@ namespace nexo::assets {
             modelPath = Path::getExecutablePath();
             LOG(NEXO_WARN, "ModelImporter: Model {}: Model path not given (imported from memory), using executable path for texture lookup.", std::quoted(ctx.location.getFullLocation()));
         }
-        std::filesystem::path modelDirectory = modelPath.parent_path();
+        const std::filesystem::path modelDirectory = modelPath.parent_path();
 
         for (unsigned int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
             aiMaterial const *material = scene->mMaterials[matIdx];
@@ -355,7 +355,7 @@ namespace nexo::assets {
         return meshNode;
     }
 
-    Mesh ModelImporter::processMesh(const AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
+    Mesh ModelImporter::processMesh(const AssetImporterContext& ctx, aiMesh* mesh, [[maybe_unused]] const aiScene* scene) const
     {
         std::shared_ptr<renderer::NxVertexArray> vao = renderer::createVertexArray();
         auto vertexBuffer = renderer::createVertexBuffer(mesh->mNumVertices * sizeof(renderer::NxVertex));

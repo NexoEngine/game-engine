@@ -48,6 +48,6 @@ namespace nexo::system {
                     const std::shared_ptr<ecs::ComponentArray<components::TransformComponent>> &transformComponentArray,
                     const std::vector<ecs::Entity>& children,
                     const glm::mat4& parentWorldMatrix);
-                glm::mat4 calculateLocalMatrix(const components::TransformComponent& transform) const;
+                [[nodiscard]] glm::mat4 calculateLocalMatrix(const components::TransformComponent& transform) const;
 	};
 }

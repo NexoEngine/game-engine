@@ -16,7 +16,6 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
-#include "ShaderLibrary.hpp"
 
 #include <array>
 #include <glm/glm.hpp>

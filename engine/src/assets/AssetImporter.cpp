@@ -32,7 +32,7 @@ namespace nexo::assets {
 
     AssetImporter::~AssetImporter()
     {
-        for (auto& importers: m_importers | std::views::values) {
+        for (const auto& importers: m_importers | std::views::values) {
             for (const auto& importer: importers) {
                 delete importer;
             }

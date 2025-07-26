@@ -109,7 +109,7 @@ namespace nexo::scripting {
         const auto assemblyPath = HostString(m_params.assemblyPath.c_str());
         const auto dotnetRoot = HostString(m_params.dotnetRoot.c_str());
 
-        get_hostfxr_parameters params {
+        const get_hostfxr_parameters params {
             sizeof(get_hostfxr_parameters),
             assemblyPath.empty() ? nullptr : assemblyPath.c_str(),
             dotnetRoot.empty() ? nullptr : dotnetRoot.c_str()
@@ -158,7 +158,7 @@ namespace nexo::scripting {
         const HostString configPath = runtimeConfigPath.c_str();
 
         // Load .NET Core
-        unsigned int rc = m_hostfxr_fn.init_for_config(configPath.c_str(), nullptr, &m_host_ctx);
+        const unsigned int rc = m_hostfxr_fn.init_for_config(configPath.c_str(), nullptr, &m_host_ctx);
         if (rc != 0 || m_host_ctx == nullptr) {
             m_params.errorCallback(std::format("Init failed: 0x{:X}", rc));
             m_hostfxr_fn.close(m_host_ctx);
@@ -327,7 +327,7 @@ namespace nexo::scripting {
         return m_status = SUCCESS;
     }
 
-    int HostHandler::runScriptExample()
+    int HostHandler::runScriptExample() const
     {
         // Run managed code
         // Call the Hello method multiple times
@@ -342,7 +342,7 @@ namespace nexo::scripting {
 
 
         // Call UnmanagedCallersOnly method
-        lib_args args_unmanaged {
+        const lib_args args_unmanaged {
             STR("from host!"),
             -1
         };

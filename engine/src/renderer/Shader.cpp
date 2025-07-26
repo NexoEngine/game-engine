@@ -60,18 +60,18 @@ namespace nexo::renderer {
         m_storageBuffers.push_back(buffer);
     }
 
-    void NxShader::setStorageBufferData(unsigned int index, void *data, unsigned int size)
+    void NxShader::setStorageBufferData(const unsigned int index, void *data, const unsigned int size)
     {
         if (index >= m_storageBuffers.size())
             THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
         m_storageBuffers[index]->setData(data, size);
     }
 
-    bool NxShader::setUniformFloat(const std::string& name, float value) const
+    bool NxShader::setUniformFloat(const std::string& name, const float value) const
     {
         // Use uniform cache to avoid redundant state changes
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<float>(*optionalValue) &&
                 std::get<float>(*optionalValue) == value) {
@@ -86,7 +86,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformFloat2(const std::string& name, const glm::vec2& values) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<glm::vec2>(*optionalValue) &&
                 std::get<glm::vec2>(*optionalValue) == values) {
@@ -101,7 +101,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformFloat3(const std::string& name, const glm::vec3& values) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<glm::vec3>(*optionalValue) &&
                 std::get<glm::vec3>(*optionalValue) == values) {
@@ -116,7 +116,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformFloat4(const std::string& name, const glm::vec4& values) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<glm::vec4>(*optionalValue) &&
                 std::get<glm::vec4>(*optionalValue) == values) {
@@ -131,7 +131,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformMatrix(const std::string& name, const glm::mat4& matrix) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<glm::mat4>(*optionalValue) &&
                 std::get<glm::mat4>(*optionalValue) == matrix) {
@@ -146,7 +146,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformBool(const std::string& name, bool value) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<bool>(*optionalValue) &&
                 std::get<bool>(*optionalValue) == value) {
@@ -161,7 +161,7 @@ namespace nexo::renderer {
     bool NxShader::setUniformInt(const std::string& name, int value) const
     {
         if (!m_uniformCache.isDirty(name)) {
-            auto optionalValue = m_uniformCache.getValue(name);
+            const auto optionalValue = m_uniformCache.getValue(name);
             if (optionalValue.has_value() &&
                 std::holds_alternative<int>(*optionalValue) &&
                 std::get<int>(*optionalValue) == value) {
@@ -211,7 +211,7 @@ namespace nexo::renderer {
         return m_uniformInfos.contains(name);
     }
 
-    bool NxShader::hasAttribute(int location) const
+    bool NxShader::hasAttribute(const int location) const
     {
         return m_attributeInfos.contains(location);
     }

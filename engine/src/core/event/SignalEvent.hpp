@@ -23,7 +23,7 @@ namespace nexo::event {
 
     class EventAnySignal final : public Event<EventAnySignal> {
         public:
-            explicit EventAnySignal(int signal) : signal(signal) {};
+            explicit EventAnySignal(const int signal) : signal(signal) {};
             int signal;
 
             friend std::ostream &operator<<(std::ostream &os, const EventAnySignal &event)
