@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <string>
+#include <utility>
 #include <vector>
 #include <cstdint>
 
@@ -24,21 +25,21 @@ namespace nexo::renderer {
 
     class RenderPass {
         public:
-            RenderPass(PassId id, const std::string& debugName = "") : id(id), name(debugName) {}
+            explicit RenderPass(const PassId id, std::string  debugName = "") : id(id), name(std::move(debugName)) {}
             virtual ~RenderPass() = default;
 
             // The actual rendering work
             virtual void execute(RenderPipeline& pipeline) = 0;
             virtual void resize(unsigned int width, unsigned int height) = 0;
-            void setFinal(bool isFinal) {m_isFinal = isFinal;};
-            bool isFinal() const {return m_isFinal;}
+            void setFinal(const bool isFinal) {m_isFinal = isFinal;};
+            [[nodiscard]] bool isFinal() const {return m_isFinal;}
 
-            PassId getId() const { return id; }
-            const std::string& getName() const { return name; }
+            [[nodiscard]] PassId getId() const { return id; }
+            [[nodiscard]] const std::string& getName() const { return name; }
             std::vector<PassId> &getPrerequisites() { return prerequisites; }
-            const std::vector<PassId> &getPrerequisites() const { return prerequisites; }
+            [[nodiscard]] const std::vector<PassId> &getPrerequisites() const { return prerequisites; }
             std::vector<PassId> &getEffects() { return effects; }
-            const std::vector<PassId> &getEffects() const { return effects; }
+            [[nodiscard]] const std::vector<PassId> &getEffects() const { return effects; }
         protected:
             bool m_isFinal = false;
             PassId id;

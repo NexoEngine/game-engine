@@ -20,10 +20,6 @@
 #include "Asset.hpp"
 #include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
-
-#include "Assets/Texture/Texture.hpp"
-
-#include "Assets/Texture/Texture.hpp"
 #include "assets/AssetRef.hpp"
 
 namespace nexo::assets {
@@ -86,14 +82,14 @@ namespace nexo::assets {
              * @param asset The asset to move.
              * @param path The new location for the asset.
              */
-            void moveAsset(const GenericAssetRef &asset, const std::string &path);
+            void moveAsset(const GenericAssetRef &asset, const std::string &path) const;
 
             /**
              * @brief Moves an asset to another location.
              * @param id The ID of the asset to move.
              * @param path The new location for the asset.
              */
-            void moveAsset(AssetID id, const std::string &path);
+            void moveAsset(AssetID id, const std::string &path) const;
 
 
             /**

@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <iostream>
 #include <utility>
 
 namespace nexo::event {
@@ -58,7 +57,7 @@ namespace nexo::event {
              *
              * @param event The event to handle.
              */
-            virtual void handleEvent(T &) = 0;
+            virtual void handleEvent(T &event) = 0;
     };
 
     /**

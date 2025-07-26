@@ -14,17 +14,13 @@
 
 
 #include "renderer/Renderer3D.hpp"
-#include "renderer/RendererExceptions.hpp"
 
-#include <algorithm>
 #include <array>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-
 
 namespace nexo::renderer
 {
@@ -60,7 +56,7 @@ namespace nexo::renderer
         vertices = verts;
 
         // Basic UV mapping for each face
-        std::array<glm::vec2, 12> textureCoords = {{
+        const std::array<glm::vec2, 12> textureCoords = {{
             {0.5f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, // Front face
             {1.0f, 0.5f}, {1.0f, 1.0f}, {0.0f, 0.0f}, // Right face
             {0.0f, 0.5f}, {1.0f, 0.0f}, {1.0f, 1.0f}, // Left face
@@ -68,9 +64,6 @@ namespace nexo::renderer
         }};
 
         texCoords = textureCoords;
-
-        // Compute normals for each face
-        //std::array<glm::vec3, 12> norm;
 
         for (int i = 0; i < 12; i += 3)
         {
@@ -83,9 +76,6 @@ namespace nexo::renderer
             normals[i + 1] = normal;
             normals[i + 2] = normal;
         }
-
-        //normals = norm;
-        //std::ranges::copy(norm, normals.begin());
     }
 
 
@@ -128,7 +118,7 @@ namespace nexo::renderer
             vertexData[i].entityID = 0; // Default entity ID
         }
 
-        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
         tetrahedronVao->addVertexBuffer(vertexBuffer);
 
         std::vector<unsigned int> indices(nbVerticesTetrahedron);
@@ -136,7 +126,7 @@ namespace nexo::renderer
             indices[i] = i;
 
         const auto indexBuffer = createIndexBuffer();
-        indexBuffer->setData(indices.data(), indices.size());
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         tetrahedronVao->setIndexBuffer(indexBuffer);
 
         return tetrahedronVao;

@@ -17,6 +17,7 @@
 #include "components/Transform.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/RenderContext.hpp"
+
 namespace nexo::system {
     class TransformMatrixSystem final : public ecs::QuerySystem<
         ecs::Write<components::TransformComponent>,

@@ -25,7 +25,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
 #include <map>
-#include <set>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
@@ -44,7 +43,7 @@ namespace nexo::renderer
         std::vector<glm::vec3> vertices{};
         vertices.reserve(12); // Reserve space for the 12 vertices of the icosahedron
 
-        const float phi = (1.0f + sqrt(5.0f)) * 0.5f; // golden ratio
+        const float phi = (1.0f + sqrtf(5.0f)) * 0.5f; // golden ratio
         float a = 1.0f;
         float b = 1.0f / phi;
 
@@ -241,11 +240,11 @@ namespace nexo::renderer
             vertexData[i].entityID = 0; // Default entity ID
         }
 
-        vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
+        vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
         sphereVaoMap[nbSubdivision]->addVertexBuffer(vertexBuffer);
 
         const auto indexBuffer = createIndexBuffer();
-        indexBuffer->setData(indices.data(), indices.size());
+        indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         sphereVaoMap[nbSubdivision]->setIndexBuffer(indexBuffer);
 
         return sphereVaoMap[nbSubdivision];

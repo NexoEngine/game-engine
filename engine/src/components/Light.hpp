@@ -36,7 +36,7 @@ namespace nexo::components {
             color = memento.color;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {color};
         }
@@ -64,7 +64,7 @@ namespace nexo::components {
             color = memento.color;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {direction, color};
         }
@@ -94,7 +94,7 @@ namespace nexo::components {
             constant = memento.constant;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {color, linear, quadratic, maxDistance, constant};
         }
@@ -133,7 +133,7 @@ namespace nexo::components {
             constant = memento.constant;
         }
 
-        Memento save() const
+        [[nodiscard]] Memento save() const
         {
             return {direction, color, cutOff, outerCutoff, linear, quadratic, maxDistance, constant};
         }

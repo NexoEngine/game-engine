@@ -45,12 +45,12 @@ namespace nexo::scene {
 		return newScene.getId();
 	}
 
-	void SceneManager::deleteScene(unsigned int id)
+	void SceneManager::deleteScene(const unsigned int id)
 	{
 		m_scenes.erase(id);
 	}
 
-	Scene &SceneManager::getScene(unsigned int id)
+	Scene &SceneManager::getScene(const unsigned int id)
 	{
 		return m_scenes.at(id);
 	}

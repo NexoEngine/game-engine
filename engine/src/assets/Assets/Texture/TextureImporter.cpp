@@ -40,7 +40,7 @@ namespace nexo::assets {
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
             rendererTexture = renderer::NxTexture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
         else {
-            auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
+            const auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
             rendererTexture = renderer::NxTexture2D::create(data.data(), static_cast<unsigned int>(data.size()));
         }
         auto assetData = std::make_unique<TextureData>();

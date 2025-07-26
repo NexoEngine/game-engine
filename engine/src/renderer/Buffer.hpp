@@ -64,7 +64,7 @@ namespace nexo::renderer {
      * - FLOAT3 will return 12 (3 floats, 4 bytes each).
      * - MAT4 will return 64 (4x4 matrix of floats).
      */
-    static unsigned int shaderDataTypeSize(NxShaderDataType type)
+    static unsigned int shaderDataTypeSize(const NxShaderDataType type)
     {
         switch (type)
         {

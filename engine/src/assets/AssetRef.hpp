@@ -108,7 +108,7 @@ namespace nexo::assets {
         /**
          * @brief Requests the AssetCatalog to load the asset
          */
-        void load() {
+        void load() const {
             if (auto ptr = lock()) {
                 // TODO: Implement reloadAsset in AssetCatalog
                 // Example: AssetCatalog::getInstance().reloadAsset(ptr);
@@ -119,7 +119,7 @@ namespace nexo::assets {
         /**
          * @brief Requests the AssetCatalog to unload the asset but maintain the reference
          */
-        void unload() {
+        void unload() const {
             if (auto ptr = lock()) {
                 // TODO: Implement unloadAsset in AssetCatalog
                 // Example: AssetCatalog::getInstance().unloadAsset(ptr);

@@ -142,20 +142,20 @@ namespace nexo::ecs {
             {
                 m_componentManager->registerComponent<T>();
 
-                m_getComponentFunctions[typeid(T)] = [this](Entity entity) -> std::any {
+                m_getComponentFunctions[typeid(T)] = [this](const Entity entity) -> std::any {
                     return this->getComponent<T>(entity);
                 };
 
-                m_getComponentPointers[typeid(T)] = [this](Entity entity) -> std::any {
+                m_getComponentPointers[typeid(T)] = [this](const Entity entity) -> std::any {
                     auto opt = this->tryGetComponent<T>(entity);
                     if (!opt.has_value())
-                        return std::any();
+                        return {};
                     T* ptr = &opt.value().get();
                     return std::any(static_cast<void*>(ptr));
                 };
                 m_typeIDtoTypeIndex.emplace(getComponentType<T>(), typeid(T));
 
-                m_addComponentFunctions[typeid(T)] = [this](Entity entity, const std::any& componentAny) {
+                m_addComponentFunctions[typeid(T)] = [this](const Entity entity, const std::any& componentAny) {
                     T component = std::any_cast<T>(componentAny);
                     this->addComponent<T>(entity, component);
                 };
@@ -184,7 +184,7 @@ namespace nexo::ecs {
 
             ComponentType registerComponent(const size_t componentSize, const size_t initialCapacity = 1024)
             {
-                auto typeID = m_componentManager->registerComponent(componentSize, initialCapacity);
+                const auto typeID = m_componentManager->registerComponent(componentSize, initialCapacity);
                 return typeID;
             }
 
@@ -368,7 +368,7 @@ namespace nexo::ecs {
                 return m_addComponentFunctions;
             }
 
-            Signature getSignature(Entity entity) const {
+            Signature getSignature(const Entity entity) const {
                 return m_entityManager->getSignature(entity);
             }
 
@@ -440,10 +440,10 @@ namespace nexo::ecs {
                     const Signature entitySignature = m_entityManager->getSignature(entity);
 
                     // Entity must have all required components
-                    bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
+                    const bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
 
                     // Entity must not have any excluded components
-                    bool hasAnyExcluded = (entitySignature & excludeSignature).any();
+                    const bool hasAnyExcluded = (entitySignature & excludeSignature).any();
 
                     if (hasAllRequired && !hasAnyExcluded)
                         result.push_back(entity);
@@ -606,7 +606,7 @@ namespace nexo::ecs {
                 result.reserve(livingEntities.size());
                 for (Entity entity : livingEntities)
                 {
-                    bool hasAll = (entityHasComponent<ComponentTypes>(entity) && ...);
+                    const bool hasAll = (entityHasComponent<ComponentTypes>(entity) && ...);
                     if (hasAll)
                     {
                         result.push_back(entity);

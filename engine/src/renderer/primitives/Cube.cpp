@@ -21,7 +21,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 namespace nexo::renderer
 {
@@ -136,7 +135,7 @@ namespace nexo::renderer
         for (uint32_t i = 0; i < nbVerticesCube; ++i)
             indices[i] = i;
 
-        auto indexBuffer = createIndexBuffer();
+        const auto indexBuffer = createIndexBuffer();
         indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         cubeVao->setIndexBuffer(indexBuffer);
 
