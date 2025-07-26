@@ -112,7 +112,7 @@ namespace nexo::renderer {
         return static_cast<unsigned int>(maxTextureSize);
     }
 
-    void NxOpenGlTexture2D::setData(void *data, const unsigned int size)
+    void NxOpenGlTexture2D::setData(void *data, size_t size)
     {
         if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
             THROW_EXCEPTION(NxTextureSizeMismatch, "OPENGL", size, expectedSize);

@@ -107,7 +107,7 @@ namespace nexo::renderer {
              * Usage:
              * - Use this method for dynamically updating buffer content.
              */
-            void setData(void *data, unsigned int size) override;
+            void setData(void *data, size_t size) override;
 
             [[nodiscard]] unsigned int getId() const override { return _id; };
 
