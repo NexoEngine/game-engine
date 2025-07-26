@@ -60,7 +60,7 @@ namespace nexo::renderer {
         m_storageBuffers.push_back(buffer);
     }
 
-    void NxShader::setStorageBufferData(const unsigned int index, void *data, const unsigned int size)
+    void NxShader::setStorageBufferData(const size_t index, void* data, const size_t size)
     {
         if (index >= m_storageBuffers.size())
             THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
