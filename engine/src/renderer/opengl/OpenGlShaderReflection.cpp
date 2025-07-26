@@ -50,7 +50,7 @@ namespace nexo::renderer {
 
             // For array uniforms, also store the base name (without [0])
             std::string baseName = info.name;
-            size_t bracketPos = baseName.find('[');
+            const size_t bracketPos = baseName.find('[');
             if (bracketPos != std::string::npos) {
                 baseName = baseName.substr(0, bracketPos);
 
@@ -67,7 +67,7 @@ namespace nexo::renderer {
         return uniforms;
     }
 
-    std::unordered_map<int, AttributeInfo> ShaderReflection::reflectAttributes(unsigned int programId)
+    std::unordered_map<int, AttributeInfo> ShaderReflection::reflectAttributes(const unsigned int programId)
     {
         std::unordered_map<int, AttributeInfo> attributes;
 
@@ -93,7 +93,7 @@ namespace nexo::renderer {
         return attributes;
     }
 
-    std::vector<std::string> ShaderReflection::getRequiredAttributes(unsigned int programId)
+    std::vector<std::string> ShaderReflection::getRequiredAttributes(const unsigned int programId)
     {
         auto attributes = reflectAttributes(programId);
         std::vector<std::string> required;

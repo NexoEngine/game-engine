@@ -48,9 +48,9 @@ namespace nexo::renderer {
             std::shared_ptr<NxFramebuffer> getOutput(PassId id);
 
             // Set output for a pass
-            void setOutput(PassId id, std::shared_ptr<NxFramebuffer> output);
+            void setOutput(PassId id, const std::shared_ptr<NxFramebuffer>& output);
 
-            void setFinalRenderTarget(std::shared_ptr<NxFramebuffer> finalRenderTarget);
+            void setFinalRenderTarget(const std::shared_ptr<NxFramebuffer>& finalRenderTarget);
             std::shared_ptr<NxFramebuffer> getFinalRenderTarget() const;
 
             // Set the final output pass

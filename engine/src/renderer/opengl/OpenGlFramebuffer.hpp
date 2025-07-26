@@ -126,7 +126,7 @@ namespace nexo::renderer {
 
             void setClearColor(const glm::vec4 &color) override {m_clearColor = color;}
 
-            void copy(const std::shared_ptr<NxFramebuffer> source) override;
+            void copy(std::shared_ptr<NxFramebuffer> source) override;
 
             [[nodiscard]] unsigned int getFramebufferId() const override;
 
@@ -159,7 +159,7 @@ namespace nexo::renderer {
              * @return T The pixel data.
              */
             template<typename T>
-            T getPixelImpl(unsigned int attachmentIndex, int x, int y) const
+            T getPixelImpl(const unsigned int attachmentIndex, const int x, const int y) const
             {
                 if (attachmentIndex >= m_colorAttachments.size())
                     THROW_EXCEPTION(NxFramebufferInvalidIndex, "OPENGL", attachmentIndex);
@@ -167,8 +167,8 @@ namespace nexo::renderer {
                 glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 
                 auto &textureFormat = m_colorAttachmentsSpecs[attachmentIndex].textureFormat;
-                GLenum format = framebufferTextureFormatToOpenGlFormat(textureFormat);
-                GLenum type = getGLTypeFromTemplate<T>();
+                const GLenum format = framebufferTextureFormatToOpenGlFormat(textureFormat);
+                const GLenum type = getGLTypeFromTemplate<T>();
 
                 T pixelData;
                 glReadPixels(x, y, 1, 1, format, type, &pixelData);
@@ -188,7 +188,7 @@ namespace nexo::renderer {
              * @param value The value to clear the attachment to.
              */
             template<typename T>
-            void clearAttachmentImpl(unsigned int attachmentIndex, const void *value) const
+            void clearAttachmentImpl(const unsigned int attachmentIndex, const void *value) const
             {
                 if (attachmentIndex >= m_colorAttachments.size())
                     THROW_EXCEPTION(NxFramebufferInvalidIndex, "OPENGL", attachmentIndex);

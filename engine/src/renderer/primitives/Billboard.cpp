@@ -80,7 +80,7 @@ namespace nexo::renderer
             return billboardVao;
 
         billboardVao = createVertexArray();
-        auto vertexBuffer = createVertexBuffer(nbVerticesBillboard * sizeof(NxVertex));
+        const auto vertexBuffer = createVertexBuffer(nbVerticesBillboard * sizeof(NxVertex));
         const NxBufferLayout cubeVertexBufferLayout = {
             {NxShaderDataType::FLOAT3, "aPos"},
             {NxShaderDataType::FLOAT2, "aTexCoord"},
@@ -114,7 +114,7 @@ namespace nexo::renderer
         for (uint32_t i = 0; i < nbVerticesBillboard; ++i)
             indices[i] = i;
 
-        auto indexBuffer = createIndexBuffer();
+        const auto indexBuffer = createIndexBuffer();
         indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
         billboardVao->setIndexBuffer(indexBuffer);
 

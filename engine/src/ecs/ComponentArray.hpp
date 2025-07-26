@@ -171,7 +171,7 @@ namespace nexo::ecs {
             return &m_componentArray[m_sparse[entity]];
         }
 
-        [[nodiscard]] const void* getRawComponent(Entity entity) const override
+        [[nodiscard]] const void* getRawComponent(const Entity entity) const override
         {
             if (!hasComponent(entity))
                 return nullptr;
@@ -250,7 +250,7 @@ namespace nexo::ecs {
             if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
             } else {
-                new (&m_componentArray[newIndex]) T(*reinterpret_cast<const T*>(componentData));
+                THROW_EXCEPTION(InternalError, "Component type is not trivially copyable for raw insertion");
             }
 
             ++m_size;
@@ -335,7 +335,7 @@ namespace nexo::ecs {
             return m_componentArray[m_sparse[entity]];
         }
 
-        void duplicateComponent(Entity sourceEntity, Entity destEntity) override
+        void duplicateComponent(const Entity sourceEntity, const Entity destEntity) override
         {
             if (!hasComponent(sourceEntity))
                 THROW_EXCEPTION(ComponentNotFound, sourceEntity);
@@ -608,7 +608,7 @@ namespace nexo::ecs {
         {
             if (m_size < m_componentArray.capacity() / 4 && m_componentArray.capacity() > capacity * 2) {
                 // Only shrink if vectors are significantly oversized to avoid frequent reallocations
-                size_t newCapacity = std::max(m_size * 2, static_cast<size_t>(capacity));
+                size_t newCapacity = std::max(m_size * 2, capacity);
                 if (newCapacity < capacity)
                     newCapacity = capacity;
 

@@ -17,7 +17,6 @@
 #include <csignal>
 #include <cstring>
 
-
 namespace nexo::utils {
 
 #ifdef _WIN32

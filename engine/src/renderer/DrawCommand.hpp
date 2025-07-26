@@ -35,7 +35,7 @@ namespace nexo::renderer {
                  1.0f, -1.0f,  1.0f, 0.0f,
                  1.0f,  1.0f,  1.0f, 1.0f
             };
-            auto vb = createVertexBuffer(sizeof(quadVertices));
+            const auto vb = createVertexBuffer(sizeof(quadVertices));
             vb->setData(quadVertices, sizeof(quadVertices));
             vb->setLayout({
                 {NxShaderDataType::FLOAT2, "aPosition"},

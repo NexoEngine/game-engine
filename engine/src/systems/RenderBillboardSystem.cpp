@@ -115,14 +115,14 @@ namespace nexo::system {
     {
         renderer::DrawCommand cmd;
         cmd.vao = mesh.vao;
-        bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
+        const bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
         if (isOpaque)
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
         else {
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
             cmd.uniforms["uMaterial.albedoColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-            auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-            auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
+            const auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
+            const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
             cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
         }
         const glm::mat4 &billboardRotation = createBillboardTransformMatrix(cameraPosition, transform);
@@ -135,7 +135,7 @@ namespace nexo::system {
     }
 
     static renderer::DrawCommand createDrawCommand(
-        ecs::Entity entity,
+        const ecs::Entity entity,
         const glm::vec3 &cameraPosition,
         const std::shared_ptr<renderer::NxShader> &shader,
         const components::BillboardComponent &billboard,
@@ -152,23 +152,23 @@ namespace nexo::system {
         cmd.uniforms["uEntityId"] = static_cast<int>(entity);
 
         cmd.uniforms["uMaterial.albedoColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-        auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-        auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
+        const auto albedoTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
+        const auto albedoTexture = albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
 
         cmd.uniforms["uMaterial.specularColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f);
-        auto specularTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
-        auto specularTexture = specularTextureAsset && specularTextureAsset->isLoaded() ? specularTextureAsset->getData()->texture : nullptr;
+        const auto specularTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
+        const auto specularTexture = specularTextureAsset && specularTextureAsset->isLoaded() ? specularTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
 
         cmd.uniforms["uMaterial.emissiveColor"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
-        auto emissiveTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
-        auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ? emissiveTextureAsset->getData()->texture : nullptr;
+        const auto emissiveTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
+        const auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ? emissiveTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
 
         cmd.uniforms["uMaterial.roughness"] = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f;
-        auto roughnessTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
-        auto roughnessTexture = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ? roughnessTextureAsset->getData()->texture : nullptr;
+        const auto roughnessTextureAsset = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
+        const auto roughnessTexture = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ? roughnessTextureAsset->getData()->texture : nullptr;
         cmd.uniforms["uMaterial.roughnessTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture);
 
         cmd.filterMask = 0;
@@ -211,7 +211,7 @@ namespace nexo::system {
                 const auto &transform = transformComponentArray->get(entitySpan[i]);
                 const auto &materialAsset = materialComponentArray->get(entitySpan[i]).material.lock();
                 const auto &billboard = billboardSpan[i];
-                auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : nullptr;
+                auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
                 auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
                 auto cmd = createDrawCommand(
                     entity,

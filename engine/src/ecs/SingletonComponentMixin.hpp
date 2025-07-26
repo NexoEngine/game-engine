@@ -15,7 +15,6 @@
 
 #include "Access.hpp"
 #include "SingletonComponent.hpp"
-#include <unordered_map>
 #include <memory>
 
 namespace nexo::ecs {
@@ -93,7 +92,7 @@ namespace nexo::ecs {
             void cacheSingletonComponent()
             {
                 auto* derived = static_cast<Derived*>(this);
-                std::shared_ptr<ISingletonComponent> instance = derived->coord->template getRawSingletonComponent<T>();
+                const std::shared_ptr<ISingletonComponent> instance = derived->coord->template getRawSingletonComponent<T>();
 
                 // Store in the type-specific cache
                 auto typedInstance = std::static_pointer_cast<SingletonComponent<T>>(instance);

@@ -24,7 +24,7 @@ namespace nexo::renderer {
         auto safeLoadShader = [this](const std::string& name, const std::string& relativePath) {
             try {
                 // Resolve the absolute path
-                std::filesystem::path absPath = Path::resolvePathRelativeToExe(relativePath);
+                const std::filesystem::path absPath = Path::resolvePathRelativeToExe(relativePath);
 
                 // Check if the shader file exists
                 if (!std::filesystem::exists(absPath)) {

@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "FieldType.hpp"
 #include "scripting/native/ManagedTypedef.hpp"
 
