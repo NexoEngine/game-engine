@@ -138,10 +138,10 @@ namespace nexo::editor {
     void SceneTreeWindow::selectAllCallback()
     {
         auto& selector = Selector::get();
-        int currentSceneId = selector.getSelectedScene();
+        const int currentSceneId = selector.getSelectedScene();
 
         if (currentSceneId != -1) {
-            auto& app = nexo::getApp();
+            auto& app = getApp();
             const auto& scene = app.getSceneManager().getScene(currentSceneId);
 
             selector.clearSelection();
@@ -160,7 +160,8 @@ namespace nexo::editor {
         auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty()) return;
+        if (selectedEntities.empty())
+            return;
 
         auto& app = getApp();
         auto& actionManager = ActionManager::get();
@@ -204,13 +205,15 @@ namespace nexo::editor {
         auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty()) return;
+        if (selectedEntities.empty())
+            return;
 
         auto& app = nexo::getApp();
         auto& actionManager = ActionManager::get();
-        int currentSceneId = selector.getSelectedScene();
+        const int currentSceneId = selector.getSelectedScene();
 
-        if (currentSceneId == -1) return;
+        if (currentSceneId == -1)
+            return;
 
         std::vector<ecs::Entity> newEntities;
         newEntities.reserve(selectedEntities.size());
@@ -244,7 +247,8 @@ namespace nexo::editor {
         const auto& selector = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty()) return;
+        if (selectedEntities.empty())
+            return;
 
         auto& actionManager = ActionManager::get();
         auto actionGroup = ActionManager::createActionGroup();
@@ -268,7 +272,7 @@ namespace nexo::editor {
     void SceneTreeWindow::showAllCallback()
     {
         const auto& selector = Selector::get();
-        int currentSceneId = selector.getSelectedScene();
+        const int currentSceneId = selector.getSelectedScene();
 
         if (currentSceneId == -1) return;
 

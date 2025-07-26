@@ -40,7 +40,7 @@ namespace nexo::editor {
     void EditorScene::selectAllCallback()
     {
         auto &selector = Selector::get();
-        auto &app = nexo::getApp();
+        auto &app = getApp();
         const auto &scene = app.getSceneManager().getScene(m_sceneId);
 
         selector.clearSelection();
@@ -81,7 +81,7 @@ namespace nexo::editor {
     {
         auto &selector = Selector::get();
         const auto &selectedEntities = selector.getSelectedEntities();
-        auto &app = nexo::getApp();
+        auto &app = getApp();
         auto& actionManager = ActionManager::get();
         if (selectedEntities.size() > 1) {
             auto actionGroup = ActionManager::createActionGroup();

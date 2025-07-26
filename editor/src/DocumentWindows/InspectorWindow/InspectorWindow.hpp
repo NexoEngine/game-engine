@@ -102,7 +102,7 @@ namespace nexo::editor {
 			template<typename T>
 			bool getSubInspectorVisibility() const
 			{
-			    auto it = m_subInspectorVisibility.find(std::type_index(typeid(T)));
+			    const auto it = m_subInspectorVisibility.find(std::type_index(typeid(T)));
 			    return (it != m_subInspectorVisibility.end()) ? it->second : false;
 			}
 
@@ -135,15 +135,14 @@ namespace nexo::editor {
 			template<typename WindowType, typename Data>
 			std::optional<Data> getSubInspectorData() const
             {
-                auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
+                const auto it = m_subInspectorData.find(std::type_index(typeid(WindowType)));
                 if (it != m_subInspectorData.end()) {
                     if (auto ptr = std::any_cast<Data>(&it->second)) {
                         return *ptr;
-                    } else {
-                        LOG(NEXO_ERROR, "Failed to cast sub-inspector data for type {}",
-                            typeid(WindowType).name());
-                        return std::nullopt;
                     }
+                    LOG(NEXO_ERROR, "Failed to cast sub-inspector data for type {}",
+                        typeid(WindowType).name());
+                    return std::nullopt;
                 }
                 return std::nullopt;
             }

@@ -40,7 +40,7 @@ namespace nexo::editor {
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
-            SceneTreeDragDropPayload payload{
+            const SceneTreeDragDropPayload payload{
                 object.data.entity,
                 object.data.sceneProperties.sceneId,
                 object.type,
@@ -202,7 +202,7 @@ namespace nexo::editor {
                 !coordinator.entityHasComponent<components::RootComponent>(parentEntity))
             {
                 std::string name = dropTarget.uiName;
-                auto it = ObjectTypeToIcon.find(dropTarget.type);
+                const auto it = ObjectTypeToIcon.find(dropTarget.type);
                 if (it != ObjectTypeToIcon.end())
                 {
                     const std::string& icon = it->second;
@@ -240,10 +240,10 @@ namespace nexo::editor {
 
             if (payload.type == assets::AssetType::MODEL)
             {
-                auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                const auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
                 if (!modelRef)
                     return;
-                if (auto model = modelRef.as<assets::Model>(); model)
+                if (const auto model = modelRef.as<assets::Model>(); model)
                 {
                     ecs::Entity newEntity = EntityFactory3D::createModel(
                         model,
@@ -261,10 +261,10 @@ namespace nexo::editor {
             }
             else if (payload.type == assets::AssetType::TEXTURE)
             {
-                auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                const auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
                 if (!textureRef)
                     return;
-                if (auto texture = textureRef.as<assets::Texture>(); texture)
+                if (const auto texture = textureRef.as<assets::Texture>(); texture)
                 {
                     components::Material material;
                     material.albedoTexture = texture;
@@ -286,7 +286,7 @@ namespace nexo::editor {
         }
         else if (dropTarget.type == SelectionType::ENTITY)
         {
-            auto matCompOpt = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(dropTarget.data.entity);
+            const auto matCompOpt = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(dropTarget.data.entity);
             if (!matCompOpt)
                 { ImGui::EndDragDropTarget(); return; }
 
@@ -294,10 +294,10 @@ namespace nexo::editor {
 
             if (payload.type == assets::AssetType::TEXTURE)
             {
-                auto texRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                if (auto tex = texRef.as<assets::Texture>(); tex)
+                const auto texRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (const auto tex = texRef.as<assets::Texture>(); tex)
                 {
-                    auto mat = matComp.material.lock();
+                    const auto mat = matComp.material.lock();
                     if (!mat)
                         return;
                     mat->getData()->albedoTexture = tex;
@@ -305,8 +305,8 @@ namespace nexo::editor {
             }
             else if (payload.type == assets::AssetType::MATERIAL)
             {
-                auto matRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-                if (auto m = matRef.as<assets::Material>(); m)
+                auto const matRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+                if (const auto m = matRef.as<assets::Material>(); m)
                 {
                     auto oldMat = matComp.material;
                     matComp.material = m;

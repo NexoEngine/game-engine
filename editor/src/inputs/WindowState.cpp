@@ -28,6 +28,6 @@ namespace nexo::editor {
 
     std::span<const Command> WindowState::getCommands() const
     {
-        return std::span<const Command>(m_commands.data(), m_commands.size());
+        return {m_commands.data(), m_commands.size()};
     }
 }

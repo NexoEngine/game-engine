@@ -30,7 +30,7 @@ namespace nexo::editor {
 
         if (ImNexo::Header("##AmbientNode", "Ambient light"))
         {
-            auto ambientComponentCopy = ambientComponent;
+            const auto ambientComponentCopy = ambientComponent;
             ImNexo::resetItemStates();
             ImNexo::Ambient(ambientComponent);
             if (ImNexo::isItemActivated()) {

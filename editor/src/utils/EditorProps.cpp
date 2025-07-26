@@ -15,7 +15,6 @@
 #include "EditorProps.hpp"
 #include "Renderer3D.hpp"
 #include "components/BillboardMesh.hpp"
-#include "renderer/Texture.hpp"
 #include "components/Render3D.hpp"
 #include "Path.hpp"
 #include "Nexo.hpp"

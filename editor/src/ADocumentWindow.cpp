@@ -30,7 +30,7 @@ namespace nexo::editor {
         {
             const bool isDocked = currentWindow->DockIsActive;
             const ImGuiID currentDockID = currentWindow->DockId;
-            auto dockId = m_windowRegistry.getDockId(windowName);
+            const auto dockId = m_windowRegistry.getDockId(windowName);
 
             // If it's the first time opening the window and we have a dock id saved in the registry, then we force set it
             if (m_firstOpened && (dockId && currentDockID != *dockId))

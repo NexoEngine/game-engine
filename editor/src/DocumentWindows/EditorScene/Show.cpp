@@ -163,11 +163,11 @@ namespace nexo::editor
         if (m_shouldSplitDock && !m_gameWindowNameToSplit.empty())
         {
             const std::string currentWindowName = m_windowName;
-            ImGuiWindow *currentImGuiWindow = ImGui::FindWindowByName((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str());
+            const ImGuiWindow *currentImGuiWindow = ImGui::FindWindowByName((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str());
 
             if (currentImGuiWindow && currentImGuiWindow->DockId)
             {
-                ImGuiID editorDockId = currentImGuiWindow->DockId;
+                const ImGuiID editorDockId = currentImGuiWindow->DockId;
                 ImGuiID rightNode, leftNode;
 
                 if (ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode))

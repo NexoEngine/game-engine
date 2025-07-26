@@ -22,7 +22,7 @@
 namespace nexo::editor {
 
     struct MaterialInspectorData {
-        ecs::Entity m_selectedEntity;
+        ecs::Entity m_selectedEntity{};
         assets::AssetRef<assets::Material> material;
     };
 
@@ -32,8 +32,8 @@ namespace nexo::editor {
 
             void show(ecs::Entity entity) override;
         private:
-            void createMaterialPopup(const ecs::Entity entity) const;
-            void cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out) const;
+            static void createMaterialPopup(ecs::Entity entity);
+            static void cleanupPopup(assets::AssetRef<assets::Material> &materialRef, utils::ScenePreviewOut &out);
             PopupManager m_popupManager;
     };
 }

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <imgui.h>
-#include <imgui_internal.h>
 #include <string>
 #include <vector>
 
@@ -232,6 +231,7 @@ namespace ImNexo {
      * @param pMax Lower right corner position of the rectangle
      * @param angle Angle of the gradient in degrees (0.0f = down, 90.0f = right, 180.0f = up, 270.0f = left)
      * @param stops Vector of gradient stops, each defined by a position (0.0f to 1.0f) and a color
+     * @param drawList The imgui draw list
      */
     void RectFilledLinearGradient(
 		const ImVec2& pMin,

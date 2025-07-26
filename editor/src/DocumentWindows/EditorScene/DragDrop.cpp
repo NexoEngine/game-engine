@@ -23,12 +23,12 @@
 
 namespace nexo::editor {
 
-    void EditorScene::handleDropModel(const AssetDragDropPayload &payload)
+    void EditorScene::handleDropModel(const AssetDragDropPayload &payload) const
     {
-        auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+        const auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
         if (!modelRef)
             return;
-        if (auto model = modelRef.as<assets::Model>(); model)
+        if (const auto model = modelRef.as<assets::Model>(); model)
         {
             auto& sceneManager = Application::getInstance().getSceneManager();
             // Create entity with the model
@@ -49,12 +49,12 @@ namespace nexo::editor {
         }
     }
 
-    void EditorScene::handleDropTexture(const AssetDragDropPayload &payload)
+    void EditorScene::handleDropTexture(const AssetDragDropPayload &payload) const
     {
-        auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+        const auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
         if (!textureRef)
             return;
-        if (auto texture = textureRef.as<assets::Texture>(); texture)
+        if (const auto texture = textureRef.as<assets::Texture>(); texture)
         {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
@@ -89,22 +89,22 @@ namespace nexo::editor {
                 ActionManager::get().recordAction(std::move(action));
                 return;
             }
-            auto matComponent = Application::getInstance().m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
+            const auto matComponent = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
             if (!matComponent)
                 return;
-            auto material = matComponent->get().material.lock();
+            const auto material = matComponent->get().material.lock();
             if (!material)
                 return;
             material->getData()->albedoTexture = texture;
         }
     }
 
-    void EditorScene::handleDropMaterial(const AssetDragDropPayload &payload)
+    void EditorScene::handleDropMaterial(const AssetDragDropPayload &payload) const
     {
-        auto materialRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
+        const auto materialRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
         if (!materialRef)
             return;
-        if (auto material = materialRef.as<assets::Material>(); material)
+        if (const auto material = materialRef.as<assets::Material>(); material)
         {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
@@ -119,7 +119,7 @@ namespace nexo::editor {
             const int entityId = sampleEntityTexture(mx, my);
             if (entityId == -1)
                 return;
-            auto matComponent = Application::getInstance().m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
+            const auto matComponent = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
             if (!matComponent)
                 return;
             matComponent->get().material = material;
@@ -148,11 +148,11 @@ namespace nexo::editor {
                 if (entityId != -1 && static_cast<ecs::Entity>(entityId) != m_entityHovered)
                 {
                     m_entityHovered = static_cast<ecs::Entity>(entityId);
-                    Application::getInstance().m_coordinator->addComponent(m_entityHovered, components::SelectedTag{});
+                    Application::m_coordinator->addComponent(m_entityHovered, components::SelectedTag{});
                 }
                 if (entityId == -1 && m_entityHovered != ecs::INVALID_ENTITY)
                 {
-                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
+                    Application::m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
                     m_entityHovered = ecs::INVALID_ENTITY;
                 }
                 if (!assetPayload->IsDelivery())
@@ -160,7 +160,7 @@ namespace nexo::editor {
                     return;
                 }
                 if (m_entityHovered != ecs::INVALID_ENTITY)
-                    Application::getInstance().m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
+                    Application::m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
                 m_entityHovered = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 

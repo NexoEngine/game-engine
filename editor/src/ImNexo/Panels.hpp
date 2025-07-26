@@ -13,10 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "components/Render.hpp"
 #include "core/scene/SceneManager.hpp"
-
-#include <imgui.h>
 
 namespace ImNexo {
     /**

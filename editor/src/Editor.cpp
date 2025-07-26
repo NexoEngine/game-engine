@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "ADocumentWindow.hpp"
 
 #include "utils/Config.hpp"
@@ -25,9 +26,8 @@
 #include "context/ActionManager.hpp"
 #include "DocumentWindows/TestWindow/TestWindow.hpp"
 
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui.h"
 #include <imgui_internal.h>
+#include "imgui.h"
 #include <ImGuizmo.h>
 #include <algorithm>
 
@@ -38,7 +38,7 @@ namespace nexo::editor {
 
     void Editor::shutdown() const
     {
-        Application& app = Application::getInstance();
+        const Application& app = Application::getInstance();
 
         app.shutdownScripting();
         LOG(NEXO_INFO, "Closing editor");
@@ -187,7 +187,7 @@ namespace nexo::editor {
             fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
-        float iconFontSize = fontSize * 2.0f / 3.0f;
+        const float iconFontSize = fontSize * 2.0f / 3.0f;
 
         static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
             "../resources/fonts/SourceSans3-Regular.ttf").string();
@@ -341,11 +341,11 @@ namespace nexo::editor {
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyDown(ImGuiKey_LeftShift) && ImGui::IsKeyPressed(ImGuiKey_T))
         {
-            if (auto testWindow = getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()) {
+            if (const auto testWindow = getWindow<TestWindow>(NEXO_WND_USTRID_TEST).lock()) {
                 testWindow->setOpened(true);
             } else {
-                registerWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST);
-                getWindow<nexo::editor::TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
+                registerWindow<TestWindow>(NEXO_WND_USTRID_TEST);
+                getWindow<TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
             }
         }
     }
@@ -547,7 +547,7 @@ namespace nexo::editor {
 
         ImGui::Render();
 
-        ImGuiBackend::end(nexo::getApp().getWindow());
+        ImGuiBackend::end(getApp().getWindow());
     }
 
     void Editor::update() const
