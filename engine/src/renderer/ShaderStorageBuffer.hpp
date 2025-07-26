@@ -27,7 +27,7 @@ namespace nexo::renderer {
 			virtual void bindBase(unsigned int bindingLocation) const = 0;
 			virtual void unbind() const = 0;
 
-			virtual void setData(void *data, unsigned int size) = 0;
+			virtual void setData(void *data, size_t size) = 0;
 			[[nodiscard]] virtual unsigned int getId() const = 0;
 	};
 }
