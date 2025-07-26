@@ -333,7 +333,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setData(unsigned int *data, unsigned int size) = 0;
+            virtual void setData(unsigned int *data, size_t size) = 0;
 
             /**
              * @brief Retrieves the number of indices in the index buffer.
