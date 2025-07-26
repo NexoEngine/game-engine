@@ -250,7 +250,7 @@ namespace nexo::ecs {
             if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
             } else {
-                new (&m_componentArray[newIndex]) T(*reinterpret_cast<const T*>(componentData));
+                THROW_EXCEPTION(InternalError, "Component type is not trivially copyable for raw insertion");
             }
 
             ++m_size;
