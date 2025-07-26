@@ -203,7 +203,7 @@ namespace nexo::scripting {
         {
             auto& app = Application::getInstance();
             auto physicsSystem = app.getPhysicsSystem();
-            
+
             if (!physicsSystem) {
                 LOG(NEXO_ERROR, "Physics system not available");
                 return;
@@ -217,7 +217,7 @@ namespace nexo::scripting {
             system::ShapeType cppShapeType = static_cast<system::ShapeType>(shapeType);
             JPH::EMotionType cppMotionType = static_cast<JPH::EMotionType>(motionType);
 
-            JPH::BodyID bodyID = physicsSystem->createBodyFromShape(entity, transform, cppShapeType, cppMotionType);
+            physicsSystem->createBodyFromShape(entity, transform, cppShapeType, cppMotionType);
 
             LOG(NEXO_DEV, "Physics body created");
         }
