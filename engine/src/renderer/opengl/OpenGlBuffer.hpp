@@ -179,7 +179,7 @@ namespace nexo::renderer {
             * Notes:
             * - Sets the `_count` member to track the number of indices in the buffer.
             */
-            void setData(unsigned int *indices, unsigned int count) override;
+            void setData(unsigned int *indices, size_t count) override;
 
             /**
             * @brief Retrieves the number of indices in the buffer.
