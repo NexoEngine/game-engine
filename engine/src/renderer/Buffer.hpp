@@ -346,7 +346,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            [[nodiscard]] virtual unsigned int getCount() const = 0;
+            [[nodiscard]] virtual size_t getCount() const = 0;
 
             [[nodiscard]] virtual unsigned int getId() const = 0;
     };
