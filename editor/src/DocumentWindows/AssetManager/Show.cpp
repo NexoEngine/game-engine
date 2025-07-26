@@ -45,8 +45,8 @@ namespace nexo::editor {
             m_layout.size.iconSize + ImGui::GetFontSize() * 1.7f  // height
         );
         m_layout.size.itemStep = ImVec2(
-            m_layout.size.itemSize.x + m_layout.size.iconSpacing,
-            m_layout.size.itemSize.y + m_layout.size.iconSpacing
+            m_layout.size.itemSize.x + static_cast<float>(m_layout.size.iconSpacing),
+            m_layout.size.itemSize.y + static_cast<float>(m_layout.size.iconSpacing)
         );
         // Colors
         m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
@@ -367,8 +367,8 @@ namespace nexo::editor {
                     unsigned int col = i % m_layout.size.columnCount;
                     unsigned int row = i / m_layout.size.columnCount;
                     ImVec2 itemPos{
-                        startPos.x + col * m_layout.size.itemStep.x,
-                        startPos.y + row * m_layout.size.itemStep.y
+                        startPos.x + static_cast<float>(col) * m_layout.size.itemStep.x,
+                        startPos.y + static_cast<float>(row) * m_layout.size.itemStep.y
                     };
 
                     if (i < static_cast<unsigned int>(subfolders.size())) {
@@ -460,7 +460,7 @@ namespace nexo::editor {
             // Draw text
             const std::string dropText = "Drop files here to import";
             const ImVec2 textSize = ImGui::CalcTextSize(dropText.c_str());
-            const ImVec2 textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
+            const auto textPos = ImVec2(windowPos.x + (windowSize.x - textSize.x) * 0.5f,
                                   windowPos.y + (windowSize.y - textSize.y) * 0.5f);
             drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.5f, textPos,
                             IM_COL32(255, 255, 255, 255), dropText.c_str());
