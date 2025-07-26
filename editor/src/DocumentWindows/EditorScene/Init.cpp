@@ -23,7 +23,6 @@
 #include "renderPasses/OutlinePass.hpp"
 #include "assets/AssetImporter.hpp"
 #include "Path.hpp"
-#include "components/SceneComponents.hpp"
 
 namespace nexo::editor
 {
@@ -47,11 +46,11 @@ namespace nexo::editor
         framebufferSpecs.width = static_cast<unsigned int>(m_contentSize.x);
         framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
-        m_editorCamera = CameraFactory::createPerspectiveCamera({0.0f, 36.0f, 25.0f},
+        m_editorCamera = static_cast<int>(CameraFactory::createPerspectiveCamera({0.0f, 36.0f, 25.0f},
                                                                 static_cast<unsigned int>(m_contentSize.x),
                                                                 static_cast<unsigned int>(m_contentSize.y),
-                                                                renderTarget);
-        auto& cameraComponent = app.m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
+                                                                renderTarget));
+        auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         cameraComponent.render = true;
         auto maskPass = std::make_shared<renderer::MaskPass>(
                                 static_cast<unsigned int>(m_contentSize.x),
@@ -111,7 +110,7 @@ namespace nexo::editor
         for (int i = 0; i < numLights; ++i)
         {
             constexpr float radius = 30.0f;
-            const float angle = glm::radians(360.0f / numLights * i);
+            const float angle = glm::radians(360.0f / numLights * static_cast<float>(i));
             const glm::vec3 position = center + glm::vec3(radius * cos(angle), 0.0f, radius * sin(angle));
             const auto light = LightFactory::createPointLight(position, colors[i % colors.size()], 0.01, 0.0010);
             scene.addEntity(light);
@@ -172,7 +171,7 @@ namespace nexo::editor
                 default:
                     throw std::runtime_error("Unsupported shape type for entity creation.");
             }
-            JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, app.m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
+            JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
             if (bodyId.IsInvalid()) {
                 LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
             }
@@ -270,7 +269,7 @@ namespace nexo::editor
                 constexpr float startY = 14.0f;
                 constexpr float spacing = 3.0f;
                 float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-                glm::vec3 pos = {col * spacing + startX + offsetX, startY + row * 1.2f, 0.0f};
+                glm::vec3 pos = {static_cast<float>(col) * spacing + startX + offsetX, startY + static_cast<float>(row) * 1.2f, 0.0f};
                 auto maxFactor = static_cast<float>(totalRows * cols);
                 float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
                 glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);

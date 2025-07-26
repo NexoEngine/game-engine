@@ -40,24 +40,22 @@ namespace nexo::editor {
             return 0;
 
 
-        auto asset = assetRef.lock();
+        const auto asset = assetRef.lock();
         if (!asset)
             return 0;
 
         switch (asset->getType()) {
             case assets::AssetType::MATERIAL: {
-                auto materialRef = assetRef.as<assets::Material>();
+                const auto materialRef = assetRef.as<assets::Material>();
                 return getMaterialThumbnail(materialRef, size);
             }
             case assets::AssetType::TEXTURE: {
-                auto textureRef = assetRef.as<assets::Texture>();
+                const auto textureRef = assetRef.as<assets::Texture>();
                 return getTextureThumbnail(textureRef, size);
             }
             case assets::AssetType::MODEL:
-                // Model thumbnails not currently implemented
-                return 0;
             default:
-                // Unsupported asset type
+                // Unsupported asset type | Model not supported yet
                 return 0;
         }
     }
@@ -68,14 +66,14 @@ namespace nexo::editor {
         if (!materialRef.isValid())
             return 0;
 
-        auto material = materialRef.lock();
+        const auto material = materialRef.lock();
         if (!material || !material->getData())
             return 0;
 
         const boost::uuids::uuid& assetId = material->getID();
 
         // Check if thumbnail exists at requested size
-        auto it = m_thumbnailCache.find(assetId);
+        const auto it = m_thumbnailCache.find(assetId);
         if (it != m_thumbnailCache.end() && it->second.size == size)
             return it->second.framebuffer->getColorAttachmentId(0);
 
@@ -91,7 +89,7 @@ namespace nexo::editor {
         if (!materialRef.isValid())
             return 0;
 
-        auto material = materialRef.lock();
+        const auto material = materialRef.lock();
         if (!material || !material->getData())
             return 0;
 
@@ -104,13 +102,13 @@ namespace nexo::editor {
         if (!textureRef.isValid())
             return 0;
 
-        auto texture = textureRef.lock();
+        const auto texture = textureRef.lock();
         if (!texture)
             return 0;
 
         const boost::uuids::uuid& assetId = texture->getID();
 
-        auto it = m_thumbnailCache.find(assetId);
+        const auto it = m_thumbnailCache.find(assetId);
         if (it != m_thumbnailCache.end() && it->second.size == size)
             return it->second.textureId;
 
@@ -123,14 +121,14 @@ namespace nexo::editor {
     unsigned int ThumbnailCache::createMaterialThumbnail(const assets::AssetRef<assets::Material>& materialRef,
                                                        const glm::vec2& size)
     {
-        auto material = materialRef.lock();
+        const auto material = materialRef.lock();
         if (!material || !material->getData())
             return 0;
 
         utils::ScenePreviewOut previewInfo;
 
         const components::Material& materialData = *material->getData();
-        ecs::Entity previewEntity = nexo::EntityFactory3D::createCube(
+        const ecs::Entity previewEntity = EntityFactory3D::createCube(
             glm::vec3(0.0f),         // position
             glm::vec3(1.0f),         // size
             glm::vec3(30.0f, 45.0f, 0.0f), // rotation - angled for better lighting
@@ -145,13 +143,14 @@ namespace nexo::editor {
         app.run(sceneInfo);
         const auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(previewInfo.cameraId);
 
-        auto framebuffer = cameraComponent.m_renderTarget;
+        const auto framebuffer = cameraComponent.m_renderTarget;
         app.getSceneManager().deleteScene(previewInfo.sceneId);
         ThumbnailInfo info;
         info.framebuffer = framebuffer;
         info.size = size;
         info.previewInfo = previewInfo;
         info.isScenePreview = false;
+        info.textureId = framebuffer->getColorAttachmentId(0);
 
         m_thumbnailCache[material->getID()] = info;
 
@@ -163,14 +162,14 @@ namespace nexo::editor {
     unsigned int ThumbnailCache::createTextureThumbnail(const assets::AssetRef<assets::Texture>& textureRef,
                                                       const glm::vec2& size)
     {
-        auto texture = textureRef.lock();
+        const auto texture = textureRef.lock();
         if (!texture)
             return 0;
 
         // For textures, we can often just use the texture directly
         if (texture->isLoaded() && texture->getData()) {
             ThumbnailInfo info;
-            info.textureId = texture->getData().get()->texture->getId();
+            info.textureId = texture->getData()->texture->getId();
             info.size = size;
             info.isScenePreview = false;
 
@@ -186,7 +185,7 @@ namespace nexo::editor {
         auto& app = getApp();
 
         // Clean up all scene previews
-        for (auto& [assetId, info] : m_thumbnailCache) {
+        for (auto &info: m_thumbnailCache | std::views::values) {
             if (info.isScenePreview && info.previewInfo.sceneGenerated) {
                 app.getSceneManager().deleteScene(info.previewInfo.sceneId);
                 info.previewInfo.sceneGenerated = false;
@@ -198,7 +197,7 @@ namespace nexo::editor {
 
     void ThumbnailCache::removeThumbnail(const boost::uuids::uuid& assetId)
     {
-        auto it = m_thumbnailCache.find(assetId);
+        const auto it = m_thumbnailCache.find(assetId);
         if (it == m_thumbnailCache.end())
             return;
 

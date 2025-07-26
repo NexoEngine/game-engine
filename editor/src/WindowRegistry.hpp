@@ -113,7 +113,7 @@ namespace nexo::editor {
 			requires std::derived_from<T, IDocumentWindow>
 			void unregisterWindow(const std::string &windowName)
 			{
-                auto it = m_windows.find(typeid(T));
+                const auto it = m_windows.find(typeid(T));
                 if (it == m_windows.end()) {
                     LOG(NEXO_WARN, "Window of type {} not found", typeid(T).name());
                     return;
@@ -147,7 +147,7 @@ namespace nexo::editor {
 			requires std::derived_from<T, IDocumentWindow>
 			std::weak_ptr<T> getWindow(const std::string &windowName) const
 			{
-			    auto it = m_windows.find(typeid(T));
+			    const auto it = m_windows.find(typeid(T));
 			    if (it == m_windows.end())
 				{
 					LOG(NEXO_WARN, "Window of type {} not found", typeid(T).name());
@@ -191,7 +191,7 @@ namespace nexo::editor {
 			    // Helper: non-capturing function for casting:
 			    std::shared_ptr<T>(*caster)(const std::shared_ptr<IDocumentWindow>&) = &castWindow<T>;
 
-			    auto it = m_windows.find(typeid(T));
+			    const auto it = m_windows.find(typeid(T));
 			    if (it == m_windows.end()) {
 			        static const std::vector<std::shared_ptr<IDocumentWindow>> empty;
 			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);
@@ -222,7 +222,7 @@ namespace nexo::editor {
 			    // Helper: non-capturing function for casting:
 			    std::shared_ptr<T>(*caster)(std::shared_ptr<IDocumentWindow>&) = &castWindow<T>;
 
-			    auto it = m_windows.find(typeid(T));
+			    const auto it = m_windows.find(typeid(T));
 			    if (it == m_windows.end()) {
 			        static std::vector<std::shared_ptr<IDocumentWindow>> empty;
 			        return std::ranges::transform_view(std::ranges::ref_view(empty), caster);

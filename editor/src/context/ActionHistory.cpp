@@ -54,14 +54,14 @@ namespace nexo::editor {
         undoStack.push_back(std::move(action));
     }
 
-    void ActionHistory::setMaxUndoLevels(size_t levels)
+    void ActionHistory::setMaxUndoLevels(const size_t levels)
     {
         maxUndoLevels = levels;
         while (undoStack.size() > maxUndoLevels)
             undoStack.pop_front();
     }
 
-    void ActionHistory::clear(unsigned int count)
+    void ActionHistory::clear(const unsigned int count)
     {
         if (!count) {
             undoStack.clear();

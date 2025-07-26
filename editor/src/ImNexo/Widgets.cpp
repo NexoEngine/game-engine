@@ -12,7 +12,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <Editor.hpp>
 #include <EntityFactory3D.hpp>
 #include <imgui.h>
 #include <context/ActionManager.hpp>
@@ -91,7 +90,7 @@ namespace ImNexo
     }
 
     void ButtonDropDown(const ImVec2& buttonPos, const ImVec2 buttonSize, const std::vector<ButtonProps>& buttonProps,
-                        bool& closure, DropdownOrientation orientation)
+                        bool& closure, const DropdownOrientation orientation)
     {
         constexpr float buttonSpacing = 5.0f;
         constexpr float padding = 10.0f;
@@ -120,7 +119,7 @@ namespace ImNexo
         }
 
         // Adjust layout for horizontal orientations
-        bool isHorizontal = (orientation == DropdownOrientation::LEFT ||
+        const bool isHorizontal = (orientation == DropdownOrientation::LEFT ||
             orientation == DropdownOrientation::RIGHT);
 
         // For horizontal layouts, swap width and height

@@ -62,7 +62,7 @@ namespace nexo::editor {
             * @param windowTypeIndex The type index of the unregistered window.
             * @param loc The source location where the exception is thrown (defaults to the current location).
             */
-            explicit WindowNotRegistered(std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
+            explicit WindowNotRegistered(const std::type_index windowTypeIndex, const std::source_location loc = std::source_location::current())
             	: Exception(std::format("Window not registered: {}. Make sure the window is registered in the WindowRegistry before accessing it.", windowTypeIndex.name()), loc) {}
     };
 
@@ -77,7 +77,7 @@ namespace nexo::editor {
             * @param windowName The name of the window.
             * @param loc The source location where the exception is thrown (defaults to the current location).
             */
-            explicit WindowAlreadyRegistered(std::type_index windowTypeIndex, const std::string &windowName, const std::source_location loc = std::source_location::current())
+            explicit WindowAlreadyRegistered(const std::type_index windowTypeIndex, const std::string &windowName, const std::source_location loc = std::source_location::current())
             	: Exception(std::format("Window {} already registered as: {}. Make sure the type and name is unique.", windowName, windowTypeIndex.name()), loc) {}
     };
 

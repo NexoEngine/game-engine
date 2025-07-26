@@ -32,7 +32,7 @@ namespace ImNexo {
     )
     {
         IdGuard idGuard(uniqueId);
-        std::string invisButtonLabel = "##" + uniqueId;
+        const std::string invisButtonLabel = "##" + uniqueId;
 
         if (ImGui::InvisibleButton(invisButtonLabel.c_str(), itemSize))
             return true;

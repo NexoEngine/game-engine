@@ -49,7 +49,7 @@ namespace nexo::editor
         if (m_gameCamera != ecs::INVALID_ENTITY)
         {
             // Try to get the camera component
-            auto cameraCompOpt = coordinator.tryGetComponent<components::CameraComponent>(m_gameCamera);
+            const auto cameraCompOpt = coordinator.tryGetComponent<components::CameraComponent>(m_gameCamera);
             if (cameraCompOpt)
             {
                 // Disable rendering

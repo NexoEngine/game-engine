@@ -14,15 +14,11 @@
 
 #include "GameWindow.hpp"
 #include "IconsFontAwesome.h"
-#include "ImNexo/ImNexo.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/Widgets.hpp"
 #include "Application.hpp"
 #include "ecs/Coordinator.hpp"
 #include "components/Camera.hpp"
-#include "components/Transform.hpp"
-#include "components/RenderContext.hpp"
-#include "core/scene/SceneManager.hpp"
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <format>
@@ -37,7 +33,7 @@ namespace nexo::editor
         ImGui::SetNextWindowSize(ImVec2(1280, 720), ImGuiCond_FirstUseEver);
 
         // Begin the window
-        std::string windowTitle = std::format("Game View - {}###GameWindow{}", m_sceneUuid, m_sceneId);
+        const std::string windowTitle = std::format("Game View - {}###GameWindow{}", m_sceneUuid, m_sceneId);
         ImGui::Begin(windowTitle.c_str(), &m_opened, ImGuiWindowFlags_NoCollapse);
 
         // Call beginRender to handle docking and state tracking
@@ -56,14 +52,14 @@ namespace nexo::editor
         constexpr float buttonWidth = 35.0f;
         constexpr float buttonHeight = 35.0f;
 
-        ImVec2 windowContentMin = ImGui::GetWindowContentRegionMin();
+        const ImVec2 windowContentMin = ImGui::GetWindowContentRegionMin();
         ImVec2 toolbarPos = m_windowPos;
         toolbarPos.x += windowContentMin.x + 10.0f;
         toolbarPos.y += 20.0f;
 
         ImGui::SetCursorScreenPos(toolbarPos);
 
-        const auto toolbarSize = ImVec2(200.0f, 50.0f);
+        constexpr auto toolbarSize = ImVec2(200.0f, 50.0f);
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
         ImGui::BeginChild("##GameToolbarOverlay", toolbarSize, 0,
@@ -131,7 +127,7 @@ namespace nexo::editor
         }
 
         // Try to get camera component - entity might have been deleted
-        auto cameraCompOpt = coordinator.template tryGetComponent<components::CameraComponent>(m_gameCamera);
+        const auto cameraCompOpt = coordinator.tryGetComponent<components::CameraComponent>(m_gameCamera);
         if (!cameraCompOpt)
         {
             // Camera entity was deleted, reset to invalid
