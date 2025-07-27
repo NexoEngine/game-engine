@@ -264,7 +264,9 @@ namespace nexo::editor {
         auto primaryTransform = coord->tryGetComponent<components::TransformComponent>(primaryEntity);
         if (!primaryTransform) {
             const auto entityWithTransform = findEntityWithTransform(selectedEntities);
-            if (!entityWithTransform) return; // No entity with transform found
+            if (!entityWithTransform.has_value()) {
+                return; // No entity with transform found
+            }
 
             primaryEntity = *entityWithTransform;
             primaryTransform = coord->tryGetComponent<components::TransformComponent>(primaryEntity);
