@@ -57,23 +57,24 @@ namespace nexo::editor {
             ImGui::EndPopup();
         }
 
-        if (opened) {
-            // Use the precomputed children list
-            if (const auto it = m_folderChildren.find(path); it != m_folderChildren.end()) {
-                for (const auto& childPath : it->second) {
-                    // Find the name of the child from m_folderStructure
-                    std::string childName;
-                    for (const auto& [p, n] : m_folderStructure) {
-                        if (p == childPath) {
-                            childName = n;
-                            break;
-                        }
+        if (!opened)
+            return;
+
+        // Use the precomputed children list
+        if (const auto it = m_folderChildren.find(path); it != m_folderChildren.end()) {
+            for (const auto& childPath : it->second) {
+                // Find the name of the child from m_folderStructure
+                std::string childName;
+                for (const auto& [p, n] : m_folderStructure) {
+                    if (p == childPath) {
+                        childName = n;
+                        break;
                     }
-                    drawFolderTreeItem(childName, childPath);
                 }
+                drawFolderTreeItem(childName, childPath);
             }
-            ImGui::TreePop();
         }
+        ImGui::TreePop();
     }
 
     void AssetManagerWindow::handleNewFolderCreation()
