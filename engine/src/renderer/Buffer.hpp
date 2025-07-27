@@ -130,7 +130,7 @@ namespace nexo::renderer {
                 case NxShaderDataType::MAT3:      return 3 * 3;
                 case NxShaderDataType::MAT4:      return 4 * 4;
                 case NxShaderDataType::BOOL:      return 1;
-                default: return std::numeric_limits<unsigned int>::max(); // Undefined type, return max count
+                default: return 0; // Undefined type, return 0
             }
         }
     };
