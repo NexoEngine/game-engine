@@ -15,10 +15,9 @@
 #pragma once
 
 #include <string_view>
-#include <algorithm>
+#include <ranges>
 
 namespace nexo {
-
     /**
      * @brief Compare two strings case-insensitively.
      *
