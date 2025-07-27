@@ -194,12 +194,6 @@ namespace nexo::editor
         }
         lightsScene(m_sceneId);
 
-        // 9mn
-        assets::AssetImporter importer;
-        std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-        assets::ImporterFileInput fileInput9mn{path9mn};
-        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
-
         // Background
         createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
                            system::ShapeType::Box, JPH::EMotionType::Static);
