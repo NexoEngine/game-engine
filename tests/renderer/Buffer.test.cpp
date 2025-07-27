@@ -172,7 +172,7 @@ namespace nexo::renderer {
         EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT3, "").getComponentCount(), 9);
         EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT4, "").getComponentCount(), 16);
         EXPECT_EQ(NxBufferElements(NxShaderDataType::BOOL, "").getComponentCount(), 1);
-        EXPECT_EQ(NxBufferElements(NxShaderDataType::NONE, "").getComponentCount(), -1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::NONE, "").getComponentCount(), 0);
     }
 
     // Tests for BufferLayout
