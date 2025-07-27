@@ -122,7 +122,7 @@ namespace nexo::editor {
 
             ImTextureID getFolderIconTexture() const;
 
-            void newFolderContextMenu();
+            void newFolderMenu();
             bool handleNewFolderCreation();
             void drawFolder(
                 const std::string& folderPath,

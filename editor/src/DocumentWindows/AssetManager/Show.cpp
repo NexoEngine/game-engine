@@ -512,7 +512,7 @@ namespace nexo::editor {
             folderTreeContextMenu();
 
         if (m_popupManager.showPopupModal("Create new folder"))
-            newFolderContextMenu();
+            newFolderMenu();
 
         ImGui::End();
     }
