@@ -16,7 +16,7 @@ set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})
-    set(NEXO_COMPILER_FLAGS_DEBUG -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
+    set(NEXO_COMPILER_FLAGS_DEBUG -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic -Werror)
     set(NEXO_COMPILER_FLAGS_RELEASE -O3)
     set(NEXO_COVERAGE_FLAGS -O0 --coverage)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
