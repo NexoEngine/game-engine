@@ -204,7 +204,7 @@ namespace nexo::renderer {
 
         const BOOL useDarkMode                 = enabled ? TRUE : FALSE;
         const BOOL setImmersiveDarkModeSuccess = SUCCEEDED(DwmSetWindowAttribute(
-            hWnd, DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE, &_props.isDarkMode, sizeof(useDarkMode)));
+            hWnd, DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof(useDarkMode)));
         if (!setImmersiveDarkModeSuccess) {
             LOG(NEXO_ERROR, "[GLFW ERROR] Failed to set enable/disable immersive dark mode for window: {}",
                 GetLastError());
