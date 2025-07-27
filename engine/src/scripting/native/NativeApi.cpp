@@ -101,26 +101,38 @@ namespace nexo::scripting {
 
         void* NxGetComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
+            if (componentTypeId > ecs::MAX_COMPONENT_TYPE) {
+                LOG(NEXO_ERROR, "NxGetComponent: Maximum component type ID exceeded for entity {}", entity);
+                return nullptr;
+            }
             const auto& coordinator = *Application::m_coordinator;
-            const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
+            const auto opt = coordinator.tryGetComponentById(static_cast<ecs::ComponentType>(componentTypeId), entity);
             return opt;
         }
 
-        void NxAddComponent(const ecs::Entity entity, const UInt32 typeId, const void *componentData)
+        void NxAddComponent(const ecs::Entity entity, const UInt32 componentTypeId, const void* componentData)
         {
+            if (componentTypeId > ecs::MAX_COMPONENT_TYPE) {
+                LOG(NEXO_ERROR, "NxAddComponent: Maximum component type ID exceeded for entity {}", entity);
+                return;
+            }
             if (componentData == nullptr) {
                 LOG(NEXO_ERROR, "NxAddComponent: componentData is null for entity {}", entity);
                 return;
             }
             const auto& coordinator = *Application::m_coordinator;
 
-            coordinator.addComponent(entity, typeId, componentData);
+            coordinator.addComponent(entity, static_cast<ecs::ComponentType>(componentTypeId), componentData);
         }
 
         void NxRemoveComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
+            if (componentTypeId > ecs::MAX_COMPONENT_TYPE) {
+                LOG(NEXO_ERROR, "NxRemoveComponent: Maximum component type ID exceeded for entity {}", entity);
+                return;
+            }
             auto& coordinator = *Application::m_coordinator;
-            coordinator.removeComponent(entity, componentTypeId);
+            coordinator.removeComponent(entity, static_cast<ecs::ComponentType>(componentTypeId));
         }
 
         void NxDestroyEntity(const ecs::Entity entity)
@@ -129,11 +141,15 @@ namespace nexo::scripting {
             coordinator.destroyEntity(entity);
         }
 
-        bool NxHasComponent(const ecs::Entity entity, const UInt32 typeId)
+        bool NxHasComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
+            if (componentTypeId > ecs::MAX_COMPONENT_TYPE) {
+                LOG(NEXO_ERROR, "NxHasComponent: Maximum component type ID exceeded for entity {}", entity);
+                return false;
+            }
             const auto& coordinator = *Application::m_coordinator;
 
-            return coordinator.entityHasComponent(entity, typeId);
+            return coordinator.entityHasComponent(entity, static_cast<ecs::ComponentType>(componentTypeId));
         }
 
         Int64 NxRegisterComponent(const char *name, const UInt64 componentSize, const Field *fields, const UInt64 fieldCount)
