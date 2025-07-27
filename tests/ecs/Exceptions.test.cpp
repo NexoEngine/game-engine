@@ -63,7 +63,7 @@ namespace nexo::ecs {
 	    try {
 	        throw InternalError("Test error");
 	        FAIL() << "Exception was not thrown";
-	    } catch (const InternalError& e) {
+	    } catch (const InternalError&) {
 	        SUCCEED();
 	    } catch (...) {
 	        FAIL() << "Wrong exception type caught";
@@ -201,7 +201,7 @@ namespace nexo::ecs {
 	            case 7: throw TooManyEntities();
 	            default: throw OutOfRange(10);
 	        }
-	    } catch (const Exception& e) {
+	    } catch (const Exception&) {
 	        // All exceptions should be caught here
 	        caughtCount++;
 	    } catch (...) {

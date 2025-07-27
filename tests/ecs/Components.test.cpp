@@ -372,7 +372,7 @@ namespace nexo::ecs {
 		bool exceptionThrown = false;
 		try {
 		    componentManager.registerGroup<TestComponentA, TestComponentC>(get<TestComponentB>());
-		} catch (const OverlappingGroupsException& e) {
+		} catch (const OverlappingGroupsException&) {
 		    exceptionThrown = true;
 		}
 		EXPECT_TRUE(exceptionThrown);
@@ -382,7 +382,7 @@ namespace nexo::ecs {
 		bool exceptionThrown = false;
 	    try {
 	        componentManager.registerGroup<TestComponentA, TestComponentD>(get<TestComponentB>());
-	    } catch (const ComponentNotRegistered& e) {
+	    } catch (const ComponentNotRegistered&) {
 			exceptionThrown = true;
 	    }
 		EXPECT_TRUE(exceptionThrown);
@@ -403,7 +403,7 @@ namespace nexo::ecs {
 		bool exceptionThrown = false;
 	    try {
 	        componentManager.getGroup<TestComponentA, TestComponentB>(get<TestComponentC>());
-	    } catch (const GroupNotFound& e) {
+	    } catch (const GroupNotFound&) {
       		exceptionThrown = true;
 	    }
 		EXPECT_TRUE(exceptionThrown);
