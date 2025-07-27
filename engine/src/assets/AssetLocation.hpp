@@ -46,6 +46,12 @@ namespace nexo::assets {
                 setLocation(fullLocation);
             }
 
+            AssetLocation(const AssetLocation&) = default;
+            AssetLocation& operator=(const AssetLocation&) = default;
+
+            AssetLocation(AssetLocation&&) noexcept = default;
+            AssetLocation& operator=(AssetLocation&&) noexcept = default;
+
             AssetLocation& setName(const AssetName& name)
             {
                 _name = name;
