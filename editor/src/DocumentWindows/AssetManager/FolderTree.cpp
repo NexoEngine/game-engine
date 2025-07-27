@@ -24,15 +24,11 @@ namespace nexo::editor {
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-
-        // Check if this is the selected folder
         if (path == m_currentFolder)
             flags |= ImGuiTreeNodeFlags_Selected;
-
-        if (!m_folderChildren.contains(path))
+        if (!m_folderChildren.contains(path) || m_folderChildren.at(path).empty())
             flags |= ImGuiTreeNodeFlags_Leaf;
 
-        // Folder icon
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(230, 180, 80, 255));
         ImGui::Text(ICON_FA_FOLDER);
         ImGui::PopStyleColor();
@@ -60,17 +56,9 @@ namespace nexo::editor {
         if (!opened)
             return;
 
-        // Use the precomputed children list
         if (const auto it = m_folderChildren.find(path); it != m_folderChildren.end()) {
             for (const auto& childPath : it->second) {
-                // Find the name of the child from m_folderStructure
-                std::string childName;
-                for (const auto& [p, n] : m_folderStructure) {
-                    if (p == childPath) {
-                        childName = n;
-                        break;
-                    }
-                }
+                const std::string childName = std::filesystem::path(childPath).filename().string();
                 drawFolderTreeItem(childName, childPath);
             }
         }
@@ -79,76 +67,85 @@ namespace nexo::editor {
 
     void AssetManagerWindow::handleNewFolderCreation()
     {
-        if (m_folderCreationState.isCreatingFolder) {
-            ImGui::OpenPopup("Create New Folder");
+        if (!m_folderCreationState.isCreatingFolder)
+            return;
 
-            // Center the popup
-            const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::OpenPopup("Create New Folder");
 
-            if (ImGui::BeginPopupModal("Create New Folder", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                ImGui::Text("Enter name for new folder:");
-                ImGui::InputText("##FolderName", m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName));
+        // Center the popup
+        const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-                ImGui::Separator();
+        if (ImGui::BeginPopupModal("Create New Folder", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            ImGui::Text("Enter name for new folder:");
+            ImGui::InputText("##FolderName", m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName));
 
-                if (ImGui::Button("Create", ImVec2(120, 0))) {
-                    if (strnlen(m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName)) > 0) {
-                        std::string newFolderPath;
-                        if (m_folderCreationState.parentPath.empty())
-                            newFolderPath = m_folderCreationState.folderName;
-                        else
-                            newFolderPath = m_folderCreationState.parentPath + "/" + m_folderCreationState.folderName;
+            ImGui::Separator();
 
-                        // Check if folder already exists
-                        bool folderExists = false;
-                        for (const auto &path: m_folderStructure | std::views::keys) {
-                            if (path == newFolderPath) {
-                                folderExists = true;
-                                break;
+            if (ImGui::Button("Create", ImVec2(120, 0))) {
+                if (strnlen(m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName)) > 0) {
+                    std::string newFolderPath;
+                    if (m_folderCreationState.parentPath.empty())
+                        newFolderPath = m_folderCreationState.folderName;
+                    else
+                        newFolderPath = m_folderCreationState.parentPath + "/" + m_folderCreationState.folderName;
+
+                    // Check if folder already exists
+                    bool folderExists = false;
+                    for (const auto &path: m_folderStructure | std::views::keys) {
+                        if (path == newFolderPath) {
+                            folderExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!folderExists) {
+                        m_folderStructure.emplace_back(newFolderPath, m_folderCreationState.folderName);
+                        LOG(NEXO_INFO, "Created new folder: {}", newFolderPath);
+
+                        m_folderCreationState.isCreatingFolder = false;
+                        std::sort(
+                            m_folderStructure.begin() + 1,
+                            m_folderStructure.end(),
+                            [](const auto& a, const auto& b) {
+                                return a.first < b.first;
                             }
-                        }
-
-                        if (!folderExists) {
-                            m_folderStructure.emplace_back(newFolderPath, m_folderCreationState.folderName);
-                            LOG(NEXO_INFO, "Created new folder: {}", newFolderPath);
-
-                            m_folderCreationState.isCreatingFolder = false;
-                            ImGui::CloseCurrentPopup();
-                        } else {
-                            m_folderCreationState.showError = true;
-                            m_folderCreationState.errorMessage = "Folder already exists";
-                        }
+                        );
+                        updateFolderChildren();
+                        ImGui::CloseCurrentPopup();
                     } else {
                         m_folderCreationState.showError = true;
-                        m_folderCreationState.errorMessage = "Folder name cannot be empty";
+                        m_folderCreationState.errorMessage = "Folder already exists";
                     }
+                } else {
+                    m_folderCreationState.showError = true;
+                    m_folderCreationState.errorMessage = "Folder name cannot be empty";
                 }
-
-                ImGui::SameLine();
-                if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-                    m_folderCreationState.isCreatingFolder = false;
-                    ImGui::CloseCurrentPopup();
-                }
-
-                // Display error message if needed
-                if (m_folderCreationState.showError) {
-                    ImGui::Separator();
-                    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-                    ImGui::Text("%s", m_folderCreationState.errorMessage.c_str());
-                    ImGui::PopStyleColor();
-
-                    // Clear error after a few seconds
-                    if (m_folderCreationState.errorTimer <= 0.0f) {
-                        m_folderCreationState.showError = false;
-                        m_folderCreationState.errorTimer = 3.0f; // Reset timer
-                    } else {
-                        m_folderCreationState.errorTimer -= ImGui::GetIO().DeltaTime;
-                    }
-                }
-
-                ImGui::EndPopup();
             }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                m_folderCreationState.isCreatingFolder = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            // Display error message if needed
+            if (m_folderCreationState.showError) {
+                ImGui::Separator();
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+                ImGui::Text("%s", m_folderCreationState.errorMessage.c_str());
+                ImGui::PopStyleColor();
+
+                // Clear error after a few seconds
+                if (m_folderCreationState.errorTimer <= 0.0f) {
+                    m_folderCreationState.showError = false;
+                    m_folderCreationState.errorTimer = 3.0f; // Reset timer
+                } else {
+                    m_folderCreationState.errorTimer -= ImGui::GetIO().DeltaTime;
+                }
+            }
+
+            ImGui::EndPopup();
         }
     }
 
