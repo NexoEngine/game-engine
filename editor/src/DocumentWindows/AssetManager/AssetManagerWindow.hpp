@@ -106,7 +106,7 @@ namespace nexo::editor {
             std::string m_currentFolder;  // Currently selected folder
             std::string m_hoveredFolder;  // Currently hovered folder
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
-            char m_searchBuffer[256] = "";
+            std::string m_searchBuffer = "";
 
             PopupManager m_popupManager;
 
