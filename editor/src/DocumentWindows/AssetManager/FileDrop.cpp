@@ -54,9 +54,6 @@ namespace nexo::editor {
         for (const auto& filePath : m_pendingDroppedFiles)
             importDroppedFile(filePath);
         m_pendingDroppedFiles.clear();
-
-        m_folderStructure.clear();
-        buildFolderStructure();
     }
 
     void AssetManagerWindow::importDroppedFile(const std::string& filePath) const
@@ -67,9 +64,6 @@ namespace nexo::editor {
             LOG(NEXO_WARN, "Dropped file does not exist: {}", filePath);
             return;
         }
-
-        std::string extension = path.extension().string();
-        std::ranges::transform(extension, extension.begin(), ::tolower);
 
         const assets::AssetLocation location = getAssetLocation(path);
 
