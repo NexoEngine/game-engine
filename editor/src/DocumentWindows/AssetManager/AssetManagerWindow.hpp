@@ -43,7 +43,7 @@ namespace nexo::editor {
         }
     };
 
-    struct LayoutSizes {
+    struct GridLayoutSizes {
         float iconSize = 64.0f;
         int iconSpacing = 8;
 
@@ -76,8 +76,10 @@ namespace nexo::editor {
     };
 
     struct LayoutSettings {
-        LayoutSizes size;
+        GridLayoutSizes size;
         LayoutColors color;
+
+        float leftPanelWidth = 200.0f;
     };
 
     class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
@@ -98,6 +100,8 @@ namespace nexo::editor {
             LayoutSettings m_layout;
 
             void drawMenuBar();
+            void drawPanelSplitter();
+            void drawBreadcrumbs();
             void drawAssetsGrid();
             void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
             void handleSelection(unsigned int index, bool isSelected);
@@ -132,9 +136,9 @@ namespace nexo::editor {
             );
 
             std::vector<std::string> m_pendingDroppedFiles;
-            bool m_showDropIndicator = false;
 
             void handleDroppedFiles();
+            void handleAssetDrop(const std::string &path);
             assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
             void importDroppedFile(const std::string& filePath) const;
     };
