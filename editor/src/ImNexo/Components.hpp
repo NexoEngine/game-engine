@@ -22,6 +22,8 @@
 #include "ecs/Coordinator.hpp"
 #include "renderer/Texture.hpp"
 #include "Elements.hpp"
+#include "Guard.hpp"
+#include "ImNexo.hpp"
 
 namespace ImNexo {
 
@@ -107,9 +109,95 @@ namespace ImNexo {
      * @param getNameFunc Function that converts an entity ID to a displayable name string
      * @return true if an entity was selected (value changed), false otherwise
      */
-    bool RowEntityDropdown(const std::string &label, nexo::ecs::Entity &targetEntity,
-                                const std::vector<nexo::ecs::Entity>& entities,
-                                const std::function<std::string(nexo::ecs::Entity)>& getNameFunc);
+     template<typename GetNameFunc>
+     bool RowEntityDropdown(
+         const std::string label,
+         nexo::ecs::Entity& targetEntity,
+         const std::vector<nexo::ecs::Entity>& entities,
+         GetNameFunc&& getNameFunc
+     )
+     {
+         ImGui::TableNextRow();
+         ImGui::TableNextColumn();
+         ImGui::AlignTextToFramePadding();
+         ImGui::TextUnformatted(label.c_str());
+
+         ImGui::TableNextColumn();
+         IdGuard idGuard(label);
+
+         bool changed = false;
+
+         // Build entity-name mapping
+         static std::vector<std::pair<nexo::ecs::Entity, std::string>> entityNamePairs;
+         static nexo::ecs::Entity lastTargetEntity = 0;
+         static std::vector<nexo::ecs::Entity> lastEntities;
+
+         // Only rebuild the mapping if entities list changed or target entity changed
+         bool needRebuild = lastTargetEntity != targetEntity || lastEntities.size() != entities.size();
+
+         if (!needRebuild) {
+             for (size_t i = 0; i < entities.size() && !needRebuild; i++) {
+                 needRebuild = lastEntities[i] != entities[i];
+             }
+         }
+
+         if (needRebuild) {
+             entityNamePairs.clear();
+             entityNamePairs.reserve(entities.size());
+             lastEntities = entities;
+             lastTargetEntity = targetEntity;
+
+             for (nexo::ecs::Entity entity : entities) {
+                 std::string name = getNameFunc(entity);
+                 entityNamePairs.emplace_back(entity, name);
+             }
+         }
+
+         // Find current index
+         int currentIndex = -1;
+         for (size_t i = 0; i < entityNamePairs.size(); i++) {
+             if (entityNamePairs[i].first == targetEntity) {
+                 currentIndex = static_cast<int>(i);
+                 break;
+             }
+         }
+
+         // Add a "None" option if we want to allow null selection
+         const std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
+
+         // Draw the combo box
+         ImGui::SetNextItemWidth(-FLT_MIN); // Use all available width
+         if (ImGui::BeginCombo("##entity_dropdown", currentItemName.c_str()))
+         {
+             // Optional: Add a "None" option for clearing the target
+             if (ImGui::Selectable("None", targetEntity == nexo::ecs::MAX_ENTITIES)) {
+                 targetEntity = nexo::ecs::MAX_ENTITIES;
+                 changed = true;
+             }
+
+             for (size_t i = 0; i < entityNamePairs.size(); i++)
+             {
+                 const bool isSelected = (currentIndex == static_cast<int>(i));
+                 if (ImGui::Selectable(entityNamePairs[i].second.c_str(), isSelected))
+                 {
+                     targetEntity = entityNamePairs[i].first;
+                     changed = true;
+                 }
+
+                 if (isSelected)
+                     ImGui::SetItemDefaultFocus();
+             }
+             ImGui::EndCombo();
+         }
+         if (ImGui::IsItemActive())
+             setItemActive();
+         if (ImGui::IsItemActivated())
+             setItemActivated();
+         if (ImGui::IsItemDeactivated())
+             setItemDeactivated();
+
+         return changed;
+     }
 
 	/**
     * @brief Draws a row with multiple channels (badge + slider pairs)
