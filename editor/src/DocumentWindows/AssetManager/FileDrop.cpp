@@ -15,11 +15,25 @@
 #include "AssetManagerWindow.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "Logger.hpp"
 #include <filesystem>
 #include <algorithm>
 
 namespace nexo::editor {
+
+    void AssetManagerWindow::handleAssetDrop(const std::string &path)
+    {
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+            {
+                const auto data = static_cast<const AssetDragDropPayload *>(payload->Data);
+                assets::AssetCatalog::getInstance().moveAsset(data->id, path);
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
 
     assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
     {
