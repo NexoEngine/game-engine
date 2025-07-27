@@ -16,6 +16,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <gtest/gtest.h>
 
 #include "renderer/Buffer.hpp"
 
@@ -73,16 +74,16 @@ namespace nexo::renderer {
         MOCK_METHOD(void, unbind, (), (const, override));
         MOCK_METHOD(void, setLayout, (const NxBufferLayout &layout), (override));
         MOCK_METHOD(NxBufferLayout, getLayout, (), (const, override));
-        MOCK_METHOD(void, setData, (void *data, unsigned int size), (override));
-        MOCK_METHOD(unsigned int, getId, (), (const override));
+        MOCK_METHOD(void, setData, (void *data, size_t size), (override));
+        MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 
     class MockIndexBuffer : public NxIndexBuffer {
         public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setData, (unsigned int *data, unsigned int size), (override));
-        MOCK_METHOD(unsigned int, getCount, (), (const, override));
+        MOCK_METHOD(void, setData, (unsigned int *data, size_t size), (override));
+        MOCK_METHOD(size_t, getCount, (), (const, override));
         MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 }
