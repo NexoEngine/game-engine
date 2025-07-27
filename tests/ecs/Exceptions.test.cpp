@@ -62,7 +62,6 @@ namespace nexo::ecs {
 	    // Test polymorphic catching
 	    try {
 	        throw InternalError("Test error");
-	        FAIL() << "Exception was not thrown";
 	    } catch (const InternalError&) {
 	        SUCCEED();
 	    } catch (...) {
@@ -128,7 +127,6 @@ namespace nexo::ecs {
 	    // Test that no parameters are needed
 	    try {
 	        throw ComponentNotRegistered();
-	        FAIL() << "Exception was not thrown";
 	    } catch (const ComponentNotRegistered&) {
 	        SUCCEED();
 	    } catch (...) {

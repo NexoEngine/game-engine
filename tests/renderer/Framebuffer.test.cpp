@@ -285,7 +285,7 @@ namespace nexo::renderer {
 #ifdef _WIN32
         // TODO: fix test (see #99)
         GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
-#endif
+#else
         NxFramebufferSpecs specs;
         specs.width = 100;
         specs.height = 100;
@@ -301,6 +301,7 @@ namespace nexo::renderer {
         EXPECT_NO_THROW(framebuffer.getPixelWrapper(0, 50, 50, &pixelValue, typeid(int)));
 
         framebuffer.unbind();
+#endif
     }
 
     TEST_F(OpenGLTest, GetPixelWrapperUnsupportedType)
