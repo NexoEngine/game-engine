@@ -35,7 +35,7 @@ namespace nexo::renderer {
         renderTarget->bind();
        	NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
        	NxRenderCommand::clear();
-        renderTarget->clearAttachment(1, -1);
+        renderTarget->clearAttachment<int>(1, -1);
         NxRenderer3D::get().bindTextures();
         const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         for (const auto &cmd : drawCommands) {

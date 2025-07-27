@@ -32,30 +32,30 @@ namespace nexo::renderer {
 
     void OutlinePass::execute(RenderPipeline& pipeline)
     {
-        const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
+        const auto renderTarget = pipeline.getRenderTarget();
         std::shared_ptr<NxFramebuffer> maskPass = nullptr;
-        for (const auto &prereq : prerequisites) {
-            const auto &prereqPass = pipeline.getRenderPass(prereq);
-            if (prereqPass->getId() == Passes::MASK) {
-                maskPass = prereqPass->getOutput();
-            }
+        for (auto prereq : prerequisites) {
+            auto p = pipeline.getRenderPass(prereq);
+            if (p->getId() == Passes::MASK)
+                maskPass = p->getOutput();
         }
         if (!renderTarget || !maskPass)
             return;
+
         renderTarget->bind();
-        constexpr GLenum singleDrawBuffer[] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, singleDrawBuffer);
+        constexpr GLenum ourDrawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, ourDrawBuffers);
 
         renderer::NxRenderCommand::setDepthTest(false);
         renderer::NxRenderCommand::setDepthMask(false);
-        maskPass->bindAsTexture();
-        renderTarget->bindDepthAsTexture(1);
-        maskPass->bindDepthAsTexture(2);
-        const auto &drawCommands = pipeline.getDrawCommands();
-        for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_OUTLINE_PASS) {
+        maskPass->bindAsTexture();             // bound to unit 0
+        renderTarget->bindDepthAsTexture(1);   // bound to unit 1
+        maskPass->bindDepthAsTexture(2);       // bound to unit 2
+
+        const auto& drawCommands = pipeline.getDrawCommands();
+        for (auto const& cmd : drawCommands) {
+            if (cmd.filterMask & F_OUTLINE_PASS)
                 cmd.execute();
-            }
         }
         constexpr GLenum allBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
         glDrawBuffers(2, allBuffers);

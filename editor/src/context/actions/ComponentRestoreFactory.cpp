@@ -16,6 +16,7 @@
 #include "EntityActions.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/Name.hpp"
 #include "components/Render.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
@@ -40,6 +41,10 @@ namespace nexo::editor {
             {typeid(components::PerspectiveCameraTarget), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(e); }},
             {typeid(components::MaterialComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::MaterialComponent>>(e); }},
             {typeid(components::StaticMeshComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::StaticMeshComponent>>(e); }},
+            {typeid(components::ParentComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::ParentComponent>>(e); }},
+            {typeid(components::NameComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::NameComponent>>(e); }},
+            {typeid(components::RootComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::RootComponent>>(e); }},
+
         };
 
         auto typeId = std::type_index(typeIndex.type());

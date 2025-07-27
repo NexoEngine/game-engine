@@ -18,5 +18,19 @@
 namespace nexo::components {
     struct NameComponent {
         std::string name;
+
+        struct Memento {
+            std::string name;
+        };
+
+        void restore(const Memento& memento)
+        {
+            name = memento.name;
+        }
+
+        [[nodiscard]] Memento save() const
+        {
+            return {name};
+        }
     };
 }
