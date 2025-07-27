@@ -24,6 +24,34 @@
 #include <imgui.h>
 
 namespace nexo::editor {
+
+    static constexpr ImU32 getAssetTypeOverlayColor(const assets::AssetType type)
+    {
+        switch (type) {
+            case assets::AssetType::TEXTURE: return IM_COL32(200, 70, 70, 255);
+            case assets::AssetType::MODEL: return IM_COL32(70, 170, 70, 255);
+            default: return IM_COL32(0, 0, 0, 0);
+        }
+    }
+
+    static void calculateGridLayout(LayoutSettings &layout)
+    {
+        const float availWidth = ImGui::GetContentRegionAvail().x;
+
+        // Sizes
+        layout.size.columnCount = std::max(
+            static_cast<int>(availWidth / layout.size.itemStep.x), 1
+        );
+        layout.size.itemSize = ImVec2(
+            layout.size.iconSize + ImGui::GetFontSize() * 1.5f, // width
+            layout.size.iconSize + ImGui::GetFontSize() * 1.7f  // height
+        );
+        layout.size.itemStep = ImVec2(
+            layout.size.itemSize.x + static_cast<float>(layout.size.iconSpacing),
+            layout.size.itemSize.y + static_cast<float>(layout.size.iconSpacing)
+        );
+    }
+
     void AssetManagerWindow::drawMenuBar()
     {
         if (ImGui::BeginMenuBar()) {
@@ -36,67 +64,26 @@ namespace nexo::editor {
         }
     }
 
-    void AssetManagerWindow::calculateLayout(const float availWidth)
-    {
-        // Sizes
-        m_layout.size.columnCount = std::max(
-            static_cast<int>(availWidth / m_layout.size.itemStep.x), 1
-        );
-        m_layout.size.itemSize = ImVec2(
-            m_layout.size.iconSize + ImGui::GetFontSize() * 1.5f, // width
-            m_layout.size.iconSize + ImGui::GetFontSize() * 1.7f  // height
-        );
-        m_layout.size.itemStep = ImVec2(
-            m_layout.size.itemSize.x + static_cast<float>(m_layout.size.iconSpacing),
-            m_layout.size.itemSize.y + static_cast<float>(m_layout.size.iconSpacing)
-        );
-        // Colors
-        m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
-        m_layout.color.thumbnailBgHovered = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-        m_layout.color.thumbnailBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
-        m_layout.color.thumbnailBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
-
-        m_layout.color.selectedBoxColor = ImGui::GetColorU32(ImGuiCol_TabSelectedOverline);
-
-        m_layout.color.titleBg = ImGui::GetColorU32(ImGuiCol_Header);
-        m_layout.color.titleBgHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
-        m_layout.color.titleBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
-        m_layout.color.titleBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
-
-        m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
-    }
-
     void AssetManagerWindow::handleSelection(const unsigned int index, const bool isSelected)
     {
-        if (ImGui::GetIO().KeyCtrl) {
+        if (ImGui::IsKeyDown(ImGuiKey_ModCtrl)) {
             if (isSelected)
                 m_selectedAssets.erase(index);
             else
                 m_selectedAssets.insert(index);
-        } else if (ImGui::GetIO().KeyShift) {
-            const unsigned int latestSelected = m_selectedAssets.empty() ? 0 : *m_selectedAssets.rbegin();
-            if (latestSelected <= index) {
-                for (unsigned int i = latestSelected ; i <= index; ++i) {
-                    m_selectedAssets.insert(i);
-                }
-            } else {
-                for (unsigned int i = index; i <= latestSelected; ++i) {
-                    m_selectedAssets.insert(i);
-                }
-            }
-        } else {
-            m_selectedAssets.clear();
-            m_selectedAssets.insert(index);
+            return;
         }
-    }
 
-    static ImU32 getAssetTypeOverlayColor(const assets::AssetType type)
-    {
-        switch (type) {
-            case assets::AssetType::TEXTURE: return IM_COL32(200, 70, 70, 255);
-            case assets::AssetType::MODEL: return IM_COL32(70, 170, 70, 255);
-            default: return IM_COL32(0, 0, 0, 0);
+        if (ImGui::IsKeyDown(ImGuiKey_ModShift) && !m_selectedAssets.empty()) {
+            const unsigned int latestSelected = *m_selectedAssets.rbegin();
+            const auto [start, end] = std::minmax(latestSelected, index);
+            const auto range = std::views::iota(start, end + 1);
+            m_selectedAssets.insert(range.begin(), range.end());
+            return;
         }
+
+        m_selectedAssets.clear();
+        m_selectedAssets.insert(index);
     }
 
     void AssetManagerWindow::drawAsset(
@@ -120,7 +107,7 @@ namespace nexo::editor {
 
         const bool isSelected = std::ranges::find(m_selectedAssets, index) != m_selectedAssets.end();
         const ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
-        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
+        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.CORNER_RADIUS);
 
         if (isSelected) {
             // Draw a distinctive border around selected items
@@ -128,14 +115,14 @@ namespace nexo::editor {
                 ImVec2(itemPos.x - 1, itemPos.y - 1),
                 ImVec2(itemEnd.x + 1, itemEnd.y + 1),
                 m_layout.color.selectedBoxColor,
-                m_layout.size.cornerRadius,
+                m_layout.size.CORNER_RADIUS,
                 0,
-                m_layout.size.selectedBoxThickness
+                m_layout.size.SELECTED_BOX_THICKNESS
             );
         }
 
         // Draw thumbnail area
-        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
+        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.THUMBNAIL_HEIGHT_RATIO);
 
         if (const ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset); !textureId) {
             drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
@@ -155,14 +142,14 @@ namespace nexo::editor {
         }
 
         // Draw type overlay (maybe later modify it to an icon)
-        const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.overlayPadding, itemPos.y + m_layout.size.overlayPadding);
+        const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.OVERLAY_PADDING, itemPos.y + m_layout.size.OVERLAY_PADDING);
         const ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
-        drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.overlaySize, overlayPos.y + m_layout.size.overlaySize), overlayColor);
+        drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.OVERLAY_SIZE, overlayPos.y + m_layout.size.OVERLAY_SIZE), overlayColor);
 
         // Draw title
         const char *assetName = assetData->getMetadata().location.getName().c_str();
         const auto textPos = ImVec2(itemPos.x + (itemSize.x - ImGui::CalcTextSize(assetName).x) * 0.5f,
-            thumbnailEnd.y + m_layout.size.titlePadding);
+            thumbnailEnd.y + m_layout.size.TITLE_PADDING);
 
         // Background rectangle for text
         const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : m_layout.color.titleBg;
@@ -250,9 +237,9 @@ namespace nexo::editor {
 
         // Background - use hover color when hovered
         const ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
-        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.cornerRadius);
+        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.CORNER_RADIUS);
 
-        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.thumbnailHeightRatio);
+        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.THUMBNAIL_HEIGHT_RATIO);
 
         // Calculate padding for the icon
         constexpr float padding = 10.0f;
@@ -296,7 +283,7 @@ namespace nexo::editor {
 
         // Draw title background
         const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : IM_COL32(0, 0, 0, 0);
-        const float titleAreaHeight = itemSize.y * (1.0f - m_layout.size.thumbnailHeightRatio);
+        const float titleAreaHeight = itemSize.y * (1.0f - m_layout.size.THUMBNAIL_HEIGHT_RATIO);
 
         drawList->AddRectFilled(
             ImVec2(itemPos.x, thumbnailEnd.y),
@@ -399,10 +386,6 @@ namespace nexo::editor {
 
     void AssetManagerWindow::show()
     {
-        m_hoveredFolder.clear();
-        if (m_folderStructure.empty())
-            buildFolderStructure();
-
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened, ImGuiWindowFlags_MenuBar);
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
@@ -523,7 +506,7 @@ namespace nexo::editor {
 
         ImGui::Separator();
 
-        calculateLayout(ImGui::GetContentRegionAvail().x);
+        calculateGridLayout(m_layout);
         drawAssetsGrid();
         ImGui::EndChild();
 
