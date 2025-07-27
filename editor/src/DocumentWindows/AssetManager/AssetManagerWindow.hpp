@@ -23,6 +23,43 @@
 
 namespace nexo::editor {
 
+    struct LayoutSizes {
+        float iconSize = 64.0f;
+        int iconSpacing = 8;
+
+        ImVec2 itemSize;
+        ImVec2 itemStep;
+        int columnCount;
+
+        static constexpr float THUMBNAIL_HEIGHT_RATIO = 0.8f;
+        static constexpr float TITLE_PADDING = 5.0f;
+        static constexpr float OVERLAY_SIZE = 6.0f;
+        static constexpr float OVERLAY_PADDING = 5.0f;
+        static constexpr float CORNER_RADIUS = 5.0f;
+        static constexpr float SELECTED_BOX_THICKNESS = 4.0f;
+    };
+
+    struct LayoutColors {
+        ImU32 thumbnailBg;
+        ImU32 thumbnailBgHovered;
+        ImU32 thumbnailBgSelected;
+        ImU32 thumbnailBgSelectedHovered;
+
+        ImU32 selectedBoxColor;
+
+        ImU32 titleBg;
+        ImU32 titleBgHovered;
+        ImU32 titleBgSelected;
+        ImU32 titleBgSelectedHovered;
+
+        ImU32 titleText;
+    };
+
+    struct LayoutSettings {
+        LayoutSizes size;
+        LayoutColors color;
+    };
+
     class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
         public:
             using ADocumentWindow::ADocumentWindow;
@@ -35,43 +72,11 @@ namespace nexo::editor {
             void handleEvent(event::EventFileDrop& event) override;
 
         private:
-            struct LayoutSettings {
-                struct LayoutSizes {
-                    float iconSize = 64.0f;
-                    int iconSpacing = 8;
-                    ImVec2 itemSize;
-                    ImVec2 itemStep;
-                    int columnCount;
-                    float thumbnailHeightRatio = 0.8f;
-                    float titlePadding = 5.0f;
-                    float overlaySize = 6.0f;
-                    float overlayPadding = 5.0f;
-                    float cornerRadius = 5.0f;
-                    float selectedBoxThickness = 4.0f;
-                } size;
-
-                struct LayoutColors {
-                    ImU32 thumbnailBg;
-                    ImU32 thumbnailBgHovered;
-                    ImU32 thumbnailBgSelected;
-                    ImU32 thumbnailBgSelectedHovered;
-
-                    ImU32 selectedBoxColor;
-
-                    ImU32 titleBg;
-                    ImU32 titleBgHovered;
-                    ImU32 titleBgSelected;
-                    ImU32 titleBgSelectedHovered;
-
-                    ImU32 titleText;
-                } color;
-            };
-
             std::set<unsigned int> m_selectedAssets;
             std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
+
             LayoutSettings m_layout;
 
-            void calculateLayout(float availWidth);
             void drawMenuBar();
             void drawAssetsGrid();
             void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
@@ -84,6 +89,7 @@ namespace nexo::editor {
             char m_searchBuffer[256] = "";
 
             void buildFolderStructure();
+            void updateFolderChildren();
             void drawFolderTree();
             void drawFolderTreeItem(const std::string& name, const std::string& path);
 
