@@ -31,7 +31,7 @@ namespace nexo::editor {
     static void drawSearchBar(std::string &searchBuffer)
     {
         ImGui::PushItemWidth(-1);
-        ImGui::InputTextWithHint("##search", "Search...", searchBuffer.data(), searchBuffer.size());
+        ImGui::InputTextWithHint("##search", "Search...", searchBuffer.data(), searchBuffer.size() + 1);
         ImGui::PopItemWidth();
         ImGui::Separator();
     }
