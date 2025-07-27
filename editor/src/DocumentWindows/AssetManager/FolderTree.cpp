@@ -23,6 +23,57 @@
 
 namespace nexo::editor {
 
+    static bool isTopLevelFolder(const std::string &path)
+    {
+        return path.empty() && path.find('/') == std::string::npos;
+    }
+
+    static void drawSearchBar(std::string &searchBuffer)
+    {
+        ImGui::PushItemWidth(-1);
+        ImGui::InputTextWithHint("##search", "Search...", searchBuffer.data(), searchBuffer.size());
+        ImGui::PopItemWidth();
+        ImGui::Separator();
+    }
+
+    struct FavoriteItem {
+        std::string_view icon;
+        std::string_view name;
+        assets::AssetType type;
+
+        [[nodiscard]] std::string getLabel(bool selected) const {
+            return std::format("{} {}{}", icon, name, selected ? "   " ICON_FA_CHECK : "");
+        }
+    };
+
+    static void drawFavorites(assets::AssetType &selectedType)
+    {
+        ImGuiTreeNodeFlags rootFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+        if (!ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", rootFlags))
+            return;
+
+        static constexpr FavoriteItem favorites[]{
+            {ICON_FA_ADJUST, "Materials", assets::AssetType::MATERIAL},
+            {ICON_FA_CUBE, "Models", assets::AssetType::MODEL},
+            {ICON_FA_SQUARE, "Textures", assets::AssetType::TEXTURE}
+        };
+
+        for (const auto& fav : favorites) {
+            const bool isSelected = (fav.type == selectedType);
+
+            ImGuiTreeNodeFlags itemFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+            if (isSelected) itemFlags |= ImGuiTreeNodeFlags_Selected;
+
+            const auto label = fav.getLabel(isSelected);
+            ImGui::TreeNodeEx(label.c_str(), itemFlags);
+
+            if (ImGui::IsItemClicked()) {
+                selectedType = isSelected ? assets::AssetType::UNKNOWN : fav.type;
+            }
+        }
+        ImGui::TreePop();
+    }
+
     void AssetManagerWindow::folderTreeContextMenu()
     {
         if (ImGui::MenuItem("New Folder"))
@@ -68,73 +119,33 @@ namespace nexo::editor {
 
     void AssetManagerWindow::drawFolderTree()
     {
-        ImGui::PushItemWidth(-1);
-        ImGui::InputTextWithHint("##search", "Search...", m_searchBuffer, sizeof(m_searchBuffer));
-        ImGui::PopItemWidth();
-        ImGui::Separator();
-
-        // favorites section
-        {
-            if (ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick)) {
-                struct FavoriteItem {
-                    std::string label;
-                    assets::AssetType type;
-                };
-
-                static const FavoriteItem favorites[] = {
-                    {ICON_FA_ADJUST " Materials", assets::AssetType::MATERIAL},
-                    {ICON_FA_CUBE " Models", assets::AssetType::MODEL},
-                    {ICON_FA_SQUARE " Textures", assets::AssetType::TEXTURE}
-                };
-
-                for (const auto& fav : favorites) {
-                    const bool isSelected = (fav.type == m_selectedType);
-
-                    ImGuiTreeNodeFlags itemFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                    if (isSelected)
-                        itemFlags |= ImGuiTreeNodeFlags_Selected;
-
-                    const std::string labelName = fav.label + (isSelected ? "   " ICON_FA_CHECK : "");
-                    ImGui::TreeNodeEx(labelName.c_str(), itemFlags);
-
-                    if (ImGui::IsItemClicked()) {
-                        if (isSelected)
-                            m_selectedType = assets::AssetType::UNKNOWN;
-                        else
-                            m_selectedType = fav.type;
-                    }
-                }
-                ImGui::TreePop();
-            }
-        }
+        drawSearchBar(m_searchBuffer);
+        drawFavorites(m_selectedType);
 
         // folder structure
+        ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+        if (m_currentFolder.empty())
+            headerFlags |= ImGuiTreeNodeFlags_Selected;
+
+        bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
+
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
         {
-            ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
+            m_folderCreationState.reset();
+            m_popupManager.openPopup("Folder Tree Context Menu");
+        }
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+            m_currentFolder = "";
 
-            if (m_currentFolder.empty()) {
-                headerFlags |= ImGuiTreeNodeFlags_Selected;
-            }
+        if (!assetsOpen)
+            return;
 
-            bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
-
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-            {
-                m_folderCreationState.reset();
-                m_popupManager.openPopup("Folder Tree Context Menu");
-            }
-
-            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-                m_currentFolder = "";
-
-            if (assetsOpen) {
-                for (const auto& [path, name] : m_folderStructure) {
-                    if (!path.empty() && path.find('/') == std::string::npos) {
-                        drawFolderTreeItem(name, path);
-                    }
-                }
-                ImGui::TreePop();
+        for (const auto& [path, name] : m_folderStructure) {
+            if (isTopLevelFolder(path)) {
+                drawFolderTreeItem(name, path);
             }
         }
+        ImGui::TreePop();
     }
 }
