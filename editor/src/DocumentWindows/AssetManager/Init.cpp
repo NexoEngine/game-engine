@@ -22,11 +22,6 @@
 namespace nexo::editor {
     void AssetManagerWindow::setup()
     {
-        auto& catalog = assets::AssetCatalog::getInstance();
-        auto asset = std::make_unique<assets::Model>();
-        assets::AssetLocation location{"my_package::My_Model@Random"};
-        catalog.registerAsset(location, std::move(asset));
-
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
