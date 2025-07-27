@@ -85,30 +85,25 @@ namespace nexo::renderer
 
         capIndicesRec = [&indices, &transformer, &capIndicesRec, &nbSegment](const unsigned int start, const unsigned int nbEdge)
         {
+            assert(nbEdge > 0 && "Number of edges must be greater than 0");
             // Calculate the step size for dividing the cap into triangles
             // Base case: If the step size is 1, form a single triangle
-            if (const int step = ceil(static_cast<double>(nbEdge) / 3.0); step == 1)
-            {
-                const int tmp = start + 2 < nbSegment ? start + 2 : 0;
+            if (const auto step = static_cast<unsigned int>(std::ceil(static_cast<double>(nbEdge) / 3.0)); step == 1) {
+                const unsigned int tmp = start + 2 < nbSegment ? start + 2 : 0;
                 indices.push_back(start + transformer);
                 indices.push_back(tmp + transformer);
                 indices.push_back(start + 1 + transformer);
-            }
-            else
-            {
+            } else {
                 // Recursive case: Divide the cap into smaller sections
                 capIndicesRec(start, step + 1);
 
-                if (start + 2 * step < start + nbEdge - 1)
-                {
+                if (start + 2 * step < start + nbEdge - 1) {
                     unsigned int tmp = 0;
-                    if (start + 2 * step < start + nbEdge - 1)
-                    {
-                        tmp = static_cast<int>(start + nbEdge - 1);
+                    if (start + 2 * step < start + nbEdge - 1) {
+                        tmp = start + nbEdge - 1;
                         capIndicesRec(start + step, tmp - (start + step) + 1);
                     }
-                    else if (start + 2 * step < nbSegment)
-                    {
+                    else if (start + 2 * step < nbSegment) {
                         tmp = start + 2 * step;
                         capIndicesRec(start + step, step + 1);
                     }
@@ -116,15 +111,12 @@ namespace nexo::renderer
                     indices.push_back(start + transformer);
                     indices.push_back(tmp + transformer);
                     indices.push_back(start + step + transformer);
-                }
-                else
-                {
-                    const int tmp = static_cast<int>(start + nbEdge - 1 < nbSegment ? start + nbEdge - 1 : 0);
+                } else {
+                    const unsigned int tmp = start + nbEdge - 1 < nbSegment ? start + nbEdge - 1 : 0;
                     indices.push_back(start + transformer);
                     indices.push_back(tmp + transformer);
                     indices.push_back(start + step + transformer);
-                    if (start + nbEdge - 1 - (start + step) > 1)
-                    {
+                    if (start + nbEdge - 1 - (start + step) > 1) {
                         capIndicesRec(start + step, step + 1);
                     }
                 }
@@ -133,7 +125,7 @@ namespace nexo::renderer
 
         // Initial setup: Define the starting point and step size
         constexpr unsigned int start = 0;
-        const unsigned int step = static_cast<unsigned int>(ceil(static_cast<double>(nbSegment) / 3.0));
+        const auto step = static_cast<unsigned int>(ceil(static_cast<double>(nbSegment) / 3.0));
 
         // Add the first triangle to the indices
         indices.push_back(start + transformer);
