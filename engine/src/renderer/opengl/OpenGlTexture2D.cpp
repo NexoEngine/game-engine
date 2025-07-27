@@ -114,7 +114,7 @@ namespace nexo::renderer {
 
     void NxOpenGlTexture2D::setData(void *data, const size_t size)
     {
-        if (const size_t expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
+        if (const size_t expectedSize = static_cast<size_t>(m_width) * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
             THROW_EXCEPTION(NxTextureSizeMismatch, "OPENGL", size, expectedSize);
         glBindTexture(GL_TEXTURE_2D, m_id);
         // Update the entire texture with new data
