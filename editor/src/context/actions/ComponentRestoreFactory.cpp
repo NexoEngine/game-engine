@@ -16,8 +16,11 @@
 #include "EntityActions.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/Name.hpp"
+#include "components/Parent.hpp"
 #include "components/Render.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 
