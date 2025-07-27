@@ -36,7 +36,7 @@ public:
 };
 
 // Forward declarations for mocking
-class NxFramebufferSpecs; // Forward declaration if needed
+struct NxFramebufferSpecs; // Forward declaration if needed
 
 class MockFramebuffer : public NxFramebuffer {
 public:
