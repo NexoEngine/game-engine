@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Path.hpp"
+#include <ranges>
 
 namespace nexo {
 
@@ -52,5 +53,17 @@ namespace nexo {
         size_t start = s.find_first_not_of('/');
         size_t end   = s.find_last_not_of('/');
         return s.substr(start, end - start + 1);
+    }
+
+    std::vector<std::string> splitPath(const std::filesystem::path& path)
+    {
+        auto segments = path
+          | std::views::filter([&](auto const& e){
+              return e != path.root_name() && e != path.root_directory();
+            })
+          | std::views::transform([](auto const& e){
+              return e.string();
+            });
+        return std::vector<std::string>(segments.begin(), segments.end());
     }
 }
