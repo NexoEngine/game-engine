@@ -123,6 +123,11 @@ namespace nexo::ecs {
         [[nodiscard]] virtual std::span<const Entity> entities() const = 0;
     };
 
+#if defined(_MSC_VER)
+    #pragma warning(push) // ComponentArray
+    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+#endif
+
     /**
      * @class ComponentArray
      * @brief Stores and manages components of a specific type T.
@@ -622,6 +627,14 @@ namespace nexo::ecs {
         }
     };
 
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // ComponentArray
+
+    #pragma warning(push) // TypeErasedComponentArray
+    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+#endif
+
         /**
      * @class TypeErasedComponentArray
      * @brief A type-erased component array that can store components of any size.
@@ -737,5 +750,9 @@ namespace nexo::ecs {
 
         void shrinkIfNeeded();
     };
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // TypeErasedComponentArray
+#endif
 
 }
