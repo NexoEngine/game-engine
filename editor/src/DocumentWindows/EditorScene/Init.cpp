@@ -108,7 +108,7 @@ namespace nexo::editor
             constexpr float radius = 30.0f;
             const float angle = glm::radians(360.0f / numLights * static_cast<float>(i));
             const glm::vec3 position = center + glm::vec3(radius * cos(angle), 0.0f, radius * sin(angle));
-            const auto light = LightFactory::createPointLight(position, colors[i % colors.size()], 0.01, 0.0010);
+            const auto light = LightFactory::createPointLight(position, colors[i % colors.size()], 0.01f, 0.0010f);
             scene.addEntity(light);
         }
     }
