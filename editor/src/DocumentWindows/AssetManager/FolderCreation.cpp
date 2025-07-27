@@ -56,7 +56,7 @@ namespace nexo::editor {
     void AssetManagerWindow::newFolderMenu()
     {
         ImGui::Text("Enter name for the new folder:");
-        ImGui::InputText("##FolderName", m_folderCreationState.folderName.data(), m_folderCreationState.folderName.size());
+        ImGui::InputText("##FolderName", m_folderCreationState.folderName.data(), m_folderCreationState.folderName.size() + 1);
 
         ImGui::Separator();
 
