@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
+#include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor {
 
@@ -46,6 +47,47 @@ namespace nexo::editor {
         for (auto& [parent, children] : m_folderChildren) {
             std::ranges::sort(children);
         }
+    }
+
+    void AssetManagerWindow::buildFolderStructure()
+    {
+        m_folderStructure.clear();
+        // Root entry
+        m_folderStructure.emplace_back("", "Assets");
+        m_folderChildren.clear(); // Clear the folder children map
+
+        // First pass: build the folder structure
+        std::set<std::string, std::less<>> uniqueFolderPaths;
+
+        std::unordered_set<std::string> seen{""};
+
+        for (const auto assets = assets::AssetCatalog::getInstance().getAssets(); auto& ref : assets) {
+            if (const auto assetData = ref.lock()) {
+                // normalized path: e.g. "Random/Sub"
+                std::filesystem::path p{ assetData->getMetadata().location.getPath() };
+                std::filesystem::path curr;
+                for (auto const& part : p) {
+                    // skip empty or “_internal” style parts
+                    if (auto s = part.string(); s.empty() || s.front() == '_')
+                        continue;
+                    curr /= part;
+                    if (auto folderPath = curr.string(); seen.emplace(folderPath).second) {
+                        m_folderStructure.emplace_back(
+                            folderPath,
+                            curr.filename().string()
+                        );
+                    }
+                }
+            }
+        }
+
+        std::sort(
+            m_folderStructure.begin() + 1,
+            m_folderStructure.end(),
+            [](auto const& a, auto const& b){
+                return a.first < b.first;
+            }
+        );
     }
 
     void AssetManagerWindow::update()

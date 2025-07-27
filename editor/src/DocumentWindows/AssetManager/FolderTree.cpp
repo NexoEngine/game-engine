@@ -18,9 +18,19 @@
 #include "assets/AssetCatalog.hpp"
 
 #include <filesystem>
+#include <imgui.h>
 #include <set>
 
 namespace nexo::editor {
+
+    void AssetManagerWindow::folderTreeContextMenu()
+    {
+        if (ImGui::MenuItem("New Folder"))
+            m_popupManager.openPopup("Create new folder");
+
+        PopupManager::closePopup();
+    }
+
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -36,21 +46,12 @@ namespace nexo::editor {
 
         bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
 
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsItemToggledOpen())
             m_currentFolder = path;
-
-        if (ImGui::BeginPopupContextItem()) {
-            if (ImGui::MenuItem("New Folder")) {
-                m_folderCreationState.parentPath = path;
-                m_folderCreationState.isCreatingFolder = true;
-                ImGui::OpenPopup("Create New Folder");
-                std::format_to_n(
-                    m_folderCreationState.folderName,
-                    sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
-                    "New Folder"
-                );
-            }
-            ImGui::EndPopup();
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+            m_folderCreationState.reset();
+            m_folderCreationState.parentPath = path;
+            m_popupManager.openPopup("Folder Tree Context Menu");
         }
 
         if (!opened)
@@ -65,136 +66,8 @@ namespace nexo::editor {
         ImGui::TreePop();
     }
 
-    void AssetManagerWindow::handleNewFolderCreation()
-    {
-        if (!m_folderCreationState.isCreatingFolder)
-            return;
-
-        ImGui::OpenPopup("Create New Folder");
-
-        // Center the popup
-        const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-        if (ImGui::BeginPopupModal("Create New Folder", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-            ImGui::Text("Enter name for new folder:");
-            ImGui::InputText("##FolderName", m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName));
-
-            ImGui::Separator();
-
-            if (ImGui::Button("Create", ImVec2(120, 0))) {
-                if (strnlen(m_folderCreationState.folderName, sizeof(m_folderCreationState.folderName)) > 0) {
-                    std::string newFolderPath;
-                    if (m_folderCreationState.parentPath.empty())
-                        newFolderPath = m_folderCreationState.folderName;
-                    else
-                        newFolderPath = m_folderCreationState.parentPath + "/" + m_folderCreationState.folderName;
-
-                    // Check if folder already exists
-                    bool folderExists = false;
-                    for (const auto &path: m_folderStructure | std::views::keys) {
-                        if (path == newFolderPath) {
-                            folderExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!folderExists) {
-                        m_folderStructure.emplace_back(newFolderPath, m_folderCreationState.folderName);
-                        LOG(NEXO_INFO, "Created new folder: {}", newFolderPath);
-
-                        m_folderCreationState.isCreatingFolder = false;
-                        std::sort(
-                            m_folderStructure.begin() + 1,
-                            m_folderStructure.end(),
-                            [](const auto& a, const auto& b) {
-                                return a.first < b.first;
-                            }
-                        );
-                        updateFolderChildren();
-                        ImGui::CloseCurrentPopup();
-                    } else {
-                        m_folderCreationState.showError = true;
-                        m_folderCreationState.errorMessage = "Folder already exists";
-                    }
-                } else {
-                    m_folderCreationState.showError = true;
-                    m_folderCreationState.errorMessage = "Folder name cannot be empty";
-                }
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-                m_folderCreationState.isCreatingFolder = false;
-                ImGui::CloseCurrentPopup();
-            }
-
-            // Display error message if needed
-            if (m_folderCreationState.showError) {
-                ImGui::Separator();
-                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-                ImGui::Text("%s", m_folderCreationState.errorMessage.c_str());
-                ImGui::PopStyleColor();
-
-                // Clear error after a few seconds
-                if (m_folderCreationState.errorTimer <= 0.0f) {
-                    m_folderCreationState.showError = false;
-                    m_folderCreationState.errorTimer = 3.0f; // Reset timer
-                } else {
-                    m_folderCreationState.errorTimer -= ImGui::GetIO().DeltaTime;
-                }
-            }
-
-            ImGui::EndPopup();
-        }
-    }
-
-    void AssetManagerWindow::buildFolderStructure()
-    {
-        m_folderStructure.clear();
-        // Root entry
-        m_folderStructure.emplace_back("", "Assets");
-        m_folderChildren.clear(); // Clear the folder children map
-
-        // First pass: build the folder structure
-        std::set<std::string, std::less<>> uniqueFolderPaths;
-
-        std::unordered_set<std::string> seen{""};
-
-        for (const auto assets = assets::AssetCatalog::getInstance().getAssets(); auto& ref : assets) {
-            if (const auto assetData = ref.lock()) {
-                // normalized path: e.g. "Random/Sub"
-                std::filesystem::path p{ assetData->getMetadata().location.getPath() };
-                std::filesystem::path curr;
-                for (auto const& part : p) {
-                    // skip empty or “_internal” style parts
-                    if (auto s = part.string(); s.empty() || s.front() == '_')
-                        continue;
-                    curr /= part;
-                    if (auto folderPath = curr.string(); seen.emplace(folderPath).second) {
-                        m_folderStructure.emplace_back(
-                            folderPath,
-                            curr.filename().string()
-                        );
-                    }
-                }
-            }
-        }
-
-        std::sort(
-            m_folderStructure.begin() + 1,
-            m_folderStructure.end(),
-            [](auto const& a, auto const& b){
-                return a.first < b.first;
-            }
-        );
-    }
-
-
     void AssetManagerWindow::drawFolderTree()
     {
-        handleNewFolderCreation();
-
         ImGui::PushItemWidth(-1);
         ImGui::InputTextWithHint("##search", "Search...", m_searchBuffer, sizeof(m_searchBuffer));
         ImGui::PopItemWidth();
@@ -245,18 +118,10 @@ namespace nexo::editor {
 
             bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
 
-            // Handle right-click on Assets root
-            if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::MenuItem("New Folder")) {
-                    m_folderCreationState.parentPath = "";
-                    m_folderCreationState.isCreatingFolder = true;
-                    std::format_to_n(
-                        m_folderCreationState.folderName,
-                        sizeof(m_folderCreationState.folderName) - 1,  // Ensure null termination
-                        "New Folder"
-                    );
-                }
-                ImGui::EndPopup();
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            {
+                m_folderCreationState.reset();
+                m_popupManager.openPopup("Folder Tree Context Menu");
             }
 
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())

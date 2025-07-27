@@ -508,6 +508,12 @@ namespace nexo::editor {
         drawAssetsGrid();
         ImGui::EndChild();
 
+        if (m_popupManager.showPopup("Folder Tree Context Menu"))
+            folderTreeContextMenu();
+
+        if (m_popupManager.showPopupModal("Create new folder"))
+            newFolderContextMenu();
+
         ImGui::End();
     }
 }

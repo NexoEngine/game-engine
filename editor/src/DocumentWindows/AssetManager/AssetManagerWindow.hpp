@@ -17,11 +17,31 @@
 #include <set>
 #include <imgui.h>
 #include <assets/AssetRef.hpp>
+#include "DocumentWindows/PopupManager.hpp"
 #include "utils/TransparentStringHash.hpp"
 #include <core/event/WindowEvent.hpp>
 #include "assets/Asset.hpp"
 
 namespace nexo::editor {
+
+    struct FolderCreationState {
+        bool isCreatingFolder = false;
+        std::string folderName = "New Folder";
+        std::string parentPath;
+        bool showError = false;
+        std::string errorMessage;
+        float errorTimer = 3.0f;
+
+        void reset()
+        {
+            isCreatingFolder = false;
+            folderName = "New Folder";
+            parentPath = "";
+            showError = false;
+            errorMessage = "";
+            errorTimer = 3.0f;
+        }
+    };
 
     struct LayoutSizes {
         float iconSize = 64.0f;
@@ -88,26 +108,22 @@ namespace nexo::editor {
             std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
             char m_searchBuffer[256] = "";
 
+            PopupManager m_popupManager;
+
             void buildFolderStructure();
             void updateFolderChildren();
+
+            void folderTreeContextMenu();
             void drawFolderTree();
             void drawFolderTreeItem(const std::string& name, const std::string& path);
-
-            struct FolderCreationState {
-                bool isCreatingFolder = false;
-                char folderName[256] = "";
-                std::string parentPath;
-                bool showError = false;
-                std::string errorMessage;
-                float errorTimer = 3.0f;
-            };
 
             FolderCreationState m_folderCreationState;
             assets::AssetRef<assets::Texture> m_folderIcon;
 
             ImTextureID getFolderIconTexture() const;
 
-            void handleNewFolderCreation();
+            void newFolderContextMenu();
+            bool handleNewFolderCreation();
             void drawFolder(
                 const std::string& folderPath,
                 const std::string& folderName,
