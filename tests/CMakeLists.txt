@@ -21,12 +21,6 @@ project(nexoTests VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if (MSVC)
-    add_compile_options(/wd4702) # Unreachable code
-else()
-    add_compile_options(-Wno-unreachable-code) # Unreachable code
-endif()
-
 enable_testing()
 include(GoogleTest)
 # Find gtest package

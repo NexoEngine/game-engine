@@ -61,11 +61,14 @@ namespace nexo::assets {
 
     TEST(AssetLocationTest, InvalidLocationWithInvalidName)
     {
-        GTEST_SKIP() << "TODO: Implement validation for path, this test should pass later";
-        const std::string invalidLocation = "myPack::my@Asset@path/to/asset";
-        EXPECT_THROW({
-            AssetLocation cannotCreate(invalidLocation);
-        }, InvalidAssetLocation);
+        #if defined(GTEST_SKIP)
+            GTEST_SKIP() << "TODO: Implement validation for path, this test should pass later";
+        #else
+            const std::string invalidLocation = "myPack::my@Asset@path/to/asset";
+            EXPECT_THROW({
+                AssetLocation cannotCreate(invalidLocation);
+            }, InvalidAssetLocation);
+        #endif
     }
 
     TEST(AssetLocationTest, ParseFullLocationStaticFunctionValid)
