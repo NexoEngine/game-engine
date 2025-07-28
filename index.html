@@ -144,7 +144,8 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <h2>Build the project</h2>
 <p >Cloning and building is a breeze:</p>
 <h3>1. Clone the repository with the submodules.</h3>
-<div class="fragment"><div class="line">git clone --recurse-submodules</div>
+<div class="fragment"><div class="line">git clone --recurse-submodules https://github.com/NexoEngine/game-engine.git NEXO-Engine</div>
+<div class="line">cd NEXO-Engine</div>
 </div><!-- fragment --><h3>2. Run cmake to generate the build files.</h3>
 <h4>Option1: Using <code>CMake presets</code> (automatic) [Recommended]</h4>
 <div class="fragment"><div class="line">cmake --workflow --preset=build-debug</div>
