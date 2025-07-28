@@ -57,10 +57,10 @@ https://github.com/user-attachments/assets/ea92807b-da51-4fb6-bd1d-d3c9fadf0c13
 ## External Dependencies
 
 To run this project, ensure you have the following:
-- **CMake**: Necessary for building the project from source. (version 3.28 or higher)
+- **CMake**: Necessary for building the project from source. (version 3.28 or higher) [install here](https://cmake.org/download/)
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **Git**: For cloning with submodules.
-- **.NET SDK 9.0**: Required for the C# scripting support.
+- **Git**: For cloning with submodules. [install here](https://github.com/git-guides/install-git)
+- **.NET SDK 9.0**: Required for the C# scripting support. [install here](https://dotnet.microsoft.com/fr-fr/download)
 
 ## Build the project
 
