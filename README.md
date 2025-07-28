@@ -68,7 +68,8 @@ Cloning and building is a breeze:
 
 ### 1. Clone the repository with the submodules.
 ```bash
-git clone --recurse-submodules
+git clone --recurse-submodules https://github.com/NexoEngine/game-engine.git NEXO-Engine
+cd NEXO-Engine
 ```
 
 ### 2. Run cmake to generate the build files.
