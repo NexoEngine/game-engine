@@ -16,9 +16,9 @@
 
 namespace nexo::editor {
 
-    ImTextureID AssetManagerWindow::getFolderIconTexture() const
+    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture> &texture) const
     {
-        if (const auto texRef = m_folderIcon.lock()) {
+        if (const auto texRef = texture.lock()) {
             const auto &texData = texRef->getData();
             if (texData && texData->texture) {
                 return texData->texture->getId();

@@ -53,7 +53,7 @@ namespace nexo::editor {
 
         static constexpr float THUMBNAIL_HEIGHT_RATIO = 0.8f;
         static constexpr float TITLE_PADDING = 5.0f;
-        static constexpr float OVERLAY_SIZE = 6.0f;
+        static constexpr float OVERLAY_SIZE = 24.0f;
         static constexpr float OVERLAY_PADDING = 5.0f;
         static constexpr float CORNER_RADIUS = 5.0f;
         static constexpr float SELECTED_BOX_THICKNESS = 4.0f;
@@ -82,6 +82,19 @@ namespace nexo::editor {
         float leftPanelWidth = 200.0f;
     };
 
+    struct AssetTypeInfo {
+        ImTextureID iconTexture;
+        ImU32 backgroundColor;
+        std::string tooltip;
+    };
+
+    struct AssetLayoutParams {
+        ImVec2 itemPos;
+        ImVec2 itemSize;
+        ImVec2 itemEnd;
+        ImVec2 thumbnailEnd;
+    };
+
     class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
         public:
             using ADocumentWindow::ADocumentWindow;
@@ -102,8 +115,13 @@ namespace nexo::editor {
             void drawMenuBar();
             void drawPanelSplitter();
             void drawBreadcrumbs();
+
             void drawAssetsGrid();
-            void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
+            void drawAssetTitle(
+                const std::shared_ptr<assets::IAsset>& assetData,
+                const AssetLayoutParams& params,
+                bool isHovered
+            ) const;           void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
             void handleSelection(unsigned int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
@@ -124,7 +142,7 @@ namespace nexo::editor {
             FolderCreationState m_folderCreationState;
             assets::AssetRef<assets::Texture> m_folderIcon;
 
-            ImTextureID getFolderIconTexture() const;
+            ImTextureID getIconTexture(const assets::AssetRef<assets::Texture> &texture) const;
 
             void newFolderMenu();
             bool handleNewFolderCreation();
