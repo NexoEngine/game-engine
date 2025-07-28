@@ -64,6 +64,6 @@ namespace nexo {
           | std::views::transform([](auto const& e){
               return e.string();
             });
-        return std::vector<std::string>(segments.begin(), segments.end());
+        return {segments.begin(), segments.end()};
     }
 }
