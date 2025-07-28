@@ -120,13 +120,14 @@ This will install the NEXO Engine in the directory `/path/to/install` with all t
 
 ### Create an installer for Windows (NSIS)
 
-To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
-
 > [!WARNING]
 > We assume here that you already ran the cmake command to generate the build files in the `build` directory.
 
-First install NSIS on your computer, then run the following command:
+To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
 
+1. First install [NSIS](https://nsis.sourceforge.io/Download) on your computer.
+
+2. Execute the following commands:
 ```bash
 cd build
 cpack -G NSIS -C Debug
