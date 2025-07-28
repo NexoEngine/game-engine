@@ -20,6 +20,10 @@
                     "type": "BOOL",
                     "value": true
                 },
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Debug"
+                },
                 "NEXO_BOOTSTRAP_VCPKG": {
                     "type": "BOOL",
                     "value": true
