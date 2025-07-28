@@ -87,7 +87,10 @@ namespace nexo::editor {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         if (path == m_currentFolder)
             flags |= ImGuiTreeNodeFlags_Selected;
-        if (!m_folderChildren.contains(path) || m_folderChildren.at(path).empty())
+
+        // Replace the old children check with:
+        auto children = m_folderManager.getChildren(path);
+        if (children.empty())
             flags |= ImGuiTreeNodeFlags_Leaf;
 
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(230, 180, 80, 255));
@@ -108,11 +111,9 @@ namespace nexo::editor {
         if (!opened)
             return;
 
-        if (const auto it = m_folderChildren.find(path); it != m_folderChildren.end()) {
-            for (const auto& childPath : it->second) {
-                const std::string childName = std::filesystem::path(childPath).filename().string();
-                drawFolderTreeItem(childName, childPath);
-            }
+        // Replace the old iteration with:
+        for (const auto& [childPath, childName] : children) {
+            drawFolderTreeItem(childName, childPath);
         }
         ImGui::TreePop();
     }
@@ -122,7 +123,6 @@ namespace nexo::editor {
         drawSearchBar(m_searchBuffer);
         drawFavorites(m_selectedType);
 
-        // folder structure
         ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
         if (m_currentFolder.empty())
@@ -141,10 +141,10 @@ namespace nexo::editor {
         if (!assetsOpen)
             return;
 
-        for (const auto& [path, name] : m_folderStructure) {
-            if (isTopLevelFolder(path)) {
-                drawFolderTreeItem(name, path);
-            }
+        // Replace the old iteration with:
+        auto rootChildren = m_folderManager.getChildren("");
+        for (const auto& [path, name] : rootChildren) {
+            drawFolderTreeItem(name, path);
         }
         ImGui::TreePop();
     }

@@ -58,6 +58,5 @@ namespace nexo::editor {
 
         m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
         buildFolderStructure();
-        updateFolderChildren();
     }
 }
