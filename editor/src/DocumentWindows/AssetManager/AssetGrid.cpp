@@ -13,16 +13,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
+#include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "context/ThumbnailCache.hpp"
+#include "ImNexo/Elements.hpp"
 
 namespace nexo::editor {
 
     static constexpr ImU32 getAssetTypeOverlayColor(const assets::AssetType type)
     {
         switch (type) {
-            case assets::AssetType::TEXTURE: return IM_COL32(200, 70, 70, 255);
-            case assets::AssetType::MODEL: return IM_COL32(70, 170, 70, 255);
+            case assets::AssetType::TEXTURE: return IM_COL32(60, 40, 40, 255);
+            case assets::AssetType::MODEL: return IM_COL32(40, 60, 40, 255);
+            case assets::AssetType::MATERIAL: return IM_COL32(40, 40, 60, 255);
             default: return IM_COL32(0, 0, 0, 0);
         }
     }
@@ -31,7 +34,6 @@ namespace nexo::editor {
     {
         const float availWidth = ImGui::GetContentRegionAvail().x;
 
-        // Sizes
         layout.size.columnCount = std::max(
             static_cast<int>(availWidth / layout.size.itemStep.x), 1
         );
@@ -45,6 +47,97 @@ namespace nexo::editor {
         );
     }
 
+    static void drawAssetThumbnail(
+        const assets::GenericAssetRef& asset,
+        const LayoutSettings &layout,
+        const AssetLayoutParams& params,
+        const bool isSelected
+    ) {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        const ImU32 bgColor = isSelected ? layout.color.selectedBoxColor : layout.color.thumbnailBg;
+        ImNexo::ButtonBorder(bgColor, bgColor, bgColor);
+
+        if (const ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset); !textureId) {
+            drawList->AddRectFilled(params.itemPos, params.thumbnailEnd, layout.color.thumbnailBg);
+        } else {
+            constexpr float padding = 4.0f;
+            const ImVec2 imageStart(params.itemPos.x + padding, params.itemPos.y + padding);
+            const ImVec2 imageEnd(params.thumbnailEnd.x - padding, params.thumbnailEnd.y - padding);
+
+            drawList->AddImage(
+                textureId,
+                imageStart,
+                imageEnd,
+                ImVec2(0, 1),
+                ImVec2(1, 0),
+                IM_COL32(255, 255, 255, 255)
+            );
+        }
+    }
+
+    static void cropText(const std::string& assetName, std::string& displayText, float availableTextWidth)
+    {
+        const std::string ellipsis = "...";
+        if (ImGui::CalcTextSize(assetName.c_str()).x <= availableTextWidth) {
+            displayText = assetName;
+            return;
+        }
+
+        for (size_t length = assetName.size(); length > 0; --length) {
+            displayText = assetName.substr(0, length) + ellipsis;
+            if (ImGui::CalcTextSize(displayText.c_str()).x <= availableTextWidth)
+                return;
+        }
+
+        displayText = ellipsis;
+    }
+
+    void AssetManagerWindow::drawAssetTitle(
+        const std::shared_ptr<assets::IAsset>& assetData,
+        const AssetLayoutParams& params,
+        bool isHovered
+    ) const {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        const float titleAreaHeight = params.itemSize.y * (1.0f - m_layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const float titlePadding = std::max(2.0f, titleAreaHeight * 0.1f);
+        const float availableTextWidth = params.itemSize.x - (titlePadding * 2);
+
+        ImU32 titleBgColor = (isHovered) ?
+                m_layout.color.titleBgHovered :
+                getAssetTypeOverlayColor(assetData->getType());
+
+        // title background
+        drawList->AddRectFilled(
+            ImVec2(params.itemPos.x, params.thumbnailEnd.y),
+            ImVec2(params.itemEnd.x, params.itemEnd.y),
+            titleBgColor
+        );
+
+        const std::string assetName = assetData->getMetadata().location.getName().data();
+        const ImVec2 fullTextSize = ImGui::CalcTextSize(assetName.c_str());
+        std::string displayText = assetName;
+
+        // Crop text if it's too wide
+        if (fullTextSize.x > availableTextWidth)
+            cropText(assetName, displayText, availableTextWidth);
+
+        const ImVec2 displayTextSize = ImGui::CalcTextSize(displayText.c_str());
+        const ImVec2 textPos(
+            params.itemPos.x + (params.itemSize.x - displayTextSize.x) * 0.5f,
+            params.thumbnailEnd.y + (titleAreaHeight - displayTextSize.y) * 0.5f
+        );
+        drawList->AddText(textPos, m_layout.color.titleText, displayText.c_str());
+
+        if (isHovered) {
+            if (fullTextSize.x > availableTextWidth)
+                ImGui::SetTooltip("%s\n%s", assetName.c_str(), assetData->getMetadata().location.getFullLocation().c_str());
+            else
+                ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
+        }
+    }
+
     void AssetManagerWindow::drawAsset(
         const assets::GenericAssetRef& asset,
         const unsigned int index,
@@ -54,96 +147,35 @@ namespace nexo::editor {
         const auto assetData = asset.lock();
         if (!assetData)
             return;
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
-        const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
 
         ImGui::PushID(static_cast<int>(index));
-
         ImGui::SetCursorScreenPos(itemPos);
 
         const bool clicked = ImGui::InvisibleButton("##item", itemSize);
         const bool isHovered = ImGui::IsItemHovered();
-
-        const bool isSelected = std::ranges::find(m_selectedAssets, index) != m_selectedAssets.end();
-        const ImU32 bgColor = isSelected ? m_layout.color.thumbnailBgSelected : m_layout.color.thumbnailBg;
-        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.CORNER_RADIUS);
-
-        if (isSelected) {
-            // Draw a distinctive border around selected items
-            drawList->AddRect(
-                ImVec2(itemPos.x - 1, itemPos.y - 1),
-                ImVec2(itemEnd.x + 1, itemEnd.y + 1),
-                m_layout.color.selectedBoxColor,
-                m_layout.size.CORNER_RADIUS,
-                0,
-                m_layout.size.SELECTED_BOX_THICKNESS
-            );
-        }
-
-        // Draw thumbnail area
+        const bool isSelected = m_selectedAssets.contains(index);
+        const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
         const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const AssetLayoutParams assetLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
 
-        if (const ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset); !textureId) {
-            drawList->AddRectFilled(itemPos, thumbnailEnd, m_layout.color.thumbnailBg);
-        } else {
-            constexpr float padding = 4.0f;
-            const ImVec2 imageStart(itemPos.x + padding, itemPos.y + padding);
-            const ImVec2 imageEnd(thumbnailEnd.x - padding, thumbnailEnd.y - padding);
+        drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
+        drawAssetTitle(assetData, assetLayoutParams, isHovered);
 
-            drawList->AddImage(
-                textureId,
-                imageStart,
-                imageEnd,
-                ImVec2(0, 1),     // UV0 (top-left)
-                ImVec2(1, 0),     // UV1 (bottom-right)
-                IM_COL32(255, 255, 255, 255) // White tint
-            );
-        }
-
-        // Draw type overlay (maybe later modify it to an icon)
-        const auto overlayPos = ImVec2(thumbnailEnd.x - m_layout.size.OVERLAY_PADDING, itemPos.y + m_layout.size.OVERLAY_PADDING);
-        const ImU32 overlayColor = getAssetTypeOverlayColor(assetData->getType());
-        drawList->AddRectFilled(overlayPos, ImVec2(overlayPos.x + m_layout.size.OVERLAY_SIZE, overlayPos.y + m_layout.size.OVERLAY_SIZE), overlayColor);
-
-        // Draw title
-        const char *assetName = assetData->getMetadata().location.getName().c_str();
-        const auto textPos = ImVec2(itemPos.x + (itemSize.x - ImGui::CalcTextSize(assetName).x) * 0.5f,
-            thumbnailEnd.y + m_layout.size.TITLE_PADDING);
-
-        // Background rectangle for text
-        const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : m_layout.color.titleBg;
-        drawList->AddRectFilled(ImVec2(itemPos.x, thumbnailEnd.y), ImVec2(itemEnd.x, itemEnd.y), titleBgColor);
-        drawList->AddText(textPos, m_layout.color.titleText, assetName);
-
-        // Handle selection when clicked
         if (clicked)
             handleSelection(index, isSelected);
 
-        // On Hover show asset location
-        if (isHovered)
-            ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
-
-        // Handle drag source for assets
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
             AssetDragDropPayload payload;
             payload.type = assetData->getType();
             payload.id = assetData->getID();
             payload.path = assetData->getMetadata().location.getFullLocation();
-            payload.name = assetName;
+            payload.name = assetData->getMetadata().location.getName().data();
 
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
-
-            // Show preview while dragging
-            //TODO: Add asset preview thanks to thumbnail cache after rebasing
-            if (assetData->getType() == assets::AssetType::TEXTURE) {
-                const auto textureAsset = asset.as<assets::Texture>();
-                if (const auto textureData = textureAsset.lock();
-                    textureData && textureData->getData() && textureData->getData()->texture) {
-                    const ImTextureID textureId = textureData->getData()->texture->getId();
-                    ImGui::Image(textureId, {64, 64});
-                }
-            }
+            ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
+            if (textureID)
+                ImGui::Image(textureID, {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::EndDragDropSource();
         }
@@ -215,7 +247,7 @@ namespace nexo::editor {
 
         // Draw folder PNG icon
 
-        if (const ImTextureID folderIconTexture = getFolderIconTexture()) {
+        if (const ImTextureID folderIconTexture = getIconTexture(m_folderIcon)) {
             drawList->AddImage(
                 folderIconTexture,
                 imageStart,
