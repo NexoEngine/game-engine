@@ -169,14 +169,17 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="fragment"><div class="line">cmake --install build --prefix /path/to/install</div>
 </div><!-- fragment --><p >This will install the NEXO Engine in the directory <code>/path/to/install</code> with all the necessary files.</p>
 <h3>Create an installer for Windows (NSIS)</h3>
-<p >To create an installer for Windows, you can use the <a href="https://nsis.sourceforge.io/Main_Page">NSIS</a> installer.</p>
 <blockquote class="doxtable">
 <p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
 </blockquote>
-<p>First install NSIS on your computer, then run the following command:</p>
-<div class="fragment"><div class="line">cd build</div>
+<p>To create an installer for Windows, you can use the <a href="https://nsis.sourceforge.io/Main_Page">NSIS</a> installer.</p>
+<ol type="1">
+<li>First install <a href="https://nsis.sourceforge.io/Download">NSIS</a> on your computer.</li>
+<li>Execute the following commands: <div class="fragment"><div class="line">cd build</div>
 <div class="line">cpack -G NSIS -C Debug</div>
-</div><!-- fragment --><p >Now you can run the generated installer to install the NEXO Engine on your computer.</p>
+</div><!-- fragment --></li>
+</ol>
+<p >Now you can run the generated installer to install the NEXO Engine on your computer.</p>
 <h2>Create an installer for Linux (DEB)</h2>
 <blockquote class="doxtable">
 <p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
