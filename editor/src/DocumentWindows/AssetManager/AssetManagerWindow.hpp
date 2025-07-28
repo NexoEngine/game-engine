@@ -21,6 +21,7 @@
 #include "utils/TransparentStringHash.hpp"
 #include <core/event/WindowEvent.hpp>
 #include "assets/Asset.hpp"
+#include "FolderManager.hpp"
 
 namespace nexo::editor {
 
@@ -108,7 +109,6 @@ namespace nexo::editor {
 
         private:
             std::set<unsigned int> m_selectedAssets;
-            std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
 
             LayoutSettings m_layout;
 
@@ -121,19 +121,18 @@ namespace nexo::editor {
                 const std::shared_ptr<assets::IAsset>& assetData,
                 const AssetLayoutParams& params,
                 bool isHovered
-            ) const;           void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
+            ) const;
+            void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
             void handleSelection(unsigned int index, bool isSelected);
 
             assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
             std::string m_currentFolder;  // Currently selected folder
             std::string m_hoveredFolder;  // Currently hovered folder
-            std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
             std::string m_searchBuffer = "";
 
             PopupManager m_popupManager;
 
             void buildFolderStructure();
-            void updateFolderChildren();
 
             void folderTreeContextMenu();
             void drawFolderTree();
@@ -159,6 +158,8 @@ namespace nexo::editor {
             void handleAssetDrop(const std::string &path);
             assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
             void importDroppedFile(const std::string& filePath) const;
+
+            FolderManager m_folderManager;
     };
 
     /**

@@ -292,36 +292,20 @@ namespace nexo::editor {
         calculateGridLayout(m_layout);
 
         const ImVec2 startPos = ImGui::GetCursorScreenPos();
-
-        std::vector<std::pair<std::string,std::string>> subfolders;
-        for (auto& [path,name] : m_folderStructure) {
-            if (path.empty() || path.front() == '_')
-                continue;
-
-            if (m_currentFolder.empty()) {
-                if (path.find('/') == std::string::npos)
-                    subfolders.emplace_back(path, name);
-            } else {
-                if (std::string prefix = m_currentFolder + "/"; path.rfind(prefix, 0) == 0 &&
-                                                                path.find('/', prefix.size()) == std::string::npos)
-                {
-                    subfolders.emplace_back(path, path.substr(prefix.size()));
-                }
-            }
-        }
+        auto subfolders = m_folderManager.getChildren(m_currentFolder);
 
         std::vector<assets::GenericAssetRef> filtered;
         for (auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
-            if (const auto d = ref.lock()) {
-                const auto& folder = d->getMetadata().location.getPath();
-                if (folder == "_internal")
-                    continue;
-                if (m_selectedType != assets::AssetType::UNKNOWN &&
-                    d->getType() != m_selectedType)  continue;
-
-                if (folder == m_currentFolder)
-                    filtered.push_back(ref);
-            }
+            const auto d = ref.lock();
+            if (!d)
+                continue;
+            const auto& folder = d->getMetadata().location.getPath();
+            if (folder == "_internal")
+                continue;
+            if (m_selectedType != assets::AssetType::UNKNOWN && d->getType() != m_selectedType)
+                continue;
+            if (folder == m_currentFolder)
+                filtered.push_back(ref);
         }
 
         const size_t totalItems = subfolders.size() + filtered.size();
