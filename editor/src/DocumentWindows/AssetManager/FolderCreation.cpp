@@ -25,31 +25,13 @@ namespace nexo::editor {
             return false;
         }
 
-        std::string newFolderPath = (m_folderCreationState.parentPath.empty()) ? "" : m_folderCreationState.parentPath + "/";
-        newFolderPath += m_folderCreationState.folderName;
-
-        const bool folderExists = std::ranges::any_of(m_folderStructure,
-            [&newFolderPath](const auto& folder) {
-                return folder.first == newFolderPath;
-            }
-        );
-
-        if (folderExists) {
+        // Replace the old logic with:
+        if (!m_folderManager.createFolder(m_folderCreationState.parentPath, m_folderCreationState.folderName)) {
             m_folderCreationState.showError = true;
-            m_folderCreationState.errorMessage = "Folder already exists";
+            m_folderCreationState.errorMessage = "Failed to create folder (may already exist)";
             return false;
         }
 
-        m_folderStructure.emplace_back(newFolderPath, m_folderCreationState.folderName);
-
-        std::sort(
-            m_folderStructure.begin() + 1,
-            m_folderStructure.end(),
-            [](const auto& a, const auto& b) {
-                return a.first < b.first;
-            }
-        );
-        updateFolderChildren();
         return true;
     }
 
