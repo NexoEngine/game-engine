@@ -118,7 +118,7 @@ cmake --install build --prefix /path/to/install
 
 This will install the NEXO Engine in the directory `/path/to/install` with all the necessary files.
 
-### Create an installer for Windows (NSIS)
+#### Create an installer for Windows (NSIS)
 
 > [!WARNING]
 > We assume here that you already ran the cmake command to generate the build files in the `build` directory.
@@ -134,8 +134,11 @@ cpack -G NSIS -C Debug
 ```
 
 Now you can run the generated installer to install the NEXO Engine on your computer.
+```bash
+./nexoEditor.exe
+```
 
-## Create an installer for Linux (DEB)
+#### Create an installer for Linux (DEB)
 
 > [!WARNING]
 > We assume here that you already ran the cmake command to generate the build files in the `build` directory.
@@ -181,6 +184,7 @@ NEXO Engine is brought to life by a dedicated team of fifth-year students from E
 - Thomas PARENTEAU [@ThomasParenteau](https://www.linkedin.com/in/thomas-parenteau-0570b120a/)
 
 ## Join the NEXO community
+
 Check our [web site](https://www.nexo-engine.com/) to keep you up to date about the latest news about **NEXO**.</br>
 Join the [community](https://github.com/orgs/NexoEngine/discussions) to ask your questions or to talk with our developers.</br>
 Visit our [blog](https://www.nexo-engine.com/blog) to find out more about how NEXO works.</br>
