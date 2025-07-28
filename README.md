@@ -60,7 +60,7 @@ To run this project, ensure you have the following:
 - **CMake**: Necessary for building the project from source. (version 3.28 or higher) [install here](https://cmake.org/download/)
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
 - **Git**: For cloning with submodules. [install here](https://github.com/git-guides/install-git)
-- **.NET SDK 9.0**: Required for the C# scripting support. [install here](https://dotnet.microsoft.com/fr-fr/download)
+- **.NET SDK 9.0**: Required for the C# scripting support. [install here](https://dotnet.microsoft.com/fr-fr/download/dotnet/9.0)
 
 ## Build the project
 
