@@ -145,6 +145,7 @@ namespace nexo::editor {
 
             void newFolderMenu();
             bool handleNewFolderCreation();
+            void drawFolderIcon(const AssetLayoutParams& params);
             void drawFolder(
                 const std::string& folderPath,
                 const std::string& folderName,
