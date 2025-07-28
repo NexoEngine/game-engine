@@ -48,7 +48,7 @@ namespace nexo::renderer {
             virtual void bind(unsigned int slot = 0) const = 0;
             virtual void unbind(unsigned int slot = 0) const = 0;
 
-            virtual void setData(void *data, unsigned int size) = 0;
+            virtual void setData(void *data, size_t size) = 0;
 
             bool operator==(const NxTexture &other) const { return this->getId() == other.getId(); };
     };

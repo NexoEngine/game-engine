@@ -261,7 +261,7 @@ namespace nexo::system {
     }
 
 
-    void PhysicsSystem::syncTransformsToBodies(const std::vector<ecs::Entity>& entities, ecs::Coordinator& coordinator) const
+    void PhysicsSystem::syncTransformsToBodies(ecs::Coordinator& coordinator) const
     {
         for (const auto& entity : entities) {
             if (!coordinator.entityHasComponent<components::TransformComponent>(entity) ||

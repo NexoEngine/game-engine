@@ -271,7 +271,7 @@ int main() {
     coordinator.registerComponent<Position>();
     coordinator.registerComponent<Velocity>();
 
-    coordinator.registerSingletonComponent<GameConfig>(5000, 10);
+    coordinator.registerSingletonComponent<GameConfig>(5000, 10.0f);
     coordinator.registerSingletonComponent<GameState>(true, 10.0f);
     log("Components registered");
 

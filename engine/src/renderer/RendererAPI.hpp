@@ -137,9 +137,9 @@ namespace nexo::renderer {
             *
             * Must be implemented by subclasses.
             */
-            virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, unsigned int count = 0) = 0;
+            virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t count = 0) = 0;
 
-            virtual void drawUnIndexed(unsigned int verticesCount) = 0;
+            virtual void drawUnIndexed(size_t verticesCount) = 0;
 
             virtual void setStencilTest(bool enable) = 0;
             virtual void setStencilMask(unsigned int mask) = 0;

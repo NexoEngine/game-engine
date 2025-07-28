@@ -30,7 +30,7 @@ namespace nexo::renderer {
         MOCK_METHOD(void, unbind, (), (const, override));
         MOCK_METHOD(void, setLayout, (const NxBufferLayout&), (override));
         MOCK_METHOD(NxBufferLayout, getLayout, (), (const, override));
-        MOCK_METHOD(void, setData, (void*, unsigned int), (override));
+        MOCK_METHOD(void, setData, (void*, size_t), (override));
         MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 
@@ -38,8 +38,8 @@ namespace nexo::renderer {
     public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setData, (unsigned int*, unsigned int), (override));
-        MOCK_METHOD(unsigned int, getCount, (), (const, override));
+        MOCK_METHOD(void, setData, (unsigned int*, size_t), (override));
+        MOCK_METHOD(size_t, getCount, (), (const, override));
         MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 
@@ -67,7 +67,7 @@ namespace nexo::renderer {
 
 	        glfwMakeContextCurrent(window);
 
-	        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+	        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	        {
 	            glfwDestroyWindow(window);
 	            glfwTerminate();
@@ -114,7 +114,7 @@ namespace nexo::renderer {
 
 	        glfwMakeContextCurrent(window);
 
-	        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+	        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	        {
 	            glfwDestroyWindow(window);
 	            glfwTerminate();
@@ -172,7 +172,7 @@ namespace nexo::renderer {
         EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT3, "").getComponentCount(), 9);
         EXPECT_EQ(NxBufferElements(NxShaderDataType::MAT4, "").getComponentCount(), 16);
         EXPECT_EQ(NxBufferElements(NxShaderDataType::BOOL, "").getComponentCount(), 1);
-        EXPECT_EQ(NxBufferElements(NxShaderDataType::NONE, "").getComponentCount(), -1);
+        EXPECT_EQ(NxBufferElements(NxShaderDataType::NONE, "").getComponentCount(), 0);
     }
 
     // Tests for BufferLayout
@@ -251,7 +251,7 @@ namespace nexo::renderer {
         buffer.unbind();
         unsigned int indices[] = {0, 1, 2, 2, 3, 0};
         buffer.setData(indices, 6);
-        unsigned int count = buffer.getCount();
+        size_t count = buffer.getCount();
         unsigned int id = buffer.getId();
 
         EXPECT_EQ(count, 6);

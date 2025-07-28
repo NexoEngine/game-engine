@@ -146,7 +146,7 @@ namespace nexo::editor {
     void SceneTreeWindow::update()
     {
         root_.uiName = "Scene Tree";
-        root_.data.entity = -1;
+        root_.data.entity = ecs::INVALID_ENTITY;
         root_.type = SelectionType::NONE;
         root_.children.clear();
         m_nbPointLights = 0;

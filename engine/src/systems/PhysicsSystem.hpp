@@ -186,10 +186,7 @@ namespace nexo::system
                                         ShapeType shapeType, JPH::EMotionType motionType) const;
 
 
-        void syncTransformsToBodies(
-            const std::vector<ecs::Entity>& entities,
-            ecs::Coordinator& coordinator
-        ) const;
+        void syncTransformsToBodies(ecs::Coordinator& coordinator) const;
 
         void applyForce(JPH::BodyID bodyID, const JPH::Vec3& force) const;
         void setGravity(const JPH::Vec3& gravity) const;

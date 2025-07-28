@@ -184,7 +184,7 @@ namespace nexo::renderer {
             * texture->setData(pixels, sizeof(pixels));
             * ```
             */
-            void setData(void *data, unsigned int size) override;
+            void setData(void *data, size_t size) override;
         private:
             /**
              * @brief Ingest and load texture data from stb_image buffer.

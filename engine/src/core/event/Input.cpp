@@ -24,15 +24,14 @@ namespace nexo::event {
 
     void Input::init(const std::shared_ptr<renderer::NxWindow>& window)
     {
-        if (!_instance)
-        {
-            #ifdef NX_GRAPHICS_API_OPENGL
-                _instance = std::make_shared<InputOpenGl>(window);
-                return;
-            #endif
-            THROW_EXCEPTION(renderer::NxUnknownGraphicsApi, "UNKNOWN");
-        }
-    }
+        if (_instance)
+            return;
 
+        #ifdef NX_GRAPHICS_API_OPENGL
+            _instance = std::make_shared<InputOpenGl>(window);
+        #else
+            THROW_EXCEPTION(renderer::NxUnknownGraphicsApi, "UNKNOWN");
+        #endif
+    }
 
 }

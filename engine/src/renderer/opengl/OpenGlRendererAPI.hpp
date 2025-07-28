@@ -122,9 +122,9 @@ namespace nexo::renderer {
              * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
              * - NxInvalidValue if the `vertexArray` is null.
              */
-            void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, unsigned int indexCount = 0) override;
+            void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0) override;
 
-            void drawUnIndexed(unsigned int verticesCount) override;
+            void drawUnIndexed(size_t verticesCount) override;
 
             void setStencilTest(bool enable) override;
             void setStencilMask(unsigned int mask) override;

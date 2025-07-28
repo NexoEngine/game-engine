@@ -62,8 +62,7 @@ namespace nexo::ecs {
 	    // Test polymorphic catching
 	    try {
 	        throw InternalError("Test error");
-	        FAIL() << "Exception was not thrown";
-	    } catch (const InternalError& e) {
+	    } catch (const InternalError&) {
 	        SUCCEED();
 	    } catch (...) {
 	        FAIL() << "Wrong exception type caught";
@@ -128,7 +127,6 @@ namespace nexo::ecs {
 	    // Test that no parameters are needed
 	    try {
 	        throw ComponentNotRegistered();
-	        FAIL() << "Exception was not thrown";
 	    } catch (const ComponentNotRegistered&) {
 	        SUCCEED();
 	    } catch (...) {
@@ -201,7 +199,7 @@ namespace nexo::ecs {
 	            case 7: throw TooManyEntities();
 	            default: throw OutOfRange(10);
 	        }
-	    } catch (const Exception& e) {
+	    } catch (const Exception&) {
 	        // All exceptions should be caught here
 	        caughtCount++;
 	    } catch (...) {

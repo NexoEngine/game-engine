@@ -34,11 +34,16 @@ namespace nexo::renderer {
         m_output = renderer::NxFramebuffer::create(framebufferSpecs);
     }
 
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4702) // Unreachable code
+#endif
+
     void GridPass::execute(RenderPipeline& pipeline)
     {
         auto output = (m_isFinal) ? pipeline.getFinalRenderTarget() : m_output;
         std::shared_ptr<NxFramebuffer> prevPass = nullptr;
-        for (const auto &prereq : prerequisites) {
+        for (const auto &prereq : prerequisites) { // TODO: fix unreachable code, since prerequisites is *always* empty
             const auto &prereqPass = pipeline.getRenderPass(prereq);
             prevPass = pipeline.getOutput(prereqPass->getId());
             break;
@@ -64,6 +69,10 @@ namespace nexo::renderer {
         output->unbind();
         pipeline.setOutput(id, output);
     }
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // Unreachable code
+#endif
 
     void GridPass::resize(unsigned int width, unsigned int height)
     {

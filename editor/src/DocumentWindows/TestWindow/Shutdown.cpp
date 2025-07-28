@@ -15,6 +15,7 @@
 #include "Exception.hpp"
 #include "TestWindow.hpp"
 #include "Path.hpp"
+#include "Error.hpp"
 #include "exceptions/Exceptions.hpp"
 
 #include <fstream>
@@ -163,8 +164,10 @@ namespace nexo::editor {
         const auto filePath = getTestReportFilePath();
 
         std::ofstream out(filePath.string());
-        if (!out)
-            THROW_EXCEPTION(FileWriteException, filePath.string(), std::strerror(errno));
+        if (!out) {
+            THROW_EXCEPTION(FileWriteException, filePath.string(), nexo::strerror(errno));
+        }
+
 
         writeEnvironmentReport(out);
 

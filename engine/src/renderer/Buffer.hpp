@@ -130,7 +130,7 @@ namespace nexo::renderer {
                 case NxShaderDataType::MAT3:      return 3 * 3;
                 case NxShaderDataType::MAT4:      return 4 * 4;
                 case NxShaderDataType::BOOL:      return 1;
-                default: return -1;
+                default: return 0; // Undefined type, return 0
             }
         }
     };
@@ -273,7 +273,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setData(void *data, unsigned int size) = 0;
+            virtual void setData(void *data, size_t size) = 0;
 
             [[nodiscard]] virtual unsigned int getId() const = 0;
     };
@@ -333,7 +333,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setData(unsigned int *data, unsigned int size) = 0;
+            virtual void setData(unsigned int *data, size_t size) = 0;
 
             /**
              * @brief Retrieves the number of indices in the index buffer.
@@ -346,7 +346,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            [[nodiscard]] virtual unsigned int getCount() const = 0;
+            [[nodiscard]] virtual size_t getCount() const = 0;
 
             [[nodiscard]] virtual unsigned int getId() const = 0;
     };

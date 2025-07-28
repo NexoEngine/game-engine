@@ -82,7 +82,7 @@ namespace nexo::ecs {
 
     class OutOfRange final : public Exception {
         public:
-            explicit OutOfRange(unsigned int index, const std::source_location loc = std::source_location::current())
+            explicit OutOfRange(size_t index, const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Index {} is out of range", index), loc) {}
     };
 }

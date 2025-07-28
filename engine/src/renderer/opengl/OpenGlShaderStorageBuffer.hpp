@@ -25,7 +25,7 @@ namespace nexo::renderer {
 		void bindBase(unsigned int bindingLocation) const override;
 		void unbind() const override;
 
-		void setData(void* data, unsigned int size) override;
+		void setData(void* data, size_t size) override;
 
 		[[nodiscard]] unsigned int getId() const override { return m_id; };
 
