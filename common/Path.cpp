@@ -57,13 +57,13 @@ namespace nexo {
 
     std::vector<std::string> splitPath(const std::filesystem::path& path)
     {
-        auto segments = path
-          | std::views::filter([&](auto const& e){
-              return e != path.root_name() && e != path.root_directory();
-            })
-          | std::views::transform([](auto const& e){
-              return e.string();
-            });
-        return {segments.begin(), segments.end()};
+        std::vector<std::string> result;
+
+        for (const auto& part : path) {
+            if (part != path.root_name() && part != path.root_directory())
+                result.push_back(part.string());
+        }
+
+        return result;
     }
 }
