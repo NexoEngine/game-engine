@@ -274,6 +274,7 @@ namespace nexo {
         m_window->init();
         registerWindowCallbacks();
         m_window->setVsync(false);
+        m_window->setDarkMode(true);
 
 #ifdef NX_GRAPHICS_API_OPENGL
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
