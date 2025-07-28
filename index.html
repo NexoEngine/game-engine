@@ -168,7 +168,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <p >First build the project as seen in the step <a href="#build-the-project">Build the project</a>. Then run the following command:</p>
 <div class="fragment"><div class="line">cmake --install build --prefix /path/to/install</div>
 </div><!-- fragment --><p >This will install the NEXO Engine in the directory <code>/path/to/install</code> with all the necessary files.</p>
-<h3>Create an installer for Windows (NSIS)</h3>
+<h4>Create an installer for Windows (NSIS)</h4>
 <blockquote class="doxtable">
 <p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
 </blockquote>
@@ -179,8 +179,8 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="line">cpack -G NSIS -C Debug</div>
 </div><!-- fragment --></li>
 </ol>
-<p >Now you can run the generated installer to install the NEXO Engine on your computer.</p>
-<h2>Create an installer for Linux (DEB)</h2>
+<p >Now you can run the generated installer to install the NEXO Engine on your computer. </p><div class="fragment"><div class="line">./nexoEditor.exe</div>
+</div><!-- fragment --><h4>Create an installer for Linux (DEB)</h4>
 <blockquote class="doxtable">
 <p >[!WARNING] We assume here that you already ran the cmake command to generate the build files in the <code>build</code> directory. </p>
 </blockquote>
