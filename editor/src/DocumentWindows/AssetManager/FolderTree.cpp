@@ -23,11 +23,6 @@
 
 namespace nexo::editor {
 
-    static bool isTopLevelFolder(const std::string &path)
-    {
-        return path.empty() && path.find('/') == std::string::npos;
-    }
-
     static void drawSearchBar(std::string &searchBuffer)
     {
         ImGui::PushItemWidth(-1);
@@ -88,7 +83,6 @@ namespace nexo::editor {
         if (path == m_currentFolder)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        // Replace the old children check with:
         auto children = m_folderManager.getChildren(path);
         if (children.empty())
             flags |= ImGuiTreeNodeFlags_Leaf;
@@ -111,7 +105,6 @@ namespace nexo::editor {
         if (!opened)
             return;
 
-        // Replace the old iteration with:
         for (const auto& [childPath, childName] : children) {
             drawFolderTreeItem(childName, childPath);
         }
@@ -141,7 +134,6 @@ namespace nexo::editor {
         if (!assetsOpen)
             return;
 
-        // Replace the old iteration with:
         auto rootChildren = m_folderManager.getChildren("");
         for (const auto& [path, name] : rootChildren) {
             drawFolderTreeItem(name, path);
