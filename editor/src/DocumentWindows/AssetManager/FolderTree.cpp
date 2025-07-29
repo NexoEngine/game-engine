@@ -25,8 +25,11 @@ namespace nexo::editor {
 
     static void drawSearchBar(std::string &searchBuffer)
     {
+        constexpr size_t MAX_SEARCH_LENGTH = 256;
+        searchBuffer.resize(MAX_SEARCH_LENGTH);
         ImGui::PushItemWidth(-1);
-        ImGui::InputTextWithHint("##search", "Search...", searchBuffer.data(), searchBuffer.size() + 1);
+        ImGui::InputTextWithHint("##search", "Search...", searchBuffer.data(), searchBuffer.capacity());
+        searchBuffer.resize(strlen(searchBuffer.c_str()));
         ImGui::PopItemWidth();
         ImGui::Separator();
     }

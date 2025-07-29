@@ -22,7 +22,7 @@
 
 namespace nexo::editor {
 
-    void AssetManagerWindow::handleAssetDrop(const std::string &path)
+    void AssetManagerWindow::handleAssetDrop(const std::string &path) const
     {
         if (ImGui::BeginDragDropTarget())
         {

@@ -111,7 +111,7 @@ namespace ImNexo {
      */
      template<typename GetNameFunc>
      bool RowEntityDropdown(
-         const std::string label,
+         const std::string& label,
          nexo::ecs::Entity& targetEntity,
          const std::vector<nexo::ecs::Entity>& entities,
          GetNameFunc&& getNameFunc

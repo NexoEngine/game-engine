@@ -25,7 +25,6 @@ namespace nexo::editor {
             return false;
         }
 
-        // Replace the old logic with:
         if (!m_folderManager.createFolder(m_folderCreationState.parentPath, m_folderCreationState.folderName)) {
             m_folderCreationState.showError = true;
             m_folderCreationState.errorMessage = "Failed to create folder (may already exist)";
@@ -38,8 +37,10 @@ namespace nexo::editor {
     void AssetManagerWindow::newFolderMenu()
     {
         ImGui::Text("Enter name for the new folder:");
-        ImGui::InputText("##FolderName", m_folderCreationState.folderName.data(), m_folderCreationState.folderName.size() + 1);
-
+        constexpr size_t MAX_FOLDER_NAME_LENGTH = 256;
+        m_folderCreationState.folderName.resize(MAX_FOLDER_NAME_LENGTH);
+        ImGui::InputText("##FolderName", m_folderCreationState.folderName.data(), m_folderCreationState.folderName.capacity());
+        m_folderCreationState.folderName.resize(strlen(m_folderCreationState.folderName.c_str()));
         ImGui::Separator();
 
         if (ImNexo::Button("Create") && handleNewFolderCreation()) {
@@ -60,7 +61,7 @@ namespace nexo::editor {
 
             if (m_folderCreationState.errorTimer <= 0.0f) {
                 m_folderCreationState.showError = false;
-                m_folderCreationState.errorTimer = 3.0f; // Reset timer
+                m_folderCreationState.errorTimer = ERROR_DISPLAY_TIMEOUT; // Reset timer
             } else
                 m_folderCreationState.errorTimer -= ImGui::GetIO().DeltaTime;
         }

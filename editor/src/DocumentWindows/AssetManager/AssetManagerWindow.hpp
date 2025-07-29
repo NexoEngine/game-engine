@@ -25,13 +25,16 @@
 
 namespace nexo::editor {
 
+    static constexpr std::string INTERNAL_FOLDER_PREFIX = "_internal";
+    static constexpr float ERROR_DISPLAY_TIMEOUT = 3.0f;
+
     struct FolderCreationState {
         bool isCreatingFolder = false;
         std::string folderName = "New Folder";
         std::string parentPath;
         bool showError = false;
         std::string errorMessage;
-        float errorTimer = 3.0f;
+        float errorTimer = ERROR_DISPLAY_TIMEOUT;
 
         void reset()
         {
@@ -145,7 +148,7 @@ namespace nexo::editor {
 
             void newFolderMenu();
             bool handleNewFolderCreation();
-            void drawFolderIcon(const AssetLayoutParams& params);
+            void drawFolderIcon(const AssetLayoutParams& params) const;
             void drawFolder(
                 const std::string& folderPath,
                 const std::string& folderName,
@@ -156,7 +159,7 @@ namespace nexo::editor {
             std::vector<std::string> m_pendingDroppedFiles;
 
             void handleDroppedFiles();
-            void handleAssetDrop(const std::string &path);
+            void handleAssetDrop(const std::string &path) const;
             assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
             void importDroppedFile(const std::string& filePath) const;
 
@@ -172,7 +175,7 @@ namespace nexo::editor {
     {
         assets::AssetType type; ///< Type of the asset
         assets::AssetID id; ///< ID of the asset
-        std::string path; ///< Path to the asset
-        std::string name; ///< Display name of the asset
+        char path[256];  ///< Path to the asset
+        char name[64]; ///< Display name of the asset
     };
 }

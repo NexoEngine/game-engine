@@ -67,7 +67,7 @@ namespace nexo::editor {
         std::string path = m_currentFolder;
         std::vector<std::string> crumbs = splitPath(m_currentFolder);
         std::string fullPath;
-        for (auto &crumb : crumbs)
+        for (const auto &crumb : crumbs)
         {
             fullPath += (fullPath.empty() ? "" : "/") + crumb;
             ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
