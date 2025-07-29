@@ -83,7 +83,17 @@ namespace nexo::editor {
                                          const glm::vec2& size = {128, 128});
 
         /**
-         * @brief Remove all cached thumbnails and free associated resources.
+         * @brief Get or generate a thumbnail for a model asset.
+         *
+         * Uses the model directly if already loaded; otherwise generates a preview.
+         * @param modelRef Reference to the model asset.
+         * @param size Desired thumbnail size in pixels (width, height).
+         * @return model ID of the model thumbnail, or 0 if invalid.
+         */
+        unsigned int getModelThumbnail(const assets::AssetRef<assets::Model>& modelRef, const glm::vec2& size);
+
+        /**
+         * @brief Remove all cached thumbnails and free-associated resources.
          */
         void clearCache();
 

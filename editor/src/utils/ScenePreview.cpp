@@ -42,38 +42,28 @@ namespace nexo::editor::utils {
 
     static ecs::Entity copyEntity(const ecs::Entity entity)
     {
-        const ecs::Entity entityCopy = Application::m_coordinator->createEntity();
-        const auto staticMeshCopy = Application::m_coordinator->getComponent<components::StaticMeshComponent>(entity);
-        const auto materialCopy   = Application::m_coordinator->getComponent<components::MaterialComponent>(entity);
-        const auto &transformComponentBase =
-            Application::m_coordinator->getComponent<components::TransformComponent>(entity);
-        components::TransformComponent transformComponent;
-        transformComponent.pos  = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};
-        transformComponent.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-        transformComponent.size = transformComponentBase.size;
-        Application::m_coordinator->addComponent(entityCopy, staticMeshCopy);
-        Application::m_coordinator->addComponent(entityCopy, materialCopy);
-        Application::m_coordinator->addComponent(entityCopy, transformComponent);
-        return entityCopy;
+        // const ecs::Entity entityCopy = Application::m_coordinator->createEntity();
+        // const auto staticMeshCopy =
+        // Application::m_coordinator->getComponent<components::StaticMeshComponent>(entity); const auto materialCopy =
+        // Application::m_coordinator->getComponent<components::MaterialComponent>(entity); const auto
+        // &transformComponentBase =
+        //     Application::m_coordinator->getComponent<components::TransformComponent>(entity);
+        // components::TransformComponent transformComponent;
+        // transformComponent.pos  = {0.0f, 0.0f, -transformComponentBase.size.z * 2.0f};
+        // transformComponent.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        // transformComponent.size = transformComponentBase.size;
+        // Application::m_coordinator->addComponent(entityCopy, staticMeshCopy);
+        // Application::m_coordinator->addComponent(entityCopy, materialCopy);
+        // Application::m_coordinator->addComponent(entityCopy, transformComponent);
+        // return entityCopy;
+        return Application::m_coordinator->duplicateEntity(entity);
     }
 
-    static ecs::Entity createPreviewCamera(scene::SceneId sceneId, ecs::Entity entity, ecs::Entity entityCopy,
-                                           const glm::vec2 &previewSize, const glm::vec4 &clearColor)
+    glm::vec3 oldComputeCameraPosition(const ecs::Entity entity)
     {
-        auto &app = getApp();
-        renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
-                                        renderer::NxFrameBufferTextureFormats::RED_INTEGER,
-                                        renderer::NxFrameBufferTextureFormats::Depth};
-        framebufferSpecs.width       = static_cast<unsigned int>(previewSize.x);
-        framebufferSpecs.height      = static_cast<unsigned int>(previewSize.y);
         const auto &transformComponentBase =
             Application::m_coordinator->getComponent<components::TransformComponent>(entity);
-        const auto &transformComponent =
-            Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
-
-        auto framebuffer = renderer::NxFramebuffer::create(framebufferSpecs);
-
+        // If no vertices are available, use the transform component's size to compute the camera position
         float distance = transformComponentBase.size.z * 3.0f;
 
         float defaultYawDeg   = 30.0f;  // horizontal offset
@@ -82,7 +72,7 @@ namespace nexo::editor::utils {
         float defaultYaw   = glm::radians(defaultYawDeg);
         float defaultPitch = glm::radians(defaultPitchDeg);
 
-        glm::vec3 targetPos = transformComponent.pos;
+        glm::vec3 targetPos = transformComponentBase.pos;
 
         glm::vec3 initialOffset = {0.0f, 0.0f, distance};
 
@@ -99,8 +89,84 @@ namespace nexo::editor::utils {
         newOffset           = glm::normalize(newOffset) * distance;
 
         glm::vec3 cameraPos = targetPos + newOffset;
+        std::cout << "Camera position computed: " << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z
+                  << std::endl;
+        return cameraPos;
+    }
 
-        ecs::Entity cameraId = CameraFactory::createPerspectiveCamera(cameraPos, framebufferSpecs.width,
+    glm::vec3 computeCameraPosition(const ecs::Entity entity, const float verticalFovDeg, const float aspectRatio,
+                                    const glm::vec3 &camForward = glm::vec3(0, 0, -1))
+    {
+        const auto &modelComponent = Application::m_coordinator->tryGetComponent<components::ModelComponent>(entity);
+        if (!modelComponent) {
+            LOG(NEXO_ERROR, "Entity {} does not have model component, using default camera position computation",
+                entity);
+            return oldComputeCameraPosition(entity);
+        }
+        // const auto vertices = modelComponent.model.getVertices(); // TODO: Create get vertices method for the model
+        const std::vector<glm::vec3> &vertices = {};
+
+        if (vertices.empty()) {
+            LOG(NEXO_ERROR, "No vertices available for entity {}, using default camera position computation", entity);
+            return oldComputeCameraPosition(entity);
+        }
+
+        // 1) Find AABB min/max
+        glm::vec3 vMin{std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(),
+                       std::numeric_limits<float>::infinity()};
+        glm::vec3 vMax{-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(),
+                       -std::numeric_limits<float>::infinity()};
+
+        for (const auto &v : vertices) {
+            vMin.x = std::min(vMin.x, v.x);
+            vMin.y = std::min(vMin.y, v.y);
+            vMin.z = std::min(vMin.z, v.z);
+            vMax.x = std::max(vMax.x, v.x);
+            vMax.y = std::max(vMax.y, v.y);
+            vMax.z = std::max(vMax.z, v.z);
+        }
+
+        // 2) Compute center & half‐extents
+        const glm::vec3 center{(vMin.x + vMax.x) * 0.5f, (vMin.y + vMax.y) * 0.5f, (vMin.z + vMax.z) * 0.5f};
+        const glm::vec3 extents{(vMax.x - vMin.x) * 0.5f, (vMax.y - vMin.y) * 0.5f, (vMax.z - vMin.z) * 0.5f};
+
+        // 3) Compute half‐angles in radians
+        constexpr float deg2rad = 3.14159265f / 180.0f;
+        const float halfVFovRad = 0.5f * verticalFovDeg * deg2rad;
+        const float halfHFovRad = std::atan(std::tan(halfVFovRad) * aspectRatio);
+
+        // 4) Compute distances needed to fit height & width
+        const float dVert    = extents.y / std::tan(halfVFovRad);
+        const float dHoriz   = extents.x / std::tan(halfHFovRad);
+        const float distance = std::max(dVert, dHoriz);
+
+        // 5) Position camera: move back from center along the NEGATIVE of the forward vector
+        const glm::vec3 forwardN = normalize(camForward);
+        return center - forwardN * distance;
+    }
+
+    static ecs::Entity createPreviewCamera(const scene::SceneId sceneId, const ecs::Entity entity,
+                                           const ecs::Entity entityCopy, const glm::vec2 &previewSize,
+                                           const glm::vec4 &clearColor)
+    {
+        auto &app = getApp();
+        renderer::NxFramebufferSpecs framebufferSpecs;
+        framebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
+                                        renderer::NxFrameBufferTextureFormats::RED_INTEGER,
+                                        renderer::NxFrameBufferTextureFormats::Depth};
+        framebufferSpecs.width       = static_cast<unsigned int>(previewSize.x);
+        framebufferSpecs.height      = static_cast<unsigned int>(previewSize.y);
+        const auto &transformComponentBase =
+            Application::m_coordinator->getComponent<components::TransformComponent>(entity);
+        const auto &transformComponent =
+            Application::m_coordinator->getComponent<components::TransformComponent>(entityCopy);
+
+        const auto framebuffer = renderer::NxFramebuffer::create(framebufferSpecs);
+
+        const glm::vec3 cameraPos = computeCameraPosition(entity, 45.0f, previewSize.x / previewSize.y,
+                                                    transformComponentBase.pos - transformComponent.pos);
+
+        const ecs::Entity cameraId = CameraFactory::createPerspectiveCamera(cameraPos, framebufferSpecs.width,
                                                                       framebufferSpecs.height, framebuffer, clearColor);
 
         auto &cameraTransform  = Application::m_coordinator->getComponent<components::TransformComponent>(cameraId);
@@ -108,7 +174,7 @@ namespace nexo::editor::utils {
         auto &cameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
         cameraComponent.render = true;
 
-        glm::vec3 newFront   = glm::normalize(targetPos - cameraPos);
+        const glm::vec3 newFront   = glm::normalize(transformComponent.pos - cameraPos);
         cameraTransform.quat = glm::normalize(glm::quatLookAt(newFront, glm::vec3(0.0f, 1.0f, 0.0f)));
 
         components::PerspectiveCameraTarget cameraTarget;
