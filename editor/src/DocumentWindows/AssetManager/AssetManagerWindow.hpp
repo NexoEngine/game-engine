@@ -25,7 +25,7 @@
 
 namespace nexo::editor {
 
-    static constexpr std::string INTERNAL_FOLDER_PREFIX = "_internal";
+    static constexpr std::string_view INTERNAL_FOLDER_PREFIX = "_internal";
     static constexpr float ERROR_DISPLAY_TIMEOUT = 3.0f;
 
     struct FolderCreationState {
