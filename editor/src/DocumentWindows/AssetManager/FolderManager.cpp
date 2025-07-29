@@ -16,7 +16,7 @@
 
 namespace nexo::editor {
 
-    static bool isNameValid(const std::string &folderName)
+    static bool isNameValid(std::string_view folderName)
     {
         return !(folderName.empty() || folderName.front() == '_' || folderName.find('/') != std::string::npos);
     }
@@ -89,7 +89,7 @@ namespace nexo::editor {
         m_children[newFolderPath] = {};
         m_children[parentPath].push_back(newFolderPath);
 
-        std::sort(m_children[parentPath].begin(), m_children[parentPath].end());
+        std::ranges::sort(m_children[parentPath]);
 
         return true;
     }
@@ -111,10 +111,7 @@ namespace nexo::editor {
         std::string parentPath = getParentPath(folderPath);
         if (auto parentIt = m_children.find(parentPath); parentIt != m_children.end()) {
             auto& parentChildren = parentIt->second;
-            parentChildren.erase(
-                std::remove(parentChildren.begin(), parentChildren.end(), folderPath),
-                parentChildren.end()
-            );
+            std::erase(parentChildren, folderPath);
         }
 
         m_pathToName.erase(folderPath);
@@ -155,7 +152,7 @@ namespace nexo::editor {
         for (const auto& [path, name] : m_pathToName) {
             paths.push_back(path);
         }
-        std::sort(paths.begin(), paths.end());
+        std::ranges::sort(paths);
         return paths;
     }
 
@@ -176,7 +173,7 @@ namespace nexo::editor {
         m_children[""] = {};
     }
 
-    void FolderManager::addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths)
+    void FolderManager::addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const
     {
         if (fullPath.empty()) return;
 
@@ -208,7 +205,7 @@ namespace nexo::editor {
 
         // Sort all children vectors
         for (auto& [parent, children] : m_children)
-            std::sort(children.begin(), children.end());
+            std::ranges::sort(children);
     }
 
     std::string FolderManager::extractNameFromPath(const std::string& path) const
