@@ -52,7 +52,7 @@ namespace nexo::editor {
         private:
             void clear();
 
-            void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths);
+            void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const;
 
             void buildMapsFromPaths(const std::unordered_set<std::string>& allPaths);
 

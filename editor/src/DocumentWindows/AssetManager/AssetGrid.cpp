@@ -27,6 +27,12 @@ namespace nexo::editor {
             case assets::AssetType::TEXTURE: return IM_COL32(60, 40, 40, 255);
             case assets::AssetType::MODEL: return IM_COL32(40, 60, 40, 255);
             case assets::AssetType::MATERIAL: return IM_COL32(40, 40, 60, 255);
+            case assets::AssetType::UNKNOWN:
+            case assets::AssetType::FONT:
+            case assets::AssetType::MUSIC:
+            case assets::AssetType::SCRIPT:
+            case assets::AssetType::SHADER:
+            case assets::AssetType::SOUND:
             default: return IM_COL32(0, 0, 0, 0);
         }
     }
@@ -101,11 +107,11 @@ namespace nexo::editor {
     ) const {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        const float titleAreaHeight = params.itemSize.y * (1.0f - m_layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const float titleAreaHeight = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const float titlePadding = std::max(2.0f, titleAreaHeight * 0.1f);
         const float availableTextWidth = params.itemSize.x - (titlePadding * 2);
 
-        ImU32 titleBgColor = (isHovered) ?
+        ImU32 titleBgColor = isHovered ?
                 m_layout.color.titleBgHovered :
                 getAssetTypeOverlayColor(assetData->getType());
 
@@ -156,7 +162,7 @@ namespace nexo::editor {
         const bool isHovered = ImGui::IsItemHovered();
         const bool isSelected = m_selectedAssets.contains(index);
         const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
-        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const AssetLayoutParams assetLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
 
         drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
@@ -170,8 +176,12 @@ namespace nexo::editor {
             AssetDragDropPayload payload;
             payload.type = assetData->getType();
             payload.id = assetData->getID();
-            payload.path = assetData->getMetadata().location.getFullLocation();
-            payload.name = assetData->getMetadata().location.getName().data();
+            const auto& fullPath = assetData->getMetadata().location.getFullLocation();
+            const auto& name = assetData->getMetadata().location.getName().data();
+            std::strncpy(payload.path, fullPath.c_str(), sizeof(payload.path) - 1);
+            payload.path[sizeof(payload.path) - 1] = '\0';
+            std::strncpy(payload.name, name.c_str(), sizeof(payload.name) - 1);
+            payload.name[sizeof(payload.name) - 1] = '\0';
 
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
             ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
@@ -184,7 +194,7 @@ namespace nexo::editor {
         ImGui::PopID();
     }
 
-    void AssetManagerWindow::drawFolderIcon(const AssetLayoutParams& params)
+    void AssetManagerWindow::drawFolderIcon(const AssetLayoutParams& params) const
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -228,7 +238,7 @@ namespace nexo::editor {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
         const ImU32 titleBgColor = isHovered ? layout.color.titleBgHovered : IM_COL32(0, 0, 0, 0);
-        const float titleAreaHeight = params.itemSize.y * (1.0f - layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const float titleAreaHeight = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
 
         drawList->AddRectFilled(
             ImVec2(params.itemPos.x, params.thumbnailEnd.y),
@@ -255,7 +265,7 @@ namespace nexo::editor {
     ) {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         const auto itemEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
-        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * m_layout.size.THUMBNAIL_HEIGHT_RATIO);
+        const auto thumbnailEnd = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const AssetLayoutParams folderLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
 
         ImGui::PushID(("folder_" + folderPath).c_str());
@@ -272,7 +282,7 @@ namespace nexo::editor {
         handleAssetDrop(folderPath);
 
         const ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
-        drawList->AddRectFilled(itemPos, itemEnd, bgColor, m_layout.size.CORNER_RADIUS);
+        drawList->AddRectFilled(itemPos, itemEnd, bgColor, GridLayoutSizes::CORNER_RADIUS);
         drawFolderIcon(folderLayoutParams);
         drawFolderTitle(folderName, m_layout, folderLayoutParams, isHovered);
 
@@ -282,16 +292,16 @@ namespace nexo::editor {
         ImGui::PopID();
     }
 
-    static const std::vector<assets::GenericAssetRef> getFilteredAsset(const std::string &currentFolder, const assets::AssetType selectedType)
+    static std::vector<assets::GenericAssetRef> getFilteredAsset(std::string_view currentFolder, const assets::AssetType selectedType)
     {
         std::vector<assets::GenericAssetRef> filtered;
 
-        for (auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
+        for (const auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
             const auto d = ref.lock();
             if (!d)
                 continue;
             const auto& folder = d->getMetadata().location.getPath();
-            if (folder == "_internal")
+            if (folder == INTERNAL_FOLDER_PREFIX)
                 continue;
             if (selectedType != assets::AssetType::UNKNOWN && d->getType() != selectedType)
                 continue;

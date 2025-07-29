@@ -293,7 +293,7 @@ namespace nexo::system {
                 continue;
             const auto &transform = transformSpan[i];
             const auto &materialAsset = materialSpan[i].material.lock();
-            auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+            std::string shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
             const auto &mesh = meshSpan[i];
             auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
             if (!shader)
