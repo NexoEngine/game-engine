@@ -49,7 +49,10 @@ namespace nexo::editor {
                 const auto textureRef = assetRef.as<assets::Texture>();
                 return getTextureThumbnail(textureRef, size);
             }
-            case assets::AssetType::MODEL:
+            case assets::AssetType::MODEL: {
+                const auto modelRef = assetRef.as<assets::Model>();
+                return getModelThumbnail(modelRef, size);
+            }
             default:
                 // Unsupported asset type | Model not supported yet
                 return 0;
@@ -105,6 +108,24 @@ namespace nexo::editor {
         return createTextureThumbnail(textureRef, size);
     }
 
+    unsigned int ThumbnailCache::getModelThumbnail(const assets::AssetRef<assets::Model>& modelRef, const glm::vec2& size)
+    {
+        if (!modelRef.isValid()) return 0;
+
+        const auto model = modelRef.lock();
+        if (!model || !model->getData()) return 0;
+        const boost::uuids::uuid& assetId = model->getID();
+
+        // Check if thumbnail exists at requested size
+        const auto it = m_thumbnailCache.find(assetId);
+        if (it != m_thumbnailCache.end() && it->second.size == size)
+            return it->second.framebuffer->getColorAttachmentId(0);
+
+        if (it != m_thumbnailCache.end()) removeThumbnail(assetId);
+
+        return createModelThumbnail(modelRef, size);
+    }
+
     unsigned int ThumbnailCache::createMaterialThumbnail(const assets::AssetRef<assets::Material>& materialRef,
                                                          const glm::vec2& size)
     {
@@ -116,7 +137,7 @@ namespace nexo::editor {
         const components::Material& materialData = *material->getData();
         const ecs::Entity previewEntity =
             EntityFactory3D::createSphere(glm::vec3(0.0f),             // position
-                                          glm::vec3(1.0f),             // size
+                                          glm::vec3(0.5f),             // size
                                           glm::vec3(0.0f, 0.0f, 0.0f), // rotation - angled for better lighting
                                           materialData                 // material
             );
@@ -127,11 +148,10 @@ namespace nexo::editor {
 
         const Application::SceneInfo sceneInfo{previewInfo.sceneId, RenderingType::FRAMEBUFFER};
         app.run(sceneInfo);
-        const auto& [width, height, viewportLocked, fov, nearPlane, farPlane, type, clearColor, active, render, main,
-                     resizing, m_renderTarget, pipeline] =
+        const auto& cameraComponent =
             Application::m_coordinator->getComponent<components::CameraComponent>(previewInfo.cameraId);
 
-        const auto framebuffer = m_renderTarget;
+        const auto framebuffer = cameraComponent.m_renderTarget;
         app.getSceneManager().deleteScene(previewInfo.sceneId);
         ThumbnailInfo info;
         info.framebuffer    = framebuffer;
@@ -171,8 +191,40 @@ namespace nexo::editor {
                                                       const glm::vec2& size)
     {
         const auto model = modelRef.lock();
-        if (!model) return 0;
-        return 0;
+        if (!model || !model->getData()) return 0;
+
+        utils::ScenePreviewOut previewInfo;
+
+        const ecs::Entity previewEntity =
+            EntityFactory3D::createModel(modelRef,                          // model
+                                         glm::vec3(0.0f, 0.0f, 0.0f),   // position
+                                         glm::vec3(1.0f),                // size
+                                         glm::vec3(0.0f, 0.0f, 0.0f)    // rotation - angled for better lighting
+            );
+
+        genScenePreview("Material_Thumbnail", size, previewEntity, previewInfo);
+
+        auto& app = getApp();
+
+        const Application::SceneInfo sceneInfo{previewInfo.sceneId, RenderingType::FRAMEBUFFER};
+        app.run(sceneInfo);
+        const auto& cameraComponent =
+            Application::m_coordinator->getComponent<components::CameraComponent>(previewInfo.cameraId);
+
+        const auto framebuffer = cameraComponent.m_renderTarget;
+        app.getSceneManager().deleteScene(previewInfo.sceneId);
+        ThumbnailInfo info;
+        info.framebuffer    = framebuffer;
+        info.size           = size;
+        info.previewInfo    = previewInfo;
+        info.isScenePreview = false;
+        info.textureId      = framebuffer->getColorAttachmentId(0);
+
+        m_thumbnailCache[model->getID()] = info;
+
+        previewInfo.sceneGenerated = false;
+
+        return framebuffer->getColorAttachmentId(0);
     }
 
     void ThumbnailCache::clearCache()
