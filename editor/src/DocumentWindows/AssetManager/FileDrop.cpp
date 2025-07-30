@@ -15,11 +15,25 @@
 #include "AssetManagerWindow.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "Logger.hpp"
 #include <filesystem>
 #include <algorithm>
 
 namespace nexo::editor {
+
+    void AssetManagerWindow::handleAssetDrop(const std::string &path) const
+    {
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+            {
+                const auto data = static_cast<const AssetDragDropPayload *>(payload->Data);
+                assets::AssetCatalog::getInstance().moveAsset(data->id, path);
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
 
     assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
     {
@@ -54,9 +68,6 @@ namespace nexo::editor {
         for (const auto& filePath : m_pendingDroppedFiles)
             importDroppedFile(filePath);
         m_pendingDroppedFiles.clear();
-
-        m_folderStructure.clear();
-        buildFolderStructure();
     }
 
     void AssetManagerWindow::importDroppedFile(const std::string& filePath) const
@@ -67,9 +78,6 @@ namespace nexo::editor {
             LOG(NEXO_WARN, "Dropped file does not exist: {}", filePath);
             return;
         }
-
-        std::string extension = path.extension().string();
-        std::ranges::transform(extension, extension.begin(), ::tolower);
 
         const assets::AssetLocation location = getAssetLocation(path);
 

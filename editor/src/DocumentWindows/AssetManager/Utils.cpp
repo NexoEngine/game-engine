@@ -1,4 +1,4 @@
-//// Update.cpp ///////////////////////////////////////////////////////////////
+//// Utils.cpp ///////////////////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -7,25 +7,23 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        28/04/2025
-//  Description: Source file for the update function of the asset manager window
+//  Date:        27/05/2025
+//  Description: Source file for the utils function of the asset manager
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
-#include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor {
 
-    void AssetManagerWindow::buildFolderStructure()
+    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture> &texture) const
     {
-        m_folderManager.buildFromAssets();
+        if (const auto texRef = texture.lock()) {
+            const auto &texData = texRef->getData();
+            if (texData && texData->texture) {
+                return texData->texture->getId();
+            }
+        }
+        return 0;
     }
-
-    void AssetManagerWindow::update()
-    {
-        handleDroppedFiles();
-        // Nothing to do for now
-    }
-
 }

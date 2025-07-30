@@ -62,6 +62,9 @@ namespace nexo::editor {
             */
             explicit ConsoleWindow(const std::string &windowName, WindowRegistry &registry);
 
+            ConsoleWindow(const ConsoleWindow&) = delete;
+            ConsoleWindow& operator=(const ConsoleWindow&) = delete;
+
             /**
              * @brief Destructor that cleans up the ConsoleWindow.
              *
