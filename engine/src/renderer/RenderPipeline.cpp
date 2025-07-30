@@ -70,7 +70,7 @@ namespace nexo::renderer {
         passes.erase(id);
 
         // Choose new final output if necessary
-        if (needNewFinal) {
+        if (needNewFinalOutput) {
             if (passes.empty()) {
                 finalOutputPass = -1;
             } else {
