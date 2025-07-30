@@ -227,6 +227,7 @@ TEST_F(RenderPipelineTest, RemovePassPreservesConnections) {
 TEST_F(RenderPipelineTest, ExecutePipeline) {
     auto pass1 = createMockPass("Pass1");
     auto pass2 = createMockPass("Pass2");
+    auto renderTarget = createMockFramebuffer();
 
     // Set up expectations for the execute method
     EXPECT_CALL(*pass1, execute(::testing::_)).Times(1);
@@ -239,25 +240,32 @@ TEST_F(RenderPipelineTest, ExecutePipeline) {
     pipeline.addPrerequisite(id2, id1);
     pipeline.addEffect(id1, id2);
 
+
+
     // Make sure pass2 is the final output to ensure it gets executed
     pipeline.setFinalOutputPass(id2);
+    pipeline.setRenderTarget(renderTarget);
+
 
     // Verify the setup is correct
     EXPECT_EQ(pipeline.getFinalOutputPass(), static_cast<int>(id2));
 
+
+
     // Execute the pipeline
     pipeline.execute();
+
 }
 
-TEST_F(RenderPipelineTest, SetAndGetOutputFramebuffer) {
+TEST_F(RenderPipelineTest, SetAndGetRenderTarget) {
     auto pass = createMockPass("Pass1");
     auto framebuffer = createMockFramebuffer();
 
-    PassId id = pipeline.addRenderPass(pass);
+    pipeline.addRenderPass(pass);
 
     // Set and verify output framebuffer for a pass
-    pipeline.setOutput(id, framebuffer);
-    auto retrievedFramebuffer = pipeline.getOutput(id);
+    pipeline.setRenderTarget(framebuffer);
+    auto retrievedFramebuffer = pipeline.getRenderTarget();
 
     EXPECT_EQ(retrievedFramebuffer, framebuffer);
 }
@@ -266,6 +274,8 @@ TEST_F(RenderPipelineTest, DrawCommandsManagement) {
     DrawCommand cmd1;
 
     DrawCommand cmd2;
+
+    auto mockRenderTarget = createMockFramebuffer();
 
     // Add single command
     pipeline.addDrawCommand(cmd1);
@@ -277,6 +287,8 @@ TEST_F(RenderPipelineTest, DrawCommandsManagement) {
     // Verify commands were added
     auto& retrievedCommands = pipeline.getDrawCommands();
     EXPECT_EQ(retrievedCommands.size(), 3);
+
+    pipeline.setRenderTarget(mockRenderTarget);
 
     // Check they're cleared after execution
     pipeline.execute();
@@ -322,7 +334,7 @@ TEST_F(RenderPipelineTest, ResizePipeline) {
 
     // Don't need the ID, but need to add pass to pipeline
     pipeline.addRenderPass(pass);
-    pipeline.setFinalRenderTarget(framebuffer);
+    pipeline.setRenderTarget(framebuffer);
 
     // Test resize
     pipeline.resize(800, 600);
@@ -412,8 +424,8 @@ TEST_F(RenderPipelineTest, FinalOutputPassManagement) {
 
     // Set final render target
     auto framebuffer = createMockFramebuffer();
-    pipeline.setFinalRenderTarget(framebuffer);
-    EXPECT_EQ(pipeline.getFinalRenderTarget(), framebuffer);
+    pipeline.setRenderTarget(framebuffer);
+    EXPECT_EQ(pipeline.getRenderTarget(), framebuffer);
 }
 
 TEST_F(RenderPipelineTest, HasPrerequisitesAndEffects) {

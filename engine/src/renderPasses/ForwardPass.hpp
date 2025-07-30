@@ -20,12 +20,9 @@ namespace nexo::renderer {
 
     class ForwardPass : public RenderPass {
         public:
-            ForwardPass(unsigned int width, unsigned int height);
+            ForwardPass();
             ~ForwardPass() override = default;
 
             void execute(RenderPipeline& pipeline) override;
-            void resize(unsigned int width, unsigned int height) override;
-        private:
-            std::shared_ptr<NxFramebuffer> m_output;
     };
 }

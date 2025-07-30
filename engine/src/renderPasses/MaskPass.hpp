@@ -25,7 +25,8 @@ namespace nexo::renderer {
 
             void execute(RenderPipeline& pipeline) override;
             void resize(unsigned int width, unsigned int height) override;
+            std::shared_ptr<NxFramebuffer> getOutput() const override;
         private:
-            std::shared_ptr<NxFramebuffer> m_output;
+            std::shared_ptr<NxFramebuffer> m_mask;
     };
 }

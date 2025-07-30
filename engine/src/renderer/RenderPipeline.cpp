@@ -12,7 +12,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "RenderPipeline.hpp"
+#include "Exception.hpp"
 #include "Framebuffer.hpp"
+#include "RenderCommand.hpp"
+#include "RendererExceptions.hpp"
+#include "Renderer3D.hpp"
 #include <functional>
 #include <set>
 #include <utility>
@@ -35,7 +39,7 @@ namespace nexo::renderer {
             return;
         const auto &pass = passes[id];
 
-        // Save prerequisites and effects before removal
+        // Save dependencies before removal
         std::vector<PassId> prerequisites = pass->getPrerequisites();
         std::vector<PassId> effects = pass->getEffects();
 
@@ -62,14 +66,11 @@ namespace nexo::renderer {
         // First remove the pass, then find a new final output if needed
         const bool needNewFinalOutput = (finalOutputPass == static_cast<int>(id));
 
-        // Remove the pass from the maps
+        // Erase the pass
         passes.erase(id);
-        if (passOutputs.contains(id))
-            passOutputs.erase(id);
 
-        // Now, after removing the pass, find a new final output if needed
+        // Choose new final output if necessary
         if (needNewFinalOutput) {
-            // If there are no passes left, set finalOutputPass to -1 directly
             if (passes.empty()) {
                 finalOutputPass = -1;
             } else {
@@ -78,11 +79,11 @@ namespace nexo::renderer {
                 if (!terminalPasses.empty()) {
                     setFinalOutputPass(terminalPasses[0]);
                 } else {
-                    // Fallback to any pass
                     setFinalOutputPass(passes.begin()->first);
                 }
             }
         }
+
         m_isDirty = true;
     }
 
@@ -90,7 +91,6 @@ namespace nexo::renderer {
     {
         if (!passes.contains(pass) || !passes.contains(prerequisite))
             return;
-
         auto& prereqs = passes[pass]->getPrerequisites();
         if (std::find(prereqs.begin(), prereqs.end(), prerequisite) == prereqs.end())
             prereqs.push_back(prerequisite);
@@ -101,7 +101,6 @@ namespace nexo::renderer {
     {
         if (!passes.contains(pass))
             return;
-
         auto& prereqs = passes[pass]->getPrerequisites();
         std::erase(prereqs, prerequisite);
         m_isDirty = true;
@@ -111,7 +110,6 @@ namespace nexo::renderer {
     {
         if (!passes.contains(pass) || !passes.contains(effect))
             return;
-
         auto& effects = passes[pass]->getEffects();
         if (std::find(effects.begin(), effects.end(), effect) == effects.end())
             effects.push_back(effect);
@@ -122,7 +120,6 @@ namespace nexo::renderer {
     {
         if (!passes.contains(pass))
             return;
-
         auto& effects = passes[pass]->getEffects();
         std::erase(effects, effect);
         m_isDirty = true;
@@ -136,17 +133,14 @@ namespace nexo::renderer {
         return nullptr;
     }
 
-    std::shared_ptr<NxFramebuffer> RenderPipeline::getOutput(const PassId id)
+    void RenderPipeline::setRenderTarget(std::shared_ptr<NxFramebuffer> renderTarget)
     {
-        auto it = passOutputs.find(id);
-        if (it != passOutputs.end())
-            return it->second;
-        return nullptr;
+        m_renderTarget = std::move(renderTarget);
     }
 
-    void RenderPipeline::setOutput(const PassId id, const std::shared_ptr<NxFramebuffer>& output)
+    std::shared_ptr<NxFramebuffer> RenderPipeline::getRenderTarget() const
     {
-        passOutputs[id] = output;
+        return m_renderTarget;
     }
 
     void RenderPipeline::setFinalOutputPass(const PassId id)
@@ -158,16 +152,6 @@ namespace nexo::renderer {
             passes[id]->setFinal(true);
             finalOutputPass = static_cast<int>(id);
         }
-    }
-
-    void RenderPipeline::setFinalRenderTarget(const std::shared_ptr<NxFramebuffer> &finalRenderTarget)
-    {
-        m_finalRenderTarget = finalRenderTarget;
-    }
-
-    std::shared_ptr<NxFramebuffer> RenderPipeline::getFinalRenderTarget() const
-    {
-        return m_finalRenderTarget;
     }
 
     std::vector<PassId> RenderPipeline::findTerminalPasses() const
@@ -196,8 +180,6 @@ namespace nexo::renderer {
     std::vector<PassId> RenderPipeline::createExecutionPlan()
     {
         std::vector<PassId> result;
-
-        // Early return if there are no passes
         if (passes.empty()) {
             m_isDirty = false;
             return result;
@@ -214,20 +196,15 @@ namespace nexo::renderer {
                 if (passes.contains(prereq))
                     buildPlan(prereq);
             }
-
-            // Then add this pass
             visited.insert(current);
             result.push_back(current);
         };
 
-        // Start with the final output pass if it exists
         if (finalOutputPass != -1 && passes.contains(finalOutputPass)) {
             buildPlan(finalOutputPass);
         } else {
-            // Fallback to processing all terminal passes
             auto terminals = findTerminalPasses();
             if (terminals.empty()) {
-                // If no terminal passes, include all passes
                 for (const auto& [id, _] : passes)
                     terminals.push_back(id);
             }
@@ -236,6 +213,7 @@ namespace nexo::renderer {
             for (const PassId term : terminals)
                 buildPlan(term);
         }
+
         m_isDirty = false;
         return result;
     }
@@ -245,6 +223,9 @@ namespace nexo::renderer {
         if (m_isDirty)
             m_plan = createExecutionPlan();
 
+        if (!m_renderTarget)
+            THROW_EXCEPTION(NxPipelineRenderTargetNotSetException);
+
         for (PassId id : m_plan) {
             if (passes.contains(id))
                 passes[id]->execute(*this);
@@ -252,38 +233,38 @@ namespace nexo::renderer {
         m_drawCommands.clear();
     }
 
-    void RenderPipeline::addDrawCommands(const std::vector<DrawCommand> &drawCommands)
+    void RenderPipeline::addDrawCommands(const std::vector<DrawCommand>& drawCommands)
     {
         m_drawCommands.reserve(m_drawCommands.size() + drawCommands.size());
         m_drawCommands.insert(m_drawCommands.end(), drawCommands.begin(), drawCommands.end());
     }
 
-    void RenderPipeline::addDrawCommand(const DrawCommand &drawCommand)
+    void RenderPipeline::addDrawCommand(const DrawCommand& drawCommand)
     {
         m_drawCommands.push_back(drawCommand);
     }
 
-    const std::vector<DrawCommand> &RenderPipeline::getDrawCommands() const
+    const std::vector<DrawCommand>& RenderPipeline::getDrawCommands() const
     {
         return m_drawCommands;
     }
 
-    void RenderPipeline::setCameraClearColor(const glm::vec4 &clearColor)
+    void RenderPipeline::setCameraClearColor(const glm::vec4& clearColor)
     {
         m_cameraClearColor = clearColor;
     }
 
-    const glm::vec4 &RenderPipeline::getCameraClearColor() const
+    const glm::vec4& RenderPipeline::getCameraClearColor() const
     {
         return m_cameraClearColor;
     }
 
     void RenderPipeline::resize(const unsigned int width, const unsigned int height) const
     {
-        if (!m_finalRenderTarget)
+        if (!m_renderTarget)
             return;
-        m_finalRenderTarget->resize(width, height);
-        for (const auto &[_, pass] : passes)
+        m_renderTarget->resize(width, height);
+        for (const auto& [_, pass] : passes)
             pass->resize(width, height);
     }
 }
