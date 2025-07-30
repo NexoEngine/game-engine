@@ -236,8 +236,6 @@ namespace nexo::editor
                          ImGuiWindowFlags_NoCollapse))
         {
             beginRender(NEXO_WND_USTRID_SCENE_TREE);
-            m_focused = ImGui::IsWindowFocused();
-            m_hovered = ImGui::IsWindowHovered();
 
             const auto& selector = Selector::get();
 
@@ -262,8 +260,11 @@ namespace nexo::editor
                 for (auto& node : root_.children)
                     showNode(node);
             }
+
             sceneContextMenu();
             sceneCreationMenu();
+
+            // Show the primitive creation popup
             if (m_popupManager.showPopup("Sphere creation popup"))
             {
                 const int sceneId = selector.getSelectedScene();

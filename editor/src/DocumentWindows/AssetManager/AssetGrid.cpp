@@ -328,12 +328,12 @@ namespace nexo::editor {
         clipper.Begin(rows, m_layout.size.itemStep.y);
 
         while (clipper.Step()) {
-            unsigned int visibleStart = clipper.DisplayStart * columnCount;
-            unsigned int visibleEnd = std::min(clipper.DisplayEnd * columnCount, static_cast<int>(totalItems));
+            const unsigned int visibleStart = clipper.DisplayStart * columnCount;
+            const unsigned int visibleEnd = std::min(clipper.DisplayEnd * columnCount, static_cast<int>(totalItems));
 
             for (unsigned int i = visibleStart; i < visibleEnd; ++i) {
-                unsigned int col = i % columnCount;
-                unsigned int row = i / columnCount;
+                const unsigned int col = i % columnCount;
+                const unsigned int row = i / columnCount;
                 ImVec2 itemPos{
                     startPos.x + static_cast<float>(col) * m_layout.size.itemStep.x,
                     startPos.y + static_cast<float>(row) * m_layout.size.itemStep.y

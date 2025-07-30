@@ -14,22 +14,22 @@
 #pragma once
 
 #include <ADocumentWindow.hpp>
-#include <set>
-#include <imgui.h>
 #include <assets/AssetRef.hpp>
-#include "DocumentWindows/PopupManager.hpp"
-#include "utils/TransparentStringHash.hpp"
 #include <core/event/WindowEvent.hpp>
-#include "assets/Asset.hpp"
+#include <imgui.h>
+#include <set>
+#include "DocumentWindows/PopupManager.hpp"
 #include "FolderManager.hpp"
+#include "assets/Asset.hpp"
+#include "utils/TransparentStringHash.hpp"
 
 namespace nexo::editor {
 
     static constexpr std::string_view INTERNAL_FOLDER_PREFIX = "_internal";
-    static constexpr float ERROR_DISPLAY_TIMEOUT = 3.0f;
+    static constexpr float ERROR_DISPLAY_TIMEOUT             = 3.0f;
 
     struct FolderCreationState {
-        bool isCreatingFolder = false;
+        bool isCreatingFolder  = false;
         std::string folderName = "New Folder";
         std::string parentPath;
         bool showError = false;
@@ -39,16 +39,16 @@ namespace nexo::editor {
         void reset()
         {
             isCreatingFolder = false;
-            folderName = "New Folder";
-            parentPath = "";
-            showError = false;
-            errorMessage = "";
-            errorTimer = 3.0f;
+            folderName       = "New Folder";
+            parentPath       = "";
+            showError        = false;
+            errorMessage     = "";
+            errorTimer       = 3.0f;
         }
     };
 
     struct GridLayoutSizes {
-        float iconSize = 64.0f;
+        float iconSize  = 64.0f;
         int iconSpacing = 8;
 
         ImVec2 itemSize;
@@ -56,10 +56,10 @@ namespace nexo::editor {
         int columnCount;
 
         static constexpr float THUMBNAIL_HEIGHT_RATIO = 0.8f;
-        static constexpr float TITLE_PADDING = 5.0f;
-        static constexpr float OVERLAY_SIZE = 24.0f;
-        static constexpr float OVERLAY_PADDING = 5.0f;
-        static constexpr float CORNER_RADIUS = 5.0f;
+        static constexpr float TITLE_PADDING          = 5.0f;
+        static constexpr float OVERLAY_SIZE           = 24.0f;
+        static constexpr float OVERLAY_PADDING        = 5.0f;
+        static constexpr float CORNER_RADIUS          = 5.0f;
         static constexpr float SELECTED_BOX_THICKNESS = 4.0f;
     };
 
@@ -100,70 +100,66 @@ namespace nexo::editor {
     };
 
     class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
-        public:
-            using ADocumentWindow::ADocumentWindow;
+       public:
+        using ADocumentWindow::ADocumentWindow;
 
-            void setup() override;
-            void shutdown() override;
-            void show() override;
-            void update() override;
+        void setup() override;
+        void shutdown() override;
+        void show() override;
+        void update() override;
 
-            void handleEvent(event::EventFileDrop& event) override;
+        void handleEvent(event::EventFileDrop& event) override;
 
-        private:
-            std::set<unsigned int> m_selectedAssets;
+       private:
+        std::set<unsigned int> m_selectedAssets;
 
-            LayoutSettings m_layout;
+        LayoutSettings m_layout;
 
-            void drawMenuBar();
-            void drawPanelSplitter();
-            void drawBreadcrumbs();
+        void drawMenuBar();
+        void drawPanelSplitter();
+        void drawBreadcrumbs();
+        void sceneContextMenu();
+        void handleRightClick();
 
-            void drawAssetsGrid();
-            void drawAssetTitle(
-                const std::shared_ptr<assets::IAsset>& assetData,
-                const AssetLayoutParams& params,
-                bool isHovered
-            ) const;
-            void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
-            void handleSelection(unsigned int index, bool isSelected);
+        void drawAssetsGrid();
+        void drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData, const AssetLayoutParams& params,
+                            bool isHovered) const;
+        void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos,
+                       const ImVec2& itemSize);
+        void handleSelection(unsigned int index, bool isSelected);
 
-            assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;  // Currently selected folder
-            std::string m_hoveredFolder;  // Currently hovered folder
-            std::string m_searchBuffer = "";
+        assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
+        std::string m_currentFolder; // Currently selected folder
+        std::string m_hoveredFolder; // Currently hovered folder
+        std::string m_searchBuffer;
 
-            PopupManager m_popupManager;
+        PopupManager m_popupManager;
 
-            void buildFolderStructure();
+        void buildFolderStructure();
 
-            void folderTreeContextMenu();
-            void drawFolderTree();
-            void drawFolderTreeItem(const std::string& name, const std::string& path);
+        void folderTreeContextMenu();
+        void drawFolderTree();
+        void drawFolderTreeItem(const std::string& name, const std::string& path);
 
-            FolderCreationState m_folderCreationState;
-            assets::AssetRef<assets::Texture> m_folderIcon;
+        FolderCreationState m_folderCreationState;
+        assets::AssetRef<assets::Texture> m_folderIcon;
 
-            ImTextureID getIconTexture(const assets::AssetRef<assets::Texture> &texture) const;
+        ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
 
-            void newFolderMenu();
-            bool handleNewFolderCreation();
-            void drawFolderIcon(const AssetLayoutParams& params) const;
-            void drawFolder(
-                const std::string& folderPath,
-                const std::string& folderName,
-                const ImVec2& itemPos,
-                const ImVec2& itemSize
-            );
+        void newFolderMenu();
+        bool handleNewFolderCreation();
+        void drawFolderIcon(const AssetLayoutParams& params) const;
+        void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,
+                        const ImVec2& itemSize);
 
-            std::vector<std::string> m_pendingDroppedFiles;
+        std::vector<std::string> m_pendingDroppedFiles;
 
-            void handleDroppedFiles();
-            void handleAssetDrop(const std::string &path) const;
-            assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
-            void importDroppedFile(const std::string& filePath) const;
+        void handleDroppedFiles();
+        void handleAssetDrop(const std::string& path) const;
+        assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
+        void importDroppedFile(const std::string& filePath) const;
 
-            FolderManager m_folderManager;
+        FolderManager m_folderManager;
     };
 
     /**
@@ -171,11 +167,10 @@ namespace nexo::editor {
      *
      * Contains information about the asset being dragged.
      */
-    struct AssetDragDropPayload
-    {
+    struct AssetDragDropPayload {
         assets::AssetType type; ///< Type of the asset
-        assets::AssetID id; ///< ID of the asset
-        char path[256];  ///< Path to the asset
-        char name[64]; ///< Display name of the asset
+        assets::AssetID id;     ///< ID of the asset
+        char path[256];         ///< Path to the asset
+        char name[64];          ///< Display name of the asset
     };
-}
+} // namespace nexo::editor
