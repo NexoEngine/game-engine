@@ -45,7 +45,7 @@ namespace nexo::renderer {
             */
             explicit NxOpenGlWindow(const int width = 1920,
                          const int height = 1080,
-                         const char *title = "Nexo window") :
+                         const std::string &title = "Nexo window") :
                     _props(width, height, title) {}
 
             /**
