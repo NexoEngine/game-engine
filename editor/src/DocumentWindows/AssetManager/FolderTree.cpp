@@ -23,7 +23,7 @@
 
 namespace nexo::editor {
 
-    static void drawSearchBar(std::string &searchBuffer)
+    static void drawSearchBar(std::string& searchBuffer)
     {
         constexpr size_t MAX_SEARCH_LENGTH = 256;
         searchBuffer.resize(MAX_SEARCH_LENGTH);
@@ -39,22 +39,20 @@ namespace nexo::editor {
         std::string_view name;
         assets::AssetType type;
 
-        [[nodiscard]] std::string getLabel(bool selected) const {
+        [[nodiscard]] std::string getLabel(bool selected) const
+        {
             return std::format("{} {}{}", icon, name, selected ? "   " ICON_FA_CHECK : "");
         }
     };
 
-    static void drawFavorites(assets::AssetType &selectedType)
+    static void drawFavorites(assets::AssetType& selectedType)
     {
         ImGuiTreeNodeFlags rootFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-        if (!ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", rootFlags))
-            return;
+        if (!ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", rootFlags)) return;
 
-        static constexpr FavoriteItem favorites[]{
-            {ICON_FA_ADJUST, "Materials", assets::AssetType::MATERIAL},
-            {ICON_FA_CUBE, "Models", assets::AssetType::MODEL},
-            {ICON_FA_SQUARE, "Textures", assets::AssetType::TEXTURE}
-        };
+        static constexpr FavoriteItem favorites[]{{ICON_FA_ADJUST, "Materials", assets::AssetType::MATERIAL},
+                                                  {ICON_FA_CUBE, "Models", assets::AssetType::MODEL},
+                                                  {ICON_FA_SQUARE, "Textures", assets::AssetType::TEXTURE}};
 
         for (const auto& fav : favorites) {
             const bool isSelected = (fav.type == selectedType);
@@ -74,8 +72,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::folderTreeContextMenu()
     {
-        if (ImGui::MenuItem("New Folder"))
-            m_popupManager.openPopup("Create new folder");
+        if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create new folder");
 
         PopupManager::closePopup();
     }
@@ -83,12 +80,10 @@ namespace nexo::editor {
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-        if (path == m_currentFolder)
-            flags |= ImGuiTreeNodeFlags_Selected;
+        if (path == m_currentFolder) flags |= ImGuiTreeNodeFlags_Selected;
 
         auto children = m_folderManager.getChildren(path);
-        if (children.empty())
-            flags |= ImGuiTreeNodeFlags_Leaf;
+        if (children.empty()) flags |= ImGuiTreeNodeFlags_Leaf;
 
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(230, 180, 80, 255));
         ImGui::Text(ICON_FA_FOLDER);
@@ -97,16 +92,14 @@ namespace nexo::editor {
 
         bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
 
-        if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsItemToggledOpen())
-            m_currentFolder = path;
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsItemToggledOpen()) m_currentFolder = path;
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
             m_folderCreationState.reset();
             m_folderCreationState.parentPath = path;
             m_popupManager.openPopup("Folder Tree Context Menu");
         }
 
-        if (!opened)
-            return;
+        if (!opened) return;
 
         for (const auto& [childPath, childName] : children) {
             drawFolderTreeItem(childName, childPath);
@@ -121,21 +114,17 @@ namespace nexo::editor {
 
         ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-        if (m_currentFolder.empty())
-            headerFlags |= ImGuiTreeNodeFlags_Selected;
+        if (m_currentFolder.empty()) headerFlags |= ImGuiTreeNodeFlags_Selected;
 
-        bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
+        const bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
 
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-        {
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
             m_folderCreationState.reset();
             m_popupManager.openPopup("Folder Tree Context Menu");
         }
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-            m_currentFolder = "";
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) m_currentFolder = "";
 
-        if (!assetsOpen)
-            return;
+        if (!assetsOpen) return;
 
         auto rootChildren = m_folderManager.getChildren("");
         for (const auto& [path, name] : rootChildren) {
@@ -143,4 +132,4 @@ namespace nexo::editor {
         }
         ImGui::TreePop();
     }
-}
+} // namespace nexo::editor
