@@ -145,15 +145,14 @@ TEST_F(ApplicationTest, EventHandling_KeyEvent) {
     app->handleEvent(keyEvent);
     
     // Test with debug flag
-    // TODO: Can't set debug flags without access
-    // app->setEventDebugFlags(DEBUG_LOG_KEYBOARD_EVENT);
+    app->setEventDebugFlags(nexo::DEBUG_LOG_KEYBOARD_EVENT);
     
     // Capture cout
     testing::internal::CaptureStdout();
     app->handleEvent(keyEvent);
     std::string output = testing::internal::GetCapturedStdout();
     
-    EXPECT_TRUE(output.find("EventKey") != std::string::npos);
+    EXPECT_TRUE(output.find("[KEYBOARD EVENT]") != std::string::npos);
 }
 
 TEST_F(ApplicationTest, EventHandling_WindowClose) {
@@ -188,32 +187,29 @@ TEST_F(ApplicationTest, EventHandling_MouseEvents) {
     clickEvent.button = event::MouseButton::LEFT;
     clickEvent.action = event::PRESSED;
     
-    // TODO: Can't set debug flags without access
-    // app->setEventDebugFlags(DEBUG_LOG_MOUSE_CLICK_EVENT);
+    app->setEventDebugFlags(nexo::DEBUG_LOG_MOUSE_CLICK_EVENT);
     testing::internal::CaptureStdout();
     app->handleEvent(clickEvent);
     std::string clickOutput = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(clickOutput.find("EventMouseClick") != std::string::npos);
+    EXPECT_TRUE(clickOutput.find("[MOUSE BUTTON EVENT]") != std::string::npos);
     
     // Mouse scroll event
     event::EventMouseScroll scrollEvent(0.0, 1.0);
     
-    // TODO: Can't set debug flags without access
-    // app->setEventDebugFlags(DEBUG_LOG_MOUSE_SCROLL_EVENT);
+    app->setEventDebugFlags(nexo::DEBUG_LOG_MOUSE_SCROLL_EVENT);
     testing::internal::CaptureStdout();
     app->handleEvent(scrollEvent);
     std::string scrollOutput = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(scrollOutput.find("EventMouseScroll") != std::string::npos);
+    EXPECT_TRUE(scrollOutput.find("[MOUSE SCROLL EVENT]") != std::string::npos);
     
     // Mouse move event
     event::EventMouseMove moveEvent(150, 250);
     
-    // TODO: Can't set debug flags without access
-    // app->setEventDebugFlags(DEBUG_LOG_MOUSE_MOVE_EVENT);
+    app->setEventDebugFlags(nexo::DEBUG_LOG_MOUSE_MOVE_EVENT);
     testing::internal::CaptureStdout();
     app->handleEvent(moveEvent);
     std::string moveOutput = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(moveOutput.find("EventMouseMove") != std::string::npos);
+    EXPECT_TRUE(moveOutput.find("[MOUSE MOVE EVENT]") != std::string::npos);
 }
 
 TEST_F(ApplicationTest, EventHandling_Signals) {

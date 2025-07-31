@@ -195,10 +195,23 @@ jobs:
         working-directory: 'build'
 
       - name: Run headless test
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: 'ctest -C Debug --output-on-failure'
-          working-directory: 'build'
+        run: |
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            # Start Xvfb for headless testing on Linux
+            export DISPLAY=:99
+            Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+            xvfb_pid=$!
+            sleep 3  # Give Xvfb time to start
+            
+            # Run tests
+            cd build && ctest -C Debug --output-on-failure
+            
+            # Clean up Xvfb
+            kill $xvfb_pid || true
+          else
+            # Windows - run tests directly
+            cd build && ctest -C Debug --output-on-failure
+          fi
 
       - name: Collect coverage into XML report for SonarCloud
         if: ${{ matrix.os == 'ubuntu-latest' }}

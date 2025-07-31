@@ -138,13 +138,14 @@ TEST_F(CameraFactoryTest, CreatePerspectiveCamera_CustomParameters) {
 TEST_F(CameraFactoryTest, CreatePerspectiveCamera_WithRenderTarget) {
     // Test creating a perspective camera with a render target
     glm::vec3 position(0.0f, 0.0f, 5.0f);
-    unsigned int width = 1920;
-    unsigned int height = 1080;
     
     // TODO: Test disabled - MockFramebuffer is too complex to implement correctly
     // The NxFramebuffer interface has too many pure virtual methods
     // This test needs refactoring to avoid mocking framebuffer
     SUCCEED() << "Test disabled - needs refactoring";
+    
+    // Suppress unused variable warning
+    (void)position;
 }
 
 TEST_F(CameraFactoryTest, CreatePerspectiveCamera_RenderPipeline) {

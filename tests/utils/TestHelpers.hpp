@@ -113,7 +113,7 @@ protected:
         
         // Create root
         auto root = createEntityWithTransform();
-        coordinator->addComponent(root, components::RootComponent{"HierarchyRoot"});
+        coordinator->addComponent(root, components::RootComponent{"HierarchyRoot", {}, 0});
         entities.push_back(root);
         
         // Create hierarchy recursively
