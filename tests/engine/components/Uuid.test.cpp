@@ -20,6 +20,7 @@
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 namespace nexo::components {
 

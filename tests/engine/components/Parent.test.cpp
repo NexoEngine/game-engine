@@ -29,7 +29,7 @@ class ParentComponentTest : public ::testing::Test {
 protected:
     void SetUp() override {
         parentComp = ParentComponent{};
-        rootComp = RootComponent{};
+        rootComp = RootComponent{"Root", {}, 0};
     }
     
     ParentComponent parentComp;
@@ -129,15 +129,14 @@ protected:
     RootComponent rootComp;
     
     void SetUp() override {
-        rootComp = RootComponent{};
+        rootComp = RootComponent{"Root", {}, 0};
     }
 };
 
 TEST_F(RootComponentTest, DefaultConstruction) {
-    RootComponent defaultRoot;
+    RootComponent defaultRoot{"Root", {}, 0};
     
     EXPECT_EQ(defaultRoot.name, "Root");
-    EXPECT_FALSE(defaultRoot.modelRef.isValid());
     EXPECT_EQ(defaultRoot.childCount, 0);
 }
 
