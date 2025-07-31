@@ -179,7 +179,7 @@ namespace nexo {
             void addEventDebugFlag(const int flag) {m_eventDebugFlags |= flag; };
             void resetEventDebugFlags() {m_eventDebugFlags = 0; };
 
-            bool isRunning() const { return m_isRunning; };
+            virtual bool isRunning() const { return m_isRunning; };
 
             /**
              * @brief Creates a new entity.

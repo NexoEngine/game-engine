@@ -172,3 +172,8 @@ html/
 _CPack_Packages/
 
 myinstall/
+
+# Development and temporary files that should not be committed
+test_coverage_status.md
+coverage_progress.md
+.task/

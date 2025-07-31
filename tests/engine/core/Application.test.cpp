@@ -77,9 +77,8 @@ class TestApplication : public Application {
 public:
     TestApplication() : Application() {}
     
-    // We can't access private members, so just provide test methods
+    // We can't access private members, so provide test methods
     void setTestRunning(bool running) {
-        // Can't actually set m_isRunning
         testRunning = running;
     }
     
@@ -219,14 +218,15 @@ TEST_F(ApplicationTest, EventHandling_Signals) {
     app->handleEvent(termEvent);
     EXPECT_FALSE(app->isRunning());
     
-    // Reset running state
-    app->setTestRunning(true);
+    // Create a new app instance for the interrupt signal test
+    // since we can't reset the base class's m_isRunning variable
+    auto app2 = std::make_unique<TestApplication>();
     
-    // Test interrupt signal
+    // Test interrupt signal with fresh app instance
     event::EventSignalInterrupt interruptEvent;
-    EXPECT_TRUE(app->isRunning());
-    app->handleEvent(interruptEvent);
-    EXPECT_FALSE(app->isRunning());
+    EXPECT_TRUE(app2->isRunning());
+    app2->handleEvent(interruptEvent);
+    EXPECT_FALSE(app2->isRunning());
 }
 
 TEST_F(ApplicationTest, EventDebugFlags) {
