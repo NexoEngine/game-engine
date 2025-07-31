@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
+
+# Enable coverage by default for Debug builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT DEFINED NEXO_COVERAGE)
+    set(NEXO_COVERAGE ON)
+endif()
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
 set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
 set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
@@ -108,3 +113,33 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
 include_directories("./common")
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack.cmake")
+
+# Coverage report generation
+if(NEXO_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    find_program(LCOV lcov)
+    find_program(GENHTML genhtml)
+    
+    if(LCOV AND GENHTML)
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/coverage
+            COMMAND ${LCOV} --capture --directory ${CMAKE_BINARY_DIR} --output-file ${CMAKE_BINARY_DIR}/coverage/coverage.info
+            COMMAND ${LCOV} --remove ${CMAKE_BINARY_DIR}/coverage/coverage.info 
+                '/usr/*' '*/vcpkg/*' '*/tests/*' '*/external/*' '*/examples/*'
+                --output-file ${CMAKE_BINARY_DIR}/coverage/coverage.filtered.info
+            COMMAND ${GENHTML} ${CMAKE_BINARY_DIR}/coverage/coverage.filtered.info 
+                --output-directory ${CMAKE_BINARY_DIR}/coverage/html
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated in ${CMAKE_BINARY_DIR}/coverage/html/index.html"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating coverage report..."
+        )
+        
+        add_custom_target(coverage-clean
+            COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/coverage
+            COMMAND find ${CMAKE_BINARY_DIR} -name "*.gcda" -delete
+            COMMAND find ${CMAKE_BINARY_DIR} -name "*.gcno" -delete
+            COMMENT "Cleaning coverage data..."
+        )
+    else()
+        message(WARNING "lcov and/or genhtml not found - coverage reports will not be available")
+    endif()
+endif()
