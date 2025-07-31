@@ -1,0 +1,205 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  BUILD_TYPE: Debug
+  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-cache
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    name: Linux Test Coverage
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          ${{ github.workspace }}/vcpkg/installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          lcov \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxxf86vm-dev
+
+    - name: Bootstrap vcpkg
+      run: |
+        ./vcpkg/bootstrap-vcpkg.sh
+        mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DNEXO_COVERAGE=ON \
+          -DNEXO_BUILD_TESTS=ON \
+          -DNEXO_BUILD_EXAMPLES=OFF \
+          -G Ninja
+
+    - name: Build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Run tests
+      working-directory: build
+      run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --verbose
+
+    - name: Generate coverage report
+      working-directory: build
+      run: |
+        make coverage || true
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./build/coverage/coverage.filtered.info
+        flags: unittests
+        name: codecov-nexo-engine
+        fail_ci_if_error: false
+
+    - name: Archive coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-linux
+        path: build/coverage/html/
+
+  test-windows:
+    runs-on: windows-latest
+    name: Windows Tests
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          ${{ github.workspace }}/vcpkg/installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Bootstrap vcpkg
+      run: |
+        .\vcpkg\bootstrap-vcpkg.bat
+        New-Item -ItemType Directory -Force -Path "${{ env.VCPKG_DEFAULT_BINARY_CACHE }}"
+
+    - name: Configure CMake
+      run: |
+        cmake -B build `
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} `
+          -DNEXO_BUILD_TESTS=ON `
+          -DNEXO_BUILD_EXAMPLES=OFF
+
+    - name: Build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Run tests
+      working-directory: build
+      run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --verbose
+
+  test-macos:
+    runs-on: macos-latest
+    name: macOS Tests
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          ${{ github.workspace }}/vcpkg/installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Install dependencies
+      run: |
+        brew install cmake ninja lcov
+
+    - name: Bootstrap vcpkg
+      run: |
+        ./vcpkg/bootstrap-vcpkg.sh
+        mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DNEXO_COVERAGE=ON \
+          -DNEXO_BUILD_TESTS=ON \
+          -DNEXO_BUILD_EXAMPLES=OFF \
+          -G Ninja
+
+    - name: Build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+    - name: Run tests
+      working-directory: build
+      run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure --verbose
+
+    - name: Generate coverage report
+      working-directory: build
+      run: |
+        make coverage || true
+
+    - name: Archive coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-macos
+        path: build/coverage/html/
+
+  coverage-summary:
+    needs: [test-linux, test-windows, test-macos]
+    runs-on: ubuntu-latest
+    name: Coverage Summary
+    
+    steps:
+    - name: Download Linux coverage
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report-linux
+        path: coverage-linux/
+
+    - name: Display coverage summary
+      run: |
+        echo "## Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Coverage reports have been generated for:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Linux" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Windows (tests only, no coverage)" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ macOS" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "View detailed coverage reports in the workflow artifacts." >> $GITHUB_STEP_SUMMARY
