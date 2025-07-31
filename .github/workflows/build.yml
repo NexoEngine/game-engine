@@ -195,22 +195,45 @@ jobs:
         working-directory: 'build'
 
       - name: Run headless test
+        shell: bash
         run: |
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            echo "Setting up headless testing for Linux..."
+            
             # Start Xvfb for headless testing on Linux
             export DISPLAY=:99
+            echo "Starting Xvfb..."
             Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
             xvfb_pid=$!
-            sleep 3  # Give Xvfb time to start
+            echo "Xvfb started with PID: $xvfb_pid"
+            
+            # Give Xvfb time to start and verify it's running
+            sleep 3
+            if ! ps -p $xvfb_pid > /dev/null 2>&1; then
+              echo "Error: Xvfb failed to start"
+              exit 1
+            fi
+            echo "Xvfb is running"
             
             # Run tests
-            cd build && ctest -C Debug --output-on-failure
+            echo "Running tests..."
+            cd build
+            ctest -C Debug --output-on-failure
+            test_exit_code=$?
             
             # Clean up Xvfb
-            kill $xvfb_pid || true
+            echo "Cleaning up Xvfb..."
+            kill $xvfb_pid 2>/dev/null || true
+            wait $xvfb_pid 2>/dev/null || true
+            echo "Xvfb cleanup complete"
+            
+            # Exit with test result
+            exit $test_exit_code
           else
+            echo "Running tests on Windows..."
             # Windows - run tests directly
-            cd build && ctest -C Debug --output-on-failure
+            cd build
+            ctest -C Debug --output-on-failure
           fi
 
       - name: Collect coverage into XML report for SonarCloud
