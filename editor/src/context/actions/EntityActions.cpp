@@ -45,6 +45,17 @@ namespace nexo::editor {
         for (const auto typeIndex : componentsTypeIndex) {
              if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
+            auto typeId = std::type_index(typeIndex.type());
+            if (typeId == typeid(components::ParentComponent)) {
+                auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(entityId);
+                if (parentOpt.has_value()) {
+                    ecs::Entity oldParent = parentOpt->get().parent;
+                    m_componentRestoreActions.push_back(
+                        std::make_unique<EntityParentChangeAction>(entityId, oldParent, ecs::INVALID_ENTITY)
+                    );
+                }
+                continue;
+            }
             m_componentRestoreActions.push_back(ComponentRestoreFactory::createRestoreComponent(entityId, typeIndex));
         }
     }
@@ -53,6 +64,14 @@ namespace nexo::editor {
     {
         // Simply destroy the entity
         const auto& coordinator = Application::m_coordinator;
+        auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(m_entityId);
+        if (parentOpt.has_value()) {
+            ecs::Entity oldParent = parentOpt->get().parent;
+            auto parentTransformOpt = coordinator->tryGetComponent<components::TransformComponent>(oldParent);
+            if (parentTransformOpt.has_value()) {
+                parentTransformOpt->get().removeChild(m_entityId);
+            }
+        }
         coordinator->destroyEntity(m_entityId);
     }
 
@@ -144,4 +163,45 @@ namespace nexo::editor {
             }
         }
     }
+
+    EntityHierarchyDeletionAction::EntityHierarchyDeletionAction(ecs::Entity rootEntity)
+    : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
+    {
+        std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
+            LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] Collecting entity: {}", static_cast<uint32_t>(entity));
+
+            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            if (transformOpt) {
+                for (const auto& child : transformOpt->get().children) {
+                    LOG(NEXO_DEV, " |- Found child: {}", static_cast<uint32_t>(child));
+                    collectActions(child);
+                    m_group->addAction(std::make_unique<EntityParentChangeAction>(child, entity, ecs::INVALID_ENTITY));
+                    m_group->addAction(std::make_unique<EntityDeletionAction>(child));
+                }
+            }
+
+            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
+                LOG(NEXO_DEV, " |- Will detach from parent: {}", static_cast<uint32_t>(parentOpt->get().parent));
+                m_group->addAction(std::make_unique<EntityParentChangeAction>(entity, parentOpt->get().parent, ecs::INVALID_ENTITY));
+            }
+
+            LOG(NEXO_DEV, " |- Add deletion for entity: {}", static_cast<uint32_t>(entity));
+            m_group->addAction(std::make_unique<EntityDeletionAction>(entity));
+        };
+
+        collectActions(rootEntity);
+    }
+
+    void EntityHierarchyDeletionAction::redo() {
+        LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] REDO root entity: {}", static_cast<uint32_t>(m_root));
+        m_group->redo();
+    }
+
+    void EntityHierarchyDeletionAction::undo() {
+        LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] UNDO root entity: {}", static_cast<uint32_t>(m_root));
+        m_group->undo();
+    }
+
+
 }
