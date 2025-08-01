@@ -83,21 +83,27 @@ namespace nexo::editor {
         const auto &selectedEntities = selector.getSelectedEntities();
         auto &app = getApp();
         auto& actionManager = ActionManager::get();
+
+        if (selectedEntities.empty())
+            return;
+
         if (selectedEntities.size() > 1) {
             auto actionGroup = ActionManager::createActionGroup();
             for (const auto entity : selectedEntities) {
-                actionGroup->addAction(ActionManager::prepareEntityDeletion(entity));
+                actionGroup->addAction(ActionManager::prepareEntityHierarchyDeletion(entity));
                 app.deleteEntity(entity);
             }
             actionManager.recordAction(std::move(actionGroup));
         } else {
-            auto deleteAction = ActionManager::prepareEntityDeletion(selectedEntities[0]);
+            auto deleteAction = ActionManager::prepareEntityHierarchyDeletion(selectedEntities[0]);
             app.deleteEntity(selectedEntities[0]);
             actionManager.recordAction(std::move(deleteAction));
         }
+
         selector.clearSelection();
         this->m_windowState = m_globalState;
     }
+
 
     void EditorScene::unhideAllCallback() const
     {

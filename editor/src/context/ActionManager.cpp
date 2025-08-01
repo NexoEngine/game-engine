@@ -28,7 +28,12 @@ namespace nexo::editor {
 
     std::unique_ptr<Action> ActionManager::prepareEntityDeletion(ecs::Entity entityId)
     {
-        return std::make_unique<EntityDeletionAction>(entityId);
+        return std::make_unique<EntityHierarchyDeletionAction>(entityId);
+    }
+
+    std::unique_ptr<Action> ActionManager::prepareEntityHierarchyDeletion(ecs::Entity root)
+    {
+        return std::make_unique<EntityHierarchyDeletionAction>(root);
     }
 
     std::unique_ptr<ActionGroup> ActionManager::createActionGroup()

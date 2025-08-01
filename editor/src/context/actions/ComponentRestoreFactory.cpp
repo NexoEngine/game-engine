@@ -47,7 +47,6 @@ namespace nexo::editor {
             {typeid(components::ParentComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::ParentComponent>>(e); }},
             {typeid(components::NameComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::NameComponent>>(e); }},
             {typeid(components::RootComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::RootComponent>>(e); }},
-
         };
 
         auto typeId = std::type_index(typeIndex.type());

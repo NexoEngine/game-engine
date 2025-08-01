@@ -169,12 +169,12 @@ namespace nexo::editor {
         if (selectedEntities.size() > 1) {
             auto actionGroup = ActionManager::createActionGroup();
             for (const auto entity : selectedEntities) {
-                actionGroup->addAction(ActionManager::prepareEntityDeletion(entity));
+                actionGroup->addAction(std::make_unique<EntityHierarchyDeletionAction>(entity));
                 app.deleteEntity(entity);
             }
             actionManager.recordAction(std::move(actionGroup));
         } else {
-            auto deleteAction = ActionManager::prepareEntityDeletion(selectedEntities[0]);
+            auto deleteAction = std::make_unique<EntityHierarchyDeletionAction>(selectedEntities[0]);
             app.deleteEntity(selectedEntities[0]);
             actionManager.recordAction(std::move(deleteAction));
         }
@@ -182,6 +182,7 @@ namespace nexo::editor {
         selector.clearSelection();
         m_windowState = m_defaultState;
     }
+
 
     void SceneTreeWindow::expandAllCallback()
     {

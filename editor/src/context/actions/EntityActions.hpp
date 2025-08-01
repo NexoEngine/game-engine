@@ -15,6 +15,7 @@
 
 #include "Action.hpp"
 #include "Nexo.hpp"
+#include "context/ActionGroup.hpp"
 
 namespace nexo::editor {
 
@@ -161,10 +162,21 @@ namespace nexo::editor {
 
             void redo() override;
             void undo() override;
+
         private:
             ecs::Entity m_entity;
             ecs::Entity m_oldParent;
             ecs::Entity m_newParent;
     };
 
+    class EntityHierarchyDeletionAction final : public Action {
+    public:
+        explicit EntityHierarchyDeletionAction(ecs::Entity rootEntity);
+        void redo() override;
+        void undo() override;
+
+    private:
+        ecs::Entity m_root;
+        std::unique_ptr<ActionGroup> m_group;
+    };
 }
