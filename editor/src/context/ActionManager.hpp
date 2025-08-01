@@ -25,6 +25,7 @@ namespace nexo::editor {
             void recordAction(std::unique_ptr<Action> action);
             void recordEntityCreation(ecs::Entity entityId);
             static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
+            static std::unique_ptr<Action> prepareEntityHierarchyDeletion(ecs::Entity entityId);
 
             template<typename MementoComponent>
             void recordComponentChange(ecs::Entity entityId,
