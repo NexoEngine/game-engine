@@ -18,9 +18,7 @@
 #include "IconsFontAwesome.h"
 #include "ImNexo/Elements.hpp"
 #include "Path.hpp"
-#include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
-#include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
 #include "context/ActionManager.hpp"
 #include "context/actions/AssetActions.hpp"
@@ -88,6 +86,7 @@ namespace nexo::editor {
     {
         // Handle the right click
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
+            m_folderActionState.parentPath = m_currentFolder;
             m_popupManager.openPopup("Folder Tree Context Menu");
         }
     }
@@ -130,9 +129,10 @@ namespace nexo::editor {
             if (m_popupManager.showPopup("Folder Tree Context Menu")) folderTreeContextMenu();
             if (m_popupManager.showPopup("Folder Right Click Menu")) folderRightClickMenu();
             if (m_popupManager.showPopup("Right Click Menu")) rightClickMenu();
+            if (m_popupManager.showPopupModal("Delete not empty folder")) notEmptyFolderDeletionPopup();
             if (m_popupManager.showPopupModal("Create folder")) createFolderMenu();
-            if (m_popupManager.showPopup("Rename folder")) renameFolderMenu();
-            if (m_popupManager.showPopup("Delete folder")) deleteFolderMenu();
+            if (m_popupManager.showPopupModal("Rename folder")) renameFolderMenu();
+            if (m_popupManager.showPopupModal("Delete folder")) deleteFolderMenu();
             if (m_popupManager.showPopup("Details about folder")) folderDetailsMenu();
         }
 

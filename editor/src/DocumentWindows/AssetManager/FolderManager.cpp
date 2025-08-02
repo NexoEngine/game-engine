@@ -207,6 +207,11 @@ namespace nexo::editor {
         }
 
         // Remove the folder from the internal maps
+        std::cout << "Deleting folder: " << folderPath << std::endl;
+        std::cout << "In paths:" << std::endl;
+        for (const auto& [path, _] : m_pathToName) {
+            std::cout << path << std::endl;
+        }
         m_pathToName.erase(folderPath);
         m_children.erase(folderPath);
         return true;

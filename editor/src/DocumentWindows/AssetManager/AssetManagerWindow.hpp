@@ -155,6 +155,7 @@ namespace nexo::editor {
         void rightClickMenu();
         void handleRightClickOnFolder();
         void folderDetailsMenu() const;
+        void notEmptyFolderDeletionPopup();
 
         void drawFolderIcon(const AssetLayoutParams& params) const;
         void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,

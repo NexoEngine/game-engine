@@ -29,9 +29,9 @@ namespace nexo::editor {
     void AssetManagerWindow::handleRightClickOnFolder()
     {
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !m_hoveredFolder.empty()) {
-            m_folderActionState.folderName       = m_hoveredFolder;
+            m_folderActionState.folderName       = m_folderManager.getName(m_hoveredFolder);
             m_folderActionState.isManagingFolder = true;
-            std::cout << "Right click on folder: " << m_hoveredFolder << std::endl;
+            std::cout << "Right click on folder: " << m_folderActionState.folderName << std::endl;
             m_popupManager.openPopup("Folder Right Click Menu");
         }
     }
@@ -107,7 +107,7 @@ namespace nexo::editor {
         m_folderActionState.folderName.resize(strlen(m_folderActionState.folderName.c_str()));
         ImGui::Separator();
 
-        if (ImNexo::Button("Create") && handleFolderCreation()) {
+        if (ImNexo::Button("Create", true) && handleFolderCreation()) {
             m_folderActionState.reset();
             PopupManager::closePopupInContext();
         }
@@ -168,20 +168,57 @@ namespace nexo::editor {
     {
         ImGui::Text("Are you sure you want to delete %s?", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete")) {
-            // TODO: Check if folder contains assets - you might want to prevent deletion
-            const std::vector<assets::GenericAssetRef> assets =
-                m_folderManager.getFolderAssets(m_folderActionState.parentPath);
+        const std::string folderPath = m_folderActionState.parentPath.empty() ?
+                                           m_folderActionState.folderName :
+                                           m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
+        if (ImNexo::Button("Delete", true)) {
+            const std::vector<assets::GenericAssetRef> assets = m_folderManager.getFolderAssets(folderPath);
             if (!assets.empty()) {
+                m_popupManager.openPopup("Delete not empty folder");
                 m_folderActionState.showError    = true;
-                m_folderActionState.errorMessage = "Folder is not empty, deletion not allowed";
-            } else if (m_folderManager.deleteFolder(m_folderActionState.parentPath)) {
+                m_folderActionState.errorMessage = "Are you sure you want to delete this folder? It contains assets.";
+            } else if (m_folderManager.deleteFolder(folderPath)) {
                 m_folderActionState.reset();
                 PopupManager::closePopupInContext();
             } else {
                 m_folderActionState.showError    = true;
                 m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
             }
+        }
+        ImGui::SameLine();
+        if (ImNexo::Button("Cancel")) {
+            m_folderActionState.reset();
+            PopupManager::closePopupInContext();
+        }
+
+        if (m_folderActionState.showError) {
+            ImGui::Separator();
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+            ImGui::Text("%s", m_folderActionState.errorMessage.c_str());
+            ImGui::PopStyleColor();
+
+            if (m_folderActionState.errorTimer <= 0.0f) {
+                m_folderActionState.showError  = false;
+                m_folderActionState.errorTimer = ERROR_DISPLAY_TIMEOUT; // Reset timer
+            } else
+                m_folderActionState.errorTimer -= ImGui::GetIO().DeltaTime;
+        }
+        PopupManager::closePopup();
+    }
+
+    void AssetManagerWindow::notEmptyFolderDeletionPopup()
+    {
+        ImGui::Text("Are you sure you want to delete %s? It contains assets.", m_folderActionState.folderName.c_str());
+        ImGui::Separator();
+        const std::string folderPath = m_folderActionState.parentPath.empty() ?
+                                           m_folderActionState.folderName :
+                                           m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
+        if (ImNexo::Button("Delete", true) && m_folderManager.deleteFolder(folderPath)) {
+            m_folderActionState.reset();
+            PopupManager::closePopupInContext();
+        } else {
+            m_folderActionState.showError    = true;
+            m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
         }
         ImGui::SameLine();
         if (ImNexo::Button("Cancel")) {
@@ -224,7 +261,7 @@ namespace nexo::editor {
         newName.resize(strlen(newName.c_str()));
         ImGui::Separator();
 
-        if (ImNexo::Button("Rename") && handleFolderRenaming(newName)) {
+        if (ImNexo::Button("Rename", true) && handleFolderRenaming(newName)) {
             m_folderActionState.reset();
             newName = "";
             PopupManager::closePopupInContext();
@@ -262,12 +299,11 @@ namespace nexo::editor {
         ImGui::Text("Details of: %s", m_folderActionState.folderName.c_str());
         ImGui::Separator();
         ImGui::Text("Name: %s", m_folderActionState.folderName.c_str());
-        const std::string& folderPath = m_folderActionState.parentPath.empty() ?
-                                            m_folderActionState.folderName :
-                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
+        const std::string folderPath = m_folderActionState.parentPath.empty() ?
+                                           m_folderActionState.folderName :
+                                           m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
         ImGui::Text("Path: %s", folderPath);
-        ImGui::Text("Child: %zu", m_folderManager.getChildCount(m_folderActionState.parentPath + "/" +
-                                                                m_folderActionState.folderName));
+        ImGui::Text("Child: %zu", m_folderManager.getChildCount(folderPath));
         ImGui::Separator();
         std::vector<std::string> allPaths = m_folderManager.getAllPaths();
         std::ranges::sort(allPaths);
@@ -275,7 +311,6 @@ namespace nexo::editor {
         for (const auto& path : allPaths) {
             ImGui::BulletText("%s", path.c_str());
         }
-        ImGui::Separator();
         ImGui::Separator();
         if (ImNexo::Button("Close")) {
             PopupManager::closePopupInContext();
