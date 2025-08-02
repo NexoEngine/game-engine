@@ -175,7 +175,7 @@ namespace nexo::assets {
             /**
              * @brief Get the metadata of the asset (for modification)
              */
-            //[[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
+            [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
     };
 
     template<typename TAssetData, AssetType TAssetType>

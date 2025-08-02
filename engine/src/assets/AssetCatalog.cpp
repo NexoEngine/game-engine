@@ -32,6 +32,19 @@ namespace nexo::assets {
         }
     }
 
+    void AssetCatalog::renameAsset(const AssetID id, const std::string& newName) const
+    {
+        if (!m_assets.contains(id)) return;
+        const auto asset = m_assets.at(id);
+        asset->m_metadata.location.setName(newName);
+    }
+
+    void AssetCatalog::renameAsset(const GenericAssetRef& asset, const std::string& newName) const
+    {
+        if (const auto assetData = asset.lock())
+            renameAsset(assetData->getID(), newName);
+    }
+
     void AssetCatalog::moveAsset(const GenericAssetRef &asset, const std::string &path) const
     {
         if (const auto assetData = asset.lock())
