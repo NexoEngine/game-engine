@@ -31,7 +31,6 @@ namespace nexo::editor {
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !m_hoveredFolder.empty()) {
             m_folderActionState.folderName       = m_folderManager.getName(m_hoveredFolder);
             m_folderActionState.isManagingFolder = true;
-            std::cout << "Right click on folder: " << m_folderActionState.folderName << std::endl;
             m_popupManager.openPopup("Folder Right Click Menu");
         }
     }
