@@ -78,7 +78,6 @@ namespace nexo::editor {
     void EntityDeletionAction::undo()
     {
         const auto& coordinator = Application::m_coordinator;
-        // This can cause problem is the entity is not the same, maybe in the future we would need another method
         m_entityId = coordinator->createEntity();
         for (const auto &action : m_componentRestoreActions)
             action->undo();
@@ -87,7 +86,6 @@ namespace nexo::editor {
     void EntityParentChangeAction::redo()
     {
         auto& coordinator = *Application::m_coordinator;
-
         // Handle old parent
         if (m_oldParent != ecs::INVALID_ENTITY) {
             const auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_oldParent);
@@ -168,25 +166,22 @@ namespace nexo::editor {
     : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
     {
         std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
-            LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] Collecting entity: {}", static_cast<uint32_t>(entity));
 
             auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
             if (transformOpt) {
                 for (const auto& child : transformOpt->get().children) {
-                    LOG(NEXO_DEV, " |- Found child: {}", static_cast<uint32_t>(child));
                     collectActions(child);
-                    m_group->addAction(std::make_unique<EntityParentChangeAction>(child, entity, ecs::INVALID_ENTITY));
+                    m_parentRelations.emplace_back(child, entity);
                     m_group->addAction(std::make_unique<EntityDeletionAction>(child));
                 }
             }
 
             auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
             if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
-                LOG(NEXO_DEV, " |- Will detach from parent: {}", static_cast<uint32_t>(parentOpt->get().parent));
-                m_group->addAction(std::make_unique<EntityParentChangeAction>(entity, parentOpt->get().parent, ecs::INVALID_ENTITY));
+                ecs::Entity parent = parentOpt->get().parent;
+                m_parentRelations.emplace_back(entity, parent);
             }
 
-            LOG(NEXO_DEV, " |- Add deletion for entity: {}", static_cast<uint32_t>(entity));
             m_group->addAction(std::make_unique<EntityDeletionAction>(entity));
         };
 
@@ -194,12 +189,10 @@ namespace nexo::editor {
     }
 
     void EntityHierarchyDeletionAction::redo() {
-        LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] REDO root entity: {}", static_cast<uint32_t>(m_root));
         m_group->redo();
     }
 
     void EntityHierarchyDeletionAction::undo() {
-        LOG(NEXO_DEV, "[EntityHierarchyDeletionAction] UNDO root entity: {}", static_cast<uint32_t>(m_root));
         m_group->undo();
     }
 
