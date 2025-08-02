@@ -178,5 +178,6 @@ namespace nexo::editor {
     private:
         ecs::Entity m_root;
         std::unique_ptr<ActionGroup> m_group;
+        std::vector<std::pair<ecs::Entity, ecs::Entity>> m_parentRelations;
     };
 }
