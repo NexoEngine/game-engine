@@ -19,6 +19,13 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Handles a right-click event on a folder.
+     *
+     * This method checks if the right mouse button is clicked while hovering over a folder.
+     * If so, it sets the folder action state to manage the selected folder and opens the
+     * "Folder Right Click Menu" popup.
+     */
     void AssetManagerWindow::handleRightClickOnFolder()
     {
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !m_hoveredFolder.empty()) {
@@ -29,6 +36,15 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Handles the creation of a new folder.
+     *
+     * This method validates the folder name and attempts to create a new folder
+     * using the folder manager. If the folder name is empty or the creation fails,
+     * an error message is displayed.
+     *
+     * @return `true` if the folder is successfully created, `false` otherwise.
+     */
     bool AssetManagerWindow::handleFolderCreation()
     {
         if (m_folderActionState.folderName.empty()) {
@@ -46,7 +62,17 @@ namespace nexo::editor {
         return true;
     }
 
-    bool AssetManagerWindow::handleFolderRenaming(const std::string &newName)
+    /**
+     * @brief Handles the renaming of a folder.
+     *
+     * This method validates the current folder name and attempts to rename the folder
+     * to the specified new name using the folder manager. If the folder name is empty
+     * or the renaming fails, an error message is displayed.
+     *
+     * @param newName The new name for the folder.
+     * @return `true` if the folder is successfully renamed, `false` otherwise.
+     */
+    bool AssetManagerWindow::handleFolderRenaming(const std::string& newName)
     {
         if (m_folderActionState.folderName.empty()) {
             m_folderActionState.showError    = true;
@@ -54,9 +80,8 @@ namespace nexo::editor {
             return false;
         }
 
-        const std::string actualPath = m_folderActionState.parentPath.empty() ?
-                                           m_folderActionState.folderName :
-                                           m_folderActionState.parentPath;
+        const std::string actualPath =
+            m_folderActionState.parentPath.empty() ? m_folderActionState.folderName : m_folderActionState.parentPath;
         if (!m_folderManager.renameFolder(actualPath, newName)) {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Failed to rename the folder (may already exist)";
@@ -66,6 +91,12 @@ namespace nexo::editor {
         return true;
     }
 
+    /**
+     * @brief Displays the menu for creating a new folder.
+     *
+     * This method provides a user interface for entering a folder name and creating
+     * a new folder. It validates the input and handles errors if the creation fails.
+     */
     void AssetManagerWindow::createFolderMenu()
     {
         ImGui::Text("Enter name for the new folder:");
@@ -106,6 +137,12 @@ namespace nexo::editor {
         // Handle the right click on any asset type
     }
 
+    /**
+     * @brief Displays the right-click menu for folders.
+     *
+     * This method provides options for renaming, deleting, or viewing details
+     * about a folder. It opens the corresponding popup based on the selected action.
+     */
     void AssetManagerWindow::folderRightClickMenu()
     {
         if (ImGui::MenuItem("Rename Folder")) {
@@ -120,6 +157,13 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
+    /**
+     * @brief Displays the menu for deleting a folder.
+     *
+     * This method confirms the deletion of a folder and checks if the folder
+     * contains any assets. If the folder is not empty or the deletion fails,
+     * an error message is displayed.
+     */
     void AssetManagerWindow::deleteFolderMenu()
     {
         ImGui::Text("Are you sure you want to delete %s?", m_folderActionState.folderName.c_str());
@@ -160,11 +204,18 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
+    /**
+     * @brief Displays the menu for renaming a folder.
+     *
+     * This method provides a user interface for entering a new name for a folder
+     * and handles the renaming process. It validates the input and displays errors
+     * if the renaming fails.
+     */
     void AssetManagerWindow::renameFolderMenu()
     {
         ImGui::Text("Enter a new name for the folder:");
         constexpr size_t MAX_FOLDER_NAME_LENGTH = 256;
-        static std::string newName = m_folderActionState.folderName;
+        static std::string newName              = m_folderActionState.folderName;
         if (newName.empty()) {
             newName = m_folderActionState.folderName;
         }
@@ -200,15 +251,23 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
+    /**
+     * @brief Displays the details of a folder.
+     *
+     * This method shows information about the selected folder, including its name,
+     * path, and child count. It also lists all available folder paths.
+     */
     void AssetManagerWindow::folderDetailsMenu() const
     {
         ImGui::Text("Details of: %s", m_folderActionState.folderName.c_str());
         ImGui::Separator();
         ImGui::Text("Name: %s", m_folderActionState.folderName.c_str());
-        const std::string& folderPath = m_folderActionState.parentPath.empty() ? m_folderActionState.folderName :
+        const std::string& folderPath = m_folderActionState.parentPath.empty() ?
+                                            m_folderActionState.folderName :
                                             m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
         ImGui::Text("Path: %s", folderPath);
-        ImGui::Text("Child: %zu", m_folderManager.getChildCount(m_folderActionState.parentPath + "/" + m_folderActionState.folderName));
+        ImGui::Text("Child: %zu", m_folderManager.getChildCount(m_folderActionState.parentPath + "/" +
+                                                                m_folderActionState.folderName));
         ImGui::Separator();
         std::vector<std::string> allPaths = m_folderManager.getAllPaths();
         std::ranges::sort(allPaths);
