@@ -192,7 +192,7 @@ namespace nexo::editor {
      */
     bool FolderManager::deleteFolder(const std::string& folderPath)
     {
-        if (folderPath.empty()) // || !exists(folderPath)) TODO: fix exists check
+        if (folderPath.empty() || !exists(folderPath))
             return false;
 
         // Recursively delete all folder inside first
@@ -226,13 +226,15 @@ namespace nexo::editor {
      */
     bool FolderManager::renameFolder(const std::string& folderPath, const std::string& newName)
     {
-        if (newName.empty() || folderPath.empty()) // || !exists(folderPath)) TODO: fix exists check
+        if (newName.empty() || folderPath.empty() || !exists(folderPath))
             return false;
 
         if (!isNameValid(newName)) return false;
 
         const std::string parentPath    = getParentPath(folderPath);
-        const std::string newFolderPath = parentPath.empty() ? newName : parentPath + "/" + newName;
+        const std::string newFolderPath = folderPath.find_last_of('/') == std::string::npos
+                                        ? newName
+                                        : folderPath.substr(0, folderPath.find_last_of('/')) + "/" + newName;
 
         if (newFolderPath != folderPath && exists(newFolderPath)) return false;
 
@@ -244,10 +246,11 @@ namespace nexo::editor {
 
         // Get all children paths that need to be updated
         std::vector<std::string> toUpdate;
-        for (const auto& [path, _] : m_pathToName) {
-            if (path == folderPath || path.starts_with(folderPath + "/")) {
-                toUpdate.push_back(path);
+        for (const auto& [key, _] : m_pathToName) {
+            if (key == folderPath || key.starts_with(folderPath + "/")) {
+                toUpdate.push_back(key);
             }
+            std::cout << std::endl;
         }
 
         // Update paths and names
@@ -255,17 +258,15 @@ namespace nexo::editor {
             std::string newPath   = newFolderPath + oldPath.substr(folderPath.size());
             m_pathToName[newPath] = (oldPath == folderPath) ? newName : extractNameFromPath(newPath);
             m_children[newPath]   = std::move(m_children[oldPath]);
+            m_children[parentPath].push_back(newPath);
         }
 
         // Clean up old paths
         for (const auto& oldPath : toUpdate) {
             m_pathToName.erase(oldPath);
             m_children.erase(oldPath);
+            std::erase(m_children[parentPath], oldPath);
         }
-
-        //  Update the parent's children list
-        auto& siblings = m_children[parentPath];
-        std::ranges::replace(siblings, folderPath, newFolderPath);
 
         return true;
     }

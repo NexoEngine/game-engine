@@ -79,12 +79,21 @@ namespace nexo::editor {
             return false;
         }
 
-        const std::string actualPath =
-            m_folderActionState.parentPath.empty() ? m_folderActionState.folderName : m_folderActionState.parentPath;
-        if (!m_folderManager.renameFolder(actualPath, newName)) {
+        std::string actualPath = m_folderActionState.parentPath.empty() ?
+                                           m_folderActionState.folderName :
+                                           m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
+        actualPath.resize(strlen(actualPath.c_str())); // Ensure the path is properly resized
+
+        const std::string resizedActualPath = actualPath;
+        if (!m_folderManager.renameFolder(resizedActualPath, newName)) {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Failed to rename the folder (may already exist)";
             return false;
+        } else {
+            const std::string newFolderPath = m_folderActionState.parentPath.empty() ?
+                                                 newName :
+                                                 m_folderActionState.parentPath + "/" + newName;
+            // TODO: rename assets
         }
 
         return true;
