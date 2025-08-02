@@ -56,7 +56,7 @@ set(SRCS
         editor/src/DocumentWindows/AssetManager/Update.cpp
         editor/src/DocumentWindows/AssetManager/FolderTree.cpp
         editor/src/DocumentWindows/AssetManager/FileDrop.cpp
-        editor/src/DocumentWindows/AssetManager/FolderCreation.cpp
+        editor/src/DocumentWindows/AssetManager/ActionOnFolder.cpp
         editor/src/DocumentWindows/AssetManager/Selection.cpp
         editor/src/DocumentWindows/AssetManager/AssetGrid.cpp
         editor/src/DocumentWindows/AssetManager/Utils.cpp

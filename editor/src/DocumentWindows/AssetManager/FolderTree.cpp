@@ -72,7 +72,8 @@ namespace nexo::editor {
 
     void AssetManagerWindow::folderTreeContextMenu()
     {
-        if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create new folder");
+        if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create folder");
+        if (ImGui::MenuItem("Import")) LOG(NEXO_INFO, "Importing assets is not implemented yet");
 
         PopupManager::closePopup();
     }
@@ -94,8 +95,8 @@ namespace nexo::editor {
 
         if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsItemToggledOpen()) m_currentFolder = path;
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-            m_folderCreationState.reset();
-            m_folderCreationState.parentPath = path;
+            m_folderActionState.reset();
+            m_folderActionState.parentPath = path;
             m_popupManager.openPopup("Folder Tree Context Menu");
         }
 
@@ -119,7 +120,7 @@ namespace nexo::editor {
         const bool assetsOpen = ImGui::TreeNodeEx(ICON_FA_FOLDER " Assets", headerFlags);
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
-            m_folderCreationState.reset();
+            m_folderActionState.reset();
             m_popupManager.openPopup("Folder Tree Context Menu");
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) m_currentFolder = "";

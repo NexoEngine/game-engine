@@ -12,53 +12,55 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
 #include <algorithm>
 #include <sstream>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor {
 
     class FolderManager {
-        private:
-            std::unordered_map<std::string, std::string> m_pathToName;           // path -> display name
-            std::unordered_map<std::string, std::vector<std::string>> m_children; // path -> direct children paths
+       private:
+        std::unordered_map<std::string, std::string> m_pathToName;            // path -> display name
+        std::unordered_map<std::string, std::vector<std::string>> m_children; // path -> direct children paths
 
-        public:
-            FolderManager();
+       public:
+        FolderManager();
 
-            void buildFromAssets();
+        void buildFromAssets();
 
-            std::vector<std::pair<std::string, std::string>> getChildren(const std::string& path) const;
+        [[nodiscard]] std::vector<std::pair<std::string, std::string>> getChildren(const std::string& path) const;
 
-            std::string getName(const std::string& path) const;
+        [[nodiscard]] std::string getName(const std::string& path) const;
 
-            bool exists(const std::string& path) const;
+        [[nodiscard]] bool exists(const std::string& path) const;
 
-            bool createFolder(const std::string& parentPath, const std::string& folderName);
+        [[nodiscard]] std::vector<assets::GenericAssetRef> getFolderAssets(const std::string& folderPath) const;
 
-            bool deleteFolder(const std::string& folderPath);
+        bool createFolder(const std::string& parentPath, const std::string& folderName);
 
-            bool renameFolder(const std::string& folderPath, const std::string& newName);
+        bool deleteFolder(const std::string& folderPath);
 
-            std::vector<std::string> getAllPaths() const;
+        bool renameFolder(const std::string& folderPath, const std::string& newName);
 
-            size_t getChildCount(const std::string& path) const;
+        [[nodiscard]] std::vector<std::string> getAllPaths() const;
 
-        private:
-            void clear();
+        [[nodiscard]] size_t getChildCount(const std::string& path) const;
 
-            void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const;
+       private:
+        void clear();
 
-            void buildMapsFromPaths(const std::unordered_set<std::string>& allPaths);
+        void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const;
 
-            std::string extractNameFromPath(const std::string& path) const;
+        void buildMapsFromPaths(const std::unordered_set<std::string>& allPaths);
 
-            std::string getParentPath(const std::string& path) const;
+        [[nodiscard]] std::string extractNameFromPath(const std::string& path) const;
+
+        [[nodiscard]] std::string getParentPath(const std::string& path) const;
     };
 
 } // namespace nexo::editor
