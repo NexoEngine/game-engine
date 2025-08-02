@@ -19,7 +19,6 @@
 
 #include <filesystem>
 #include <imgui.h>
-#include <set>
 
 namespace nexo::editor {
 
@@ -70,6 +69,12 @@ namespace nexo::editor {
         ImGui::TreePop();
     }
 
+    /**
+     * @brief Displays the context menu for the folder tree.
+     *
+     * This method provides options to create a new folder or import assets.
+     * It is triggered by a right-click on the folder tree.
+     */
     void AssetManagerWindow::folderTreeContextMenu()
     {
         if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create folder");
