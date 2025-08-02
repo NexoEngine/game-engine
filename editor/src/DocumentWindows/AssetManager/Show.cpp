@@ -91,8 +91,9 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened,
-                          ImGuiWindowFlags_MenuBar))
+                          ImGuiWindowFlags_MenuBar)) {
             return;
+        }
 
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
 
@@ -112,7 +113,6 @@ namespace nexo::editor {
         // Right panel
         {
             ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-
             ImGui::Text(ICON_FA_FOLDER " ");
             ImGui::SameLine();
             handleRightClick();
@@ -125,8 +125,12 @@ namespace nexo::editor {
         // Popups
         {
             if (m_popupManager.showPopup("Folder Tree Context Menu")) folderTreeContextMenu();
-
-            if (m_popupManager.showPopupModal("Create new folder")) newFolderMenu();
+            if (m_popupManager.showPopup("Folder Right Click Menu")) folderRightClickMenu();
+            if (m_popupManager.showPopup("Right Click Menu")) rightClickMenu();
+            if (m_popupManager.showPopupModal("Create folder")) createFolderMenu();
+            if (m_popupManager.showPopup("Rename folder")) renameFolderMenu();
+            if (m_popupManager.showPopup("Delete folder")) deleteFolderMenu();
+            if (m_popupManager.showPopup("Details about folder")) folderDetailsMenu();
         }
 
         ImGui::End();

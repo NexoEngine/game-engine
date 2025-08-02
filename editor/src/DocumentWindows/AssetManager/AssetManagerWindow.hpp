@@ -28,8 +28,8 @@ namespace nexo::editor {
     static constexpr std::string_view INTERNAL_FOLDER_PREFIX = "_internal";
     static constexpr float ERROR_DISPLAY_TIMEOUT             = 3.0f;
 
-    struct FolderCreationState {
-        bool isCreatingFolder  = false;
+    struct FolderActionState {
+        bool isManagingFolder  = false;
         std::string folderName = "New Folder";
         std::string parentPath;
         bool showError = false;
@@ -38,7 +38,7 @@ namespace nexo::editor {
 
         void reset()
         {
-            isCreatingFolder = false;
+            isManagingFolder = false;
             folderName       = "New Folder";
             parentPath       = "";
             showError        = false;
@@ -141,13 +141,21 @@ namespace nexo::editor {
         void drawFolderTree();
         void drawFolderTreeItem(const std::string& name, const std::string& path);
 
-        FolderCreationState m_folderCreationState;
+        FolderActionState m_folderActionState;
         assets::AssetRef<assets::Texture> m_folderIcon;
 
-        ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
+        [[nodiscard]] ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
 
-        void newFolderMenu();
-        bool handleNewFolderCreation();
+        void folderRightClickMenu();
+        void deleteFolderMenu();
+        void renameFolderMenu();
+        void createFolderMenu();
+        bool handleFolderRenaming(const std::string &newName);
+        bool handleFolderCreation();
+        void rightClickMenu();
+        void handleRightClickOnFolder();
+        void folderDetailsMenu() const;
+
         void drawFolderIcon(const AssetLayoutParams& params) const;
         void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,
                         const ImVec2& itemSize);
@@ -156,7 +164,7 @@ namespace nexo::editor {
 
         void handleDroppedFiles();
         void handleAssetDrop(const std::string& path) const;
-        assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
+        [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
         void importDroppedFile(const std::string& filePath) const;
 
         FolderManager m_folderManager;
@@ -168,9 +176,9 @@ namespace nexo::editor {
      * Contains information about the asset being dragged.
      */
     struct AssetDragDropPayload {
-        assets::AssetType type; ///< Type of the asset
-        assets::AssetID id;     ///< ID of the asset
-        char path[256];         ///< Path to the asset
-        char name[64];          ///< Display name of the asset
+        assets::AssetType type = assets::AssetType::UNKNOWN;    ///< Type of the asset
+        assets::AssetID id; ///< ID of the asset
+        char path[256]{};   ///< Path to the asset
+        char name[64]{};    ///< Display name of the asset
     };
 } // namespace nexo::editor

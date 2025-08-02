@@ -240,7 +240,7 @@ namespace nexo::assets {
             }
 
         private:
-            AssetName _name{"Unnamed"};            //< The name of the asset
+            AssetName _name{"Unnamed"};             //< The name of the asset
             std::optional<AssetPackName> _packName; //< The package containing the asset
             std::string _path;                      //< The path to the asset
     };

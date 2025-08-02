@@ -34,7 +34,6 @@ namespace nexo::editor {
             assets::ImporterFileInput fileInput{path};
             auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
         }
-
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");

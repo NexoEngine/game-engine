@@ -18,6 +18,7 @@ namespace nexo::editor {
 
     static bool isNameValid(std::string_view folderName)
     {
+        std::cout << "Checking folder name validity: '" << folderName << "'" << std::endl;
         return !(folderName.empty() || folderName.front() == '_' || folderName.find('/') != std::string::npos);
     }
 
@@ -48,7 +49,7 @@ namespace nexo::editor {
     {
         std::vector<std::pair<std::string, std::string>> result;
 
-        if (auto it = m_children.find(path); it != m_children.end()) {
+        if (const auto it = m_children.find(path); it != m_children.end()) {
             result.reserve(it->second.size());
             for (const std::string& childPath : it->second) {
                 auto nameIt = m_pathToName.find(childPath);
@@ -63,7 +64,7 @@ namespace nexo::editor {
 
     std::string FolderManager::getName(const std::string& path) const
     {
-        if (auto it = m_pathToName.find(path); it != m_pathToName.end())
+        if (const auto it = m_pathToName.find(path); it != m_pathToName.end())
             return it->second;
         return extractNameFromPath(path);
     }
@@ -73,12 +74,29 @@ namespace nexo::editor {
         return m_pathToName.contains(path);
     }
 
+    std::vector<assets::GenericAssetRef> FolderManager::getFolderAssets(const std::string& folderPath) const
+    {
+        std::vector<assets::GenericAssetRef> assets;
+        if (folderPath.empty() || !exists(folderPath))
+            return assets;
+
+        for (const auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
+            if (const auto assetData = ref.lock()) {
+                const std::string& assetPath = assetData->getMetadata().location.getPath();
+                if (assetPath.starts_with(folderPath + "/") || assetPath == folderPath) {
+                    assets.push_back(ref);
+                }
+            }
+        }
+
+        return assets;
+    }
+
     bool FolderManager::createFolder(const std::string& parentPath, const std::string& folderName)
     {
-        if (!exists(parentPath))
-            return false;
+        if (!exists(parentPath)) return false;
 
-        std::string newFolderPath = parentPath.empty() ? folderName : parentPath + "/" + folderName;
+        const std::string newFolderPath = parentPath.empty() ? folderName : parentPath + "/" + folderName;
         if (exists(newFolderPath))
             return false;
 
@@ -96,20 +114,16 @@ namespace nexo::editor {
 
     bool FolderManager::deleteFolder(const std::string& folderPath)
     {
-        if (folderPath.empty() || !exists(folderPath))
+        if (folderPath.empty()) // || !exists(folderPath)) TODO: fix exists check
             return false;
 
-        // TODO: Check if folder contains assets - you might want to prevent deletion
-        // if (!getFolderAssets(folderPath).empty()) return false;
-
-        // Recursively delete all children first
-        auto childrenCopy = m_children[folderPath];
-        for (const std::string& childPath : childrenCopy)
+        // Recursively delete all folder inside first
+        for (const auto childrenCopy = m_children[folderPath]; const std::string& childPath : childrenCopy)
             deleteFolder(childPath);
 
         // Remove from parent's children list
-        std::string parentPath = getParentPath(folderPath);
-        if (auto parentIt = m_children.find(parentPath); parentIt != m_children.end()) {
+        const std::string parentPath = getParentPath(folderPath);
+        if (const auto parentIt = m_children.find(parentPath); parentIt != m_children.end()) {
             auto& parentChildren = parentIt->second;
             std::erase(parentChildren, folderPath);
         }
@@ -121,14 +135,13 @@ namespace nexo::editor {
 
     bool FolderManager::renameFolder(const std::string& folderPath, const std::string& newName)
     {
-        if (folderPath.empty() || !exists(folderPath))
+        if (newName.empty() || folderPath.empty())// || !exists(folderPath))
             return false;
 
-        if (!isNameValid(newName))
-            return false;
+        if (!isNameValid(newName)) return false;
 
-        std::string parentPath = getParentPath(folderPath);
-        std::string newFolderPath = parentPath.empty() ? newName : parentPath + "/" + newName;
+        const std::string parentPath = getParentPath(folderPath);
+        const std::string newFolderPath = parentPath.empty() ? newName : parentPath + "/" + newName;
 
         if (newFolderPath != folderPath && exists(newFolderPath))
             return false;
@@ -139,9 +152,31 @@ namespace nexo::editor {
             return true;
         }
 
-        // TODO: This gets complex if you need to update all child paths
-        // For now, just update the display name
-        m_pathToName[folderPath] = newName;
+        // Get all children paths that need to be updated
+        std::vector<std::string> toUpdate;
+        for (const auto& [path, _] : m_pathToName) {
+            if (path == folderPath || path.starts_with(folderPath + "/")) {
+                toUpdate.push_back(path);
+            }
+        }
+
+        // Update paths and names
+        for (const auto& oldPath : toUpdate) {
+            std::string newPath = newFolderPath + oldPath.substr(folderPath.size());
+            m_pathToName[newPath] = (oldPath == folderPath) ? newName : extractNameFromPath(newPath);
+            m_children[newPath] = std::move(m_children[oldPath]);
+        }
+
+        // Clean up old paths
+        for (const auto& oldPath : toUpdate) {
+            m_pathToName.erase(oldPath);
+            m_children.erase(oldPath);
+        }
+
+        //  Update the parent's children list
+        auto& siblings = m_children[parentPath];
+        std::ranges::replace(siblings, folderPath, newFolderPath);
+
         return true;
     }
 
@@ -149,7 +184,7 @@ namespace nexo::editor {
     {
         std::vector<std::string> paths;
         paths.reserve(m_pathToName.size());
-        for (const auto& [path, name] : m_pathToName) {
+        for (const auto& path : m_pathToName | std::views::keys) {
             paths.push_back(path);
         }
         std::ranges::sort(paths);
@@ -158,7 +193,7 @@ namespace nexo::editor {
 
     size_t FolderManager::getChildCount(const std::string& path) const
     {
-        if (auto it = m_children.find(path); it != m_children.end()) {
+        if (const auto it = m_children.find(path); it != m_children.end()) {
             return it->second.size();
         }
         return 0;
@@ -177,7 +212,7 @@ namespace nexo::editor {
     {
         if (fullPath.empty()) return;
 
-        std::string currentPath = "";
+        std::string currentPath;
         std::stringstream ss(fullPath);
         std::string part;
 
@@ -210,10 +245,9 @@ namespace nexo::editor {
 
     std::string FolderManager::extractNameFromPath(const std::string& path) const
     {
-        if (path.empty())
-            return "Assets";
+        if (path.empty()) return "Assets";
 
-        size_t lastSlash = path.find_last_of('/');
+        const size_t lastSlash = path.find_last_of('/');
         return (lastSlash == std::string::npos) ? path : path.substr(lastSlash + 1);
     }
 
@@ -222,7 +256,7 @@ namespace nexo::editor {
         if (path.empty())
             return ""; // Root has no parent
 
-        size_t lastSlash = path.find_last_of('/');
+        const size_t lastSlash = path.find_last_of('/');
         return (lastSlash == std::string::npos) ? "" : path.substr(0, lastSlash);
     }
 }
