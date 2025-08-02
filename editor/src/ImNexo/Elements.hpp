@@ -115,6 +115,31 @@ namespace ImNexo {
         float verticalPosition = 0.5f
     );
 
+	/**
+    * @brief Draws a validation button with custom style colors.
+    *
+    * Pushes custom style colors for the button and its states, draws the button,
+    * and then pops the style colors.
+    *
+    * @param label The button label.
+    * @param isValidation If true, the button will also respond to Enter key presses.
+    * @param size The size of the button.
+    * @param bg The background color.
+    * @param bgHovered The background color when hovered.
+    * @param bgActive The background color when active.
+    * @param txtColor The text color.
+    * @return true if the button was clicked; false otherwise.
+    */
+	bool Button(
+		const std::string &label,
+		bool isValidation,
+		const ImVec2& size = ImVec2(0, 0),
+		ImU32 bg = 0,
+		ImU32 bgHovered = 0,
+		ImU32 bgActive = 0,
+		ImU32 txtColor = 0
+	);
+
     /**
     * @brief Draws a button with custom style colors.
     *
