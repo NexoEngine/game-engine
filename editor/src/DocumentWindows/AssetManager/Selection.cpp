@@ -27,8 +27,8 @@ namespace nexo::editor {
 
         if (ImGui::IsKeyDown(ImGuiKey_ModShift) && !m_selectedAssets.empty()) {
             const unsigned int latestSelected = *m_selectedAssets.rbegin();
-            const auto [start, end] = std::minmax(latestSelected, index);
-            const auto range = std::views::iota(start, end + 1);
+            const auto [start, end]           = std::minmax(latestSelected, index);
+            const auto range                  = std::views::iota(start, end + 1);
             m_selectedAssets.insert(range.begin(), range.end());
             return;
         }
@@ -36,4 +36,4 @@ namespace nexo::editor {
         m_selectedAssets.clear();
         m_selectedAssets.insert(index);
     }
-}
+} // namespace nexo::editor

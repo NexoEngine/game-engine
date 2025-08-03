@@ -12,13 +12,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <filesystem>
+#include <imgui.h>
 #include "AssetManagerWindow.hpp"
 #include "IconsFontAwesome.h"
 #include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
-
-#include <filesystem>
-#include <imgui.h>
 
 namespace nexo::editor {
 
@@ -75,9 +74,9 @@ namespace nexo::editor {
      * This method provides options to create a new folder or import assets.
      * It is triggered by a right-click on the folder tree.
      */
-    void AssetManagerWindow::folderTreeContextMenu()
+    void AssetManagerWindow::rightClickOnAssetManagerMenu()
     {
-        if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create folder");
+        if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create Folder Popup");
         if (ImGui::MenuItem("Import")) LOG(NEXO_INFO, "Importing assets is not implemented yet");
 
         PopupManager::closePopup();
@@ -102,7 +101,7 @@ namespace nexo::editor {
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
             m_folderActionState.reset();
             m_folderActionState.parentPath = path;
-            m_popupManager.openPopup("Folder Tree Context Menu");
+            m_popupManager.openPopup("Right click on Asset Manager");
         }
 
         if (!opened) return;
@@ -126,7 +125,7 @@ namespace nexo::editor {
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
             m_folderActionState.reset();
-            m_popupManager.openPopup("Folder Tree Context Menu");
+            m_popupManager.openPopup("Right click on Asset Manager");
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) m_currentFolder = "";
 

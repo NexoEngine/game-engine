@@ -18,7 +18,7 @@ namespace nexo::editor {
 
     void AssetManagerWindow::shutdown()
     {
-        //Nothing to do in the shutdown for now
+        // Nothing to do in the shutdown for now
     }
 
-}
+} // namespace nexo::editor
