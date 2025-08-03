@@ -254,7 +254,6 @@ namespace nexo::editor {
                     auto& scene = sceneManager.getScene(dropTarget.data.sceneProperties.sceneId);
                     scene.addEntity(newEntity);
 
-                    // Record action for undo/redo TODO: Fix undo for models, it does not seem to work properly
                     auto action = std::make_unique<EntityHierarchyCreationAction>(newEntity);
                     ActionManager::get().recordAction(std::move(action));
                 }
