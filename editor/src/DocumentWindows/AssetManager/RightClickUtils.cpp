@@ -20,14 +20,14 @@ namespace nexo::editor {
      * @brief Handles the right-click event on the asset manager window.
      *
      * This method checks if the right mouse button is clicked while hovering over the
-     * asset manager window. If so, it opens the "Right click on Asset Manager" popup
+     * asset manager window. If so, it opens the "Right click on AssetManager" popup
      * with the current folder path set in the folder action state.
      */
     void AssetManagerWindow::handleRightClickOnAssetManager()
     {
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
             m_folderActionState.parentPath = m_currentFolder;
-            m_popupManager.openPopup("Right click on Asset Manager");
+            m_popupManager.openPopup("Right click on AssetManager");
         }
     }
 
@@ -49,8 +49,8 @@ namespace nexo::editor {
 
     void AssetManagerWindow::handleRightClickOnAsset()
     {
-        // TODO: Implement right-click handling on assets
-        // if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && asset is hovered) {
+        // TODO: Implement right-click handling for assets
+        // if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
         //     m_popupManager.openPopup("Right click on Asset");
         // }
     }

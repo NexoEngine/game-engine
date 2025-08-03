@@ -163,7 +163,7 @@ namespace nexo::editor {
 
         LayoutSettings m_layout;
 
-        assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
+        assets::AssetType m_selectedType;
         std::string m_currentFolder; // Currently selected folder
         std::string m_hoveredFolder; // Currently hovered folder
         std::string m_searchBuffer;
