@@ -12,7 +12,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <cstring>
 #include <imgui.h>
 #include "AssetManagerWindow.hpp"
 #include "IconsFontAwesome.h"
@@ -82,15 +81,6 @@ namespace nexo::editor {
         }
     }
 
-    void AssetManagerWindow::handleRightClick()
-    {
-        // Handle the right click
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
-            m_folderActionState.parentPath = m_currentFolder;
-            m_popupManager.openPopup("Folder Tree Context Menu");
-        }
-    }
-
     void AssetManagerWindow::show()
     {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
@@ -104,7 +94,7 @@ namespace nexo::editor {
         // Left panel
         {
             ImGui::BeginChild("LeftPanel", ImVec2(m_layout.leftPanelWidth, 0), true);
-            handleRightClick();
+            handleRightClickOnAssetManager();
             drawFolderTree();
             ImGui::EndChild();
         }
@@ -117,23 +107,32 @@ namespace nexo::editor {
             ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
             ImGui::Text(ICON_FA_FOLDER " ");
             ImGui::SameLine();
-            handleRightClick();
+            handleRightClickOnAssetManager();
             drawBreadcrumbs();
             ImGui::Separator();
             drawAssetsGrid();
             ImGui::EndChild();
         }
 
-        // Popups
+        // Popups & right-click menus
         {
-            if (m_popupManager.showPopup("Folder Tree Context Menu")) folderTreeContextMenu();
-            if (m_popupManager.showPopup("Folder Right Click Menu")) folderRightClickMenu();
-            if (m_popupManager.showPopup("Right Click Menu")) rightClickMenu();
-            if (m_popupManager.showPopupModal("Delete not empty folder")) notEmptyFolderDeletionPopup();
-            if (m_popupManager.showPopupModal("Create folder")) createFolderMenu();
-            if (m_popupManager.showPopupModal("Rename folder")) renameFolderMenu();
-            if (m_popupManager.showPopupModal("Delete folder")) deleteFolderMenu();
-            if (m_popupManager.showPopup("Details about folder")) folderDetailsMenu();
+            // Right-click menus
+            if (m_popupManager.showPopup("Right click on Asset Manager")) rightClickOnAssetManagerMenu();
+            if (m_popupManager.showPopup("Right click on Folder")) rightClickOnFolderMenu();
+            if (m_popupManager.showPopup("Right click on Asset")) rightClickOnAssetMenu();
+
+            // Folder popups
+            if (m_popupManager.showPopupModal("Create Folder Popup")) createFolderPopup();
+            if (m_popupManager.showPopupModal("Rename Folder Popup")) renameFolderPopup();
+            if (m_popupManager.showPopupModal("Delete Folder Popup")) deleteFolderPopup();
+            if (m_popupManager.showPopupModal("Delete Not Empty Folder Popup")) deleteNotEmptyFolderPopup();
+            if (m_popupManager.showPopupModal("Details Folder Popup")) folderDetailsPopup();
+
+            // Asset popups
+            if (m_popupManager.showPopupModal("Rename Asset Popup")) renameAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Asset Popup")) deleteAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Not Empty Asset Popup")) deleteUsedAssetPopup();
+            if (m_popupManager.showPopupModal("Details Asset Popup")) assetDetailsPopup();
         }
 
         ImGui::End();

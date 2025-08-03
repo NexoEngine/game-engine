@@ -21,7 +21,6 @@
 #include "DocumentWindows/PopupManager.hpp"
 #include "FolderManager.hpp"
 #include "assets/Asset.hpp"
-#include "utils/TransparentStringHash.hpp"
 
 namespace nexo::editor {
 
@@ -50,11 +49,9 @@ namespace nexo::editor {
     struct GridLayoutSizes {
         float iconSize  = 64.0f;
         int iconSpacing = 8;
-
         ImVec2 itemSize;
         ImVec2 itemStep;
         int columnCount;
-
         static constexpr float THUMBNAIL_HEIGHT_RATIO = 0.8f;
         static constexpr float TITLE_PADDING          = 5.0f;
         static constexpr float OVERLAY_SIZE           = 24.0f;
@@ -68,21 +65,17 @@ namespace nexo::editor {
         ImU32 thumbnailBgHovered;
         ImU32 thumbnailBgSelected;
         ImU32 thumbnailBgSelectedHovered;
-
         ImU32 selectedBoxColor;
-
         ImU32 titleBg;
         ImU32 titleBgHovered;
         ImU32 titleBgSelected;
         ImU32 titleBgSelectedHovered;
-
         ImU32 titleText;
     };
 
     struct LayoutSettings {
         GridLayoutSizes size;
         LayoutColors color;
-
         float leftPanelWidth = 200.0f;
     };
 
@@ -111,22 +104,64 @@ namespace nexo::editor {
         void handleEvent(event::EventFileDrop& event) override;
 
        private:
-        std::set<unsigned int> m_selectedAssets;
-
-        LayoutSettings m_layout;
-
+        // Draw methods
         void drawMenuBar();
         void drawPanelSplitter();
         void drawBreadcrumbs();
         void sceneContextMenu();
-        void handleRightClick();
-
         void drawAssetsGrid();
         void drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData, const AssetLayoutParams& params,
                             bool isHovered) const;
         void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos,
                        const ImVec2& itemSize);
+        void drawFolderIcon(const AssetLayoutParams& params) const;
+        void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,
+                        const ImVec2& itemSize);
+        void drawFolderTree();
+        void drawFolderTreeItem(const std::string& name, const std::string& path);
+
+        // utility methods
+        void buildFolderStructure();
+        [[nodiscard]] ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
+        [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
+
+        // handle selection events
         void handleSelection(unsigned int index, bool isSelected);
+
+        // handle right-click events
+        void handleRightClickOnAssetManager();
+        void handleRightClickOnFolder();
+        void handleRightClickOnAsset();
+        void rightClickOnAssetManagerMenu();
+
+        // popup management
+        void deleteFolderPopup();
+        void deleteNotEmptyFolderPopup();
+        void renameFolderPopup();
+        void createFolderPopup();
+        void folderDetailsPopup();
+        void renameAssetPopup();
+        void deleteAssetPopup();
+        void deleteUsedAssetPopup();
+        void assetDetailsPopup() const;
+        void drawErrorMessageInPopup();
+
+        // menu management
+        void rightClickOnFolderMenu();
+        void rightClickOnAssetMenu();
+
+        // handle action on folder
+        bool handleFolderRenaming(const std::string& newName);
+        bool handleFolderCreation();
+
+        // drag and drop management
+        void handleDroppedFiles();
+        void handleAssetDrop(const std::string& path) const;
+        void importDroppedFile(const std::string& filePath) const;
+
+        std::set<unsigned int> m_selectedAssets;
+
+        LayoutSettings m_layout;
 
         assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
         std::string m_currentFolder; // Currently selected folder
@@ -135,38 +170,10 @@ namespace nexo::editor {
 
         PopupManager m_popupManager;
 
-        void buildFolderStructure();
-
-        void folderTreeContextMenu();
-        void drawFolderTree();
-        void drawFolderTreeItem(const std::string& name, const std::string& path);
-
         FolderActionState m_folderActionState;
         assets::AssetRef<assets::Texture> m_folderIcon;
 
-        [[nodiscard]] ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
-
-        void folderRightClickMenu();
-        void deleteFolderMenu();
-        void renameFolderMenu();
-        void createFolderMenu();
-        bool handleFolderRenaming(const std::string &newName);
-        bool handleFolderCreation();
-        void rightClickMenu();
-        void handleRightClickOnFolder();
-        void folderDetailsMenu() const;
-        void notEmptyFolderDeletionPopup();
-
-        void drawFolderIcon(const AssetLayoutParams& params) const;
-        void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,
-                        const ImVec2& itemSize);
-
         std::vector<std::string> m_pendingDroppedFiles;
-
-        void handleDroppedFiles();
-        void handleAssetDrop(const std::string& path) const;
-        [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
-        void importDroppedFile(const std::string& filePath) const;
 
         FolderManager m_folderManager;
     };
@@ -177,9 +184,9 @@ namespace nexo::editor {
      * Contains information about the asset being dragged.
      */
     struct AssetDragDropPayload {
-        assets::AssetType type = assets::AssetType::UNKNOWN;    ///< Type of the asset
-        assets::AssetID id; ///< ID of the asset
-        char path[256]{};   ///< Path to the asset
-        char name[64]{};    ///< Display name of the asset
+        assets::AssetType type = assets::AssetType::UNKNOWN; ///< Type of the asset
+        assets::AssetID id;                                  ///< ID of the asset
+        char path[256]{};                                    ///< Path to the asset
+        char name[64]{};                                     ///< Display name of the asset
     };
 } // namespace nexo::editor

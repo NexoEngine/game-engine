@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
-#include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor {
 
