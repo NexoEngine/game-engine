@@ -101,7 +101,7 @@ namespace nexo::editor {
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
             m_folderActionState.reset();
             m_folderActionState.parentPath = path;
-            m_popupManager.openPopup("Right click on Asset Manager");
+            m_popupManager.openPopup("Right click on AssetManager");
         }
 
         if (!opened) return;
@@ -125,7 +125,7 @@ namespace nexo::editor {
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
             m_folderActionState.reset();
-            m_popupManager.openPopup("Right click on Asset Manager");
+            m_popupManager.openPopup("Right click on AssetManager");
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) m_currentFolder = "";
 

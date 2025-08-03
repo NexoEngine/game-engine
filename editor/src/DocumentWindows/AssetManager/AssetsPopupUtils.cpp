@@ -24,6 +24,7 @@ namespace nexo::editor {
      */
     void AssetManagerWindow::rightClickOnAssetMenu()
     {
+        // Draw the right-click menu for assets
         if (ImGui::MenuItem("Rename Asset")) {
             m_popupManager.openPopup("Rename Asset Popup");
         }

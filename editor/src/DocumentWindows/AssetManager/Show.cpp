@@ -54,6 +54,12 @@ namespace nexo::editor {
         if (ImGui::IsItemActive()) m_layout.leftPanelWidth += ImGui::GetIO().MouseDelta.x;
     }
 
+    /**
+     * @brief Draws the breadcrumbs for the current folder path.
+     *
+     * This method displays a breadcrumb navigation for the current folder,
+     * allowing users to navigate back to parent folders by clicking on them.
+     */
     void AssetManagerWindow::drawBreadcrumbs()
     {
         ImGui::PushID("breadcrumb_root");
@@ -62,18 +68,20 @@ namespace nexo::editor {
         handleAssetDrop("");
         ImGui::PopID();
 
-        std::string path                = m_currentFolder;
-        std::vector<std::string> crumbs = splitPath(m_currentFolder);
+        std::string path                      = m_currentFolder;
+        const std::vector<std::string> crumbs = splitPath(m_currentFolder);
         std::string fullPath;
-        for (const auto &crumb : crumbs) {
+        const int lastIndex = static_cast<int>(crumbs.size()) - 1;
+        for (int i = 0; i <= lastIndex; ++i) {
+            const auto& crumb = crumbs[i];
             fullPath += (fullPath.empty() ? "" : "/") + crumb;
             ImGui::SameLine();
             ImGui::Text(" > ");
             ImGui::SameLine();
             ImGui::PushID(("breadcrumb_" + crumb).c_str());
-            if (crumb == *std::prev(crumbs.end()))
+            if (i == lastIndex)
                 ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", crumb.c_str());
-            else if (ImNexo::Button(crumb))
+            else if (ImNexo::Button(crumb + "##" + std::to_string(i)))
                 m_currentFolder = fullPath;
 
             handleAssetDrop(fullPath);
@@ -117,7 +125,7 @@ namespace nexo::editor {
         // Popups & right-click menus
         {
             // Right-click menus
-            if (m_popupManager.showPopup("Right click on Asset Manager")) rightClickOnAssetManagerMenu();
+            if (m_popupManager.showPopup("Right click on AssetManager")) rightClickOnAssetManagerMenu();
             if (m_popupManager.showPopup("Right click on Folder")) rightClickOnFolderMenu();
             if (m_popupManager.showPopup("Right click on Asset")) rightClickOnAssetMenu();
 
