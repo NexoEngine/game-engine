@@ -38,3 +38,9 @@
 - Should be able to unhide all with CTRL + H
 - Should be able to delete entity with DELETE
 - Should be able to delete multiple entities with DELETE
+- Should be able to undo the deletion of an entity with CTRL + Z
+- Should be able to redo the deletion of an entity with CTRL + SHIFT + Z
+- Should be able to undo the deletion of multiple entity with CTRL + Z
+- Should be able to redo the deletion of multiple entity with CTRL + SHIFT + Z
+- Should be able to undo the deletion of an entity with parent entity or children entity with CTRL + Z
+- Should be able to redo the deletion of an entity with parent entity or children entity  with CTRL + SHIFT + Z

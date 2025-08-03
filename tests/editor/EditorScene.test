@@ -27,6 +27,18 @@
 - Should be able to toggle snap with SHIFT + S
 - Should be able to hide everything but selected object with SHIFT + H
 - Should be able to hide everything but selected objects with multiple selection
+- Should be able to undo the movement of an entity with CTRL + Z
+- Should be able to undo the creation of a primitive with CTRL + Z
+- Should be able to undo the creation of a directional light with CTRL + Z
+- Should be able to undo the creation of a point light with CTRL + Z
+- Should be able to undo the creation of a spot light with CTRL + Z
+- Should be able to undo the creation of a camera with CTRL + Z
+- Should be able to redo the movement of an entity with CTRL + SHIFT + Z
+- Should be able to redo the creation of a primitive with CTRL + SHIFT + Z
+- Should be able to redo the creation of a directional light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a point light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a spot light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a camera with CTRL + SHIFT + Z
 ## Selection
 - Should be able to click on an entity to select it
 - Selected entities should have an outline

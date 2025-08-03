@@ -1,0 +1,36 @@
+# Asset Manager Window
+- Should be able to navigate into the present folder
+## Assets Manager Folder Tree
+- Should be able to expand the Assets Folder tree
+- Should be able to navigate onto the folder with the Assets Folder tree
+- The Materials filter should display only material asset on the navigated folder
+- The Models filter should display only model asset on the navigated folder
+- The Textures filter should display only texture asset on the navigated folder
+## Right click menu
+- The right click should display a menu
+- The right click menu should display a Create Folder option
+## Right click menu on a folder
+- The right click menu should display rename option
+- Should be able to rename a folder with the right click
+- The right click menu should display delete option
+- Should be able to delete a folder with the right click
+- The right click menu should display Details option
+- Should be able to display the folder details of a folder with the right click
+## Right click menu on an asset
+- The right click menu should display rename option
+- Should be able to rename a folder with the right click
+- The right click menu should display delete option
+- Should be able to delete a folder with the right click
+- The right click menu should display Details option
+- Should be able to display the folder details of a folder with the right click
+## Drag & Drop
+- Should be able to drag and drop asset on a scene
+- Should be able to drag and drop asset on the SceenTree window
+- Should be able to import a asset by dragging a file from your computer
+## Shortcuts
+- Should be able to undo the drag and drop of an asset with CTRL + Z
+- Should be able to redo the drag and drop of an asset with CTRL + SHIFT + Z
+## Selection
+- Should be able to select multiple entities with CTRL + LEFT CLICK
+- Should be able to deselect entity with CTRL + LEFT CLICK
+- Should be able to select multiple entities with SHIFT + LEFT CLICK
