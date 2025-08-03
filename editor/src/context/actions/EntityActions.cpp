@@ -196,5 +196,46 @@ namespace nexo::editor {
         m_group->undo();
     }
 
+    EntityHierarchyCreationAction::EntityHierarchyCreationAction(ecs::Entity rootEntity)
+        : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
+    {
+        std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
+            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            if (transformOpt) {
+                for (const auto& child : transformOpt->get().children) {
+                    collectActions(child);
+                    m_parentRelations.emplace_back(child, entity);
+                    m_group->addAction(std::make_unique<EntityCreationAction>(child));
+                }
+            }
+
+            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
+                ecs::Entity parent = parentOpt->get().parent;
+                m_parentRelations.emplace_back(entity, parent);
+            }
+
+            m_group->addAction(std::make_unique<EntityCreationAction>(entity));
+        };
+
+        collectActions(rootEntity);
+
+        for (const auto& [child, parent] : m_parentRelations) {
+            if (parent != ecs::INVALID_ENTITY) {
+                m_group->addAction(std::make_unique<EntityParentChangeAction>(
+                    child, ecs::INVALID_ENTITY, parent));
+            }
+        }
+    }
+
+    void EntityHierarchyCreationAction::redo() {
+        m_group->redo();
+    }
+
+    void EntityHierarchyCreationAction::undo() {
+        m_group->undo();
+    }
+
+
 
 }
