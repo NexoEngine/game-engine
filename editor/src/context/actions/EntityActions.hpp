@@ -180,4 +180,18 @@ namespace nexo::editor {
         std::unique_ptr<ActionGroup> m_group;
         std::vector<std::pair<ecs::Entity, ecs::Entity>> m_parentRelations;
     };
+
+    class EntityHierarchyCreationAction final : public Action {
+    public:
+        explicit EntityHierarchyCreationAction(ecs::Entity rootEntity);
+
+        void redo() override;
+        void undo() override;
+
+    private:
+        ecs::Entity m_root;
+        std::unique_ptr<ActionGroup> m_group;
+        std::vector<std::pair<ecs::Entity, ecs::Entity>> m_parentRelations;
+    };
+
 }
