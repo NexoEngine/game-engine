@@ -138,6 +138,16 @@ target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 find_package(Jolt CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
+# tracy
+if (NEXO_TRACY)
+    find_package(Tracy CONFIG REQUIRED)
+    target_link_libraries(nexoRenderer PUBLIC Tracy::TracyClient)
+    target_compile_definitions(nexoRenderer PUBLIC TRACY_ENABLE)
+    message(STATUS "Tracy profiler enabled")
+else()
+    message(STATUS "Tracy profiler disabled")
+endif()
+
 ###########################################
 # Scripting
 ###########################################

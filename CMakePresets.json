@@ -67,6 +67,21 @@
                     "value": "Release"
                 }
             }
+        },
+        {
+            "name": "tracy",
+            "description": "Enable Tracy profiler integration",
+            "inherits": "default",
+            "cacheVariables": {
+                "NEXO_TRACY": {
+                    "type": "BOOL",
+                    "value": true
+                },
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "RelWithDebInfo"
+                }
+            }
         }
     ],
     "buildPresets": [
@@ -93,6 +108,12 @@
             "configurePreset": "minimal",
             "description": "Build minimal release mode",
             "configuration": "Release"
+        },
+        {
+            "name": "Tracy",
+            "configurePreset": "tracy",
+            "description": "Build with Tracy profiler integration",
+            "configuration": "RelWithDebInfo"
         }
     ],
     "testPresets": [
@@ -169,6 +190,20 @@
                 {
                     "type": "build",
                     "name": "MinimalRelease"
+                }
+            ]
+        },
+        {
+            "name": "build-tracy",
+            "description": "Configure and build with Tracy profiler",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "tracy"
+                },
+                {
+                    "type": "build",
+                    "name": "Tracy"
                 }
             ]
         },

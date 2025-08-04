@@ -30,6 +30,7 @@
 #include "imgui.h"
 #include <ImGuizmo.h>
 #include <algorithm>
+#include <tracy/Tracy.hpp>
 
 #include "DocumentWindows/EditorScene/EditorScene.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"

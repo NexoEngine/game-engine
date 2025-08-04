@@ -17,11 +17,15 @@
 #include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
 #include <sys/types.h>
+#include <tracy/Tracy.hpp>
 
 #include "Renderer3D.hpp"
+#include "Timestep.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Camera.hpp"
+#include "components/Editor.hpp"
 #include "components/Light.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
@@ -29,22 +33,18 @@
 #include "components/SceneComponents.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
-#include "components/Editor.hpp"
 #include "components/Uuid.hpp"
-#include "components/Render.hpp"
-#include "components/MaterialComponent.hpp"
 #include "core/event/Input.hpp"
-#include "Timestep.hpp"
 #include "exceptions/Exceptions.hpp"
-#include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
+#include "renderer/RendererExceptions.hpp"
 #include "scripting/native/Scripting.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
+#include "systems/ScriptingSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
-#include "systems/ScriptingSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
@@ -239,6 +239,7 @@ namespace nexo {
 
     Application::Application()
     {
+        ZoneScoped;
         m_window = renderer::NxWindow::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
@@ -267,13 +268,14 @@ namespace nexo {
 
     void Application::init()
     {
+        ZoneScoped;
         event::Input::init(m_window);
         event::SignalHandler::getInstance()->registerEventManager(m_eventManager);
 
         // Window and glad init
         m_window->init();
         registerWindowCallbacks();
-        m_window->setVsync(false);
+        m_window->setVsync(true);
         m_window->setDarkMode(true);
 
 #ifdef NX_GRAPHICS_API_OPENGL
@@ -298,6 +300,7 @@ namespace nexo {
 
     void Application::beginFrame()
     {
+        ZoneScoped;
 	    const auto time = glfwGetTime();
         m_worldState.time.deltaTime = time - m_worldState.time.totalTime;
         m_worldState.time.totalTime = time;
@@ -306,6 +309,7 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
+        ZoneScoped;
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         m_scriptingSystem->update();
@@ -351,16 +355,19 @@ namespace nexo {
 
     void Application::endFrame()
     {
+        ZoneScoped;
     	m_eventManager->clearEvents();
     }
 
     ecs::Entity Application::createEntity() const
     {
+        ZoneScoped;
         return m_coordinator->createEntity();
     }
 
     void Application::deleteEntity(const ecs::Entity entity)
     {
+        ZoneScoped;
         // First, recursively delete all children of this entity
         deleteEntityChildren(entity);
 
@@ -378,6 +385,7 @@ namespace nexo {
 
     void Application::removeEntityFromParent(const ecs::Entity entity) const
     {
+        ZoneScoped;
         // Get the parent component to find the parent entity
         auto parentComponent = m_coordinator->tryGetComponent<components::ParentComponent>(entity);
         if (!parentComponent || parentComponent->get().parent == ecs::INVALID_ENTITY)
@@ -395,6 +403,7 @@ namespace nexo {
 
     void Application::deleteEntityChildren(const ecs::Entity entity)
     {
+        ZoneScoped;
         // Check if this entity has a transform component with children
         auto transform = m_coordinator->tryGetComponent<components::TransformComponent>(entity);
         if (!transform || transform->get().children.empty())

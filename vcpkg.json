@@ -35,6 +35,15 @@
 		{ "name": "assimp", "version>=": "5.4.3#0" },
         { "name": "nlohmann-json", "version>=": "3.11.3#1"},
         { "name": "nethost", "version>=": "8.0.3#0"},
-        { "name": "utfcpp", "version>=": "4.0.6#0"}
+        { "name": "utfcpp", "version>=": "4.0.6#0"},
+		{
+			"name": "tracy",
+			"version>=": "0.11.1#2",
+			"features": [
+				"cli-tools",
+				"crash-handler",
+				"gui-tools"
+			]
+		}
   ]
 }

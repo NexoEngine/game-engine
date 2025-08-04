@@ -13,16 +13,19 @@ set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
 set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
 set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
 set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
+set(NEXO_TRACY OFF CACHE BOOL "Enable Tracy profiler integration")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})
     set(NEXO_COMPILER_FLAGS_DEBUG -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
     set(NEXO_COMPILER_FLAGS_RELEASE -O3)
+    set(NEXO_COMPILER_FLAGS_RELWITHDEBINFO -g -O3 -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
     set(NEXO_COVERAGE_FLAGS -O0 --coverage)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(NEXO_COMPILER_FLAGS_ALL /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor /utf-8)
     set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1)
     set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor)
+    set(NEXO_COMPILER_FLAGS_RELWITHDEBINFO /Zi /O2 /Zc:preprocessor)
     set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
 else()
     message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}, using default flags")
@@ -32,6 +35,7 @@ add_compile_options(
         "${NEXO_COMPILER_FLAGS_ALL}"
         "$<$<CONFIG:Debug>:${NEXO_COMPILER_FLAGS_DEBUG}>"
         "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
+        "$<$<CONFIG:RelWithDebInfo>:${NEXO_COMPILER_FLAGS_RELWITHDEBINFO}>"
 )
 
 # Prevent Visual Studio (or other build tools) from creating per config sub-directories (e.g. Debug, Release)

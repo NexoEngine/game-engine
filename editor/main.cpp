@@ -25,6 +25,7 @@
 #include <thread>
 #include <loguru.hpp>
 #include <core/exceptions/Exceptions.hpp>
+#include <tracy/Tracy.hpp>
 
 #include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
@@ -60,6 +61,7 @@ try {
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+        FrameMark;
     }
 
     editor.shutdown();
