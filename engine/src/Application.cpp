@@ -29,6 +29,7 @@
 #include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
+#include "components/Render.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/StaticMesh.hpp"
