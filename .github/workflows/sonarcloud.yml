@@ -44,11 +44,6 @@ jobs:
           cmake -S . -B build
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Debug
         env:
-          CMAKE_GENERATOR: Ninja
-          CC: gcc-13
-          CXX: g++-13
-          CMAKE_C_COMPILER: gcc-13
-          CMAKE_CXX_COMPILER: g++-13
           USERNAME: NexoEngine
 
       - name: Run tests for coverage

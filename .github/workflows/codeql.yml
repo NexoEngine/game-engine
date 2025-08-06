@@ -67,12 +67,6 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           workflowPreset: 'minimal-build'
-        env:
-          CMAKE_GENERATOR: ${{ matrix.generator }}
-          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && format('gcc-{0}', matrix.version) || '' }}
-          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && format('g++-{0}', matrix.version) || '' }}
-          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && format('gcc-{0}', matrix.version) || '' }}
-          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && format('g++-{0}', matrix.version) || '' }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

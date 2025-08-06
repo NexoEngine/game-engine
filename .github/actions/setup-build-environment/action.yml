@@ -17,6 +17,23 @@ inputs:
     description: 'GitHub token for package access'
     required: true
 
+outputs:
+  cc:
+    description: 'C compiler path'
+    value: ${{ steps.set-compiler-vars.outputs.cc }}
+  cxx:
+    description: 'C++ compiler path'
+    value: ${{ steps.set-compiler-vars.outputs.cxx }}
+  cmake-c-compiler:
+    description: 'CMake C compiler path'
+    value: ${{ steps.set-compiler-vars.outputs.cmake-c-compiler }}
+  cmake-cxx-compiler:
+    description: 'CMake C++ compiler path'
+    value: ${{ steps.set-compiler-vars.outputs.cmake-cxx-compiler }}
+  cmake-generator:
+    description: 'CMake generator'
+    value: ${{ steps.set-compiler-vars.outputs.cmake-generator }}
+
 runs:
   using: 'composite'
   steps:
@@ -60,6 +77,34 @@ runs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         toolset: ${{ inputs.compiler-version }}
+
+    - name: Set compiler environment variables
+      id: set-compiler-vars
+      shell: bash
+      run: |
+        if [ "${{ inputs.compiler }}" = "gcc" ]; then
+          CC_PATH="gcc-${{ inputs.compiler-version }}"
+          CXX_PATH="g++-${{ inputs.compiler-version }}"
+        elif [ "${{ inputs.compiler }}" = "clang" ]; then
+          CC_PATH="${{ steps.set-up-clang.outputs.clang }}"
+          CXX_PATH="${{ steps.set-up-clang.outputs.clangxx }}"
+        else
+          CC_PATH=""
+          CXX_PATH=""
+        fi
+        
+        echo "cc=${CC_PATH}" >> $GITHUB_OUTPUT
+        echo "cxx=${CXX_PATH}" >> $GITHUB_OUTPUT
+        echo "cmake-c-compiler=${CC_PATH}" >> $GITHUB_OUTPUT
+        echo "cmake-cxx-compiler=${CXX_PATH}" >> $GITHUB_OUTPUT
+        echo "cmake-generator=${{ inputs.generator }}" >> $GITHUB_OUTPUT
+        
+        # Set environment variables for the current action and all subsequent steps
+        echo "CC=${CC_PATH}" >> $GITHUB_ENV
+        echo "CXX=${CXX_PATH}" >> $GITHUB_ENV
+        echo "CMAKE_C_COMPILER=${CC_PATH}" >> $GITHUB_ENV
+        echo "CMAKE_CXX_COMPILER=${CXX_PATH}" >> $GITHUB_ENV
+        echo "CMAKE_GENERATOR=${{ inputs.generator }}" >> $GITHUB_ENV
 
     - name: Install required system dependencies for Ubuntu
       if: ${{ inputs.os == 'ubuntu-latest' }}
