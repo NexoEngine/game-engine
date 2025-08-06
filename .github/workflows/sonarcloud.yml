@@ -1,0 +1,75 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    env:
+      VCPKG_FEATURE_FLAGS: dependencygraph
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
+      DOTNET_INSTALL_DIR: "./.dotnet"
+      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Setup Build Environment
+        uses: ./.github/actions/setup-build-environment
+        with:
+          compiler: gcc
+          compiler-version: 13
+          os: ubuntu-latest
+          generator: Ninja
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Build Wrapper
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
+
+      - name: Run Build Wrapper
+        run: |
+          mkdir build
+          cmake -S . -B build
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Debug
+        env:
+          CMAKE_GENERATOR: Ninja
+          CC: gcc-13
+          CXX: g++-13
+          CMAKE_C_COMPILER: gcc-13
+          CMAKE_CXX_COMPILER: g++-13
+          USERNAME: NexoEngine
+
+      - name: Run tests for coverage
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: 'ctest -C Debug --output-on-failure'
+          working-directory: 'build'
+
+      - name: Collect coverage into XML report for SonarCloud
+        run: |
+          pip install gcovr
+          gcovr build --verbose --sonarqube -o coverage.xml --gcov-executable gcov-13
+          cat coverage.xml
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        with:
+          args: >
+            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define sonar.coverageReportPaths=coverage.xml
