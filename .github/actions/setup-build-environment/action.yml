@@ -98,13 +98,6 @@ runs:
         echo "cmake-c-compiler=${CC_PATH}" >> $GITHUB_OUTPUT
         echo "cmake-cxx-compiler=${CXX_PATH}" >> $GITHUB_OUTPUT
         echo "cmake-generator=${{ inputs.generator }}" >> $GITHUB_OUTPUT
-        
-        # Set environment variables for the current action and all subsequent steps
-        echo "CC=${CC_PATH}" >> $GITHUB_ENV
-        echo "CXX=${CXX_PATH}" >> $GITHUB_ENV
-        echo "CMAKE_C_COMPILER=${CC_PATH}" >> $GITHUB_ENV
-        echo "CMAKE_CXX_COMPILER=${CXX_PATH}" >> $GITHUB_ENV
-        echo "CMAKE_GENERATOR=${{ inputs.generator }}" >> $GITHUB_ENV
 
     - name: Install required system dependencies for Ubuntu
       if: ${{ inputs.os == 'ubuntu-latest' }}

@@ -40,6 +40,7 @@ jobs:
           submodules: recursive
 
       - name: Setup Build Environment
+        id: setup-env
         uses: ./.github/actions/setup-build-environment
         with:
           compiler: ${{ matrix.compiler }}
@@ -67,6 +68,12 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           workflowPreset: 'minimal-build'
+        env:
+          CMAKE_GENERATOR: ${{ steps.setup-env.outputs.cmake-generator }}
+          CC: ${{ steps.setup-env.outputs.cc }}
+          CXX: ${{ steps.setup-env.outputs.cxx }}
+          CMAKE_C_COMPILER: ${{ steps.setup-env.outputs.cmake-c-compiler }}
+          CMAKE_CXX_COMPILER: ${{ steps.setup-env.outputs.cmake-cxx-compiler }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

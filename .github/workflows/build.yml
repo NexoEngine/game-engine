@@ -62,6 +62,7 @@ jobs:
           detached: true # Run in the background and wait for connection
 
       - name: Setup Build Environment
+        id: setup-env
         uses: ./.github/actions/setup-build-environment
         with:
           compiler: ${{ matrix.compiler }}
@@ -75,6 +76,11 @@ jobs:
         with:
           workflowPreset: 'build-coverage'
         env:
+          CMAKE_GENERATOR: ${{ steps.setup-env.outputs.cmake-generator }}
+          CC: ${{ steps.setup-env.outputs.cc }}
+          CXX: ${{ steps.setup-env.outputs.cxx }}
+          CMAKE_C_COMPILER: ${{ steps.setup-env.outputs.cmake-c-compiler }}
+          CMAKE_CXX_COMPILER: ${{ steps.setup-env.outputs.cmake-cxx-compiler }}
           USERNAME: NexoEngine
 
       - name: Install Mesa for Windows
@@ -110,6 +116,12 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           workflowPreset: 'minimal-build'
+        env:
+          CMAKE_GENERATOR: ${{ steps.setup-env.outputs.cmake-generator }}
+          CC: ${{ steps.setup-env.outputs.cc }}
+          CXX: ${{ steps.setup-env.outputs.cxx }}
+          CMAKE_C_COMPILER: ${{ steps.setup-env.outputs.cmake-c-compiler }}
+          CMAKE_CXX_COMPILER: ${{ steps.setup-env.outputs.cmake-cxx-compiler }}
 
       - name: Generate NSIS installer
         if: ${{ matrix.os == 'windows-latest' }}
