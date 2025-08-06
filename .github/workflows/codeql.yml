@@ -39,6 +39,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Init submodules
+        shell: bash
+        run: |
+          git submodule update --init --recursive
+
       - name: Setup Build Environment
         id: setup-env
         uses: ./.github/actions/setup-build-environment

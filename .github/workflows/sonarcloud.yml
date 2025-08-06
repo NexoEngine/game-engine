@@ -26,6 +26,11 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # Fetch all history for all tags and branches (for SonarCloud)
 
+      - name: Init submodules
+        shell: bash
+        run: |
+          git submodule update --init --recursive
+
       - name: Setup Build Environment
         id: setup-env
         uses: ./.github/actions/setup-build-environment

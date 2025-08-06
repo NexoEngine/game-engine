@@ -119,11 +119,6 @@ runs:
       with:
         dotnet-version: '9.x'
 
-    - name: Init submodules
-      shell: bash
-      run: |
-        git submodule update --init --recursive
-
     - name: Install latest CMake and Ninja
       uses: lukka/get-cmake@latest
       with:

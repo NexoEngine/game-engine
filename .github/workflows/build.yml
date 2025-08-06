@@ -53,6 +53,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Init submodules
+        shell: bash
+        run: |
+          git submodule update --init --recursive
+
       # DEBUGGING ONLY, to run this trigger with even
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
