@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Coordinator.hpp"
+#include <tracy/Tracy.hpp>
 
 std::shared_ptr<nexo::ecs::Coordinator> nexo::ecs::System::coord = nullptr;
 
@@ -20,6 +21,9 @@ namespace nexo::ecs {
 
     void Coordinator::init()
     {
+        ZoneScoped;
+        ZoneName("ECS Coordinator Init", 20);
+
         m_componentManager = std::make_shared<ComponentManager>();
         m_entityManager = std::make_shared<EntityManager>();
         m_systemManager = std::make_shared<SystemManager>();
@@ -32,11 +36,17 @@ namespace nexo::ecs {
 
     Entity Coordinator::createEntity() const
     {
+        ZoneScoped;
+        ZoneName("Create Entity", 13);
+
         return m_entityManager->createEntity();
     }
 
     void Coordinator::destroyEntity(const Entity entity) const
     {
+        ZoneScoped;
+        ZoneName("Destroy Entity", 14);
+
         const Signature signature = m_entityManager->getSignature(entity);
         m_entityManager->destroyEntity(entity);
         m_componentManager->entityDestroyed(entity, signature);

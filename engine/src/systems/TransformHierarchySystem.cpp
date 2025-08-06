@@ -17,6 +17,7 @@
 #include "components/Transform.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/RenderContext.hpp"
+#include <tracy/Tracy.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -24,6 +25,9 @@
 namespace nexo::system {
     void TransformHierarchySystem::update()
     {
+        ZoneScoped;
+        ZoneName("Transform Hierarchy Update", 26);
+
         const auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1)
             return;
@@ -41,16 +45,21 @@ namespace nexo::system {
         const std::span<const ecs::Entity> entitySpan = m_group->entities();
         const auto &transformComponentArray = get<components::TransformComponent>();
 
-        // Process all root entities in the current scene
-        for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-            const ecs::Entity rootEntity = entitySpan[i];
-            if (!transformComponentArray->hasComponent(rootEntity))
-                continue;
+        {
+            ZoneScopedN("Process Root Entities");
+            ZoneValue(partition->count);
 
-            auto& rootTransform = transformComponentArray->get(rootEntity);
-            glm::mat4 rootWorldMatrix = calculateLocalMatrix(rootTransform);
-            rootTransform.worldMatrix = rootWorldMatrix;
-            updateChildTransforms(transformComponentArray, rootTransform.children, rootWorldMatrix);
+            // Process all root entities in the current scene
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
+                const ecs::Entity rootEntity = entitySpan[i];
+                if (!transformComponentArray->hasComponent(rootEntity))
+                    continue;
+
+                auto& rootTransform = transformComponentArray->get(rootEntity);
+                glm::mat4 rootWorldMatrix = calculateLocalMatrix(rootTransform);
+                rootTransform.worldMatrix = rootWorldMatrix;
+                updateChildTransforms(transformComponentArray, rootTransform.children, rootWorldMatrix);
+            }
         }
     }
 

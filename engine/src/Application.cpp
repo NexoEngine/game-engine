@@ -311,44 +311,72 @@ namespace nexo {
     void Application::run(const SceneInfo &sceneInfo)
     {
         ZoneScoped;
-       	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
+        ZoneName("Application Run", 15);
 
-        m_scriptingSystem->update();
+        auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
+
+        {
+            ZoneScopedN("Scripting Update");
+            m_scriptingSystem->update();
+        }
 
         if (!m_isMinimized)
         {
-         	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
+            ZoneScopedN("Scene Rendering");
+            renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
             renderContext.sceneType = sceneInfo.sceneType;
             if (sceneInfo.isChildWindow) {
                 renderContext.isChildWindow = true;
                 renderContext.viewportBounds[0] = sceneInfo.viewportBounds[0];
                 renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
             }
-        	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
-			{
-                m_transformMatrixSystem->update();
-                m_transformHierarchySystem->update();
-				m_cameraContextSystem->update();
-				m_lightSystem->update();
-				m_renderCommandSystem->update();
-				m_renderBillboardSystem->update();
-				for (auto &camera : renderContext.cameras)
-				    camera.pipeline.execute();
-				// We have to unbind after the whole pipeline since multiple passes can use the same textures
-				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
-                renderer::NxRenderer3D::get().unbindTextures();
-        	    m_physicsSystem->update();
-			}
-			if (m_SceneManager.getScene(sceneInfo.id).isActive())
-			{
-				m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
-			}
+            if (m_SceneManager.getScene(sceneInfo.id).isRendered())
+            {
+                {
+                    ZoneScopedN("Transform Systems");
+                    m_transformMatrixSystem->update();
+                    m_transformHierarchySystem->update();
+                }
+
+                {
+                    ZoneScopedN("Camera & Lighting");
+                    m_cameraContextSystem->update();
+                    m_lightSystem->update();
+                }
+
+                {
+                    ZoneScopedN("Render Systems");
+                    m_renderCommandSystem->update();
+                    m_renderBillboardSystem->update();
+                }
+
+                {
+                    ZoneScopedN("Pipeline Execution");
+                    for (auto &camera : renderContext.cameras)
+                        camera.pipeline.execute();
+                    renderer::NxRenderer3D::get().unbindTextures();
+                }
+
+                {
+                    ZoneScopedN("Physics Update");
+                    m_physicsSystem->update();
+                }
+            }
+            if (m_SceneManager.getScene(sceneInfo.id).isActive())
+            {
+                ZoneScopedN("Camera Controllers");
+                m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
+            }
         }
 
         // Update (swap buffers and poll events)
-        if (sceneInfo.renderingType == RenderingType::WINDOW)
-            m_window->onUpdate();
-        m_eventManager->dispatchEvents();
+        {
+            ZoneScopedN("Window & Events");
+            if (sceneInfo.renderingType == RenderingType::WINDOW)
+                m_window->onUpdate();
+            m_eventManager->dispatchEvents();
+        }
+
         renderContext.reset();
         if (m_displayProfileResult)
             displayProfileResults();

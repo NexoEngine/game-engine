@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "RenderCommand.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include <tracy/Tracy.hpp>
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlRendererAPI.hpp"
 #endif
@@ -25,6 +26,9 @@ namespace nexo::renderer {
 
     void NxRenderCommand::init()
     {
+        ZoneScoped;
+        ZoneName("Render Command Init", 18);
+
         if (!_rendererApi)
             THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         _rendererApi->init();

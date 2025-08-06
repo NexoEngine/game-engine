@@ -17,10 +17,16 @@
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlWindow.hpp"
 #endif
+#include <tracy/Tracy.hpp>
 
 namespace nexo::renderer {
     std::shared_ptr<NxWindow> NxWindow::create(int width, int height, const std::string &title)
     {
+        ZoneScoped;
+        ZoneName("Window Create", 13);
+        ZoneValue(static_cast<int64_t>(width * height));
+        ZoneText(title.c_str(), title.length());
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlWindow>(width, height, title);
         #endif

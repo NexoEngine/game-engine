@@ -15,11 +15,15 @@
 #include "ScriptingSystem.hpp"
 
 #include "scripting/native/Scripting.hpp"
+#include <tracy/Tracy.hpp>
 
 namespace nexo::system {
 
     ScriptingSystem::ScriptingSystem()
     {
+        ZoneScoped;
+        ZoneName("Scripting System Constructor", 26);
+
         scripting::HostHandler::Parameters params;
         params.errorCallback = [this](const scripting::HostString& message) {
             LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
@@ -37,20 +41,33 @@ namespace nexo::system {
 
     int ScriptingSystem::init()
     {
+        ZoneScoped;
+        ZoneName("Scripting System Init", 20);
 
         const auto &scriptHost = scripting::HostHandler::getInstance();
 
-        updateWorldState();
-        if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeComponents(); ret != 0) {
-            LOG(NEXO_ERROR, "Failed to initialize scripting components, returned: {}", ret);
-            return ret;
+        {
+            ZoneScopedN("Update World State");
+            updateWorldState();
         }
-        LOG(NEXO_INFO, "Scripting components initialized successfully");
-        if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
-            LOG(NEXO_ERROR, "Failed to initialize scripting systems, returned: {}", ret);
-            return ret;
+
+        {
+            ZoneScopedN("Initialize Components");
+            if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeComponents(); ret != 0) {
+                LOG(NEXO_ERROR, "Failed to initialize scripting components, returned: {}", ret);
+                return ret;
+            }
+            LOG(NEXO_INFO, "Scripting components initialized successfully");
         }
-        LOG(NEXO_INFO, "Scripting systems initialized successfully");
+
+        {
+            ZoneScopedN("Initialize Systems");
+            if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
+                LOG(NEXO_ERROR, "Failed to initialize scripting systems, returned: {}", ret);
+                return ret;
+            }
+            LOG(NEXO_INFO, "Scripting systems initialized successfully");
+        }
 
         if (scriptHost.runScriptExample() == EXIT_FAILURE) {
             LOG(NEXO_ERROR, "Error in runScriptExample");
@@ -63,34 +80,59 @@ namespace nexo::system {
 
     int ScriptingSystem::update()
     {
+        ZoneScoped;
+        ZoneName("Scripting System Update", 22);
+
         const auto &scriptHost = scripting::HostHandler::getInstance();
         const auto &api = scriptHost.getManagedApi();
 
-        updateWorldState();
-        if (const auto ret = api.SystemBase.UpdateSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
-            LOG_ONCE(NEXO_ERROR, "Failed to update scripting systems");
-            return ret;
+        {
+            ZoneScopedN("Update World State");
+            updateWorldState();
         }
-        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Failed to update scripting systems"));
+
+        {
+            ZoneScopedN("Update Managed Systems");
+            if (const auto ret = api.SystemBase.UpdateSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
+                LOG_ONCE(NEXO_ERROR, "Failed to update scripting systems");
+                return ret;
+            }
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("Failed to update scripting systems"));
+        }
+
         return 0;
     }
 
     int ScriptingSystem::shutdown()
     {
+        ZoneScoped;
+        ZoneName("Scripting System Shutdown", 24);
+
         const auto &scriptHost = scripting::HostHandler::getInstance();
         const auto &api = scriptHost.getManagedApi();
 
-        updateWorldState();
-        if (auto ret = api.SystemBase.ShutdownSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
-            LOG(NEXO_ERROR, "Failed to shutdown scripting systems: {}", ret);
-            return ret;
+        {
+            ZoneScopedN("Update World State");
+            updateWorldState();
         }
-        LOG(NEXO_INFO, "Scripting systems shutdown successfully");
+
+        {
+            ZoneScopedN("Shutdown Managed Systems");
+            if (auto ret = api.SystemBase.ShutdownSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
+                LOG(NEXO_ERROR, "Failed to shutdown scripting systems: {}", ret);
+                return ret;
+            }
+            LOG(NEXO_INFO, "Scripting systems shutdown successfully");
+        }
+
         return 0;
     }
 
     void ScriptingSystem::updateWorldState()
     {
+        ZoneScoped;
+        ZoneName("Update World State", 18);
+
         Application& app = Application::getInstance();
         m_worldState.update(app.getWorldState());
     }

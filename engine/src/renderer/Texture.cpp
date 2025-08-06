@@ -16,6 +16,7 @@
 #include "Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "String.hpp"
+#include <tracy/Tracy.hpp>
 
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlTexture2D.hpp"
@@ -44,6 +45,10 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxTexture2D> NxTexture2D::create(unsigned int width, unsigned int height)
     {
+        ZoneScoped;
+        ZoneName("Texture2D Create", 15);
+        ZoneValue(static_cast<int64_t>(width * height));
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlTexture2D>(width, height);
         #endif
@@ -69,6 +74,10 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxTexture2D> NxTexture2D::create(const std::string &path)
     {
+        ZoneScoped;
+        ZoneName("Texture2D Create (File)", 21);
+        ZoneText(path.c_str(), path.length());
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlTexture2D>(path);
         #endif

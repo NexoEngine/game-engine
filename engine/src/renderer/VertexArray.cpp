@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "VertexArray.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include <tracy/Tracy.hpp>
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlVertexArray.hpp"
 #endif
@@ -21,6 +22,9 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxVertexArray> createVertexArray()
     {
+        ZoneScoped;
+        ZoneName("Create Vertex Array", 18);
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexArray>();
         #endif

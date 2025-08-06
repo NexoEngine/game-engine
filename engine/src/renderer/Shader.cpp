@@ -21,11 +21,15 @@
 #endif
 
 #include <fstream>
+#include <tracy/Tracy.hpp>
 
 namespace nexo::renderer {
 
     std::shared_ptr<NxShader> NxShader::create(const std::string &path)
     {
+        ZoneScoped;
+        ZoneName("Shader Create (File)", 19);
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlShader>(path);
         #endif
@@ -34,6 +38,9 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
     {
+        ZoneScoped;
+        ZoneName("Shader Create (Source)", 21);
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
         #endif
@@ -42,6 +49,9 @@ namespace nexo::renderer {
 
     std::string NxShader::readFile(const std::string &filepath)
     {
+        ZoneScoped;
+        ZoneName("Shader Read File", 16);
+
         std::string result;
         if (std::ifstream in(filepath, std::ios::in | std::ios::binary); in)
         {

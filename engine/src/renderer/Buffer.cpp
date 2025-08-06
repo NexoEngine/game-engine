@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Buffer.hpp"
 #include "renderer/RendererExceptions.hpp"
+#include <tracy/Tracy.hpp>
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlBuffer.hpp"
 #endif
@@ -22,6 +23,10 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxVertexBuffer> createVertexBuffer(float *vertices, unsigned int size)
     {
+        ZoneScoped;
+        ZoneName("Create Vertex Buffer (Data)", 25);
+        ZoneValue(static_cast<int64_t>(size));
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(vertices, size);
         #endif
@@ -30,6 +35,10 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxVertexBuffer> createVertexBuffer(unsigned int size)
     {
+        ZoneScoped;
+        ZoneName("Create Vertex Buffer", 19);
+        ZoneValue(static_cast<int64_t>(size));
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(size);
         #endif
@@ -38,6 +47,9 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxIndexBuffer> createIndexBuffer()
     {
+        ZoneScoped;
+        ZoneName("Create Index Buffer", 18);
+
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlIndexBuffer>();
         #endif

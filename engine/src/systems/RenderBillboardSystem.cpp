@@ -19,6 +19,7 @@
 #include "renderer/ShaderLibrary.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "components/Editor.hpp"
+#include <tracy/Tracy.hpp>
 
 namespace nexo::system {
     /**
@@ -38,6 +39,9 @@ namespace nexo::system {
     */
     void RenderBillboardSystem::setupLights(renderer::DrawCommand &cmd, const components::LightContext& lightContext)
     {
+        ZoneScoped;
+        ZoneName("Billboard Setup Lights", 21);
+
         cmd.uniforms["uAmbientLight"] = lightContext.ambientLight;
 
         cmd.uniforms["uNumPointLights"] = static_cast<int>(lightContext.pointLightCount);
@@ -178,6 +182,9 @@ namespace nexo::system {
 
 	void RenderBillboardSystem::update()
 	{
+        ZoneScoped;
+        ZoneName("Billboard System Update", 21);
+
 		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
@@ -185,56 +192,73 @@ namespace nexo::system {
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 		const SceneType sceneType = renderContext.sceneType;
 
-		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
-			[](const components::SceneTag& tag) { return tag.id; }
-		);
-		const auto *partition = scenePartition.getPartition(sceneRendered);
-		auto &app = Application::getInstance();
-        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
-		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
-            return;
-		}
-        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+        // Move partition declaration outside any scoped blocks
+        const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+            [](const components::SceneTag& tag) { return tag.id; }
+        );
+        const auto *partition = scenePartition.getPartition(sceneRendered);
+
+        {
+            ZoneScopedN("Scene Partition Validation");
+            auto &app = Application::getInstance();
+            const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+            if (!partition) {
+                LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+                return;
+            }
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+        }
 
 		const auto transformComponentArray = get<components::TransformComponent>();
 		const auto billboardSpan = get<components::BillboardComponent>();
 		const auto materialComponentArray = get<components::MaterialComponent>();
 		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
-		for (auto &camera : renderContext.cameras) {
-            std::vector<renderer::DrawCommand> drawCommands;
-            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-                const ecs::Entity entity = entitySpan[i];
-                if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
-                    continue;
-                const auto &transform = transformComponentArray->get(entitySpan[i]);
-                const auto &materialAsset = materialComponentArray->get(entitySpan[i]).material.lock();
-                const auto &billboard = billboardSpan[i];
-                auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
-                auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
-                auto cmd = createDrawCommand(
-                    entity,
-                    camera.cameraPosition,
-                    shader,
-                    billboard,
-                    materialAsset,
-                    transform
-                );
-                cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                cmd.uniforms["uCamPos"] = camera.cameraPosition;
-                setupLights(cmd, renderContext.sceneLights);
-                drawCommands.push_back(cmd);
+        {
+            ZoneScopedN("Billboard Camera Processing");
+            ZoneValue(renderContext.cameras.size());
 
-                if (coord->entityHasComponent<components::SelectedTag>(entity)) {
-                    auto selectedCmd = createSelectedDrawCommand(camera.cameraPosition, billboard, materialAsset, transform);
-                    selectedCmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                    selectedCmd.uniforms["uCamPos"] = camera.cameraPosition;
-                    setupLights(selectedCmd, renderContext.sceneLights);
-                    drawCommands.push_back(selectedCmd);
+            for (auto &camera : renderContext.cameras) {
+                std::vector<renderer::DrawCommand> drawCommands;
+
+                {
+                    ZoneScopedN("Billboard Draw Commands");
+                    ZoneValue(partition->count);
+
+                    for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
+                        const ecs::Entity entity = entitySpan[i];
+                        if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
+                            continue;
+                        const auto &transform = transformComponentArray->get(entitySpan[i]);
+                        const auto &materialAsset = materialComponentArray->get(entitySpan[i]).material.lock();
+                        const auto &billboard = billboardSpan[i];
+                        auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+                        auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
+                        auto cmd = createDrawCommand(
+                            entity,
+                            camera.cameraPosition,
+                            shader,
+                            billboard,
+                            materialAsset,
+                            transform
+                        );
+                        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
+                        cmd.uniforms["uCamPos"] = camera.cameraPosition;
+                        setupLights(cmd, renderContext.sceneLights);
+                        drawCommands.push_back(cmd);
+
+                        if (coord->entityHasComponent<components::SelectedTag>(entity)) {
+                            auto selectedCmd = createSelectedDrawCommand(camera.cameraPosition, billboard, materialAsset, transform);
+                            selectedCmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
+                            selectedCmd.uniforms["uCamPos"] = camera.cameraPosition;
+                            setupLights(selectedCmd, renderContext.sceneLights);
+                            drawCommands.push_back(selectedCmd);
+                        }
+                    }
                 }
+
+                camera.pipeline.addDrawCommands(drawCommands);
             }
-            camera.pipeline.addDrawCommands(drawCommands);
-		}
+        }
 	}
 }
