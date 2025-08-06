@@ -47,8 +47,7 @@ jobs:
       - name: Run Build Wrapper
         run: |
           mkdir build
-          cmake -S . -B build -C Debug
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Debug
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --workflow 'build-coverage' --config Debug
         env:
           CMAKE_GENERATOR: ${{ steps.setup-env.outputs.cmake-generator }}
           CC: ${{ steps.setup-env.outputs.cc }}
