@@ -15,6 +15,7 @@
 #include <nethost.h>
 #include <filesystem>
 #include <hostfxr.h>
+#include <tracy/Tracy.hpp>
 
 #ifdef WIN32
     #define NOMINMAX
@@ -43,36 +44,60 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::initialize(Parameters parameters)
     {
+        ZoneScoped;
+        ZoneName("Scripting Host Initialize", 24);
+
         if (m_status == SUCCESS)
             return m_status;
 
         m_params = std::move(parameters);
 
-        if (loadHostfxr() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Load HostFXR");
+            if (loadHostfxr() != SUCCESS)
+                return m_status;
+        }
 
         currentErrorCallback = m_params.errorCallback;
         m_hostfxr_fn.set_error_writer([](const char_t* message) {
             currentErrorCallback(message);
         });
 
-        if (initRuntime() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Initialize Runtime");
+            if (initRuntime() != SUCCESS)
+                return m_status;
+        }
 
-        if (getRuntimeDelegates() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Get Runtime Delegates");
+            if (getRuntimeDelegates() != SUCCESS)
+                return m_status;
+        }
 
-        if (loadManagedAssembly() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Load Managed Assembly");
+            if (loadManagedAssembly() != SUCCESS)
+                return m_status;
+        }
 
         // Take over signal handling because the CoreCLR library overrides them??
-        event::SignalHandler::getInstance()->initSignals();
+        {
+            ZoneScopedN("Init Signal Handling");
+            event::SignalHandler::getInstance()->initSignals();
+        }
 
-        if (initManagedApi() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Initialize Managed API");
+            if (initManagedApi() != SUCCESS)
+                return m_status;
+        }
 
-        if (initCallbacks() != SUCCESS)
-            return m_status;
+        {
+            ZoneScopedN("Initialize Callbacks");
+            if (initCallbacks() != SUCCESS)
+                return m_status;
+        }
 
         return m_status = SUCCESS;
     }
@@ -80,21 +105,29 @@ namespace nexo::scripting {
     void *HostHandler::getManagedFptrVoid(const char_t* typeName, const char_t* methodName,
         const char_t* delegateTypeName) const
     {
+        ZoneScoped;
+        ZoneName("Get Managed Function Pointer", 27);
+        ZoneText(methodName ? HostString(methodName).to_utf8().c_str() : "null",
+                 methodName ? HostString(methodName).to_utf8().length() : 4);
+
         if (m_status != SUCCESS) {
             m_params.errorCallback("getManagedFptr: HostHandler not initialized");
             return nullptr;
         }
 
         void *fptr = nullptr;
-        unsigned int rc = m_delegates.load_assembly_and_get_function_pointer(
-            m_assembly_path.c_str(), typeName, methodName, delegateTypeName, nullptr, &fptr);
-        if (rc != 0 || fptr == nullptr) {
-            m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
-                typeName ? HostString(typeName).to_utf8() : "",
-                methodName ? HostString(methodName).to_utf8() : "",
-                rc)
-            );
-            return nullptr;
+        {
+            ZoneScopedN("Load Assembly and Get Function");
+            unsigned int rc = m_delegates.load_assembly_and_get_function_pointer(
+                m_assembly_path.c_str(), typeName, methodName, delegateTypeName, nullptr, &fptr);
+            if (rc != 0 || fptr == nullptr) {
+                m_params.errorCallback(std::format("Failed to get function pointer Type({}) Method({}): 0x{:X}",
+                    typeName ? HostString(typeName).to_utf8() : "",
+                    methodName ? HostString(methodName).to_utf8() : "",
+                    rc)
+                );
+                return nullptr;
+            }
         }
         return fptr;
     }
@@ -106,6 +139,9 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::loadHostfxr()
     {
+        ZoneScoped;
+        ZoneName("Load HostFXR", 12);
+
         const auto assemblyPath = HostString(m_params.assemblyPath.c_str());
         const auto dotnetRoot = HostString(m_params.dotnetRoot.c_str());
 
@@ -114,31 +150,42 @@ namespace nexo::scripting {
             assemblyPath.empty() ? nullptr : assemblyPath.c_str(),
             dotnetRoot.empty() ? nullptr : dotnetRoot.c_str()
         };
+
         // Pre-allocate a large buffer for the path to hostfxr
         char_t buffer[MAX_PATH] = {0};
         size_t buffer_size = sizeof(buffer) / sizeof(char_t);
-        if (unsigned int rc = get_hostfxr_path(buffer, &buffer_size, &params)) {
-            m_params.errorCallback(std::format("Failed to get hostfxr path. Error code 0x{:X}.", rc));
-            return m_status = HOSTFXR_NOT_FOUND;
+
+        {
+            ZoneScopedN("Get HostFXR Path");
+            if (unsigned int rc = get_hostfxr_path(buffer, &buffer_size, &params)) {
+                m_params.errorCallback(std::format("Failed to get hostfxr path. Error code 0x{:X}.", rc));
+                return m_status = HOSTFXR_NOT_FOUND;
+            }
         }
 
-        m_dll_handle = std::make_shared<boost::dll::shared_library>(buffer, boost::dll::load_mode::default_mode);
-        if (m_dll_handle == nullptr || !m_dll_handle->is_loaded()) {
-            m_params.errorCallback(std::format("Failed to load hostfxr library from path: {}", HostString(buffer).to_utf8()));
-            return m_status = HOSTFXR_LOAD_ERROR;
+        {
+            ZoneScopedN("Load HostFXR Library");
+            m_dll_handle = std::make_shared<boost::dll::shared_library>(buffer, boost::dll::load_mode::default_mode);
+            if (m_dll_handle == nullptr || !m_dll_handle->is_loaded()) {
+                m_params.errorCallback(std::format("Failed to load hostfxr library from path: {}", HostString(buffer).to_utf8()));
+                return m_status = HOSTFXR_LOAD_ERROR;
+            }
         }
 
-        m_hostfxr_fn.set_error_writer = m_dll_handle->get<std::remove_pointer_t<hostfxr_set_error_writer_fn>>("hostfxr_set_error_writer");
-        m_hostfxr_fn.init_for_cmd_line = m_dll_handle->get<std::remove_pointer_t<hostfxr_initialize_for_dotnet_command_line_fn>>("hostfxr_initialize_for_dotnet_command_line");
-        m_hostfxr_fn.init_for_config = m_dll_handle->get<std::remove_pointer_t<hostfxr_initialize_for_runtime_config_fn>>("hostfxr_initialize_for_runtime_config");
-        m_hostfxr_fn.get_delegate = m_dll_handle->get<std::remove_pointer_t<hostfxr_get_runtime_delegate_fn>>("hostfxr_get_runtime_delegate");
-        m_hostfxr_fn.run_app = m_dll_handle->get<std::remove_pointer_t<hostfxr_run_app_fn>>("hostfxr_run_app");
-        m_hostfxr_fn.close = m_dll_handle->get<std::remove_pointer_t<hostfxr_close_fn>>("hostfxr_close");
+        {
+            ZoneScopedN("Load HostFXR Functions");
+            m_hostfxr_fn.set_error_writer = m_dll_handle->get<std::remove_pointer_t<hostfxr_set_error_writer_fn>>("hostfxr_set_error_writer");
+            m_hostfxr_fn.init_for_cmd_line = m_dll_handle->get<std::remove_pointer_t<hostfxr_initialize_for_dotnet_command_line_fn>>("hostfxr_initialize_for_dotnet_command_line");
+            m_hostfxr_fn.init_for_config = m_dll_handle->get<std::remove_pointer_t<hostfxr_initialize_for_runtime_config_fn>>("hostfxr_initialize_for_runtime_config");
+            m_hostfxr_fn.get_delegate = m_dll_handle->get<std::remove_pointer_t<hostfxr_get_runtime_delegate_fn>>("hostfxr_get_runtime_delegate");
+            m_hostfxr_fn.run_app = m_dll_handle->get<std::remove_pointer_t<hostfxr_run_app_fn>>("hostfxr_run_app");
+            m_hostfxr_fn.close = m_dll_handle->get<std::remove_pointer_t<hostfxr_close_fn>>("hostfxr_close");
 
-        if (not (m_hostfxr_fn.set_error_writer && m_hostfxr_fn.init_for_cmd_line && m_hostfxr_fn.init_for_config
-                && m_hostfxr_fn.get_delegate && m_hostfxr_fn.run_app && m_hostfxr_fn.close)) {
-            m_params.errorCallback(std::format("Failed to load hostfxr functions from path: {}", HostString(buffer).to_utf8()));
-            return m_status = HOSTFXR_LOAD_ERROR;
+            if (not (m_hostfxr_fn.set_error_writer && m_hostfxr_fn.init_for_cmd_line && m_hostfxr_fn.init_for_config
+                    && m_hostfxr_fn.get_delegate && m_hostfxr_fn.run_app && m_hostfxr_fn.close)) {
+                m_params.errorCallback(std::format("Failed to load hostfxr functions from path: {}", HostString(buffer).to_utf8()));
+                return m_status = HOSTFXR_LOAD_ERROR;
+            }
         }
 
         return m_status = SUCCESS;
@@ -146,148 +193,197 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::initRuntime()
     {
+        ZoneScoped;
+        ZoneName("Initialize .NET Runtime", 22);
+
         const std::filesystem::path runtimeConfigPath =
             m_params.nexoManagedPath / NEXO_RUNTIMECONFIG_FILENAME;
 
-        if (!std::filesystem::exists(runtimeConfigPath))
         {
-            m_params.errorCallback(std::format("Nexo runtime config file not found: {}", runtimeConfigPath.string()));
-            return m_status = RUNTIME_CONFIG_NOT_FOUND;
+            ZoneScopedN("Validate Runtime Config");
+            if (!std::filesystem::exists(runtimeConfigPath))
+            {
+                m_params.errorCallback(std::format("Nexo runtime config file not found: {}", runtimeConfigPath.string()));
+                return m_status = RUNTIME_CONFIG_NOT_FOUND;
+            }
         }
 
         const HostString configPath = runtimeConfigPath.c_str();
 
-        // Load .NET Core
-        const unsigned int rc = m_hostfxr_fn.init_for_config(configPath.c_str(), nullptr, &m_host_ctx);
-        if (rc != 0 || m_host_ctx == nullptr) {
-            m_params.errorCallback(std::format("Init failed: 0x{:X}", rc));
-            m_hostfxr_fn.close(m_host_ctx);
-            return m_status = INIT_DOTNET_RUNTIME_ERROR;
+        {
+            ZoneScopedN("Load .NET Core Runtime");
+            // Load .NET Core
+            const unsigned int rc = m_hostfxr_fn.init_for_config(configPath.c_str(), nullptr, &m_host_ctx);
+            if (rc != 0 || m_host_ctx == nullptr) {
+                m_params.errorCallback(std::format("Init failed: 0x{:X}", rc));
+                m_hostfxr_fn.close(m_host_ctx);
+                return m_status = INIT_DOTNET_RUNTIME_ERROR;
+            }
         }
+
         return m_status = SUCCESS;
     }
 
     HostHandler::Status HostHandler::getRuntimeDelegates()
     {
+        ZoneScoped;
+        ZoneName("Get Runtime Delegates", 20);
+
         unsigned int rc = 0;
 
-        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly, reinterpret_cast<void **>(&m_delegates.load_assembly));
-        if (rc != 0 || m_delegates.load_assembly == nullptr) {
-            m_params.errorCallback(std::format("Failed to get 'load_assembly' delegate: 0x{:X}", rc));
-            return m_status = GET_DELEGATES_ERROR;
+        {
+            ZoneScopedN("Get Load Assembly Delegate");
+            rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly, reinterpret_cast<void **>(&m_delegates.load_assembly));
+            if (rc != 0 || m_delegates.load_assembly == nullptr) {
+                m_params.errorCallback(std::format("Failed to get 'load_assembly' delegate: 0x{:X}", rc));
+                return m_status = GET_DELEGATES_ERROR;
+            }
         }
 
-        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly_and_get_function_pointer,
-            reinterpret_cast<void **>(&m_delegates.load_assembly_and_get_function_pointer));
-        if (rc != 0 || m_delegates.load_assembly_and_get_function_pointer == nullptr) {
-            m_params.errorCallback(std::format("Failed to get 'load_assembly_and_get_function_pointer' delegate: 0x{:X}", rc));
-            return m_status = GET_DELEGATES_ERROR;
+        {
+            ZoneScopedN("Get Load Assembly and Function Delegate");
+            rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_load_assembly_and_get_function_pointer,
+                reinterpret_cast<void **>(&m_delegates.load_assembly_and_get_function_pointer));
+            if (rc != 0 || m_delegates.load_assembly_and_get_function_pointer == nullptr) {
+                m_params.errorCallback(std::format("Failed to get 'load_assembly_and_get_function_pointer' delegate: 0x{:X}", rc));
+                return m_status = GET_DELEGATES_ERROR;
+            }
         }
 
-        rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_get_function_pointer,
-            reinterpret_cast<void **>(&m_delegates.get_function_pointer));
-        if (rc != 0 || m_delegates.get_function_pointer == nullptr) {
-            m_params.errorCallback(std::format("Failed to get 'get_function_pointer' delegate: 0x{:X}", rc));
-            return m_status = GET_DELEGATES_ERROR;
+        {
+            ZoneScopedN("Get Function Pointer Delegate");
+            rc = m_hostfxr_fn.get_delegate(m_host_ctx, hdt_get_function_pointer,
+                reinterpret_cast<void **>(&m_delegates.get_function_pointer));
+            if (rc != 0 || m_delegates.get_function_pointer == nullptr) {
+                m_params.errorCallback(std::format("Failed to get 'get_function_pointer' delegate: 0x{:X}", rc));
+                return m_status = GET_DELEGATES_ERROR;
+            }
         }
+
         return m_status = SUCCESS;
     }
 
     HostHandler::Status HostHandler::loadManagedAssembly()
     {
+        ZoneScoped;
+        ZoneName("Load Managed Assembly", 20);
+
         unsigned int rc = 0;
 
         const std::filesystem::path assemblyPath =
             m_params.nexoManagedPath / NEXO_ASSEMBLY_FILENAME;
 
-        if (!std::filesystem::exists(assemblyPath)) {
-            m_params.errorCallback(std::format("Nexo assembly file not found: {}", assemblyPath.string()));
-            return m_status = ASSEMBLY_NOT_FOUND;
+        {
+            ZoneScopedN("Validate Assembly Path");
+            if (!std::filesystem::exists(assemblyPath)) {
+                m_params.errorCallback(std::format("Nexo assembly file not found: {}", assemblyPath.string()));
+                return m_status = ASSEMBLY_NOT_FOUND;
+            }
         }
 
         const HostString assemblyPathStr = assemblyPath.c_str();
 
-        rc = m_delegates.load_assembly(assemblyPathStr.c_str(), nullptr, nullptr);
-        if (rc != 0) {
-            m_params.errorCallback(std::format("Failed to load assembly at {}: 0x{:X}", assemblyPathStr.to_utf8(), rc));
-            return m_status = LOAD_ASSEMBLY_ERROR;
+        {
+            ZoneScopedN("Load .NET Assembly");
+            ZoneText(assemblyPathStr.to_utf8().c_str(), assemblyPathStr.to_utf8().length());
+
+            rc = m_delegates.load_assembly(assemblyPathStr.c_str(), nullptr, nullptr);
+            if (rc != 0) {
+                m_params.errorCallback(std::format("Failed to load assembly at {}: 0x{:X}", assemblyPathStr.to_utf8(), rc));
+                return m_status = LOAD_ASSEMBLY_ERROR;
+            }
         }
+
         m_assembly_path = assemblyPathStr;
         return m_status = SUCCESS;
     }
 
-
     HostHandler::Status HostHandler::initManagedApi()
     try {
-        m_managedApi.NativeInterop = {
-            .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, UInt32)>(
-                "Nexo.NativeInterop, Nexo",
-                "Initialize",
-                UNMANAGEDCALLERSONLY
-            ),
-            .DemonstrateNativeCalls = getManagedFptr<void(*)()>(
-                "Nexo.NativeInterop, Nexo",
-                "DemonstrateNativeCalls",
-                UNMANAGEDCALLERSONLY
-            ),
-            .Update = getManagedFptr<void(*)(Double)>(
-                "Nexo.NativeInterop, Nexo",
-                "Update",
-                UNMANAGEDCALLERSONLY
-            )
-        };
+        ZoneScoped;
+        ZoneName("Initialize Managed API", 21);
 
-        m_managedApi.Lib = {
-            .CustomEntryPoint = getManagedFptr<void(*)(lib_args)>(
-                "Nexo.Lib, Nexo",
-                "CustomEntryPoint",
-                "Nexo.Lib+CustomEntryPointDelegate, Nexo"
-            ),
-            .CustomEntryPointUnmanagedCallersOnly = getManagedFptr<void(*)(lib_args)>(
-                "Nexo.Lib, Nexo",
-                "CustomEntryPointUnmanagedCallersOnly",
-                UNMANAGEDCALLERSONLY
-            ),
-            .Hello = getManagedFptr<void(*)(lib_args*, UInt32)>(
-                "Nexo.Lib, Nexo",
-                "Hello"
-            ),
-            .Add = getManagedFptr<Int32(*)(Int32, Int32)>(
-                "Nexo.Lib, Nexo",
-                "Add",
-                UNMANAGEDCALLERSONLY
-            ),
-            .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
-                "Nexo.Lib, Nexo",
-                "AddToPtr",
-                UNMANAGEDCALLERSONLY
-            )
-        };
+        {
+            ZoneScopedN("Setup Native Interop API");
+            m_managedApi.NativeInterop = {
+                .Initialize = getManagedFptr<Int32(*)(NativeApiCallbacks*, UInt32)>(
+                    "Nexo.NativeInterop, Nexo",
+                    "Initialize",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .DemonstrateNativeCalls = getManagedFptr<void(*)()>(
+                    "Nexo.NativeInterop, Nexo",
+                    "DemonstrateNativeCalls",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .Update = getManagedFptr<void(*)(Double)>(
+                    "Nexo.NativeInterop, Nexo",
+                    "Update",
+                    UNMANAGEDCALLERSONLY
+                )
+            };
+        }
 
-        m_managedApi.SystemBase = {
-            .InitializeSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
-                "Nexo.Systems.SystemBase, Nexo",
-                "InitializeSystems",
-                UNMANAGEDCALLERSONLY
-            ),
-            .InitializeComponents = getManagedFptr<Int32(*)()>(
-                "Nexo.Components.IComponentBase, Nexo",
-                "InitializeComponents",
-                UNMANAGEDCALLERSONLY
-            ),
-            .ShutdownSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
-                "Nexo.Systems.SystemBase, Nexo",
-                "ShutdownSystems",
-                UNMANAGEDCALLERSONLY
-            ),
-            .UpdateSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
-                "Nexo.Systems.SystemBase, Nexo",
-                "UpdateSystems",
-                UNMANAGEDCALLERSONLY
-            )
-        };
+        {
+            ZoneScopedN("Setup Library API");
+            m_managedApi.Lib = {
+                .CustomEntryPoint = getManagedFptr<void(*)(lib_args)>(
+                    "Nexo.Lib, Nexo",
+                    "CustomEntryPoint",
+                    "Nexo.Lib+CustomEntryPointDelegate, Nexo"
+                ),
+                .CustomEntryPointUnmanagedCallersOnly = getManagedFptr<void(*)(lib_args)>(
+                    "Nexo.Lib, Nexo",
+                    "CustomEntryPointUnmanagedCallersOnly",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .Hello = getManagedFptr<void(*)(lib_args*, UInt32)>(
+                    "Nexo.Lib, Nexo",
+                    "Hello"
+                ),
+                .Add = getManagedFptr<Int32(*)(Int32, Int32)>(
+                    "Nexo.Lib, Nexo",
+                    "Add",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .AddToPtr = getManagedFptr<Int32(*)(Int32, Int32, Int32*)>(
+                    "Nexo.Lib, Nexo",
+                    "AddToPtr",
+                    UNMANAGEDCALLERSONLY
+                )
+            };
+        }
 
-        return m_status = checkManagedApi();
+        {
+            ZoneScopedN("Setup System Base API");
+            m_managedApi.SystemBase = {
+                .InitializeSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                    "Nexo.Systems.SystemBase, Nexo",
+                    "InitializeSystems",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .InitializeComponents = getManagedFptr<Int32(*)()>(
+                    "Nexo.Components.IComponentBase, Nexo",
+                    "InitializeComponents",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .ShutdownSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                    "Nexo.Systems.SystemBase, Nexo",
+                    "ShutdownSystems",
+                    UNMANAGEDCALLERSONLY
+                ),
+                .UpdateSystems = getManagedFptr<Int32(*)(ManagedWorldState *worldState, UInt32 size)>(
+                    "Nexo.Systems.SystemBase, Nexo",
+                    "UpdateSystems",
+                    UNMANAGEDCALLERSONLY
+                )
+            };
+        }
+
+        {
+            ZoneScopedN("Validate Managed API");
+            return m_status = checkManagedApi();
+        }
 
     } catch (const std::exception& e) {
         m_params.errorCallback(std::format("Failed to initialize managed API: {}", e.what()));
@@ -319,52 +415,73 @@ namespace nexo::scripting {
 
     HostHandler::Status HostHandler::initCallbacks()
     {
+        ZoneScoped;
+        ZoneName("Initialize Callbacks", 18);
+
         // Initialize callbacks
-        if (m_managedApi.NativeInterop.Initialize(&nativeApiCallbacks, sizeof(nativeApiCallbacks))) {
-            m_params.errorCallback("Failed to initialize native API callbacks");
-            return m_status = INIT_CALLBACKS_ERROR;
+        {
+            ZoneScopedN("Initialize Native API Callbacks");
+            if (m_managedApi.NativeInterop.Initialize(&nativeApiCallbacks, sizeof(nativeApiCallbacks))) {
+                m_params.errorCallback("Failed to initialize native API callbacks");
+                return m_status = INIT_CALLBACKS_ERROR;
+            }
         }
+
         return m_status = SUCCESS;
     }
 
     int HostHandler::runScriptExample() const
     {
-        // Run managed code
-        // Call the Hello method multiple times
-        for (int i = 0; i < 3; ++i) {
-            lib_args args {
-                STR("from host!"),
-                i
-            };
+        ZoneScoped;
+        ZoneName("Run Script Example", 18);
 
-            m_managedApi.Lib.Hello(&args, sizeof(args));
+        {
+            ZoneScopedN("Managed Hello Method Calls");
+            // Run managed code
+            // Call the Hello method multiple times
+            for (int i = 0; i < 3; ++i) {
+                lib_args args {
+                    STR("from host!"),
+                    i
+                };
+
+                m_managedApi.Lib.Hello(&args, sizeof(args));
+            }
         }
 
-
-        // Call UnmanagedCallersOnly method
         const lib_args args_unmanaged {
             STR("from host!"),
             -1
         };
-        m_managedApi.Lib.CustomEntryPointUnmanagedCallersOnly(args_unmanaged);
 
-
-        // Call custom delegate type method
-        m_managedApi.Lib.CustomEntryPoint(args_unmanaged);
-
-        std::cout << "Testing Add(30, -10) = " << m_managedApi.Lib.Add(30, -10) << std::endl;
-
-        int32_t result = 0;
-        if (m_managedApi.Lib.AddToPtr(1000, 234, &result)) {
-            std::cout << "addToPtr returned an error" << std::endl;
-        } else {
-            std::cout << "Testing AddToPtr(1000, 234, ptr), *ptr = " << result << std::endl;
+        {
+            ZoneScopedN("Unmanaged Callers Only");
+            // Call UnmanagedCallersOnly method
+            m_managedApi.Lib.CustomEntryPointUnmanagedCallersOnly(args_unmanaged);
         }
 
-        // Demonstrate C# calling C++ (managed to native)
-        // Call the method to demonstrate calling C++ from C#
-        std::cout << "\nDemonstrating calling C++ functions from C#:" << std::endl;
-        m_managedApi.NativeInterop.DemonstrateNativeCalls();
+        {
+            ZoneScopedN("Custom Delegate Methods");
+            // Call custom delegate type method
+            m_managedApi.Lib.CustomEntryPoint(args_unmanaged);
+
+            std::cout << "Testing Add(30, -10) = " << m_managedApi.Lib.Add(30, -10) << std::endl;
+
+            int32_t result = 0;
+            if (m_managedApi.Lib.AddToPtr(1000, 234, &result)) {
+                std::cout << "addToPtr returned an error" << std::endl;
+            } else {
+                std::cout << "Testing AddToPtr(1000, 234, ptr), *ptr = " << result << std::endl;
+            }
+        }
+
+        {
+            ZoneScopedN("Demonstrate Native Calls");
+            // Demonstrate C# calling C++ (managed to native)
+            // Call the method to demonstrate calling C++ from C#
+            std::cout << "\nDemonstrating calling C++ functions from C#:" << std::endl;
+            m_managedApi.NativeInterop.DemonstrateNativeCalls();
+        }
 
         return EXIT_SUCCESS;
     }

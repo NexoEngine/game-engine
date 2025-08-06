@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <tracy/Tracy.hpp>
 
 #include "NativeApi.hpp"
 #include "EntityFactory3D.hpp"
@@ -32,25 +33,43 @@ namespace nexo::scripting {
     extern "C" {
 
         void NxHelloFromNative() {
+            ZoneScoped;
+            ZoneName("Script API: Hello From Native", 28);
+
             std::cout << "Hello World from C++ native code!" << std::endl;
         }
 
         Int32 NxAddNumbers(const Int32 a, const Int32 b) {
+            ZoneScoped;
+            ZoneName("Script API: Add Numbers", 23);
+            ZoneValue(static_cast<int64_t>(a + b));
+
             std::cout << "Native AddNumbers called with " << a << " and " << b << std::endl;
             return a + b;
         }
 
         const char* NxGetNativeMessage() {
+            ZoneScoped;
+            ZoneName("Script API: Get Native Message", 31);
+
             std::cout << "GetNativeMessage called from C#" << std::endl;
             return nativeMessage;
         }
 
         void NxLog(UInt32 level, const char *message) {
+            ZoneScoped;
+            ZoneName("Script API: Log", 16);
+            ZoneText(message, strlen(message));
+
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
         }
 
         ecs::Entity NxCreateCube(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Cube", 23);
+            ZoneText("Cube", 4);
+
             auto& app = Application::getInstance();
             const ecs::Entity basicCube = EntityFactory3D::createCube(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(basicCube);
@@ -59,6 +78,10 @@ namespace nexo::scripting {
 
         ecs::Entity NxCreateTetrahedron(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Tetrahedron", 30);
+            ZoneText("Tetrahedron", 11);
+
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createTetrahedron(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(entity);
@@ -67,6 +90,10 @@ namespace nexo::scripting {
 
         ecs::Entity NxCreatePyramid(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Pyramid", 26);
+            ZoneText("Pyramid", 7);
+
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createPyramid(position, size, rotation, color);
             app.getSceneManager().getScene(0).addEntity(entity);
@@ -75,6 +102,11 @@ namespace nexo::scripting {
 
         ecs::Entity NxCreateCylinder(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color, const UInt32 nbSegment)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Cylinder", 27);
+            ZoneText("Cylinder", 8);
+            ZoneValue(static_cast<int64_t>(nbSegment));
+
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createCylinder(position, size, rotation, color, nbSegment);
             app.getSceneManager().getScene(0).addEntity(entity);
@@ -83,6 +115,11 @@ namespace nexo::scripting {
 
         ecs::Entity NxCreateSphere(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color, const UInt32 nbSubdivision)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Sphere", 25);
+            ZoneText("Sphere", 6);
+            ZoneValue(static_cast<int64_t>(nbSubdivision));
+
             auto& app = Application::getInstance();
             const ecs::Entity entity = EntityFactory3D::createSphere(position, size, rotation, color, nbSubdivision);
             app.getSceneManager().getScene(0).addEntity(entity);
@@ -91,6 +128,10 @@ namespace nexo::scripting {
 
         components::TransformComponent *NxGetTransformComponent(ecs::Entity entity)
         {
+            ZoneScoped;
+            ZoneName("Script API: Get Transform Component", 34);
+            ZoneValue(static_cast<int64_t>(entity));
+
             const auto opt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
             if (!opt.has_value()) {
                 LOG(NEXO_WARN, "GetTransformComponent: Entity {} does not have a TransformComponent", entity);
@@ -101,6 +142,11 @@ namespace nexo::scripting {
 
         void* NxGetComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
+            ZoneScoped;
+            ZoneName("Script API: Get Component", 24);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(componentTypeId));
+
             const auto& coordinator = *Application::m_coordinator;
             const auto opt = coordinator.tryGetComponentById(componentTypeId, entity);
             return opt;
@@ -108,6 +154,11 @@ namespace nexo::scripting {
 
         void NxAddComponent(const ecs::Entity entity, const UInt32 typeId, const void *componentData)
         {
+            ZoneScoped;
+            ZoneName("Script API: Add Component", 24);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(typeId));
+
             if (componentData == nullptr) {
                 LOG(NEXO_ERROR, "NxAddComponent: componentData is null for entity {}", entity);
                 return;
@@ -119,18 +170,32 @@ namespace nexo::scripting {
 
         void NxRemoveComponent(const ecs::Entity entity, const UInt32 componentTypeId)
         {
+            ZoneScoped;
+            ZoneName("Script API: Remove Component", 25);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(componentTypeId));
+
             auto& coordinator = *Application::m_coordinator;
             coordinator.removeComponent(entity, componentTypeId);
         }
 
         void NxDestroyEntity(const ecs::Entity entity)
         {
+            ZoneScoped;
+            ZoneName("Script API: Destroy Entity", 22);
+            ZoneValue(static_cast<int64_t>(entity));
+
             auto& coordinator = *Application::m_coordinator;
             coordinator.destroyEntity(entity);
         }
 
         bool NxHasComponent(const ecs::Entity entity, const UInt32 typeId)
         {
+            ZoneScoped;
+            ZoneName("Script API: Has Component", 22);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(typeId));
+
             const auto& coordinator = *Application::m_coordinator;
 
             return coordinator.entityHasComponent(entity, typeId);
@@ -138,6 +203,12 @@ namespace nexo::scripting {
 
         Int64 NxRegisterComponent(const char *name, const UInt64 componentSize, const Field *fields, const UInt64 fieldCount)
         {
+            ZoneScoped;
+            ZoneName("Script API: Register Component", 28);
+            ZoneText(name, strlen(name));
+            ZoneValue(static_cast<int64_t>(componentSize));
+            ZoneValue(static_cast<int64_t>(fieldCount));
+
             if (!name || !fields || fieldCount == 0 || componentSize == 0) {
                 LOG(NEXO_ERROR, "Invalid parameters for component registration");
                 return -1;
@@ -181,6 +252,9 @@ namespace nexo::scripting {
 
         ComponentTypeIds NxGetComponentTypeIds()
         {
+            ZoneScoped;
+            ZoneName("Script API: Get Component Type Ids", 27);
+
             const auto& coordinator = *Application::m_coordinator;
 
             return ComponentTypeIds {
@@ -201,6 +275,12 @@ namespace nexo::scripting {
 
         void NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType)
         {
+            ZoneScoped;
+            ZoneName("Script API: Create Body From Shape", 34);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(shapeType));
+            ZoneValue(static_cast<int64_t>(motionType));
+
             const auto& app = Application::getInstance();
             auto physicsSystem = app.getPhysicsSystem();
 
@@ -224,6 +304,13 @@ namespace nexo::scripting {
 
         void NxApplyForce(ecs::Entity entity, const Vector3 force)
         {
+            ZoneScoped;
+            ZoneName("Script API: Apply Force", 24);
+            ZoneValue(static_cast<int64_t>(entity));
+            ZoneValue(static_cast<int64_t>(force.x));
+            ZoneValue(static_cast<int64_t>(force.y));
+            ZoneValue(static_cast<int64_t>(force.z));
+
             const auto& app = Application::getInstance();
             const auto physicsSystem = app.getPhysicsSystem();
             if (!physicsSystem) {
