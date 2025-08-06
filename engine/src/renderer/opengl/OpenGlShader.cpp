@@ -18,6 +18,8 @@
 #include "Shader.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "OpenGlShaderReflection.hpp"
+#include <tracy/Tracy.hpp>
+#include <tracy/TracyOpenGL.hpp>
 
 #include <array>
 #include <vector>
@@ -37,26 +39,51 @@ namespace nexo::renderer {
 
     NxOpenGlShader::NxOpenGlShader(const std::string &path)
     {
-        const std::string src = readFile(path);
-        const auto shaderSources = preProcess(src, path);
-        compile(shaderSources);
+        ZoneScoped;
+        ZoneName("OpenGL Shader Create (File)", 25);
+        ZoneText(path.c_str(), path.length());
 
-        auto lastSlash = path.find_last_of("/\\");
-        lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-        const auto lastDot = path.rfind('.');
-        const auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
-        m_name = path.substr(lastSlash, count);
-        setupUniformLocations();
+        {
+            ZoneScopedN("Read Shader File");
+            const std::string src = readFile(path);
+            const auto shaderSources = preProcess(src, path);
+            compile(shaderSources);
+        }
+
+        {
+            ZoneScopedN("Extract Shader Name");
+            auto lastSlash = path.find_last_of("/\\");
+            lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+            const auto lastDot = path.rfind('.');
+            const auto count = lastDot == std::string::npos ? path.size() - lastSlash : lastDot - lastSlash;
+            m_name = path.substr(lastSlash, count);
+        }
+
+        {
+            ZoneScopedN("Setup Uniform Locations");
+            setupUniformLocations();
+        }
     }
 
     NxOpenGlShader::NxOpenGlShader(std::string name, const std::string_view &vertexSource,
                                const std::string_view &fragmentSource) : m_name(std::move(name))
     {
-        std::unordered_map<GLenum, std::string> preProcessedSource;
-        preProcessedSource[GL_VERTEX_SHADER] = vertexSource;
-        preProcessedSource[GL_FRAGMENT_SHADER] = fragmentSource;
-        compile(preProcessedSource);
-        setupUniformLocations();
+        ZoneScoped;
+        ZoneName("OpenGL Shader Create (Source)", 27);
+        ZoneText(m_name.c_str(), m_name.length());
+
+        {
+            ZoneScopedN("Preprocess Shader Sources");
+            std::unordered_map<GLenum, std::string> preProcessedSource;
+            preProcessedSource[GL_VERTEX_SHADER] = vertexSource;
+            preProcessedSource[GL_FRAGMENT_SHADER] = fragmentSource;
+            compile(preProcessedSource);
+        }
+
+        {
+            ZoneScopedN("Setup Uniform Locations");
+            setupUniformLocations();
+        }
     }
 
     NxOpenGlShader::~NxOpenGlShader()
@@ -105,6 +132,11 @@ namespace nexo::renderer {
 
     void NxOpenGlShader::compile(const std::unordered_map<GLenum, std::string> &shaderSources)
     {
+        ZoneScoped;
+        ZoneName("Compile OpenGL Shader", 21);
+        TracyGpuZone("GPU Shader Compile");
+        ZoneValue(static_cast<int64_t>(shaderSources.size()));
+
         // Vertex and fragment shaders are successfully compiled.
         // Now time to link them together into a program.
         // Get a program object.
@@ -182,6 +214,10 @@ namespace nexo::renderer {
 
     void NxOpenGlShader::setupUniformLocations()
     {
+        ZoneScoped;
+        ZoneName("Setup Uniform Locations", 22);
+        TracyGpuZone("GPU Reflect Uniforms");
+
         m_uniformInfos = ShaderReflection::reflectUniforms(m_id);
         m_attributeInfos = ShaderReflection::reflectAttributes(m_id);
 
@@ -203,11 +239,20 @@ namespace nexo::renderer {
 
     void NxOpenGlShader::bind() const
     {
+        ZoneScoped;
+        ZoneName("Bind Shader", 11);
+        TracyGpuZone("GPU Bind Shader");
+        ZoneText(m_name.c_str(), m_name.length());
+
         glUseProgram(m_id);
     }
 
     void NxOpenGlShader::unbind() const
     {
+        ZoneScoped;
+        ZoneName("Unbind Shader", 13);
+        TracyGpuZone("GPU Unbind Shader");
+
         glUseProgram(0);
     }
 
@@ -221,6 +266,11 @@ namespace nexo::renderer {
 
     bool NxOpenGlShader::setUniformFloat(const std::string& name, const float value) const
     {
+        ZoneScoped;
+        ZoneName("Set Uniform Float", 16);
+        TracyGpuZone("GPU Set Uniform Float");
+        ZoneText(name.c_str(), name.length());
+
         if (!NxShader::hasUniform(name))
             return false;
         if (NxShader::setUniformFloat(name, value))
@@ -343,6 +393,11 @@ namespace nexo::renderer {
 
     bool NxOpenGlShader::setUniformMatrix(const std::string& name, const glm::mat4& matrix) const
     {
+        ZoneScoped;
+        ZoneName("Set Uniform Matrix", 17);
+        TracyGpuZone("GPU Set Uniform Matrix");
+        ZoneText(name.c_str(), name.length());
+
         if (!NxShader::hasUniform(name))
             return false;
         if (NxShader::setUniformMatrix(name, matrix))
@@ -430,6 +485,12 @@ namespace nexo::renderer {
 
     bool NxOpenGlShader::setUniformIntArray(const std::string &name, const int *values, const unsigned int count) const
     {
+        ZoneScoped;
+        ZoneName("Set Uniform Int Array", 20);
+        TracyGpuZone("GPU Set Uniform Array");
+        ZoneText(name.c_str(), name.length());
+        ZoneValue(static_cast<int64_t>(count));
+
         if (!NxShader::hasUniform(name))
             return false;
 

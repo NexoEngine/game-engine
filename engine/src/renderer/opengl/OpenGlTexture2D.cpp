@@ -19,16 +19,29 @@
 
 #include <stb_image.h>
 
+#include <tracy/Tracy.hpp>
+#include <tracy/TracyOpenGL.hpp>
+
 namespace nexo::renderer {
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
     {
+        ZoneScoped;
+        ZoneName("OpenGL Texture2D Create (Empty)", 28);
+        TracyGpuZone("GPU Create Texture");
+        ZoneValue(static_cast<int64_t>(width * height));
+
         createOpenGLTexture(nullptr, width, height, GL_RGBA8, GL_RGBA);
     }
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t *buffer, const unsigned int width, const unsigned int height,
         const NxTextureFormat format) : m_width(width), m_height(height)
     {
+        ZoneScoped;
+        ZoneName("OpenGL Texture2D Create (Buffer)", 30);
+        TracyGpuZone("GPU Create Texture From Buffer");
+        ZoneValue(static_cast<int64_t>(width * height));
+
         if (!buffer)
             THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Buffer is null");
 
@@ -62,22 +75,31 @@ namespace nexo::renderer {
     NxOpenGlTexture2D::NxOpenGlTexture2D(const std::string &path)
         : m_path(path)
     {
+        ZoneScoped;
+        ZoneName("OpenGL Texture2D Create (File)", 28);
+        TracyGpuZone("GPU Load Texture From File");
+        ZoneText(path.c_str(), path.length());
+
         int width = 0;
         int height = 0;
         int channels = 0;
-        //TODO: Set this conditionnaly based on the type of texture
-        stbi_set_flip_vertically_on_load(1);
-        stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        if (!data)
-            THROW_EXCEPTION(NxFileNotFoundException, path);
 
-        try {
-            ingestDataFromStb(data, width, height, channels, path);
-        } catch (const Exception&) {
+        {
+            ZoneScopedN("Load Image Data");
+            //TODO: Set this conditionnaly based on the type of texture
+            stbi_set_flip_vertically_on_load(1);
+            stbi_uc *data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+            if (!data)
+                THROW_EXCEPTION(NxFileNotFoundException, path);
+
+            try {
+                ingestDataFromStb(data, width, height, channels, path);
+            } catch (const Exception&) {
+                stbi_image_free(data);
+                throw;
+            }
             stbi_image_free(data);
-            throw;
         }
-        stbi_image_free(data);
     }
 
     NxOpenGlTexture2D::~NxOpenGlTexture2D()
@@ -114,6 +136,11 @@ namespace nexo::renderer {
 
     void NxOpenGlTexture2D::setData(void *data, const unsigned int size)
     {
+        ZoneScoped;
+        ZoneName("Set Texture Data", 16);
+        TracyGpuZone("GPU Update Texture");
+        ZoneValue(static_cast<int64_t>(size));
+
         if (const unsigned int expectedSize = m_width * m_height * (m_dataFormat == GL_RGBA ? 4 : 3); size != expectedSize)
             THROW_EXCEPTION(NxTextureSizeMismatch, "OPENGL", size, expectedSize);
         glBindTexture(GL_TEXTURE_2D, m_id);
@@ -154,6 +181,11 @@ namespace nexo::renderer {
     void NxOpenGlTexture2D::createOpenGLTexture(const uint8_t* buffer, const unsigned int width, const unsigned int height,
         const GLint internalFormat, const GLenum dataFormat)
     {
+        ZoneScoped;
+        ZoneName("Create OpenGL Texture", 20);
+        TracyGpuZone("GPU Create GL Texture");
+        ZoneValue(static_cast<int64_t>(width * height));
+
         const unsigned int maxTextureSize = getMaxTextureSize();
         if (width > maxTextureSize || height > maxTextureSize)
             THROW_EXCEPTION(NxTextureInvalidSize, "OPENGL", width, height, maxTextureSize);
@@ -178,12 +210,22 @@ namespace nexo::renderer {
 
     void NxOpenGlTexture2D::bind(const unsigned int slot) const
     {
+        ZoneScoped;
+        ZoneName("Bind Texture", 12);
+        TracyGpuZone("GPU Bind Texture");
+        ZoneValue(static_cast<int64_t>(slot));
+
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_id);
     }
 
     void NxOpenGlTexture2D::unbind(const unsigned int slot) const
     {
+        ZoneScoped;
+        ZoneName("Unbind Texture", 14);
+        TracyGpuZone("GPU Unbind Texture");
+        ZoneValue(static_cast<int64_t>(slot));
+
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);
     }

@@ -15,6 +15,8 @@
 #include "OpenGlWindow.hpp"
 
 #include <stb_image.h>
+#include <tracy/Tracy.hpp>
+#include <tracy/TracyOpenGL.hpp>
 
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
@@ -100,6 +102,9 @@ namespace nexo::renderer {
 
     void NxOpenGlWindow::init()
     {
+        ZoneScoped;
+        ZoneName("OpenGL Window Init", 17);
+
         if (!glfwInit())
             THROW_EXCEPTION(NxGraphicsApiInitFailure, "OPENGL");
         LOG(NEXO_DEV, "Initializing opengl window");
@@ -141,8 +146,25 @@ namespace nexo::renderer {
 
     void NxOpenGlWindow::onUpdate()
     {
-        glfwSwapBuffers(_openGlWindow);
-        glfwPollEvents();
+        ZoneScoped;
+        ZoneName("Window Update", 13);
+        TracyGpuZone("GPU Frame End");
+
+        {
+            ZoneScopedN("Swap Buffers");
+            glfwSwapBuffers(_openGlWindow);
+        }
+
+        {
+            ZoneScopedN("Poll Events");
+            glfwPollEvents();
+        }
+
+        // Collect GPU events for Tracy profiling
+        {
+            ZoneScopedN("GPU Collect");
+            TracyGpuCollect;
+        }
     }
 
     void NxOpenGlWindow::setVsync(const bool enabled)
