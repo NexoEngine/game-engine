@@ -19,9 +19,8 @@
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 
-
-
 #include <Jolt/RegisterTypes.h>
+#include <tracy/Tracy.hpp>
 
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() = default;
@@ -35,6 +34,9 @@ namespace nexo::system {
     }
 
     void PhysicsSystem::init() {
+        ZoneScoped;
+        ZoneName("Physics System Init", 18);
+
         JPH::RegisterDefaultAllocator();
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
@@ -54,6 +56,9 @@ namespace nexo::system {
 
     void PhysicsSystem::update()
     {
+        ZoneScoped;
+        ZoneName("Physics System Update", 21);
+
         const double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
@@ -64,18 +69,25 @@ namespace nexo::system {
 
         m_lastPhysicsTime = currentTime;
 
-        constexpr int collisionSteps = 5;
-        physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
+        {
+            ZoneScopedN("Physics Simulation Step");
+            ZoneValue(static_cast<int64_t>(entities.size()));
+            constexpr int collisionSteps = 5;
+            physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
+        }
 
-        for (const ecs::Entity entity : entities) {
-            auto& transform = getComponent<components::TransformComponent>(entity);
-            const auto& physicsBody = getComponent<components::PhysicsBodyComponent>(entity);
+        {
+            ZoneScopedN("Transform Sync");
+            for (const ecs::Entity entity : entities) {
+                auto& transform = getComponent<components::TransformComponent>(entity);
+                const auto& physicsBody = getComponent<components::PhysicsBodyComponent>(entity);
 
-            const JPH::Vec3 pos = bodyInterface->GetPosition(physicsBody.bodyID);
-            transform.pos = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
+                const JPH::Vec3 pos = bodyInterface->GetPosition(physicsBody.bodyID);
+                transform.pos = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
 
-            const JPH::Quat rot = bodyInterface->GetRotation(physicsBody.bodyID);
-            transform.quat = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+                const JPH::Quat rot = bodyInterface->GetRotation(physicsBody.bodyID);
+                transform.quat = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+            }
         }
     }
 

@@ -29,6 +29,7 @@
 #include "renderPasses/Masks.hpp"
 #include "Application.hpp"
 #include "renderer/ShaderLibrary.hpp"
+#include <tracy/Tracy.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -53,6 +54,9 @@ namespace nexo::system {
     */
     void RenderCommandSystem::setupLights(renderer::DrawCommand &cmd, const components::LightContext& lightContext)
     {
+        ZoneScoped;
+        ZoneName("Setup Lights", 12);
+
         cmd.uniforms["uAmbientLight"] = lightContext.ambientLight;
 
         cmd.uniforms["uNumPointLights"] = static_cast<int>(lightContext.pointLightCount);
@@ -62,32 +66,40 @@ namespace nexo::system {
         cmd.uniforms["uDirLight.direction"] = directionalLight.direction;
         cmd.uniforms["uDirLight.color"] = glm::vec4(directionalLight.color, 1.0f);
 
-        const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
+
         const auto &transformComponentArray = coord->getComponentArray<components::TransformComponent>();
-        for (unsigned int i = 0; i < lightContext.pointLightCount; ++i)
+
         {
-            const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
-            const auto &transform = transformComponentArray->get(lightContext.pointLights[i]);
-            cmd.uniforms[std::format("uPointLights[{}].position", i)] = transform.pos;
-            cmd.uniforms[std::format("uPointLights[{}].color", i)] = glm::vec4(pointLight.color, 1.0f);
-            cmd.uniforms[std::format("uPointLights[{}].constant", i)] = pointLight.constant;
-            cmd.uniforms[std::format("uPointLights[{}].linear", i)] = pointLight.linear;
-            cmd.uniforms[std::format("uPointLights[{}].quadratic", i)] = pointLight.quadratic;
+            ZoneScopedN("Point Lights Setup");
+            const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
+            for (unsigned int i = 0; i < lightContext.pointLightCount; ++i)
+            {
+                const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
+                const auto &transform = transformComponentArray->get(lightContext.pointLights[i]);
+                cmd.uniforms[std::format("uPointLights[{}].position", i)] = transform.pos;
+                cmd.uniforms[std::format("uPointLights[{}].color", i)] = glm::vec4(pointLight.color, 1.0f);
+                cmd.uniforms[std::format("uPointLights[{}].constant", i)] = pointLight.constant;
+                cmd.uniforms[std::format("uPointLights[{}].linear", i)] = pointLight.linear;
+                cmd.uniforms[std::format("uPointLights[{}].quadratic", i)] = pointLight.quadratic;
+            }
         }
 
-        const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
-        for (unsigned int i = 0; i < lightContext.spotLightCount; ++i)
         {
-            const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
-            const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
-            cmd.uniforms[std::format("uSpotLights[{}].position", i)] = transform.pos;
-            cmd.uniforms[std::format("uSpotLights[{}].color", i)] = glm::vec4(spotLight.color, 1.0f);
-            cmd.uniforms[std::format("uSpotLights[{}].constant", i)] = spotLight.constant;
-            cmd.uniforms[std::format("uSpotLights[{}].linear", i)] = spotLight.linear;
-            cmd.uniforms[std::format("uSpotLights[{}].quadratic", i)] = spotLight.quadratic;
-            cmd.uniforms[std::format("uSpotLights[{}].direction", i)] = spotLight.direction;
-            cmd.uniforms[std::format("uSpotLights[{}].cutOff", i)] = spotLight.cutOff;
-            cmd.uniforms[std::format("uSpotLights[{}].outerCutoff", i)] = spotLight.outerCutoff;
+            ZoneScopedN("Spot Lights Setup");
+            const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
+            for (unsigned int i = 0; i < lightContext.spotLightCount; ++i)
+            {
+                const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
+                const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
+                cmd.uniforms[std::format("uSpotLights[{}].position", i)] = transform.pos;
+                cmd.uniforms[std::format("uSpotLights[{}].color", i)] = glm::vec4(spotLight.color, 1.0f);
+                cmd.uniforms[std::format("uSpotLights[{}].constant", i)] = spotLight.constant;
+                cmd.uniforms[std::format("uSpotLights[{}].linear", i)] = spotLight.linear;
+                cmd.uniforms[std::format("uSpotLights[{}].quadratic", i)] = spotLight.quadratic;
+                cmd.uniforms[std::format("uSpotLights[{}].direction", i)] = spotLight.direction;
+                cmd.uniforms[std::format("uSpotLights[{}].cutOff", i)] = spotLight.cutOff;
+                cmd.uniforms[std::format("uSpotLights[{}].outerCutoff", i)] = spotLight.outerCutoff;
+            }
         }
     }
 
@@ -262,6 +274,9 @@ namespace nexo::system {
 
 	void RenderCommandSystem::update()
 	{
+        ZoneScoped;
+        ZoneName("RenderCommandSystem Update", 26);
+
 		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
@@ -269,58 +284,78 @@ namespace nexo::system {
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 		const SceneType sceneType = renderContext.sceneType;
 
-		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
-			[](const components::SceneTag& tag) { return tag.id; }
-		);
-		const auto *partition = scenePartition.getPartition(sceneRendered);
-		auto &app = Application::getInstance();
-        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
-		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
-            return;
-		}
-        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+        // Move partition declaration outside the scoped block
+        const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+            [](const components::SceneTag& tag) { return tag.id; }
+        );
+        const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		const auto transformSpan = get<components::TransformComponent>();
-		const auto meshSpan = get<components::StaticMeshComponent>();
-		const auto materialSpan = get<components::MaterialComponent>();
-		const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        {
+            ZoneScopedN("Scene Partition Setup");
+            auto &app = Application::getInstance();
+            const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+            if (!partition) {
+                LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+                return;
+            }
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+        }
+
+        const auto transformSpan = get<components::TransformComponent>();
+        const auto meshSpan = get<components::StaticMeshComponent>();
+        const auto materialSpan = get<components::MaterialComponent>();
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         std::vector<renderer::DrawCommand> drawCommands;
-		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-		    const ecs::Entity entity = entitySpan[i];
-            if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
-                continue;
-            const auto &transform = transformSpan[i];
-            const auto &materialAsset = materialSpan[i].material.lock();
-            auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
-            const auto &mesh = meshSpan[i];
-            auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
-            if (!shader)
-                continue;
-            drawCommands.push_back(createDrawCommand(
-                entity,
-                shader,
-                mesh,
-                materialAsset,
-                transform)
-            );
 
-            if (coord->entityHasComponent<components::SelectedTag>(entity))
-                drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
-		}
+        {
+            ZoneScopedN("Draw Commands Generation");
+            ZoneValue(partition->count);
 
-		for (auto &camera : renderContext.cameras) {
-            for (auto &cmd : drawCommands) {
-                cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                cmd.uniforms["uCamPos"] = camera.cameraPosition;
-                setupLights(cmd, renderContext.sceneLights);
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
+                const ecs::Entity entity = entitySpan[i];
+                if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
+                    continue;
+                const auto &transform = transformSpan[i];
+                const auto &materialAsset = materialSpan[i].material.lock();
+                auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+                const auto &mesh = meshSpan[i];
+                auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
+                if (!shader)
+                    continue;
+                drawCommands.push_back(createDrawCommand(
+                    entity,
+                    shader,
+                    mesh,
+                    materialAsset,
+                    transform)
+                );
+
+                if (coord->entityHasComponent<components::SelectedTag>(entity))
+                    drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
             }
-            camera.pipeline.addDrawCommands(drawCommands);
-            if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
-                camera.pipeline.addDrawCommand(createGridDrawCommand(camera, renderContext));
-            if (sceneType == SceneType::EDITOR)
-                camera.pipeline.addDrawCommand(createOutlineDrawCommand(camera));
-		}
+        }
+
+        {
+            ZoneScopedN("Camera Processing");
+            ZoneValue(renderContext.cameras.size());
+
+            for (auto &camera : renderContext.cameras) {
+                {
+                    ZoneScopedN("Setup Camera Uniforms");
+                    for (auto &cmd : drawCommands) {
+                        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
+                        cmd.uniforms["uCamPos"] = camera.cameraPosition;
+                        setupLights(cmd, renderContext.sceneLights);
+                    }
+                }
+
+                camera.pipeline.addDrawCommands(drawCommands);
+                if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
+                    camera.pipeline.addDrawCommand(createGridDrawCommand(camera, renderContext));
+                if (sceneType == SceneType::EDITOR)
+                    camera.pipeline.addDrawCommand(createOutlineDrawCommand(camera));
+            }
+        }
 	}
 }

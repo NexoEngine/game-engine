@@ -53,14 +53,29 @@ try {
 
     while (editor.isOpen())
     {
+        ZoneScoped;
+        ZoneName("Main Loop", 9);
+
         auto start = std::chrono::high_resolution_clock::now();
-        editor.render();
-        editor.update();
+
+        {
+            ZoneScopedN("Editor Render");
+            editor.render();
+        }
+
+        {
+            ZoneScopedN("Editor Update");
+            editor.update();
+        }
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+        {
+            ZoneScopedN("Frame Sleep");
+            std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+        }
+
         FrameMark;
     }
 

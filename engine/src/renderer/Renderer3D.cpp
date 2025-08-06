@@ -24,11 +24,15 @@
 #include "renderer/RendererExceptions.hpp"
 #include <glad/glad.h>
 #include "Path.hpp"
+#include <tracy/Tracy.hpp>
 
 namespace nexo::renderer {
 
     void NxRenderer3D::init()
     {
+        ZoneScoped;
+        ZoneName("Renderer3D Init", 15);
+
         m_storage = std::make_shared<NxRenderer3DStorage>();
 
         m_storage->vertexArray = createVertexArray();
@@ -79,6 +83,9 @@ namespace nexo::renderer {
 
     void NxRenderer3D::shutdown()
     {
+        ZoneScoped;
+        ZoneName("Renderer3D Shutdown", 18);
+
         if (!m_storage)
             THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
         m_storage.reset();
@@ -86,6 +93,10 @@ namespace nexo::renderer {
 
     void NxRenderer3D::bindTextures() const
     {
+        ZoneScoped;
+        ZoneName("Bind Textures", 13);
+        ZoneValue(static_cast<int64_t>(m_storage->textureSlotIndex));
+
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             m_storage->textureSlots[i]->bind(i);
@@ -94,6 +105,9 @@ namespace nexo::renderer {
 
     void NxRenderer3D::unbindTextures() const
     {
+        ZoneScoped;
+        ZoneName("Unbind Textures", 15);
+
         for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i)
         {
             m_storage->textureSlots[i]->unbind(i);

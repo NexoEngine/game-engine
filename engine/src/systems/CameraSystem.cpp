@@ -22,48 +22,56 @@
 #include "core/event/WindowEvent.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <numbers>
+#include <tracy/Tracy.hpp>
 
 namespace nexo::system {
 
 	void CameraContextSystem::update()
 	{
+        ZoneScoped;
+        ZoneName("Camera Context Update", 20);
+
 		auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
 
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
-		const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
-			[](const components::SceneTag& tag) { return tag.id; }
-		);
+        {
+            ZoneScopedN("Scene Partition Setup");
+            const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+                [](const components::SceneTag& tag) { return tag.id; }
+            );
 
-		const auto *partition = scenePartition.getPartition(sceneRendered);
+            const auto *partition = scenePartition.getPartition(sceneRendered);
 
-		auto &app = Application::getInstance();
-        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
-		if (!partition) {
-            LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneName);
-            return;
+            auto &app = Application::getInstance();
+            const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+            if (!partition) {
+                LOG_ONCE(NEXO_WARN, "No camera found in scene {}, skipping", sceneName);
+                return;
+            }
+            nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneName));
+
+		    const auto cameraSpan = get<components::CameraComponent>();
+		    const auto transformComponentArray = get<components::TransformComponent>();
+		    const auto entitySpan = m_group->entities();
+		    renderContext.cameras.reserve(partition->count);
+
+		    for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
+		    {
+			    const auto &cameraComponent = cameraSpan[i];
+			    if (!cameraComponent.render)
+				    continue;
+			    const auto &transformComponent = transformComponentArray->get(entitySpan[i]);
+			    glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
+			    glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
+			    const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+			    components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor, cameraComponent.m_renderTarget, cameraComponent.pipeline};
+			    renderContext.cameras.push_back(context);
+		    }
+
         }
-        nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneName));
-
-		const auto cameraSpan = get<components::CameraComponent>();
-		const auto transformComponentArray = get<components::TransformComponent>();
-		const auto entitySpan = m_group->entities();
-		renderContext.cameras.reserve(partition->count);
-
-		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i)
-		{
-			const auto &cameraComponent = cameraSpan[i];
-			if (!cameraComponent.render)
-				continue;
-			const auto &transformComponent = transformComponentArray->get(entitySpan[i]);
-			glm::mat4 projectionMatrix = cameraComponent.getProjectionMatrix();
-			glm::mat4 viewMatrix = cameraComponent.getViewMatrix(transformComponent);
-			const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-			components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor, cameraComponent.m_renderTarget, cameraComponent.pipeline};
-			renderContext.cameras.push_back(context);
-		}
 	}
 
 	PerspectiveCameraControllerSystem::PerspectiveCameraControllerSystem()
@@ -74,6 +82,9 @@ namespace nexo::system {
 
 	void PerspectiveCameraControllerSystem::update(const Timestep ts)
 	{
+        ZoneScoped;
+        ZoneName("Perspective Camera Controller", 28);
+
 		const auto &renderContext = getSingleton<components::RenderContext>();
 		if (renderContext.sceneRendered == -1)
 			return;
@@ -81,41 +92,46 @@ namespace nexo::system {
 		const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 		const auto deltaTime = static_cast<float>(ts);
 
-	    for (const ecs::Entity entity : entities)
-		{
-			auto &sceneTag = getComponent<components::SceneTag>(entity);
-			if (!sceneTag.isActive || sceneTag.id != sceneRendered)
-				continue;
-			auto &cameraComponent = getComponent<components::CameraComponent>(entity);
-			if (!cameraComponent.active)
-				continue;
-			auto &transform = getComponent<components::TransformComponent>(entity);
-			auto &cameraController = getComponent<components::PerspectiveCameraController>(entity);
+        {
+            ZoneScopedN("Camera Movement Processing");
+            ZoneValue(static_cast<int64_t>(entities.size()));
 
-			cameraComponent.resizing = false;
+            for (const ecs::Entity entity : entities)
+			{
+				auto &sceneTag = getComponent<components::SceneTag>(entity);
+				if (!sceneTag.isActive || sceneTag.id != sceneRendered)
+					continue;
+				auto &cameraComponent = getComponent<components::CameraComponent>(entity);
+				if (!cameraComponent.active)
+					continue;
+				auto &transform = getComponent<components::TransformComponent>(entity);
+				auto &cameraController = getComponent<components::PerspectiveCameraController>(entity);
 
-            if (event::isKeyPressed(NEXO_KEY_SHIFT))
-                cameraController.translationSpeed = 10.0f;
-            if (event::isKeyReleased(NEXO_KEY_SHIFT))
-                cameraController.translationSpeed = 5.0f;
+				cameraComponent.resizing = false;
 
-			glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
-			glm::vec3 up    = transform.quat * glm::vec3(0.0f, 1.0f,  0.0f);
-			glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f,  0.0f);
+                if (event::isKeyPressed(NEXO_KEY_SHIFT))
+                    cameraController.translationSpeed = 10.0f;
+                if (event::isKeyReleased(NEXO_KEY_SHIFT))
+                    cameraController.translationSpeed = 5.0f;
 
-			if (event::isKeyPressed(NEXO_KEY_Z))
-				transform.pos += front * cameraController.translationSpeed * deltaTime; // Forward
-			if (event::isKeyPressed(NEXO_KEY_S))
-				transform.pos -= front * cameraController.translationSpeed * deltaTime; // Backward
-			if (event::isKeyPressed(NEXO_KEY_Q))
-				transform.pos -= right * cameraController.translationSpeed * deltaTime; // Left
-			if (event::isKeyPressed(NEXO_KEY_D))
-				transform.pos += right * cameraController.translationSpeed * deltaTime; // Right
-			if (event::isKeyPressed(NEXO_KEY_SPACE))
-				transform.pos += up * cameraController.translationSpeed * deltaTime;    // Up
-			if (event::isKeyPressed(NEXO_KEY_TAB))
-				transform.pos -= up * cameraController.translationSpeed * deltaTime;    // Down
-		}
+				glm::vec3 front = transform.quat * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 up    = transform.quat * glm::vec3(0.0f, 1.0f,  0.0f);
+				glm::vec3 right = transform.quat * glm::vec3(1.0f, 0.0f,  0.0f);
+
+				if (event::isKeyPressed(NEXO_KEY_Z))
+					transform.pos += front * cameraController.translationSpeed * deltaTime; // Forward
+				if (event::isKeyPressed(NEXO_KEY_S))
+					transform.pos -= front * cameraController.translationSpeed * deltaTime; // Backward
+				if (event::isKeyPressed(NEXO_KEY_Q))
+					transform.pos -= right * cameraController.translationSpeed * deltaTime; // Left
+				if (event::isKeyPressed(NEXO_KEY_D))
+					transform.pos += right * cameraController.translationSpeed * deltaTime; // Right
+				if (event::isKeyPressed(NEXO_KEY_SPACE))
+					transform.pos += up * cameraController.translationSpeed * deltaTime;    // Up
+				if (event::isKeyPressed(NEXO_KEY_TAB))
+					transform.pos -= up * cameraController.translationSpeed * deltaTime;    // Down
+			}
+        }
 	}
 
 	void PerspectiveCameraControllerSystem::handleEvent(event::EventMouseScroll &event)
