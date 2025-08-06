@@ -17,8 +17,8 @@ jobs:
       DOTNET_INSTALL_DIR: "./.dotnet"
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
     permissions:
-      contents: read
-      packages: read
+      contents: write
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
