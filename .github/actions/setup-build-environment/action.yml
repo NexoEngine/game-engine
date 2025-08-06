@@ -86,12 +86,6 @@ runs:
       run: |
         git submodule update --init --recursive
 
-    - name: Fetch all history for all tags and branches of vcpkg
-      shell: bash
-      run: |
-        cd vcpkg
-        git fetch --prune --unshallow
-
     - name: Install latest CMake and Ninja
       uses: lukka/get-cmake@latest
       with:
