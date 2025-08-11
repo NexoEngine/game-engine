@@ -273,7 +273,7 @@ jobs:
     steps:
       - name: Download NSIS installer
         id: download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: 'nexo-engine-installer-msvc14-windows-latest'
 
@@ -345,7 +345,7 @@ jobs:
     steps:
       - name: Download DEB installer
         id: download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
 
