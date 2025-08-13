@@ -47,12 +47,19 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Handles a right-click event on an asset.
+     *
+     * This method checks if the right mouse button is clicked while hovering over an asset.
+     * If so, it opens the "Right click on Asset" popup, allowing further actions on the asset.
+     */
     void AssetManagerWindow::handleRightClickOnAsset()
     {
-        // TODO: Implement right-click handling for assets
-        // if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-        //     m_popupManager.openPopup("Right click on Asset");
-        // }
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && m_hoveredAsset) {
+            m_assetActionState.assetData       = m_hoveredAsset.get();
+            m_assetActionState.isManagingAsset = true;
+            m_popupManager.openPopup("Right click on Asset");
+        }
     }
 
 } // namespace nexo::editor

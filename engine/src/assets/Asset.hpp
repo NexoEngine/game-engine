@@ -49,8 +49,6 @@ namespace nexo::assets {
         _COUNT
     };
 
-
-
     /**
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.

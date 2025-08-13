@@ -115,8 +115,6 @@ namespace nexo::editor {
         const ImVec2 textPos(params.itemPos.x + (params.itemSize.x - displayTextSize.x) * 0.5f,
                              params.thumbnailEnd.y + (titleAreaHeight - displayTextSize.y) * 0.5f);
         drawList->AddText(textPos, m_layout.color.titleText, displayText.c_str());
-
-        ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
     }
 
     void AssetManagerWindow::drawAsset(const assets::GenericAssetRef& asset, const unsigned int index,
@@ -128,8 +126,6 @@ namespace nexo::editor {
         ImGui::PushID(static_cast<int>(index));
         ImGui::SetCursorScreenPos(itemPos);
 
-        const bool clicked    = ImGui::InvisibleButton("##item", itemSize);
-        const bool isHovered  = ImGui::IsItemHovered();
         const bool isSelected = m_selectedAssets.contains(index);
         const auto itemEnd    = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
         const auto thumbnailEnd =
@@ -139,7 +135,26 @@ namespace nexo::editor {
         drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
         drawAssetTitle(assetData, assetLayoutParams);
 
-        if (clicked) handleSelection(index, isSelected);
+
+        static bool clicked = false; // ImGui::InvisibleButton("##item", itemSize);
+        ImGui::Selectable("###asset", clicked, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_Highlight,
+                          itemSize);
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+            clicked = !clicked;
+        }
+        if (clicked) {
+            handleSelection(index, isSelected);
+            clicked = false;
+        }
+
+        const bool isHovered  = ImGui::IsItemHovered();
+        if (isHovered) {
+            m_hoveredAsset = assetData;
+        } else {
+            m_hoveredAsset.reset();
+        }
+
+        handleRightClickOnAsset();
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
             AssetDragDropPayload payload;
@@ -193,7 +208,7 @@ namespace nexo::editor {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
         constexpr ImU32 titleBgColor = IM_COL32(0, 0, 0, 0);
-        const float titleAreaHeight = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
+        const float titleAreaHeight  = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
 
         drawList->AddRectFilled(ImVec2(params.itemPos.x, params.thumbnailEnd.y),
                                 ImVec2(params.itemEnd.x, params.itemEnd.y), titleBgColor);
@@ -219,12 +234,12 @@ namespace nexo::editor {
 
         static bool isDoubleClicked = false;
         // Create an invisible button for the folder
-        ImGui::Selectable(
-            "###folder", isDoubleClicked,
-            ImGuiSelectableFlags_AllowDoubleClick |
-                (m_folderActionState.folderName == folderName && m_hoveredFolder == folderName ?
-                     ImGuiSelectableFlags_Highlight : 0),
-            itemSize);
+        ImGui::Selectable("###folder", isDoubleClicked,
+                          ImGuiSelectableFlags_AllowDoubleClick |
+                              (m_folderActionState.folderName == folderName && m_hoveredFolder == folderName ?
+                                   ImGuiSelectableFlags_Highlight :
+                                   0),
+                          itemSize);
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
             isDoubleClicked = !isDoubleClicked;
         }
@@ -238,8 +253,7 @@ namespace nexo::editor {
         if (isHovered) {
             // If hovered, set the hovered folder
             m_hoveredFolder = folderPath;
-        }
-        else if (m_hoveredFolder == folderPath) {
+        } else if (m_hoveredFolder == folderPath) {
             // If not hovered and was previously hovered, clear it
             m_hoveredFolder.clear();
         }
@@ -248,7 +262,7 @@ namespace nexo::editor {
 
         handleAssetDrop(folderPath);
 
-        const ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
+        constexpr ImU32 bgColor = IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, GridLayoutSizes::CORNER_RADIUS);
         drawFolderIcon(folderLayoutParams);
         drawFolderTitle(folderName, m_layout, folderLayoutParams);
@@ -278,8 +292,8 @@ namespace nexo::editor {
     {
         calculateGridLayout(m_layout);
 
-        const ImVec2 startPos = ImGui::GetCursorScreenPos();
-        const auto subfolders = m_folderManager.getChildren(m_currentFolder);
+        const ImVec2 startPos                               = ImGui::GetCursorScreenPos();
+        const auto subfolders                               = m_folderManager.getChildren(m_currentFolder);
         const std::vector<assets::GenericAssetRef> filtered = getFilteredAsset(m_currentFolder, m_selectedType);
         if (filtered.empty() && subfolders.empty()) {
             ImGui::Text("This folder is empty.");

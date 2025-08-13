@@ -89,14 +89,14 @@ namespace nexo::assets {
          * @param asset The asset to rename.
          * @param newName The new name for the asset.
          */
-        void renameAsset(const GenericAssetRef& asset, const std::string& newName) const;
+        bool renameAsset(const GenericAssetRef& asset, const std::string& newName) const;
 
         /**
          * @brief Renames an asset in the catalog.
          * @param id The ID of the asset to rename.
          * @param newName The new name for the asset.
          */
-        void renameAsset(AssetID id, const std::string& newName) const;
+        bool renameAsset(AssetID id, const std::string& newName) const;
 
         /**
          * @brief Moves an asset to another location.
