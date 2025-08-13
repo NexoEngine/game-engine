@@ -18,17 +18,19 @@
 
 namespace nexo::assets {
 
-    void AssetCatalog::deleteAsset(const AssetID id)
+    bool AssetCatalog::deleteAsset(const AssetID id)
     {
-        if (!m_assets.contains(id)) return;
+        if (!m_assets.contains(id)) return false;
         m_assets.erase(id);
+        return true;
     }
 
-    void AssetCatalog::deleteAsset(const GenericAssetRef& asset)
+    bool AssetCatalog::deleteAsset(const GenericAssetRef& asset)
     {
         if (const auto assetData = asset.lock()) {
-            deleteAsset(assetData->getID());
+            return deleteAsset(assetData->getID());
         }
+        return false;
     }
 
     bool AssetCatalog::renameAsset(const AssetID id, const std::string& newName) const
