@@ -41,15 +41,62 @@ namespace nexo::editor {
 
     void AssetManagerWindow::deleteAssetPopup()
     {
-        ImGui::Text("Are you sure you want to delete this asset?");
-        // TODO: Implement the delete asset popup
+        const std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+
+        ImGui::Text("Are you sure you want to delete %s?", assetName.c_str());
+        ImGui::Separator();
+        if (ImNexo::Button("Delete", true)) {
+            // TODO: Check if the asset is used before deleting
+            // if (m_assetActionState.assetData->isUsed()) {
+            //     m_popupManager.openPopup("Delete Used Asset Popup");
+            //     m_assetActionState.showError    = true;
+            //     m_assetActionState.errorMessage = "Are you sure you want to delete this asset? It is currently
+            //     used.";
+            // } else {
+            if (assets::AssetCatalog::getInstance().deleteAsset(m_assetActionState.assetData->getID())) {
+                m_assetActionState.reset();
+                PopupManager::closePopupInContext();
+            } else {
+                m_assetActionState.showError    = true;
+                m_assetActionState.errorMessage = "Failed to delete the asset (may currently be in use)";
+            }
+            // }
+            ImGui::SameLine();
+            if (ImNexo::Button("Cancel")) {
+                m_assetActionState.reset();
+                PopupManager::closePopupInContext();
+            }
+        }
+
+        // Display error message if any
+        drawErrorMessageInPopup();
+
         PopupManager::closePopup();
     }
 
     void AssetManagerWindow::deleteUsedAssetPopup()
     {
-        ImGui::Text("This asset is used by one or more entities.\nAre you sure you want to delete it?");
-        // TODO: Implement the delete used asset popup
+        const std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+
+        ImGui::Text("%s is used by one or more entities.\nAre you sure you want to delete it?", assetName.c_str());
+        ImGui::Separator();
+        if (ImNexo::Button("Delete", true) &&
+            assets::AssetCatalog::getInstance().deleteAsset(m_assetActionState.assetData->getID())) {
+            m_assetActionState.reset();
+            PopupManager::closePopupInContext();
+        } else {
+            m_assetActionState.showError    = true;
+            m_assetActionState.errorMessage = "Failed to delete the asset (may currently be in use)";
+        }
+        ImGui::SameLine();
+        if (ImNexo::Button("Cancel")) {
+            m_folderActionState.reset();
+            PopupManager::closePopupInContext();
+        }
+
+        // Display error message if any
+        drawErrorMessageInPopup();
+
         PopupManager::closePopup();
     }
 
@@ -120,8 +167,8 @@ namespace nexo::editor {
 
         ImGui::Separator();
         if (ImNexo::Button("Close")) {
-            PopupManager::closePopupInContext();
             m_folderActionState.reset();
+            PopupManager::closePopupInContext();
         }
         PopupManager::closePopup();
     }

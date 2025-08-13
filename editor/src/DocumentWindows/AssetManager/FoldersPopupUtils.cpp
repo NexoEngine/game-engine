@@ -132,7 +132,7 @@ namespace nexo::editor {
             if (!assets.empty()) {
                 m_popupManager.openPopup("Delete Not Empty Folder Popup");
                 m_folderActionState.showError    = true;
-                m_folderActionState.errorMessage = "Are you sure you want to delete this folder? It contains assets.";
+                m_folderActionState.errorMessage = "Are you sure you want to delete this folder? It is not empty.";
             } else if (m_folderManager.deleteFolder(folderPath)) {
                 m_folderActionState.reset();
                 PopupManager::closePopupInContext();

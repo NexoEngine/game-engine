@@ -69,13 +69,13 @@ namespace nexo::assets {
          *
          * @param id The unique identifier of the asset to be removed.
          */
-        void deleteAsset(AssetID id);
+        bool deleteAsset(AssetID id);
 
         /**
          * @brief Delete an asset from the catalog.
          * @param asset The asset to delete.
          */
-        void deleteAsset(const GenericAssetRef& asset);
+        bool deleteAsset(const GenericAssetRef& asset);
 
         /**
          * @brief Moves an asset to another location.
