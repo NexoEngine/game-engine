@@ -90,7 +90,7 @@ namespace nexo::editor {
     }
 
     void AssetManagerWindow::drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData,
-                                            const AssetLayoutParams& params, const bool isHovered) const
+                                            const AssetLayoutParams& params) const
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -98,7 +98,7 @@ namespace nexo::editor {
         const float titlePadding       = std::max(2.0f, titleAreaHeight * 0.1f);
         const float availableTextWidth = params.itemSize.x - (titlePadding * 2);
 
-        const ImU32 titleBgColor = isHovered ? m_layout.color.titleBgHovered : getAssetTypeOverlayColor(assetData->getType());
+        const ImU32 titleBgColor = getAssetTypeOverlayColor(assetData->getType());
 
         // title background
         drawList->AddRectFilled(ImVec2(params.itemPos.x, params.thumbnailEnd.y),
@@ -116,13 +116,7 @@ namespace nexo::editor {
                              params.thumbnailEnd.y + (titleAreaHeight - displayTextSize.y) * 0.5f);
         drawList->AddText(textPos, m_layout.color.titleText, displayText.c_str());
 
-        if (isHovered) {
-            if (fullTextSize.x > availableTextWidth)
-                ImGui::SetTooltip("%s\n%s", assetName.c_str(),
-                                  assetData->getMetadata().location.getFullLocation().c_str());
-            else
-                ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
-        }
+        ImGui::SetTooltip("%s", assetData->getMetadata().location.getFullLocation().c_str());
     }
 
     void AssetManagerWindow::drawAsset(const assets::GenericAssetRef& asset, const unsigned int index,
@@ -143,7 +137,7 @@ namespace nexo::editor {
         const AssetLayoutParams assetLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
 
         drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
-        drawAssetTitle(assetData, assetLayoutParams, isHovered);
+        drawAssetTitle(assetData, assetLayoutParams);
 
         if (clicked) handleSelection(index, isSelected);
 
@@ -194,11 +188,11 @@ namespace nexo::editor {
     }
 
     static void drawFolderTitle(const std::string& folderName, const LayoutSettings& layout,
-                                const AssetLayoutParams& params, bool isHovered)
+                                const AssetLayoutParams& params)
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        const ImU32 titleBgColor    = isHovered ? layout.color.titleBgHovered : IM_COL32(0, 0, 0, 0);
+        constexpr ImU32 titleBgColor = IM_COL32(0, 0, 0, 0);
         const float titleAreaHeight = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
 
         drawList->AddRectFilled(ImVec2(params.itemPos.x, params.thumbnailEnd.y),
@@ -223,13 +217,32 @@ namespace nexo::editor {
         ImGui::PushID(("folder_" + folderPath).c_str());
         ImGui::SetCursorScreenPos(itemPos);
 
-        const bool clicked   = ImGui::InvisibleButton("##folder", itemSize);
-        const bool isHovered = ImGui::IsItemHovered();
-
-        if (isHovered)
-            m_hoveredFolder = folderPath;
-        else if (m_hoveredFolder == folderPath)
+        static bool isDoubleClicked = false;
+        // Create an invisible button for the folder
+        ImGui::Selectable(
+            "###folder", isDoubleClicked,
+            ImGuiSelectableFlags_AllowDoubleClick |
+                (m_folderActionState.folderName == folderName && m_hoveredFolder == folderName ?
+                     ImGuiSelectableFlags_Highlight : 0),
+            itemSize);
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+            isDoubleClicked = !isDoubleClicked;
+        }
+        if (isDoubleClicked) { // If double-clicked, navigate to the folder
+            m_currentFolder = folderPath;
+            isDoubleClicked = false;
             m_hoveredFolder.clear();
+        }
+
+        const bool isHovered = ImGui::IsItemHovered();
+        if (isHovered) {
+            // If hovered, set the hovered folder
+            m_hoveredFolder = folderPath;
+        }
+        else if (m_hoveredFolder == folderPath) {
+            // If not hovered and was previously hovered, clear it
+            m_hoveredFolder.clear();
+        }
 
         handleRightClickOnFolder();
 
@@ -238,14 +251,12 @@ namespace nexo::editor {
         const ImU32 bgColor = isHovered ? m_layout.color.thumbnailBgHovered : IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, GridLayoutSizes::CORNER_RADIUS);
         drawFolderIcon(folderLayoutParams);
-        drawFolderTitle(folderName, m_layout, folderLayoutParams, isHovered);
-
-        if (clicked) m_currentFolder = folderPath;
+        drawFolderTitle(folderName, m_layout, folderLayoutParams);
 
         ImGui::PopID();
     }
 
-    static std::vector<assets::GenericAssetRef> getFilteredAsset(std::string_view currentFolder,
+    static std::vector<assets::GenericAssetRef> getFilteredAsset(const std::string_view currentFolder,
                                                                  const assets::AssetType selectedType)
     {
         std::vector<assets::GenericAssetRef> filtered;
@@ -269,6 +280,10 @@ namespace nexo::editor {
         const ImVec2 startPos                               = ImGui::GetCursorScreenPos();
         const auto subfolders                               = m_folderManager.getChildren(m_currentFolder);
         const std::vector<assets::GenericAssetRef> filtered = getFilteredAsset(m_currentFolder, m_selectedType);
+        if (filtered.empty() && subfolders.empty()) {
+            ImGui::Text("This folder is empty.");
+            return;
+        }
 
         const size_t totalItems = subfolders.size() + filtered.size();
         const int columnCount   = m_layout.size.columnCount;

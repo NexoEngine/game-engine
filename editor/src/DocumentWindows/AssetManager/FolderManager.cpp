@@ -246,7 +246,7 @@ namespace nexo::editor {
 
         // Get all children paths that need to be updated
         std::vector<std::string> toUpdate;
-        for (const auto& [key, _] : m_pathToName) {
+        for (const auto& key : m_pathToName | std::views::keys) {
             if (key == folderPath || key.starts_with(folderPath + "/")) {
                 toUpdate.push_back(key);
             }
@@ -309,6 +309,31 @@ namespace nexo::editor {
     }
 
     /**
+     * @brief Calculates the total size of a folder and its contents on disk.
+     *
+     * This method recursively traverses the specified folder and sums the sizes
+     * of all regular files within it. The total size is returned in megabytes (Mo).
+     *
+     * @param folderPath The path of the folder to calculate the size for.
+     * @return The total size of the folder in megabytes, or 0 if an error occurs.
+     */
+    float FolderManager::getFolderSize(const std::string &folderPath)
+    {
+        namespace fs = std::filesystem;
+        float totalSize = 0.0f;
+        try {
+            for (const auto &entry : fs::recursive_directory_iterator(folderPath)) {
+                if (fs::is_regular_file(entry.path())) {
+                    totalSize += static_cast<float>(fs::file_size(entry.path()));
+                }
+            }
+        } catch (const std::exception &) {
+            return 0.0f;
+        }
+        return totalSize / (1024.0f * 1024.0f); // Return size in Mo
+    }
+
+    /**
      * @brief Clears all folder data and resets the folder manager to its initial state.
      *
      * This method removes all entries from the internal maps `m_pathToName` and `m_children`,
@@ -336,7 +361,7 @@ namespace nexo::editor {
      * @param fullPath The full path to add (e.g., "folder/subfolder/item").
      * @param allPaths A reference to a set of strings where the paths will be added.
      */
-    void FolderManager::addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const
+    void FolderManager::addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths)
     {
         if (fullPath.empty()) return;
 
@@ -388,7 +413,7 @@ namespace nexo::editor {
      * @param path The folder path to extract the name from.
      * @return The name of the folder.
      */
-    std::string FolderManager::extractNameFromPath(const std::string& path) const
+    std::string FolderManager::extractNameFromPath(const std::string& path)
     {
         if (path.empty()) return "Assets";
 
@@ -405,7 +430,7 @@ namespace nexo::editor {
      * @param path The folder path to retrieve the parent path from.
      * @return The parent path of the folder.
      */
-    std::string FolderManager::getParentPath(const std::string& path) const
+    std::string FolderManager::getParentPath(const std::string& path)
     {
         if (path.empty()) return ""; // Root has no parent
 

@@ -110,8 +110,7 @@ namespace nexo::editor {
         void drawBreadcrumbs();
         void sceneContextMenu();
         void drawAssetsGrid();
-        void drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData, const AssetLayoutParams& params,
-                            bool isHovered) const;
+        void drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData, const AssetLayoutParams& params) const;
         void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos,
                        const ImVec2& itemSize);
         void drawFolderIcon(const AssetLayoutParams& params) const;
@@ -122,7 +121,7 @@ namespace nexo::editor {
 
         // utility methods
         void buildFolderStructure();
-        [[nodiscard]] ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) const;
+        [[nodiscard]] static ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) ;
         [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
 
         // handle selection events

@@ -47,7 +47,7 @@ namespace nexo::editor {
      * @param texture The asset reference to the texture.
      * @return ImTextureID The texture ID or 0 if the texture is invalid.
      */
-    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture> &texture) const
+    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture> &texture)
     {
         if (const auto texRef = texture.lock()) {
             const auto &texData = texRef->getData();
