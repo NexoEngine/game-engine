@@ -159,7 +159,7 @@ namespace nexo::editor {
         void renameAssetPopup();
         void deleteAssetPopup();
         void deleteUsedAssetPopup();
-        void assetDetailsPopup() const;
+        void assetDetailsPopup();
         void drawErrorMessageInPopup();
 
         // menu management

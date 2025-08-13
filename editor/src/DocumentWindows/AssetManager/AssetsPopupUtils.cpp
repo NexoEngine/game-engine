@@ -108,18 +108,20 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
-    void AssetManagerWindow::assetDetailsPopup() const
+    void AssetManagerWindow::assetDetailsPopup()
     {
-        ImGui::Text("Details of: %s", "test asset");
+        const std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+        ImGui::Text("Details of: %s", assetName.c_str());
         ImGui::Separator();
-        ImGui::Text("Name: %s", m_hoveredAsset->m_metadata.location.getName().data());
-        ImGui::Text("Path: %s", m_hoveredAsset->m_metadata.location.getPath());
-        ImGui::Text("Type: %s", getAssetTypeName(m_hoveredAsset->m_metadata.type));
-        ImGui::Text("Status: %s", m_hoveredAsset->isLoaded() ? "Loaded" : "Not Loaded");
+        ImGui::Text("Name: %s", assetName.c_str());
+        ImGui::Text("Path: %s", m_assetActionState.assetData->m_metadata.location.getPath().c_str());
+        ImGui::Text("Type: %s", getAssetTypeName(m_assetActionState.assetData->m_metadata.type));
+        ImGui::Text("Status: %s", m_assetActionState.assetData->isLoaded() ? "Loaded" : "Not Loaded");
 
         ImGui::Separator();
         if (ImNexo::Button("Close")) {
             PopupManager::closePopupInContext();
+            m_folderActionState.reset();
         }
         PopupManager::closePopup();
     }
