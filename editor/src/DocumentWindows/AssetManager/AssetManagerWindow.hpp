@@ -121,7 +121,7 @@ namespace nexo::editor {
 
         // utility methods
         void buildFolderStructure();
-        [[nodiscard]] static ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture) ;
+        [[nodiscard]] static ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture);
         [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
 
         // handle selection events
@@ -155,14 +155,14 @@ namespace nexo::editor {
 
         // drag and drop management
         void handleDroppedFiles();
-        void handleAssetDrop(const std::string& path) const;
+        static void handleAssetDrop(const std::string& path);
         void importDroppedFile(const std::string& filePath) const;
 
         std::set<unsigned int> m_selectedAssets;
 
         LayoutSettings m_layout;
 
-        assets::AssetType m_selectedType;
+        assets::AssetType m_selectedType = assets::AssetType::UNKNOWN; // Default selected asset type
         std::string m_currentFolder; // Currently selected folder
         std::string m_hoveredFolder; // Currently hovered folder
         std::string m_searchBuffer;
