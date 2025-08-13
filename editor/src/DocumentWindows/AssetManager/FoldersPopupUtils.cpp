@@ -299,10 +299,12 @@ namespace nexo::editor {
         ImGui::Separator();
         ImGui::Text("Name: %s", m_folderActionState.folderName.c_str());
         ImGui::Text("Path: %s", folderPath.c_str());
-        ImGui::Text("Child: %zu", m_folderManager.getChildCount(folderPath));
+        ImGui::Text("Child: %zu",
+                    m_folderManager.getChildCount(folderPath) + m_folderManager.getFolderAssets(folderPath).size());
         ImGui::Text("Size: %.2f Ko", m_folderManager.getFolderSize(folderPath) / 1024.0);
-        ImGui::Separator();
+        ImGui::Separator();<
         if (ImNexo::Button("Close")) {
+            m_folderActionState.reset();
             PopupManager::closePopupInContext();
         }
         PopupManager::closePopup();
