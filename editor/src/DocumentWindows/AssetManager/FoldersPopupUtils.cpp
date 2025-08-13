@@ -302,7 +302,7 @@ namespace nexo::editor {
         ImGui::Text("Child: %zu",
                     m_folderManager.getChildCount(folderPath) + m_folderManager.getFolderAssets(folderPath).size());
         ImGui::Text("Size: %.2f Ko", m_folderManager.getFolderSize(folderPath) / 1024.0);
-        ImGui::Separator();<
+        ImGui::Separator();
         if (ImNexo::Button("Close")) {
             m_folderActionState.reset();
             PopupManager::closePopupInContext();
