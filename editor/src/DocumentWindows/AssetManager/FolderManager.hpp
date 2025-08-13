@@ -49,16 +49,18 @@ namespace nexo::editor {
 
         [[nodiscard]] size_t getChildCount(const std::string& path) const;
 
+        [[nodiscard]] float getFolderSize(const std::string& folderPath);
+
        private:
         void clear();
 
-        void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) const;
+        static void addPathAndParents(const std::string& fullPath, std::unordered_set<std::string>& allPaths) ;
 
         void buildMapsFromPaths(const std::unordered_set<std::string>& allPaths);
 
-        [[nodiscard]] std::string extractNameFromPath(const std::string& path) const;
+        [[nodiscard]] static std::string extractNameFromPath(const std::string& path) ;
 
-        [[nodiscard]] std::string getParentPath(const std::string& path) const;
+        [[nodiscard]] static std::string getParentPath(const std::string& path) ;
     };
 
 } // namespace nexo::editor
