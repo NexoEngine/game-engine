@@ -260,14 +260,15 @@ namespace nexo::editor {
                                                                  const assets::AssetType selectedType)
     {
         std::vector<assets::GenericAssetRef> filtered;
+        std::vector<assets::GenericAssetRef> assets = assets::AssetCatalog::getInstance().getAssets();
 
-        for (const auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
+        for (const auto& ref : assets) {
             const auto d = ref.lock();
             if (!d) continue;
-            const auto& folder = d->getMetadata().location.getPath();
-            if (folder == INTERNAL_FOLDER_PREFIX) continue;
+            const auto& assetPath = d->getMetadata().location.getPath();
+            if (assetPath == INTERNAL_FOLDER_PREFIX) continue;
             if (selectedType != assets::AssetType::UNKNOWN && d->getType() != selectedType) continue;
-            if (folder == currentFolder) filtered.push_back(ref);
+            if (assetPath == currentFolder) filtered.push_back(ref);
         }
 
         return filtered;
@@ -277,8 +278,8 @@ namespace nexo::editor {
     {
         calculateGridLayout(m_layout);
 
-        const ImVec2 startPos                               = ImGui::GetCursorScreenPos();
-        const auto subfolders                               = m_folderManager.getChildren(m_currentFolder);
+        const ImVec2 startPos = ImGui::GetCursorScreenPos();
+        const auto subfolders = m_folderManager.getChildren(m_currentFolder);
         const std::vector<assets::GenericAssetRef> filtered = getFilteredAsset(m_currentFolder, m_selectedType);
         if (filtered.empty() && subfolders.empty()) {
             ImGui::Text("This folder is empty.");

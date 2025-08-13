@@ -18,11 +18,10 @@
 #include "assets/AssetCatalog.hpp"
 #include "Logger.hpp"
 #include <filesystem>
-#include <algorithm>
 
 namespace nexo::editor {
 
-    void AssetManagerWindow::handleAssetDrop(const std::string &path) const
+    void AssetManagerWindow::handleAssetDrop(const std::string &path)
     {
         if (ImGui::BeginDragDropTarget())
         {
@@ -74,7 +73,7 @@ namespace nexo::editor {
     {
         const std::filesystem::path path(filePath);
 
-        if (!std::filesystem::exists(path)) {
+        if (!exists(path)) {
             LOG(NEXO_WARN, "Dropped file does not exist: {}", filePath);
             return;
         }
