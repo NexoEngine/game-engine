@@ -12,6 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <ImNexo/Elements.hpp>
+
 #include "AssetManagerWindow.hpp"
 
 namespace nexo::editor {
@@ -51,17 +53,74 @@ namespace nexo::editor {
         PopupManager::closePopup();
     }
 
+    bool AssetManagerWindow::handleAssetRenaming(const std::string &newName)
+    {
+        const std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+
+        if (assetName.empty() || newName.empty()) {
+            m_assetActionState.showError    = true;
+            m_assetActionState.errorMessage = "Asset name cannot be empty";
+            return false;
+        }
+
+        assets::GenericAssetRef assetRef =
+            assets::AssetCatalog::getInstance().getAsset(m_assetActionState.assetData->getID());
+        if (assets::AssetCatalog::getInstance().renameAsset(assetRef, newName)) {
+            return true;
+        }
+        m_assetActionState.showError    = true;
+        m_assetActionState.errorMessage = "Failed to rename the asset (may already exist)";
+        return false;
+    }
+
     void AssetManagerWindow::renameAssetPopup()
     {
         ImGui::Text("Enter a new name for the asset:");
+
+        // Input text for the new folder name
+        std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
-        // TODO: Implement the rename asset popup
+        static std::string newName = assetName;
+        if (newName.empty()) {
+            newName = assetName;
+        }
+        assetName.resize(MAX_ASSET_NAME_LENGTH);
+        ImGui::InputText("##AssetName", newName.data(), assetName.capacity());
+        newName.resize(strlen(newName.c_str()));
+        ImGui::Separator();
+
+        // Buttons for renaming or canceling the action
+        if (ImNexo::Button("Rename", true) && handleAssetRenaming(newName)) {
+            m_assetActionState.reset();
+            newName = "";
+            PopupManager::closePopupInContext();
+        }
+        ImGui::SameLine();
+        if (ImNexo::Button("Cancel")) {
+            m_assetActionState.reset();
+            newName = "";
+            PopupManager::closePopupInContext();
+        }
+
+        // Display error message if any
+        drawErrorMessageInPopup();
+
         PopupManager::closePopup();
     }
 
     void AssetManagerWindow::assetDetailsPopup() const
     {
-        // TODO: Implement the asset details popup
+        ImGui::Text("Details of: %s", "test asset");
+        ImGui::Separator();
+        ImGui::Text("Name: %s", m_hoveredAsset->m_metadata.location.getName().data());
+        ImGui::Text("Path: %s", m_hoveredAsset->m_metadata.location.getPath());
+        ImGui::Text("Type: %s", getAssetTypeName(m_hoveredAsset->m_metadata.type));
+        ImGui::Text("Status: %s", m_hoveredAsset->isLoaded() ? "Loaded" : "Not Loaded");
+
+        ImGui::Separator();
+        if (ImNexo::Button("Close")) {
+            PopupManager::closePopupInContext();
+        }
         PopupManager::closePopup();
     }
 

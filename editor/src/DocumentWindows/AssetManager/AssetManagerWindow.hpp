@@ -46,6 +46,23 @@ namespace nexo::editor {
         }
     };
 
+    struct AssetActionState {
+        bool isManagingAsset = false;
+        assets::IAsset *assetData = nullptr; // Pointer to the asset being managed
+        bool showError = false;
+        std::string errorMessage;
+        float errorTimer = ERROR_DISPLAY_TIMEOUT;
+
+        void reset()
+        {
+            isManagingAsset = false;
+            assetData      = nullptr;
+            showError       = false;
+            errorMessage    = "";
+            errorTimer      = 3.0f;
+        }
+    };
+
     struct GridLayoutSizes {
         float iconSize  = 64.0f;
         int iconSpacing = 8;
@@ -153,12 +170,16 @@ namespace nexo::editor {
         bool handleFolderRenaming(const std::string& newName);
         bool handleFolderCreation();
 
+        // handle action on asset
+        bool handleAssetRenaming(const std::string& newName);
+
         // drag and drop management
         void handleDroppedFiles();
         static void handleAssetDrop(const std::string& path);
         void importDroppedFile(const std::string& filePath) const;
 
-        std::set<unsigned int> m_selectedAssets;
+        std::set<unsigned int> m_selectedAssets; // Set of selected asset indices
+        std::shared_ptr<assets::IAsset> m_hoveredAsset; // Currently hovered asset
 
         LayoutSettings m_layout;
 
@@ -170,6 +191,7 @@ namespace nexo::editor {
         PopupManager m_popupManager;
 
         FolderActionState m_folderActionState;
+        AssetActionState m_assetActionState;
         assets::AssetRef<assets::Texture> m_folderIcon;
 
         std::vector<std::string> m_pendingDroppedFiles;

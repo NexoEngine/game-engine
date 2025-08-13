@@ -195,7 +195,7 @@ namespace nexo::editor {
      */
     bool AssetManagerWindow::handleFolderRenaming(const std::string &newName)
     {
-        if (m_folderActionState.folderName.empty()) {
+        if (m_folderActionState.folderName.empty() || newName.empty()) {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Folder name cannot be empty";
             return false;
@@ -211,22 +211,21 @@ namespace nexo::editor {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Failed to rename the folder (may already exist)";
             return false;
-        } else {
-            const std::string newFolderPath =
-                m_folderActionState.parentPath.empty() ? newName : m_folderActionState.parentPath + "/" + newName;
-            // Get all assets
-            const assets::AssetCatalog &assetCatalog    = assets::AssetCatalog::getInstance();
-            std::vector<assets::GenericAssetRef> assets = assetCatalog.getAssets();
+        }
+        const std::string newFolderPath =
+            m_folderActionState.parentPath.empty() ? newName : m_folderActionState.parentPath + "/" + newName;
+        // Get all assets
+        const assets::AssetCatalog &assetCatalog    = assets::AssetCatalog::getInstance();
+        std::vector<assets::GenericAssetRef> assets = assetCatalog.getAssets();
 
-            // Update all assets
-            for (const auto &ref : assets) {
-                const auto d = ref.lock();
-                if (!d) continue;
-                std::string assetPath = d->getMetadata().location.getPath();
-                if (assetPath == actualPath || assetPath.starts_with(actualPath + "/")) {
-                    std::string newAssetPath = newFolderPath + assetPath.substr(actualPath.size());
-                    d->getMetadata().location.setPath(newAssetPath);
-                }
+        // Update all assets
+        for (const auto &ref : assets) {
+            const auto d = ref.lock();
+            if (!d) continue;
+            std::string assetPath = d->getMetadata().location.getPath();
+            if (assetPath == actualPath || assetPath.starts_with(actualPath + "/")) {
+                std::string newAssetPath = newFolderPath + assetPath.substr(actualPath.size());
+                d->getMetadata().location.setPath(newAssetPath);
             }
         }
 
