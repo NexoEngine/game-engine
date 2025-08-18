@@ -141,6 +141,7 @@ namespace nexo::editor {
                           itemSize);
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
             clicked = !clicked;
+            ImGui::SetItemTooltip(assetData->getMetadata().location.getName().c_str());
         }
         if (clicked) {
             handleSelection(index, isSelected);
@@ -148,6 +149,9 @@ namespace nexo::editor {
         }
 
         const bool isHovered  = ImGui::IsItemHovered();
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+            ImGui::SetTooltip(assetData->getMetadata().location.getName().c_str());
+        }
         if (isHovered) {
             m_hoveredAsset = assetData;
         } else {
