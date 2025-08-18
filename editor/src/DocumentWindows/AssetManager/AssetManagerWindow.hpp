@@ -47,16 +47,16 @@ namespace nexo::editor {
     };
 
     struct AssetActionState {
-        bool isManagingAsset = false;
-        assets::IAsset *assetData = nullptr; // Pointer to the asset being managed
-        bool showError = false;
+        bool isManagingAsset      = false;
+        assets::IAsset* assetData = nullptr; // Pointer to the asset being managed
+        bool showError            = false;
         std::string errorMessage;
         float errorTimer = ERROR_DISPLAY_TIMEOUT;
 
         void reset()
         {
             isManagingAsset = false;
-            assetData      = nullptr;
+            assetData       = nullptr;
             showError       = false;
             errorMessage    = "";
             errorTimer      = 3.0f;
@@ -175,17 +175,17 @@ namespace nexo::editor {
 
         // drag and drop management
         void handleDroppedFiles();
-        static void handleAssetDrop(const std::string& path);
+        void handleAssetDrop(const std::string& path);
         void importDroppedFile(const std::string& filePath) const;
 
-        std::set<unsigned int> m_selectedAssets; // Set of selected asset indices
+        std::set<unsigned int> m_selectedAssets;        // Set of selected asset indices
         std::shared_ptr<assets::IAsset> m_hoveredAsset; // Currently hovered asset
 
         LayoutSettings m_layout;
 
         assets::AssetType m_selectedType = assets::AssetType::UNKNOWN; // Default selected asset type
-        std::string m_currentFolder; // Currently selected folder
-        std::string m_hoveredFolder; // Currently hovered folder
+        std::string m_currentFolder;                                   // Currently selected folder
+        std::string m_hoveredFolder;                                   // Currently hovered folder
         std::string m_searchBuffer;
 
         PopupManager m_popupManager;

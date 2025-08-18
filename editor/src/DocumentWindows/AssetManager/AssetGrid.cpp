@@ -58,9 +58,6 @@ namespace nexo::editor {
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        const ImU32 bgColor = isSelected ? layout.color.selectedBoxColor : layout.color.thumbnailBg;
-        ImNexo::ButtonBorder(bgColor, bgColor, bgColor);
-
         if (const ImTextureID textureId = ThumbnailCache::getInstance().getThumbnail(asset); !textureId) {
             drawList->AddRectFilled(params.itemPos, params.thumbnailEnd, layout.color.thumbnailBg);
         } else {
@@ -135,26 +132,29 @@ namespace nexo::editor {
         drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
         drawAssetTitle(assetData, assetLayoutParams);
 
-
-        static bool clicked = false; // ImGui::InvisibleButton("##item", itemSize);
-        ImGui::Selectable("###asset", clicked, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_Highlight,
+        ImGui::Selectable("###asset", isSelected,
+                          m_selectedAssets.contains(index) ||
+                                  (m_assetActionState.assetData == assetData.get() && m_hoveredAsset == assetData) ?
+                              ImGuiSelectableFlags_Highlight :
+                              0,
                           itemSize);
-        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
-            clicked = !clicked;
-            ImGui::SetItemTooltip(assetData->getMetadata().location.getName().c_str());
-        }
-        if (clicked) {
-            handleSelection(index, isSelected);
-            clicked = false;
-        }
 
-        const bool isHovered  = ImGui::IsItemHovered();
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal |
+                                 ImGuiHoveredFlags_NoSharedDelay)) {
             ImGui::SetTooltip(assetData->getMetadata().location.getName().c_str());
         }
-        if (isHovered) {
+        if (ImGui::IsItemHovered()) {
+            // Handle on hover and selection
+            if (ImGui::IsMouseClicked(0)) {
+                handleSelection(index, isSelected);
+            }
             m_hoveredAsset = assetData;
         } else {
+            if (ImGui::IsMouseClicked(0) && !ImGui::IsKeyDown(ImGuiKey_ModCtrl) &&
+                !ImGui::IsKeyDown(ImGuiKey_ModShift)) {
+                // If clicked outside, clear selection
+                m_selectedAssets.erase(index);
+            }
             m_hoveredAsset.reset();
         }
 

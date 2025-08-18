@@ -12,29 +12,28 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <filesystem>
 #include "AssetManagerWindow.hpp"
+#include "Logger.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
-#include "assets/AssetCatalog.hpp"
-#include "Logger.hpp"
-#include <filesystem>
 
 namespace nexo::editor {
 
-    void AssetManagerWindow::handleAssetDrop(const std::string &path)
+    void AssetManagerWindow::handleAssetDrop(const std::string& path)
     {
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
-            {
-                const auto data = static_cast<const AssetDragDropPayload *>(payload->Data);
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG")) {
+                const auto data = static_cast<const AssetDragDropPayload*>(payload->Data);
                 assets::AssetCatalog::getInstance().moveAsset(data->id, path);
+                m_selectedAssets.clear();
             }
             ImGui::EndDragDropTarget();
         }
     }
 
-    assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path &path) const
+    assets::AssetLocation AssetManagerWindow::getAssetLocation(const std::filesystem::path& path) const
     {
         const std::string assetName = path.stem().string();
         std::filesystem::path folderPath;
@@ -42,11 +41,8 @@ namespace nexo::editor {
 
         std::string locationString = assetName + "@" + targetFolder;
 
-        LOG(NEXO_DEV,
-            "Creating asset location: {} (current folder: '{}', hovered: '{}')",
-            locationString,
-            m_currentFolder,
-            m_hoveredFolder);
+        LOG(NEXO_DEV, "Creating asset location: {} (current folder: '{}', hovered: '{}')", locationString,
+            m_currentFolder, m_hoveredFolder);
 
         assets::AssetLocation location(locationString);
         return location;
@@ -54,18 +50,14 @@ namespace nexo::editor {
 
     void AssetManagerWindow::handleEvent(event::EventFileDrop& event)
     {
-        m_pendingDroppedFiles.insert(m_pendingDroppedFiles.end(),
-                                    event.files.begin(),
-                                    event.files.end());
+        m_pendingDroppedFiles.insert(m_pendingDroppedFiles.end(), event.files.begin(), event.files.end());
     }
 
     void AssetManagerWindow::handleDroppedFiles()
     {
-        if (m_pendingDroppedFiles.empty())
-            return;
+        if (m_pendingDroppedFiles.empty()) return;
 
-        for (const auto& filePath : m_pendingDroppedFiles)
-            importDroppedFile(filePath);
+        for (const auto& filePath : m_pendingDroppedFiles) importDroppedFile(filePath);
         m_pendingDroppedFiles.clear();
     }
 
@@ -89,4 +81,4 @@ namespace nexo::editor {
             LOG(NEXO_ERROR, "Exception while importing {}: {}", location.getPath().data(), e.what());
         }
     }
-}
+} // namespace nexo::editor
