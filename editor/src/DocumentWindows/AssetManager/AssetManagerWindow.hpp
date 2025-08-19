@@ -65,7 +65,7 @@ namespace nexo::editor {
 
     struct GridLayoutSizes {
         float iconSize  = 64.0f;
-        int iconSpacing = 8;
+        int iconSpacing = 14; // Spacing between icons
         ImVec2 itemSize;
         ImVec2 itemStep;
         int columnCount;
@@ -143,6 +143,7 @@ namespace nexo::editor {
 
         // handle selection events
         void handleSelection(unsigned int index, bool isSelected);
+        void handleSelection(const std::string& folderPath, bool isSelected);
 
         // handle right-click events
         void handleRightClickOnAssetManager();
@@ -184,8 +185,10 @@ namespace nexo::editor {
         LayoutSettings m_layout;
 
         assets::AssetType m_selectedType = assets::AssetType::UNKNOWN; // Default selected asset type
-        std::string m_currentFolder;                                   // Currently selected folder
-        std::string m_hoveredFolder;                                   // Currently hovered folder
+
+        std::set<std::string> m_selectedFolders; // Set of selected folder paths
+        std::string m_currentFolder;             // Currently selected folder
+        std::string m_hoveredFolder;             // Currently hovered folder
         std::string m_searchBuffer;
 
         PopupManager m_popupManager;

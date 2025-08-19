@@ -36,4 +36,44 @@ namespace nexo::editor {
         m_selectedAssets.clear();
         m_selectedAssets.insert(index);
     }
+
+    void AssetManagerWindow::handleSelection(const std::string& folderPath, const bool isSelected)
+    {
+        if (ImGui::IsKeyDown(ImGuiKey_ModCtrl)) {
+            if (isSelected)
+                m_selectedFolders.erase(folderPath);
+            else
+                m_selectedFolders.insert(folderPath);
+            return;
+        }
+
+        if (ImGui::IsKeyDown(ImGuiKey_ModShift) && !m_selectedFolders.empty()) {
+            std::vector<std::pair<std::string, std::string>> allFolder =
+                m_folderManager.getChildren(m_folderActionState.parentPath); // Ensure the folder exists in the manager
+            std::vector<std::string> folderPaths;
+            for (const auto& path : allFolder | std::views::keys) {
+                folderPaths.push_back(path);
+            }
+            std::ranges::sort(folderPaths);
+
+            const std::string& latestSelected = *m_selectedFolders.rbegin();
+            auto startIt                      = std::ranges::find(folderPaths, latestSelected);
+            auto endIt                        = std::ranges::find(folderPaths, folderPath);
+            // If start is after end, reverse the range
+            if (startIt > endIt) {
+                std::swap(startIt, endIt);
+            }
+            m_selectedFolders.clear();
+
+            for (auto it = startIt; it != endIt + 1; ++it) {
+                m_selectedFolders.insert(
+                    folderPaths[it - folderPaths.begin()]); // Insert the folder path into the selection
+            }
+
+            return;
+        }
+
+        m_selectedFolders.clear();
+        m_selectedFolders.insert(folderPath);
+    }
 } // namespace nexo::editor

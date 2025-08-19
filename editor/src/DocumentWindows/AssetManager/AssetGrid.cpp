@@ -166,9 +166,9 @@ namespace nexo::editor {
             payload.id           = assetData->getID();
             const auto& fullPath = assetData->getMetadata().location.getFullLocation();
             const auto& name     = assetData->getMetadata().location.getName().data();
-            std::strncpy(payload.path, fullPath.c_str(), sizeof(payload.path) - 1);
+            std::memcpy(payload.path, fullPath.c_str(), std::min(fullPath.size(), sizeof(payload.path) - 1));
             payload.path[sizeof(payload.path) - 1] = '\0';
-            std::strncpy(payload.name, name.c_str(), sizeof(payload.name) - 1);
+            std::memcpy(payload.name, name.c_str(), std::min(name.size(), sizeof(payload.name) - 1));
             payload.name[sizeof(payload.name) - 1] = '\0';
 
             ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
@@ -227,6 +227,7 @@ namespace nexo::editor {
     void AssetManagerWindow::drawFolder(const std::string& folderPath, const std::string& folderName,
                                         const ImVec2& itemPos, const ImVec2& itemSize)
     {
+        const bool isSelected = m_selectedFolders.contains(folderPath);
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         const auto itemEnd   = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
         const auto thumbnailEnd =
@@ -236,25 +237,39 @@ namespace nexo::editor {
         ImGui::PushID(("folder_" + folderPath).c_str());
         ImGui::SetCursorScreenPos(itemPos);
 
-        static bool isDoubleClicked = false;
         // Create an invisible button for the folder
-        ImGui::Selectable("###folder", isDoubleClicked,
+        ImGui::Selectable("###folder", isSelected,
                           ImGuiSelectableFlags_AllowDoubleClick |
                               (m_folderActionState.folderName == folderName && m_hoveredFolder == folderName ?
                                    ImGuiSelectableFlags_Highlight :
                                    0),
                           itemSize);
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
-            isDoubleClicked = !isDoubleClicked;
+
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal |
+                                 ImGuiHoveredFlags_NoSharedDelay)) {
+            ImGui::SetTooltip(folderName.c_str());
         }
-        if (isDoubleClicked) { // If double-clicked, navigate to the folder
-            m_currentFolder = folderPath;
-            isDoubleClicked = false;
-            m_hoveredFolder.clear();
+        if (ImGui::IsItemHovered()) {
+            // Handle on hover and selection
+            if (ImGui::IsMouseClicked(0)) {
+                handleSelection(folderPath, isSelected);
+            }
+            if (ImGui::IsMouseDoubleClicked(0)) {
+                // If double-clicked, navigate to the folder
+                m_currentFolder = folderPath;
+                m_hoveredFolder.clear();
+            }
+            m_hoveredFolder = folderPath;
+        } else {
+            if (ImGui::IsMouseClicked(0) && !ImGui::IsKeyDown(ImGuiKey_ModCtrl) &&
+                !ImGui::IsKeyDown(ImGuiKey_ModShift)) {
+                // If clicked outside, clear selection
+                m_selectedFolders.erase(folderPath);
+            }
+            m_hoveredAsset.reset();
         }
 
-        const bool isHovered = ImGui::IsItemHovered();
-        if (isHovered) {
+        if (ImGui::IsItemHovered()) {
             // If hovered, set the hovered folder
             m_hoveredFolder = folderPath;
         } else if (m_hoveredFolder == folderPath) {
