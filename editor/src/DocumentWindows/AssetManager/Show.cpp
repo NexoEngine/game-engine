@@ -32,7 +32,7 @@ namespace nexo::editor {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Options")) {
                 ImGui::SliderFloat("Icon Size", &m_layout.size.iconSize, 32.0f, 128.0f, "%.0f");
-                ImGui::SliderInt("Icon Spacing", &m_layout.size.iconSpacing, 10, 32);
+                ImGui::SliderInt("Icon Spacing", &m_layout.size.iconSpacing, 12, 32);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
