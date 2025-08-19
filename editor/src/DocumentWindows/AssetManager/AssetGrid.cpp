@@ -213,15 +213,27 @@ namespace nexo::editor {
 
         constexpr ImU32 titleBgColor = IM_COL32(0, 0, 0, 0);
         const float titleAreaHeight  = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
+        const float titlePadding       = std::max(2.0f, titleAreaHeight * 0.1f);
+        const float availableTextWidth = params.itemSize.x - (titlePadding * 2);
 
         drawList->AddRectFilled(ImVec2(params.itemPos.x, params.thumbnailEnd.y),
                                 ImVec2(params.itemEnd.x, params.itemEnd.y), titleBgColor);
 
         const ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
-        const float textY     = params.thumbnailEnd.y + ((titleAreaHeight - textSize.y) * 0.5f);
-        const float textX     = params.itemPos.x + (params.itemSize.x - textSize.x) * 0.5f;
+        // const float textY     = params.thumbnailEnd.y + ((titleAreaHeight - textSize.y) * 0.5f);
+        // const float textX     = params.itemPos.x + (params.itemSize.x - textSize.x) * 0.5f;
 
-        drawList->AddText(ImVec2(textX, textY), layout.color.titleText, folderName.c_str());
+        const ImVec2 fullTextSize   = ImGui::CalcTextSize(folderName.c_str());
+        std::string displayText     = folderName;
+
+        // Crop text if it's too wide
+        if (fullTextSize.x > availableTextWidth) cropText(folderName, displayText, availableTextWidth);
+
+        const ImVec2 displayTextSize = ImGui::CalcTextSize(displayText.c_str());
+        const ImVec2 textPos(params.itemPos.x + (params.itemSize.x - displayTextSize.x) * 0.5f,
+                             params.thumbnailEnd.y + (titleAreaHeight - displayTextSize.y) * 0.5f);
+
+        drawList->AddText(textPos, layout.color.titleText, displayText.c_str());
     }
 
     void AssetManagerWindow::drawFolder(const std::string& folderPath, const std::string& folderName,
