@@ -69,7 +69,7 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_assetActionState);
 
         PopupManager::endPopup();
     }
@@ -90,12 +90,12 @@ namespace nexo::editor {
         }
         ImGui::SameLine();
         if (Button("Cancel", ImNexo::CANCEL)) {
-            m_folderActionState.reset();
+            m_assetActionState.reset();
             PopupManager::closePopup();
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_assetActionState);
 
         PopupManager::endPopup();
     }
@@ -110,7 +110,7 @@ namespace nexo::editor {
             return false;
         }
 
-        if (!FolderManager::isNameValid(assetName)) {
+        if (!FolderManager::isNameValid(newName)) {
             m_assetActionState.showError    = true;
             m_assetActionState.errorMessage = "Asset name is invalid";
             return false;
@@ -118,12 +118,12 @@ namespace nexo::editor {
 
         const assets::GenericAssetRef assetRef =
             assets::AssetCatalog::getInstance().getAsset(m_assetActionState.assetData->getID());
-        if (assets::AssetCatalog::getInstance().renameAsset(assetRef, newName)) {
-            return true;
+        if (!assets::AssetCatalog::getInstance().renameAsset(assetRef, newName)) {
+            m_assetActionState.showError    = true;
+            m_assetActionState.errorMessage = "Failed to rename the asset (may already exist)";
+            return false;
         }
-        m_assetActionState.showError    = true;
-        m_assetActionState.errorMessage = "Failed to rename the asset (may already exist)";
-        return false;
+        return true;
     }
 
     void AssetManagerWindow::renameAssetPopup()
@@ -131,7 +131,7 @@ namespace nexo::editor {
         static bool isFocus = true;
         ImGui::Text("Enter a new name for the asset:");
 
-        // Input text for the new folder name
+        // Input text for the new asset name
         std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
         static std::string newName             = assetName;
@@ -163,10 +163,9 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_assetActionState);
 
         PopupManager::endPopup();
-        isFocus = true;
     }
 
     void AssetManagerWindow::assetDetailsPopup()
@@ -181,7 +180,7 @@ namespace nexo::editor {
 
         ImGui::Separator();
         if (Button("Close", ImNexo::CANCEL)) {
-            m_folderActionState.reset();
+            m_assetActionState.reset();
             PopupManager::closePopup();
         }
         PopupManager::endPopup();

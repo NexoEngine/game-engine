@@ -161,7 +161,9 @@ namespace nexo::editor {
         void deleteAssetPopup();
         void deleteUsedAssetPopup();
         void assetDetailsPopup();
-        void drawErrorMessageInPopup();
+
+        template <typename T>
+        static void drawErrorMessageInPopup(T& actionState);
 
         // menu management
         void rightClickOnFolderMenu();

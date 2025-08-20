@@ -117,7 +117,7 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_folderActionState);
 
         PopupManager::endPopup();
         isFocus = true;
@@ -162,7 +162,7 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_folderActionState);
 
         PopupManager::endPopup();
     }
@@ -192,7 +192,7 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_folderActionState);
 
         PopupManager::endPopup();
     }
@@ -302,7 +302,7 @@ namespace nexo::editor {
         }
 
         // Display error message if any
-        drawErrorMessageInPopup();
+        drawErrorMessageInPopup(m_folderActionState);
 
         PopupManager::endPopup();
     }
