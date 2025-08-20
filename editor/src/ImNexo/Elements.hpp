@@ -76,6 +76,12 @@ namespace ImNexo {
 		std::vector<DragFloat> sliders;  ///< Slider component for each channel
 	};
 
+	enum ButtonTypes {
+		VALIDATION,  ///< Button type for validation actions
+		CANCEL,      ///< Button type for cancel actions
+		DEFAULT      ///< Default button type for general actions
+	};
+
     /**
     * @brief Draw an icon centered within a rectangle with optional vertical positioning
     * @param[in] icon Text of the icon to draw
@@ -122,7 +128,7 @@ namespace ImNexo {
     * and then pops the style colors.
     *
     * @param label The button label.
-    * @param isValidation If true, the button will also respond to Enter key presses.
+    * @param type The type of the button (validation, cancel, or default).
     * @param size The size of the button.
     * @param bg The background color.
     * @param bgHovered The background color when hovered.
@@ -132,7 +138,7 @@ namespace ImNexo {
     */
 	bool Button(
 		const std::string &label,
-		bool isValidation,
+		ButtonTypes type,
 		const ImVec2& size = ImVec2(0, 0),
 		ImU32 bg = 0,
 		ImU32 bgHovered = 0,

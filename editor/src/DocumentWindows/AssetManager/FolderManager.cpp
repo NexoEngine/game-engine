@@ -13,23 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "FolderManager.hpp"
+#include "AssetManagerWindow.hpp"
 
 namespace nexo::editor {
-
-    /**
-     * @brief Validates a folder name based on specific criteria.
-     *
-     * This function checks if the folder name is not empty, does not start with an underscore,
-     * and does not contain any slashes. These rules help ensure that folder names are valid
-     * and do not conflict with the file system structure.
-     *
-     * @param folderName The name of the folder to validate.
-     * @return `true` if the name is valid, `false` otherwise.
-     */
-    static bool isNameValid(std::string_view folderName)
-    {
-        return !(folderName.empty() || folderName.front() == '_' || folderName.find('/') != std::string::npos);
-    }
 
     /**
      * @brief Constructs a FolderManager instance.
@@ -192,8 +178,7 @@ namespace nexo::editor {
      */
     bool FolderManager::deleteFolder(const std::string& folderPath)
     {
-        if (folderPath.empty() || !exists(folderPath))
-            return false;
+        if (folderPath.empty() || !exists(folderPath)) return false;
 
         // Recursively delete all folder inside first
         for (const auto childrenCopy = m_children[folderPath]; const std::string& childPath : childrenCopy)
@@ -213,6 +198,26 @@ namespace nexo::editor {
     }
 
     /**
+     * @brief Validates a name based on specific criteria.
+     *
+     * This method checks if the name is valid according to the following rules:
+     * - It must not be empty.
+     * - It must not start with an underscore ('_').
+     * - It must not contain slashes ('/').
+     * - It must only contain alphanumeric characters, dots ('.'), hyphens ('-'), and underscores ('_').
+     *
+     * @param name The name of the item to validate.
+     * @return `true` if the name is valid, `false` otherwise.
+     */
+    bool FolderManager::isNameValid(const std::string& name)
+    {
+        const bool containsWrongCharacter = std::ranges::any_of(
+            name, [](const char c) { return !std::isalnum(c) && c != '.' && c != '-' && c != '_'; });
+
+        return !(name.empty() || name.front() == '_' || name.find('/') != std::string::npos) && !containsWrongCharacter;
+    }
+
+    /**
      * @brief Renames a folder and updates all its children paths accordingly.
      *
      * This method renames a folder by updating its path and the paths of all its children
@@ -226,15 +231,14 @@ namespace nexo::editor {
      */
     bool FolderManager::renameFolder(const std::string& folderPath, const std::string& newName)
     {
-        if (newName.empty() || folderPath.empty() || !exists(folderPath))
-            return false;
+        if (newName.empty() || folderPath.empty() || !exists(folderPath)) return false;
 
         if (!isNameValid(newName)) return false;
 
         const std::string parentPath    = getParentPath(folderPath);
-        const std::string newFolderPath = folderPath.find_last_of('/') == std::string::npos
-                                        ? newName
-                                        : folderPath.substr(0, folderPath.find_last_of('/')) + "/" + newName;
+        const std::string newFolderPath = folderPath.find_last_of('/') == std::string::npos ?
+                                              newName :
+                                              folderPath.substr(0, folderPath.find_last_of('/')) + "/" + newName;
 
         if (newFolderPath != folderPath && exists(newFolderPath)) return false;
 
@@ -317,17 +321,17 @@ namespace nexo::editor {
      * @param folderPath The path of the folder to calculate the size for.
      * @return The total size of the folder in megabytes, or 0 if an error occurs.
      */
-    float FolderManager::getFolderSize(const std::string &folderPath)
+    float FolderManager::getFolderSize(const std::string& folderPath)
     {
-        namespace fs = std::filesystem;
+        namespace fs    = std::filesystem;
         float totalSize = 0.0f;
         try {
-            for (const auto &entry : fs::recursive_directory_iterator(folderPath)) {
-                if (fs::is_regular_file(entry.path())) {
+            for (const auto& entry : fs::recursive_directory_iterator(folderPath)) {
+                if (is_regular_file(entry.path())) {
                     totalSize += static_cast<float>(fs::file_size(entry.path()));
                 }
             }
-        } catch (const std::exception &) {
+        } catch (const std::exception&) {
             return 0.0f;
         }
         return totalSize / (1024.0f * 1024.0f); // Return size in Mo
@@ -371,7 +375,10 @@ namespace nexo::editor {
 
         while (std::getline(ss, part, '/')) {
             if (!part.empty()) {
-                currentPath = currentPath.empty() ? part : currentPath + "/" + part;
+                if (!currentPath.empty()) {
+                    currentPath += "/";
+                }
+                currentPath += part;
                 allPaths.insert(currentPath);
             }
         }

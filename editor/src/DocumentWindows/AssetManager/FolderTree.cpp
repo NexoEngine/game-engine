@@ -79,7 +79,7 @@ namespace nexo::editor {
         if (ImGui::MenuItem("New Folder")) m_popupManager.openPopup("Create Folder Popup");
         if (ImGui::MenuItem("Import")) LOG(NEXO_INFO, "Importing assets is not implemented yet");
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)

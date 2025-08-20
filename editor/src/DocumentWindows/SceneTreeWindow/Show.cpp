@@ -113,19 +113,19 @@ namespace nexo::editor
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopup("Scene selection context menu"))
         {
             m_popupManager.runPopupCallback("Scene selection context menu");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopupModal("Popup camera inspector"))
         {
             m_popupManager.runPopupCallback("Popup camera inspector");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -142,14 +142,14 @@ namespace nexo::editor
         if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer))
         {
             memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         ImGui::SameLine();
         if (ImNexo::Button("Cancel"))
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void SceneTreeWindow::showNode(SceneObject& object)
