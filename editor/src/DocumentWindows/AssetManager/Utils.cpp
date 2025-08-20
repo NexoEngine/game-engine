@@ -16,27 +16,27 @@
 
 namespace nexo::editor {
 
-    /**
-     * @brief Draws an error message in a popup if there is an error.
-     *
-     * This method checks if there is an error to display and draws the error message
-     * in the popup. If the error timer has expired, it resets the error state.
-     */
-    void AssetManagerWindow::drawErrorMessageInPopup()
+    template <typename T>
+    void AssetManagerWindow::drawErrorMessageInPopup(T& actionState)
     {
-        if (!m_folderActionState.showError) return;
+        if (!actionState.showError) return;
 
         ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-        ImGui::Text("%s", m_folderActionState.errorMessage.c_str());
+        ImGui::Text("%s", actionState.errorMessage.c_str());
         ImGui::PopStyleColor();
 
-        if (m_folderActionState.errorTimer <= 0.0f) {
-            m_folderActionState.showError  = false;
-            m_folderActionState.errorTimer = ERROR_DISPLAY_TIMEOUT; // Reset timer
-        } else
-            m_folderActionState.errorTimer -= ImGui::GetIO().DeltaTime;
+        if (actionState.errorTimer <= 0.0f) {
+            actionState.showError  = false;
+            actionState.errorTimer = ERROR_DISPLAY_TIMEOUT;
+        } else {
+            actionState.errorTimer -= ImGui::GetIO().DeltaTime;
+        }
     }
+
+    // Explicit template instantiation for FolderActionState and AssetActionState
+    template void AssetManagerWindow::drawErrorMessageInPopup(FolderActionState& actionState);
+    template void AssetManagerWindow::drawErrorMessageInPopup(AssetActionState& actionState);
 
     /**
      * @brief Retrieves the texture ID for the given texture asset.
