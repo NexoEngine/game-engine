@@ -41,7 +41,7 @@ namespace nexo::editor {
         if (ImGui::MenuItem("Details")) {
             m_popupManager.openPopup("Details Folder Popup");
         }
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     /**
@@ -58,6 +58,12 @@ namespace nexo::editor {
         if (m_folderActionState.folderName.empty()) {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Folder name cannot be empty";
+            return false;
+        }
+
+        if (!FolderManager::isNameValid(m_folderActionState.folderName)) {
+            m_folderActionState.showError    = true;
+            m_folderActionState.errorMessage = "Folder name is invalid";
             return false;
         }
 
@@ -78,6 +84,7 @@ namespace nexo::editor {
      */
     void AssetManagerWindow::createFolderPopup()
     {
+        static bool isFocus = true;
         // Ensure the folder action state is set up correctly
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
@@ -88,25 +95,32 @@ namespace nexo::editor {
         ImGui::Text("Enter name for the new folder:");
         constexpr size_t MAX_FOLDER_NAME_LENGTH = 256;
         m_folderActionState.folderName.resize(MAX_FOLDER_NAME_LENGTH);
+        if (isFocus) {
+            ImGui::SetKeyboardFocusHere();
+            isFocus = false;
+        }
         ImGui::InputText("##FolderName", m_folderActionState.folderName.data(),
-                         m_folderActionState.folderName.capacity());
+                         m_folderActionState.folderName.capacity(), ImGuiInputTextFlags_AutoSelectAll);
         m_folderActionState.folderName.resize(strlen(m_folderActionState.folderName.c_str()));
         ImGui::Separator();
 
-        if (ImNexo::Button("Create", true) && handleFolderCreation()) {
+        if (Button("Create", ImNexo::VALIDATION) && handleFolderCreation()) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
+        isFocus = true;
     }
 
     /**
@@ -127,7 +141,7 @@ namespace nexo::editor {
         // Draw the popup for deleting a folder
         ImGui::Text("Are you sure you want to delete %s?", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete", true)) {
+        if (ImNexo::Button("Delete", ImNexo::VALIDATION)) {
             const std::vector<assets::GenericAssetRef> assets = m_folderManager.getFolderAssets(folderPath);
             if (!assets.empty()) {
                 m_popupManager.openPopup("Delete Not Empty Folder Popup");
@@ -135,22 +149,22 @@ namespace nexo::editor {
                 m_folderActionState.errorMessage = "Are you sure you want to delete this folder? It is not empty.";
             } else if (m_folderManager.deleteFolder(folderPath)) {
                 m_folderActionState.reset();
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             } else {
                 m_folderActionState.showError    = true;
                 m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
             }
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void AssetManagerWindow::deleteNotEmptyFolderPopup()
@@ -164,23 +178,23 @@ namespace nexo::editor {
         // Draw the popup for deleting a folder that contains assets
         ImGui::Text("Are you sure you want to delete %s? It contains assets.", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete", true) && m_folderManager.deleteFolder(folderPath)) {
+        if (Button("Delete", ImNexo::VALIDATION) && m_folderManager.deleteFolder(folderPath)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         } else {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     /**
@@ -198,6 +212,11 @@ namespace nexo::editor {
         if (m_folderActionState.folderName.empty() || newName.empty()) {
             m_folderActionState.showError    = true;
             m_folderActionState.errorMessage = "Folder name cannot be empty";
+            return false;
+        }
+        if (!FolderManager::isNameValid(newName)) {
+            m_folderActionState.showError    = true;
+            m_folderActionState.errorMessage = "Folder name is invalid";
             return false;
         }
 
@@ -241,11 +260,12 @@ namespace nexo::editor {
      */
     void AssetManagerWindow::renameFolderPopup()
     {
+        static bool isFocus = true;
         // Ensure the folder action state is set up correctly
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder = folderPath;
+        m_hoveredFolder              = folderPath;
 
         // Draw the popup for renaming a folder
         ImGui::Text("Enter a new name for the folder:");
@@ -257,27 +277,34 @@ namespace nexo::editor {
             newName = m_folderActionState.folderName;
         }
         m_folderActionState.folderName.resize(MAX_FOLDER_NAME_LENGTH);
-        ImGui::InputText("##FolderName", newName.data(), m_folderActionState.folderName.capacity());
+        if (isFocus) {
+            ImGui::SetKeyboardFocusHere();
+            isFocus = false;
+        }
+        ImGui::InputText("##FolderName", newName.data(), m_folderActionState.folderName.capacity(),
+                         ImGuiInputTextFlags_AutoSelectAll);
         newName.resize(strlen(newName.c_str()));
         ImGui::Separator();
 
         // Buttons for renaming or canceling the action
-        if (ImNexo::Button("Rename", true) && handleFolderRenaming(newName)) {
+        if (Button("Rename", ImNexo::VALIDATION) && handleFolderRenaming(newName)) {
             m_folderActionState.reset();
             newName = "";
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_folderActionState.reset();
             newName = "";
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     /**
@@ -292,7 +319,7 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder = folderPath;
+        m_hoveredFolder              = folderPath;
 
         // Draw the popup for folder details
         ImGui::Text("Details of: %s", m_folderActionState.folderName.c_str());
@@ -301,13 +328,13 @@ namespace nexo::editor {
         ImGui::Text("Path: %s", folderPath.c_str());
         ImGui::Text("Child: %zu",
                     m_folderManager.getChildCount(folderPath) + m_folderManager.getFolderAssets(folderPath).size());
-        ImGui::Text("Size: %.2f Ko", m_folderManager.getFolderSize(folderPath) / 1024.0);
+        ImGui::Text("Size: %.2f Ko", FolderManager::getFolderSize(folderPath) / 1024.0);
         ImGui::Separator();
-        if (ImNexo::Button("Close")) {
+        if (Button("Close", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
 } // namespace nexo::editor

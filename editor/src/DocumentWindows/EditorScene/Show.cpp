@@ -128,7 +128,7 @@ namespace nexo::editor
                 ImNexo::CameraInspector(this->m_sceneId);
             }, ImVec2(1440, 900));
         }
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void EditorScene::renderView()

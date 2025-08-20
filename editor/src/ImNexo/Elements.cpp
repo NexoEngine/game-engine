@@ -114,16 +114,6 @@ namespace ImNexo {
         }
     }
 
-    bool Button(const std::string& label, const bool isValidation, const ImVec2& size, const ImU32 bg,
-                const ImU32 bgHovered, const ImU32 bgActive, const ImU32 txtColor)
-    {
-        if (isValidation) {
-            return Button(label, size, bg, bgHovered, bgActive, txtColor) || ImGui::IsKeyPressed(ImGuiKey_Enter) ||
-                   ImGui::IsKeyPressed(ImGuiKey_KeypadEnter);
-        }
-        return Button(label, size, bg, bgHovered, bgActive, txtColor);
-    }
-
     bool Button(const std::string& label, const ImVec2& size, const ImU32 bg, const ImU32 bgHovered,
                 const ImU32 bgActive, const ImU32 txtColor)
     {
@@ -133,6 +123,23 @@ namespace ImNexo {
             .push(ImGuiCol_Text, txtColor);
 
         return ImGui::Button(label.c_str(), size);
+    }
+
+    bool Button(const std::string& label, const ButtonTypes type, const ImVec2& size, const ImU32 bg,
+                const ImU32 bgHovered, const ImU32 bgActive, const ImU32 txtColor)
+    {
+        const bool clicked = Button(label, size, bg, bgHovered, bgActive, txtColor);
+        switch (type) {
+            case (VALIDATION): {
+                return clicked || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter);
+            }
+            case (CANCEL): {
+                return clicked || ImGui::IsKeyPressed(ImGuiKey_Escape);
+            }
+            default: {
+                return clicked;
+            }
+        }
     }
 
     void ButtonBorder(const ImU32 borderColor, const ImU32 borderColorHovered, const ImU32 borderColorActive,

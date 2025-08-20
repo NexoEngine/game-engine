@@ -91,14 +91,14 @@ namespace nexo::editor {
 			*
 			* Ends the current ImGui popup.
 			*/
-            static void closePopup() ;
+            static void endPopup() ;
 
 			/**
 			* @brief Closes the current popup in its context.
 			*
 			* Requests ImGui to close the current popup.
 			*/
-            static void closePopupInContext() ;
+            static void closePopup() ;
 
             /**
              * @brief Executes the callback associated with a popup.
