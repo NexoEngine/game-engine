@@ -99,6 +99,13 @@ namespace nexo::assets {
         bool renameAsset(AssetID id, const std::string& newName) const;
 
         /**
+         * @brief Checks if a name is valid for an asset.
+         * @param name The name to check.
+         * @return True if the name is valid, false otherwise.
+         */
+        [[nodiscard]] bool isValidName(std::string name) const;
+
+        /**
          * @brief Moves an asset to another location.
          * @param id The ID of the asset to move.
          * @param path The new location for the asset.

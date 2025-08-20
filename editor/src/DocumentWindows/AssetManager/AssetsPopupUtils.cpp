@@ -36,7 +36,7 @@ namespace nexo::editor {
         if (ImGui::MenuItem("Details")) {
             m_popupManager.openPopup("Details Asset Popup");
         }
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void AssetManagerWindow::deleteAssetPopup()
@@ -45,7 +45,7 @@ namespace nexo::editor {
 
         ImGui::Text("Are you sure you want to delete %s?", assetName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete", true)) {
+        if (Button("Delete", ImNexo::VALIDATION)) {
             // TODO: Check if the asset is used before deleting
             // if (m_assetActionState.assetData->isUsed()) {
             //     m_popupManager.openPopup("Delete Used Asset Popup");
@@ -55,23 +55,23 @@ namespace nexo::editor {
             // } else {
             if (assets::AssetCatalog::getInstance().deleteAsset(m_assetActionState.assetData->getID())) {
                 m_assetActionState.reset();
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             } else {
                 m_assetActionState.showError    = true;
                 m_assetActionState.errorMessage = "Failed to delete the asset (may currently be in use)";
             }
             // }
             ImGui::SameLine();
-            if (ImNexo::Button("Cancel")) {
+            if (Button("Cancel", ImNexo::CANCEL)) {
                 m_assetActionState.reset();
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             }
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void AssetManagerWindow::deleteUsedAssetPopup()
@@ -80,24 +80,24 @@ namespace nexo::editor {
 
         ImGui::Text("%s is used by one or more entities.\nAre you sure you want to delete it?", assetName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete", true) &&
+        if (Button("Delete", ImNexo::VALIDATION) &&
             assets::AssetCatalog::getInstance().deleteAsset(m_assetActionState.assetData->getID())) {
             m_assetActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         } else {
             m_assetActionState.showError    = true;
             m_assetActionState.errorMessage = "Failed to delete the asset (may currently be in use)";
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     bool AssetManagerWindow::handleAssetRenaming(const std::string &newName)
@@ -110,7 +110,13 @@ namespace nexo::editor {
             return false;
         }
 
-        assets::GenericAssetRef assetRef =
+        if (!FolderManager::isNameValid(assetName)) {
+            m_assetActionState.showError    = true;
+            m_assetActionState.errorMessage = "Asset name is invalid";
+            return false;
+        }
+
+        const assets::GenericAssetRef assetRef =
             assets::AssetCatalog::getInstance().getAsset(m_assetActionState.assetData->getID());
         if (assets::AssetCatalog::getInstance().renameAsset(assetRef, newName)) {
             return true;
@@ -122,37 +128,45 @@ namespace nexo::editor {
 
     void AssetManagerWindow::renameAssetPopup()
     {
+        static bool isFocus = true;
         ImGui::Text("Enter a new name for the asset:");
 
         // Input text for the new folder name
-        std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+        std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
-        static std::string newName = assetName;
+        static std::string newName             = assetName;
         if (newName.empty()) {
             newName = assetName;
         }
         assetName.resize(MAX_ASSET_NAME_LENGTH);
-        ImGui::InputText("##AssetName", newName.data(), assetName.capacity());
+        if (isFocus) {
+            ImGui::SetKeyboardFocusHere();
+            isFocus = false;
+        }
+        ImGui::InputText("##AssetName", newName.data(), assetName.capacity(), ImGuiInputTextFlags_AutoSelectAll);
         newName.resize(strlen(newName.c_str()));
         ImGui::Separator();
 
         // Buttons for renaming or canceling the action
-        if (ImNexo::Button("Rename", true) && handleAssetRenaming(newName)) {
+        if (Button("Rename", ImNexo::VALIDATION) && handleAssetRenaming(newName)) {
             m_assetActionState.reset();
             newName = "";
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel")) {
+        if (Button("Cancel", ImNexo::CANCEL)) {
             m_assetActionState.reset();
             newName = "";
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
+            isFocus = true;
         }
 
         // Display error message if any
         drawErrorMessageInPopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
+        isFocus = true;
     }
 
     void AssetManagerWindow::assetDetailsPopup()
@@ -166,11 +180,11 @@ namespace nexo::editor {
         ImGui::Text("Status: %s", m_assetActionState.assetData->isLoaded() ? "Loaded" : "Not Loaded");
 
         ImGui::Separator();
-        if (ImNexo::Button("Close")) {
+        if (Button("Close", ImNexo::CANCEL)) {
             m_folderActionState.reset();
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
 } // namespace nexo::editor
