@@ -178,7 +178,10 @@ namespace nexo::editor {
 
         // drag and drop management
         void handleDroppedFiles();
+        static void handleAssetDrag(const assets::GenericAssetRef& asset);
+        void handleFolderDrag(const std::string& folderPath, const std::string& folderName);
         void handleAssetDrop(const std::string& path);
+        void handleFolderDrop(const std::string& folderPath, const std::string &folderName);
         void importDroppedFile(const std::string& filePath) const;
 
         std::set<unsigned int> m_selectedAssets;        // Set of selected asset indices
@@ -214,5 +217,15 @@ namespace nexo::editor {
         assets::AssetID id;                                  ///< ID of the asset
         char path[256]{};                                    ///< Path to the asset
         char name[64]{};                                     ///< Display name of the asset
+    };
+
+    /**
+     * @brief Payload structure for drag and drop operations from asset manager.
+     *
+     * Contains information about the folder being dragged.
+     */
+    struct FolderDragDropPayload {
+        char path[256]{}; ///< Path to the folder
+        char name[64]{};  ///< Display name of the folder
     };
 } // namespace nexo::editor

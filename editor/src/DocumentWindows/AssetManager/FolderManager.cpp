@@ -212,7 +212,7 @@ namespace nexo::editor {
     bool FolderManager::isNameValid(const std::string& name)
     {
         const bool containsWrongCharacter = std::ranges::any_of(
-            name, [](const char c) { return !std::isalnum(c) && c != '.' && c != '-' && c != '_'; });
+            name, [](const char c) { return !std::isalnum(c) && c != '.' && c != '-' && c != '_' && c != ' '; });
 
         return !(name.empty() || name.front() == '_' || name.find('/') != std::string::npos) && !containsWrongCharacter;
     }
@@ -272,6 +272,88 @@ namespace nexo::editor {
             std::erase(m_children[parentPath], oldPath);
         }
 
+        return true;
+    }
+
+    bool FolderManager::moveFolder(const std::string& currentFolderPath, const std::string& path)
+    {
+        std::cout << "======================================================\nMoving folder '" << currentFolderPath
+                  << "' to '" << path << "'\n";
+
+        // if current folder is not empty or already existing or not same as path and if path exists
+        if (currentFolderPath.empty() || !exists(currentFolderPath) || !exists(path) || path == currentFolderPath)
+            return false;
+
+        const std::string parentPath = getParentPath(currentFolderPath);
+        const std::string folderName = extractNameFromPath(currentFolderPath);
+
+        const std::string newFolderPath = path.empty() ? folderName : path + "/" + folderName;
+
+        //if new path already (same destination or folder with same name exists at this destination
+        if (exists(newFolderPath)) return false;
+
+        // update name of children
+        std::vector<std::string> toUpdate;
+        for (const auto& children_path : m_children | std::views::keys) {
+            if (children_path == currentFolderPath || children_path.find(currentFolderPath) != std::string::npos) {
+                toUpdate.push_back(children_path);
+                const std::string newPath   = newFolderPath + children_path.substr(currentFolderPath.size());
+                for (const auto & child : m_children[children_path]) {
+                    if (child.find(currentFolderPath) != std::string::npos) {
+                        std::string newChildPath   = newFolderPath + child.substr(currentFolderPath.size());
+                        m_children[newPath].push_back(newChildPath);
+                    }
+                }
+            }
+        }
+        std::erase(m_children[parentPath], currentFolderPath);
+        m_children[path].push_back(newFolderPath);
+
+        // get all assets
+        const assets::AssetCatalog &assetCatalog    = assets::AssetCatalog::getInstance();
+        std::vector<assets::GenericAssetRef> assets = assetCatalog.getAssets();
+
+        // update path of asset inside
+        for (const auto &ref : assets) {
+            const auto d = ref.lock();
+            if (!d) continue;
+            std::string assetPath = d->getMetadata().location.getPath();
+            if (assetPath == currentFolderPath || assetPath.starts_with(currentFolderPath + "/")) {
+                std::string newAssetPath = newFolderPath + assetPath.substr(currentFolderPath.size());
+                d->getMetadata().location.setPath(newAssetPath);
+            }
+        }
+
+        for (const auto& oldPath : toUpdate) {
+            m_children.erase(oldPath);
+        }
+
+        // update path in pathToName
+        for (const auto& key : m_pathToName | std::views::keys) {
+            if (key.find(currentFolderPath) != std::string::npos) {
+                toUpdate.push_back(key);
+                // std::cout << "key [" << key << "] new folder path [" << newFolderPath << "] m_pathToName[key] [" << m_pathToName[key] << "]" << std::endl;
+                m_pathToName[newFolderPath] = m_pathToName[key];
+            }
+        }
+
+        for (const auto& oldPath : toUpdate) {
+            m_pathToName.erase(oldPath);
+        }
+
+        // for (const auto& child : m_children | std::views::keys) {
+        //     std::cout << "Child: [" << child << "]\n";
+        //     for (const auto& val : m_children[child]) {
+        //         std::cout << "   - " << val << "\n";
+        //     }
+        // }
+        //
+        // std::cout << std::endl;
+        //
+        // for (const auto& key : m_pathToName | std::views::keys) {
+        //     std::cout << "Key: [" << key << "]\n";
+        //     std::cout << "   - " << m_pathToName[key] << "\n";
+        // }
         return true;
     }
 

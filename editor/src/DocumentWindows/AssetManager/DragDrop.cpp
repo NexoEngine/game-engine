@@ -18,6 +18,7 @@
 #include "assets/AssetCatalog.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
+#include "context/ThumbnailCache.hpp"
 
 namespace nexo::editor {
 
@@ -30,6 +31,61 @@ namespace nexo::editor {
                 m_selectedAssets.clear();
             }
             ImGui::EndDragDropTarget();
+        }
+    }
+
+    void AssetManagerWindow::handleFolderDrop(const std::string& folderPath, const std::string &folderName)
+    {
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_DRAG")) {
+                const auto data        = static_cast<const FolderDragDropPayload*>(payload->Data);
+                m_folderManager.moveFolder(data->path, folderPath);
+                m_selectedFolders.clear();
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+
+    void AssetManagerWindow::handleAssetDrag(const assets::GenericAssetRef& asset)
+    {
+        const auto assetData = asset.lock();
+
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+            AssetDragDropPayload payload;
+            payload.type         = assetData->getType();
+            payload.id           = assetData->getID();
+            const auto& fullPath = assetData->getMetadata().location.getFullLocation();
+            const auto& name     = assetData->getMetadata().location.getName().data();
+            std::memcpy(payload.path, fullPath.c_str(), std::min(fullPath.size(), sizeof(payload.path) - 1));
+            payload.path[sizeof(payload.path) - 1] = '\0';
+            std::memcpy(payload.name, name.c_str(), std::min(name.size(), sizeof(payload.name) - 1));
+            payload.name[sizeof(payload.name) - 1] = '\0';
+
+            ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
+            ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
+            if (textureID) ImGui::Image(textureID, {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::EndDragDropSource();
+        }
+    }
+
+    void AssetManagerWindow::handleFolderDrag(const std::string& folderPath, const std::string& folderName)
+    {
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+            FolderDragDropPayload payload;
+            std::memcpy(payload.path, folderPath.c_str(), std::min(folderPath.size(), sizeof(payload.path) - 1));
+            payload.path[sizeof(payload.path) - 1] = '\0';
+            std::memcpy(payload.name, folderName.c_str(), std::min(folderName.size(), sizeof(payload.name) - 1));
+            payload.name[sizeof(payload.name) - 1] = '\0';
+
+            ImGui::SetDragDropPayload("FOLDER_DRAG", &payload, sizeof(payload));
+            // ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
+            // if (textureID) ImGui::Image(textureID, {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
+            const ImTextureID folderIconTexture = getIconTexture(m_folderIcon);
+            if (folderIconTexture) {
+                ImGui::Image(folderIconTexture, {64, 64}, ImVec2(0, 1), ImVec2(0, 1));                           // White tint for default color
+            }
+            ImGui::EndDragDropSource();
         }
     }
 

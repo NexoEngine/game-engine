@@ -66,6 +66,7 @@ namespace nexo::editor {
         if (ImGui::Button("Assets")) m_currentFolder.clear();
 
         handleAssetDrop("");
+        handleFolderDrop("", m_currentFolder);
         ImGui::PopID();
 
         std::string path                      = m_currentFolder;
@@ -85,6 +86,7 @@ namespace nexo::editor {
                 m_currentFolder = fullPath;
 
             handleAssetDrop(fullPath);
+            handleFolderDrop(fullPath, crumb.empty() ? crumb : "Assets");
             ImGui::PopID();
         }
     }

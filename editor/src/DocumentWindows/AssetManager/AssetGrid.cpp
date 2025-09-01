@@ -160,23 +160,7 @@ namespace nexo::editor {
 
         handleRightClickOnAsset();
 
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-            AssetDragDropPayload payload;
-            payload.type         = assetData->getType();
-            payload.id           = assetData->getID();
-            const auto& fullPath = assetData->getMetadata().location.getFullLocation();
-            const auto& name     = assetData->getMetadata().location.getName().data();
-            std::memcpy(payload.path, fullPath.c_str(), std::min(fullPath.size(), sizeof(payload.path) - 1));
-            payload.path[sizeof(payload.path) - 1] = '\0';
-            std::memcpy(payload.name, name.c_str(), std::min(name.size(), sizeof(payload.name) - 1));
-            payload.name[sizeof(payload.name) - 1] = '\0';
-
-            ImGui::SetDragDropPayload("ASSET_DRAG", &payload, sizeof(payload));
-            ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
-            if (textureID) ImGui::Image(textureID, {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
-
-            ImGui::EndDragDropSource();
-        }
+        handleAssetDrag(asset);
 
         ImGui::PopID();
     }
@@ -292,6 +276,8 @@ namespace nexo::editor {
         handleRightClickOnFolder();
 
         handleAssetDrop(folderPath);
+        handleFolderDrag(folderPath, folderName);
+        handleFolderDrop(folderPath, folderName);
 
         constexpr ImU32 bgColor = IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, GridLayoutSizes::CORNER_RADIUS);
