@@ -29,7 +29,6 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the right-click menu for folders
         if (ImGui::MenuItem("Rename Folder")) {
@@ -89,7 +88,6 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the popup for creating a new folder
         ImGui::Text("Enter name for the new folder:");
@@ -120,7 +118,6 @@ namespace nexo::editor {
         drawErrorMessageInPopup(m_folderActionState);
 
         PopupManager::endPopup();
-        isFocus = true;
     }
 
     /**
@@ -136,12 +133,11 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the popup for deleting a folder
         ImGui::Text("Are you sure you want to delete %s?", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (ImNexo::Button("Delete", ImNexo::VALIDATION)) {
+        if (Button("Delete", ImNexo::VALIDATION)) {
             const std::vector<assets::GenericAssetRef> assets = m_folderManager.getFolderAssets(folderPath);
             if (!assets.empty()) {
                 m_popupManager.openPopup("Delete Not Empty Folder Popup");
@@ -173,7 +169,6 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the popup for deleting a folder that contains assets
         ImGui::Text("Are you sure you want to delete %s? It contains assets.", m_folderActionState.folderName.c_str());
@@ -193,7 +188,6 @@ namespace nexo::editor {
 
         // Display error message if any
         drawErrorMessageInPopup(m_folderActionState);
-
         PopupManager::endPopup();
     }
 
@@ -233,6 +227,7 @@ namespace nexo::editor {
         }
         const std::string newFolderPath =
             m_folderActionState.parentPath.empty() ? newName : m_folderActionState.parentPath + "/" + newName;
+
         // Get all assets
         const assets::AssetCatalog &assetCatalog    = assets::AssetCatalog::getInstance();
         std::vector<assets::GenericAssetRef> assets = assetCatalog.getAssets();
@@ -265,7 +260,6 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the popup for renaming a folder
         ImGui::Text("Enter a new name for the folder:");
@@ -319,7 +313,6 @@ namespace nexo::editor {
         const std::string folderPath = m_folderActionState.parentPath.empty() ?
                                            m_folderActionState.folderName :
                                            m_folderActionState.parentPath + "/" + m_folderActionState.folderName;
-        m_hoveredFolder              = folderPath;
 
         // Draw the popup for folder details
         ImGui::Text("Details of: %s", m_folderActionState.folderName.c_str());

@@ -274,6 +274,13 @@ namespace nexo::editor {
         return true;
     }
 
+    /**
+     * @brief Moves a folder to a new parent folder and updates all its children paths accordingly.
+     * 
+     * @param currentFolderPath The current path of the folder to move.
+     * @param path The new parent path where the folder will be moved.
+     * @return `true` if the folder was successfully moved, `false` otherwise.
+     */
     bool FolderManager::moveFolder(const std::string& currentFolderPath, const std::string& path)
     {
         // if current folder is not empty or already existing or not same as path and if path exists
@@ -295,7 +302,8 @@ namespace nexo::editor {
                 m_children[newKey] = std::move(m_children[key]);
                 for (auto& child : m_children[newKey]) {
                     if (child.starts_with(key)) {
-                        child = newKey + child.substr(key.size());
+                        const std::string newChildPath = newKey + child.substr(key.size());
+                        child = newChildPath;
                     }
                 }
             }
