@@ -254,7 +254,6 @@ namespace nexo::editor {
             if (key == folderPath || key.starts_with(folderPath + "/")) {
                 toUpdate.push_back(key);
             }
-            std::cout << std::endl;
         }
 
         // Update paths and names
@@ -277,9 +276,6 @@ namespace nexo::editor {
 
     bool FolderManager::moveFolder(const std::string& currentFolderPath, const std::string& path)
     {
-        std::cout << "======================================================\nMoving folder '" << currentFolderPath
-                  << "' to '" << path << "'\n";
-
         // if current folder is not empty or already existing or not same as path and if path exists
         if (currentFolderPath.empty() || !exists(currentFolderPath) || !exists(path) || path == currentFolderPath)
             return false;
@@ -289,32 +285,31 @@ namespace nexo::editor {
 
         const std::string newFolderPath = path.empty() ? folderName : path + "/" + folderName;
 
-        //if new path already (same destination or folder with same name exists at this destination
         if (exists(newFolderPath)) return false;
 
-        // update name of children
-        std::vector<std::string> toUpdate;
-        for (const auto& children_path : m_children | std::views::keys) {
-            if (children_path == currentFolderPath || children_path.find(currentFolderPath) != std::string::npos) {
-                toUpdate.push_back(children_path);
-                const std::string newPath   = newFolderPath + children_path.substr(currentFolderPath.size());
-                for (const auto & child : m_children[children_path]) {
-                    if (child.find(currentFolderPath) != std::string::npos) {
-                        std::string newChildPath   = newFolderPath + child.substr(currentFolderPath.size());
-                        m_children[newPath].push_back(newChildPath);
+        std::vector<std::string> toUpdate = {};
+        for (const auto& key : m_children | std::views::keys) {
+            if (key.starts_with(currentFolderPath)) {
+                toUpdate.push_back(key);
+                const auto newKey  = newFolderPath + key.substr(currentFolderPath.size());
+                m_children[newKey] = std::move(m_children[key]);
+                for (auto& child : m_children[newKey]) {
+                    if (child.starts_with(key)) {
+                        child = newKey + child.substr(key.size());
                     }
                 }
             }
         }
+
         std::erase(m_children[parentPath], currentFolderPath);
         m_children[path].push_back(newFolderPath);
 
         // get all assets
-        const assets::AssetCatalog &assetCatalog    = assets::AssetCatalog::getInstance();
+        const assets::AssetCatalog& assetCatalog    = assets::AssetCatalog::getInstance();
         std::vector<assets::GenericAssetRef> assets = assetCatalog.getAssets();
 
         // update path of asset inside
-        for (const auto &ref : assets) {
+        for (const auto& ref : assets) {
             const auto d = ref.lock();
             if (!d) continue;
             std::string assetPath = d->getMetadata().location.getPath();
@@ -329,31 +324,29 @@ namespace nexo::editor {
         }
 
         // update path in pathToName
-        for (const auto& key : m_pathToName | std::views::keys) {
-            if (key.find(currentFolderPath) != std::string::npos) {
+        const std::string pathToRemove = parentPath.empty() ? "" : parentPath + "/";
+        toUpdate.clear();
+        const auto pathToName = m_pathToName; // copy to avoid modification during iteration
+        for (const auto& key : pathToName | std::views::keys) {
+            if (pathToRemove.empty()) {
+                m_pathToName[newFolderPath] = folderName;
+                if (!key.empty() && key.find(currentFolderPath) != std::string::npos) {
+                    const std::string newKey = path.empty() ? key : path + "/" + key;
+                    toUpdate.push_back(key);
+                    m_pathToName[newKey] = m_pathToName[key];
+                }
+            }
+            if (!key.empty() && !pathToRemove.empty() && key.find(currentFolderPath) != std::string::npos) {
+                const std::string newKey = path.empty() ? key.substr(pathToRemove.size()) :
+                                                          path + "/" + key.substr(pathToRemove.size());
                 toUpdate.push_back(key);
-                // std::cout << "key [" << key << "] new folder path [" << newFolderPath << "] m_pathToName[key] [" << m_pathToName[key] << "]" << std::endl;
-                m_pathToName[newFolderPath] = m_pathToName[key];
+                m_pathToName[newKey] = m_pathToName[key];
             }
         }
 
         for (const auto& oldPath : toUpdate) {
             m_pathToName.erase(oldPath);
         }
-
-        // for (const auto& child : m_children | std::views::keys) {
-        //     std::cout << "Child: [" << child << "]\n";
-        //     for (const auto& val : m_children[child]) {
-        //         std::cout << "   - " << val << "\n";
-        //     }
-        // }
-        //
-        // std::cout << std::endl;
-        //
-        // for (const auto& key : m_pathToName | std::views::keys) {
-        //     std::cout << "Key: [" << key << "]\n";
-        //     std::cout << "   - " << m_pathToName[key] << "\n";
-        // }
         return true;
     }
 
