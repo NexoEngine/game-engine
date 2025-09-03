@@ -13,12 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "../EntityProperties/PhysicsBodyProperty.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Panels.hpp"
 #include "context/ActionManager.hpp"
+#include "components/PhysicsBodyComponent.hpp"
+#include "components/Transform.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 namespace nexo::editor
 {
@@ -270,7 +274,48 @@ namespace nexo::editor
                 const int sceneId = selector.getSelectedScene();
                 ImNexo::PrimitiveCustomizationMenu(sceneId, CYLINDER);
             }
+            physicsTypeSelectionPopup();
         }
         ImGui::End();
+    }
+
+    void SceneTreeWindow::physicsTypeSelectionPopup()
+    {
+        if (!m_popupManager.showPopupModal("Physics Type Selection"))
+            return;
+
+        ImGui::Text("Choose physics body type:");
+        ImGui::Spacing();
+
+        static int physicsType = 1;
+        ImGui::RadioButton("Static Body", &physicsType, 0);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Static bodies don't move but can be collided with");
+        }
+
+        ImGui::RadioButton("Dynamic Body", &physicsType, 1);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Dynamic bodies are affected by gravity and forces");
+        }
+
+        ImGui::Spacing();
+
+        if (ImGui::Button("Add Physics Component"))
+        {
+            PhysicsBodyProperty::addPhysicsComponentToEntity(m_pendingPhysicsEntity, physicsType == 1);
+            PopupManager::closePopupInContext();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            PopupManager::closePopupInContext();
+        }
+
+        PopupManager::closePopup();
     }
 }

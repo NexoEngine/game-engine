@@ -139,6 +139,7 @@ namespace nexo::editor
 	        std::optional<std::pair<SelectionType, std::string>> m_renameTarget; ///< Target for renaming.
 	        std::string m_renameBuffer; ///< Buffer for rename input.
 	        PopupManager m_popupManager; ///< Manages context and creation popups.
+	        ecs::Entity m_pendingPhysicsEntity = 0; ///< Entity waiting for physics component addition.
 
         /**
          * @brief Generates nodes for all entities matching the specified components.
@@ -336,7 +337,7 @@ namespace nexo::editor
          *
          * @param obj The scene object representing the entity.
          */
-        static void entitySelected(const SceneObject& obj);
+        void entitySelected(const SceneObject& obj);
 
         /**
          * @brief Renders a node and its children in the scene tree.
@@ -368,6 +369,14 @@ namespace nexo::editor
          * The popup is closed either upon successful scene creation or when the "Cancel" button is clicked.
          */
         void sceneCreationMenu();
+
+        /**
+         * @brief Displays the physics type selection popup.
+         *
+         * Shows a popup allowing the user to choose between Static and Dynamic
+         * physics body types when adding a physics component to an entity.
+         */
+        void physicsTypeSelectionPopup();
 
         // /**
         //  * @brief Displays a popup menu for creating primitive entities.
