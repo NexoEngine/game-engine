@@ -16,7 +16,6 @@
 
 #include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
-#include <sys/types.h>
 
 #include "Renderer3D.hpp"
 #include "components/BillboardMesh.hpp"
@@ -31,6 +30,7 @@
 #include "components/Transform.hpp"
 #include "components/Editor.hpp"
 #include "components/Uuid.hpp"
+#include "components/Video.hpp"
 #include "components/Render.hpp"
 #include "components/MaterialComponent.hpp"
 #include "core/event/Input.hpp"
@@ -103,6 +103,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::ParentComponent>();
         m_coordinator->registerComponent<components::ModelComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
+        m_coordinator->registerComponent<components::VideoComponent>();
         m_coordinator->registerComponent<components::MaterialComponent>();
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
@@ -213,6 +214,7 @@ namespace nexo {
         m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
         m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
         m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
+        m_renderVideoSystem = m_coordinator->registerGroupSystem<system::RenderVideoSystem>();
         m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
         m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
@@ -329,6 +331,7 @@ namespace nexo {
 				m_lightSystem->update();
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
+        	    m_renderVideoSystem->update();
 				for (auto &camera : renderContext.cameras)
 				    camera.pipeline.execute();
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures

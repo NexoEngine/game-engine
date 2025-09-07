@@ -17,7 +17,6 @@
 #include "components/Transform.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/SceneComponents.hpp"
-#include "components/Render3D.hpp"
 #include "components/RenderContext.hpp"
 #include "ecs/GroupSystem.hpp"
 

@@ -34,6 +34,7 @@
 #include "systems/LightSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
+#include "systems/RenderVideoSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
@@ -288,6 +289,7 @@ namespace nexo {
             std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
             std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
             std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
+            std::shared_ptr<system::RenderVideoSystem> m_renderVideoSystem;
             std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
 
             std::vector<ProfileResult> m_profilesResults;

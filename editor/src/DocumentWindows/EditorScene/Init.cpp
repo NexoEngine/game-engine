@@ -12,17 +12,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "EditorScene.hpp"
+#include <components/Video.hpp>
 #include "CameraFactory.hpp"
-#include "LightFactory.hpp"
+#include "EditorScene.hpp"
 #include "EntityFactory3D.hpp"
+#include "LightFactory.hpp"
+#include "Path.hpp"
 #include "RenderPass.hpp"
-#include "utils/EditorProps.hpp"
+#include "assets/AssetImporter.hpp"
 #include "renderPasses/GridPass.hpp"
 #include "renderPasses/MaskPass.hpp"
 #include "renderPasses/OutlinePass.hpp"
-#include "assets/AssetImporter.hpp"
-#include "Path.hpp"
+#include "utils/EditorProps.hpp"
 
 namespace nexo::editor
 {
@@ -175,97 +176,114 @@ namespace nexo::editor
             return entity;
         };
 
+        //////////////////////////////// Physic scene //////////////////////////////////
+        {
         // Balls
-
-        for (int i = 0; i < 50; ++i)
-        {
-            float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
-            float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
-            glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
-            glm::vec4 color = {
-                1.0f, dis(gen), dis(gen), 1.0f
-            };
-            createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
-                               JPH::EMotionType::Dynamic);
+        // for (int i = 0; i < 50; ++i)
+        // {
+        //     float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
+        //     float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+        //     glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
+        //     glm::vec4 color = {
+        //         1.0f, dis(gen), dis(gen), 1.0f
+        //     };
+        //     createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+        //                        JPH::EMotionType::Dynamic);
+        // }
+        // lightsScene(m_sceneId);
+        //
+        // // Background
+        // createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        //
+        // // Funnel
+        // createAndAddEntity({-6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        // createAndAddEntity({6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        //
+        // // Spinner
+        // createAndAddEntity({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        //
+        // // Stairs
+        // std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
+        //     {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+        //     {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+        //     {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+        //     {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}
+        // };
+        // for (const auto& [pos, size, rotation, color] : stairs)
+        // {
+        //     createAndAddEntity(pos, size, rotation, color, system::ShapeType::Box, JPH::EMotionType::Static);
+        // }
+        //
+        // // Tunnel
+        // std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
+        //     {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
+        //     {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
+        //     {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
+        // };
+        // for (const auto& [pos, size, rotation] : tunnels)
+        // {
+        //     createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+        // }
+        //
+        // // Dominos
+        // createAndAddEntity({-9.0f, 44.0f, 0.0f}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        // createAndAddEntity({11.15f, 44.0f, 0.0f}, {15.5f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        //
+        // for (int i = 0; i < 24; ++i)
+        // {
+        //     if (i == 13) continue;
+        //     float x = -18.4f + static_cast<float>(i) * 1.6f;
+        //     glm::vec3 pos = {x, 45.5f, 0.0f};
+        //     float gradientFactor = static_cast<float>(i) / 24.0f;
+        //     glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+        //     createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box, JPH::EMotionType::Dynamic);
+        // }
+        //
+        // // Spinner
+        // createAndAddEntity({2.5f, 41.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
+        //                    system::ShapeType::Box, JPH::EMotionType::Static);
+        //
+        // // Fakir
+        // constexpr int totalRows = 20;
+        // constexpr float startX = -14.0f;
+        //
+        // for (int row = 0; row < totalRows; ++row)
+        // {
+        //     constexpr int cols = 10;
+        //     for (int col = 0; col < cols; ++col)
+        //     {
+        //         constexpr float startY = 14.0f;
+        //         constexpr float spacing = 3.0f;
+        //         float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+        //         glm::vec3 pos = {static_cast<float>(col) * spacing + startX + offsetX, startY + static_cast<float>(row) * 1.2f, 0.0f};
+        //         auto maxFactor = static_cast<float>(totalRows * cols);
+        //         float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
+        //         glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+        //         createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
+        //     }
+        // }
         }
-        lightsScene(m_sceneId);
+        ////////////////////////////////////////////////////////////////////////////////
 
-        // Background
-        createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Funnel
-        createAndAddEntity({-6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-        createAndAddEntity({6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Spinner
-        createAndAddEntity({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Stairs
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
-            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}
-        };
-        for (const auto& [pos, size, rotation, color] : stairs)
+        //////////////////////////////// Video scene ///////////////////////////////////
         {
-            createAndAddEntity(pos, size, rotation, color, system::ShapeType::Box, JPH::EMotionType::Static);
+            auto videoBillboard = EntityFactory3D::createBillboard({0.0f, 5.0f, 1.0f},
+                                                            {3.0f, 3.0f, 3.0f},
+                                                            {1.0f, 1.0f, 1.0f, 1.0f});
+            components::VideoComponent videoComponent;
+            videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
+
+            Application::m_coordinator->addComponent(videoBillboard, videoComponent);
+
+            scene.addEntity(videoBillboard);
         }
-
-        // Tunnel
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
-            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
-            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
-            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
-        };
-        for (const auto& [pos, size, rotation] : tunnels)
-        {
-            createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-        }
-
-        // Dominos
-        createAndAddEntity({-9.0f, 44.0f, 0.0f}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-        createAndAddEntity({11.15f, 44.0f, 0.0f}, {15.5f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-
-        for (int i = 0; i < 24; ++i)
-        {
-            if (i == 13) continue;
-            float x = -18.4f + static_cast<float>(i) * 1.6f;
-            glm::vec3 pos = {x, 45.5f, 0.0f};
-            float gradientFactor = static_cast<float>(i) / 24.0f;
-            glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-            createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box, JPH::EMotionType::Dynamic);
-        }
-
-        // Spinner
-        createAndAddEntity({2.5f, 41.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
-                           system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Fakir
-        constexpr int totalRows = 20;
-        constexpr float startX = -14.0f;
-
-        for (int row = 0; row < totalRows; ++row)
-        {
-            constexpr int cols = 10;
-            for (int col = 0; col < cols; ++col)
-            {
-                constexpr float startY = 14.0f;
-                constexpr float spacing = 3.0f;
-                float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-                glm::vec3 pos = {static_cast<float>(col) * spacing + startX + offsetX, startY + static_cast<float>(row) * 1.2f, 0.0f};
-                auto maxFactor = static_cast<float>(totalRows * cols);
-                float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
-                glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-                createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
-            }
-        }
+        ////////////////////////////////////////////////////////////////////////////////
     }
 
     void EditorScene::setupWindow()

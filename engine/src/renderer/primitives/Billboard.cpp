@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "renderer/Renderer3D.hpp"
-
 #include <array>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
