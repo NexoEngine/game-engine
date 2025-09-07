@@ -25,6 +25,7 @@ set(COMMON_SOURCES
         engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
         engine/src/components/Camera.cpp
+        engine/src/components/Video.cpp
         engine/src/components/Transform.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
@@ -57,6 +58,7 @@ set(COMMON_SOURCES
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderCommandSystem.cpp
         engine/src/systems/RenderBillboardSystem.cpp
+        engine/src/systems/RenderVideoSystem.cpp
         engine/src/systems/LightSystem.cpp
         engine/src/systems/ScriptingSystem.cpp
         engine/src/systems/PhysicsSystem.cpp
@@ -134,9 +136,13 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll)
 
-# joltphysics
+# jolt-physics
 find_package(Jolt CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
+
+# OpenCV
+find_package(OpenCV CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_imgproc opencv_highgui)
 
 ###########################################
 # Scripting
