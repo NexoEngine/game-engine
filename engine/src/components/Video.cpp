@@ -38,10 +38,6 @@ namespace nexo::components {
 
         const auto width  = static_cast<unsigned int>(tmp.cols);
         const auto height = static_cast<unsigned int>(tmp.rows);
-        // const size_t byteCount    = tmp.total() * tmp.elemSize();
-
-        // std::vector<uint8_t> buffer(byteCount);
-        // std::memcpy(buffer.data(), tmp.data, byteCount);
 
         renderer::NxTextureFormat format;
         if (tmp.channels() == 1)
