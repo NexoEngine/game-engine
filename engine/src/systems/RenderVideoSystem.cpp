@@ -42,19 +42,17 @@ namespace nexo::system {
 
         for (size_t i = 0; i < videoSpan.size(); ++i) {
             auto &videoComponent = videoSpan[i];
-            if ((coord->entityHasComponent<components::MaterialComponent>(entitySpan[i]) &&
-                 videoComponent.frames.empty()) ||
-                videoComponent.path.empty())
+            if (!coord->entityHasComponent<components::MaterialComponent>(entitySpan[i]) ||
+                videoComponent.path.empty()) {
                 continue;
-            if (videoComponent.frames.empty() && !videoComponent.path.empty() &&
-                !videoComponent.loadVideoFrames(videoComponent.path)) {
+            }
+            if (videoComponent.frames.empty() && !videoComponent.loadVideoFrames(videoComponent.path)) {
                 LOG_ONCE(NEXO_ERROR, "Failed to load video frames from path: {}", videoComponent.path);
                 continue;
             }
 
             // update material to current frame
-            auto &materialComponent =
-                coord->getComponent<components::MaterialComponent>(entitySpan[i]);
+            auto &materialComponent    = coord->getComponent<components::MaterialComponent>(entitySpan[i]);
             auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex++];
             materialComponent.material = currentFrameMaterial;
         }
