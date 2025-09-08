@@ -132,9 +132,9 @@ namespace nexo::editor {
         ImGui::Text("Enter a new name for the asset:");
 
         // Input text for the new asset name
-        std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
-        static std::string newName             = assetName;
+        static std::string newName;
+        std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         if (newName.empty()) {
             newName = assetName;
         }
@@ -143,7 +143,7 @@ namespace nexo::editor {
             ImGui::SetKeyboardFocusHere();
             isFocus = false;
         }
-        ImGui::InputText("##AssetName", newName.data(), assetName.capacity(), ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::InputText("##AssetName", newName.data(), MAX_ASSET_NAME_LENGTH, ImGuiInputTextFlags_AutoSelectAll);
         newName.resize(strlen(newName.c_str()));
         ImGui::Separator();
 
