@@ -19,12 +19,13 @@
 #include "assets/AssetCatalog.hpp"
 
 namespace nexo::components {
+
     bool VideoComponent::loadVideoFrames(const std::string &videoPath)
     {
         cv::VideoCapture cap(videoPath);
 
         if (!cap.isOpened()) {
-            LOG_ONCE(NEXO_ERROR, "Erreur : impossible d'ouvrir la vidéo {}", videoPath);
+            LOG_ONCE(NEXO_ERROR, "Failed to open the video {}", videoPath);
             return false;
         }
         // int frameNumber = static_cast<int>(cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_COUNT)); // Get total
