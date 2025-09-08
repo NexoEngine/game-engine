@@ -148,7 +148,7 @@ namespace nexo::editor {
                 PopupManager::closePopup();
             } else {
                 m_folderActionState.showError    = true;
-                m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
+                m_folderActionState.errorMessage = "The folder may not be empty";
             }
         }
         ImGui::SameLine();
@@ -178,7 +178,7 @@ namespace nexo::editor {
             PopupManager::closePopup();
         } else {
             m_folderActionState.showError    = true;
-            m_folderActionState.errorMessage = "Failed to delete the folder (may not be empty)";
+            m_folderActionState.errorMessage = "Failed to delete the folder";
         }
         ImGui::SameLine();
         if (Button("Cancel", ImNexo::CANCEL)) {
