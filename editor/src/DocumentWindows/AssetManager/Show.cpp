@@ -141,7 +141,7 @@ namespace nexo::editor {
             // Asset popups
             if (m_popupManager.showPopupModal("Rename Asset Popup")) renameAssetPopup();
             if (m_popupManager.showPopupModal("Delete Asset Popup")) deleteAssetPopup();
-            if (m_popupManager.showPopupModal("Delete Not Empty Asset Popup")) deleteUsedAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Used Asset Popup")) deleteUsedAssetPopup();
             if (m_popupManager.showPopupModal("Details Asset Popup")) assetDetailsPopup();
         }
 
