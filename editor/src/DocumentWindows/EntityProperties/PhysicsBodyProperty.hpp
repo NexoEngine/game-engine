@@ -37,6 +37,8 @@ namespace nexo::editor {
              */
             void show(ecs::Entity entity) override;
 
+            static void addPhysicsComponentToEntity(ecs::Entity entity, bool isDynamic);
+
         private:
             /**
              * @brief Recreates the physics body in Jolt with new properties.

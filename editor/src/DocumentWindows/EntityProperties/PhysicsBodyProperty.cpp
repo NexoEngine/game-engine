@@ -119,4 +119,47 @@ namespace nexo::editor {
         }
     }
 
+    void PhysicsBodyProperty::addPhysicsComponentToEntity(const ecs::Entity entity, const bool isDynamic)
+    {
+        const auto& coordinator = Application::m_coordinator;
+        auto& app = Application::getInstance();
+        auto physicsSystem = app.getPhysicsSystem();
+        
+        if (!physicsSystem) {
+            LOG(NEXO_ERROR, "PhysicsSystem not available");
+            return;
+        }
+
+        auto transformOpt = coordinator->tryGetComponent<components::TransformComponent>(entity);
+        if (!transformOpt) {
+            LOG(NEXO_ERROR, "Entity {} missing TransformComponent for physics body creation", entity);
+            return;
+        }
+
+        const auto& transform = transformOpt->get();
+        const auto type = isDynamic ? components::PhysicsBodyComponent::Type::Dynamic : components::PhysicsBodyComponent::Type::Static;
+        
+        try {
+            JPH::BodyID bodyID;
+            if (isDynamic) {
+                bodyID = physicsSystem->createDynamicBody(entity, transform);
+            } else {
+                bodyID = physicsSystem->createStaticBody(entity, transform);
+            }
+            
+            if (bodyID.IsInvalid()) {
+                LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+                return;
+            }
+            
+            coordinator->addComponent(entity, components::PhysicsBodyComponent{bodyID, type});
+            
+            LOG(NEXO_INFO, "Added physics component to entity {} (type: {})", 
+                entity, isDynamic ? "Dynamic" : "Static");
+                
+        } catch (const std::exception& e) {
+            LOG(NEXO_ERROR, "Exception during physics component creation for entity {}: {}", entity, e.what());
+        }
+    }
+
 }
