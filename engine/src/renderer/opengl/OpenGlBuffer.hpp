@@ -107,7 +107,7 @@ namespace nexo::renderer {
              * Usage:
              * - Use this method for dynamically updating buffer content.
              */
-            void setData(void *data, unsigned int size) override;
+            void setData(void *data, size_t size) override;
 
             [[nodiscard]] unsigned int getId() const override { return _id; };
 
@@ -179,7 +179,7 @@ namespace nexo::renderer {
             * Notes:
             * - Sets the `_count` member to track the number of indices in the buffer.
             */
-            void setData(unsigned int *indices, unsigned int count) override;
+            void setData(unsigned int *indices, size_t count) override;
 
             /**
             * @brief Retrieves the number of indices in the buffer.
@@ -191,12 +191,12 @@ namespace nexo::renderer {
             * Usage:
             * - Use this value for rendering indexed primitives.
             */
-            [[nodiscard]] unsigned int getCount() const override;
+            [[nodiscard]] size_t getCount() const override;
 
             [[nodiscard]] unsigned int getId() const override { return _id; };
         private:
             unsigned int _id{};
-            unsigned int _count = 0;
+            size_t _count = 0;
     };
 
 }

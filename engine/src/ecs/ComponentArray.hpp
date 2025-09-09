@@ -123,6 +123,11 @@ namespace nexo::ecs {
         [[nodiscard]] virtual std::span<const Entity> entities() const = 0;
     };
 
+#if defined(_MSC_VER)
+    #pragma warning(push) // ComponentArray
+    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+#endif
+
     /**
      * @class ComponentArray
      * @brief Stores and manages components of a specific type T.
@@ -249,11 +254,10 @@ namespace nexo::ecs {
             // copy the raw data into the new component, if it is trivially copyable, use memcpy, otherwise use placement new
             if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+                ++m_size;
             } else {
                 THROW_EXCEPTION(InternalError, "Component type is not trivially copyable for raw insertion");
             }
-
-            ++m_size;
         }
 
         /**
@@ -622,6 +626,14 @@ namespace nexo::ecs {
         }
     };
 
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // ComponentArray
+
+    #pragma warning(push) // TypeErasedComponentArray
+    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+#endif
+
         /**
      * @class TypeErasedComponentArray
      * @brief A type-erased component array that can store components of any size.
@@ -737,5 +749,9 @@ namespace nexo::ecs {
 
         void shrinkIfNeeded();
     };
+
+#if defined(_MSC_VER)
+    #pragma warning(pop) // TypeErasedComponentArray
+#endif
 
 }

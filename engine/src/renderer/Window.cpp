@@ -19,12 +19,14 @@
 #endif
 
 namespace nexo::renderer {
+
     std::shared_ptr<NxWindow> NxWindow::create(int width, int height, const std::string &title)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlWindow>(width, height, title);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
 }

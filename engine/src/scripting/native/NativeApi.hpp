@@ -89,10 +89,10 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) NxCreateCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(components::TransformComponent *) NxGetTransformComponent(ecs::Entity entity);
         NEXO_RET(void *) NxGetComponent(ecs::Entity entity, UInt32 componentTypeId);
-        NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 typeId, const void *componentData);
+        NEXO_RET(void) NxAddComponent(ecs::Entity entity, UInt32 componentTypeId, const void *componentData);
         NEXO_RET(void) NxRemoveComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(void) NxDestroyEntity(ecs::Entity entity);
-        NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 typeId);
+        NEXO_RET(bool) NxHasComponent(ecs::Entity entity, UInt32 componentTypeId);
         NEXO_RET(Int64) NxRegisterComponent(const char *name, UInt64 componentSize, const Field *fields, UInt64 fieldCount);
         NEXO_RET(ComponentTypeIds) NxGetComponentTypeIds();
 

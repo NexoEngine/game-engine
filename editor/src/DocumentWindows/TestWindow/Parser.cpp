@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Error.hpp"
 #include "Exception.hpp"
 #include "TestWindow.hpp"
 #include "utils/String.hpp"
@@ -19,9 +20,9 @@
 #include "Logger.hpp"
 #include "exceptions/Exceptions.hpp"
 
-#include <fstream>
 #include <cctype>
 #include <cerrno>
+#include <fstream>
 
 namespace nexo::editor {
 
@@ -36,7 +37,7 @@ namespace nexo::editor {
     {
         std::ifstream in(entry.path());
         if (!in)
-            THROW_EXCEPTION(FileReadException, entry.path().string(), std::strerror(errno));
+            THROW_EXCEPTION(FileReadException, entry.path().string(), nexo::strerror(errno));
 
         TestSection* currentSection = nullptr;
         TestSection* currentSubSection = nullptr;

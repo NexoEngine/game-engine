@@ -64,10 +64,10 @@ namespace nexo::editor {
 
         nexo::init();
 
-        ImGuiBackend::setErrorCallback(nexo::getApp().getWindow());
+        ImGuiBackend::setErrorCallback(window);
 
         ImGui::CreateContext();
-        ImGuiBackend::init(nexo::getApp().getWindow());
+        ImGuiBackend::init(window);
 
         ImGuiIO &io = ImGui::GetIO();
         static const std::string iniFilePath = Path::resolvePathRelativeToExe(

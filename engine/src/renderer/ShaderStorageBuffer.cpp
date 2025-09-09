@@ -20,11 +20,14 @@
 #endif
 
 namespace nexo::renderer {
+
 	std::shared_ptr<NxShaderStorageBuffer> NxShaderStorageBuffer::create(unsigned int size)
 	{
   		#ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlShaderStorageBuffer>(size);
-        #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+	    #else
+	        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+	    #endif
 	}
+
 }

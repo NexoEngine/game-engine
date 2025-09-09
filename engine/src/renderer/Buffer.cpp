@@ -24,23 +24,27 @@ namespace nexo::renderer {
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(vertices, size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<NxVertexBuffer> createVertexBuffer(unsigned int size)
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexBuffer>(size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
     std::shared_ptr<NxIndexBuffer> createIndexBuffer()
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlIndexBuffer>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
+
 }

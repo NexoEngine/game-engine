@@ -23,8 +23,9 @@ namespace nexo::renderer {
     {
         #ifdef NX_GRAPHICS_API_OPENGL
             return std::make_shared<NxOpenGlVertexArray>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
     }
 
 }

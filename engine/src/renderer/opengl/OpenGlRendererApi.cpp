@@ -109,17 +109,17 @@ namespace nexo::renderer {
             glDepthMask(GL_FALSE);
     }
 
-    void NxOpenGlRendererApi::drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const unsigned int indexCount)
+    void NxOpenGlRendererApi::drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (!vertexArray)
             THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex array cannot be null");
-        const unsigned int count = indexCount ? vertexArray->getIndexBuffer()->getCount() : indexCount;
+        const size_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
         glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 
-    void NxOpenGlRendererApi::drawUnIndexed(const unsigned int verticesCount)
+    void NxOpenGlRendererApi::drawUnIndexed(size_t verticesCount)
     {
         if (!m_initialized)
             THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");

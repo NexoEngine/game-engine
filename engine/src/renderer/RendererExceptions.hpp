@@ -22,7 +22,7 @@ namespace nexo::renderer {
 
 	class NxOutOfRangeException final : public Exception {
         public:
-            explicit NxOutOfRangeException(unsigned int index, unsigned int size,
+            explicit NxOutOfRangeException(size_t index, size_t size,
                                          const std::source_location loc = std::source_location::current())
                 : Exception(std::format("Index {} is out of range [0, {})", index, size), loc) {}
     };
@@ -197,7 +197,7 @@ namespace nexo::renderer {
 
     class NxTextureSizeMismatch final : public Exception {
         public:
-            explicit NxTextureSizeMismatch(const std::string &backendApi, const int dataSize, const int expectedSize,
+            explicit NxTextureSizeMismatch(const std::string &backendApi, const size_t dataSize, const size_t expectedSize,
                                          const std::source_location loc = std::source_location::current())
                 : Exception(std::format("[{}] Data size does not match the texture size: {} != {}",
                                         backendApi, dataSize, expectedSize), loc) {}
