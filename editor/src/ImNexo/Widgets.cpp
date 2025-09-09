@@ -239,9 +239,10 @@ namespace ImNexo
         ImGui::EndPopup();
     }
 
+
+
     void PrimitiveSubMenu(const int sceneId, nexo::editor::PopupManager& popupManager)
     {
-
         auto& app = nexo::Application::getInstance();
         auto& sceneManager = app.getSceneManager();
 
