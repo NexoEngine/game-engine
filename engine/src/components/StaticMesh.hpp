@@ -22,6 +22,20 @@ namespace nexo::components {
         std::shared_ptr<renderer::NxVertexArray> vao;
 
         renderer::RequiredAttributes meshAttributes;
+
+        struct Memento {
+            std::shared_ptr<renderer::NxVertexArray> vao;
+        };
+
+        void restore(const Memento &memento)
+        {
+            vao = memento.vao;
+        }
+
+        [[nodiscard]] Memento save() const
+        {
+            return {vao};
+        }
     };
 
 }

@@ -16,13 +16,17 @@
 #include "EntityActions.hpp"
 #include "components/Camera.hpp"
 #include "components/Light.hpp"
+#include "components/MaterialComponent.hpp"
+#include "components/Name.hpp"
+#include "components/Parent.hpp"
 #include "components/Render.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
 
-    std::unique_ptr<Action> ComponentRestoreFactory::createRestoreComponent(ecs::Entity entity, const std::type_index typeIndex)
+    std::unique_ptr<Action> ComponentRestoreFactory::createRestoreComponent(ecs::Entity entity, const std::any& typeIndex)
     {
         using ActionFactory = std::function<std::unique_ptr<Action>(ecs::Entity)>;
 
@@ -38,9 +42,16 @@ namespace nexo::editor {
             {typeid(components::UuidComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::UuidComponent>>(e); }},
             {typeid(components::PerspectiveCameraController), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraController>>(e); }},
             {typeid(components::PerspectiveCameraTarget), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::PerspectiveCameraTarget>>(e); }},
+            {typeid(components::MaterialComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::MaterialComponent>>(e); }},
+            {typeid(components::StaticMeshComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::StaticMeshComponent>>(e); }},
+            {typeid(components::ParentComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::ParentComponent>>(e); }},
+            {typeid(components::NameComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::NameComponent>>(e); }},
+            {typeid(components::RootComponent), [](ecs::Entity e){ return std::make_unique<ComponentRestoreAction<components::RootComponent>>(e); }},
         };
 
-        if (const auto it = factories.find(typeIndex); it != factories.end()) {
+        auto typeId = std::type_index(typeIndex.type());
+        auto it = factories.find(typeId);
+        if (it != factories.end()) {
             return (it->second)(entity);
         }
         return nullptr;

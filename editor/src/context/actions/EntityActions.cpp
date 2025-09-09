@@ -29,8 +29,8 @@ namespace nexo::editor {
     void EntityCreationAction::undo()
     {
         const auto &coordinator = Application::m_coordinator;
-        const std::vector<std::type_index>& componentsTypeIndex = coordinator->getAllComponentTypeIndices(m_entityId);
-        for (const auto typeIndex : componentsTypeIndex) {
+        const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
+        for (const auto &typeIndex : componentsTypeIndex) {
             if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
             m_componentRestoreActions.push_back(ComponentRestoreFactory::createRestoreComponent(m_entityId, typeIndex));
@@ -41,10 +41,21 @@ namespace nexo::editor {
     EntityDeletionAction::EntityDeletionAction(const ecs::Entity entityId) : m_entityId(entityId)
     {
         const auto &coordinator = Application::m_coordinator;
-        std::vector<std::type_index> componentsTypeIndex = coordinator->getAllComponentTypeIndices(entityId);
-        for (const auto typeIndex : componentsTypeIndex) {
+        const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
+        for (const auto &typeIndex : componentsTypeIndex) {
              if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
+            auto typeId = std::type_index(typeIndex.type());
+            if (typeId == typeid(components::ParentComponent)) {
+                auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(entityId);
+                if (parentOpt.has_value()) {
+                    ecs::Entity oldParent = parentOpt->get().parent;
+                    m_componentRestoreActions.push_back(
+                        std::make_unique<EntityParentChangeAction>(entityId, oldParent, ecs::INVALID_ENTITY)
+                    );
+                }
+                continue;
+            }
             m_componentRestoreActions.push_back(ComponentRestoreFactory::createRestoreComponent(entityId, typeIndex));
         }
     }
@@ -53,13 +64,20 @@ namespace nexo::editor {
     {
         // Simply destroy the entity
         const auto& coordinator = Application::m_coordinator;
+        auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(m_entityId);
+        if (parentOpt.has_value()) {
+            ecs::Entity oldParent = parentOpt->get().parent;
+            auto parentTransformOpt = coordinator->tryGetComponent<components::TransformComponent>(oldParent);
+            if (parentTransformOpt.has_value()) {
+                parentTransformOpt->get().removeChild(m_entityId);
+            }
+        }
         coordinator->destroyEntity(m_entityId);
     }
 
     void EntityDeletionAction::undo()
     {
         const auto& coordinator = Application::m_coordinator;
-        // This can cause problem is the entity is not the same, maybe in the future we would need another method
         m_entityId = coordinator->createEntity();
         for (const auto &action : m_componentRestoreActions)
             action->undo();
@@ -68,7 +86,6 @@ namespace nexo::editor {
     void EntityParentChangeAction::redo()
     {
         auto& coordinator = *Application::m_coordinator;
-
         // Handle old parent
         if (m_oldParent != ecs::INVALID_ENTITY) {
             const auto oldParentTransform = coordinator.tryGetComponent<components::TransformComponent>(m_oldParent);
@@ -144,4 +161,81 @@ namespace nexo::editor {
             }
         }
     }
+
+    EntityHierarchyDeletionAction::EntityHierarchyDeletionAction(ecs::Entity rootEntity)
+    : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
+    {
+        std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
+
+            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            if (transformOpt) {
+                for (const auto& child : transformOpt->get().children) {
+                    collectActions(child);
+                    m_parentRelations.emplace_back(child, entity);
+                    m_group->addAction(std::make_unique<EntityDeletionAction>(child));
+                }
+            }
+
+            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
+                ecs::Entity parent = parentOpt->get().parent;
+                m_parentRelations.emplace_back(entity, parent);
+            }
+
+            m_group->addAction(std::make_unique<EntityDeletionAction>(entity));
+        };
+
+        collectActions(rootEntity);
+    }
+
+    void EntityHierarchyDeletionAction::redo() {
+        m_group->redo();
+    }
+
+    void EntityHierarchyDeletionAction::undo() {
+        m_group->undo();
+    }
+
+    EntityHierarchyCreationAction::EntityHierarchyCreationAction(ecs::Entity rootEntity)
+        : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
+    {
+        std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
+            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            if (transformOpt) {
+                for (const auto& child : transformOpt->get().children) {
+                    collectActions(child);
+                    m_parentRelations.emplace_back(child, entity);
+                    m_group->addAction(std::make_unique<EntityCreationAction>(child));
+                }
+            }
+
+            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
+                ecs::Entity parent = parentOpt->get().parent;
+                m_parentRelations.emplace_back(entity, parent);
+            }
+
+            m_group->addAction(std::make_unique<EntityCreationAction>(entity));
+        };
+
+        collectActions(rootEntity);
+
+        for (const auto& [child, parent] : m_parentRelations) {
+            if (parent != ecs::INVALID_ENTITY) {
+                m_group->addAction(std::make_unique<EntityParentChangeAction>(
+                    child, ecs::INVALID_ENTITY, parent));
+            }
+        }
+    }
+
+    void EntityHierarchyCreationAction::redo() {
+        m_group->redo();
+    }
+
+    void EntityHierarchyCreationAction::undo() {
+        m_group->undo();
+    }
+
+
+
 }

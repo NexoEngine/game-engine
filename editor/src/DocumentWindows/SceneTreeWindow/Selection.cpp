@@ -42,7 +42,7 @@ namespace nexo::editor {
                 // Delete all selected entities
                 auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
-                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    auto deleteAction = std::make_unique<EntityHierarchyDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
@@ -51,7 +51,7 @@ namespace nexo::editor {
             } else {
                 // Delete just this entity
                 selector.clearSelection();
-                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                auto action = std::make_unique<EntityHierarchyDeletionAction>(obj.data.entity);
                 ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }
@@ -77,7 +77,7 @@ namespace nexo::editor {
                 // Delete all selected entities
                 auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
-                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    auto deleteAction = std::make_unique<EntityHierarchyDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
@@ -86,7 +86,7 @@ namespace nexo::editor {
             } else {
                 // Delete just this entity
                 selector.clearSelection();
-                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                auto action = std::make_unique<EntityHierarchyDeletionAction>(obj.data.entity);
                 ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }
@@ -127,7 +127,7 @@ namespace nexo::editor {
                 // Delete all selected entities
                 auto actionGroup = ActionManager::createActionGroup();
                 for (const auto& entityId : selectedEntities) {
-                    auto deleteAction = std::make_unique<EntityDeletionAction>(entityId);
+                    auto deleteAction = std::make_unique<EntityHierarchyDeletionAction>(entityId);
                     actionGroup->addAction(std::move(deleteAction));
                     app.deleteEntity(entityId);
                 }
@@ -136,7 +136,7 @@ namespace nexo::editor {
             } else {
                 // Delete just this entity
                 selector.clearSelection();
-                auto action = std::make_unique<EntityDeletionAction>(obj.data.entity);
+                auto action = std::make_unique<EntityHierarchyDeletionAction>(obj.data.entity);
                 ActionManager::get().recordAction(std::move(action));
                 app.deleteEntity(obj.data.entity);
             }

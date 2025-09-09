@@ -15,6 +15,7 @@
 
 #include "Action.hpp"
 #include "Nexo.hpp"
+#include "context/ActionGroup.hpp"
 
 namespace nexo::editor {
 
@@ -58,9 +59,7 @@ namespace nexo::editor {
 
             void redo() override
             {
-                ComponentType target;
-                target.restore(m_memento);
-                Application::m_coordinator->addComponent(m_entity, target);
+                //We have nothing to do here since we are simply redeleting the entity and its components
             }
 
         private:
@@ -163,10 +162,36 @@ namespace nexo::editor {
 
             void redo() override;
             void undo() override;
+
         private:
             ecs::Entity m_entity;
             ecs::Entity m_oldParent;
             ecs::Entity m_newParent;
+    };
+
+    class EntityHierarchyDeletionAction final : public Action {
+    public:
+        explicit EntityHierarchyDeletionAction(ecs::Entity rootEntity);
+        void redo() override;
+        void undo() override;
+
+    private:
+        ecs::Entity m_root;
+        std::unique_ptr<ActionGroup> m_group;
+        std::vector<std::pair<ecs::Entity, ecs::Entity>> m_parentRelations;
+    };
+
+    class EntityHierarchyCreationAction final : public Action {
+    public:
+        explicit EntityHierarchyCreationAction(ecs::Entity rootEntity);
+
+        void redo() override;
+        void undo() override;
+
+    private:
+        ecs::Entity m_root;
+        std::unique_ptr<ActionGroup> m_group;
+        std::vector<std::pair<ecs::Entity, ecs::Entity>> m_parentRelations;
     };
 
 }

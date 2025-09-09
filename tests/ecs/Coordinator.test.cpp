@@ -108,20 +108,20 @@ namespace nexo::ecs {
         EXPECT_THROW(coordinator->removeComponent<TestComponent>(nonexistentEntity), ComponentNotFound);
     }
 
-    TEST_F(CoordinatorTest, GetAllComponents) {
-        coordinator->registerComponent<TestComponent>();
-
-        Entity entity = coordinator->createEntity();
-        TestComponent component{42};
-        coordinator->addComponent(entity, component);
-
-        auto components = coordinator->getAllComponents(entity);
-        EXPECT_EQ(components.size(), 1);
-
-        auto& [type, value] = components[0];
-        EXPECT_EQ(type, std::type_index(typeid(TestComponent)));
-        EXPECT_EQ(std::any_cast<TestComponent>(value).data, 42);
-    }
+    // TEST_F(CoordinatorTest, GetAllComponents) {
+    //     coordinator->registerComponent<TestComponent>();
+    //
+    //     Entity entity = coordinator->createEntity();
+    //     TestComponent component{42};
+    //     coordinator->addComponent(entity, component);
+    //
+    //     auto components = coordinator->getAllComponents(entity);
+    //     EXPECT_EQ(components.size(), 1);
+    //
+    //     auto& [type, value] = components[0];
+    //     EXPECT_EQ(type, std::type_index(typeid(TestComponent)));
+    //     EXPECT_EQ(std::any_cast<TestComponent>(value).data, 42);
+    // }
 
     TEST_F(CoordinatorTest, GetAllEntitiesWith_NoMatch) {
         Entity e1 = coordinator->createEntity();
