@@ -19,6 +19,7 @@
 #include "exceptions/Exceptions.hpp"
 
 #include <fstream>
+#include <tinyfiledialogs.h>
 
 #ifdef __linux__
   #include <sys/utsname.h>
@@ -151,17 +152,34 @@ namespace nexo::editor {
         const auto now_tp = floor<std::chrono::seconds>(std::chrono::system_clock::now());
         std::chrono::zoned_time local_zoned{std::chrono::current_zone(), now_tp};
         std::string ts = std::format("{:%Y%m%d}", local_zoned);
-        const std::string filename = std::format("EditorTestResults_{}.report", ts);
+        const std::string filename = std::format("EditorTestResults_{}", ts);
 
-        const auto testDir = std::filesystem::path(Path::resolvePathRelativeToExe("../tests/editor"));
-        std::filesystem::create_directories(testDir);
-        auto filePath = testDir / filename;
-        return filePath;
+        // Tiny file dialog to get path
+        // patterns
+        const char *patterns[] = {"*.report"};
+        const char *chosenPathStr = tinyfd_saveFileDialog(
+            "Save Test Report",
+            filename.c_str(),
+            1,
+            patterns,
+            "Text files (*.report)"
+        );
+        if (!chosenPathStr) {
+            return std::filesystem::path(); // User cancelled
+        }
+        const std::filesystem::path chosenPath = chosenPathStr;
+        std::filesystem::create_directories(chosenPath.parent_path());
+        return chosenPath;
     }
 
     void TestWindow::writeTestReport()
     {
         const auto filePath = getTestReportFilePath();
+
+        if (filePath.empty()) {
+            LOG(NEXO_WARN, "Test report generation cancelled by user");
+            return;
+        }
 
         std::ofstream out(filePath.string());
         if (!out) {
