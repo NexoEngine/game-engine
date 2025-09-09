@@ -103,134 +103,238 @@ $(document).ready(function(){initNavTree('_asset_manager_window_8hpp_source.html
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;ADocumentWindow.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;assets/AssetRef.hpp&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;utils/TransparentStringHash.hpp&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;core/event/WindowEvent.hpp&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;assets/Asset.hpp&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span>nexo::editor {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_asset_manager_window.html">   26</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_asset_manager_window.html">AssetManagerWindow</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a>, LISTENS_TO(event::EventFileDrop) {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">using</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">ADocumentWindow::ADocumentWindow</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;assets/AssetRef.hpp&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;core/event/WindowEvent.hpp&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;DocumentWindows/PopupManager.hpp&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;FolderManager.hpp&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;assets/Asset.hpp&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>nexo::editor {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view INTERNAL_FOLDER_PREFIX = <span class="stringliteral">&quot;_internal&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> ERROR_DISPLAY_TIMEOUT             = 3.0f;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordtype">void</span> setup() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordtype">void</span> shutdown() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordtype">void</span> show() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordtype">void</span> update() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_file_drop.html">event::EventFileDrop</a>&amp; event) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">struct </span>LayoutSettings {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html">   39</a></span>                <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html">LayoutSizes</a> {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                    <span class="keywordtype">float</span> iconSize = 64.0f;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                    <span class="keywordtype">int</span> iconSpacing = 8;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                    ImVec2 itemSize;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    ImVec2 itemStep;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    <span class="keywordtype">int</span> columnCount;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                    <span class="keywordtype">float</span> thumbnailHeightRatio = 0.8f;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                    <span class="keywordtype">float</span> titlePadding = 5.0f;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                    <span class="keywordtype">float</span> overlaySize = 6.0f;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                    <span class="keywordtype">float</span> overlayPadding = 5.0f;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                    <span class="keywordtype">float</span> cornerRadius = 5.0f;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    <span class="keywordtype">float</span> selectedBoxThickness = 4.0f;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                } size;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html">   53</a></span>                <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html">LayoutColors</a> {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    ImU32 thumbnailBg;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    ImU32 thumbnailBgHovered;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                    ImU32 thumbnailBgSelected;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                    ImU32 thumbnailBgSelectedHovered;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    ImU32 selectedBoxColor;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    ImU32 titleBg;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                    ImU32 titleBgHovered;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    ImU32 titleBgSelected;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                    ImU32 titleBgSelectedHovered;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_folder_action_state.html">   30</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_folder_action_state.html">FolderActionState</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordtype">bool</span> isManagingFolder  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        std::string folderName = <span class="stringliteral">&quot;New Folder&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        std::string parentPath;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordtype">bool</span> showError = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        std::string errorMessage;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">float</span> errorTimer = ERROR_DISPLAY_TIMEOUT;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordtype">void</span> reset()</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            isManagingFolder = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            folderName       = <span class="stringliteral">&quot;New Folder&quot;</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            parentPath       = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            showError        = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            errorMessage     = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            errorTimer       = 3.0f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_action_state.html">   49</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_action_state.html">AssetActionState</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">bool</span> isManagingAsset      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_class" href="classnexo_1_1assets_1_1_i_asset.html">assets::IAsset</a>* assetData = <span class="keyword">nullptr</span>; <span class="comment">// Pointer to the asset being managed</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">bool</span> showError            = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        std::string errorMessage;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">float</span> errorTimer = ERROR_DISPLAY_TIMEOUT;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordtype">void</span> reset()</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            isManagingAsset = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            assetData       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            showError       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            errorMessage    = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            errorTimer      = 3.0f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    };</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    ImU32 titleText;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                } color;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            };</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            std::set&lt;unsigned int&gt; m_selectedAssets;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            std::unordered_map&lt;std::string, std::vector&lt;std::string&gt;, <a class="code hl_struct" href="structnexo_1_1editor_1_1_transparent_string_hash.html">TransparentStringHash</a>, std::equal_to&lt;&gt;&gt; m_folderChildren;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            LayoutSettings m_layout;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordtype">void</span> calculateLayout(<span class="keywordtype">float</span> availWidth);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordtype">void</span> drawMenuBar();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordtype">void</span> drawAssetsGrid();</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordtype">void</span> drawAsset(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1assets_1_1_generic_asset_ref.html">assets::GenericAssetRef</a>&amp; asset, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keyword">const</span> ImVec2&amp; itemPos, <span class="keyword">const</span> ImVec2&amp; itemSize);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordtype">void</span> handleSelection(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">bool</span> isSelected);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_grid_layout_sizes.html">   66</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_grid_layout_sizes.html">GridLayoutSizes</a> {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">float</span> iconSize  = 64.0f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordtype">int</span> iconSpacing = 14; <span class="comment">// Spacing between icons</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        ImVec2 itemSize;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        ImVec2 itemStep;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordtype">int</span> columnCount;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> THUMBNAIL_HEIGHT_RATIO = 0.8f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> TITLE_PADDING          = 5.0f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> OVERLAY_SIZE           = 24.0f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> OVERLAY_PADDING        = 5.0f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> CORNER_RADIUS          = 5.0f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> SELECTED_BOX_THICKNESS = 4.0f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    };</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <a class="code hl_enumeration" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">assets::AssetType</a> m_selectedType = assets::AssetType::UNKNOWN;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            std::string m_currentFolder;  <span class="comment">// Currently selected folder</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            std::string m_hoveredFolder;  <span class="comment">// Currently hovered folder</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; m_folderStructure;  <span class="comment">// Pairs of (path, name)</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">char</span> m_searchBuffer[256] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordtype">void</span> buildFolderStructure();</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordtype">void</span> drawFolderTree();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordtype">void</span> drawFolderTreeItem(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::string&amp; path);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keyword">struct </span>FolderCreationState {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keywordtype">bool</span> isCreatingFolder = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keywordtype">char</span> folderName[256] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                std::string parentPath;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <span class="keywordtype">bool</span> showError = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                std::string errorMessage;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <span class="keywordtype">float</span> errorTimer = 3.0f;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            };</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_layout_colors.html">   80</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_layout_colors.html">LayoutColors</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        ImU32 thumbnailBg;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        ImU32 thumbnailBgHovered;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        ImU32 thumbnailBgSelected;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        ImU32 thumbnailBgSelectedHovered;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        ImU32 selectedBoxColor;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        ImU32 titleBg;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        ImU32 titleBgHovered;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        ImU32 titleBgSelected;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        ImU32 titleBgSelectedHovered;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        ImU32 titleText;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    };</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_layout_settings.html">   93</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_layout_settings.html">LayoutSettings</a> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_struct" href="structnexo_1_1editor_1_1_grid_layout_sizes.html">GridLayoutSizes</a> size;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <a class="code hl_struct" href="structnexo_1_1editor_1_1_layout_colors.html">LayoutColors</a> color;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordtype">float</span> leftPanelWidth = 200.0f;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    };</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            FolderCreationState m_folderCreationState;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <a class="code hl_class" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef&lt;assets::Texture&gt;</a> m_folderIcon;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            ImTextureID getFolderIconTexture() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keywordtype">void</span> handleNewFolderCreation();</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordtype">void</span> drawFolder(</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keyword">const</span> std::string&amp; folderPath,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                <span class="keyword">const</span> std::string&amp; folderName,</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="keyword">const</span> ImVec2&amp; itemPos,</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keyword">const</span> ImVec2&amp; itemSize</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            );</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_type_info.html">   99</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_type_info.html">AssetTypeInfo</a> {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        ImTextureID iconTexture;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        ImU32 backgroundColor;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        std::string tooltip;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    };</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_layout_params.html">  105</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_layout_params.html">AssetLayoutParams</a> {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        ImVec2 itemPos;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        ImVec2 itemSize;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        ImVec2 itemEnd;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        ImVec2 thumbnailEnd;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    };</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            std::vector&lt;std::string&gt; m_pendingDroppedFiles;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordtype">bool</span> m_showDropIndicator = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordtype">void</span> handleDroppedFiles();</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <a class="code hl_class" href="classnexo_1_1assets_1_1_asset_location.html">assets::AssetLocation</a> getAssetLocation(<span class="keyword">const</span> std::filesystem::path &amp;path) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordtype">void</span> importDroppedFile(<span class="keyword">const</span> std::string&amp; filePath) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    };</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">  125</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">AssetDragDropPayload</a></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">  127</a></span>        <a class="code hl_enumeration" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">assets::AssetType</a> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">type</a>; </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">  128</a></span>        <a class="code hl_typedef" href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">assets::AssetID</a> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">id</a>; </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a3f87ac79bcc26574fb8cf70f1cda7213">  129</a></span>        std::string <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a3f87ac79bcc26574fb8cf70f1cda7213">path</a>; </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a45f0ed1bdf710dda56a933b239b297dd">  130</a></span>        std::string <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a45f0ed1bdf710dda56a933b239b297dd">name</a>; </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    };</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_asset_manager_window.html">  112</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_asset_manager_window.html">AssetManagerWindow</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a>, LISTENS_TO(event::EventFileDrop) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>       <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">using</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">ADocumentWindow::ADocumentWindow</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordtype">void</span> setup() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordtype">void</span> shutdown() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordtype">void</span> show() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordtype">void</span> update() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordtype">void</span> handleEvent(<a class="code hl_class" href="classnexo_1_1event_1_1_event_file_drop.html">event::EventFileDrop</a>&amp; event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>       <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="comment">// Draw methods</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordtype">void</span> drawMenuBar();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordtype">void</span> drawPanelSplitter();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordtype">void</span> drawBreadcrumbs();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordtype">void</span> sceneContextMenu();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordtype">void</span> drawAssetsGrid();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordtype">void</span> drawAssetTitle(<span class="keyword">const</span> std::shared_ptr&lt;assets::IAsset&gt;&amp; assetData, <span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_layout_params.html">AssetLayoutParams</a>&amp; params) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordtype">void</span> drawAsset(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1assets_1_1_generic_asset_ref.html">assets::GenericAssetRef</a>&amp; asset, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keyword">const</span> ImVec2&amp; itemPos,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                       <span class="keyword">const</span> ImVec2&amp; itemSize);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordtype">void</span> drawFolderIcon(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_layout_params.html">AssetLayoutParams</a>&amp; params) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordtype">void</span> drawFolder(<span class="keyword">const</span> std::string&amp; folderPath, <span class="keyword">const</span> std::string&amp; folderName, <span class="keyword">const</span> ImVec2&amp; itemPos,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                        <span class="keyword">const</span> ImVec2&amp; itemSize);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordtype">void</span> drawFolderTree();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordtype">void</span> drawFolderTreeItem(<span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> std::string&amp; path);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="comment">// utility methods</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordtype">void</span> buildFolderStructure();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        [[nodiscard]] <span class="keyword">static</span> ImTextureID getIconTexture(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef&lt;assets::Texture&gt;</a>&amp; texture);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        [[nodiscard]] <a class="code hl_class" href="classnexo_1_1assets_1_1_asset_location.html">assets::AssetLocation</a> getAssetLocation(<span class="keyword">const</span> std::filesystem::path&amp; path) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="comment">// handle selection events</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordtype">void</span> handleSelection(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">bool</span> isSelected);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordtype">void</span> handleSelection(<span class="keyword">const</span> std::string&amp; folderPath, <span class="keywordtype">bool</span> isSelected);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="comment">// handle right-click events</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordtype">void</span> handleRightClickOnAssetManager();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keywordtype">void</span> handleRightClickOnFolder();</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordtype">void</span> handleRightClickOnAsset();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordtype">void</span> rightClickOnAssetManagerMenu();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="comment">// popup management</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordtype">void</span> deleteFolderPopup();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordtype">void</span> deleteNotEmptyFolderPopup();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordtype">void</span> renameFolderPopup();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordtype">void</span> createFolderPopup();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordtype">void</span> folderDetailsPopup();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordtype">void</span> renameAssetPopup();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordtype">void</span> deleteAssetPopup();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordtype">void</span> deleteUsedAssetPopup();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordtype">void</span> assetDetailsPopup();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keyword">static</span> <span class="keywordtype">void</span> drawErrorMessageInPopup(T&amp; actionState);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="comment">// menu management</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordtype">void</span> rightClickOnFolderMenu();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordtype">void</span> rightClickOnAssetMenu();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="comment">// handle action on folder</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordtype">bool</span> handleFolderRenaming(<span class="keyword">const</span> std::string&amp; newName);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordtype">bool</span> handleFolderCreation();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="comment">// handle action on asset</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordtype">bool</span> handleAssetRenaming(<span class="keyword">const</span> std::string&amp; newName);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="comment">// drag and drop management</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordtype">void</span> handleDroppedFiles();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">static</span> <span class="keywordtype">void</span> handleAssetDrag(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1assets_1_1_generic_asset_ref.html">assets::GenericAssetRef</a>&amp; asset);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordtype">void</span> handleFolderDrag(<span class="keyword">const</span> std::string&amp; folderPath, <span class="keyword">const</span> std::string&amp; folderName);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordtype">void</span> handleAssetDrop(<span class="keyword">const</span> std::string&amp; path);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordtype">void</span> handleFolderDrop(<span class="keyword">const</span> std::string&amp; folderPath, <span class="keyword">const</span> std::string &amp;folderName);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordtype">void</span> importDroppedFile(<span class="keyword">const</span> std::string&amp; filePath) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        std::set&lt;unsigned int&gt; m_selectedAssets;        <span class="comment">// Set of selected asset indices</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        std::shared_ptr&lt;assets::IAsset&gt; m_hoveredAsset; <span class="comment">// Currently hovered asset</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <a class="code hl_struct" href="structnexo_1_1editor_1_1_layout_settings.html">LayoutSettings</a> m_layout;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_enumeration" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">assets::AssetType</a> m_selectedType = assets::AssetType::UNKNOWN; <span class="comment">// Default selected asset type</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        std::set&lt;std::string&gt; m_selectedFolders; <span class="comment">// Set of selected folder paths</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        std::string m_currentFolder;             <span class="comment">// Currently selected folder</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        std::string m_hoveredFolder;             <span class="comment">// Currently hovered folder</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        std::string m_searchBuffer;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <a class="code hl_class" href="classnexo_1_1editor_1_1_popup_manager.html">PopupManager</a> m_popupManager;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_struct" href="structnexo_1_1editor_1_1_folder_action_state.html">FolderActionState</a> m_folderActionState;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_action_state.html">AssetActionState</a> m_assetActionState;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <a class="code hl_class" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef&lt;assets::Texture&gt;</a> m_folderIcon;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        std::vector&lt;std::string&gt; m_pendingDroppedFiles;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <a class="code hl_class" href="classnexo_1_1editor_1_1_folder_manager.html">FolderManager</a> m_folderManager;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    };</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">  215</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">AssetDragDropPayload</a> {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">  216</a></span>        <a class="code hl_enumeration" href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">assets::AssetType</a> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">type</a> = assets::AssetType::UNKNOWN; </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">  217</a></span>        <a class="code hl_typedef" href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">assets::AssetID</a> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">id</a>;                                  </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ab469594b4de8c878e09fb40530d8487f">  218</a></span>        <span class="keywordtype">char</span> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ab469594b4de8c878e09fb40530d8487f">path</a>[256]{};                                    </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#aadeebfa33c1a4550012b3265aa8cbffd">  219</a></span>        <span class="keywordtype">char</span> <a class="code hl_variable" href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#aadeebfa33c1a4550012b3265aa8cbffd">name</a>[64]{};                                     </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    };</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html">  227</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html">FolderDragDropPayload</a> {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a83338edd065ef79229a0135779849b55">  228</a></span>        <span class="keywordtype">char</span> <a class="code hl_variable" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a83338edd065ef79229a0135779849b55">path</a>[256]{}; </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a070e2316e3a9689f7216a7f25c2f7e0e">  229</a></span>        <span class="keywordtype">char</span> <a class="code hl_variable" href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a070e2316e3a9689f7216a7f25c2f7e0e">name</a>[64]{};  </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    };</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>} <span class="comment">// namespace nexo::editor</span></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_asset_location_html"><div class="ttname"><a href="classnexo_1_1assets_1_1_asset_location.html">nexo::assets::AssetLocation</a></div><div class="ttdoc">AssetLocation is a wrapper of std::string to represent the location of an asset.</div><div class="ttdef"><b>Definition:</b> AssetLocation.hpp:42</div></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_asset_ref_html"><div class="ttname"><a href="classnexo_1_1assets_1_1_asset_ref.html">nexo::assets::AssetRef</a></div><div class="ttdoc">Template class representing a lightweight reference to an asset.</div><div class="ttdef"><b>Definition:</b> AssetRef.hpp:151</div></div>
 <div class="ttc" id="aclassnexo_1_1assets_1_1_generic_asset_ref_html"><div class="ttname"><a href="classnexo_1_1assets_1_1_generic_asset_ref.html">nexo::assets::GenericAssetRef</a></div><div class="ttdoc">A non-templated asset reference for generic asset storage.</div><div class="ttdef"><b>Definition:</b> AssetRef.hpp:38</div></div>
+<div class="ttc" id="aclassnexo_1_1assets_1_1_i_asset_html"><div class="ttname"><a href="classnexo_1_1assets_1_1_i_asset.html">nexo::assets::IAsset</a></div><div class="ttdoc">Pure virtual interface for all assets.</div><div class="ttdef"><b>Definition:</b> Asset.hpp:144</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:37</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html_ade88d5fd59fe62d66fe32998428a0add"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html#ade88d5fd59fe62d66fe32998428a0add">nexo::editor::ADocumentWindow::ADocumentWindow</a></div><div class="ttdeci">ADocumentWindow(std::string windowName, WindowRegistry &amp;windowRegistry)</div><div class="ttdoc">Constructs a new ADocumentWindow instance with a unique window ID.</div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:45</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_asset_manager_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_asset_manager_window.html">nexo::editor::AssetManagerWindow</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:26</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_asset_manager_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_asset_manager_window.html">nexo::editor::AssetManagerWindow</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:112</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_folder_manager_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_folder_manager.html">nexo::editor::FolderManager</a></div><div class="ttdef"><b>Definition:</b> FolderManager.hpp:24</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_popup_manager_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_popup_manager.html">nexo::editor::PopupManager</a></div><div class="ttdoc">Manages the state of popups within the UI.</div><div class="ttdef"><b>Definition:</b> PopupManager.hpp:29</div></div>
 <div class="ttc" id="aclassnexo_1_1event_1_1_event_file_drop_html"><div class="ttname"><a href="classnexo_1_1event_1_1_event_file_drop.html">nexo::event::EventFileDrop</a></div><div class="ttdef"><b>Definition:</b> WindowEvent.hpp:167</div></div>
 <div class="ttc" id="anamespacenexo_1_1assets_html_a496d7a7f3c68e839788098391b929616"><div class="ttname"><a href="namespacenexo_1_1assets.html#a496d7a7f3c68e839788098391b929616">nexo::assets::AssetType</a></div><div class="ttdeci">AssetType</div><div class="ttdoc">Asset types.</div><div class="ttdef"><b>Definition:</b> Asset.hpp:39</div></div>
-<div class="ttc" id="anamespacenexo_1_1assets_html_a60fde580868364aa1ec300406da050f9"><div class="ttname"><a href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">nexo::assets::AssetID</a></div><div class="ttdeci">boost::uuids::uuid AssetID</div><div class="ttdoc">Asset ID type.</div><div class="ttdef"><b>Definition:</b> Asset.hpp:124</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">nexo::editor::AssetDragDropPayload</a></div><div class="ttdoc">Payload structure for drag and drop operations from asset manager.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:126</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_a3f87ac79bcc26574fb8cf70f1cda7213"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a3f87ac79bcc26574fb8cf70f1cda7213">nexo::editor::AssetDragDropPayload::path</a></div><div class="ttdeci">std::string path</div><div class="ttdoc">Path to the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:129</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_a4249c00d7802d9b494746203b7d6e06a"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">nexo::editor::AssetDragDropPayload::type</a></div><div class="ttdeci">assets::AssetType type</div><div class="ttdoc">Type of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:127</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_a45f0ed1bdf710dda56a933b239b297dd"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a45f0ed1bdf710dda56a933b239b297dd">nexo::editor::AssetDragDropPayload::name</a></div><div class="ttdeci">std::string name</div><div class="ttdoc">Display name of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:130</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_ac13ca02d90a89406d2ff34da8644778c"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">nexo::editor::AssetDragDropPayload::id</a></div><div class="ttdeci">assets::AssetID id</div><div class="ttdoc">ID of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:128</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html">nexo::editor::AssetManagerWindow::LayoutSettings::LayoutColors</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:53</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html">nexo::editor::AssetManagerWindow::LayoutSettings::LayoutSizes</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:39</div></div>
-<div class="ttc" id="astructnexo_1_1editor_1_1_transparent_string_hash_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_transparent_string_hash.html">nexo::editor::TransparentStringHash</a></div><div class="ttdef"><b>Definition:</b> TransparentStringHash.hpp:20</div></div>
+<div class="ttc" id="anamespacenexo_1_1assets_html_a60fde580868364aa1ec300406da050f9"><div class="ttname"><a href="namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9">nexo::assets::AssetID</a></div><div class="ttdeci">boost::uuids::uuid AssetID</div><div class="ttdoc">Asset ID type.</div><div class="ttdef"><b>Definition:</b> Asset.hpp:122</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_action_state_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_action_state.html">nexo::editor::AssetActionState</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:49</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html">nexo::editor::AssetDragDropPayload</a></div><div class="ttdoc">Payload structure for drag and drop operations from asset manager.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:215</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_a4249c00d7802d9b494746203b7d6e06a"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a">nexo::editor::AssetDragDropPayload::type</a></div><div class="ttdeci">assets::AssetType type</div><div class="ttdoc">Type of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:216</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_aadeebfa33c1a4550012b3265aa8cbffd"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#aadeebfa33c1a4550012b3265aa8cbffd">nexo::editor::AssetDragDropPayload::name</a></div><div class="ttdeci">char name[64]</div><div class="ttdoc">Display name of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:219</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_ab469594b4de8c878e09fb40530d8487f"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ab469594b4de8c878e09fb40530d8487f">nexo::editor::AssetDragDropPayload::path</a></div><div class="ttdeci">char path[256]</div><div class="ttdoc">Path to the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:218</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_drag_drop_payload_html_ac13ca02d90a89406d2ff34da8644778c"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_drag_drop_payload.html#ac13ca02d90a89406d2ff34da8644778c">nexo::editor::AssetDragDropPayload::id</a></div><div class="ttdeci">assets::AssetID id</div><div class="ttdoc">ID of the asset.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:217</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_layout_params_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_layout_params.html">nexo::editor::AssetLayoutParams</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:105</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_asset_type_info_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_asset_type_info.html">nexo::editor::AssetTypeInfo</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:99</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_folder_action_state_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_folder_action_state.html">nexo::editor::FolderActionState</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:30</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_folder_drag_drop_payload_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html">nexo::editor::FolderDragDropPayload</a></div><div class="ttdoc">Payload structure for drag and drop operations from asset manager.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:227</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_folder_drag_drop_payload_html_a070e2316e3a9689f7216a7f25c2f7e0e"><div class="ttname"><a href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a070e2316e3a9689f7216a7f25c2f7e0e">nexo::editor::FolderDragDropPayload::name</a></div><div class="ttdeci">char name[64]</div><div class="ttdoc">Display name of the folder.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:229</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_folder_drag_drop_payload_html_a83338edd065ef79229a0135779849b55"><div class="ttname"><a href="structnexo_1_1editor_1_1_folder_drag_drop_payload.html#a83338edd065ef79229a0135779849b55">nexo::editor::FolderDragDropPayload::path</a></div><div class="ttdeci">char path[256]</div><div class="ttdoc">Path to the folder.</div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:228</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_grid_layout_sizes_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_grid_layout_sizes.html">nexo::editor::GridLayoutSizes</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:66</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_layout_colors_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_layout_colors.html">nexo::editor::LayoutColors</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:80</div></div>
+<div class="ttc" id="astructnexo_1_1editor_1_1_layout_settings_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_layout_settings.html">nexo::editor::LayoutSettings</a></div><div class="ttdef"><b>Definition:</b> AssetManagerWindow.hpp:93</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

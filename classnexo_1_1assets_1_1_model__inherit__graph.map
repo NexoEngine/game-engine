@@ -1,5 +1,5 @@
 <map id="nexo::assets::Model" name="nexo::assets::Model">
-<area shape="rect" id="node1" title="Represents a 3D model asset." alt="" coords="21,549,155,641"/>
-<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,233,171,501"/>
-<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_i_asset.html" title="Pure virtual interface for all assets." alt="" coords="19,5,157,185"/>
+<area shape="rect" id="node1" title="Represents a 3D model asset." alt="" coords="21,564,155,656"/>
+<area shape="rect" id="node2" href="$classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,248,171,516"/>
+<area shape="rect" id="node3" href="$classnexo_1_1assets_1_1_i_asset.html" title="Pure virtual interface for all assets." alt="" coords="19,5,157,200"/>
 </map>

@@ -103,16 +103,16 @@ Inheritance diagram for nexo::assets::IAsset:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1assets_1_1_i_asset__inherit__graph.png" border="0" usemap="#anexo_1_1assets_1_1_i_asset_inherit__map" alt="Inheritance graph"/></div>
 <map name="anexo_1_1assets_1_1_i_asset_inherit__map" id="anexo_1_1assets_1_1_i_asset_inherit__map">
-<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="376,5,515,185"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,233,176,501"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="203,233,338,501"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="363,233,528,501"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="553,233,725,501"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="749,241,939,494"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_material.html" title="Represents a material asset." alt="" coords="13,579,160,671"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="184,579,357,671"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="382,579,517,671"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="567,549,710,700"/>
+<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="376,5,515,200"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="5,248,176,516"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="203,248,338,516"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="363,248,528,516"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="553,248,725,516"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset.html" title=" " alt="" coords="749,255,939,509"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_material.html" title="Represents a material asset." alt="" coords="13,593,160,685"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_mock_shader_asset.html" title=" " alt="" coords="184,593,357,685"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_model.html" title="Represents a 3D model asset." alt="" coords="382,593,517,685"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_texture.html" title="Represents a texture asset." alt="" coords="567,564,710,715"/>
 </map>
 </div>
 <div class="dynheader">
@@ -120,9 +120,9 @@ Collaboration diagram for nexo::assets::IAsset:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1assets_1_1_i_asset__coll__graph.png" border="0" usemap="#anexo_1_1assets_1_1_i_asset_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1assets_1_1_i_asset_coll__map" id="anexo_1_1assets_1_1_i_asset_coll__map">
-<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="30,520,169,700"/>
-<area shape="rect" href="structnexo_1_1assets_1_1_asset_metadata.html" title=" " alt="" coords="5,336,193,457"/>
-<area shape="rect" href="classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="7,5,191,273"/>
+<area shape="rect" title="Pure virtual interface for all assets." alt="" coords="30,491,169,685"/>
+<area shape="rect" href="structnexo_1_1assets_1_1_asset_metadata.html" title=" " alt="" coords="5,307,193,428"/>
+<area shape="rect" href="classnexo_1_1assets_1_1_asset_location.html" title="AssetLocation is a wrapper of std::string to represent the location of an asset." alt="" coords="7,5,191,244"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -146,6 +146,10 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLoaded</b> 
 <tr class="memitem:a0a00efb522f86f306fc70996e0350a5d"><td class="memItemLeft" align="right" valign="top"><a id="a0a00efb522f86f306fc70996e0350a5d" name="a0a00efb522f86f306fc70996e0350a5d"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isErrored</b> () const =0</td></tr>
 <tr class="separator:a0a00efb522f86f306fc70996e0350a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06fb3a96bdaf72e7262a76b86df6995"><td class="memItemLeft" align="right" valign="top"><a id="ac06fb3a96bdaf72e7262a76b86df6995" name="ac06fb3a96bdaf72e7262a76b86df6995"></a>
+<a class="el" href="structnexo_1_1assets_1_1_asset_metadata.html">AssetMetadata</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMetadata</b> ()</td></tr>
+<tr class="memdesc:ac06fb3a96bdaf72e7262a76b86df6995"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the metadata of the asset (for modification) <br /></td></tr>
+<tr class="separator:ac06fb3a96bdaf72e7262a76b86df6995"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>

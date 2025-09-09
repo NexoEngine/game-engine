@@ -62,16 +62,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_2editor_2src_2_editor_8cpp-example.html",
-"class_im_nexo_1_1_style_var_guard.html#ad5bc87dc94402ab45e7a1088eb6c3d74",
-"classnexo_1_1ecs_1_1_component_array.html#a0d89525d6262d3472fde0e293060ae65",
-"classnexo_1_1ecs_1_1_group_1_1_partition_view.html#a1650015d866b3124084c234a2da199c3",
-"classnexo_1_1editor_1_1_ambient_light_property.html#a8664cb5e9d044346dec77d973d9869fa",
-"classnexo_1_1editor_1_1_state_action.html",
-"classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a80c864d09e6d3d56241e3aecca749ccd",
-"classnexo_1_1scene_1_1_scene_manager.html#a7f77fc93730b389fb9c33b13c397a4bc",
-"struct_im_nexo_1_1_button_props.html#a3380ae0a919975112c5331db3d018b09",
-"structnexo_1_1ecs_1_1_extract_component_types_3_01std_1_1tuple_3_01_access_types_8_8_8_01_4_01_4.html",
-"structnexo_1_1scripting_1_1_coreclr_delegate.html"
+"class_im_nexo_1_1_style_var_guard.html#acb62b3f5b5f200f7fe48b4aab7582863",
+"classnexo_1_1core_1_1_too_many_spot_lights_exception.html",
+"classnexo_1_1ecs_1_1_group_1_1_group_iterator.html#a4fbc51af4f98922b88bd0e77aac33f55",
+"classnexo_1_1editor_1_1_action.html",
+"classnexo_1_1editor_1_1_selector.html#a262b2235757487c6d5f39ef7713486ff",
+"classnexo_1_1renderer_1_1_nx_framebuffer_resizing_failed.html",
+"classnexo_1_1renderer_1_1_open_g_l_test.html",
+"namespacenexo_1_1assets.html#a6852b592036c9b52081fe57544f6b5ce",
+"structnexo_1_1components_1_1_render_context.html",
+"structnexo_1_1editor_1_1_test_case.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -7,6 +7,7 @@ var dir_3d350f955f42a9576a254bd8a2ee5ff8 =
     [ "CameraTarget.hpp", "_camera_target_8hpp_source.html", null ],
     [ "DirectionalLightProperty.hpp", "_directional_light_property_8hpp_source.html", null ],
     [ "MaterialProperty.hpp", "_material_property_8hpp_source.html", null ],
+    [ "PhysicsBodyProperty.hpp", "_physics_body_property_8hpp_source.html", null ],
     [ "PointLightProperty.hpp", "_point_light_property_8hpp_source.html", null ],
     [ "RenderProperty.hpp", "_render_property_8hpp_source.html", null ],
     [ "SpotLightProperty.hpp", "_spot_light_property_8hpp_source.html", null ],

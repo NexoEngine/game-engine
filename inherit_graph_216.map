@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structnexo_1_1renderer_1_1_nx_window_property.html" title=" " alt="" coords="5,5,176,47"/>
+<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_nx_renderer_api.html" title="Abstract interface for low&#45;level rendering API implementations." alt="" coords="5,13,200,39"/>
+<area shape="rect" id="node2" href="$classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html" title="Implementation of the RendererApi interface using OpenGL." alt="" coords="248,5,416,47"/>
 </map>

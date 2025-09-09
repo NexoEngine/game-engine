@@ -103,7 +103,7 @@ Collaboration diagram for nexo::editor::ThumbnailCache:</div>
 <div class="dyncontent">
 <div class="center"><img src="classnexo_1_1editor_1_1_thumbnail_cache__coll__graph.png" border="0" usemap="#anexo_1_1editor_1_1_thumbnail_cache_coll__map" alt="Collaboration graph"/></div>
 <map name="anexo_1_1editor_1_1_thumbnail_cache_coll__map" id="anexo_1_1editor_1_1_thumbnail_cache_coll__map">
-<area shape="rect" title="Singleton managing thumbnail textures for various asset types." alt="" coords="5,5,196,244"/>
+<area shape="rect" title="Singleton managing thumbnail textures for various asset types." alt="" coords="5,5,196,259"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -133,9 +133,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af50a8ef2aab1dd6fc240b5007c250d77"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_thumbnail_cache.html#af50a8ef2aab1dd6fc240b5007c250d77">getTextureThumbnail</a> (const <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef</a>&lt; <a class="el" href="classnexo_1_1assets_1_1_texture.html">assets::Texture</a> &gt; &amp;textureRef, const glm::vec2 &amp;size={128, 128})</td></tr>
 <tr class="memdesc:af50a8ef2aab1dd6fc240b5007c250d77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or generate a thumbnail for a texture asset.  <a href="classnexo_1_1editor_1_1_thumbnail_cache.html#af50a8ef2aab1dd6fc240b5007c250d77">More...</a><br /></td></tr>
 <tr class="separator:af50a8ef2aab1dd6fc240b5007c250d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278d2dc4fcadfdc67eed6f1f821e0229"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_thumbnail_cache.html#a278d2dc4fcadfdc67eed6f1f821e0229">getModelThumbnail</a> (const <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef</a>&lt; <a class="el" href="classnexo_1_1assets_1_1_model.html">assets::Model</a> &gt; &amp;modelRef, const glm::vec2 &amp;size)</td></tr>
+<tr class="memdesc:a278d2dc4fcadfdc67eed6f1f821e0229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or generate a thumbnail for a model asset.  <a href="classnexo_1_1editor_1_1_thumbnail_cache.html#a278d2dc4fcadfdc67eed6f1f821e0229">More...</a><br /></td></tr>
+<tr class="separator:a278d2dc4fcadfdc67eed6f1f821e0229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d9731ca4ac75771e5a45ab44769366c"><td class="memItemLeft" align="right" valign="top"><a id="a5d9731ca4ac75771e5a45ab44769366c" name="a5d9731ca4ac75771e5a45ab44769366c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearCache</b> ()</td></tr>
-<tr class="memdesc:a5d9731ca4ac75771e5a45ab44769366c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all cached thumbnails and free associated resources. <br /></td></tr>
+<tr class="memdesc:a5d9731ca4ac75771e5a45ab44769366c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all cached thumbnails and free-associated resources. <br /></td></tr>
 <tr class="separator:a5d9731ca4ac75771e5a45ab44769366c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af83f088c733e696f3812ad4d53698372"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1editor_1_1_thumbnail_cache.html#af83f088c733e696f3812ad4d53698372">removeThumbnail</a> (const boost::uuids::uuid &amp;assetId)</td></tr>
 <tr class="memdesc:af83f088c733e696f3812ad4d53698372"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a specific thumbnail from the cache by asset ID.  <a href="classnexo_1_1editor_1_1_thumbnail_cache.html#af83f088c733e696f3812ad4d53698372">More...</a><br /></td></tr>
@@ -331,6 +334,44 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OpenGL texture ID of the texture thumbnail, or 0 if invalid. </dd></dl>
+
+</div>
+</div>
+<a id="a278d2dc4fcadfdc67eed6f1f821e0229" name="a278d2dc4fcadfdc67eed6f1f821e0229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278d2dc4fcadfdc67eed6f1f821e0229">&#9670;&nbsp;</a></span>getModelThumbnail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int nexo::editor::ThumbnailCache::getModelThumbnail </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classnexo_1_1assets_1_1_asset_ref.html">assets::AssetRef</a>&lt; <a class="el" href="classnexo_1_1assets_1_1_model.html">assets::Model</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>modelRef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec2 &amp;&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get or generate a thumbnail for a model asset. </p>
+<p >Uses the model directly if already loaded; otherwise generates a preview. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">modelRef</td><td>Reference to the model asset. </td></tr>
+    <tr><td class="paramname">size</td><td>Desired thumbnail size in pixels (width, height). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>model ID of the model thumbnail, or 0 if invalid. </dd></dl>
 
 </div>
 </div>

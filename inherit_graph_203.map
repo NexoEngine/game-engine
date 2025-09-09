@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_nx_renderer3_d.html" title="Provides a high&#45;performance 3D rendering system for drawing cubes, textured objects,..." alt="" coords="5,5,197,32"/>
+<area shape="rect" id="node1" href="$classnexo_1_1renderer_1_1_nx_framebuffer.html" title="Abstract class representing a framebuffer in the rendering pipeline." alt="" coords="5,56,199,83"/>
+<area shape="rect" id="node2" href="$class_dummy_framebuffer.html" title=" " alt="" coords="284,5,419,32"/>
+<area shape="rect" id="node3" href="$classnexo_1_1renderer_1_1_mock_framebuffer.html" title=" " alt="" coords="247,56,456,83"/>
+<area shape="rect" id="node4" href="$classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html" title=" " alt="" coords="267,107,435,149"/>
 </map>

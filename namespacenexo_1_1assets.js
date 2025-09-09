@@ -17,7 +17,7 @@ var namespacenexo_1_1assets =
     [ "AssetRefTest", "classnexo_1_1assets_1_1_asset_ref_test.html", null ],
     [ "FilenameValidator", "structnexo_1_1assets_1_1_filename_validator.html", null ],
     [ "GenericAssetRef", "classnexo_1_1assets_1_1_generic_asset_ref.html", "classnexo_1_1assets_1_1_generic_asset_ref" ],
-    [ "IAsset", "classnexo_1_1assets_1_1_i_asset.html", null ],
+    [ "IAsset", "classnexo_1_1assets_1_1_i_asset.html", "classnexo_1_1assets_1_1_i_asset" ],
     [ "ImporterFileInput", "structnexo_1_1assets_1_1_importer_file_input.html", null ],
     [ "ImporterMemoryInput", "structnexo_1_1assets_1_1_importer_memory_input.html", null ],
     [ "InvalidAssetLocation", "classnexo_1_1assets_1_1_invalid_asset_location.html", null ],

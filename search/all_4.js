@@ -19,6 +19,7 @@ var searchData=
   ['bplayerinterfaceimpl_16',['BPLayerInterfaceImpl',['../classnexo_1_1system_1_1_b_p_layer_interface_impl.html',1,'nexo::system']]],
   ['bufferfactorytest_17',['BufferFactoryTest',['../classnexo_1_1renderer_1_1_buffer_factory_test.html',1,'nexo::renderer']]],
   ['builder_18',['Builder',['../classnexo_1_1editor_1_1_command_1_1_builder.html',1,'nexo::editor::Command']]],
-  ['buttongradient_19',['buttonGradient',['../struct_im_nexo_1_1_button_props.html#adb3499a638fc775a6e67bb59333de5b5',1,'ImNexo::ButtonProps']]],
-  ['buttonprops_20',['ButtonProps',['../struct_im_nexo_1_1_button_props.html',1,'ImNexo']]]
+  ['buildfromassets_19',['buildFromAssets',['../classnexo_1_1editor_1_1_folder_manager.html#aeca4e6901b9e5e7ad8843628bfffe799',1,'nexo::editor::FolderManager']]],
+  ['buttongradient_20',['buttonGradient',['../struct_im_nexo_1_1_button_props.html#adb3499a638fc775a6e67bb59333de5b5',1,'ImNexo::ButtonProps']]],
+  ['buttonprops_21',['ButtonProps',['../struct_im_nexo_1_1_button_props.html',1,'ImNexo']]]
 ];

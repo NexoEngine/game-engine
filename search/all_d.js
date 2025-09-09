@@ -2,8 +2,8 @@ var searchData=
 [
   ['label_0',['label',['../struct_im_nexo_1_1_badge.html#a2f2699ea39eac3fee952e09b106d6a97',1,'ImNexo::Badge::label()'],['../struct_im_nexo_1_1_drag_float.html#ac4a8fa8d6e4f847021c641d0016b6a38',1,'ImNexo::DragFloat::label()']]],
   ['lastmouseposition_1',['lastMousePosition',['../structnexo_1_1components_1_1_perspective_camera_controller.html#a0fb1653c468419151c2c2ec7fb055bb0',1,'nexo::components::PerspectiveCameraController::lastMousePosition()'],['../structnexo_1_1components_1_1_perspective_camera_target.html#ac77e0f608c25de332ffacca001745912',1,'nexo::components::PerspectiveCameraTarget::lastMousePosition()']]],
-  ['layoutcolors_2',['LayoutColors',['../structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html',1,'nexo::editor::AssetManagerWindow::LayoutSettings']]],
-  ['layoutsizes_3',['LayoutSizes',['../structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html',1,'nexo::editor::AssetManagerWindow::LayoutSettings']]],
+  ['layoutcolors_2',['LayoutColors',['../structnexo_1_1editor_1_1_layout_colors.html',1,'nexo::editor']]],
+  ['layoutsettings_3',['LayoutSettings',['../structnexo_1_1editor_1_1_layout_settings.html',1,'nexo::editor']]],
   ['lib_5fargs_4',['lib_args',['../structnexo_1_1scripting_1_1lib__args.html',1,'nexo::scripting']]],
   ['libapi_5',['LibApi',['../structnexo_1_1scripting_1_1_managed_api_1_1_lib_api.html',1,'nexo::scripting::ManagedApi']]],
   ['lightcontext_6',['LightContext',['../structnexo_1_1components_1_1_light_context.html',1,'nexo::components']]],

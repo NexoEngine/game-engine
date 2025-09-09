@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['layoutcolors_0',['LayoutColors',['../structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html',1,'nexo::editor::AssetManagerWindow::LayoutSettings']]],
-  ['layoutsizes_1',['LayoutSizes',['../structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html',1,'nexo::editor::AssetManagerWindow::LayoutSettings']]],
+  ['layoutcolors_0',['LayoutColors',['../structnexo_1_1editor_1_1_layout_colors.html',1,'nexo::editor']]],
+  ['layoutsettings_1',['LayoutSettings',['../structnexo_1_1editor_1_1_layout_settings.html',1,'nexo::editor']]],
   ['lib_5fargs_2',['lib_args',['../structnexo_1_1scripting_1_1lib__args.html',1,'nexo::scripting']]],
   ['libapi_3',['LibApi',['../structnexo_1_1scripting_1_1_managed_api_1_1_lib_api.html',1,'nexo::scripting::ManagedApi']]],
   ['lightcontext_4',['LightContext',['../structnexo_1_1components_1_1_light_context.html',1,'nexo::components']]],

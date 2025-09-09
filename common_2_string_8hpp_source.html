@@ -104,20 +104,19 @@ $(document).ready(function(){initNavTree('common_2_string_8hpp_source.html','');
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;ranges&gt;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>nexo {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> iequals(<span class="keyword">const</span> std::string_view&amp; a, <span class="keyword">const</span> std::string_view&amp; b) {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">return</span> a.size() == b.size() &amp;&amp;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            std::equal(a.begin(), a.end(), b.begin(), [](<span class="keyword">const</span> <span class="keywordtype">char</span> _a, <span class="keyword">const</span> <span class="keywordtype">char</span> _b) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                return std::tolower(static_cast&lt;unsigned char&gt;(_a)) ==</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                       std::tolower(static_cast&lt;unsigned char&gt;(_b));</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            });</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> iequals(<span class="keyword">const</span> std::string_view&amp; a, <span class="keyword">const</span> std::string_view&amp; b) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">return</span> a.size() == b.size() &amp;&amp;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            std::equal(a.begin(), a.end(), b.begin(), [](<span class="keyword">const</span> <span class="keywordtype">char</span> _a, <span class="keyword">const</span> <span class="keywordtype">char</span> _b) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                return std::tolower(static_cast&lt;unsigned char&gt;(_a)) ==</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                       std::tolower(static_cast&lt;unsigned char&gt;(_b));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            });</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>} <span class="comment">// namespace nexo</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>} <span class="comment">// namespace nexo</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

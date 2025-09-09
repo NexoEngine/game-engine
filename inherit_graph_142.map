@@ -1,15 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnexo_1_1editor_1_1_action.html" title=" " alt="" coords="5,344,136,371"/>
-<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_action_group.html" title=" " alt="" coords="205,5,370,32"/>
-<area shape="rect" id="node3" href="$classnexo_1_1editor_1_1_asset_move_action.html" title="Action for moving assets between folders in the Asset Manager." alt="" coords="189,56,385,83"/>
-<area shape="rect" id="node4" href="$classnexo_1_1editor_1_1_component_add_action.html" title=" " alt="" coords="196,107,379,149"/>
-<area shape="rect" id="node5" href="$classnexo_1_1editor_1_1_component_change_action.html" title=" " alt="" coords="186,173,389,214"/>
-<area shape="rect" id="node6" href="$classnexo_1_1editor_1_1_component_remove_action.html" title=" " alt="" coords="184,238,391,279"/>
-<area shape="rect" id="node7" href="$classnexo_1_1editor_1_1_component_restore_action.html" title=" " alt="" coords="185,303,389,345"/>
-<area shape="rect" id="node8" href="$classnexo_1_1editor_1_1_entity_creation_action.html" title=" " alt="" coords="201,369,374,410"/>
-<area shape="rect" id="node9" href="$classnexo_1_1editor_1_1_entity_deletion_action.html" title=" " alt="" coords="201,434,373,475"/>
-<area shape="rect" id="node10" href="$classnexo_1_1editor_1_1_entity_hierarchy_creation_action.html" title=" " alt="" coords="197,499,377,541"/>
-<area shape="rect" id="node11" href="$classnexo_1_1editor_1_1_entity_hierarchy_deletion_action.html" title=" " alt="" coords="197,565,377,606"/>
-<area shape="rect" id="node12" href="$classnexo_1_1editor_1_1_entity_parent_change_action.html" title=" " alt="" coords="206,630,369,671"/>
-<area shape="rect" id="node13" href="$classnexo_1_1editor_1_1_state_action.html" title=" " alt="" coords="192,696,383,723"/>
+<area shape="rect" id="node1" href="$structnexo_1_1ecs_1_1_write_singleton.html" title="Type alias for read&#45;write singleton component access." alt="" coords="5,5,201,32"/>
 </map>

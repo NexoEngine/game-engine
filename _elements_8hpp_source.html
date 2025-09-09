@@ -141,108 +141,124 @@ $(document).ready(function(){initNavTree('_elements_8hpp_source.html',''); initR
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_channels.html#a5b8cbf2fd9f1f7e2997bc8fe27cea83c">   76</a></span>        std::vector&lt;DragFloat&gt; <a class="code hl_variable" href="struct_im_nexo_1_1_channels.html#a5b8cbf2fd9f1f7e2997bc8fe27cea83c">sliders</a>;  </div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    };</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> CenteredIcon(</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> std::string&amp; icon,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">const</span> ImVec2&amp; p_min,</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keyword">const</span> ImVec2&amp; p_max,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        ImU32 color,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordtype">float</span> scale = 1.0f,</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordtype">float</span> verticalPosition = 0.5f,</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordtype">float</span> horizontalPosition = 0.5f,</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        ImFont* font = <span class="keyword">nullptr</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    );</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> WrappedCenteredText(</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> std::string&amp; text,</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> ImVec2&amp; p_min,</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> ImVec2&amp; p_max,</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        ImU32 color,</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordtype">float</span> verticalPosition = 0.5f</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    );</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">bool</span> Button(</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keyword">const</span> std::string &amp;label,</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keyword">const</span> ImVec2&amp; size = ImVec2(0, 0),</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        ImU32 bg = 0,</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        ImU32 bgHovered = 0,</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        ImU32 bgActive = 0,</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        ImU32 txtColor = 0</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    );</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> ButtonBorder(</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        ImU32 borderColor,</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        ImU32 borderColorHovered,</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        ImU32 borderColorActive,</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordtype">float</span> rounding = 2.0f,</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        ImDrawFlags flags = 0,</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordtype">float</span> thickness = 3.0f</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    );</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">void</span> ButtonInnerBorder(</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        ImU32 borderColor,</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        ImU32 borderColorHovered,</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        ImU32 borderColorActive,</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordtype">float</span> rounding = 2.0f,</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        ImDrawFlags flags = 0,</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordtype">float</span> thickness = 3.0f</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    );</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">bool</span> <a class="code hl_struct" href="struct_im_nexo_1_1_drag_float.html">DragFloat</a>(</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keyword">const</span> std::string &amp;label,</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordtype">float</span> *values,</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordtype">float</span> speed,</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordtype">float</span> min,</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordtype">float</span> max,</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">const</span> std::string &amp;format,</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        ImU32 bg = 0,</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        ImU32 bgHovered = 0,</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        ImU32 bgActive = 0,</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        ImU32 textColor = 0</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    );</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_gradient_stop.html">  222</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_im_nexo_1_1_gradient_stop.html">GradientStop</a></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    {</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordtype">float</span> pos;   <span class="comment">// percentage position along the gradient [0.0f, 1.0f]</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        ImU32 color; <span class="comment">// color at this stop</span></div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    };</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordtype">void</span> RectFilledLinearGradient(</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keyword">const</span> ImVec2&amp; pMin,</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keyword">const</span> ImVec2&amp; pMax,</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordtype">float</span> angle,</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        std::vector&lt;GradientStop&gt; stops,</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        ImDrawList* drawList = <span class="keyword">nullptr</span></div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    );</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordtype">bool</span> Header(<span class="keyword">const</span> std::string &amp;label, std::string_view headerText);</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keywordtype">void</span> RowLabel(<span class="keyword">const</span> <a class="code hl_struct" href="struct_im_nexo_1_1_channel_label.html">ChannelLabel</a> &amp;rowLabel);</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keywordtype">void</span> Arrow(<span class="keyword">const</span> ImVec2&amp; center, <span class="keywordtype">bool</span> isExpanded, ImU32 color, <span class="keywordtype">float</span> size);</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordtype">void</span> CustomSeparatorText(<span class="keyword">const</span> std::string &amp;text, <span class="keywordtype">float</span> textPadding, <span class="keywordtype">float</span> leftSpacing, <span class="keywordtype">float</span> thickness, ImU32 lineColor, ImU32 textColor);</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">void</span> Image(</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        ImTextureID user_texture_id,</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="keyword">const</span> ImVec2&amp; image_size,</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <span class="keyword">const</span> ImVec2&amp; uv0 = ImVec2(0, 1), <span class="comment">// Flipped Y</span></div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keyword">const</span> ImVec2&amp; uv1 = ImVec2(1, 0), <span class="comment">// Flipped Y</span></div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <span class="keyword">const</span> ImVec4&amp; tint_col = ImVec4(1, 1, 1, 1),</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">const</span> ImVec4&amp; border_col = ImVec4(0, 0, 0, 0)</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    );</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordtype">bool</span> ImageButton(</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keyword">const</span> <span class="keywordtype">char</span>* str_id,</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        ImTextureID user_texture_id,</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keyword">const</span> ImVec2&amp; image_size,</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keyword">const</span> ImVec2&amp; uv0 = ImVec2(0, 1), <span class="comment">// Flipped Y</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <span class="keyword">const</span> ImVec2&amp; uv1 = ImVec2(1, 0), <span class="comment">// Flipped Y</span></div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keyword">const</span> ImVec4&amp; bg_col = ImVec4(0, 0, 0, 0),</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keyword">const</span> ImVec4&amp; tint_col = ImVec4(1, 1, 1, 1)</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    );</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>}</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">enum</span> ButtonTypes {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        VALIDATION,  </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        CANCEL,      </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        DEFAULT      </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    };</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> CenteredIcon(</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">const</span> std::string&amp; icon,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">const</span> ImVec2&amp; p_min,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> ImVec2&amp; p_max,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        ImU32 color,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordtype">float</span> scale = 1.0f,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordtype">float</span> verticalPosition = 0.5f,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordtype">float</span> horizontalPosition = 0.5f,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        ImFont* font = <span class="keyword">nullptr</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    );</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> WrappedCenteredText(</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keyword">const</span> std::string&amp; text,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">const</span> ImVec2&amp; p_min,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">const</span> ImVec2&amp; p_max,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        ImU32 color,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordtype">float</span> verticalPosition = 0.5f</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    );</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">bool</span> Button(</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">const</span> std::string &amp;label,</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        ButtonTypes type,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keyword">const</span> ImVec2&amp; size = ImVec2(0, 0),</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        ImU32 bg = 0,</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        ImU32 bgHovered = 0,</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        ImU32 bgActive = 0,</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        ImU32 txtColor = 0</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    );</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">bool</span> Button(</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keyword">const</span> std::string &amp;label,</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">const</span> ImVec2&amp; size = ImVec2(0, 0),</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        ImU32 bg = 0,</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        ImU32 bgHovered = 0,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        ImU32 bgActive = 0,</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        ImU32 txtColor = 0</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    );</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">void</span> ButtonBorder(</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        ImU32 borderColor,</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        ImU32 borderColorHovered,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        ImU32 borderColorActive,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordtype">float</span> rounding = 2.0f,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        ImDrawFlags flags = 0,</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keywordtype">float</span> thickness = 3.0f</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    );</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordtype">void</span> ButtonInnerBorder(</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        ImU32 borderColor,</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        ImU32 borderColorHovered,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        ImU32 borderColorActive,</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordtype">float</span> rounding = 2.0f,</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        ImDrawFlags flags = 0,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordtype">float</span> thickness = 3.0f</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    );</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">bool</span> DragFloat(</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keyword">const</span> std::string &amp;label,</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordtype">float</span> *values,</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="keywordtype">float</span> speed,</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordtype">float</span> min,</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keywordtype">float</span> max,</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keyword">const</span> std::string &amp;format,</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        ImU32 bg = 0,</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        ImU32 bgHovered = 0,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        ImU32 bgActive = 0,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        ImU32 textColor = 0</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    );</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno"><a class="line" href="struct_im_nexo_1_1_gradient_stop.html">  253</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_im_nexo_1_1_gradient_stop.html">GradientStop</a></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    {</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="keywordtype">float</span> pos;   <span class="comment">// percentage position along the gradient [0.0f, 1.0f]</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        ImU32 color; <span class="comment">// color at this stop</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    };</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordtype">void</span> RectFilledLinearGradient(</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <span class="keyword">const</span> ImVec2&amp; pMin,</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keyword">const</span> ImVec2&amp; pMax,</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordtype">float</span> angle,</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        std::vector&lt;GradientStop&gt; stops,</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        ImDrawList* drawList = <span class="keyword">nullptr</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    );</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordtype">bool</span> Header(<span class="keyword">const</span> std::string &amp;label, std::string_view headerText);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <span class="keywordtype">void</span> RowLabel(<span class="keyword">const</span> <a class="code hl_struct" href="struct_im_nexo_1_1_channel_label.html">ChannelLabel</a> &amp;rowLabel);</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">void</span> Arrow(<span class="keyword">const</span> ImVec2&amp; center, <span class="keywordtype">bool</span> isExpanded, ImU32 color, <span class="keywordtype">float</span> size);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keywordtype">void</span> CustomSeparatorText(<span class="keyword">const</span> std::string &amp;text, <span class="keywordtype">float</span> textPadding, <span class="keywordtype">float</span> leftSpacing, <span class="keywordtype">float</span> thickness, ImU32 lineColor, ImU32 textColor);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keywordtype">void</span> Image(</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        ImTextureID user_texture_id,</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keyword">const</span> ImVec2&amp; image_size,</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <span class="keyword">const</span> ImVec2&amp; uv0 = ImVec2(0, 1), <span class="comment">// Flipped Y</span></div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keyword">const</span> ImVec2&amp; uv1 = ImVec2(1, 0), <span class="comment">// Flipped Y</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        <span class="keyword">const</span> ImVec4&amp; tint_col = ImVec4(1, 1, 1, 1),</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <span class="keyword">const</span> ImVec4&amp; border_col = ImVec4(0, 0, 0, 0)</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    );</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <span class="keywordtype">bool</span> ImageButton(</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        <span class="keyword">const</span> <span class="keywordtype">char</span>* str_id,</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        ImTextureID user_texture_id,</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        <span class="keyword">const</span> ImVec2&amp; image_size,</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        <span class="keyword">const</span> ImVec2&amp; uv0 = ImVec2(0, 1), <span class="comment">// Flipped Y</span></div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keyword">const</span> ImVec2&amp; uv1 = ImVec2(1, 0), <span class="comment">// Flipped Y</span></div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="keyword">const</span> ImVec4&amp; bg_col = ImVec4(0, 0, 0, 0),</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="keyword">const</span> ImVec4&amp; tint_col = ImVec4(1, 1, 1, 1)</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    );</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>}</div>
 <div class="ttc" id="astruct_im_nexo_1_1_badge_html"><div class="ttname"><a href="struct_im_nexo_1_1_badge.html">ImNexo::Badge</a></div><div class="ttdoc">A styled badge component with customizable appearance.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:39</div></div>
 <div class="ttc" id="astruct_im_nexo_1_1_badge_html_a111980cca80f2019afd615d3403de787"><div class="ttname"><a href="struct_im_nexo_1_1_badge.html#a111980cca80f2019afd615d3403de787">ImNexo::Badge::bg</a></div><div class="ttdeci">ImU32 bg</div><div class="ttdoc">Background color.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:42</div></div>
 <div class="ttc" id="astruct_im_nexo_1_1_badge_html_a2f2699ea39eac3fee952e09b106d6a97"><div class="ttname"><a href="struct_im_nexo_1_1_badge.html#a2f2699ea39eac3fee952e09b106d6a97">ImNexo::Badge::label</a></div><div class="ttdeci">std::string label</div><div class="ttdoc">The displayed text.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:40</div></div>
@@ -266,7 +282,7 @@ $(document).ready(function(){initNavTree('_elements_8hpp_source.html',''); initR
 <div class="ttc" id="astruct_im_nexo_1_1_drag_float_html_ac709b3b1052691f1a8aed3d668cdef6e"><div class="ttname"><a href="struct_im_nexo_1_1_drag_float.html#ac709b3b1052691f1a8aed3d668cdef6e">ImNexo::DragFloat::value</a></div><div class="ttdeci">float * value</div><div class="ttdoc">Pointer to the value being edited.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:56</div></div>
 <div class="ttc" id="astruct_im_nexo_1_1_drag_float_html_ad7990faeef42c72a2472a002a1605686"><div class="ttname"><a href="struct_im_nexo_1_1_drag_float.html#ad7990faeef42c72a2472a002a1605686">ImNexo::DragFloat::bg</a></div><div class="ttdeci">ImU32 bg</div><div class="ttdoc">Background color.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:60</div></div>
 <div class="ttc" id="astruct_im_nexo_1_1_drag_float_html_afa7784412a15747f7aca259c4ab1f8dc"><div class="ttname"><a href="struct_im_nexo_1_1_drag_float.html#afa7784412a15747f7aca259c4ab1f8dc">ImNexo::DragFloat::bgHovered</a></div><div class="ttdeci">ImU32 bgHovered</div><div class="ttdoc">Background color when hovered.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:61</div></div>
-<div class="ttc" id="astruct_im_nexo_1_1_gradient_stop_html"><div class="ttname"><a href="struct_im_nexo_1_1_gradient_stop.html">ImNexo::GradientStop</a></div><div class="ttdoc">Defines a color position in a gradient.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:223</div></div>
+<div class="ttc" id="astruct_im_nexo_1_1_gradient_stop_html"><div class="ttname"><a href="struct_im_nexo_1_1_gradient_stop.html">ImNexo::GradientStop</a></div><div class="ttdoc">Defines a color position in a gradient.</div><div class="ttdef"><b>Definition:</b> Elements.hpp:254</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

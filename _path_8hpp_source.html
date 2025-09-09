@@ -124,10 +124,12 @@ $(document).ready(function(){initNavTree('_path_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string normalizePathAndRemovePrefixSlash(<span class="keyword">const</span> std::string &amp;rawPath);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace nexo</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::vector&lt;std::string&gt; splitPath(<span class="keyword">const</span> std::filesystem::path&amp; path);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>} <span class="comment">// namespace nexo</span></div>
 <div class="ttc" id="aclassnexo_1_1_path_html"><div class="ttname"><a href="classnexo_1_1_path.html">nexo::Path</a></div><div class="ttdoc">Utils for handling paths.</div><div class="ttdef"><b>Definition:</b> Path.hpp:25</div></div>
-<div class="ttc" id="aclassnexo_1_1_path_html_a4fc2dce1092b3cc15afa6956691ac6c1"><div class="ttname"><a href="classnexo_1_1_path.html#a4fc2dce1092b3cc15afa6956691ac6c1">nexo::Path::getExecutablePath</a></div><div class="ttdeci">static const std::filesystem::path &amp; getExecutablePath()</div><div class="ttdoc">Get the path to the executable (e.g.: nexoEditor)</div><div class="ttdef"><b>Definition:</b> Path.cpp:19</div></div>
-<div class="ttc" id="aclassnexo_1_1_path_html_a707039e86e1e330fcc56167f079b19e5"><div class="ttname"><a href="classnexo_1_1_path.html#a707039e86e1e330fcc56167f079b19e5">nexo::Path::resetCache</a></div><div class="ttdeci">static void resetCache()</div><div class="ttdoc">Reset the cached paths.</div><div class="ttdef"><b>Definition:</b> Path.cpp:36</div></div>
+<div class="ttc" id="aclassnexo_1_1_path_html_a4fc2dce1092b3cc15afa6956691ac6c1"><div class="ttname"><a href="classnexo_1_1_path.html#a4fc2dce1092b3cc15afa6956691ac6c1">nexo::Path::getExecutablePath</a></div><div class="ttdeci">static const std::filesystem::path &amp; getExecutablePath()</div><div class="ttdoc">Get the path to the executable (e.g.: nexoEditor)</div><div class="ttdef"><b>Definition:</b> Path.cpp:20</div></div>
+<div class="ttc" id="aclassnexo_1_1_path_html_a707039e86e1e330fcc56167f079b19e5"><div class="ttname"><a href="classnexo_1_1_path.html#a707039e86e1e330fcc56167f079b19e5">nexo::Path::resetCache</a></div><div class="ttdeci">static void resetCache()</div><div class="ttdoc">Reset the cached paths.</div><div class="ttdef"><b>Definition:</b> Path.cpp:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -19,6 +19,7 @@ var hierarchy =
     [ "nexo::components::AmbientLightComponent", "structnexo_1_1components_1_1_ambient_light_component.html", null ],
     [ "nexo::scripting::ApiCallback< Sig >", "structnexo_1_1scripting_1_1_api_callback.html", null ],
     [ "nexo::scripting::ApiCallback< Ret(Args...)>", "structnexo_1_1scripting_1_1_api_callback_3_01_ret_07_args_8_8_8_08_4.html", null ],
+    [ "nexo::editor::AssetActionState", "structnexo_1_1editor_1_1_asset_action_state.html", null ],
     [ "nexo::assets::AssetCatalog", "classnexo_1_1assets_1_1_asset_catalog.html", [
       [ "nexo::assets::MockAssetCatalog", "classnexo_1_1assets_1_1_mock_asset_catalog.html", null ]
     ] ],
@@ -34,8 +35,10 @@ var hierarchy =
       [ "nexo::assets::TextureImporter", "classnexo_1_1assets_1_1_texture_importer.html", null ]
     ] ],
     [ "nexo::assets::AssetImporterContext", "structnexo_1_1assets_1_1_asset_importer_context.html", null ],
+    [ "nexo::editor::AssetLayoutParams", "structnexo_1_1editor_1_1_asset_layout_params.html", null ],
     [ "nexo::assets::AssetLocation", "classnexo_1_1assets_1_1_asset_location.html", null ],
     [ "nexo::assets::AssetMetadata", "structnexo_1_1assets_1_1_asset_metadata.html", null ],
+    [ "nexo::editor::AssetTypeInfo", "structnexo_1_1editor_1_1_asset_type_info.html", null ],
     [ "nexo::math::AttenuationData", "structnexo_1_1math_1_1_attenuation_data.html", null ],
     [ "nexo::renderer::AttributeInfo", "structnexo_1_1renderer_1_1_attribute_info.html", null ],
     [ "ImNexo::Badge", "struct_im_nexo_1_1_badge.html", null ],
@@ -184,6 +187,7 @@ var hierarchy =
       [ "nexo::ecs::has_save_method< T, typename >", "structnexo_1_1ecs_1_1has__save__method.html", null ],
       [ "nexo::ecs::is_exclude< T >", "structnexo_1_1ecs_1_1is__exclude.html", null ]
     ] ],
+    [ "nexo::editor::FavoriteItem", "structnexo_1_1editor_1_1_favorite_item.html", null ],
     [ "nexo::ecs::Field", "structnexo_1_1ecs_1_1_field.html", null ],
     [ "nexo::scripting::Field", "structnexo_1_1scripting_1_1_field.html", null ],
     [ "nexo::assets::FilenameValidator", "structnexo_1_1assets_1_1_filename_validator.html", [
@@ -191,6 +195,9 @@ var hierarchy =
       [ "nexo::assets::AssetPackNameValidator", "structnexo_1_1assets_1_1_asset_pack_name_validator.html", null ]
     ] ],
     [ "nexo::renderer::RequiredAttributes::BitFields::Flags", "structnexo_1_1renderer_1_1_required_attributes_1_1_bit_fields_1_1_flags.html", null ],
+    [ "nexo::editor::FolderActionState", "structnexo_1_1editor_1_1_folder_action_state.html", null ],
+    [ "nexo::editor::FolderDragDropPayload", "structnexo_1_1editor_1_1_folder_drag_drop_payload.html", null ],
+    [ "nexo::editor::FolderManager", "classnexo_1_1editor_1_1_folder_manager.html", null ],
     [ "ImNexo::FontScaleGuard", "class_im_nexo_1_1_font_scale_guard.html", null ],
     [ "GameConfig", "struct_game_config.html", null ],
     [ "nexo::ecs::GameSettings", "classnexo_1_1ecs_1_1_game_settings.html", null ],
@@ -201,6 +208,7 @@ var hierarchy =
     [ "nexo::ecs::GenericComponent< N >", "structnexo_1_1ecs_1_1_generic_component.html", null ],
     [ "nexo::ecs::get_t< NonOwning >", "structnexo_1_1ecs_1_1get__t.html", null ],
     [ "ImNexo::GradientStop", "struct_im_nexo_1_1_gradient_stop.html", null ],
+    [ "nexo::editor::GridLayoutSizes", "structnexo_1_1editor_1_1_grid_layout_sizes.html", null ],
     [ "nexo::components::RenderContext::GridParams", "structnexo_1_1components_1_1_render_context_1_1_grid_params.html", null ],
     [ "nexo::ecs::Group< OwnedTuple, NonOwnedTuple >::GroupIterator", "classnexo_1_1ecs_1_1_group_1_1_group_iterator.html", null ],
     [ "nexo::ecs::GroupKey", "structnexo_1_1ecs_1_1_group_key.html", null ],
@@ -250,6 +258,7 @@ var hierarchy =
         [ "nexo::editor::CameraTarget", "classnexo_1_1editor_1_1_camera_target.html", null ],
         [ "nexo::editor::DirectionalLightProperty", "classnexo_1_1editor_1_1_directional_light_property.html", null ],
         [ "nexo::editor::MaterialProperty", "classnexo_1_1editor_1_1_material_property.html", null ],
+        [ "nexo::editor::PhysicsBodyProperty", "classnexo_1_1editor_1_1_physics_body_property.html", null ],
         [ "nexo::editor::PointLightProperty", "classnexo_1_1editor_1_1_point_light_property.html", null ],
         [ "nexo::editor::RenderProperty", "classnexo_1_1editor_1_1_render_property.html", null ],
         [ "nexo::editor::SpotLightProperty", "classnexo_1_1editor_1_1_spot_light_property.html", null ],
@@ -331,8 +340,8 @@ var hierarchy =
     [ "nexo::ecs::ISingletonComponent", "classnexo_1_1ecs_1_1_i_singleton_component.html", [
       [ "nexo::ecs::SingletonComponent< T >", "classnexo_1_1ecs_1_1_singleton_component.html", null ]
     ] ],
-    [ "nexo::editor::AssetManagerWindow::LayoutSettings::LayoutColors", "structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_colors.html", null ],
-    [ "nexo::editor::AssetManagerWindow::LayoutSettings::LayoutSizes", "structnexo_1_1editor_1_1_asset_manager_window_1_1_layout_settings_1_1_layout_sizes.html", null ],
+    [ "nexo::editor::LayoutColors", "structnexo_1_1editor_1_1_layout_colors.html", null ],
+    [ "nexo::editor::LayoutSettings", "structnexo_1_1editor_1_1_layout_settings.html", null ],
     [ "nexo::scripting::lib_args", "structnexo_1_1scripting_1_1lib__args.html", null ],
     [ "nexo::scripting::ManagedApi::LibApi", "structnexo_1_1scripting_1_1_managed_api_1_1_lib_api.html", null ],
     [ "nexo::components::LightContext", "structnexo_1_1components_1_1_light_context.html", null ],
@@ -362,6 +371,7 @@ var hierarchy =
     [ "nexo::components::ParentComponent::Memento", "structnexo_1_1components_1_1_parent_component_1_1_memento.html", null ],
     [ "nexo::components::PerspectiveCameraController::Memento", "structnexo_1_1components_1_1_perspective_camera_controller_1_1_memento.html", null ],
     [ "nexo::components::PerspectiveCameraTarget::Memento", "structnexo_1_1components_1_1_perspective_camera_target_1_1_memento.html", null ],
+    [ "nexo::components::PhysicsBodyComponent::Memento", "structnexo_1_1components_1_1_physics_body_component_1_1_memento.html", null ],
     [ "nexo::components::PointLightComponent::Memento", "structnexo_1_1components_1_1_point_light_component_1_1_memento.html", null ],
     [ "nexo::components::RenderComponent::Memento", "structnexo_1_1components_1_1_render_component_1_1_memento.html", null ],
     [ "nexo::components::RootComponent::Memento", "structnexo_1_1components_1_1_root_component_1_1_memento.html", null ],

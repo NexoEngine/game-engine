@@ -1,7 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,114,104,141"/>
-<area shape="rect" id="node2" href="$structnexo_1_1ecs_1_1_is_read_singleton_3_01_read_singleton_3_01_t_01_4_01_4.html" title=" " alt="" coords="155,5,332,47"/>
-<area shape="rect" id="node3" href="$structnexo_1_1ecs_1_1_is_write_singleton_3_01_write_singleton_3_01_t_01_4_01_4.html" title=" " alt="" coords="155,71,332,112"/>
-<area shape="rect" id="node4" href="$structnexo_1_1ecs_1_1has__memento__type_3_01_t_00_01std_1_1void__t_3_01typename_01_t_1_1_memento_01_4_01_4.html" title=" " alt="" coords="152,135,335,191"/>
-<area shape="rect" id="node5" href="$structnexo_1_1ecs_1_1is__exclude_3_01_exclude_3_01_t_01_4_01_4.html" title=" " alt="" coords="172,215,315,256"/>
+<area shape="rect" id="node1" href="$classnexo_1_1ecs_1_1_i_singleton_component.html" title="Base interface for singleton components." alt="" coords="5,5,212,32"/>
+<area shape="rect" id="node2" href="$classnexo_1_1ecs_1_1_singleton_component.html" title="Template class representing a singleton component." alt="" coords="260,5,492,32"/>
 </map>
