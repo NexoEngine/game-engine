@@ -22,11 +22,6 @@
 namespace nexo::editor {
     void AssetManagerWindow::setup()
     {
-        auto& catalog = assets::AssetCatalog::getInstance();
-        auto asset = std::make_unique<assets::Model>();
-        assets::AssetLocation location{"my_package::My_Model@Random"};
-        catalog.registerAsset(location, std::move(asset));
-
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
@@ -48,5 +43,20 @@ namespace nexo::editor {
         }
         // Register for file drop events
         Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);
+
+        m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
+        m_layout.color.thumbnailBgHovered = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+        m_layout.color.thumbnailBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.thumbnailBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+
+        m_layout.color.selectedBoxColor = ImGui::GetColorU32(ImGuiCol_TabSelectedOverline);
+
+        m_layout.color.titleBg = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.titleBgHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+        m_layout.color.titleBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.titleBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+
+        m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
+        buildFolderStructure();
     }
 }

@@ -256,7 +256,7 @@ namespace nexo::ecs {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
                 ++m_size;
             } else {
-                THROW_EXCEPTION(InternalError, "Component type is not trivially copyable for raw insertion");
+                THROW_EXCEPTION(InternalError, "Component type is not trivially copyable, raw insertion is not supported");
             }
         }
 
