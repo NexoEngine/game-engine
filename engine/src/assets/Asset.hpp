@@ -49,8 +49,6 @@ namespace nexo::assets {
         _COUNT
     };
 
-
-
     /**
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.
@@ -175,7 +173,7 @@ namespace nexo::assets {
             /**
              * @brief Get the metadata of the asset (for modification)
              */
-            //[[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
+            [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
     };
 
     template<typename TAssetData, AssetType TAssetType>

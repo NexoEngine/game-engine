@@ -12,12 +12,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <imgui.h>
 #include "AssetManagerWindow.hpp"
-#include "assets/Asset.hpp"
-#include "assets/AssetCatalog.hpp"
 #include "IconsFontAwesome.h"
+#include "ImNexo/Elements.hpp"
 #include "Path.hpp"
-#include "assets/Assets/Texture/Texture.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "context/ThumbnailCache.hpp"
 #include "context/ActionManager.hpp"
 #include "context/actions/AssetActions.hpp"
@@ -32,7 +32,7 @@ namespace nexo::editor {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Options")) {
                 ImGui::SliderFloat("Icon Size", &m_layout.size.iconSize, 32.0f, 128.0f, "%.0f");
-                ImGui::SliderInt("Icon Spacing", &m_layout.size.iconSpacing, 0, 32);
+                ImGui::SliderInt("Icon Spacing", &m_layout.size.iconSpacing, 12, 32);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -51,33 +51,42 @@ namespace nexo::editor {
         ImGui::Button("##Splitter", ImVec2(splitterWidth, -1));
         ImGui::PopStyleColor(3);
 
-        if (ImGui::IsItemActive())
-            m_layout.leftPanelWidth += ImGui::GetIO().MouseDelta.x;
+        if (ImGui::IsItemActive()) m_layout.leftPanelWidth += ImGui::GetIO().MouseDelta.x;
     }
 
+    /**
+     * @brief Draws the breadcrumbs for the current folder path.
+     *
+     * This method displays a breadcrumb navigation for the current folder,
+     * allowing users to navigate back to parent folders by clicking on them.
+     */
     void AssetManagerWindow::drawBreadcrumbs()
     {
         ImGui::PushID("breadcrumb_root");
-        if (ImGui::Button("Assets"))
-            m_currentFolder.clear();
+        if (ImGui::Button("Assets")) m_currentFolder.clear();
 
         handleAssetDrop("");
+        handleFolderDrop("", m_currentFolder);
         ImGui::PopID();
 
-        std::string path = m_currentFolder;
-        std::vector<std::string> crumbs = splitPath(m_currentFolder);
+        std::string path                      = m_currentFolder;
+        const std::vector<std::string> crumbs = splitPath(m_currentFolder);
         std::string fullPath;
-        for (const auto &crumb : crumbs)
-        {
+        const int lastIndex = static_cast<int>(crumbs.size()) - 1;
+        for (int i = 0; i <= lastIndex; ++i) {
+            const auto& crumb = crumbs[i];
             fullPath += (fullPath.empty() ? "" : "/") + crumb;
-            ImGui::SameLine(); ImGui::Text(" > "); ImGui::SameLine();
+            ImGui::SameLine();
+            ImGui::Text(" > ");
+            ImGui::SameLine();
             ImGui::PushID(("breadcrumb_" + crumb).c_str());
-            if (crumb == *std::prev(crumbs.end()))
+            if (i == lastIndex)
                 ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", crumb.c_str());
-            else if (ImNexo::Button(crumb))
+            else if (ImNexo::Button(crumb + "##" + std::to_string(i)))
                 m_currentFolder = fullPath;
 
             handleAssetDrop(fullPath);
+            handleFolderDrop(fullPath, crumb.empty() ? crumb : "Assets");
             ImGui::PopID();
         }
     }
@@ -89,11 +98,13 @@ namespace nexo::editor {
                      ImGuiWindowFlags_MenuBar);
 
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
+
         drawMenuBar();
 
         // Left panel
         {
             ImGui::BeginChild("LeftPanel", ImVec2(m_layout.leftPanelWidth, 0), true);
+            handleRightClickOnAssetManager();
             drawFolderTree();
             ImGui::EndChild();
         }
@@ -104,25 +115,36 @@ namespace nexo::editor {
         // Right panel
         {
             ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-
             ImGui::Text(ICON_FA_FOLDER " ");
             ImGui::SameLine();
-
+            handleRightClickOnAssetManager();
             drawBreadcrumbs();
             ImGui::Separator();
             drawAssetsGrid();
             ImGui::EndChild();
         }
 
-        // Popups
+        // Popups & right-click menus
         {
-            if (m_popupManager.showPopup("Folder Tree Context Menu"))
-                folderTreeContextMenu();
+            // Right-click menus
+            if (m_popupManager.showPopup("Right click on AssetManager")) rightClickOnAssetManagerMenu();
+            if (m_popupManager.showPopup("Right click on Folder")) rightClickOnFolderMenu();
+            if (m_popupManager.showPopup("Right click on Asset")) rightClickOnAssetMenu();
 
-            if (m_popupManager.showPopupModal("Create new folder"))
-                newFolderMenu();
+            // Folder popups
+            if (m_popupManager.showPopupModal("Create Folder Popup")) createFolderPopup();
+            if (m_popupManager.showPopupModal("Rename Folder Popup")) renameFolderPopup();
+            if (m_popupManager.showPopupModal("Delete Folder Popup")) deleteFolderPopup();
+            if (m_popupManager.showPopupModal("Delete Not Empty Folder Popup")) deleteNotEmptyFolderPopup();
+            if (m_popupManager.showPopupModal("Details Folder Popup")) folderDetailsPopup();
+
+            // Asset popups
+            if (m_popupManager.showPopupModal("Rename Asset Popup")) renameAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Asset Popup")) deleteAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Not Empty Asset Popup")) deleteUsedAssetPopup();
+            if (m_popupManager.showPopupModal("Details Asset Popup")) assetDetailsPopup();
         }
 
         ImGui::End();
     }
-}
+} // namespace nexo::editor

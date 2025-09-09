@@ -273,11 +273,11 @@ namespace nexo::editor {
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -320,11 +320,11 @@ namespace nexo::editor {
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 

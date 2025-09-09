@@ -113,19 +113,19 @@ namespace nexo::editor
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopup("Scene selection context menu"))
         {
             m_popupManager.runPopupCallback("Scene selection context menu");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopupModal("Popup camera inspector"))
         {
             m_popupManager.runPopupCallback("Popup camera inspector");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -142,14 +142,14 @@ namespace nexo::editor
         if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer))
         {
             memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         ImGui::SameLine();
         if (ImNexo::Button("Cancel"))
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void SceneTreeWindow::showNode(SceneObject& object)
@@ -236,8 +236,6 @@ namespace nexo::editor
                          ImGuiWindowFlags_NoCollapse))
         {
             beginRender(NEXO_WND_USTRID_SCENE_TREE);
-            m_focused = ImGui::IsWindowFocused();
-            m_hovered = ImGui::IsWindowHovered();
 
             const auto& selector = Selector::get();
 
@@ -262,8 +260,11 @@ namespace nexo::editor
                 for (auto& node : root_.children)
                     showNode(node);
             }
+
             sceneContextMenu();
             sceneCreationMenu();
+
+            // Show the primitive creation popup
             if (m_popupManager.showPopup("Sphere creation popup"))
             {
                 const int sceneId = selector.getSelectedScene();
@@ -307,13 +308,13 @@ namespace nexo::editor
         if (ImGui::Button("Add Physics Component"))
         {
             PhysicsBodyProperty::addPhysicsComponentToEntity(m_pendingPhysicsEntity, physicsType == 1);
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         ImGui::SameLine();
         if (ImGui::Button("Cancel"))
         {
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         PopupManager::closePopup();

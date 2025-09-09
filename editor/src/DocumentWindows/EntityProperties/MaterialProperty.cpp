@@ -190,7 +190,7 @@ namespace nexo::editor {
         if (m_popupManager.showPopupModal("Create new material"))
         {
             createMaterialPopup(entity);
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 }
