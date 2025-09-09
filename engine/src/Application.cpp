@@ -308,7 +308,9 @@ namespace nexo {
     {
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
-        m_scriptingSystem->update();
+        if (isInPlayMode()) {
+            m_scriptingSystem->update();
+        }
 
         if (!m_isMinimized)
         {
@@ -332,7 +334,10 @@ namespace nexo {
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures
 				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
-        	    m_physicsSystem->update();
+                
+                if (isInPlayMode()) {
+                    m_physicsSystem->update();
+                }
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
 			{
