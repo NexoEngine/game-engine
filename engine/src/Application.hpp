@@ -46,6 +46,11 @@ namespace nexo {
         class ScriptingSystem;
     }
 
+    enum class GameState {
+        EDITOR_MODE,
+        PLAY_MODE
+    };
+
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
         DEBUG_LOG_KEYBOARD_EVENT = 1 << 1,
@@ -239,6 +244,12 @@ namespace nexo {
             int initScripting() const;
             int shutdownScripting() const;
 
+            // Game state management
+            GameState getGameState() const { return m_gameState; }
+            void setGameState(GameState state) { m_gameState = state; }
+            bool isInPlayMode() const { return m_gameState == GameState::PLAY_MODE; }
+            bool isInEditorMode() const { return m_gameState == GameState::EDITOR_MODE; }
+
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:
             Application();
@@ -264,6 +275,7 @@ namespace nexo {
             std::shared_ptr<renderer::NxWindow> m_window;
 
             WorldState m_worldState;
+            GameState m_gameState = GameState::EDITOR_MODE;
 
             int m_eventDebugFlags{};
 
