@@ -273,11 +273,11 @@ namespace nexo::editor {
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -320,11 +320,11 @@ namespace nexo::editor {
 
             if (ImNexo::Button("OK", ImVec2(buttonWidth, 0.0f)))
             {
-                PopupManager::closePopupInContext();
+                PopupManager::closePopup();
             }
             ImGui::Unindent(10.0f);
             ImGui::PopStyleVar();
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -526,10 +526,20 @@ namespace nexo::editor {
 
         ImGui::SameLine();
 
-        // -------- Play button button --------
-        if (renderToolbarButton("play", ICON_FA_PLAY, "Play scene", m_buttonGradient))
+        auto& app = getApp();
+        const bool isPlaying = app.getGameState() == nexo::GameState::PLAY_MODE;
+        
+        const char* icon = isPlaying ? ICON_FA_STOP : ICON_FA_PLAY;
+        const char* tooltip = isPlaying ? "Stop scene" : "Play scene";
+        const auto& gradient = isPlaying ? m_selectedGradient : m_buttonGradient;
+        
+        if (renderToolbarButton("play_stop", icon, tooltip, gradient))
         {
-            createOrFocusGameWindow();
+            if (isPlaying) {
+                app.setGameState(nexo::GameState::EDITOR_MODE);
+            } else {
+                app.setGameState(nexo::GameState::PLAY_MODE);
+            }
         }
 
         ImGui::PopStyleVar();

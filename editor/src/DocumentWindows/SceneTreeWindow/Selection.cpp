@@ -17,6 +17,9 @@
 #include "utils/EditorProps.hpp"
 #include "context/ActionManager.hpp"
 #include "context/actions/EntityActions.hpp"
+#include "components/PhysicsBodyComponent.hpp"
+#include "components/Transform.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 #include <memory>
 #include <format>
@@ -31,6 +34,33 @@ namespace nexo::editor {
         // Check if we're operating on a single item or multiple items
         const auto& selectedEntities = selector.getSelectedEntities();
         const bool multipleSelected = selectedEntities.size() > 1;
+
+        // Only show "Add Component" for single entity selection
+        if (!multipleSelected) {
+            if (ImGui::BeginMenu("Add Component"))
+            {
+                // Check if entity already has physics component
+                auto& coordinator = *Application::m_coordinator;
+                const bool hasPhysics = coordinator.entityHasComponent<components::PhysicsBodyComponent>(obj.data.entity);
+                
+                if (!hasPhysics && ImGui::MenuItem("Physics Body"))
+                {
+                    // Store the entity ID for the popup
+                    m_pendingPhysicsEntity = obj.data.entity;
+                    // Use PopupManager to open the popup
+                    m_popupManager.openPopup("Physics Type Selection");
+                }
+                else if (hasPhysics)
+                {
+                    ImGui::TextDisabled("Physics Body (already added)");
+                }
+                
+                
+                ImGui::EndMenu();
+            }
+            
+            ImGui::Separator();
+        }
 
         const std::string menuText = multipleSelected ?
             std::format("Delete Selected Entities ({})", selectedEntities.size()) :
@@ -56,6 +86,8 @@ namespace nexo::editor {
                 app.deleteEntity(obj.data.entity);
             }
         }
+
+
     }
 
     void SceneTreeWindow::cameraSelected(const SceneObject &obj) const

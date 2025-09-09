@@ -14,107 +14,197 @@
 #pragma once
 
 #include <ADocumentWindow.hpp>
-#include <set>
-#include <imgui.h>
 #include <assets/AssetRef.hpp>
-#include "utils/TransparentStringHash.hpp"
 #include <core/event/WindowEvent.hpp>
+#include <imgui.h>
+#include <set>
+#include "DocumentWindows/PopupManager.hpp"
+#include "FolderManager.hpp"
 #include "assets/Asset.hpp"
 
 namespace nexo::editor {
 
+    static constexpr std::string_view INTERNAL_FOLDER_PREFIX = "_internal";
+    static constexpr float ERROR_DISPLAY_TIMEOUT             = 3.0f;
+
+    struct FolderActionState {
+        bool isManagingFolder  = false;
+        std::string folderName = "New Folder";
+        std::string parentPath;
+        bool showError = false;
+        std::string errorMessage;
+        float errorTimer = ERROR_DISPLAY_TIMEOUT;
+
+        void reset()
+        {
+            isManagingFolder = false;
+            folderName       = "New Folder";
+            parentPath       = "";
+            showError        = false;
+            errorMessage     = "";
+            errorTimer       = 3.0f;
+        }
+    };
+
+    struct AssetActionState {
+        bool isManagingAsset      = false;
+        assets::IAsset* assetData = nullptr; // Pointer to the asset being managed
+        bool showError            = false;
+        std::string errorMessage;
+        float errorTimer = ERROR_DISPLAY_TIMEOUT;
+
+        void reset()
+        {
+            isManagingAsset = false;
+            assetData       = nullptr;
+            showError       = false;
+            errorMessage    = "";
+            errorTimer      = 3.0f;
+        }
+    };
+
+    struct GridLayoutSizes {
+        float iconSize  = 64.0f;
+        int iconSpacing = 14; // Spacing between icons
+        ImVec2 itemSize;
+        ImVec2 itemStep;
+        int columnCount;
+        static constexpr float THUMBNAIL_HEIGHT_RATIO = 0.8f;
+        static constexpr float TITLE_PADDING          = 5.0f;
+        static constexpr float OVERLAY_SIZE           = 24.0f;
+        static constexpr float OVERLAY_PADDING        = 5.0f;
+        static constexpr float CORNER_RADIUS          = 5.0f;
+        static constexpr float SELECTED_BOX_THICKNESS = 4.0f;
+    };
+
+    struct LayoutColors {
+        ImU32 thumbnailBg;
+        ImU32 thumbnailBgHovered;
+        ImU32 thumbnailBgSelected;
+        ImU32 thumbnailBgSelectedHovered;
+        ImU32 selectedBoxColor;
+        ImU32 titleBg;
+        ImU32 titleBgHovered;
+        ImU32 titleBgSelected;
+        ImU32 titleBgSelectedHovered;
+        ImU32 titleText;
+    };
+
+    struct LayoutSettings {
+        GridLayoutSizes size;
+        LayoutColors color;
+        float leftPanelWidth = 200.0f;
+    };
+
+    struct AssetTypeInfo {
+        ImTextureID iconTexture;
+        ImU32 backgroundColor;
+        std::string tooltip;
+    };
+
+    struct AssetLayoutParams {
+        ImVec2 itemPos;
+        ImVec2 itemSize;
+        ImVec2 itemEnd;
+        ImVec2 thumbnailEnd;
+    };
+
     class AssetManagerWindow final : public ADocumentWindow, LISTENS_TO(event::EventFileDrop) {
-        public:
-            using ADocumentWindow::ADocumentWindow;
+       public:
+        using ADocumentWindow::ADocumentWindow;
 
-            void setup() override;
-            void shutdown() override;
-            void show() override;
-            void update() override;
+        void setup() override;
+        void shutdown() override;
+        void show() override;
+        void update() override;
 
-            void handleEvent(event::EventFileDrop& event) override;
+        void handleEvent(event::EventFileDrop& event) override;
 
-        private:
-            struct LayoutSettings {
-                struct LayoutSizes {
-                    float iconSize = 64.0f;
-                    int iconSpacing = 8;
-                    ImVec2 itemSize;
-                    ImVec2 itemStep;
-                    int columnCount;
-                    float thumbnailHeightRatio = 0.8f;
-                    float titlePadding = 5.0f;
-                    float overlaySize = 6.0f;
-                    float overlayPadding = 5.0f;
-                    float cornerRadius = 5.0f;
-                    float selectedBoxThickness = 4.0f;
-                } size;
+       private:
+        // Draw methods
+        void drawMenuBar();
+        void drawPanelSplitter();
+        void drawBreadcrumbs();
+        void sceneContextMenu();
+        void drawAssetsGrid();
+        void drawAssetTitle(const std::shared_ptr<assets::IAsset>& assetData, const AssetLayoutParams& params) const;
+        void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos,
+                       const ImVec2& itemSize);
+        void drawFolderIcon(const AssetLayoutParams& params) const;
+        void drawFolder(const std::string& folderPath, const std::string& folderName, const ImVec2& itemPos,
+                        const ImVec2& itemSize);
+        void drawFolderTree();
+        void drawFolderTreeItem(const std::string& name, const std::string& path);
 
-                struct LayoutColors {
-                    ImU32 thumbnailBg;
-                    ImU32 thumbnailBgHovered;
-                    ImU32 thumbnailBgSelected;
-                    ImU32 thumbnailBgSelectedHovered;
+        // utility methods
+        void buildFolderStructure();
+        [[nodiscard]] static ImTextureID getIconTexture(const assets::AssetRef<assets::Texture>& texture);
+        [[nodiscard]] assets::AssetLocation getAssetLocation(const std::filesystem::path& path) const;
 
-                    ImU32 selectedBoxColor;
+        // handle selection events
+        void handleSelection(unsigned int index, bool isSelected);
+        void handleSelection(const std::string& folderPath, bool isSelected);
 
-                    ImU32 titleBg;
-                    ImU32 titleBgHovered;
-                    ImU32 titleBgSelected;
-                    ImU32 titleBgSelectedHovered;
+        // handle right-click events
+        void handleRightClickOnAssetManager();
+        void handleRightClickOnFolder();
+        void handleRightClickOnAsset();
+        void rightClickOnAssetManagerMenu();
 
-                    ImU32 titleText;
-                } color;
-            };
+        // popup management
+        void deleteFolderPopup();
+        void deleteNotEmptyFolderPopup();
+        void renameFolderPopup();
+        void createFolderPopup();
+        void folderDetailsPopup();
+        void renameAssetPopup();
+        void deleteAssetPopup();
+        void deleteUsedAssetPopup();
+        void assetDetailsPopup();
 
-            std::set<unsigned int> m_selectedAssets;
-            std::unordered_map<std::string, std::vector<std::string>, TransparentStringHash, std::equal_to<>> m_folderChildren;
-            LayoutSettings m_layout;
+        template <typename T>
+        static void drawErrorMessageInPopup(T& actionState);
 
-            void calculateLayout(float availWidth);
-            void drawMenuBar();
-            void drawAssetsGrid();
-            void drawAsset(const assets::GenericAssetRef& asset, unsigned int index, const ImVec2& itemPos, const ImVec2& itemSize);
-            void handleSelection(unsigned int index, bool isSelected);
+        // menu management
+        void rightClickOnFolderMenu();
+        void rightClickOnAssetMenu();
 
-            assets::AssetType m_selectedType = assets::AssetType::UNKNOWN;
-            std::string m_currentFolder;  // Currently selected folder
-            std::string m_hoveredFolder;  // Currently hovered folder
-            std::vector<std::pair<std::string, std::string>> m_folderStructure;  // Pairs of (path, name)
-            char m_searchBuffer[256] = "";
+        // handle action on folder
+        bool handleFolderRenaming(const std::string& newName);
+        bool handleFolderCreation();
 
-            void buildFolderStructure();
-            void drawFolderTree();
-            void drawFolderTreeItem(const std::string& name, const std::string& path);
+        // handle action on asset
+        bool handleAssetRenaming(const std::string& newName);
 
-            struct FolderCreationState {
-                bool isCreatingFolder = false;
-                char folderName[256] = "";
-                std::string parentPath;
-                bool showError = false;
-                std::string errorMessage;
-                float errorTimer = 3.0f;
-            };
+        // drag and drop management
+        void handleDroppedFiles();
+        static void handleAssetDrag(const assets::GenericAssetRef& asset);
+        void handleFolderDrag(const std::string& folderPath, const std::string& folderName);
+        void handleAssetDrop(const std::string& path);
+        void handleFolderDrop(const std::string& folderPath, const std::string &folderName);
+        void importDroppedFile(const std::string& filePath) const;
 
-            FolderCreationState m_folderCreationState;
-            assets::AssetRef<assets::Texture> m_folderIcon;
+        std::set<unsigned int> m_selectedAssets;        // Set of selected asset indices
+        std::shared_ptr<assets::IAsset> m_hoveredAsset; // Currently hovered asset
 
-            ImTextureID getFolderIconTexture() const;
+        LayoutSettings m_layout;
 
-            void handleNewFolderCreation();
-            void drawFolder(
-                const std::string& folderPath,
-                const std::string& folderName,
-                const ImVec2& itemPos,
-                const ImVec2& itemSize
-            );
+        assets::AssetType m_selectedType = assets::AssetType::UNKNOWN; // Default selected asset type
 
-            std::vector<std::string> m_pendingDroppedFiles;
-            bool m_showDropIndicator = false;
+        std::set<std::string> m_selectedFolders; // Set of selected folder paths
+        std::string m_currentFolder;             // Currently selected folder
+        std::string m_hoveredFolder;             // Currently hovered folder
+        std::string m_searchBuffer;
 
-            void handleDroppedFiles();
-            assets::AssetLocation getAssetLocation(const std::filesystem::path &path) const;
-            void importDroppedFile(const std::string& filePath) const;
+        PopupManager m_popupManager;
+
+        FolderActionState m_folderActionState;
+        AssetActionState m_assetActionState;
+        assets::AssetRef<assets::Texture> m_folderIcon;
+
+        std::vector<std::string> m_pendingDroppedFiles;
+
+        FolderManager m_folderManager;
     };
 
     /**
@@ -122,11 +212,20 @@ namespace nexo::editor {
      *
      * Contains information about the asset being dragged.
      */
-    struct AssetDragDropPayload
-    {
-        assets::AssetType type; ///< Type of the asset
-        assets::AssetID id; ///< ID of the asset
-        std::string path; ///< Path to the asset
-        std::string name; ///< Display name of the asset
+    struct AssetDragDropPayload {
+        assets::AssetType type = assets::AssetType::UNKNOWN; ///< Type of the asset
+        assets::AssetID id;                                  ///< ID of the asset
+        char path[256]{};                                    ///< Path to the asset
+        char name[64]{};                                     ///< Display name of the asset
     };
-}
+
+    /**
+     * @brief Payload structure for drag and drop operations from asset manager.
+     *
+     * Contains information about the folder being dragged.
+     */
+    struct FolderDragDropPayload {
+        char path[256]{}; ///< Path to the folder
+        char name[64]{};  ///< Display name of the folder
+    };
+} // namespace nexo::editor

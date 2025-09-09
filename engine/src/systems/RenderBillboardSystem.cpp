@@ -211,7 +211,7 @@ namespace nexo::system {
                 const auto &transform = transformComponentArray->get(entitySpan[i]);
                 const auto &materialAsset = materialComponentArray->get(entitySpan[i]).material.lock();
                 const auto &billboard = billboardSpan[i];
-                auto shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+                std::string shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
                 auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
                 auto cmd = createDrawCommand(
                     entity,

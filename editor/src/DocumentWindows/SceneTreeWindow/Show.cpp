@@ -13,12 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
+#include "../EntityProperties/PhysicsBodyProperty.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
 #include "context/actions/EntityActions.hpp"
 #include "utils/EditorProps.hpp"
 #include "ImNexo/Panels.hpp"
 #include "context/ActionManager.hpp"
+#include "components/PhysicsBodyComponent.hpp"
+#include "components/Transform.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 namespace nexo::editor
 {
@@ -109,19 +113,19 @@ namespace nexo::editor
         {
             if (ImGui::MenuItem("Create Scene"))
                 m_popupManager.openPopup("Create New Scene");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopup("Scene selection context menu"))
         {
             m_popupManager.runPopupCallback("Scene selection context menu");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
 
         if (m_popupManager.showPopupModal("Popup camera inspector"))
         {
             m_popupManager.runPopupCallback("Popup camera inspector");
-            PopupManager::closePopup();
+            PopupManager::endPopup();
         }
     }
 
@@ -138,14 +142,14 @@ namespace nexo::editor
         if (ImNexo::Button("Create") && handleSceneCreation(sceneNameBuffer))
         {
             memset(sceneNameBuffer, 0, sizeof(sceneNameBuffer));
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         ImGui::SameLine();
         if (ImNexo::Button("Cancel"))
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
 
-        PopupManager::closePopup();
+        PopupManager::endPopup();
     }
 
     void SceneTreeWindow::showNode(SceneObject& object)
@@ -232,8 +236,6 @@ namespace nexo::editor
                          ImGuiWindowFlags_NoCollapse))
         {
             beginRender(NEXO_WND_USTRID_SCENE_TREE);
-            m_focused = ImGui::IsWindowFocused();
-            m_hovered = ImGui::IsWindowHovered();
 
             const auto& selector = Selector::get();
 
@@ -258,8 +260,11 @@ namespace nexo::editor
                 for (auto& node : root_.children)
                     showNode(node);
             }
+
             sceneContextMenu();
             sceneCreationMenu();
+
+            // Show the primitive creation popup
             if (m_popupManager.showPopup("Sphere creation popup"))
             {
                 const int sceneId = selector.getSelectedScene();
@@ -270,7 +275,48 @@ namespace nexo::editor
                 const int sceneId = selector.getSelectedScene();
                 ImNexo::PrimitiveCustomizationMenu(sceneId, CYLINDER);
             }
+            physicsTypeSelectionPopup();
         }
         ImGui::End();
+    }
+
+    void SceneTreeWindow::physicsTypeSelectionPopup()
+    {
+        if (!m_popupManager.showPopupModal("Physics Type Selection"))
+            return;
+
+        ImGui::Text("Choose physics body type:");
+        ImGui::Spacing();
+
+        static int physicsType = 1;
+        ImGui::RadioButton("Static Body", &physicsType, 0);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Static bodies don't move but can be collided with");
+        }
+
+        ImGui::RadioButton("Dynamic Body", &physicsType, 1);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Dynamic bodies are affected by gravity and forces");
+        }
+
+        ImGui::Spacing();
+
+        if (ImGui::Button("Add Physics Component"))
+        {
+            PhysicsBodyProperty::addPhysicsComponentToEntity(m_pendingPhysicsEntity, physicsType == 1);
+            PopupManager::closePopup();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            PopupManager::closePopup();
+        }
+
+        PopupManager::closePopup();
     }
 }

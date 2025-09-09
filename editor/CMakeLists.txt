@@ -55,7 +55,14 @@ set(SRCS
         editor/src/DocumentWindows/AssetManager/Shutdown.cpp
         editor/src/DocumentWindows/AssetManager/Update.cpp
         editor/src/DocumentWindows/AssetManager/FolderTree.cpp
-        editor/src/DocumentWindows/AssetManager/FileDrop.cpp
+        editor/src/DocumentWindows/AssetManager/DragDrop.cpp
+        editor/src/DocumentWindows/AssetManager/Selection.cpp
+        editor/src/DocumentWindows/AssetManager/AssetGrid.cpp
+        editor/src/DocumentWindows/AssetManager/Utils.cpp
+        editor/src/DocumentWindows/AssetManager/FolderManager.cpp
+        editor/src/DocumentWindows/AssetManager/RightClickUtils.cpp
+        editor/src/DocumentWindows/AssetManager/FoldersPopupUtils.cpp
+        editor/src/DocumentWindows/AssetManager/AssetsPopupUtils.cpp
         editor/src/DocumentWindows/ConsoleWindow/Init.cpp
         editor/src/DocumentWindows/ConsoleWindow/Log.cpp
         editor/src/DocumentWindows/ConsoleWindow/Show.cpp
@@ -93,6 +100,7 @@ set(SRCS
         editor/src/DocumentWindows/EntityProperties/CameraTarget.cpp
         editor/src/DocumentWindows/EntityProperties/TypeErasedProperty.cpp
         editor/src/DocumentWindows/EntityProperties/MaterialProperty.cpp
+        editor/src/DocumentWindows/EntityProperties/PhysicsBodyProperty.cpp
         editor/src/DocumentWindows/TestWindow/Init.cpp
         editor/src/DocumentWindows/TestWindow/Parser.cpp
         editor/src/DocumentWindows/TestWindow/Show.cpp

@@ -53,4 +53,6 @@ namespace nexo {
     };
 
     std::string normalizePathAndRemovePrefixSlash(const std::string &rawPath);
+
+    std::vector<std::string> splitPath(const std::filesystem::path& path);
 } // namespace nexo

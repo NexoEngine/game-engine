@@ -16,6 +16,11 @@
 
 namespace nexo::editor {
 
+    void AssetManagerWindow::buildFolderStructure()
+    {
+        m_folderManager.buildFromAssets();
+    }
+
     void AssetManagerWindow::update()
     {
         handleDroppedFiles();

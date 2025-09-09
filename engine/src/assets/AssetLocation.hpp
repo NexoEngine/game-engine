@@ -46,6 +46,12 @@ namespace nexo::assets {
                 setLocation(fullLocation);
             }
 
+            AssetLocation(const AssetLocation&) = default;
+            AssetLocation& operator=(const AssetLocation&) = default;
+
+            AssetLocation(AssetLocation&&) noexcept = default;
+            AssetLocation& operator=(AssetLocation&&) noexcept = default;
+
             AssetLocation& setName(const AssetName& name)
             {
                 _name = name;
@@ -234,7 +240,7 @@ namespace nexo::assets {
             }
 
         private:
-            AssetName _name{"Unnamed"};            //< The name of the asset
+            AssetName _name{"Unnamed"};             //< The name of the asset
             std::optional<AssetPackName> _packName; //< The package containing the asset
             std::string _path;                      //< The path to the asset
     };
