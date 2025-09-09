@@ -258,6 +258,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_windowName</
 <p >This constructor sets up the console's logging functionality by registering a loguru callback via loguru::add_callback to route log messages to the console (using the static loguruCallback) and by establishing an engine log callback that maps custom LogLevel messages to loguru verbosity levels using nexoLevelToLoguruLevel before logging them with VLOG_F.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">windowName</td><td>The name of the window </td></tr>
     <tr><td class="paramname">registry</td><td>The window registry used to register this console window. </td></tr>
   </table>
   </dd>

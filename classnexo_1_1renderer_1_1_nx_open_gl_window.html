@@ -117,9 +117,9 @@ Collaboration diagram for nexo::renderer::NxOpenGlWindow:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6e47376a19ff54f4f0799b8f686b0980"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a6e47376a19ff54f4f0799b8f686b0980">NxOpenGlWindow</a> (const int width=1920, const int height=1080, const char *title=&quot;Nexo window&quot;)</td></tr>
-<tr class="memdesc:a6e47376a19ff54f4f0799b8f686b0980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an OpenGL window with the specified properties.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a6e47376a19ff54f4f0799b8f686b0980">More...</a><br /></td></tr>
-<tr class="separator:a6e47376a19ff54f4f0799b8f686b0980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a45e3266cc134245225500f1ea67c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a39a45e3266cc134245225500f1ea67c9">NxOpenGlWindow</a> (const int width=1920, const int height=1080, const std::string &amp;title=&quot;Nexo window&quot;)</td></tr>
+<tr class="memdesc:a39a45e3266cc134245225500f1ea67c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an OpenGL window with the specified properties.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a39a45e3266cc134245225500f1ea67c9">More...</a><br /></td></tr>
+<tr class="separator:a39a45e3266cc134245225500f1ea67c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33a66f92f3c65ef8f62c556be2d43bad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a33a66f92f3c65ef8f62c556be2d43bad">init</a> () override</td></tr>
 <tr class="memdesc:a33a66f92f3c65ef8f62c556be2d43bad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the OpenGL window and its associated resources.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a33a66f92f3c65ef8f62c556be2d43bad">More...</a><br /></td></tr>
 <tr class="separator:a33a66f92f3c65ef8f62c556be2d43bad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +137,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3476d15eb0114f51b1edfceab55b4103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08feb80732ce8da7fc09ad149c544f08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a08feb80732ce8da7fc09ad149c544f08">setWindowIcon</a> (const std::filesystem::path &amp;iconPath) override</td></tr>
 <tr class="separator:a08feb80732ce8da7fc09ad149c544f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dcb05e08cb7fd5949f8adb6b0eeb182"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a6dcb05e08cb7fd5949f8adb6b0eeb182">setTitle</a> (const std::string &amp;title) override</td></tr>
+<tr class="separator:a6dcb05e08cb7fd5949f8adb6b0eeb182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e57589cb41143821d6bf0752066be51"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a8e57589cb41143821d6bf0752066be51">getTitle</a> () const override</td></tr>
+<tr class="separator:a8e57589cb41143821d6bf0752066be51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea43676291f9c99acc9fa69cf3536d01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#aea43676291f9c99acc9fa69cf3536d01">setDarkMode</a> (bool enabled) override</td></tr>
+<tr class="separator:aea43676291f9c99acc9fa69cf3536d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1039666b492470afc003eec55fde019a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a1039666b492470afc003eec55fde019a">isDarkMode</a> () const override</td></tr>
+<tr class="separator:a1039666b492470afc003eec55fde019a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74ec746906d8af1017e62a06072ae044"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a74ec746906d8af1017e62a06072ae044">setVsync</a> (bool enabled) override</td></tr>
 <tr class="memdesc:a74ec746906d8af1017e62a06072ae044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables vertical synchronization (VSync).  <a href="classnexo_1_1renderer_1_1_nx_open_gl_window.html#a74ec746906d8af1017e62a06072ae044">More...</a><br /></td></tr>
 <tr class="separator:a74ec746906d8af1017e62a06072ae044"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,9 +176,9 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classnexo_1_1renderer_1_1_nx_window')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">nexo::renderer::NxWindow</a></td></tr>
-<tr class="memitem:a73239e77a19d046a73cdd723ba2bd029 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">NxWindow</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html#a73239e77a19d046a73cdd723ba2bd029">create</a> (int width=1920, int height=1080, const char *title=&quot;Nexo window&quot;)</td></tr>
-<tr class="memdesc:a73239e77a19d046a73cdd723ba2bd029 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a platform-specific window.  <a href="classnexo_1_1renderer_1_1_nx_window.html#a73239e77a19d046a73cdd723ba2bd029">More...</a><br /></td></tr>
-<tr class="separator:a73239e77a19d046a73cdd723ba2bd029 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ba1fd8d776c9e5d3d45484c0fcd563 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">NxWindow</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html#a14ba1fd8d776c9e5d3d45484c0fcd563">create</a> (int width=1920, int height=1080, const std::string &amp;title=&quot;Nexo window&quot;)</td></tr>
+<tr class="memdesc:a14ba1fd8d776c9e5d3d45484c0fcd563 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a platform-specific window.  <a href="classnexo_1_1renderer_1_1_nx_window.html#a14ba1fd8d776c9e5d3d45484c0fcd563">More...</a><br /></td></tr>
+<tr class="separator:a14ba1fd8d776c9e5d3d45484c0fcd563 inherit pub_static_methods_classnexo_1_1renderer_1_1_nx_window"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >OpenGL-specific implementation of the <code><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html" title="Abstract class for managing window operations in the rendering system.">NxWindow</a></code> class. </p>
@@ -181,8 +189,8 @@ Additional Inherited Members</h2></td></tr>
 <li>Manage OpenGL context initialization and VSync settings. </li>
 </ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6e47376a19ff54f4f0799b8f686b0980" name="a6e47376a19ff54f4f0799b8f686b0980"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e47376a19ff54f4f0799b8f686b0980">&#9670;&nbsp;</a></span>NxOpenGlWindow()</h2>
+<a id="a39a45e3266cc134245225500f1ea67c9" name="a39a45e3266cc134245225500f1ea67c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a45e3266cc134245225500f1ea67c9">&#9670;&nbsp;</a></span>NxOpenGlWindow()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,7 +213,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const char *&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>title</em> = <code>&quot;Nexo&#160;window&quot;</code>&#160;</td>
         </tr>
         <tr>
@@ -439,6 +447,116 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramtype">const std::filesystem::path &amp;&#160;</td>
           <td class="paramname"><em>iconPath</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">nexo::renderer::NxWindow</a>.</p>
+
+</div>
+</div>
+<a id="a6dcb05e08cb7fd5949f8adb6b0eeb182" name="a6dcb05e08cb7fd5949f8adb6b0eeb182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dcb05e08cb7fd5949f8adb6b0eeb182">&#9670;&nbsp;</a></span>setTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::NxOpenGlWindow::setTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">nexo::renderer::NxWindow</a>.</p>
+
+</div>
+</div>
+<a id="a8e57589cb41143821d6bf0752066be51" name="a8e57589cb41143821d6bf0752066be51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e57589cb41143821d6bf0752066be51">&#9670;&nbsp;</a></span>getTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; nexo::renderer::NxOpenGlWindow::getTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">nexo::renderer::NxWindow</a>.</p>
+
+</div>
+</div>
+<a id="aea43676291f9c99acc9fa69cf3536d01" name="aea43676291f9c99acc9fa69cf3536d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea43676291f9c99acc9fa69cf3536d01">&#9670;&nbsp;</a></span>setDarkMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nexo::renderer::NxOpenGlWindow::setDarkMode </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">nexo::renderer::NxWindow</a>.</p>
+
+</div>
+</div>
+<a id="a1039666b492470afc003eec55fde019a" name="a1039666b492470afc003eec55fde019a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1039666b492470afc003eec55fde019a">&#9670;&nbsp;</a></span>isDarkMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nexo::renderer::NxOpenGlWindow::isDarkMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>

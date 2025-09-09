@@ -2,12 +2,15 @@ var hierarchy =
 [
     [ "nexo::editor::Action", "classnexo_1_1editor_1_1_action.html", [
       [ "nexo::editor::ActionGroup", "classnexo_1_1editor_1_1_action_group.html", null ],
+      [ "nexo::editor::AssetMoveAction", "classnexo_1_1editor_1_1_asset_move_action.html", null ],
       [ "nexo::editor::ComponentAddAction< ComponentType >", "classnexo_1_1editor_1_1_component_add_action.html", null ],
       [ "nexo::editor::ComponentChangeAction< ComponentType >", "classnexo_1_1editor_1_1_component_change_action.html", null ],
       [ "nexo::editor::ComponentRemoveAction< ComponentType >", "classnexo_1_1editor_1_1_component_remove_action.html", null ],
       [ "nexo::editor::ComponentRestoreAction< ComponentType >", "classnexo_1_1editor_1_1_component_restore_action.html", null ],
       [ "nexo::editor::EntityCreationAction", "classnexo_1_1editor_1_1_entity_creation_action.html", null ],
       [ "nexo::editor::EntityDeletionAction", "classnexo_1_1editor_1_1_entity_deletion_action.html", null ],
+      [ "nexo::editor::EntityHierarchyCreationAction", "classnexo_1_1editor_1_1_entity_hierarchy_creation_action.html", null ],
+      [ "nexo::editor::EntityHierarchyDeletionAction", "classnexo_1_1editor_1_1_entity_hierarchy_deletion_action.html", null ],
       [ "nexo::editor::EntityParentChangeAction", "classnexo_1_1editor_1_1_entity_parent_change_action.html", null ],
       [ "nexo::editor::StateAction< T >", "classnexo_1_1editor_1_1_state_action.html", null ]
     ] ],
@@ -150,6 +153,7 @@ var hierarchy =
         [ "nexo::renderer::NxGraphicsApiWindowInitFailure", "classnexo_1_1renderer_1_1_nx_graphics_api_window_init_failure.html", null ],
         [ "nexo::renderer::NxInvalidValue", "classnexo_1_1renderer_1_1_nx_invalid_value.html", null ],
         [ "nexo::renderer::NxOutOfRangeException", "classnexo_1_1renderer_1_1_nx_out_of_range_exception.html", null ],
+        [ "nexo::renderer::NxPipelineRenderTargetNotSetException", "classnexo_1_1renderer_1_1_nx_pipeline_render_target_not_set_exception.html", null ],
         [ "nexo::renderer::NxRendererNotInitialized", "classnexo_1_1renderer_1_1_nx_renderer_not_initialized.html", null ],
         [ "nexo::renderer::NxRendererSceneLifeCycleFailure", "classnexo_1_1renderer_1_1_nx_renderer_scene_life_cycle_failure.html", null ],
         [ "nexo::renderer::NxShaderCreationFailed", "classnexo_1_1renderer_1_1_nx_shader_creation_failed.html", null ],
@@ -321,7 +325,7 @@ var hierarchy =
     [ "nexo::editor::InputManager", "classnexo_1_1editor_1_1_input_manager.html", null ],
     [ "nexo::ecs::InvalidSystem", "classnexo_1_1ecs_1_1_invalid_system.html", null ],
     [ "std::is_same", null, [
-      [ "nexo::ecs::has_restore_method< T, std::void_t< decltype(std::declval< typename T::Memento >().restore())> >", "structnexo_1_1ecs_1_1has__restore__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declveb51b2c7ae0cc4ed83d203bd499a6d61.html", null ],
+      [ "nexo::ecs::has_restore_method< T, std::void_t< decltype(std::declval< T & >().restore(std::declval< const typename T::Memento & >()))> >", "structnexo_1_1ecs_1_1has__restore__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declv0724fd83510d4e75cbcdac3d9d3e1c91.html", null ],
       [ "nexo::ecs::has_save_method< T, std::void_t< decltype(std::declval< const T & >().save())> >", "structnexo_1_1ecs_1_1has__save__method_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval_a396539989758d2b1216eacb1f4524ec.html", null ]
     ] ],
     [ "nexo::ecs::ISingletonComponent", "classnexo_1_1ecs_1_1_i_singleton_component.html", [
@@ -353,12 +357,17 @@ var hierarchy =
     [ "nexo::components::AmbientLightComponent::Memento", "structnexo_1_1components_1_1_ambient_light_component_1_1_memento.html", null ],
     [ "nexo::components::CameraComponent::Memento", "structnexo_1_1components_1_1_camera_component_1_1_memento.html", null ],
     [ "nexo::components::DirectionalLightComponent::Memento", "structnexo_1_1components_1_1_directional_light_component_1_1_memento.html", null ],
+    [ "nexo::components::MaterialComponent::Memento", "structnexo_1_1components_1_1_material_component_1_1_memento.html", null ],
+    [ "nexo::components::NameComponent::Memento", "structnexo_1_1components_1_1_name_component_1_1_memento.html", null ],
+    [ "nexo::components::ParentComponent::Memento", "structnexo_1_1components_1_1_parent_component_1_1_memento.html", null ],
     [ "nexo::components::PerspectiveCameraController::Memento", "structnexo_1_1components_1_1_perspective_camera_controller_1_1_memento.html", null ],
     [ "nexo::components::PerspectiveCameraTarget::Memento", "structnexo_1_1components_1_1_perspective_camera_target_1_1_memento.html", null ],
     [ "nexo::components::PointLightComponent::Memento", "structnexo_1_1components_1_1_point_light_component_1_1_memento.html", null ],
     [ "nexo::components::RenderComponent::Memento", "structnexo_1_1components_1_1_render_component_1_1_memento.html", null ],
+    [ "nexo::components::RootComponent::Memento", "structnexo_1_1components_1_1_root_component_1_1_memento.html", null ],
     [ "nexo::components::SceneTag::Memento", "structnexo_1_1components_1_1_scene_tag_1_1_memento.html", null ],
     [ "nexo::components::SpotLightComponent::Memento", "structnexo_1_1components_1_1_spot_light_component_1_1_memento.html", null ],
+    [ "nexo::components::StaticMeshComponent::Memento", "structnexo_1_1components_1_1_static_mesh_component_1_1_memento.html", null ],
     [ "nexo::components::TransformComponent::Memento", "structnexo_1_1components_1_1_transform_component_1_1_memento.html", null ],
     [ "nexo::components::UuidComponent::Memento", "structnexo_1_1components_1_1_uuid_component_1_1_memento.html", null ],
     [ "nexo::assets::Mesh", "structnexo_1_1assets_1_1_mesh.html", null ],
@@ -458,6 +467,7 @@ var hierarchy =
     [ "nexo::renderer::RenderPipeline", "classnexo_1_1renderer_1_1_render_pipeline.html", null ],
     [ "nexo::renderer::RequiredAttributes", "structnexo_1_1renderer_1_1_required_attributes.html", null ],
     [ "nexo::components::RootComponent", "structnexo_1_1components_1_1_root_component.html", null ],
+    [ "nexo::SafeStrerror", "classnexo_1_1_safe_strerror.html", null ],
     [ "nexo::scene::Scene", "classnexo_1_1scene_1_1_scene.html", null ],
     [ "nexo::Application::SceneInfo", "structnexo_1_1_application_1_1_scene_info.html", null ],
     [ "nexo::scene::SceneManager", "classnexo_1_1scene_1_1_scene_manager.html", null ],

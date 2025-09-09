@@ -105,161 +105,160 @@ $(document).ready(function(){initNavTree('_renderer3_d_8hpp_source.html',''); in
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;Shader.hpp&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;VertexArray.hpp&quot;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;Texture.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;ShaderLibrary.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span>nexo::renderer</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_vertex.html">   26</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_vertex.html">NxVertex</a></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        glm::vec3 position;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        glm::vec2 texCoord;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        glm::vec3 normal;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        glm::vec3 tangent;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        glm::vec3 bitangent;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordtype">int</span> entityID;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    };</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">   37</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">NxIndexedMaterial</a></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        glm::vec4 albedoColor = glm::vec4(1.0f);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">int</span> albedoTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        glm::vec4 specularColor = glm::vec4(1.0f);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordtype">int</span> specularTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        glm::vec3 emissiveColor = glm::vec3(0.0f);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordtype">int</span> emissiveTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordtype">float</span> roughness = 0.5f;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordtype">int</span> roughnessTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">float</span> metallic = 0.0f;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">int</span> metallicTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordtype">float</span> opacity = 1.0f;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">int</span> opacityTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    };</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_material.html">   53</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_material.html">NxMaterial</a></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        glm::vec4 albedoColor = glm::vec4(1.0f);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        glm::vec4 specularColor = glm::vec4(1.0f);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        glm::vec3 emissiveColor = glm::vec3(0.0f);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordtype">float</span> roughness = 0.0f; <span class="comment">// 0 = smooth, 1 = rough</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordtype">float</span> metallic = 0.0f; <span class="comment">// 0 = non-metal, 1 = fully metallic</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">float</span> opacity = 1.0f; <span class="comment">// 1 = opaque, 0 = fully transparent</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::shared_ptr&lt;NxTexture2D&gt; albedoTexture = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        std::shared_ptr&lt;NxTexture2D&gt; normalMap = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        std::shared_ptr&lt;NxTexture2D&gt; metallicMap = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        std::shared_ptr&lt;NxTexture2D&gt; roughnessMap = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        std::shared_ptr&lt;NxTexture2D&gt; emissiveMap = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        std::string shader;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    };</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">//TODO: Add stats for the meshes</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">   73</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> drawCalls = 0;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cubeCount = 0;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getTotalVertexCount()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cubeCount * 8; }</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getTotalIndexCount()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cubeCount * 36; }</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    };</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">   96</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">NxRenderer3DStorage</a></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxCubes = 10000;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxVertices = maxCubes * 8;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxIndices = maxCubes * 36;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxTextureSlots = 32;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxTransforms = 1024;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        glm::vec3 cameraPosition;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        std::shared_ptr&lt;NxShader&gt; currentSceneShader = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        std::shared_ptr&lt;NxVertexArray&gt; vertexArray;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        std::shared_ptr&lt;NxVertexBuffer&gt; vertexBuffer;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        std::shared_ptr&lt;NxIndexBuffer&gt; indexBuffer;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        std::shared_ptr&lt;NxTexture2D&gt; whiteTexture;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> indexCount = 0;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        std::array&lt;NxVertex, 80000&gt; vertexBufferBase;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        std::array&lt;unsigned int, 360000&gt; indexBufferBase;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_vertex.html">NxVertex</a>* vertexBufferPtr = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>* indexBufferPtr = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        std::array&lt;std::shared_ptr&lt;NxTexture2D&gt;, maxTextureSlots&gt; textureSlots;</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> textureSlotIndex = 1;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a> stats;</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    };</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">  150</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a></div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    {</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a>&amp; get() {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a> instance;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        }</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a357507c46e44a5de42f1bf13e8177e95">init</a>();</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a1c29088fa0f6b9829fbcaee5fda55c07">shutdown</a>();</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">void</span> bindTextures() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordtype">void</span> unbindTextures() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aff5a2abc7bed127d14d644f408059038">beginScene</a>(<span class="keyword">const</span> glm::mat4&amp; viewProjection, <span class="keyword">const</span> glm::vec3&amp; cameraPos, <span class="keyword">const</span> std::string&amp; shader = <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a8ed7747a7e13cc3778e5fa364053459b">endScene</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; getCubeVAO();</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; getBillboardVAO();</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a47bc80c6b58195a01640388f1f552511">getTetrahedronVAO</a>();</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a6bf560181d756ea148defd5ca30f5961">getPyramidVAO</a>();</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a903e7cc49fded5ef4068837807a92c9c">getCylinderVAO</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nbSegment);</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aafd695213661c05fd07da41f4945171d">getSphereVAO</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nbSubdivision);</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a36359d14b8a37f58182635757e758fde">resetStats</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        [[nodiscard]] <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a0d24e1987de4cd59c163bbaa1ecfed67">getStats</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        [[nodiscard]] std::shared_ptr&lt;NxShader&gt;&amp; getShader()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_storage-&gt;currentSceneShader; };</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        [[nodiscard]] std::shared_ptr&lt;NxRenderer3DStorage&gt; getInternalStorage()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_storage; };</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#ab5870961dfca746347314403a61627df">getTextureIndex</a>(<span class="keyword">const</span> std::shared_ptr&lt;NxTexture2D&gt;&amp; texture) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        std::shared_ptr&lt;NxRenderer3DStorage&gt; m_storage;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keywordtype">bool</span> m_renderingScene = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keywordtype">void</span> flush() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordtype">void</span> flushAndReset() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>nexo::renderer</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_vertex.html">   25</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_vertex.html">NxVertex</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        glm::vec3 position;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        glm::vec2 texCoord;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        glm::vec3 normal;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        glm::vec3 tangent;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        glm::vec3 bitangent;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordtype">int</span> entityID;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">   36</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">NxIndexedMaterial</a></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        glm::vec4 albedoColor = glm::vec4(1.0f);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">int</span> albedoTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        glm::vec4 specularColor = glm::vec4(1.0f);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">int</span> specularTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        glm::vec3 emissiveColor = glm::vec3(0.0f);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">int</span> emissiveTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordtype">float</span> roughness = 0.5f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordtype">int</span> roughnessTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordtype">float</span> metallic = 0.0f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">int</span> metallicTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">float</span> opacity = 1.0f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordtype">int</span> opacityTexIndex = 0; <span class="comment">// Default: 0 (white texture)</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    };</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_material.html">   52</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_material.html">NxMaterial</a></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        glm::vec4 albedoColor = glm::vec4(1.0f);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        glm::vec4 specularColor = glm::vec4(1.0f);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        glm::vec3 emissiveColor = glm::vec3(0.0f);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordtype">float</span> roughness = 0.0f; <span class="comment">// 0 = smooth, 1 = rough</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordtype">float</span> metallic = 0.0f; <span class="comment">// 0 = non-metal, 1 = fully metallic</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordtype">float</span> opacity = 1.0f; <span class="comment">// 1 = opaque, 0 = fully transparent</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        std::shared_ptr&lt;NxTexture2D&gt; albedoTexture = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::shared_ptr&lt;NxTexture2D&gt; normalMap = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        std::shared_ptr&lt;NxTexture2D&gt; metallicMap = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        std::shared_ptr&lt;NxTexture2D&gt; roughnessMap = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        std::shared_ptr&lt;NxTexture2D&gt; emissiveMap = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        std::string shader;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    };</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">//TODO: Add stats for the meshes</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">   72</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> drawCalls = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> cubeCount = 0;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getTotalVertexCount()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cubeCount * 8; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getTotalIndexCount()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cubeCount * 36; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    };</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">   95</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">NxRenderer3DStorage</a></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxCubes = 10000;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxVertices = maxCubes * 8;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxIndices = maxCubes * 36;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxTextureSlots = 32;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxTransforms = 1024;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        glm::vec3 cameraPosition;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        std::shared_ptr&lt;NxShader&gt; currentSceneShader = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        std::shared_ptr&lt;NxVertexArray&gt; vertexArray;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        std::shared_ptr&lt;NxVertexBuffer&gt; vertexBuffer;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        std::shared_ptr&lt;NxIndexBuffer&gt; indexBuffer;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        std::shared_ptr&lt;NxTexture2D&gt; whiteTexture;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> indexCount = 0;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        std::array&lt;NxVertex, 80000&gt; vertexBufferBase;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        std::array&lt;unsigned int, 360000&gt; indexBufferBase;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_vertex.html">NxVertex</a>* vertexBufferPtr = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>* indexBufferPtr = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        std::array&lt;std::shared_ptr&lt;NxTexture2D&gt;, maxTextureSlots&gt; textureSlots;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> textureSlotIndex = 1;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a> stats;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    };</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">  149</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a>&amp; get() {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">NxRenderer3D</a> instance;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a357507c46e44a5de42f1bf13e8177e95">init</a>();</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a1c29088fa0f6b9829fbcaee5fda55c07">shutdown</a>();</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordtype">void</span> bindTextures() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">void</span> unbindTextures() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aff5a2abc7bed127d14d644f408059038">beginScene</a>(<span class="keyword">const</span> glm::mat4&amp; viewProjection, <span class="keyword">const</span> glm::vec3&amp; cameraPos, <span class="keyword">const</span> std::string&amp; shader = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a8ed7747a7e13cc3778e5fa364053459b">endScene</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; getCubeVAO();</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; getBillboardVAO();</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a47bc80c6b58195a01640388f1f552511">getTetrahedronVAO</a>();</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a6bf560181d756ea148defd5ca30f5961">getPyramidVAO</a>();</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a903e7cc49fded5ef4068837807a92c9c">getCylinderVAO</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nbSegment);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">static</span> std::shared_ptr&lt;NxVertexArray&gt; <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aafd695213661c05fd07da41f4945171d">getSphereVAO</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nbSubdivision);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a36359d14b8a37f58182635757e758fde">resetStats</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        [[nodiscard]] <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">NxRenderer3DStats</a> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a0d24e1987de4cd59c163bbaa1ecfed67">getStats</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        [[nodiscard]] std::shared_ptr&lt;NxShader&gt;&amp; getShader()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_storage-&gt;currentSceneShader; };</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        [[nodiscard]] std::shared_ptr&lt;NxRenderer3DStorage&gt; getInternalStorage()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_storage; };</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#ab5870961dfca746347314403a61627df">getTextureIndex</a>(<span class="keyword">const</span> std::shared_ptr&lt;NxTexture2D&gt;&amp; texture) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        std::shared_ptr&lt;NxRenderer3DStorage&gt; m_storage;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">bool</span> m_renderingScene = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordtype">void</span> flush() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keywordtype">void</span> flushAndReset() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordtype">void</span> setMaterialUniforms(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">NxIndexedMaterial</a>&amp; material) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    };</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>}</div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">nexo::renderer::NxRenderer3D</a></div><div class="ttdoc">Provides a high-performance 3D rendering system for drawing cubes, textured objects,...</div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:151</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a0d24e1987de4cd59c163bbaa1ecfed67"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a0d24e1987de4cd59c163bbaa1ecfed67">nexo::renderer::NxRenderer3D::getStats</a></div><div class="ttdeci">NxRenderer3DStats getStats() const</div><div class="ttdoc">Retrieves the current rendering statistics.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:226</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a1c29088fa0f6b9829fbcaee5fda55c07"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a1c29088fa0f6b9829fbcaee5fda55c07">nexo::renderer::NxRenderer3D::shutdown</a></div><div class="ttdeci">void shutdown()</div><div class="ttdoc">Releases all resources and cleans up the NxRenderer3D.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:81</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a357507c46e44a5de42f1bf13e8177e95"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a357507c46e44a5de42f1bf13e8177e95">nexo::renderer::NxRenderer3D::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initializes the NxRenderer3D and allocates required resources.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:31</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a36359d14b8a37f58182635757e758fde"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a36359d14b8a37f58182635757e758fde">nexo::renderer::NxRenderer3D::resetStats</a></div><div class="ttdeci">void resetStats() const</div><div class="ttdoc">Resets rendering statistics.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:218</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a47bc80c6b58195a01640388f1f552511"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a47bc80c6b58195a01640388f1f552511">nexo::renderer::NxRenderer3D::getTetrahedronVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getTetrahedronVAO()</div><div class="ttdoc">Creates a vertex array object (VAO) for a tetrahedron mesh.</div><div class="ttdef"><b>Definition:</b> Tetrahedron.cpp:97</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a6bf560181d756ea148defd5ca30f5961"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a6bf560181d756ea148defd5ca30f5961">nexo::renderer::NxRenderer3D::getPyramidVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getPyramidVAO()</div><div class="ttdoc">Creates a vertex array object (VAO) for a pyramid mesh.</div><div class="ttdef"><b>Definition:</b> Pyramid.cpp:99</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a8ed7747a7e13cc3778e5fa364053459b"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a8ed7747a7e13cc3778e5fa364053459b">nexo::renderer::NxRenderer3D::endScene</a></div><div class="ttdeci">void endScene() const</div><div class="ttdoc">Ends the current 3D rendering scene.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:126</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a903e7cc49fded5ef4068837807a92c9c"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a903e7cc49fded5ef4068837807a92c9c">nexo::renderer::NxRenderer3D::getCylinderVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getCylinderVAO(unsigned int nbSegment)</div><div class="ttdoc">Creates or retrieves a vertex array object (VAO) for a cylinder mesh.</div><div class="ttdef"><b>Definition:</b> Cylinder.cpp:300</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_aafd695213661c05fd07da41f4945171d"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aafd695213661c05fd07da41f4945171d">nexo::renderer::NxRenderer3D::getSphereVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getSphereVAO(unsigned int nbSubdivision)</div><div class="ttdoc">Creates a vertex array object (VAO) for a sphere mesh.</div><div class="ttdef"><b>Definition:</b> Sphere.cpp:207</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_ab5870961dfca746347314403a61627df"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#ab5870961dfca746347314403a61627df">nexo::renderer::NxRenderer3D::getTextureIndex</a></div><div class="ttdeci">int getTextureIndex(const std::shared_ptr&lt; NxTexture2D &gt; &amp;texture) const</div><div class="ttdoc">Returns the texture index for a given texture.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:173</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_aff5a2abc7bed127d14d644f408059038"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aff5a2abc7bed127d14d644f408059038">nexo::renderer::NxRenderer3D::beginScene</a></div><div class="ttdeci">void beginScene(const glm::mat4 &amp;viewProjection, const glm::vec3 &amp;cameraPos, const std::string &amp;shader=&quot;&quot;)</div><div class="ttdoc">Begins a new 3D rendering scene.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:105</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_indexed_material_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_indexed_material.html">nexo::renderer::NxIndexedMaterial</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:38</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_material_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_material.html">nexo::renderer::NxMaterial</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:54</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_renderer3_d_stats_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">nexo::renderer::NxRenderer3DStats</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:74</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_renderer3_d_storage_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">nexo::renderer::NxRenderer3DStorage</a></div><div class="ttdoc">Holds internal data and resources used by NxRenderer3D.</div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:97</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_vertex_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_vertex.html">nexo::renderer::NxVertex</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:27</div></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordtype">void</span> setMaterialUniforms(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_indexed_material.html">NxIndexedMaterial</a>&amp; material) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    };</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>}</div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html">nexo::renderer::NxRenderer3D</a></div><div class="ttdoc">Provides a high-performance 3D rendering system for drawing cubes, textured objects,...</div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:150</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a0d24e1987de4cd59c163bbaa1ecfed67"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a0d24e1987de4cd59c163bbaa1ecfed67">nexo::renderer::NxRenderer3D::getStats</a></div><div class="ttdeci">NxRenderer3DStats getStats() const</div><div class="ttdoc">Retrieves the current rendering statistics.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:225</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a1c29088fa0f6b9829fbcaee5fda55c07"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a1c29088fa0f6b9829fbcaee5fda55c07">nexo::renderer::NxRenderer3D::shutdown</a></div><div class="ttdeci">void shutdown()</div><div class="ttdoc">Releases all resources and cleans up the NxRenderer3D.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:80</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a357507c46e44a5de42f1bf13e8177e95"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a357507c46e44a5de42f1bf13e8177e95">nexo::renderer::NxRenderer3D::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">Initializes the NxRenderer3D and allocates required resources.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:30</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a36359d14b8a37f58182635757e758fde"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a36359d14b8a37f58182635757e758fde">nexo::renderer::NxRenderer3D::resetStats</a></div><div class="ttdeci">void resetStats() const</div><div class="ttdoc">Resets rendering statistics.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:217</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a47bc80c6b58195a01640388f1f552511"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a47bc80c6b58195a01640388f1f552511">nexo::renderer::NxRenderer3D::getTetrahedronVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getTetrahedronVAO()</div><div class="ttdoc">Creates a vertex array object (VAO) for a tetrahedron mesh.</div><div class="ttdef"><b>Definition:</b> Tetrahedron.cpp:87</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a6bf560181d756ea148defd5ca30f5961"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a6bf560181d756ea148defd5ca30f5961">nexo::renderer::NxRenderer3D::getPyramidVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getPyramidVAO()</div><div class="ttdoc">Creates a vertex array object (VAO) for a pyramid mesh.</div><div class="ttdef"><b>Definition:</b> Pyramid.cpp:97</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a8ed7747a7e13cc3778e5fa364053459b"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a8ed7747a7e13cc3778e5fa364053459b">nexo::renderer::NxRenderer3D::endScene</a></div><div class="ttdeci">void endScene() const</div><div class="ttdoc">Ends the current 3D rendering scene.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:125</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_a903e7cc49fded5ef4068837807a92c9c"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#a903e7cc49fded5ef4068837807a92c9c">nexo::renderer::NxRenderer3D::getCylinderVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getCylinderVAO(unsigned int nbSegment)</div><div class="ttdoc">Creates or retrieves a vertex array object (VAO) for a cylinder mesh.</div><div class="ttdef"><b>Definition:</b> Cylinder.cpp:292</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_aafd695213661c05fd07da41f4945171d"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aafd695213661c05fd07da41f4945171d">nexo::renderer::NxRenderer3D::getSphereVAO</a></div><div class="ttdeci">static std::shared_ptr&lt; NxVertexArray &gt; getSphereVAO(unsigned int nbSubdivision)</div><div class="ttdoc">Creates a vertex array object (VAO) for a sphere mesh.</div><div class="ttdef"><b>Definition:</b> Sphere.cpp:206</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_ab5870961dfca746347314403a61627df"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#ab5870961dfca746347314403a61627df">nexo::renderer::NxRenderer3D::getTextureIndex</a></div><div class="ttdeci">int getTextureIndex(const std::shared_ptr&lt; NxTexture2D &gt; &amp;texture) const</div><div class="ttdoc">Returns the texture index for a given texture.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:172</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_renderer3_d_html_aff5a2abc7bed127d14d644f408059038"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_renderer3_d.html#aff5a2abc7bed127d14d644f408059038">nexo::renderer::NxRenderer3D::beginScene</a></div><div class="ttdeci">void beginScene(const glm::mat4 &amp;viewProjection, const glm::vec3 &amp;cameraPos, const std::string &amp;shader=&quot;&quot;)</div><div class="ttdoc">Begins a new 3D rendering scene.</div><div class="ttdef"><b>Definition:</b> Renderer3D.cpp:104</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_indexed_material_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_indexed_material.html">nexo::renderer::NxIndexedMaterial</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:37</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_material_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_material.html">nexo::renderer::NxMaterial</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:53</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_renderer3_d_stats_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_renderer3_d_stats.html">nexo::renderer::NxRenderer3DStats</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:73</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_renderer3_d_storage_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_renderer3_d_storage.html">nexo::renderer::NxRenderer3DStorage</a></div><div class="ttdoc">Holds internal data and resources used by NxRenderer3D.</div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:96</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_vertex_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_vertex.html">nexo::renderer::NxVertex</a></div><div class="ttdef"><b>Definition:</b> Renderer3D.hpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

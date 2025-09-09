@@ -143,12 +143,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setDepthFunc<
 <tr class="memitem:acb8d794836f9d41734491aa6fefe87fe"><td class="memItemLeft" align="right" valign="top"><a id="acb8d794836f9d41734491aa6fefe87fe" name="acb8d794836f9d41734491aa6fefe87fe"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setDepthMask</b> (bool enable)=0</td></tr>
 <tr class="separator:acb8d794836f9d41734491aa6fefe87fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fef1a71cd1e35f7975451830c5f4243"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_renderer_api.html#a8fef1a71cd1e35f7975451830c5f4243">drawIndexed</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">NxVertexArray</a> &gt; &amp;vertexArray, unsigned int count=0)=0</td></tr>
-<tr class="memdesc:a8fef1a71cd1e35f7975451830c5f4243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a draw call for indexed geometry.  <a href="classnexo_1_1renderer_1_1_nx_renderer_api.html#a8fef1a71cd1e35f7975451830c5f4243">More...</a><br /></td></tr>
-<tr class="separator:a8fef1a71cd1e35f7975451830c5f4243"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f2946ea5f7cd74be0d5d1162cc0f3a2"><td class="memItemLeft" align="right" valign="top"><a id="a6f2946ea5f7cd74be0d5d1162cc0f3a2" name="a6f2946ea5f7cd74be0d5d1162cc0f3a2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>drawUnIndexed</b> (unsigned int verticesCount)=0</td></tr>
-<tr class="separator:a6f2946ea5f7cd74be0d5d1162cc0f3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6dcdf182fd4e3454b6e39ea4df6d75e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_renderer_api.html#aa6dcdf182fd4e3454b6e39ea4df6d75e">drawIndexed</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">NxVertexArray</a> &gt; &amp;vertexArray, size_t count=0)=0</td></tr>
+<tr class="memdesc:aa6dcdf182fd4e3454b6e39ea4df6d75e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a draw call for indexed geometry.  <a href="classnexo_1_1renderer_1_1_nx_renderer_api.html#aa6dcdf182fd4e3454b6e39ea4df6d75e">More...</a><br /></td></tr>
+<tr class="separator:aa6dcdf182fd4e3454b6e39ea4df6d75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb64b0da3d87f98e5abe97de593244d8"><td class="memItemLeft" align="right" valign="top"><a id="acb64b0da3d87f98e5abe97de593244d8" name="acb64b0da3d87f98e5abe97de593244d8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>drawUnIndexed</b> (size_t verticesCount)=0</td></tr>
+<tr class="separator:acb64b0da3d87f98e5abe97de593244d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33afb8ee3f62bd419117a550f13f96b8"><td class="memItemLeft" align="right" valign="top"><a id="a33afb8ee3f62bd419117a550f13f96b8" name="a33afb8ee3f62bd419117a550f13f96b8"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setStencilTest</b> (bool enable)=0</td></tr>
 <tr class="separator:a33afb8ee3f62bd419117a550f13f96b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -435,8 +435,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindingOrd
 
 </div>
 </div>
-<a id="a8fef1a71cd1e35f7975451830c5f4243" name="a8fef1a71cd1e35f7975451830c5f4243"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fef1a71cd1e35f7975451830c5f4243">&#9670;&nbsp;</a></span>drawIndexed()</h2>
+<a id="aa6dcdf182fd4e3454b6e39ea4df6d75e" name="aa6dcdf182fd4e3454b6e39ea4df6d75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6dcdf182fd4e3454b6e39ea4df6d75e">&#9670;&nbsp;</a></span>drawIndexed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -453,7 +453,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindingOrd
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>count</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -480,7 +480,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindingOrd
 </dl>
 <p>Must be implemented by subclasses. </p>
 
-<p>Implemented in <a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a7ff4ee3cb4786367aaf8452090b87425">nexo::renderer::NxOpenGlRendererApi</a>.</p>
+<p>Implemented in <a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a8d6a70191ce3cf4021d14723619c1a03">nexo::renderer::NxOpenGlRendererApi</a>.</p>
 
 </div>
 </div>

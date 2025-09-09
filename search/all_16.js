@@ -1,14 +1,18 @@
 var searchData=
 [
-  ['validate_0',['validate',['../classnexo_1_1assets_1_1_validated_name.html#adf50637876e94c76e8cb2d9b1ce30035',1,'nexo::assets::ValidatedName']]],
-  ['validatedname_1',['ValidatedName',['../classnexo_1_1assets_1_1_validated_name.html',1,'nexo::assets']]],
-  ['validatedname_3c_20assetnamevalidator_20_3e_2',['ValidatedName&lt; AssetNameValidator &gt;',['../classnexo_1_1assets_1_1_validated_name.html',1,'nexo::assets']]],
-  ['value_3',['value',['../struct_im_nexo_1_1_drag_float.html#ac709b3b1052691f1a8aed3d668cdef6e',1,'ImNexo::DragFloat']]],
-  ['value_5ftype_4',['value_type',['../classnexo_1_1ecs_1_1_group_1_1_group_iterator.html#abe06055fcf6b90b6579d082e8edaedfa',1,'nexo::ecs::Group::GroupIterator']]],
-  ['vec3comparator_5',['Vec3Comparator',['../structnexo_1_1renderer_1_1_vec3_comparator.html',1,'nexo::renderer']]],
-  ['velocity_6',['Velocity',['../structnexo_1_1ecs_1_1_velocity.html',1,'nexo::ecs::Velocity'],['../struct_velocity.html',1,'Velocity']]],
-  ['velocitycomponent_7',['VelocityComponent',['../structnexo_1_1ecs_1_1_velocity_component.html',1,'nexo::ecs']]],
-  ['verbosity_8',['verbosity',['../structnexo_1_1editor_1_1_log_message.html#aba4e6670f0adcfe962a34433fab6f4c3',1,'nexo::editor::LogMessage']]],
-  ['viewportlocked_9',['viewportLocked',['../structnexo_1_1components_1_1_camera_component.html#a8006dc63d3c7a079e692e1fb4e05fb63',1,'nexo::components::CameraComponent']]],
-  ['viewprojectionmatrix_10',['viewProjectionMatrix',['../structnexo_1_1components_1_1_camera_context.html#a0e7e30569cb6f5f7baec8a6677be45b1',1,'nexo::components::CameraContext']]]
+  ['uiname_0',['uiName',['../structnexo_1_1editor_1_1_scene_object.html#a27312ab62fbcc54e2e5f75f1b0400cb5',1,'nexo::editor::SceneObject']]],
+  ['unbind_1',['unbind',['../class_dummy_framebuffer.html#a9d9bee156bc08a03014c65f1ead8e26d',1,'DummyFramebuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_shader.html#a6ff96c34e3c164185dda1015de52b623',1,'nexo::renderer::NxShader::unbind()'],['../classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9',1,'nexo::renderer::NxVertexBuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02',1,'nexo::renderer::NxIndexBuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_framebuffer.html#ad3738336396e2de61fe37eb405f78c28',1,'nexo::renderer::NxFramebuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#a10cce1e02be38c6d224b93329f008c34',1,'nexo::renderer::NxOpenGlVertexBuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_index_buffer.html#ab5a0037f9f3904ef5ff17168464a48ad',1,'nexo::renderer::NxOpenGlIndexBuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a743afe54938892d4b289884ae59a0ce8',1,'nexo::renderer::NxOpenGlFramebuffer::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_shader.html#aed4a9d2f52a705be81346e8c54cbde11',1,'nexo::renderer::NxOpenGlShader::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_texture2_d.html#af0eb3f006c2e5c6fc47c6fa690e7527c',1,'nexo::renderer::NxOpenGlTexture2D::unbind()'],['../classnexo_1_1renderer_1_1_nx_open_gl_vertex_array.html#a3cd08e5d6a3643f7920ed7201c4e2470',1,'nexo::renderer::NxOpenGlVertexArray::unbind()']]],
+  ['uniformcache_2',['UniformCache',['../classnexo_1_1renderer_1_1_uniform_cache.html',1,'nexo::renderer']]],
+  ['uniforminfo_3',['UniformInfo',['../structnexo_1_1renderer_1_1_uniform_info.html',1,'nexo::renderer']]],
+  ['uniqueid_4',['uniqueId',['../struct_im_nexo_1_1_button_props.html#a2ea22a10d0b1cbb79516784934a0eb8d',1,'ImNexo::ButtonProps']]],
+  ['unload_5',['unload',['../classnexo_1_1assets_1_1_generic_asset_ref.html#af2b2a94a9c0ac30b210f94b21d18d55a',1,'nexo::assets::GenericAssetRef']]],
+  ['unregisterallimportersfortype_6',['unregisterAllImportersForType',['../classnexo_1_1assets_1_1_asset_importer.html#a675d03505d6a7e39e26fde6d192a3db5',1,'nexo::assets::AssetImporter::unregisterAllImportersForType()'],['../classnexo_1_1assets_1_1_asset_importer.html#acc83893ed2a3ae0857e6320fd5673fc3',1,'nexo::assets::AssetImporter::unregisterAllImportersForType(const std::type_index &amp;typeIdx)']]],
+  ['unregistered_7',['Unregistered',['../structnexo_1_1ecs_1_1_unregistered.html',1,'nexo::ecs']]],
+  ['unregisterlistener_8',['unregisterListener',['../classnexo_1_1event_1_1_event_manager.html#a808e048789593a5d0fa8f57a06e096c3',1,'nexo::event::EventManager']]],
+  ['unregistersingletoncomponent_9',['unregisterSingletonComponent',['../classnexo_1_1ecs_1_1_singleton_component_manager.html#a15d468a9c41db755f9232c5284364c9a',1,'nexo::ecs::SingletonComponentManager']]],
+  ['unregisterwindow_10',['unregisterWindow',['../classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650',1,'nexo::editor::WindowRegistry']]],
+  ['update_11',['update',['../classnexo_1_1editor_1_1_editor_scene.html#ab4f4a26b6baeaea05952c64bb2affb93',1,'nexo::editor::EditorScene::update()'],['../classnexo_1_1editor_1_1_scene_tree_window.html#ae9aa4ea4d4434328a5f6067dc929cdf0',1,'nexo::editor::SceneTreeWindow::update()'],['../classnexo_1_1editor_1_1_editor.html#aa47dd80e94284a153b669e6c4ee60757',1,'nexo::editor::Editor::update()'],['../classnexo_1_1editor_1_1_window_registry.html#ad63029fafd46a69a3c51c81e39d376a8',1,'nexo::editor::WindowRegistry::update()']]],
+  ['updatematerialthumbnail_12',['updateMaterialThumbnail',['../classnexo_1_1editor_1_1_thumbnail_cache.html#ae809579fa544a24fdc3d8c67ff95293d',1,'nexo::editor::ThumbnailCache']]],
+  ['uuid_13',['uuid',['../structnexo_1_1editor_1_1_scene_object.html#af2efc1bd5ba4dc9f206dd7aeaf0d74de',1,'nexo::editor::SceneObject::uuid()'],['../structnexo_1_1editor_1_1_scene_tree_drag_drop_payload.html#a1630184cec25df3396e84d607ba419e8',1,'nexo::editor::SceneTreeDragDropPayload::uuid()']]],
+  ['uuidcomponent_14',['UuidComponent',['../structnexo_1_1components_1_1_uuid_component.html',1,'nexo::components']]]
 ];

@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['targetentity_0',['targetEntity',['../structnexo_1_1components_1_1_perspective_camera_target.html#aef97aff247835a890f47d41a17e54d5e',1,'nexo::components::PerspectiveCameraTarget']]],
-  ['textcolor_1',['textColor',['../struct_im_nexo_1_1_drag_float.html#ac65376fbc836cafed446b151eef0bfc8',1,'ImNexo::DragFloat']]],
-  ['tooltip_2',['tooltip',['../struct_im_nexo_1_1_button_props.html#a6f3968344e4d5d4c8ef3bd59b493c33a',1,'ImNexo::ButtonProps']]],
-  ['translationspeed_3',['translationSpeed',['../structnexo_1_1components_1_1_perspective_camera_controller.html#a0225043ff118589efed2bf888d27cba6',1,'nexo::components::PerspectiveCameraController']]],
-  ['txtcolor_4',['txtColor',['../struct_im_nexo_1_1_badge.html#ad8a755fc0da23fc558c62bf1e4fbab2d',1,'ImNexo::Badge']]],
-  ['type_5',['type',['../structnexo_1_1editor_1_1_asset_drag_drop_payload.html#a4249c00d7802d9b494746203b7d6e06a',1,'nexo::editor::AssetDragDropPayload::type()'],['../structnexo_1_1editor_1_1_scene_object.html#ad07864952b0ce3ae12e46bd7e59f9a26',1,'nexo::editor::SceneObject::type()'],['../structnexo_1_1editor_1_1_scene_tree_drag_drop_payload.html#ad8e0141c21dbf9f8a5a7fd7d207c719e',1,'nexo::editor::SceneTreeDragDropPayload::type()'],['../structnexo_1_1components_1_1_camera_component.html#afca6dcaf1f7674280dc9e4e5bda763b8',1,'nexo::components::CameraComponent::type()']]]
+  ['scenegenerated_0',['sceneGenerated',['../structnexo_1_1editor_1_1utils_1_1_scene_preview_out.html#adf6b513f349d844eebdafc9ce74749f4',1,'nexo::editor::utils::ScenePreviewOut']]],
+  ['sceneid_1',['sceneId',['../structnexo_1_1editor_1_1_scene_properties.html#a1a23850a199485a1cf3906a7616fd2ec',1,'nexo::editor::SceneProperties::sceneId()'],['../structnexo_1_1editor_1_1utils_1_1_scene_preview_out.html#afc66252d614f1903da781c7de7712f0c',1,'nexo::editor::utils::ScenePreviewOut::sceneId()']]],
+  ['sceneproperties_2',['sceneProperties',['../structnexo_1_1editor_1_1_entity_properties.html#a4f2b2eb066815e7c884c983682744fac',1,'nexo::editor::EntityProperties']]],
+  ['size_3',['size',['../structnexo_1_1editor_1_1_popup_manager_1_1_popup_props.html#aabc63edc54b168e52950b47a6f7d7199',1,'nexo::editor::PopupManager::PopupProps::size()'],['../struct_im_nexo_1_1_badge.html#a6aa17283209780c5ff3f81780ec6a51c',1,'ImNexo::Badge::size()']]],
+  ['sliders_4',['sliders',['../struct_im_nexo_1_1_channels.html#a5b8cbf2fd9f1f7e2997bc8fe27cea83c',1,'ImNexo::Channels']]],
+  ['sourcesceneid_5',['sourceSceneId',['../structnexo_1_1editor_1_1_scene_tree_drag_drop_payload.html#a6cefb6d4605789d623f0f1faf697a456',1,'nexo::editor::SceneTreeDragDropPayload']]],
+  ['speed_6',['speed',['../struct_im_nexo_1_1_drag_float.html#a6a9369d187ade6c6db4919498b33ac4f',1,'ImNexo::DragFloat']]],
+  ['startindex_7',['startIndex',['../structnexo_1_1ecs_1_1_partition.html#a028cfaf8c19ec8aa886238f07482f26c',1,'nexo::ecs::Partition']]]
 ];

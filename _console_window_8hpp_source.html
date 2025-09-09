@@ -111,7 +111,7 @@ $(document).ready(function(){initNavTree('_console_window_8hpp_source.html','');
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::string verbosityToString(loguru::Verbosity level);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    loguru::Verbosity nexoLevelToLoguruLevel(LogLevel level);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> ImVec4 getVerbosityColor(loguru::Verbosity level);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    ImVec4 getVerbosityColor(loguru::Verbosity level);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::string generateLogFilePath();</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">constexpr</span> <span class="keyword">auto</span> LOGURU_CALLBACK_NAME = <span class="stringliteral">&quot;GEE&quot;</span>;</div>
@@ -125,109 +125,109 @@ $(document).ready(function(){initNavTree('_console_window_8hpp_source.html','');
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_console_window.html">   50</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_console_window.html">ConsoleWindow</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_a_document_window.html">ADocumentWindow</a> {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keyword">explicit</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a826d0564d59d9f2eb9ba6ecd885ab411">ConsoleWindow</a>(<span class="keyword">const</span> std::string &amp;windowName, <a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;registry);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">   69</a></span>            <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">~ConsoleWindow</a>()<span class="keyword"> override</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">            </span>{</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                loguru::remove_callback(LOGURU_CALLBACK_NAME);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            };</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="comment">// No-op method in this class</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordtype">void</span> setup() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a232c1d90a4f4ff1c789dee77bacf436c">shutdown</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a825f40d7f9abe8162500a859338c1a13">show</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="comment">// No-op method in this class</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordtype">void</span> update() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a5ec5438c444d0f48e6efc93577bcdde1">executeCommand</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* commandLine);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordtype">char</span> m_inputBuf[512] = {};</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            std::vector&lt;std::string&gt; m_commands; <span class="comment">// History of executed commands.</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            std::string m_logFilePath;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordtype">bool</span> m_exportLog = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordtype">bool</span> m_scrollToBottom = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keyword">explicit</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a826d0564d59d9f2eb9ba6ecd885ab411">ConsoleWindow</a>(<span class="keyword">const</span> std::string &amp;windowName, <a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> &amp;registry);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">   70</a></span>            <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">~ConsoleWindow</a>()<span class="keyword"> override</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">            </span>{</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                loguru::remove_callback(LOGURU_CALLBACK_NAME);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            };</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="comment">// No-op method in this class</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordtype">void</span> setup() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a232c1d90a4f4ff1c789dee77bacf436c">shutdown</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a825f40d7f9abe8162500a859338c1a13">show</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="comment">// No-op method in this class</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordtype">void</span> update() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_console_window.html#a5ec5438c444d0f48e6efc93577bcdde1">executeCommand</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* commandLine);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordtype">char</span> m_inputBuf[512] = {};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            std::vector&lt;std::string&gt; m_commands; <span class="comment">// History of executed commands.</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            std::string m_logFilePath;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordtype">bool</span> m_exportLog = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keywordtype">bool</span> m_scrollToBottom = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            std::set&lt;loguru::Verbosity&gt; m_selectedVerbosityLevels = {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                loguru::Verbosity_FATAL,</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                loguru::Verbosity_ERROR,</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                loguru::Verbosity_WARNING,</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                loguru::Verbosity_INFO,</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                loguru::Verbosity_1,</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            };</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordtype">float</span> m_logPadding = 0.0f;</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            std::vector&lt;LogMessage&gt; m_logs;</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keywordtype">size_t</span> m_maxLogCapacity = 200;</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            std::vector&lt;LogMessage&gt; m_bufferLogsToExport;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keywordtype">size_t</span> m_maxBufferLogToExportCapacity = 20;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            std::set&lt;loguru::Verbosity&gt; m_selectedVerbosityLevels = {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                loguru::Verbosity_FATAL,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                loguru::Verbosity_ERROR,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                loguru::Verbosity_WARNING,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                loguru::Verbosity_INFO,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                loguru::Verbosity_1,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            };</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keywordtype">float</span> m_logPadding = 0.0f;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            std::vector&lt;LogMessage&gt; m_logs;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordtype">size_t</span> m_maxLogCapacity = 200;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            std::vector&lt;LogMessage&gt; m_bufferLogsToExport;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keywordtype">size_t</span> m_maxBufferLogToExportCapacity = 20;</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            <span class="keywordtype">void</span> clearLog();</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordtype">void</span> addLog(<span class="keyword">const</span> LogMessage&amp; message);</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>             <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>             <span class="keywordtype">void</span> addLog(std::format_string&lt;Args...&gt; fmt, Args&amp;&amp;... args)</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>             {</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                 <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                     std::string formattedString = std::format(fmt, std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                     LogMessage newMessage;</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                     newMessage.verbosity = loguru::Verbosity_1;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                     newMessage.message = formattedString;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                     newMessage.prefix = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                     m_logs.push_back(newMessage);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                 } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                     LogMessage newMessage;</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                     newMessage.verbosity = loguru::Verbosity_ERROR;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                     <span class="keywordtype">char</span> errorBuffer[1024];</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                     <span class="comment">// format up to sizeof(errorBuffer)-1 characters</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                     <span class="keyword">auto</span> result = std::format_to_n(</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                         std::begin(errorBuffer),</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                         std::size(errorBuffer) - 1,</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                         <span class="stringliteral">&quot;Error formatting log message: {}&quot;</span>,</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                         e.what()</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                     );</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                     <span class="comment">// null-terminate</span></div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                     *result.out = <span class="charliteral">&#39;\0&#39;</span>;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                     newMessage.message = std::string(errorBuffer);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                     newMessage.prefix = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                     m_logs.push_back(newMessage);</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                 }</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                 m_scrollToBottom = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>             }</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordtype">void</span> displayLog(loguru::Verbosity verbosity, <span class="keyword">const</span> std::string &amp;msg) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordtype">void</span> exportLogsBuffered() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            <span class="keywordtype">void</span> showVerbositySettingsPopup();</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <span class="keywordtype">void</span> calcLogPadding();</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            <span class="keyword">static</span> <span class="keywordtype">void</span> loguruCallback(<span class="keywordtype">void</span> *userData, <span class="keyword">const</span> loguru::Message&amp; message);</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    };</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>}</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            <span class="keywordtype">void</span> clearLog();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <span class="keywordtype">void</span> addLog(<span class="keyword">const</span> LogMessage&amp; message);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>             <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>             <span class="keywordtype">void</span> addLog(std::format_string&lt;Args...&gt; fmt, Args&amp;&amp;... args)</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>             {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                 <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                     std::string formattedString = std::format(fmt, std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                     LogMessage newMessage;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                     newMessage.verbosity = loguru::Verbosity_1;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                     newMessage.message = formattedString;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                     newMessage.prefix = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                     m_logs.push_back(newMessage);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                 } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                     LogMessage newMessage;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                     newMessage.verbosity = loguru::Verbosity_ERROR;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                     <span class="keywordtype">char</span> errorBuffer[1024];</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                     <span class="comment">// format up to sizeof(errorBuffer)-1 characters</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                     <span class="keyword">auto</span> result = std::format_to_n(</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                         std::begin(errorBuffer),</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                         std::size(errorBuffer) - 1,</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                         <span class="stringliteral">&quot;Error formatting log message: {}&quot;</span>,</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                         e.what()</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                     );</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                     <span class="comment">// null-terminate</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                     *result.out = <span class="charliteral">&#39;\0&#39;</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                     newMessage.message = std::string(errorBuffer);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                     newMessage.prefix = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                     m_logs.push_back(newMessage);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                 }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                 m_scrollToBottom = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>             }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            <span class="keywordtype">void</span> displayLog(loguru::Verbosity verbosity, <span class="keyword">const</span> std::string &amp;msg) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            <span class="keywordtype">void</span> exportLogsBuffered() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keywordtype">void</span> showVerbositySettingsPopup();</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <span class="keywordtype">void</span> calcLogPadding();</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            <span class="keyword">static</span> <span class="keywordtype">void</span> loguruCallback(<span class="keywordtype">void</span> *userData, <span class="keyword">const</span> loguru::Message&amp; message);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    };</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>}</div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_a_document_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_a_document_window.html">nexo::editor::ADocumentWindow</a></div><div class="ttdef"><b>Definition:</b> ADocumentWindow.hpp:37</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html">nexo::editor::ConsoleWindow</a></div><div class="ttdoc">Console window for displaying and managing application logs.</div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:50</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_a232c1d90a4f4ff1c789dee77bacf436c"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#a232c1d90a4f4ff1c789dee77bacf436c">nexo::editor::ConsoleWindow::shutdown</a></div><div class="ttdeci">void shutdown() override</div><div class="ttdoc">Clears all stored log entries during shutdown.</div><div class="ttdef"><b>Definition:</b> Shutdown.cpp:19</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_a5ec5438c444d0f48e6efc93577bcdde1"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#a5ec5438c444d0f48e6efc93577bcdde1">nexo::editor::ConsoleWindow::executeCommand</a></div><div class="ttdeci">void executeCommand(const char *commandLine)</div><div class="ttdoc">Executes a command entered in the console.</div><div class="ttdef"><b>Definition:</b> Show.cpp:66</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_a825f40d7f9abe8162500a859338c1a13"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#a825f40d7f9abe8162500a859338c1a13">nexo::editor::ConsoleWindow::show</a></div><div class="ttdeci">void show() override</div><div class="ttdoc">Renders the console window interface.</div><div class="ttdef"><b>Definition:</b> Show.cpp:102</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_a826d0564d59d9f2eb9ba6ecd885ab411"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#a826d0564d59d9f2eb9ba6ecd885ab411">nexo::editor::ConsoleWindow::ConsoleWindow</a></div><div class="ttdeci">ConsoleWindow(const std::string &amp;windowName, WindowRegistry &amp;registry)</div><div class="ttdoc">Constructs and initializes a ConsoleWindow.</div><div class="ttdef"><b>Definition:</b> Init.cpp:31</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_ad038adc92b01721e70558b891becf26c"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">nexo::editor::ConsoleWindow::~ConsoleWindow</a></div><div class="ttdeci">~ConsoleWindow() override</div><div class="ttdoc">Destructor that cleans up the ConsoleWindow.</div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:69</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_console_window_html_ad038adc92b01721e70558b891becf26c"><div class="ttname"><a href="classnexo_1_1editor_1_1_console_window.html#ad038adc92b01721e70558b891becf26c">nexo::editor::ConsoleWindow::~ConsoleWindow</a></div><div class="ttdeci">~ConsoleWindow() override</div><div class="ttdoc">Destructor that cleans up the ConsoleWindow.</div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:70</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html">nexo::editor::WindowRegistry</a></div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:62</div></div>
 <div class="ttc" id="astructnexo_1_1editor_1_1_log_message_html"><div class="ttname"><a href="structnexo_1_1editor_1_1_log_message.html">nexo::editor::LogMessage</a></div><div class="ttdoc">Structure representing a formatted log message.</div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:36</div></div>
 <div class="ttc" id="astructnexo_1_1editor_1_1_log_message_html_a4f4c64f74cef163d7081b0a4448bcde2"><div class="ttname"><a href="structnexo_1_1editor_1_1_log_message.html#a4f4c64f74cef163d7081b0a4448bcde2">nexo::editor::LogMessage::message</a></div><div class="ttdeci">std::string message</div><div class="ttdoc">The content of the log message.</div><div class="ttdef"><b>Definition:</b> ConsoleWindow.hpp:38</div></div>

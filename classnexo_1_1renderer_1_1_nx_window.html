@@ -135,6 +135,18 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>getDpiScale</
 <tr class="memitem:ae6958f633fd36e4a0fab52b5bbc2b35a"><td class="memItemLeft" align="right" valign="top"><a id="ae6958f633fd36e4a0fab52b5bbc2b35a" name="ae6958f633fd36e4a0fab52b5bbc2b35a"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setWindowIcon</b> (const std::filesystem::path &amp;iconPath)=0</td></tr>
 <tr class="separator:ae6958f633fd36e4a0fab52b5bbc2b35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4551a1cf141be1c4fabdc9c0f375e97"><td class="memItemLeft" align="right" valign="top"><a id="ad4551a1cf141be1c4fabdc9c0f375e97" name="ad4551a1cf141be1c4fabdc9c0f375e97"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setTitle</b> (const std::string &amp;title)=0</td></tr>
+<tr class="separator:ad4551a1cf141be1c4fabdc9c0f375e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4959ce73ddd554a94d4bfbdb79e7fd2e"><td class="memItemLeft" align="right" valign="top"><a id="a4959ce73ddd554a94d4bfbdb79e7fd2e" name="a4959ce73ddd554a94d4bfbdb79e7fd2e"></a>
+virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getTitle</b> () const =0</td></tr>
+<tr class="separator:a4959ce73ddd554a94d4bfbdb79e7fd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07977ba3e7e1a6e6231e9d928fa9da2b"><td class="memItemLeft" align="right" valign="top"><a id="a07977ba3e7e1a6e6231e9d928fa9da2b" name="a07977ba3e7e1a6e6231e9d928fa9da2b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setDarkMode</b> (bool enabled)=0</td></tr>
+<tr class="separator:a07977ba3e7e1a6e6231e9d928fa9da2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d480bb6d65cc5f5b2fc0e60c9b1f028"><td class="memItemLeft" align="right" valign="top"><a id="a0d480bb6d65cc5f5b2fc0e60c9b1f028" name="a0d480bb6d65cc5f5b2fc0e60c9b1f028"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDarkMode</b> () const =0</td></tr>
+<tr class="separator:a0d480bb6d65cc5f5b2fc0e60c9b1f028"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89a6b93e1da39d3ba0e0172f9989d728"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html#a89a6b93e1da39d3ba0e0172f9989d728">setVsync</a> (bool enabled)=0</td></tr>
 <tr class="separator:a89a6b93e1da39d3ba0e0172f9989d728"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17c16972c733cadefec2f81874d35138"><td class="memItemLeft" align="right" valign="top"><a id="a17c16972c733cadefec2f81874d35138" name="a17c16972c733cadefec2f81874d35138"></a>
@@ -176,9 +188,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFileDropCa
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a73239e77a19d046a73cdd723ba2bd029"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">NxWindow</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html#a73239e77a19d046a73cdd723ba2bd029">create</a> (int width=1920, int height=1080, const char *title=&quot;Nexo window&quot;)</td></tr>
-<tr class="memdesc:a73239e77a19d046a73cdd723ba2bd029"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a platform-specific window.  <a href="classnexo_1_1renderer_1_1_nx_window.html#a73239e77a19d046a73cdd723ba2bd029">More...</a><br /></td></tr>
-<tr class="separator:a73239e77a19d046a73cdd723ba2bd029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ba1fd8d776c9e5d3d45484c0fcd563"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_window.html">NxWindow</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_window.html#a14ba1fd8d776c9e5d3d45484c0fcd563">create</a> (int width=1920, int height=1080, const std::string &amp;title=&quot;Nexo window&quot;)</td></tr>
+<tr class="memdesc:a14ba1fd8d776c9e5d3d45484c0fcd563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory function to create a platform-specific window.  <a href="classnexo_1_1renderer_1_1_nx_window.html#a14ba1fd8d776c9e5d3d45484c0fcd563">More...</a><br /></td></tr>
+<tr class="separator:a14ba1fd8d776c9e5d3d45484c0fcd563"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Abstract class for managing window operations in the rendering system. </p>
@@ -299,8 +311,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a73239e77a19d046a73cdd723ba2bd029" name="a73239e77a19d046a73cdd723ba2bd029"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73239e77a19d046a73cdd723ba2bd029">&#9670;&nbsp;</a></span>create()</h2>
+<a id="a14ba1fd8d776c9e5d3d45484c0fcd563" name="a14ba1fd8d776c9e5d3d45484c0fcd563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14ba1fd8d776c9e5d3d45484c0fcd563">&#9670;&nbsp;</a></span>create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,7 +335,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const char *&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>title</em> = <code>&quot;Nexo&#160;window&quot;</code>&#160;</td>
         </tr>
         <tr>

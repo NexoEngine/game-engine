@@ -124,7 +124,7 @@ $(document).ready(function(){initNavTree('_draw_command_8hpp_source.html',''); i
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                 1.0f, -1.0f,  1.0f, 0.0f,</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                 1.0f,  1.0f,  1.0f, 1.0f</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            };</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">auto</span> vb = createVertexBuffer(<span class="keyword">sizeof</span>(quadVertices));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">const</span> <span class="keyword">auto</span> vb = createVertexBuffer(<span class="keyword">sizeof</span>(quadVertices));</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            vb-&gt;setData(quadVertices, <span class="keyword">sizeof</span>(quadVertices));</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            vb-&gt;setLayout({</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                {NxShaderDataType::FLOAT2, <span class="stringliteral">&quot;aPosition&quot;</span>},</div>

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['width_0',['width',['../structnexo_1_1components_1_1_camera_component.html#a40f6f14bbaaa5cefa582a7c08de391ae',1,'nexo::components::CameraComponent']]],
-  ['windowid_1',['windowId',['../structnexo_1_1editor_1_1_scene_properties.html#a0c6a653bf11a6e0537870a44070ed8b3',1,'nexo::editor::SceneProperties']]]
+  ['value_0',['value',['../struct_im_nexo_1_1_drag_float.html#ac709b3b1052691f1a8aed3d668cdef6e',1,'ImNexo::DragFloat']]],
+  ['verbosity_1',['verbosity',['../structnexo_1_1editor_1_1_log_message.html#aba4e6670f0adcfe962a34433fab6f4c3',1,'nexo::editor::LogMessage']]],
+  ['viewportlocked_2',['viewportLocked',['../structnexo_1_1components_1_1_camera_component.html#a8006dc63d3c7a079e692e1fb4e05fb63',1,'nexo::components::CameraComponent']]],
+  ['viewprojectionmatrix_3',['viewProjectionMatrix',['../structnexo_1_1components_1_1_camera_context.html#a0e7e30569cb6f5f7baec8a6677be45b1',1,'nexo::components::CameraContext']]]
 ];

@@ -106,20 +106,21 @@ $(document).ready(function(){initNavTree('_transform_matrix_system_8hpp_source.h
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;components/Transform.hpp&quot;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;components/SceneComponents.hpp&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;components/RenderContext.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>nexo::system {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_transform_matrix_system.html">   21</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_transform_matrix_system.html">TransformMatrixSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_query_system.html">ecs::QuerySystem</a>&lt;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        ecs::Write&lt;components::TransformComponent&gt;,</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        ecs::Read&lt;components::SceneTag&gt;,</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        ecs::WriteSingleton&lt;components::RenderContext&gt;&gt; {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>               <span class="keywordtype">void</span> update();</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>           <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>               <span class="keyword">static</span> glm::mat4 createTransformMatrix(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">components::TransformComponent</a> &amp;transform);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    };</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
-<div class="ttc" id="aclassnexo_1_1ecs_1_1_query_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_query_system.html">nexo::ecs::QuerySystem</a></div><div class="ttdoc">System that directly queries component arrays.</div><div class="ttdef"><b>Definition:</b> QuerySystem.hpp:79</div></div>
-<div class="ttc" id="aclassnexo_1_1system_1_1_transform_matrix_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_transform_matrix_system.html">nexo::system::TransformMatrixSystem</a></div><div class="ttdef"><b>Definition:</b> TransformMatrixSystem.hpp:24</div></div>
-<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:25</div></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>nexo::system {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classnexo_1_1system_1_1_transform_matrix_system.html">   22</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1system_1_1_transform_matrix_system.html">TransformMatrixSystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classnexo_1_1ecs_1_1_query_system.html">ecs::QuerySystem</a>&lt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        ecs::Write&lt;components::TransformComponent&gt;,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        ecs::Read&lt;components::SceneTag&gt;,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        ecs::WriteSingleton&lt;components::RenderContext&gt;&gt; {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>               <span class="keywordtype">void</span> update();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>           <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>               <span class="keyword">static</span> glm::mat4 createTransformMatrix(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">components::TransformComponent</a> &amp;transform);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="ttc" id="aclassnexo_1_1ecs_1_1_query_system_html"><div class="ttname"><a href="classnexo_1_1ecs_1_1_query_system.html">nexo::ecs::QuerySystem</a></div><div class="ttdoc">System that directly queries component arrays.</div><div class="ttdef"><b>Definition:</b> QuerySystem.hpp:78</div></div>
+<div class="ttc" id="aclassnexo_1_1system_1_1_transform_matrix_system_html"><div class="ttname"><a href="classnexo_1_1system_1_1_transform_matrix_system.html">nexo::system::TransformMatrixSystem</a></div><div class="ttdef"><b>Definition:</b> TransformMatrixSystem.hpp:25</div></div>
+<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

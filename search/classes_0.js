@@ -33,10 +33,11 @@ var searchData=
   ['assetlocation_30',['AssetLocation',['../classnexo_1_1assets_1_1_asset_location.html',1,'nexo::assets']]],
   ['assetmanagerwindow_31',['AssetManagerWindow',['../classnexo_1_1editor_1_1_asset_manager_window.html',1,'nexo::editor']]],
   ['assetmetadata_32',['AssetMetadata',['../structnexo_1_1assets_1_1_asset_metadata.html',1,'nexo::assets']]],
-  ['assetnamevalidator_33',['AssetNameValidator',['../structnexo_1_1assets_1_1_asset_name_validator.html',1,'nexo::assets']]],
-  ['assetpacknamevalidator_34',['AssetPackNameValidator',['../structnexo_1_1assets_1_1_asset_pack_name_validator.html',1,'nexo::assets']]],
-  ['assetref_35',['AssetRef',['../classnexo_1_1assets_1_1_asset_ref.html',1,'nexo::assets']]],
-  ['assetreftest_36',['AssetRefTest',['../classnexo_1_1assets_1_1_asset_ref_test.html',1,'nexo::assets']]],
-  ['attenuationdata_37',['AttenuationData',['../structnexo_1_1math_1_1_attenuation_data.html',1,'nexo::math']]],
-  ['attributeinfo_38',['AttributeInfo',['../structnexo_1_1renderer_1_1_attribute_info.html',1,'nexo::renderer']]]
+  ['assetmoveaction_33',['AssetMoveAction',['../classnexo_1_1editor_1_1_asset_move_action.html',1,'nexo::editor']]],
+  ['assetnamevalidator_34',['AssetNameValidator',['../structnexo_1_1assets_1_1_asset_name_validator.html',1,'nexo::assets']]],
+  ['assetpacknamevalidator_35',['AssetPackNameValidator',['../structnexo_1_1assets_1_1_asset_pack_name_validator.html',1,'nexo::assets']]],
+  ['assetref_36',['AssetRef',['../classnexo_1_1assets_1_1_asset_ref.html',1,'nexo::assets']]],
+  ['assetreftest_37',['AssetRefTest',['../classnexo_1_1assets_1_1_asset_ref_test.html',1,'nexo::assets']]],
+  ['attenuationdata_38',['AttenuationData',['../structnexo_1_1math_1_1_attenuation_data.html',1,'nexo::math']]],
+  ['attributeinfo_39',['AttributeInfo',['../structnexo_1_1renderer_1_1_attribute_info.html',1,'nexo::renderer']]]
 ];

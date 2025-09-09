@@ -3,7 +3,7 @@ var structnexo_1_1components_1_1_camera_component =
     [ "Memento", "structnexo_1_1components_1_1_camera_component_1_1_memento.html", null ],
     [ "getProjectionMatrix", "structnexo_1_1components_1_1_camera_component.html#a2470881fce92a032b8b85300e6f5ba8a", null ],
     [ "getViewMatrix", "structnexo_1_1components_1_1_camera_component.html#ad160c2ca21163927cefc2b5552b5518a", null ],
-    [ "resize", "structnexo_1_1components_1_1_camera_component.html#a27537db1c4416a49b2d6339126bd56cc", null ],
+    [ "resize", "structnexo_1_1components_1_1_camera_component.html#a731c63b28d4a23d3c9919659d16e99e0", null ],
     [ "width", "structnexo_1_1components_1_1_camera_component.html#a40f6f14bbaaa5cefa582a7c08de391ae", null ],
     [ "height", "structnexo_1_1components_1_1_camera_component.html#a947d4e1ad5be074384b14a84d62e2262", null ],
     [ "viewportLocked", "structnexo_1_1components_1_1_camera_component.html#a8006dc63d3c7a079e692e1fb4e05fb63", null ],

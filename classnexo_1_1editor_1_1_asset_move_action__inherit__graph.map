@@ -1,0 +1,4 @@
+<map id="nexo::editor::AssetMoveAction" name="nexo::editor::AssetMoveAction">
+<area shape="rect" id="node1" title="Action for moving assets between folders in the Asset Manager." alt="" coords="5,160,201,267"/>
+<area shape="rect" id="node2" href="$classnexo_1_1editor_1_1_action.html" title=" " alt="" coords="38,5,169,112"/>
+</map>

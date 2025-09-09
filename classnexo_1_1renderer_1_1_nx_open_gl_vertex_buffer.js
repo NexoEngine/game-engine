@@ -7,5 +7,5 @@ var classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer =
     [ "unbind", "classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#a10cce1e02be38c6d224b93329f008c34", null ],
     [ "setLayout", "classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#ae4b763b532c7ee7776169143d20fc7da", null ],
     [ "getLayout", "classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#ade3066ba99cd74107d1c64978a74d74f", null ],
-    [ "setData", "classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#a7cc673e65f6588a38355d3fa0aee1ea9", null ]
+    [ "setData", "classnexo_1_1renderer_1_1_nx_open_gl_vertex_buffer.html#a11c9a5265521c661af7d471ed62a223f", null ]
 ];

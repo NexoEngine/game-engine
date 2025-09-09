@@ -107,42 +107,41 @@ $(document).ready(function(){initNavTree('_transform_8hpp_source.html',''); init
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;glm/gtc/quaternion.hpp&gt;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>nexo::components {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component.html">   25</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> final {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">   26</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            glm::vec3 position;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            glm::quat rotation;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            glm::vec3 scale;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            glm::mat4 localMatrix;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            glm::vec3 localCenter;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            std::vector&lt;ecs::Entity&gt; children;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        };</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordtype">void</span> restore(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> &amp;memento);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        [[nodiscard]] <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> save() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">void</span> addChild(ecs::Entity childEntity);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">void</span> removeChild(ecs::Entity childEntity);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        glm::vec3 pos;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        glm::vec3 size = glm::vec3(1.0f);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        glm::mat4 worldMatrix = glm::mat4(1.0f);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        glm::mat4 localMatrix = glm::mat4(1.0f);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        std::vector&lt;ecs::Entity&gt; children{};</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
-<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_1_1_memento_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">nexo::components::TransformComponent::Memento</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:26</div></div>
-<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:25</div></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>nexo::components {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component.html">   24</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component.html">TransformComponent</a> final {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">   25</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            glm::vec3 position;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            glm::quat rotation;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            glm::vec3 scale;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            glm::mat4 localMatrix;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            glm::vec3 localCenter;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            std::vector&lt;ecs::Entity&gt; children;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">void</span> restore(<span class="keyword">const</span> <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> &amp;memento);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        [[nodiscard]] <a class="code hl_struct" href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">Memento</a> save() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">void</span> addChild(ecs::Entity childEntity);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">void</span> removeChild(ecs::Entity childEntity);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        glm::vec3 pos;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        glm::vec3 size = glm::vec3(1.0f);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        glm::mat4 worldMatrix = glm::mat4(1.0f);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        glm::mat4 localMatrix = glm::mat4(1.0f);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        std::vector&lt;ecs::Entity&gt; children{};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_1_1_memento_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component_1_1_memento.html">nexo::components::TransformComponent::Memento</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:25</div></div>
+<div class="ttc" id="astructnexo_1_1components_1_1_transform_component_html"><div class="ttname"><a href="structnexo_1_1components_1_1_transform_component.html">nexo::components::TransformComponent</a></div><div class="ttdef"><b>Definition:</b> Transform.hpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

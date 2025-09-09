@@ -114,34 +114,35 @@ $(document).ready(function(){initNavTree('_action_manager_8hpp_source.html','');
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordtype">void</span> recordAction(std::unique_ptr&lt;Action&gt; action);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordtype">void</span> recordEntityCreation(ecs::Entity entityId);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keyword">static</span> std::unique_ptr&lt;Action&gt; prepareEntityDeletion(ecs::Entity entityId);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> MementoComponent&gt;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordtype">void</span> recordComponentChange(ecs::Entity entityId,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                    <span class="keyword">const</span> <span class="keyword">typename</span> MementoComponent::Memento&amp; beforeState,</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                    <span class="keyword">const</span> <span class="keyword">typename</span> MementoComponent::Memento&amp; afterState)</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                <span class="keyword">auto</span> action = std::make_unique&lt;ComponentChangeAction&lt;MementoComponent&gt;&gt;(entityId, beforeState, afterState);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                recordAction(std::move(action));</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            }</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">static</span> std::unique_ptr&lt;ActionGroup&gt; createActionGroup();</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordtype">void</span> undo();</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordtype">void</span> redo();</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            [[nodiscard]] <span class="keywordtype">bool</span> canUndo() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            [[nodiscard]] <span class="keywordtype">bool</span> canRedo() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordtype">void</span> clearHistory(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count = 0);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getUndoStackSize() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_action_manager.html">ActionManager</a>&amp; get() {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_action_manager.html">ActionManager</a> instance;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <a class="code hl_class" href="classnexo_1_1editor_1_1_action_history.html">ActionHistory</a> history;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">static</span> std::unique_ptr&lt;Action&gt; prepareEntityHierarchyDeletion(ecs::Entity entityId);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> MementoComponent&gt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordtype">void</span> recordComponentChange(ecs::Entity entityId,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                    <span class="keyword">const</span> <span class="keyword">typename</span> MementoComponent::Memento&amp; beforeState,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                    <span class="keyword">const</span> <span class="keyword">typename</span> MementoComponent::Memento&amp; afterState)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keyword">auto</span> action = std::make_unique&lt;ComponentChangeAction&lt;MementoComponent&gt;&gt;(entityId, beforeState, afterState);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                recordAction(std::move(action));</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keyword">static</span> std::unique_ptr&lt;ActionGroup&gt; createActionGroup();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordtype">void</span> undo();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordtype">void</span> redo();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            [[nodiscard]] <span class="keywordtype">bool</span> canUndo() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            [[nodiscard]] <span class="keywordtype">bool</span> canRedo() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordtype">void</span> clearHistory(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count = 0);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getUndoStackSize() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_action_manager.html">ActionManager</a>&amp; get() {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keyword">static</span> <a class="code hl_class" href="classnexo_1_1editor_1_1_action_manager.html">ActionManager</a> instance;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <a class="code hl_class" href="classnexo_1_1editor_1_1_action_history.html">ActionHistory</a> history;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    };</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_action_history_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_action_history.html">nexo::editor::ActionHistory</a></div><div class="ttdef"><b>Definition:</b> ActionHistory.hpp:25</div></div>
 <div class="ttc" id="aclassnexo_1_1editor_1_1_action_manager_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_action_manager.html">nexo::editor::ActionManager</a></div><div class="ttdef"><b>Definition:</b> ActionManager.hpp:23</div></div>
 </div><!-- fragment --></div><!-- contents -->

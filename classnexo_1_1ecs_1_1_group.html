@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('classnexo_1_1ecs_1_1_group.html',''); 
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classnexo_1_1ecs_1_1_group-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">nexo::ecs::Group&lt; OwnedTuple, NonOwnedTuple &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
@@ -127,10 +128,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2506899ddbc247fb028bf13167f76e5f"><td class="memTemplParams" colspan="2">template&lt;typename... NonOwning&gt; </td></tr>
-<tr class="memitem:a2506899ddbc247fb028bf13167f76e5f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_group.html#a2506899ddbc247fb028bf13167f76e5f">Group</a> (OwnedTuple ownedArrays, NonOwnedTuple nonOwnedArrays)</td></tr>
-<tr class="memdesc:a2506899ddbc247fb028bf13167f76e5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="classnexo_1_1ecs_1_1_group.html" title="Group class for a view over entities with both owned and non‑owned components.">Group</a>.  <a href="classnexo_1_1ecs_1_1_group.html#a2506899ddbc247fb028bf13167f76e5f">More...</a><br /></td></tr>
-<tr class="separator:a2506899ddbc247fb028bf13167f76e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0859bd43fa7eecb58f6058f68f4e4133"><td class="memItemLeft" align="right" valign="top"><a id="a0859bd43fa7eecb58f6058f68f4e4133" name="a0859bd43fa7eecb58f6058f68f4e4133"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>m_nonOwnedArrays</b> (std::move(nonOwnedArrays))</td></tr>
+<tr class="separator:a0859bd43fa7eecb58f6058f68f4e4133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6a3b183da98bbc55629c18eb776a33f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_group.html#af6a3b183da98bbc55629c18eb776a33f">size</a> () const</td></tr>
 <tr class="memdesc:af6a3b183da98bbc55629c18eb776a33f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of entities in the group.  <a href="classnexo_1_1ecs_1_1_group.html#af6a3b183da98bbc55629c18eb776a33f">More...</a><br /></td></tr>
 <tr class="separator:af6a3b183da98bbc55629c18eb776a33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,6 +199,13 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>invalidatePartitions</b> ()</td></tr>
 <tr class="memdesc:ac91b2e61683821bb86fb628afadf2f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalidates all partition caches. <br /></td></tr>
 <tr class="separator:ac91b2e61683821bb86fb628afadf2f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a779e449efb8c5fbaa6dc71c552485c83"><td class="memTemplParams" colspan="2">template&lt;typename... NonOwning&gt; </td></tr>
+<tr class="memitem:a779e449efb8c5fbaa6dc71c552485c83"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1ecs_1_1_group.html#a779e449efb8c5fbaa6dc71c552485c83">__pad0__</a>: m_ownedArrays(std::move(ownedArrays))</td></tr>
+<tr class="memdesc:a779e449efb8c5fbaa6dc71c552485c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="classnexo_1_1ecs_1_1_group.html" title="Group class for a view over entities with both owned and non‑owned components.">Group</a>.  <a href="classnexo_1_1ecs_1_1_group.html#a779e449efb8c5fbaa6dc71c552485c83">More...</a><br /></td></tr>
+<tr class="separator:a779e449efb8c5fbaa6dc71c552485c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename OwnedTuple, typename NonOwnedTuple&gt;<br />
@@ -214,64 +221,7 @@ class nexo::ecs::Group&lt; OwnedTuple, NonOwnedTuple &gt;</div><p ><a class="el"
   </table>
   </dd>
 </dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2506899ddbc247fb028bf13167f76e5f" name="a2506899ddbc247fb028bf13167f76e5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2506899ddbc247fb028bf13167f76e5f">&#9670;&nbsp;</a></span>Group()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename OwnedTuple , typename NonOwnedTuple &gt; </div>
-<div class="memtemplate">
-template&lt;typename... NonOwning&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classnexo_1_1ecs_1_1_group.html">nexo::ecs::Group</a>&lt; OwnedTuple, NonOwnedTuple &gt;::<a class="el" href="classnexo_1_1ecs_1_1_group.html">Group</a> </td>
-          <td>(</td>
-          <td class="paramtype">OwnedTuple&#160;</td>
-          <td class="paramname"><em>ownedArrays</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">NonOwnedTuple&#160;</td>
-          <td class="paramname"><em>nonOwnedArrays</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructs a new <a class="el" href="classnexo_1_1ecs_1_1_group.html" title="Group class for a view over entities with both owned and non‑owned components.">Group</a>. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">NonOwning</td><td>Variadic template parameters for non‑owned components. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ownedArrays</td><td>Tuple of pointers to owned component arrays. </td></tr>
-    <tr><td class="paramname">nonOwnedArrays</td><td>Tuple of pointers to non‑owned component arrays.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>The constructor computes the owned and non‑owned signatures and their combination. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="af6a3b183da98bbc55629c18eb776a33f" name="af6a3b183da98bbc55629c18eb776a33f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6a3b183da98bbc55629c18eb776a33f">&#9670;&nbsp;</a></span>size()</h2>
 
@@ -996,6 +946,41 @@ template&lt;typename KeyType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>PartitionView&lt;KeyType&gt; View over the partitioned entities. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a779e449efb8c5fbaa6dc71c552485c83" name="a779e449efb8c5fbaa6dc71c552485c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779e449efb8c5fbaa6dc71c552485c83">&#9670;&nbsp;</a></span>__pad0__</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename OwnedTuple , typename NonOwnedTuple &gt; </div>
+<div class="memtemplate">
+template&lt;typename... NonOwning&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classnexo_1_1ecs_1_1_group.html">nexo::ecs::Group</a>&lt; OwnedTuple, NonOwnedTuple &gt;::__pad0__</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs a new <a class="el" href="classnexo_1_1ecs_1_1_group.html" title="Group class for a view over entities with both owned and non‑owned components.">Group</a>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">NonOwning</td><td>Variadic template parameters for non‑owned components. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ownedArrays</td><td>Tuple of pointers to owned component arrays. </td></tr>
+    <tr><td class="paramname">nonOwnedArrays</td><td>Tuple of pointers to non‑owned component arrays.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The constructor computes the owned and non‑owned signatures and their combination. </p>
 
 </div>
 </div>

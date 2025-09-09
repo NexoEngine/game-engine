@@ -141,11 +141,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a98b5062c24597e3e18806c8ecf199bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fff60e73ea672f510d1b1747d6776cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a1fff60e73ea672f510d1b1747d6776cf">setDepthMask</a> (bool enable) override</td></tr>
 <tr class="separator:a1fff60e73ea672f510d1b1747d6776cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ff4ee3cb4786367aaf8452090b87425"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a7ff4ee3cb4786367aaf8452090b87425">drawIndexed</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">NxVertexArray</a> &gt; &amp;vertexArray, unsigned int indexCount=0) override</td></tr>
-<tr class="memdesc:a7ff4ee3cb4786367aaf8452090b87425"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders indexed geometry using OpenGL.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a7ff4ee3cb4786367aaf8452090b87425">More...</a><br /></td></tr>
-<tr class="separator:a7ff4ee3cb4786367aaf8452090b87425"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba08930a60ba259d98f3aa5c6c7a9027"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#aba08930a60ba259d98f3aa5c6c7a9027">drawUnIndexed</a> (unsigned int verticesCount) override</td></tr>
-<tr class="separator:aba08930a60ba259d98f3aa5c6c7a9027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d6a70191ce3cf4021d14723619c1a03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a8d6a70191ce3cf4021d14723619c1a03">drawIndexed</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_vertex_array.html">NxVertexArray</a> &gt; &amp;vertexArray, size_t indexCount=0) override</td></tr>
+<tr class="memdesc:a8d6a70191ce3cf4021d14723619c1a03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders indexed geometry using OpenGL.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a8d6a70191ce3cf4021d14723619c1a03">More...</a><br /></td></tr>
+<tr class="separator:a8d6a70191ce3cf4021d14723619c1a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1f7b46de720a138b565f294b0947e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a3a1f7b46de720a138b565f294b0947e7">drawUnIndexed</a> (size_t verticesCount) override</td></tr>
+<tr class="separator:a3a1f7b46de720a138b565f294b0947e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0930dcb9ad294979098db8620ab8aed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#ac0930dcb9ad294979098db8620ab8aed">setStencilTest</a> (bool enable) override</td></tr>
 <tr class="separator:ac0930dcb9ad294979098db8620ab8aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ec2a216f5ac5f495c7b7fad76800938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a6ec2a216f5ac5f495c7b7fad76800938">setStencilMask</a> (unsigned int mask) override</td></tr>
@@ -517,8 +517,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7ff4ee3cb4786367aaf8452090b87425" name="a7ff4ee3cb4786367aaf8452090b87425"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ff4ee3cb4786367aaf8452090b87425">&#9670;&nbsp;</a></span>drawIndexed()</h2>
+<a id="a8d6a70191ce3cf4021d14723619c1a03" name="a8d6a70191ce3cf4021d14723619c1a03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d6a70191ce3cf4021d14723619c1a03">&#9670;&nbsp;</a></span>drawIndexed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -535,7 +535,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>indexCount</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -565,12 +565,12 @@ Public Member Functions</h2></td></tr>
 <li><a class="el" href="classnexo_1_1renderer_1_1_nx_invalid_value.html">NxInvalidValue</a> if the <code>vertexArray</code> is null. </li>
 </ul>
 
-<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_renderer_api.html#a8fef1a71cd1e35f7975451830c5f4243">nexo::renderer::NxRendererApi</a>.</p>
+<p>Implements <a class="el" href="classnexo_1_1renderer_1_1_nx_renderer_api.html#aa6dcdf182fd4e3454b6e39ea4df6d75e">nexo::renderer::NxRendererApi</a>.</p>
 
 </div>
 </div>
-<a id="aba08930a60ba259d98f3aa5c6c7a9027" name="aba08930a60ba259d98f3aa5c6c7a9027"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba08930a60ba259d98f3aa5c6c7a9027">&#9670;&nbsp;</a></span>drawUnIndexed()</h2>
+<a id="a3a1f7b46de720a138b565f294b0947e7" name="a3a1f7b46de720a138b565f294b0947e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1f7b46de720a138b565f294b0947e7">&#9670;&nbsp;</a></span>drawUnIndexed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -581,7 +581,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void nexo::renderer::NxOpenGlRendererApi::drawUnIndexed </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>verticesCount</em></td><td>)</td>
           <td></td>
         </tr>

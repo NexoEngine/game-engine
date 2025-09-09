@@ -2,7 +2,6 @@ var classnexo_1_1ecs_1_1_group =
 [
     [ "GroupIterator", "classnexo_1_1ecs_1_1_group_1_1_group_iterator.html", "classnexo_1_1ecs_1_1_group_1_1_group_iterator" ],
     [ "PartitionView", "classnexo_1_1ecs_1_1_group_1_1_partition_view.html", "classnexo_1_1ecs_1_1_group_1_1_partition_view" ],
-    [ "Group", "classnexo_1_1ecs_1_1_group.html#a2506899ddbc247fb028bf13167f76e5f", null ],
     [ "size", "classnexo_1_1ecs_1_1_group.html#af6a3b183da98bbc55629c18eb776a33f", null ],
     [ "sortingInvalidated", "classnexo_1_1ecs_1_1_group.html#a38c7e915824591e993c0ae5fa21ad6de", null ],
     [ "ownedSignature", "classnexo_1_1ecs_1_1_group.html#afdcb8e9a50c536859d43dc95fd6cb7c2", null ],
@@ -22,5 +21,6 @@ var classnexo_1_1ecs_1_1_group =
     [ "sortBy", "classnexo_1_1ecs_1_1_group.html#a8617528a33ff7b661933fd0e07c7e7b6", null ],
     [ "getPartitionView", "classnexo_1_1ecs_1_1_group.html#a72080eb8608fbb414a4d52c54aaae91e", null ],
     [ "getEntityPartitionView", "classnexo_1_1ecs_1_1_group.html#a5cea66d973cbfeb060e5f09a50328cb2", null ],
-    [ "invalidatePartitions", "classnexo_1_1ecs_1_1_group.html#ac91b2e61683821bb86fb628afadf2f6c", null ]
+    [ "invalidatePartitions", "classnexo_1_1ecs_1_1_group.html#ac91b2e61683821bb86fb628afadf2f6c", null ],
+    [ "__pad0__", "classnexo_1_1ecs_1_1_group.html#a779e449efb8c5fbaa6dc71c552485c83", null ]
 ];

@@ -6,5 +6,5 @@ var classnexo_1_1renderer_1_1_nx_renderer_api =
     [ "clear", "classnexo_1_1renderer_1_1_nx_renderer_api.html#a3df1cce65d4653c01eaa6d042a7f46bd", null ],
     [ "setClearColor", "classnexo_1_1renderer_1_1_nx_renderer_api.html#a0f48769f5f3ba07fe5041cd56125fead", null ],
     [ "setClearDepth", "classnexo_1_1renderer_1_1_nx_renderer_api.html#a6daa8d620c4aba7dd5d3a9205061945b", null ],
-    [ "drawIndexed", "classnexo_1_1renderer_1_1_nx_renderer_api.html#a8fef1a71cd1e35f7975451830c5f4243", null ]
+    [ "drawIndexed", "classnexo_1_1renderer_1_1_nx_renderer_api.html#aa6dcdf182fd4e3454b6e39ea4df6d75e", null ]
 ];

@@ -103,22 +103,21 @@ $(document).ready(function(){initNavTree('_utils_8hpp_source.html',''); initResi
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;imgui.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;imgui_internal.h&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>ImNexo::utils {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    ImU32 imLerpColor(ImU32 colA, ImU32 colB, <span class="keywordtype">float</span> t);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> clipPolygonWithLine(<span class="keyword">const</span> std::vector&lt;ImVec2&gt;&amp; poly, <span class="keyword">const</span> ImVec2&amp; normal, <span class="keywordtype">float</span> offset, std::vector&lt;ImVec2&gt;&amp; outPoly);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> fillConvexPolygon(ImDrawList* drawList, <span class="keyword">const</span> std::vector&lt;ImVec2&gt;&amp; poly, <span class="keyword">const</span> std::vector&lt;ImU32&gt;&amp; polyColors);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    std::pair&lt;ImVec2, ImVec2&gt; getItemRect(<span class="keyword">const</span> ImVec2&amp; padding = ImVec2(0, 0));</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    ImVec2 calculateCenteredTextPosition(<span class="keyword">const</span> std::string&amp; text, <span class="keyword">const</span> ImVec2&amp; p_min, <span class="keyword">const</span> ImVec2&amp; p_max);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>ImNexo::utils {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    ImU32 imLerpColor(ImU32 colA, ImU32 colB, <span class="keywordtype">float</span> t);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> clipPolygonWithLine(<span class="keyword">const</span> std::vector&lt;ImVec2&gt;&amp; poly, <span class="keyword">const</span> ImVec2&amp; normal, <span class="keywordtype">float</span> offset, std::vector&lt;ImVec2&gt;&amp; outPoly);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> fillConvexPolygon(ImDrawList* drawList, <span class="keyword">const</span> std::vector&lt;ImVec2&gt;&amp; poly, <span class="keyword">const</span> std::vector&lt;ImU32&gt;&amp; polyColors);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    std::pair&lt;ImVec2, ImVec2&gt; getItemRect(<span class="keyword">const</span> ImVec2&amp; padding = ImVec2(0, 0));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    ImVec2 calculateCenteredTextPosition(<span class="keyword">const</span> std::string&amp; text, <span class="keyword">const</span> ImVec2&amp; p_min, <span class="keyword">const</span> ImVec2&amp; p_max);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

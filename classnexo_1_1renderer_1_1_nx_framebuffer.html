@@ -137,9 +137,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bindDepthAsTe
 <tr class="memitem:a1377f5112a8347b55af6077fd3b028a4"><td class="memItemLeft" align="right" valign="top"><a id="a1377f5112a8347b55af6077fd3b028a4" name="a1377f5112a8347b55af6077fd3b028a4"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setClearColor</b> (const glm::vec4 &amp;color)=0</td></tr>
 <tr class="separator:a1377f5112a8347b55af6077fd3b028a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a427390f610e98656e31c0e9f3d710761"><td class="memItemLeft" align="right" valign="top"><a id="a427390f610e98656e31c0e9f3d710761" name="a427390f610e98656e31c0e9f3d710761"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt; source)=0</td></tr>
-<tr class="separator:a427390f610e98656e31c0e9f3d710761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe0982c1e179130989311577e9fd639a"><td class="memItemLeft" align="right" valign="top"><a id="afe0982c1e179130989311577e9fd639a" name="afe0982c1e179130989311577e9fd639a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt; source)=0</td></tr>
+<tr class="separator:afe0982c1e179130989311577e9fd639a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2004dc2e223adfd3e68de37ce4d3a44d"><td class="memItemLeft" align="right" valign="top">virtual unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a2004dc2e223adfd3e68de37ce4d3a44d">getFramebufferId</a> () const =0</td></tr>
 <tr class="memdesc:a2004dc2e223adfd3e68de37ce4d3a44d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the unique OpenGL ID of the framebuffer.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a2004dc2e223adfd3e68de37ce4d3a44d">More...</a><br /></td></tr>
 <tr class="separator:a2004dc2e223adfd3e68de37ce4d3a44d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,10 +152,10 @@ virtual glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><b>getSize<
 <tr class="memitem:aa23ea378d2c5782de29f2faaf1094b61"><td class="memItemLeft" align="right" valign="top"><a id="aa23ea378d2c5782de29f2faaf1094b61" name="aa23ea378d2c5782de29f2faaf1094b61"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>getPixelWrapper</b> (unsigned int attachementIndex, int x, int y, void *result, const std::type_info &amp;ti) const =0</td></tr>
 <tr class="separator:aa23ea378d2c5782de29f2faaf1094b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a136bab7a5800fa4d1a200908e13b8777"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a136bab7a5800fa4d1a200908e13b8777"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a136bab7a5800fa4d1a200908e13b8777">getPixel</a> (unsigned int attachmentIndex, int x, int y) const</td></tr>
-<tr class="memdesc:a136bab7a5800fa4d1a200908e13b8777"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the pixel data from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a136bab7a5800fa4d1a200908e13b8777">More...</a><br /></td></tr>
-<tr class="separator:a136bab7a5800fa4d1a200908e13b8777"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcfd16faafb39cf5fba715f0a46f0d50"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abcfd16faafb39cf5fba715f0a46f0d50"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#abcfd16faafb39cf5fba715f0a46f0d50">getPixel</a> (const unsigned int attachmentIndex, const int x, const int y) const</td></tr>
+<tr class="memdesc:abcfd16faafb39cf5fba715f0a46f0d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the pixel data from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#abcfd16faafb39cf5fba715f0a46f0d50">More...</a><br /></td></tr>
+<tr class="separator:abcfd16faafb39cf5fba715f0a46f0d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af14458d88da74d1ed1adf92d063a26c1"><td class="memItemLeft" align="right" valign="top"><a id="af14458d88da74d1ed1adf92d063a26c1" name="af14458d88da74d1ed1adf92d063a26c1"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>clearAttachmentWrapper</b> (unsigned int attachmentIndex, const void *value, const std::type_info &amp;ti) const =0</td></tr>
 <tr class="separator:af14458d88da74d1ed1adf92d063a26c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -385,8 +385,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a136bab7a5800fa4d1a200908e13b8777" name="a136bab7a5800fa4d1a200908e13b8777"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a136bab7a5800fa4d1a200908e13b8777">&#9670;&nbsp;</a></span>getPixel()</h2>
+<a id="abcfd16faafb39cf5fba715f0a46f0d50" name="abcfd16faafb39cf5fba715f0a46f0d50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcfd16faafb39cf5fba715f0a46f0d50">&#9670;&nbsp;</a></span>getPixel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -399,19 +399,19 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">T nexo::renderer::NxFramebuffer::getPixel </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int&#160;</td>
           <td class="paramname"><em>attachmentIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>y</em>&#160;</td>
         </tr>
         <tr>

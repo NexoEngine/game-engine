@@ -6,5 +6,5 @@ var classnexo_1_1renderer_1_1_nx_open_gl_renderer_api =
     [ "clear", "classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a1b8002c6220b0c97190888f470d2f527", null ],
     [ "setClearColor", "classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#aa9ad8374c121b1ad94a72321cae367fc", null ],
     [ "setClearDepth", "classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#aedf76c2be37478e83c1e099a2d44b809", null ],
-    [ "drawIndexed", "classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a7ff4ee3cb4786367aaf8452090b87425", null ]
+    [ "drawIndexed", "classnexo_1_1renderer_1_1_nx_open_gl_renderer_api.html#a8d6a70191ce3cf4021d14723619c1a03", null ]
 ];

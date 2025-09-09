@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['value_0',['value',['../struct_im_nexo_1_1_drag_float.html#ac709b3b1052691f1a8aed3d668cdef6e',1,'ImNexo::DragFloat']]],
-  ['verbosity_1',['verbosity',['../structnexo_1_1editor_1_1_log_message.html#aba4e6670f0adcfe962a34433fab6f4c3',1,'nexo::editor::LogMessage']]],
-  ['viewportlocked_2',['viewportLocked',['../structnexo_1_1components_1_1_camera_component.html#a8006dc63d3c7a079e692e1fb4e05fb63',1,'nexo::components::CameraComponent']]],
-  ['viewprojectionmatrix_3',['viewProjectionMatrix',['../structnexo_1_1components_1_1_camera_context.html#a0e7e30569cb6f5f7baec8a6677be45b1',1,'nexo::components::CameraContext']]]
+  ['uiname_0',['uiName',['../structnexo_1_1editor_1_1_scene_object.html#a27312ab62fbcc54e2e5f75f1b0400cb5',1,'nexo::editor::SceneObject']]],
+  ['uniqueid_1',['uniqueId',['../struct_im_nexo_1_1_button_props.html#a2ea22a10d0b1cbb79516784934a0eb8d',1,'ImNexo::ButtonProps']]],
+  ['uuid_2',['uuid',['../structnexo_1_1editor_1_1_scene_object.html#af2efc1bd5ba4dc9f206dd7aeaf0d74de',1,'nexo::editor::SceneObject::uuid()'],['../structnexo_1_1editor_1_1_scene_tree_drag_drop_payload.html#a1630184cec25df3396e84d607ba419e8',1,'nexo::editor::SceneTreeDragDropPayload::uuid()']]]
 ];

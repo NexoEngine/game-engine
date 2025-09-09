@@ -133,8 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a743afe54938892d4b289884ae59a0ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5282c3a9976024dd19163b62cda2636"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#ac5282c3a9976024dd19163b62cda2636">setClearColor</a> (const glm::vec4 &amp;color) override</td></tr>
 <tr class="separator:ac5282c3a9976024dd19163b62cda2636"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0a3881c3ee212dadd53a3f79c8ade23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#af0a3881c3ee212dadd53a3f79c8ade23">copy</a> (const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt; source) override</td></tr>
-<tr class="separator:af0a3881c3ee212dadd53a3f79c8ade23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dc3b77e8d0569ed0bde318831e7fd57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a8dc3b77e8d0569ed0bde318831e7fd57">copy</a> (std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt; source) override</td></tr>
+<tr class="separator:a8dc3b77e8d0569ed0bde318831e7fd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a853af27b21de315772b372c54985a191"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a853af27b21de315772b372c54985a191">getFramebufferId</a> () const override</td></tr>
 <tr class="memdesc:a853af27b21de315772b372c54985a191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the unique OpenGL ID of the framebuffer.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a853af27b21de315772b372c54985a191">More...</a><br /></td></tr>
 <tr class="separator:a853af27b21de315772b372c54985a191"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,16 +143,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5cc296e1756b00bd7da8b25e81c53898"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02208b020a176a88fa499e79d122de27"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a02208b020a176a88fa499e79d122de27">getSize</a> () const override</td></tr>
 <tr class="separator:a02208b020a176a88fa499e79d122de27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8364ba524231e6930cf13040b00f6cd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ae8364ba524231e6930cf13040b00f6cd"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#ae8364ba524231e6930cf13040b00f6cd">getPixelImpl</a> (unsigned int attachmentIndex, int x, int y) const</td></tr>
-<tr class="memdesc:ae8364ba524231e6930cf13040b00f6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a pixel value from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#ae8364ba524231e6930cf13040b00f6cd">More...</a><br /></td></tr>
-<tr class="separator:ae8364ba524231e6930cf13040b00f6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80c864d09e6d3d56241e3aecca749ccd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a80c864d09e6d3d56241e3aecca749ccd"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a80c864d09e6d3d56241e3aecca749ccd">getPixelImpl</a> (const unsigned int attachmentIndex, const int x, const int y) const</td></tr>
+<tr class="memdesc:a80c864d09e6d3d56241e3aecca749ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a pixel value from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a80c864d09e6d3d56241e3aecca749ccd">More...</a><br /></td></tr>
+<tr class="separator:a80c864d09e6d3d56241e3aecca749ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf8d853fee4c7b93512943610e2f6628"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#adf8d853fee4c7b93512943610e2f6628">getPixelWrapper</a> (unsigned int attachementIndex, int x, int y, void *result, const std::type_info &amp;ti) const override</td></tr>
 <tr class="separator:adf8d853fee4c7b93512943610e2f6628"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96bd11c53440d8c363d5e9709016ca65"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a96bd11c53440d8c363d5e9709016ca65"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a96bd11c53440d8c363d5e9709016ca65">clearAttachmentImpl</a> (unsigned int attachmentIndex, const void *value) const</td></tr>
-<tr class="memdesc:a96bd11c53440d8c363d5e9709016ca65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the specified attachment with a given value.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a96bd11c53440d8c363d5e9709016ca65">More...</a><br /></td></tr>
-<tr class="separator:a96bd11c53440d8c363d5e9709016ca65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf3d41008d905ccd283768e0e179a6d6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:acf3d41008d905ccd283768e0e179a6d6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#acf3d41008d905ccd283768e0e179a6d6">clearAttachmentImpl</a> (const unsigned int attachmentIndex, const void *value) const</td></tr>
+<tr class="memdesc:acf3d41008d905ccd283768e0e179a6d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the specified attachment with a given value.  <a href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#acf3d41008d905ccd283768e0e179a6d6">More...</a><br /></td></tr>
+<tr class="separator:acf3d41008d905ccd283768e0e179a6d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c06618a69269c1a1c56ba8bfc29d67b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a6c06618a69269c1a1c56ba8bfc29d67b">clearAttachmentWrapper</a> (unsigned int attachmentIndex, const void *value, const std::type_info &amp;ti) const override</td></tr>
 <tr class="separator:a6c06618a69269c1a1c56ba8bfc29d67b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98671226b4d4101740c4ca76d46b61c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structnexo_1_1renderer_1_1_nx_framebuffer_specs.html">NxFramebufferSpecs</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_open_gl_framebuffer.html#a98671226b4d4101740c4ca76d46b61c3">getSpecs</a> () override</td></tr>
@@ -178,10 +178,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad109a87dc54c8f09be67c9485a4d74cf inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#ad109a87dc54c8f09be67c9485a4d74cf">~NxFramebuffer</a> ()=default</td></tr>
 <tr class="memdesc:ad109a87dc54c8f09be67c9485a4d74cf inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the framebuffer and releases associated resources.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#ad109a87dc54c8f09be67c9485a4d74cf">More...</a><br /></td></tr>
 <tr class="separator:ad109a87dc54c8f09be67c9485a4d74cf inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a136bab7a5800fa4d1a200908e13b8777 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a136bab7a5800fa4d1a200908e13b8777 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a136bab7a5800fa4d1a200908e13b8777">getPixel</a> (unsigned int attachmentIndex, int x, int y) const</td></tr>
-<tr class="memdesc:a136bab7a5800fa4d1a200908e13b8777 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the pixel data from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#a136bab7a5800fa4d1a200908e13b8777">More...</a><br /></td></tr>
-<tr class="separator:a136bab7a5800fa4d1a200908e13b8777 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcfd16faafb39cf5fba715f0a46f0d50 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abcfd16faafb39cf5fba715f0a46f0d50 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#abcfd16faafb39cf5fba715f0a46f0d50">getPixel</a> (const unsigned int attachmentIndex, const int x, const int y) const</td></tr>
+<tr class="memdesc:abcfd16faafb39cf5fba715f0a46f0d50 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the pixel data from a specified attachment.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#abcfd16faafb39cf5fba715f0a46f0d50">More...</a><br /></td></tr>
+<tr class="separator:abcfd16faafb39cf5fba715f0a46f0d50 inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca162cfdabcdd17b30a3e54b8909f3df inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aca162cfdabcdd17b30a3e54b8909f3df inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html#aca162cfdabcdd17b30a3e54b8909f3df">clearAttachment</a> (unsigned int attachmentIndex, T value) const</td></tr>
 <tr class="memdesc:aca162cfdabcdd17b30a3e54b8909f3df inherit pub_methods_classnexo_1_1renderer_1_1_nx_framebuffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears a specified attachment to a given value.  <a href="classnexo_1_1renderer_1_1_nx_framebuffer.html#aca162cfdabcdd17b30a3e54b8909f3df">More...</a><br /></td></tr>
@@ -462,8 +462,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="af0a3881c3ee212dadd53a3f79c8ade23" name="af0a3881c3ee212dadd53a3f79c8ade23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0a3881c3ee212dadd53a3f79c8ade23">&#9670;&nbsp;</a></span>copy()</h2>
+<a id="a8dc3b77e8d0569ed0bde318831e7fd57" name="a8dc3b77e8d0569ed0bde318831e7fd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dc3b77e8d0569ed0bde318831e7fd57">&#9670;&nbsp;</a></span>copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -474,7 +474,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void nexo::renderer::NxOpenGlFramebuffer::copy </td>
           <td>(</td>
-          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classnexo_1_1renderer_1_1_nx_framebuffer.html">NxFramebuffer</a> &gt;&#160;</td>
           <td class="paramname"><em>source</em></td><td>)</td>
           <td></td>
         </tr>
@@ -599,8 +599,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ae8364ba524231e6930cf13040b00f6cd" name="ae8364ba524231e6930cf13040b00f6cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8364ba524231e6930cf13040b00f6cd">&#9670;&nbsp;</a></span>getPixelImpl()</h2>
+<a id="a80c864d09e6d3d56241e3aecca749ccd" name="a80c864d09e6d3d56241e3aecca749ccd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80c864d09e6d3d56241e3aecca749ccd">&#9670;&nbsp;</a></span>getPixelImpl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -613,19 +613,19 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">T nexo::renderer::NxOpenGlFramebuffer::getPixelImpl </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int&#160;</td>
           <td class="paramname"><em>attachmentIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>y</em>&#160;</td>
         </tr>
         <tr>
@@ -717,8 +717,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a96bd11c53440d8c363d5e9709016ca65" name="a96bd11c53440d8c363d5e9709016ca65"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96bd11c53440d8c363d5e9709016ca65">&#9670;&nbsp;</a></span>clearAttachmentImpl()</h2>
+<a id="acf3d41008d905ccd283768e0e179a6d6" name="acf3d41008d905ccd283768e0e179a6d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf3d41008d905ccd283768e0e179a6d6">&#9670;&nbsp;</a></span>clearAttachmentImpl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -731,7 +731,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">void nexo::renderer::NxOpenGlFramebuffer::clearAttachmentImpl </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int&#160;</td>
           <td class="paramname"><em>attachmentIndex</em>, </td>
         </tr>
         <tr>
