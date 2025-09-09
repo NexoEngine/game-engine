@@ -30,7 +30,7 @@ namespace nexo::editor {
     {
         const auto &coordinator = Application::m_coordinator;
         const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
-        for (const auto typeIndex : componentsTypeIndex) {
+        for (const auto &typeIndex : componentsTypeIndex) {
             if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
             m_componentRestoreActions.push_back(ComponentRestoreFactory::createRestoreComponent(m_entityId, typeIndex));
@@ -42,7 +42,7 @@ namespace nexo::editor {
     {
         const auto &coordinator = Application::m_coordinator;
         const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
-        for (const auto typeIndex : componentsTypeIndex) {
+        for (const auto &typeIndex : componentsTypeIndex) {
              if (!coordinator->supportsMementoPattern(typeIndex))
                 continue;
             auto typeId = std::type_index(typeIndex.type());
