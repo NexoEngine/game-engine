@@ -21,6 +21,7 @@ namespace nexo::components {
         std::vector<assets::AssetRef<assets::Material>> frames;
         float frameRate = 30.0f; // Frames per second
         size_t currentFrameIndex = 0;
+        size_t nbFrame;
 
         [[nodiscard]] bool loadVideoFrames(const std::string& videoPath);
     };
