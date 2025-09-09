@@ -254,11 +254,10 @@ namespace nexo::ecs {
             // copy the raw data into the new component, if it is trivially copyable, use memcpy, otherwise use placement new
             if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
+                ++m_size;
             } else {
                 THROW_EXCEPTION(InternalError, "Component type is not trivially copyable for raw insertion");
             }
-
-            ++m_size;
         }
 
         /**
