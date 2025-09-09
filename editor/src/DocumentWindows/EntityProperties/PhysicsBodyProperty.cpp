@@ -6,131 +6,117 @@
 //  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
-//  Author:      AI Assistant
-//  Date:        08/01/2025
-//  Description: Source file for the physics body property inspector
+//  Author:      Thomas PARENTEAU
+//  Date:        09/01/2025
+//  Description: Implementation file for the physics body property class
+//               Handles proper synchronization with Jolt Physics
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <imgui.h>
-
 #include "PhysicsBodyProperty.hpp"
-#include "ImNexo/ImNexo.hpp"
+
 #include "ImNexo/Components.hpp"
-#include "context/ActionManager.hpp"
-#include "context/actions/EntityActions.hpp"
+#include "ImNexo/Elements.hpp"
+#include "Application.hpp"
+#include "components/Transform.hpp"
 #include "systems/PhysicsSystem.hpp"
-#include "IconsFontAwesome.h"
 
 namespace nexo::editor {
 
-    bool PhysicsBodyProperty::addPhysicsComponentToEntity(ecs::Entity entity, bool isDynamic)
+    void PhysicsBodyProperty::show(const ecs::Entity entity)
     {
-        JPH::EMotionType motionType = isDynamic ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static;
-        auto& coordinator = *Application::m_coordinator;
-        auto& transformComponent = coordinator.getComponent<components::TransformComponent>(entity);
-        nexo::system::ShapeType shapeType = nexo::system::ShapeType::Box;
+        const auto& coordinator = Application::m_coordinator;
         
-        auto& app = Application::getInstance();
-        JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
-            entity, 
-            transformComponent, 
-            shapeType, 
-            motionType
-        );
+        auto physicsBodyOpt = coordinator->tryGetComponent<components::PhysicsBodyComponent>(entity);
+        if (!physicsBodyOpt) {
+            return;
+        }
+
+        auto& physicsBody = physicsBodyOpt->get();
         
-        if (!bodyId.IsInvalid()) {
-            auto action = std::make_unique<ComponentAddAction<components::PhysicsBodyComponent>>(entity);
-            ActionManager::get().recordAction(std::move(action));
-            return true;
-        } else {
-            LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
-            return false;
+        if (ImNexo::Header("##PhysicsBody", "Physics Body Component"))
+        {
+            const auto currentType = physicsBody.type;
+            
+            const char* typeNames[] = { "Static", "Dynamic" };
+            int currentTypeIndex = (currentType == components::PhysicsBodyComponent::Type::Static) ? 0 : 1;
+            int newTypeIndex = currentTypeIndex;
+            
+            if (ImGui::Combo("Physics Type", &newTypeIndex, typeNames, IM_ARRAYSIZE(typeNames)))
+            {
+                const auto newType = (newTypeIndex == 0) 
+                    ? components::PhysicsBodyComponent::Type::Static 
+                    : components::PhysicsBodyComponent::Type::Dynamic;
+                
+                if (newType != currentType) {
+                    recreatePhysicsBody(entity, newType);
+                }
+            }
+            
+            ImGui::Separator();
+            ImGui::Text("Body ID: %u", physicsBody.bodyID.GetIndex());
+            
+            auto& app = Application::getInstance();
+            if (auto physicsSystem = app.getPhysicsSystem()) {
+                const bool isActive = physicsSystem->getBodyInterface()->IsActive(physicsBody.bodyID);
+                ImGui::Text("Active: %s", isActive ? "Yes" : "No");
+            }
+            
+            ImGui::TreePop();
         }
     }
 
-    void PhysicsBodyProperty::show(ecs::Entity entity)
+    void PhysicsBodyProperty::recreatePhysicsBody(const ecs::Entity entity, const components::PhysicsBodyComponent::Type newType)
     {
-        auto& coordinator = *Application::m_coordinator;
+        const auto& coordinator = Application::m_coordinator;
+        auto& app = Application::getInstance();
+        auto physicsSystem = app.getPhysicsSystem();
         
-        if (!coordinator.entityHasComponent<components::PhysicsBodyComponent>(entity)) {
-            if (ImNexo::Header("##AddPhysicsNode", ICON_FA_PLUS " Add Physics Component"))
-            {
-                ImGui::Spacing();
-                ImGui::Text("Add physics simulation to this entity:");
-                ImGui::Spacing();
-                
-                static int physicsType = 1;
-                ImGui::RadioButton("Static Body", &physicsType, 0);
-                ImGui::SameLine();
-                ImGui::TextDisabled("(?)");
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Static bodies don't move but can be collided with");
-                }
-                
-                ImGui::RadioButton("Dynamic Body", &physicsType, 1);
-                ImGui::SameLine();
-                ImGui::TextDisabled("(?)");
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Dynamic bodies are affected by gravity and forces");
-                }
-                
-                ImGui::Spacing();
-                
-                if (ImGui::Button("Add Physics Component")) {
-                    addPhysicsComponentToEntity(entity, physicsType == 1);
-                }
-                
-                ImGui::TreePop();
+        if (!physicsSystem) {
+            LOG(NEXO_ERROR, "PhysicsSystem not available");
+            return;
+        }
+
+        auto physicsBodyOpt = coordinator->tryGetComponent<components::PhysicsBodyComponent>(entity);
+        auto transformOpt = coordinator->tryGetComponent<components::TransformComponent>(entity);
+        
+        if (!physicsBodyOpt || !transformOpt) {
+            LOG(NEXO_ERROR, "Entity {} missing required components for physics body recreation", entity);
+            return;
+        }
+
+        auto& physicsBody = physicsBodyOpt->get();
+        const auto& transform = transformOpt->get();
+        
+        const JPH::BodyID oldBodyID = physicsBody.bodyID;
+        
+        try {
+            if (!oldBodyID.IsInvalid()) {
+                physicsSystem->getBodyInterface()->RemoveBody(oldBodyID);
+                physicsSystem->getBodyInterface()->DestroyBody(oldBodyID);
             }
-        } else {
-            auto& physicsComponent = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
             
-            if (ImNexo::Header("##PhysicsBodyNode", ICON_FA_CUBE " Physics Body Component"))
-            {
-                ImGui::Spacing();
-                
-                const char* typeStr = (physicsComponent.type == components::PhysicsBodyComponent::Type::Dynamic) ? "Dynamic" : "Static";
-                ImGui::Text("Type: %s", typeStr);
-                
-                ImGui::Spacing();
-                
-                const char* convertButtonText = (physicsComponent.type == components::PhysicsBodyComponent::Type::Dynamic) 
-                    ? "Convert to Static" 
-                    : "Convert to Dynamic";
-                    
-                if (ImGui::Button(convertButtonText)) {
-                    auto& app = Application::getInstance();
-                    auto* bodyInterface = app.getPhysicsSystem()->getBodyInterface();
-                    
-                    JPH::EMotionType newMotionType = (physicsComponent.type == components::PhysicsBodyComponent::Type::Dynamic) 
-                        ? JPH::EMotionType::Static 
-                        : JPH::EMotionType::Dynamic;
-                        
-                    bodyInterface->SetMotionType(physicsComponent.bodyID, newMotionType, JPH::EActivation::Activate);
-                    
-                    physicsComponent.type = (physicsComponent.type == components::PhysicsBodyComponent::Type::Dynamic) 
-                        ? components::PhysicsBodyComponent::Type::Static 
-                        : components::PhysicsBodyComponent::Type::Dynamic;
-                }
-                
-                ImGui::SameLine();
-                
-                if (ImGui::Button("Remove Physics")) {
-                    auto& app = Application::getInstance();
-                    auto* bodyInterface = app.getPhysicsSystem()->getBodyInterface();
-                    bodyInterface->RemoveBody(physicsComponent.bodyID);
-                    bodyInterface->DestroyBody(physicsComponent.bodyID);
-                    
-                    auto action = std::make_unique<ComponentRemoveAction<components::PhysicsBodyComponent>>(entity);
-                    ActionManager::get().recordAction(std::move(action));
-                }
-                
-                ImGui::Spacing();
-                ImGui::Text("Body ID: %u", physicsComponent.bodyID.GetIndexAndSequenceNumber());
-                
-                ImGui::TreePop();
+            JPH::BodyID newBodyID;
+            if (newType == components::PhysicsBodyComponent::Type::Static) {
+                newBodyID = physicsSystem->createStaticBody(entity, transform);
+            } else {
+                newBodyID = physicsSystem->createDynamicBody(entity, transform);
             }
+            
+            if (newBodyID.IsInvalid()) {
+                LOG(NEXO_ERROR, "Failed to create new physics body for entity {}", entity);
+                return;
+            }
+            
+            physicsBody.bodyID = newBodyID;
+            physicsBody.type = newType;
+            
+            LOG(NEXO_INFO, "Successfully recreated physics body for entity {} (type: {})", 
+                entity, (newType == components::PhysicsBodyComponent::Type::Static) ? "Static" : "Dynamic");
+                
+        } catch (const std::exception& e) {
+            LOG(NEXO_ERROR, "Exception during physics body recreation for entity {}: {}", entity, e.what());
         }
     }
+
 }
