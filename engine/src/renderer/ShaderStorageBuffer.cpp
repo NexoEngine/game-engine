@@ -15,16 +15,19 @@
 #include "ShaderStorageBuffer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include <memory>
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShaderStorageBuffer.hpp"
 #endif
 
 namespace nexo::renderer {
-	std::shared_ptr<ShaderStorageBuffer> ShaderStorageBuffer::create(unsigned int size)
+
+	std::shared_ptr<NxShaderStorageBuffer> NxShaderStorageBuffer::create(unsigned int size)
 	{
-  		#ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlShaderStorageBuffer>(size);
-        #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
+  		#ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlShaderStorageBuffer>(size);
+	    #else
+	        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+	    #endif
 	}
+
 }

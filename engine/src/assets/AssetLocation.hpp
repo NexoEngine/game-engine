@@ -21,6 +21,7 @@
 
 #include "AssetName.hpp"
 #include "AssetPackName.hpp"
+#include "Path.hpp"
 
 namespace nexo::assets {
 
@@ -61,7 +62,7 @@ namespace nexo::assets {
              */
             AssetLocation& setPath(const std::string& path)
             {
-                _path = path;
+                _path = normalizePathAndRemovePrefixSlash(path);
                 return *this;
             }
 
@@ -122,8 +123,10 @@ namespace nexo::assets {
                 if (_packName)
                     fullLocation += _packName->data() + "::";
                 fullLocation += _name.data();
-                if (!_path.empty())
-                    fullLocation += "@" + _path;
+                if (!_path.empty()) {
+                    fullLocation += "@";
+                    fullLocation += _path;
+                }
                 return fullLocation;
             }
 
@@ -152,6 +155,7 @@ namespace nexo::assets {
                 std::string extractedPath;
 
                 parseFullLocation(fullLocation, extractedAssetName, extractedPath, extractedPackName);
+                extractedPath = normalizePathAndRemovePrefixSlash(extractedPath);
 
                 try {
                     _name = AssetName(extractedAssetName);
@@ -213,13 +217,13 @@ namespace nexo::assets {
                 std::string& extractedPackName
             )
             {
-                if (auto packNameEndPos = fullLocation.find("::"); packNameEndPos != std::string::npos) {
+                if (const auto packNameEndPos = fullLocation.find("::"); packNameEndPos != std::string::npos) {
                     extractedPackName = fullLocation.substr(0, packNameEndPos);
                     fullLocation.remove_prefix(packNameEndPos + 2);
                 } else {
                     extractedPackName.clear();
                 }
-                if (auto pathStartPos = fullLocation.find('@'); pathStartPos != std::string::npos) {
+                if (const auto pathStartPos = fullLocation.find('@'); pathStartPos != std::string::npos) {
                     extractedPath = fullLocation.substr(pathStartPos + 1);
                     fullLocation.remove_suffix(fullLocation.size() - pathStartPos);
                 } else {

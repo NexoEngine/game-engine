@@ -1,0 +1,52 @@
+# Editor Scene Window
+## Toolbar
+- Should be able to click on any toolbar button
+- Should be able to add a cube
+- Should be able to edit editor camera
+- Should be able to switch gizmo mode
+- Should be able to switch between local/global coordinates
+- Should be able to enable translation/rotate snap
+- Should be able to edit snap settings by right clicking
+- Should be able to enable/disable grid
+- Should be able to edit grid setting by right clicking
+## Shortcuts
+- Should be able to use SHIFT + A to add new object
+- Should be able to add a cube
+- Should be able to add a directional light
+- Should be able to add a point light
+- Should be able to add a spot light
+- Should be able to add a camera
+- When adding camera, should open a camera inspector popup
+- Should be able to unhide all with CTRL + H
+- Should be able to select all with A
+- Should be able to delete selected object with DELETE
+- Should be able to delete multiple objects with DELETE
+- Should be able to hide object with H
+- Should be able to hide multiple objects with H
+- Should be able to switch Gizmo mode with G/R/S/U
+- Should be able to toggle snap with SHIFT + S
+- Should be able to hide everything but selected object with SHIFT + H
+- Should be able to hide everything but selected objects with multiple selection
+- Should be able to undo the movement of an entity with CTRL + Z
+- Should be able to undo the creation of a primitive with CTRL + Z
+- Should be able to undo the creation of a directional light with CTRL + Z
+- Should be able to undo the creation of a point light with CTRL + Z
+- Should be able to undo the creation of a spot light with CTRL + Z
+- Should be able to undo the creation of a camera with CTRL + Z
+- Should be able to redo the movement of an entity with CTRL + SHIFT + Z
+- Should be able to redo the creation of a primitive with CTRL + SHIFT + Z
+- Should be able to redo the creation of a directional light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a point light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a spot light with CTRL + SHIFT + Z
+- Should be able to redo the creation of a camera with CTRL + SHIFT + Z
+## Selection
+- Should be able to click on an entity to select it
+- Selected entities should have an outline
+- Should be able to use SHIFT + LEFT CLICK to select multiple entity
+- Should be able to use CTRL + LEFT CLICK to select multiple entity
+- Should be able to use CTRL + LEFT CLICK to unselect an entity
+## Gizmo
+- Should be able to move object (every different axis/plane)
+- Should be able to rotate object (every axis/screen)
+- Should be able to scale object (every axis)
+- Should be able to perform all interactions above on multiple objects

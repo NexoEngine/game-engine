@@ -13,32 +13,35 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CameraController.hpp"
+#include "ImNexo/ImNexo.hpp"
 #include "components/Camera.hpp"
-#include "Components/EntityPropertiesComponents.hpp"
+#include "ImNexo/Elements.hpp"
+#include "ImNexo/EntityProperties.hpp"
+#include "context/ActionManager.hpp"
+#include "context/actions/EntityActions.hpp"
 
 namespace nexo::editor {
 
 	void CameraController::show(const ecs::Entity entity)
 	{
         auto& controllerComponent = Application::getEntityComponent<components::PerspectiveCameraController>(entity);
+        static components::PerspectiveCameraController::Memento beforeState;
 
-        if (EntityPropertiesComponents::drawHeader("##ControllerNode", "Camera Controller"))
+        if (ImNexo::Header("##ControllerNode", "Camera Controller"))
         {
-       		ImGui::Spacing();
-
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(5.0f, 10.0f));
-   			if (ImGui::BeginTable("InspectorControllerTable", 2,
-                ImGuiTableFlags_SizingStretchProp))
-            {
-                ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-
-                EntityPropertiesComponents::drawRowDragFloat1("Mouse sensitivity", "", &controllerComponent.mouseSensitivity);
-
-                ImGui::EndTable();
+            ImGui::Spacing();
+            const auto controllerComponentCopy = controllerComponent;
+            ImNexo::resetItemStates();
+            ImNexo::CameraController(controllerComponent);
+            if (ImNexo::isItemActivated()) {
+                beforeState = controllerComponentCopy.save();
+            } else if (ImNexo::isItemDeactivated()) {
+                auto afterState = controllerComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::PerspectiveCameraController>>(entity, beforeState, afterState);
+                ActionManager::get().recordAction(std::move(action));
+                beforeState = components::PerspectiveCameraController::Memento{};
             }
-            ImGui::PopStyleVar();
-        	ImGui::TreePop();
+            ImGui::TreePop();
         }
 	}
 }

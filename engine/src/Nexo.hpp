@@ -21,7 +21,6 @@
 
 // Renderer
 #include "renderer/Renderer.hpp"
-#include "renderer/Renderer2D.hpp"
 #include "renderer/RenderCommand.hpp"
 
 #include "renderer/Buffer.hpp"
@@ -45,5 +44,5 @@ namespace nexo {
 
     Application &getApp();
 
-    void runEngine(scene::SceneId id, RenderingType renderingType = RenderingType::WINDOW);
+    void runEngine(const Application::SceneInfo &sceneInfo);
 }

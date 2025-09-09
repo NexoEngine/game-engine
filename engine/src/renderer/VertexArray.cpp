@@ -13,18 +13,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "VertexArray.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlVertexArray.hpp"
 #endif
 
 namespace nexo::renderer {
 
-    std::shared_ptr<VertexArray> createVertexArray()
+    std::shared_ptr<NxVertexArray> createVertexArray()
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlVertexArray>();
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlVertexArray>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
 }

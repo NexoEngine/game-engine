@@ -19,10 +19,10 @@
 
 namespace nexo::renderer {
     /**
-    * @class OpenGlTexture2D
-    * @brief OpenGL-specific implementation of the `Texture2D` class.
+    * @class NxOpenGlTexture2D
+    * @brief OpenGL-specific implementation of the `NxTexture2D` class.
     *
-    * The `OpenGlTexture2D` class manages 2D textures in an OpenGL rendering context.
+    * The `NxOpenGlTexture2D` class manages 2D textures in an OpenGL rendering context.
     * It supports texture creation, data uploading, and binding/unbinding operations.
     *
     * Responsibilities:
@@ -30,9 +30,9 @@ namespace nexo::renderer {
     * - Load texture data from files or raw memory.
     * - Provide texture binding and unbinding functionality.
     */
-    class OpenGlTexture2D final : public Texture2D {
+    class NxOpenGlTexture2D final : public NxTexture2D {
         public:
-            ~OpenGlTexture2D() override;
+            ~NxOpenGlTexture2D() override;
 
             /**
             * @brief Loads an OpenGL 2D texture from an image file.
@@ -42,15 +42,15 @@ namespace nexo::renderer {
             * internal and data formats based on the number of channels in the image.
             *
             * @param path The file path to the texture image.
-            * @throw FileNotFoundException If the file cannot be found.
-            * @throw TextureUnsupportedFormat If the image format is unsupported.
+            * @throw NxFileNotFoundException If the file cannot be found.
+            * @throw NxTextureUnsupportedFormat If the image format is unsupported.
             *
             * Example:
             * ```cpp
-            * auto texture = std::make_shared<OpenGlTexture2D>("textures/wood.jpg");
+            * auto texture = std::make_shared<NxOpenGlTexture2D>("textures/wood.jpg");
             * ```
             */
-            explicit OpenGlTexture2D(const std::string &path);
+            explicit NxOpenGlTexture2D(const std::string &path);
 
             /**
             * @brief Creates a blank OpenGL 2D texture with the specified dimensions.
@@ -63,13 +63,51 @@ namespace nexo::renderer {
             *
             * Example:
             * ```cpp
-            * auto texture = std::make_shared<OpenGlTexture2D>(256, 256);
+            * auto texture = std::make_shared<NxOpenGlTexture2D>(256, 256);
             * ```
             */
-            OpenGlTexture2D(unsigned int width, unsigned int height);
+            NxOpenGlTexture2D(unsigned int width, unsigned int height);
 
             /**
-             * @brief Creates a OpenGL 2D texture from file in memory.
+             * @brief Creates an OpenGL 2D texture from raw pixel data.
+             *
+             * Creates a texture from a raw pixel buffer with the specified dimensions and format.
+             * This is useful for creating textures from procedurally generated data or when working
+             * with raw pixel data from other sources.
+             *
+             * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
+             *        in a format that matches the specified NxTextureFormat. The data consists
+             *        of height scanlines of width pixels, with each pixel consisting of N components
+             *        (where N depends on the format). The first pixel pointed to is bottom-left-most
+             *        in the image. There is no padding between image scanlines or between pixels.
+             *        Each component is an 8-bit unsigned value (uint8_t).
+             * @param width The width of the texture in pixels. Must not exceed the maximum texture
+             *        size supported by the GPU.
+             * @param height The height of the texture in pixels. Must not exceed the maximum texture
+             *        size supported by the GPU.
+             * @param format The format of the pixel data, which determines the number of components
+             *        per pixel and the internal OpenGL representation:
+             *        - NxTextureFormat::R8: Single channel (GL_R8/GL_RED)
+             *        - NxTextureFormat::RG8: Two channels (GL_RG8/GL_RG)
+             *        - NxTextureFormat::RGB8: Three channels (GL_RGB8/GL_RGB)
+             *        - NxTextureFormat::RGBA8: Four channels (GL_RGBA8/GL_RGBA)
+             * @return A shared pointer to the created NxTexture2D instance.
+             *
+             * @throws NxInvalidValue If the buffer is null.
+             * @throws NxTextureUnsupportedFormat If the specified format is not supported.
+             * @throws NxTextureInvalidSize If the dimensions exceed the maximum texture size.
+             *
+             * Example:
+             * ```cpp
+             * // Create a 256x256 RGBA texture with custom data
+             * std::vector<uint8_t> pixelData(256 * 256 * 4, 255); // 4 components (RGBA)
+             * auto texture =  std::make_shared<NxOpenGlTexture2D>(pixelData.data(), 256, 256, NxTextureFormat::RGBA8);
+             * ```
+             */
+            NxOpenGlTexture2D(const uint8_t *buffer, unsigned int width, unsigned int height, NxTextureFormat format);
+
+            /**
+             * @brief Creates an OpenGL 2D texture from a file in memory (raw content).
              *
              * Loads the texture data from the specified memory buffer. The buffer must contain
              * image data in a supported format (e.g., PNG, JPG). The texture will be ready
@@ -81,10 +119,10 @@ namespace nexo::renderer {
              * Example:
              * ```cpp
              * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
-             * auto texture = std::make_shared<OpenGlTexture2D>(imageData.data(), imageData.size());
+             * auto texture = std::make_shared<NxOpenGlTexture2D>(imageData.data(), imageData.size());
              * ```
              */
-            OpenGlTexture2D(const uint8_t *buffer, unsigned int len);
+            NxOpenGlTexture2D(const uint8_t *buffer, unsigned int len);
 
             [[nodiscard]] unsigned int getWidth() const override {return m_width;};
             [[nodiscard]] unsigned int getHeight() const override {return m_height;};
@@ -97,7 +135,7 @@ namespace nexo::renderer {
             *
             * @return The maximum texture size in pixels.
             */
-            unsigned int getMaxTextureSize() const override;
+            [[nodiscard]] unsigned int getMaxTextureSize() const override;
 
             [[nodiscard]] unsigned int getId() const override {return m_id;};
 
@@ -138,7 +176,7 @@ namespace nexo::renderer {
             *
             * @param data A pointer to the pixel data.
             * @param size The size of the data in bytes.
-            * @throw TextureSizeMismatch If the size of the data does not match the texture's dimensions.
+            * @throw NxTextureSizeMismatch If the size of the data does not match the texture's dimensions.
             *
             * Example:
             * ```cpp
@@ -146,7 +184,7 @@ namespace nexo::renderer {
             * texture->setData(pixels, sizeof(pixels));
             * ```
             */
-            void setData(void *data, unsigned int size) override;
+            void setData(void *data, size_t size) override;
         private:
             /**
              * @brief Ingest and load texture data from stb_image buffer.
@@ -166,13 +204,29 @@ namespace nexo::renderer {
              * ingestDataFromStb(data, width, height, channels, path);
              * ```
              */
-            void ingestDataFromStb(uint8_t *data, int width, int height, int channels, const std::string& debugPath = "(buffer)");
+            void ingestDataFromStb(const uint8_t *data, int width, int height, int channels, const std::string& debugPath = "(buffer)");
+
+            /**
+             * @brief Creates an OpenGL texture with the specified parameters.
+             *
+             * @param buffer Pointer to the texture data (can be nullptr, as per OpenGL spec).
+             * @param width Width of the texture.
+             * @param height Height of the texture.
+             * @param internalFormat Internal format of the texture.
+             * @param dataFormat Data format of the texture.
+             *
+             * Example:
+             * ```cpp
+             * createOpenGLTexture(buffer, width, height, GL_RGBA8, GL_RGBA);
+             * ```
+             */
+            void createOpenGLTexture(const uint8_t* buffer, unsigned int width, unsigned int height, GLint internalFormat, GLenum dataFormat);
 
             std::string m_path;
-            unsigned int m_width;
-            unsigned int m_height;
+            unsigned int m_width{};
+            unsigned int m_height{};
             unsigned int m_id{};
-            GLenum m_internalFormat;
-            GLenum m_dataFormat;
+            GLint m_internalFormat{};
+            GLenum m_dataFormat{};
     };
 }

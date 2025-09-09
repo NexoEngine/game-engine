@@ -20,11 +20,22 @@
 
 namespace nexo::renderer {
 
+    enum class CulledFace {
+        BACK,
+        FRONT,
+        FRONT_AND_BACK
+    };
+
+    enum class WindingOrder {
+        CW,
+        CCW
+    };
+
     /**
-    * @class RendererApi
+    * @class NxRendererApi
     * @brief Abstract interface for low-level rendering API implementations.
     *
-    * The `RendererApi` class defines the essential methods required for interacting
+    * The `NxRendererApi` class defines the essential methods required for interacting
     * with the graphics pipeline, such as initializing the API, configuring the
     * viewport, clearing buffers, and issuing draw commands. Specific graphics APIs,
     * like OpenGL, DirectX, or Vulkan, should implement this interface to ensure
@@ -36,11 +47,11 @@ namespace nexo::renderer {
     * - Support commands for clearing buffers, setting viewport size, and drawing.
     *
     * Subclasses:
-    * - `OpenGlRendererApi`: Implements this interface using OpenGL commands.
+    * - `NxOpenGlRendererApi`: Implements this interface using OpenGL commands.
     */
-    class RendererApi {
+    class NxRendererApi {
         public:
-            virtual ~RendererApi() = default;
+            virtual ~NxRendererApi() = default;
 
             /**
             * @brief Initializes the graphics API.
@@ -111,17 +122,33 @@ namespace nexo::renderer {
             */
             virtual void setClearDepth(float depth) = 0;
 
+            virtual void setDepthTest(bool enable) = 0;
+            virtual void setDepthFunc(unsigned int func) = 0;
+            virtual void setDepthMask(bool enable) = 0;
+
             /**
             * @brief Issues a draw call for indexed geometry.
             *
             * Renders geometry using indices stored in the index buffer attached to the
-            * specified `VertexArray`.
+            * specified `NxVertexArray`.
             *
-            * @param vertexArray A shared pointer to the `VertexArray` containing vertex and index data.
+            * @param vertexArray A shared pointer to the `NxVertexArray` containing vertex and index data.
             * @param count The number of indices to draw. If zero, all indices in the buffer are used.
             *
             * Must be implemented by subclasses.
             */
-            virtual void drawIndexed(const std::shared_ptr<VertexArray> &vertexArray, unsigned int count = 0) = 0;
+            virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t count = 0) = 0;
+
+            virtual void drawUnIndexed(size_t verticesCount) = 0;
+
+            virtual void setStencilTest(bool enable) = 0;
+            virtual void setStencilMask(unsigned int mask) = 0;
+            virtual void setStencilFunc(unsigned int func, int ref, unsigned int mask) = 0;
+            virtual void setStencilOp(unsigned int sfail, unsigned int dpfail, unsigned int dppass) = 0;
+
+            virtual void setCulling(bool enable) = 0;
+            virtual void setCulledFace(CulledFace face) = 0;
+            virtual void setWindingOrder(WindingOrder order) = 0;
+
     };
 }

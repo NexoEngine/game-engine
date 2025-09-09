@@ -19,36 +19,36 @@
 namespace nexo::renderer {
     // VERTEX BUFFER
 
-    OpenGlVertexBuffer::OpenGlVertexBuffer(const float *vertices, const unsigned int size)
+    NxOpenGlVertexBuffer::NxOpenGlVertexBuffer(const float *vertices, const unsigned int size)
     {
         glGenBuffers(1, &_id);
         glBindBuffer(GL_ARRAY_BUFFER, _id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
     }
 
-    OpenGlVertexBuffer::OpenGlVertexBuffer(const unsigned int size)
+    NxOpenGlVertexBuffer::NxOpenGlVertexBuffer(const unsigned int size)
     {
         glGenBuffers(1, &_id);
         glBindBuffer(GL_ARRAY_BUFFER, _id);
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     }
 
-    OpenGlVertexBuffer::~OpenGlVertexBuffer()
+    NxOpenGlVertexBuffer::~NxOpenGlVertexBuffer()
     {
         glDeleteBuffers(1, &_id);
     }
 
-    void OpenGlVertexBuffer::bind() const
+    void NxOpenGlVertexBuffer::bind() const
     {
         glBindBuffer(GL_ARRAY_BUFFER, _id);
     }
 
-    void OpenGlVertexBuffer::unbind() const
+    void NxOpenGlVertexBuffer::unbind() const
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void OpenGlVertexBuffer::setData(void *data, const unsigned int size)
+    void NxOpenGlVertexBuffer::setData(void *data, size_t size)
     {
         glBindBuffer(GL_ARRAY_BUFFER, _id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
@@ -57,34 +57,34 @@ namespace nexo::renderer {
 
     // INDEX BUFFER
 
-    OpenGlIndexBuffer::OpenGlIndexBuffer()
+    NxOpenGlIndexBuffer::NxOpenGlIndexBuffer()
     {
         glGenBuffers(1, &_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
     }
 
-    OpenGlIndexBuffer::~OpenGlIndexBuffer()
+    NxOpenGlIndexBuffer::~NxOpenGlIndexBuffer()
     {
         glDeleteBuffers(1, &_id);
     }
 
-    void OpenGlIndexBuffer::bind() const
+    void NxOpenGlIndexBuffer::bind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
     }
 
-    void OpenGlIndexBuffer::unbind() const
+    void NxOpenGlIndexBuffer::unbind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    void OpenGlIndexBuffer::setData(unsigned int *indices, unsigned int count)
+    void NxOpenGlIndexBuffer::setData(unsigned int *indices, const size_t count)
     {
         _count = count;
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
     }
 
-    unsigned int OpenGlIndexBuffer::getCount() const
+    size_t NxOpenGlIndexBuffer::getCount() const
     {
         return _count;
     }

@@ -13,16 +13,41 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "ecs/Definitions.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-
+#include <vector>
 
 namespace nexo::components {
 
     struct TransformComponent final {
-        glm::vec3 pos;
-        glm::vec3 size;
-        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    };
+        struct Memento {
+            glm::vec3 position;
+            glm::quat rotation;
+            glm::vec3 scale;
 
+            glm::mat4 localMatrix;
+            glm::vec3 localCenter;
+
+            std::vector<ecs::Entity> children;
+        };
+
+        void restore(const Memento &memento);
+        [[nodiscard]] Memento save() const;
+
+        void addChild(ecs::Entity childEntity);
+        void removeChild(ecs::Entity childEntity);
+
+        glm::vec3 pos;
+        glm::vec3 size = glm::vec3(1.0f);
+        glm::quat quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+        glm::mat4 worldMatrix = glm::mat4(1.0f);
+        glm::mat4 localMatrix = glm::mat4(1.0f);
+
+        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+
+        std::vector<ecs::Entity> children{};
+    };
 }

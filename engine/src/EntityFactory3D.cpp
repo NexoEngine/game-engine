@@ -13,219 +13,518 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EntityFactory3D.hpp"
+#include "Definitions.hpp"
+#include "Renderer3D.hpp"
+#include "assets/AssetLocation.hpp"
+#include "components/BillboardMesh.hpp"
 #include "components/Light.hpp"
+#include "components/Name.hpp"
+#include "components/Parent.hpp"
+#include "components/Render.hpp"
+#include "components/Render3D.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "components/Camera.hpp"
-#include "core/exceptions/Exceptions.hpp"
+#include "components/StaticMesh.hpp"
+#include "components/MaterialComponent.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "Application.hpp"
+#include "math/Matrix.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <filesystem>
 
-namespace nexo {
-
+namespace nexo
+{
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
-
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
-        components::Material material{};
-        material.albedoColor = color;
-        auto cube = std::make_shared<components::Cube>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, cube);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        transform.quat = glm::quat(glm::radians(rotation));
 
-        ecs::Entity newCube = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newCube, renderComponent);
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
         components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newCube, uuid);
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::CUBE;
+
+        const ecs::Entity newCube = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newCube, transform);
+        Application::m_coordinator->addComponent(newCube, mesh);
+        Application::m_coordinator->addComponent(newCube, matComponent);
+
+        Application::m_coordinator->addComponent(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, renderComponent);
 
         return newCube;
     }
 
-    ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, const components::Material &material)
+    ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                            const components::Material& material)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
-        auto cube = std::make_shared<components::Cube>();
-        auto renderable = std::make_shared<components::Renderable3D>(material, cube);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
+        transform.quat = glm::quat(glm::radians(rotation));
 
-        ecs::Entity newCube = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newCube, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newCube, renderComponent);
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::CubeMat@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
         components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newCube, uuid);
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::CUBE;
+
+        const ecs::Entity newCube = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newCube, transform);
+        Application::m_coordinator->addComponent(newCube, mesh);
+        Application::m_coordinator->addComponent(newCube, matComponent);
+        Application::m_coordinator->addComponent(newCube, uuid);
+        Application::m_coordinator->addComponent(newCube, renderComponent);
+
         return newCube;
     }
 
-    ecs::Entity EntityFactory3D::createModel(const std::string &path, glm::vec3 pos, glm::vec3 size, glm::vec3 rotation)
+    ecs::Entity EntityFactory3D::createBillboard(const glm::vec3& pos, const glm::vec3& size, const glm::vec4& color)
     {
         components::TransformComponent transform{};
         transform.pos = pos;
         transform.size = size;
-        transform.quat = glm::quat(rotation);
-        components::Material material{};
-        std::shared_ptr<components::MeshNode> rootNode = utils::loadModel(path);
-        auto model = std::make_shared<components::Model>(rootNode);
-        auto renderable = std::make_shared<components::Renderable3D>(material, model);
-        components::RenderComponent renderComponent(renderable, components::RenderType::RENDER_3D);
 
-        ecs::Entity newModel = Application::m_coordinator->createEntity();
-        Application::m_coordinator->addComponent<components::TransformComponent>(newModel, transform);
-        Application::m_coordinator->addComponent<components::RenderComponent>(newModel, renderComponent);
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::BillboardMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        components::BillboardComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+
         components::UuidComponent uuid;
-        Application::m_coordinator->addComponent<components::UuidComponent>(newModel, uuid);
-        return newModel;
-    }
-}
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::BILLBOARD;
 
-namespace nexo::utils {
-    glm::mat4 convertAssimpMatrixToGLM(const aiMatrix4x4 &matrix)
-    {
-        return glm::mat4(
-            matrix.a1, matrix.b1, matrix.c1, matrix.d1,
-            matrix.a2, matrix.b2, matrix.c2, matrix.d2,
-            matrix.a3, matrix.b3, matrix.c3, matrix.d3,
-            matrix.a4, matrix.b4, matrix.c4, matrix.d4
-        );
+        const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newBillboard, transform);
+        Application::m_coordinator->addComponent(newBillboard, mesh);
+        Application::m_coordinator->addComponent(newBillboard, matComponent);
+        Application::m_coordinator->addComponent(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, renderComponent);
+
+        return newBillboard;
     }
 
-    components::Mesh processMesh(const std::string &path, aiMesh *mesh, const aiScene *scene)
+    ecs::Entity EntityFactory3D::createBillboard(const glm::vec3& pos, const glm::vec3& size,
+                                                 const components::Material& material)
     {
-        std::vector<renderer::Vertex> vertices;
-        std::vector<unsigned int> indices;
-        vertices.reserve(mesh->mNumVertices);
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
 
-        for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+        components::BillboardComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getBillboardVAO();
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::BillboardMaterial@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        components::UuidComponent uuid;
+        components::RenderComponent renderComponent;
+        renderComponent.isRendered = true;
+        renderComponent.type = components::PrimitiveType::BILLBOARD;
+
+        const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newBillboard, transform);
+        Application::m_coordinator->addComponent(newBillboard, mesh);
+        Application::m_coordinator->addComponent(newBillboard, matComponent);
+        Application::m_coordinator->addComponent(newBillboard, uuid);
+        Application::m_coordinator->addComponent(newBillboard, renderComponent);
+
+        return newBillboard;
+    }
+
+    ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
+
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::TetrahedronMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newTetrahedron = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newTetrahedron, transform);
+        Application::m_coordinator->addComponent(newTetrahedron, mesh);
+        Application::m_coordinator->addComponent(newTetrahedron, matComponent);
+
+        Application::m_coordinator->addComponent(newTetrahedron, uuid);
+
+        return newTetrahedron;
+    }
+
+    ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                                   const components::Material& material)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::TetrahedronMat@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newTetrahedron = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newTetrahedron, transform);
+        Application::m_coordinator->addComponent(newTetrahedron, mesh);
+        Application::m_coordinator->addComponent(newTetrahedron, matComponent);
+        Application::m_coordinator->addComponent(newTetrahedron, uuid);
+
+        return newTetrahedron;
+    }
+
+    ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
+
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::PyramidMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newPyramid = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newPyramid, transform);
+        Application::m_coordinator->addComponent(newPyramid, mesh);
+        Application::m_coordinator->addComponent(newPyramid, matComponent);
+        Application::m_coordinator->addComponent(newPyramid, uuid);
+
+        return newPyramid;
+    }
+
+    ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                               const components::Material& material)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::PyramidMat@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newPyramid = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newPyramid, transform);
+        Application::m_coordinator->addComponent(newPyramid, mesh);
+        Application::m_coordinator->addComponent(newPyramid, matComponent);
+        Application::m_coordinator->addComponent(newPyramid, uuid);
+
+        return newPyramid;
+    }
+
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                                glm::vec4 color, unsigned int nbSegment)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
+
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::CylinderMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newCylinder = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newCylinder, transform);
+        Application::m_coordinator->addComponent(newCylinder, mesh);
+        Application::m_coordinator->addComponent(newCylinder, matComponent);
+        Application::m_coordinator->addComponent(newCylinder, uuid);
+
+        return newCylinder;
+    }
+
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                                const components::Material& material, unsigned int nbSegment)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::CylinderMat@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newCylinder = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newCylinder, transform);
+        Application::m_coordinator->addComponent(newCylinder, mesh);
+        Application::m_coordinator->addComponent(newCylinder, matComponent);
+        Application::m_coordinator->addComponent(newCylinder, uuid);
+
+        return newCylinder;
+    }
+
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                              glm::vec4 color, const unsigned int nbSubdivision)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
+
+        auto material = std::make_unique<components::Material>();
+        material->albedoColor = color;
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::SphereMatFlatColor@_internal"),
+            std::move(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newSphere = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newSphere, transform);
+        Application::m_coordinator->addComponent(newSphere, mesh);
+        Application::m_coordinator->addComponent(newSphere, matComponent);
+        Application::m_coordinator->addComponent(newSphere, uuid);
+
+        return newSphere;
+    }
+
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
+                                              const components::Material& material, const unsigned int nbSubdivision)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
+        transform.size = size;
+        transform.quat = glm::quat(glm::radians(rotation));
+
+        components::StaticMeshComponent mesh;
+        mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
+
+        const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
+            assets::AssetLocation("_internal::SphereMat@_internal"),
+            std::make_unique<components::Material>(material));
+        components::MaterialComponent matComponent;
+        matComponent.material = materialRef;
+
+        const components::UuidComponent uuid;
+
+        const ecs::Entity newSphere = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent(newSphere, transform);
+        Application::m_coordinator->addComponent(newSphere, mesh);
+        Application::m_coordinator->addComponent(newSphere, matComponent);
+        Application::m_coordinator->addComponent(newSphere, uuid);
+
+        return newSphere;
+    }
+
+    ecs::Entity EntityFactory3D::createModel(assets::AssetRef<assets::Model> model, glm::vec3 pos, glm::vec3 size,
+                                             glm::vec3 rotation)
+    {
+        auto modelAsset = model.lock();
+        if (!modelAsset || !modelAsset->getData())
+            return ecs::INVALID_ENTITY;
+
+        ecs::Entity rootEntity = Application::m_coordinator->createEntity();
+
+        components::TransformComponent rootTransform;
+        rootTransform.pos = pos;
+        rootTransform.size = size;
+        rootTransform.quat = glm::quat(glm::radians(rotation));
+
+        // Create RootComponent to identify this as the root of a hierarchy
+        components::RootComponent rootComp;
+        rootComp.modelRef = model;
+
+        const std::string rawPath = modelAsset->getMetadata().location.getName().data();
+        std::filesystem::path fsPath{rawPath};
+        rootComp.name = fsPath.stem().string();
+
+        Application::m_coordinator->addComponent(rootEntity, rootTransform);
+        Application::m_coordinator->addComponent(rootEntity, rootComp);
+
+        // Process model nodes to create entity hierarchy
+        const assets::MeshNode& rootNode = *modelAsset->getData();
+        int childCount = processModelNode(rootEntity, rootNode);
+
+        // Update child count in root component
+        auto &storedRoot = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
+        storedRoot.childCount = childCount;
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent(rootEntity, uuid);
+
+        return rootEntity;
+    }
+
+    int EntityFactory3D::processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node)
+    {
+        int totalChildrenCreated = 0;
+
+        ecs::Entity nodeEntity = Application::m_coordinator->createEntity();
+        totalChildrenCreated++;
+
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent(nodeEntity, uuid);
+
+        glm::vec3 translation;
+        glm::vec3 scale;
+        glm::quat rotation;
+        nexo::math::decomposeTransformQuat(node.transform, translation, rotation, scale);
+
+        components::TransformComponent transform;
+        transform.pos = translation;
+        transform.size = scale;
+        transform.quat = rotation;
+        Application::m_coordinator->addComponent(nodeEntity, transform);
+
+        components::ParentComponent parentComponent;
+        parentComponent.parent = parentEntity;
+        Application::m_coordinator->addComponent(nodeEntity, parentComponent);
+
+        auto parentTransform = Application::m_coordinator->tryGetComponent<
+            components::TransformComponent>(parentEntity);
+        if (parentTransform)
+            parentTransform->get().children.push_back(nodeEntity);
+
+
+        if (!node.name.empty())
         {
-            renderer::Vertex vertex{};
-            vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+            components::NameComponent nameComponent;
+            nameComponent.name = node.name;
+            Application::m_coordinator->addComponent(nodeEntity, nameComponent);
+        }
 
-            if (mesh->HasNormals()) {
-                vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+        for (const auto& mesh : node.meshes)
+        {
+            ecs::Entity meshEntity = Application::m_coordinator->createEntity();
+            totalChildrenCreated++;
+
+            components::UuidComponent meshUuid;
+            Application::m_coordinator->addComponent(meshEntity, meshUuid);
+
+            components::TransformComponent meshTransform;
+            meshTransform.pos = glm::vec3(0.0f);
+            meshTransform.size = glm::vec3(1.0f);
+            meshTransform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            // Centroid
+            meshTransform.localCenter = mesh.localCenter;
+
+            components::StaticMeshComponent staticMesh;
+            staticMesh.vao = mesh.vao;
+
+            components::RenderComponent renderComponent;
+            renderComponent.isRendered = true;
+            renderComponent.type = components::PrimitiveType::MESH;
+
+            Application::m_coordinator->addComponent(meshEntity, meshTransform);
+            Application::m_coordinator->addComponent(meshEntity, staticMesh);
+            Application::m_coordinator->addComponent(meshEntity, renderComponent);
+
+            if (!mesh.name.empty())
+            {
+                components::NameComponent nameComponent;
+                nameComponent.name = mesh.name;
+                Application::m_coordinator->addComponent(meshEntity, nameComponent);
             }
 
-            if (mesh->mTextureCoords[0])
-                vertex.texCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-            else
-                vertex.texCoord = {0.0f, 0.0f};
-
-            vertices.push_back(vertex);
-        }
-
-        for (unsigned int i = 0; i < mesh->mNumFaces; i++)
-        {
-            aiFace face = mesh->mFaces[i];
-            indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
-        }
-
-        aiMaterial const *material = scene->mMaterials[mesh->mMaterialIndex];
-
-        components::Material materialComponent;
-
-        aiColor4D color;
-        if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
-            materialComponent.albedoColor = { color.r, color.g, color.b, color.a };
-        }
-
-        if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
-            materialComponent.specularColor = { color.r, color.g, color.b, color.a };
-        }
-
-        if (material->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) {
-            materialComponent.emissiveColor = { color.r, color.g, color.b };
-        }
-
-        float roughness = 0.0f;
-        if (material->Get(AI_MATKEY_SHININESS, roughness) == AI_SUCCESS) {
-            materialComponent.roughness = 1.0f - (roughness / 100.0f); // Convert glossiness to roughness
-        }
-
-        // Load Metallic
-        float metallic = 0.0f;
-        if (material->Get(AI_MATKEY_METALLIC_FACTOR, metallic) == AI_SUCCESS) {
-            materialComponent.metallic = metallic;
-        }
-
-        float opacity = 1.0f;
-        if (material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
-            materialComponent.opacity = opacity;
-        }
-
-        // Load Textures
-        std::filesystem::path modelPath(path);
-        std::filesystem::path modelDirectory = modelPath.parent_path();
-
-        auto loadTexture = [&](aiTextureType type) -> std::shared_ptr<renderer::Texture2D> {
-            aiString str;
-            if (material->GetTexture(type, 0, &str) == AI_SUCCESS) {
-                std::filesystem::path texturePath = modelDirectory / std::string(str.C_Str());
-                return renderer::Texture2D::create(texturePath.string());
+            if (mesh.material)
+            {
+                components::MaterialComponent materialComponent;
+                materialComponent.material = mesh.material;
+                Application::m_coordinator->addComponent(meshEntity, materialComponent);
             }
-            return nullptr;
-        };
 
-        materialComponent.albedoTexture = loadTexture(aiTextureType_DIFFUSE);
-        materialComponent.normalMap = loadTexture(aiTextureType_NORMALS);
-        materialComponent.metallicMap = loadTexture(aiTextureType_SPECULAR);  // Specular can store metallic in some cases
-        materialComponent.roughnessMap = loadTexture(aiTextureType_SHININESS);
-        materialComponent.emissiveMap = loadTexture(aiTextureType_EMISSIVE);
+            components::ParentComponent meshParentComponent;
+            meshParentComponent.parent = nodeEntity;
+            Application::m_coordinator->addComponent(meshEntity, meshParentComponent);
 
-        LOG(NEXO_INFO, "Loaded material: Diffuse = {}, Normal = {}, Metallic = {}, Roughness = {}",
-            materialComponent.albedoTexture ? "Yes" : "No",
-            materialComponent.normalMap ? "Yes" : "No",
-            materialComponent.metallicMap ? "Yes" : "No",
-            materialComponent.roughnessMap ? "Yes" : "No");
-
-        LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.data);
-
-        return {mesh->mName.data, vertices, indices, materialComponent};
-    }
-
-
-    std::shared_ptr<components::MeshNode> processNode(const std::string &path, aiNode const *node, const aiScene *scene)
-    {
-        static int nbNode = 0;
-        nbNode++;
-        auto meshNode = std::make_shared<components::MeshNode>();
-
-        glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
-
-        meshNode->transform = nodeTransform;
-
-        for (unsigned int i = 0; i < node->mNumMeshes; i++)
-        {
-            aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            meshNode->meshes.push_back(processMesh(path, mesh, scene));
+            auto nodeTransform = Application::m_coordinator->tryGetComponent<
+                components::TransformComponent>(nodeEntity);
+            if (nodeTransform)
+                nodeTransform->get().children.push_back(meshEntity);
         }
 
-        for (unsigned int i = 0; i < node->mNumChildren; i++)
-        {
-            auto newNode = processNode(path, node->mChildren[i], scene);
-            if (newNode)
-                meshNode->children.push_back(newNode);
-        }
+        for (const auto& childNode : node.children)
+            totalChildrenCreated += processModelNode(nodeEntity, childNode);
 
-        return meshNode;
-    }
-
-    std::shared_ptr<components::MeshNode> loadModel(const std::string &path)
-    {
-        Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(
-            path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-            THROW_EXCEPTION(core::LoadModelException, path, importer.GetErrorString());
-
-        return processNode(path, scene->mRootNode, scene);
+        return totalChildrenCreated;
     }
 }

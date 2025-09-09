@@ -14,18 +14,46 @@
 #pragma once
 
 #include "Exception.hpp"
+#include "Definitions.hpp"
 
 #include <source_location>
 #include <format>
 
 namespace nexo::ecs {
-    using Entity = std::uint32_t;
+
+    class InternalError final : public Exception {
+    public:
+        explicit InternalError(const std::string& message,
+                                const std::source_location loc = std::source_location::current())
+            : Exception(std::format("Internal error: {}", message), loc) {}
+    };
 
     class ComponentNotFound final : public Exception {
         public:
-        explicit ComponentNotFound(const Entity entity,
+            explicit ComponentNotFound(const Entity entity,
+                                        const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Component not found for: {}", entity), loc) {}
+    };
+
+    class OverlappingGroupsException final : public Exception {
+        public:
+            explicit OverlappingGroupsException(const std::string& existingGroup,
+                                                const std::string& newGroup, ComponentType conflictingComponent,
+                                                const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Cannot create group {} because it has overlapping owned component #{} with existing group {}", newGroup, conflictingComponent, existingGroup), loc) {}
+    };
+
+    class GroupNotFound final : public Exception {
+        public:
+            explicit GroupNotFound(const std::string &groupKey,
                                     const std::source_location loc = std::source_location::current())
-            : Exception(std::format("Component not found for: {}", entity), loc) {}
+                : Exception(std::format("Group not found for key: {}", groupKey), loc) {}
+    };
+
+    class InvalidGroupComponent final : public Exception {
+        public:
+            explicit InvalidGroupComponent(const std::source_location loc = std::source_location::current())
+                : Exception("Component has not been found in the group", loc) {}
     };
 
     class ComponentNotRegistered final : public Exception {
@@ -49,12 +77,12 @@ namespace nexo::ecs {
     class TooManyEntities final : public Exception {
         public:
             explicit TooManyEntities(const std::source_location loc = std::source_location::current())
-                : Exception("Too many living entities, max is 8191", loc) {}
+                : Exception(std::format("Too many living entities, max is {}", MAX_ENTITIES), loc) {}
     };
 
     class OutOfRange final : public Exception {
         public:
-        explicit OutOfRange(unsigned int index, const std::source_location loc = std::source_location::current())
-            : Exception(std::format("Index {} is out of range", index), loc) {}
+            explicit OutOfRange(size_t index, const std::source_location loc = std::source_location::current())
+                : Exception(std::format("Index {} is out of range", index), loc) {}
     };
 }

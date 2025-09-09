@@ -65,4 +65,98 @@ namespace nexo::editor {
         configFile.close();
         return dockId;
     }
+
+    std::vector<std::string> findAllEditorScenes()
+    {
+        std::string configPath = Path::resolvePathRelativeToExe(
+            "../config/default-layout.ini").string();
+        std::ifstream configFile(configPath);
+
+        std::vector<std::string> sceneWindows;
+
+        if (!configFile.is_open()) {
+            std::cout << "Could not open config file: " << configPath << std::endl;
+            return sceneWindows;
+        }
+
+        std::string line;
+        std::regex windowRegex(R"(\[Window\]\[(###Default Scene\d+)\])");
+
+        while (std::getline(configFile, line)) {
+            std::smatch match;
+            if (std::regex_search(line, match, windowRegex) && match.size() > 1) {
+                // match[1] contains the window name (e.g., "Default Scene0")
+                sceneWindows.push_back(match[1].str());
+            }
+        }
+
+        configFile.close();
+        return sceneWindows;
+    }
+
+    void setAllWindowDockIDsFromConfig(WindowRegistry& registry)
+    {
+        std::string configPath = Path::resolvePathRelativeToExe(
+            "../config/default-layout.ini").string();
+        std::ifstream configFile(configPath);
+
+        if (!configFile.is_open()) {
+            std::cout << "Could not open config file: " << configPath << std::endl;
+            return;
+        }
+
+        std::string line;
+        std::string currentWindowName;
+        bool inWindowSection = false;
+        bool isHashedWindow = false;
+
+        std::regex windowHeaderRegex(R"(\[Window\]\[(.+)\])");
+        std::regex dockIdRegex("DockId=(0x[0-9a-fA-F]+)");
+
+        while (std::getline(configFile, line)) {
+            // Check if this line is a window header
+            std::smatch windowMatch;
+            if (std::regex_search(line, windowMatch, windowHeaderRegex) && windowMatch.size() > 1) {
+                currentWindowName = windowMatch[1].str();
+                inWindowSection = true;
+
+                // Check if the window name starts with ###
+                isHashedWindow = currentWindowName.starts_with("###");
+
+                continue;
+            }
+
+            // If we're in a window section and it's a hashed window, look for DockId
+            if (inWindowSection && isHashedWindow) {
+                // If we hit a new section, reset state
+                if (!line.empty() && line[0] == '[') {
+                    inWindowSection = false;
+                    isHashedWindow = false;
+                    continue;
+                }
+
+                std::smatch dockMatch;
+                if (std::regex_search(line, dockMatch, dockIdRegex) && dockMatch.size() > 1) {
+                    std::string hexDockId = dockMatch[1];
+                    ImGuiID dockId = 0;
+                    std::stringstream ss;
+                    ss << std::hex << hexDockId;
+                    ss >> dockId;
+
+                    // Set the dock ID for this window in the registry
+                    if (dockId != 0) {
+                        std::cout << "Setting dock id " << dockId << " for hashed window "
+                                  << currentWindowName << std::endl;
+                        registry.setDockId(currentWindowName, dockId);
+                    }
+                }
+            } else if (inWindowSection && !line.empty() && line[0] == '[') {
+                // Reset state when we hit a new section
+                inWindowSection = false;
+                isHashedWindow = false;
+            }
+        }
+
+        configFile.close();
+    }
 }

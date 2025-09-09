@@ -4,10 +4,10 @@
 
 👋​ Welcome to the NEXO Engine repository! This project is a collaborative effort to create a revolutionnary game engine. Our goal is to provide a robust, user-friendly, and efficient platform for game development in desktop as well as in virtual reality! 🤩✨​🚀​
 
-[![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml) 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine) 
+[![Build, test and Package](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml/badge.svg)](https://github.com/NexoEngine/game-engine/actions/workflows/build.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=NexoEngine_game-engine&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=NexoEngine_game-engine)
 
 ## Table of Contents
@@ -27,8 +27,11 @@
   - [The Team](#the-team)
   - [Join the NEXO community](#join-the-nexo-community)
   - [Acknowledgements](#acknowledgements)
+  - [License](#license)
+    - [How to extract the third-party licenses file](#how-to-extract-the-third-party-licenses-file)
+    - [How to generate the COPYRIGHT file](#how-to-generate-the-copyright-file)
 
-> [!NOTE]  
+> [!NOTE]
 > Find the whole documentation on our [website](https://nexoengine.github.io/game-engine/).
 
 ## Project Overview
@@ -54,9 +57,10 @@ https://github.com/user-attachments/assets/ea92807b-da51-4fb6-bd1d-d3c9fadf0c13
 ## External Dependencies
 
 To run this project, ensure you have the following:
-- **CMake**: Necessary for building the project from source. (version 3.28 or higher)
+- **CMake**: Necessary for building the project from source. (version 3.28 or higher) [install here](https://cmake.org/download/)
 - **C++ Compiler**: We recommend using GCC or Clang for Linux and MacOS, and MSVC for Windows.
-- **Git**: For cloning with submodules.
+- **Git**: For cloning with submodules. [install here](https://github.com/git-guides/install-git)
+- **.NET SDK 9.0**: Required for the C# scripting support. [install here](https://dotnet.microsoft.com/fr-fr/download/dotnet/9.0)
 
 ## Build the project
 
@@ -64,7 +68,8 @@ Cloning and building is a breeze:
 
 ### 1. Clone the repository with the submodules.
 ```bash
-git clone --recurse-submodules
+git clone --recurse-submodules https://github.com/NexoEngine/game-engine.git NEXO-Engine
+cd NEXO-Engine
 ```
 
 ### 2. Run cmake to generate the build files.
@@ -113,23 +118,27 @@ cmake --install build --prefix /path/to/install
 
 This will install the NEXO Engine in the directory `/path/to/install` with all the necessary files.
 
-### Create an installer for Windows (NSIS)
-
-To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
+#### Create an installer for Windows (NSIS)
 
 > [!WARNING]
 > We assume here that you already ran the cmake command to generate the build files in the `build` directory.
 
-First install NSIS on your computer, then run the following command:
+To create an installer for Windows, you can use the [NSIS](https://nsis.sourceforge.io/Main_Page) installer.
 
+1. First install [NSIS](https://nsis.sourceforge.io/Download) on your computer.
+
+2. Execute the following commands:
 ```bash
 cd build
 cpack -G NSIS -C Debug
 ```
 
 Now you can run the generated installer to install the NEXO Engine on your computer.
+```bash
+./nexoEditor.exe
+```
 
-## Create an installer for Linux (DEB)
+#### Create an installer for Linux (DEB)
 
 > [!WARNING]
 > We assume here that you already ran the cmake command to generate the build files in the `build` directory.
@@ -175,6 +184,7 @@ NEXO Engine is brought to life by a dedicated team of fifth-year students from E
 - Thomas PARENTEAU [@ThomasParenteau](https://www.linkedin.com/in/thomas-parenteau-0570b120a/)
 
 ## Join the NEXO community
+
 Check our [web site](https://www.nexo-engine.com/) to keep you up to date about the latest news about **NEXO**.</br>
 Join the [community](https://github.com/orgs/NexoEngine/discussions) to ask your questions or to talk with our developers.</br>
 Visit our [blog](https://www.nexo-engine.com/blog) to find out more about how NEXO works.</br>
@@ -183,6 +193,37 @@ Visit our [blog](https://www.nexo-engine.com/blog) to find out more about how NE
 
 This project is part of our curriculum and end of studies project, showcasing our collective skills in advanced software development with modern C++.
 
-We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey 🚀​
+We thank Epitech for the opportunity to work on such an engaging project and for the support throughout our educational journey.
 
-Thank you for you support 🫶​
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.<br/>
+For more information about the copyright of the project, please refer to the [COPYRIGHT](COPYRIGHT) file.<br/>
+You can also find the license of the third-party libraries used in the project in the [external/licenses](external/licenses) directory.
+
+> [!TIP]
+> For any license inquiry, please contact us at [nexo.engine@gmail.com](mailto:nexo.engine@gmail.com?subject=[NEXO%20Engine]%20License)
+
+### How to extract the third-party licenses file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-licenses
+```
+
+This will extract all licenses per third-party library in the `/path/to/install/external/licenses` directory.
+
+> [!NOTE]
+> These licenses are automatically extracted from vcpkg, there might be missing third-party libraries.
+
+### How to generate the COPYRIGHT file
+
+You can use the cmake install command:
+```bash
+cmake --install build --prefix /path/to/install --component generate-copyright
+```
+
+This will generate the COPYRIGHT file in the `/path/to/install` directory.
+
+> [!WARNING]
+> By default the COPYRIGHT file is generated with some `TODO:`, the generator cannot always determine exact licenses for some files. Please check each entry for errors.

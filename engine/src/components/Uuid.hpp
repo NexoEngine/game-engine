@@ -25,11 +25,11 @@ namespace nexo::components {
 
 		std::uniform_int_distribution dist(0, 15);
 
-		const char *v = "0123456789abcdef";
 		constexpr bool dash[] = { false, false, false, false, true, false, true, false, true, false, true, false, false, false, false, false };
 
 		std::string res;
 		for (const bool i : dash) {
+			const auto v = "0123456789abcdef";
 			if (i) res += "-";
 			res += v[dist(rng)];
 			res += v[dist(rng)];
@@ -37,7 +37,21 @@ namespace nexo::components {
 		return res;
 	}
 
-	struct UuidComponent {
-		std::string uuid = genUuid();
-	};
+    struct UuidComponent {
+        struct Memento {
+            std::string uuid;
+        };
+
+        void restore(const Memento &memento)
+        {
+            uuid = memento.uuid;
+        }
+
+        [[nodiscard]] Memento save() const
+        {
+            return {uuid};
+        }
+
+        std::string uuid = genUuid();
+    };
 }

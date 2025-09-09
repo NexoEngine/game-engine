@@ -13,19 +13,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Framebuffer.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlFramebuffer.hpp"
 #endif
 
 namespace nexo::renderer {
 
-    std::shared_ptr<Framebuffer> Framebuffer::create(const FramebufferSpecs &specs)
+    std::shared_ptr<NxFramebuffer> NxFramebuffer::create(const NxFramebufferSpecs &specs)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlFramebuffer>(specs);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlFramebuffer>(specs);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
-
     }
 
 }

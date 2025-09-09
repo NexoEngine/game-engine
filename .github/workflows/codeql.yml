@@ -5,6 +5,11 @@ on: [push]
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }}/${{ matrix.compiler }}) on ${{ matrix.os }}
+    env:
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/NexoEngine/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/NexoEngine/index.json,readwrite"
+      DOTNET_INSTALL_DIR: "./.dotnet"
     runs-on: ${{ matrix.os }}
     permissions:
       # required for all workflows
@@ -21,9 +26,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: c-cpp
-            build-mode: autobuild
+          - language: c-cpp, csharp
+            build-mode: manual
             compiler: gcc
+            generator: Ninja
             version: 13
             os: ubuntu-latest
     steps:
@@ -53,13 +59,21 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libxrandr-dev libx11-dev \
-            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev \
-            libxcursor-dev '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
-            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
-            libegl1-mesa-dev
+          packages: libxrandr-dev libx11-dev
+            libxext-dev libxi-dev libgl1-mesa-dev libxinerama-dev
+            libxcursor-dev libxcb-render0-dev libxcb-shape0-dev
+            libxcb-randr0-dev libxcb-xfixes0-dev libxcb-sync-dev libxcb-shm0-dev
+            libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-dri2-0-dev libxcb-dri3-dev
+            libxcb-glx0-dev libx11-xcb-dev libglu1-mesa-dev
+            libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+            libegl1-mesa-dev mono-complete
           version: 1.0
           execute_install_scripts: true
+
+      - name: Install .NET SDK 9.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
 
       - name: Set up GCC
         if: ${{ matrix.compiler == 'gcc' }}
@@ -82,9 +96,27 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
 
+      - name: Add NuGet sources
+        shell: bash
+        env:
+          USERNAME: NexoEngine
+        run: |
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            sources add \
+            -Source "${{ env.FEED_URL }}" \
+            -StorePasswordInClearText \
+            -Name GitHubPackages \
+            -UserName "${{ env.USERNAME }}" \
+            -Password "${{ secrets.GITHUB_TOKEN }}"
+          mono `${{ env.VCPKG_EXE }} fetch nuget | tail -n 1` \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -Source "${{ env.FEED_URL }}"
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
+        env:
+          USERNAME: NexoEngine
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -94,6 +126,18 @@ jobs:
 
           # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
+
+
+      - name: CMake Workflow with preset 'minimal-build' for packaging
+        uses: lukka/run-cmake@v10
+        with:
+          workflowPreset: 'minimal-build'
+        env:
+          CMAKE_GENERATOR: ${{ matrix.generator }}
+          CC: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CXX: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
+          CMAKE_C_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clang || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gcc || '' }}
+          CMAKE_CXX_COMPILER: ${{ matrix.compiler == 'clang' && steps.set-up-clang.outputs.clangxx || matrix.compiler == 'gcc' && steps.set-up-gcc.outputs.gxx || '' }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

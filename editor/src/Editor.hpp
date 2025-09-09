@@ -14,24 +14,20 @@
 
 #pragma once
 
-#include "ADocumentWindow.hpp"
-#include "Exception.hpp"
 #include "IDocumentWindow.hpp"
-#include "exceptions/Exceptions.hpp"
 #define L_DEBUG 1
-#include <loguru/loguru.hpp>
 #include <memory>
-#include <type_traits>
 
 #include "WindowRegistry.hpp"
+#include "inputs/InputManager.hpp"
 
 namespace nexo::editor {
 
     class Editor {
         private:
             // Singleton: private constructor and destructor
-        	Editor() = default;
-         	~Editor() = default;
+            Editor() = default;
+            ~Editor() = default;
 
         public:
             // Singleton: Meyers' Singleton Pattern
@@ -97,6 +93,10 @@ namespace nexo::editor {
             requires std::derived_from<T, IDocumentWindow>
             void registerWindow(const std::string &name)
             {
+            	if (m_windowRegistry.hasWindow(name)) {
+            		LOG(NEXO_WARN, "A window with the name '{}' already exists. Please choose a different name.", name);
+            		return;
+            	}
             	auto window = std::make_shared<T>(name, m_windowRegistry);
              	m_windowRegistry.registerWindow<T>(window);
             }
@@ -119,7 +119,6 @@ namespace nexo::editor {
             	return m_windowRegistry.getWindow<T>(windowName);
             }
         private:
-
 	        /**
 	         * @brief Initializes the core engine and configures ImGui components.
 	         *
@@ -163,9 +162,15 @@ namespace nexo::editor {
              * sets a flag to signal that the editor should quit.
              */
             void drawMenuBar();
+            void drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const;
+            void drawBackground() const;
+
+            void handleGlobalCommands();
+    		std::vector<CommandInfo> handleFocusedWindowCommands();
 
             bool m_quit = false;
             bool m_showDemoWindow = false;
             WindowRegistry m_windowRegistry;
+            InputManager m_inputManager;
     };
 }

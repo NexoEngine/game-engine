@@ -18,29 +18,33 @@
 #include <vector>
 #include <glad/glad.h>
 
+#include "Types.hpp"
 #include "renderer/Window.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "core/event/SignalEvent.hpp"
-#include "renderer/Buffer.hpp"
-#include "renderer/Renderer.hpp"
 #include "ecs/Coordinator.hpp"
 #include "core/scene/SceneManager.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
+#include "WorldState.hpp"
 #include "components/Light.hpp"
+#include "components/PhysicsBodyComponent.hpp"
 
 #include "systems/CameraSystem.hpp"
-#include "systems/RenderSystem.hpp"
 #include "systems/LightSystem.hpp"
+#include "systems/RenderCommandSystem.hpp"
+#include "systems/RenderBillboardSystem.hpp"
+#include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
+#include "systems/PhysicsSystem.hpp"
 
 #define NEXO_PROFILE(name) nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) {m_profileResults.push_back(profileResult); })
 
 namespace nexo {
 
-    enum class RenderingType {
-        WINDOW,
-        FRAMEBUFFER
-    };
+    namespace system {
+        class ScriptingSystem;
+    }
 
     enum EventDebugFlags {
         DEBUG_LOG_RESIZE_EVENT = 1 << 0,
@@ -78,6 +82,14 @@ namespace nexo {
              */
             void beginFrame();
 
+            struct SceneInfo {
+                scene::SceneId id;
+                RenderingType renderingType = RenderingType::WINDOW;
+                SceneType sceneType = SceneType::GAME;
+                bool isChildWindow = false; //<< Is the current scene embedded in a sub window ?
+                glm::vec2 viewportBounds[2]{}; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded in the window), this is used for mouse coordinates
+            };
+
             /**
              * @brief Runs the application for the specified scene and rendering type.
              *
@@ -93,8 +105,9 @@ namespace nexo {
              *
              * @param sceneId The ID of the scene to render.
              * @param renderingType The rendering mode (e.g., WINDOW or other types).
+             * @param sceneType The type of scene to render.
              */
-            void run(scene::SceneId sceneId, RenderingType renderingType);
+            void run(const SceneInfo &sceneInfo);
 
             /**
              * @brief Ends the current frame by clearing processed events.
@@ -177,6 +190,10 @@ namespace nexo {
              */
             ecs::Entity createEntity() const;
 
+            std::shared_ptr<system::PhysicsSystem> getPhysicsSystem() const {
+                return m_physicsSystem;
+            }
+
             /**
              * @brief Deletes an existing entity.
              *
@@ -186,6 +203,8 @@ namespace nexo {
              * @param entity The entity to delete.
              */
             void deleteEntity(ecs::Entity entity);
+            void removeEntityFromParent(const ecs::Entity entity) const;
+            void deleteEntityChildren(const ecs::Entity entity);
 
             static Application &getInstance()
             {
@@ -206,20 +225,19 @@ namespace nexo {
                 return m_coordinator->getComponent<T>(entity);
             }
 
-            static std::vector<std::type_index> getAllEntityComponentTypes(const ecs::Entity entity)
+            static std::vector<ecs::ComponentType> getAllEntityComponentTypes(const ecs::Entity entity)
             {
                 return m_coordinator->getAllComponentTypes(entity);
             }
 
-            static std::vector<std::pair<std::type_index, std::any>> getAllEntityComponents(const ecs::Entity entity)
-            {
-                return m_coordinator->getAllComponents(entity);
-            }
-
             scene::SceneManager &getSceneManager() { return m_SceneManager; }
 
-            [[nodiscard]] const std::shared_ptr<renderer::Window> &getWindow() const { return m_window; };
-            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); };
+            [[nodiscard]] const std::shared_ptr<renderer::NxWindow> &getWindow() const { return m_window; }
+            [[nodiscard]] bool isWindowOpen() const { return m_window->isOpen(); }
+            [[nodiscard]] WorldState &getWorldState() { return m_worldState; }
+
+            int initScripting() const;
+            int shutdownScripting() const;
 
             static std::shared_ptr<ecs::Coordinator> m_coordinator;
         protected:
@@ -231,19 +249,8 @@ namespace nexo {
             void registerSignalListeners();
             void registerEcsComponents() const;
             void registerWindowCallbacks() const;
-            template<typename System, typename... Components>
-            std::shared_ptr<System> registerSystem()
-            {
-	            auto system = m_coordinator->registerSystem<System>();
-
-	            ecs::Signature signature;
-	            (signature.set(m_coordinator->getComponentType<Components>()), ...);
-
-	            m_coordinator->setSystemSignature<System>(signature);
-
-	            return system;
-            }
             void registerSystems();
+            void initScripting();
 
             void displayProfileResults() const;
             static std::unique_ptr<Application> _instance;
@@ -254,19 +261,24 @@ namespace nexo {
             bool m_isRunning = true;
             bool m_isMinimized = false;
             bool m_displayProfileResult = true;
-            std::shared_ptr<renderer::Window> m_window;
+            std::shared_ptr<renderer::NxWindow> m_window;
 
-            float m_lastFrameTime = 0.0f;
-            Timestep m_currentTimestep;
+            WorldState m_worldState;
 
             int m_eventDebugFlags{};
 
             std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
-            std::shared_ptr<system::RenderSystem> m_renderSystem;
             std::shared_ptr<system::LightSystem> m_lightSystem;
+            std::shared_ptr<system::TransformMatrixSystem> m_transformMatrixSystem;
+            std::shared_ptr<system::TransformHierarchySystem> m_transformHierarchySystem;
             std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
             std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
+            std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
+            std::shared_ptr<system::RenderCommandSystem> m_renderCommandSystem;
+            std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
+            std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
 
             std::vector<ProfileResult> m_profilesResults;
+
     };
 }

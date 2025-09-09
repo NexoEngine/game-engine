@@ -14,7 +14,7 @@
 #include "SubTexture2D.hpp"
 
 namespace nexo::renderer {
-    SubTexture2D::SubTexture2D(const std::shared_ptr<Texture2D> &texture, const glm::vec2 &min, const glm::vec2 &max)
+    NxSubTexture2D::NxSubTexture2D(const std::shared_ptr<NxTexture2D> &texture, const glm::vec2 &min, const glm::vec2 &max)
         : m_texture(texture)
     {
         m_texCoords[0] = {min.x, min.y};
@@ -23,11 +23,11 @@ namespace nexo::renderer {
         m_texCoords[3] = {min.x, max.y};
     }
 
-    std::shared_ptr<SubTexture2D> SubTexture2D::createFromCoords(const std::shared_ptr<Texture2D> &texture, const glm::vec2 &coords, const glm::vec2 &cellSize, const glm::vec2 &spriteSize)
+    std::shared_ptr<NxSubTexture2D> NxSubTexture2D::createFromCoords(const std::shared_ptr<NxTexture2D> &texture, const glm::vec2 &coords, const glm::vec2 &cellSize, const glm::vec2 &spriteSize)
     {
         glm::vec2 min = {(coords.x * cellSize.x) / static_cast<float>(texture->getWidth()) , (coords.y * cellSize.y) / static_cast<float>(texture->getHeight())};
         glm::vec2 max = {((coords.x + spriteSize.x) * cellSize.x) / static_cast<float>(texture->getWidth()), ((coords.y + spriteSize.y) * cellSize.y) / static_cast<float>(texture->getHeight())};
 
-        return std::make_shared<SubTexture2D>(texture, min, max);
+        return std::make_shared<NxSubTexture2D>(texture, min, max);
     }
 }

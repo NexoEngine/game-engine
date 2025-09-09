@@ -16,6 +16,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <gtest/gtest.h>
 
 #include "renderer/Buffer.hpp"
 
@@ -28,7 +29,7 @@ namespace nexo::renderer {
 
         void SetUp() override {
             if (!glfwInit()) {
-                GTEST_SKIP() << "GLFW initialization failed. Skipping OpenGL tests.";
+                GTEST_FAIL() << "GLFW initialization failed. Failing OpenGL tests.";
             }
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -38,7 +39,7 @@ namespace nexo::renderer {
             window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
             if (!window) {
                 glfwTerminate();
-                GTEST_SKIP() << "Failed to create GLFW window. Skipping OpenGL tests.";
+                GTEST_FAIL() << "Failed to create GLFW window. Failing OpenGL tests.";
             }
 
             glfwMakeContextCurrent(window);
@@ -46,7 +47,7 @@ namespace nexo::renderer {
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
                 glfwDestroyWindow(window);
                 glfwTerminate();
-                GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
+                GTEST_FAIL() << "Failed to initialize GLAD. Failing OpenGL tests.";
             }
 
             GLint major = 0, minor = 0;
@@ -55,7 +56,7 @@ namespace nexo::renderer {
             if (major < 4 || (major == 4 && minor < 5)) {
                 glfwDestroyWindow(window);
                 glfwTerminate();
-                GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
+                GTEST_FAIL() << "OpenGL 4.5 is required. Failing OpenGL tests.";
             }
         }
 
@@ -67,22 +68,22 @@ namespace nexo::renderer {
         }
     };
 
-    class MockVertexBuffer : public VertexBuffer {
+    class MockVertexBuffer : public NxVertexBuffer {
         public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setLayout, (const BufferLayout &layout), (override));
-        MOCK_METHOD(BufferLayout, getLayout, (), (const, override));
-        MOCK_METHOD(void, setData, (void *data, unsigned int size), (override));
-        MOCK_METHOD(unsigned int, getId, (), (const override));
+        MOCK_METHOD(void, setLayout, (const NxBufferLayout &layout), (override));
+        MOCK_METHOD(NxBufferLayout, getLayout, (), (const, override));
+        MOCK_METHOD(void, setData, (void *data, size_t size), (override));
+        MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 
-    class MockIndexBuffer : public IndexBuffer {
+    class MockIndexBuffer : public NxIndexBuffer {
         public:
         MOCK_METHOD(void, bind, (), (const, override));
         MOCK_METHOD(void, unbind, (), (const, override));
-        MOCK_METHOD(void, setData, (unsigned int *data, unsigned int size), (override));
-        MOCK_METHOD(unsigned int, getCount, (), (const, override));
+        MOCK_METHOD(void, setData, (unsigned int *data, size_t size), (override));
+        MOCK_METHOD(size_t, getCount, (), (const, override));
         MOCK_METHOD(unsigned int, getId, (), (const, override));
     };
 }

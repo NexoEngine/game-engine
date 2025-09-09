@@ -14,17 +14,25 @@
 
 #pragma once
 
+#include "VertexArray.hpp"
 #include "assets/Asset.hpp"
-
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
+#include "assets/Assets/Material/Material.hpp"
 
 namespace nexo::assets {
 
-    struct ModelData {
-        // Model data
-        // TODO: Implement model data
-        const aiScene *scene;
+    struct Mesh {
+        std::string name;
+        std::shared_ptr<renderer::NxVertexArray> vao;
+        AssetRef<Material> material;
+
+        glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+    };
+
+    struct MeshNode {
+        std::string name;
+        glm::mat4 transform{};
+        std::vector<Mesh> meshes;
+        std::vector<MeshNode> children;
     };
 
     /**
@@ -32,7 +40,7 @@ namespace nexo::assets {
      *
      * @brief Represents a 3D model asset.
      */
-    class Model final : public Asset<ModelData, AssetType::MODEL> {
+    class Model final : public Asset<MeshNode, AssetType::MODEL> {
         public:
             Model() = default;
 

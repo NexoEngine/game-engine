@@ -22,10 +22,10 @@
 namespace nexo::renderer {
 
     /**
-     * @enum ShaderDataType
+     * @enum NxShaderDataType
      * @brief Enum representing the various data types supported in shaders.
      *
-     * ShaderDataType is used to define the type of data stored in a buffer element,
+     * NxShaderDataType is used to define the type of data stored in a buffer element,
      * such as float, integer, matrix, or boolean types. This enum ensures consistent
      * representation and handling of data types in vertex and index buffers.
      *
@@ -36,7 +36,7 @@ namespace nexo::renderer {
      * - INT, INT2, INT3, INT4: Represents one or more integer values.
      * - BOOL: Represents a boolean value.
      */
-    enum class ShaderDataType {
+    enum class NxShaderDataType {
         NONE = 0,
         FLOAT,
         FLOAT2,
@@ -52,40 +52,40 @@ namespace nexo::renderer {
     };
 
     /**
-     * @brief Returns the size (in bytes) of a given ShaderDataType.
+     * @brief Returns the size (in bytes) of a given NxShaderDataType.
      *
-     * This function calculates the memory size required for a specific ShaderDataType.
+     * This function calculates the memory size required for a specific NxShaderDataType.
      * It supports floats, integers, matrices, and boolean types.
      *
-     * @param type The ShaderDataType whose size is to be calculated.
-     * @return The size in bytes of the provided ShaderDataType.
+     * @param type The NxShaderDataType whose size is to be calculated.
+     * @return The size in bytes of the provided NxShaderDataType.
      *
      * Example:
      * - FLOAT3 will return 12 (3 floats, 4 bytes each).
      * - MAT4 will return 64 (4x4 matrix of floats).
      */
-    static unsigned int shaderDataTypeSize(ShaderDataType type)
+    static unsigned int shaderDataTypeSize(const NxShaderDataType type)
     {
         switch (type)
         {
-            case ShaderDataType::FLOAT:    return 4;  // 1 float (4 bytes)
-            case ShaderDataType::FLOAT2:   return 4 * 2;  // 2 floats (8 bytes)
-            case ShaderDataType::FLOAT3:   return 4 * 3;  // 3 floats (12 bytes)
-            case ShaderDataType::FLOAT4:   return 4 * 4;  // 4 floats (16 bytes)
-            case ShaderDataType::MAT3:     return 4 * 3 * 3;  // 3x3 matrix (36 bytes)
-            case ShaderDataType::MAT4:     return 4 * 4 * 4;  // 4x4 matrix (64 bytes)
-            case ShaderDataType::INT:      return 4;  // 1 int (4 bytes)
-            case ShaderDataType::INT2:     return 4 * 2;  // 2 ints (8 bytes)
-            case ShaderDataType::INT3:     return 4 * 3;  // 3 ints (12 bytes)
-            case ShaderDataType::INT4:     return 4 * 4;  // 4 ints (16 bytes)
-            case ShaderDataType::BOOL:     return 1;  // 1 byte (1 bool)
-            case ShaderDataType::NONE:     return 0;  // No type, return 0
+            case NxShaderDataType::FLOAT:    return 4;  // 1 float (4 bytes)
+            case NxShaderDataType::FLOAT2:   return 4 * 2;  // 2 floats (8 bytes)
+            case NxShaderDataType::FLOAT3:   return 4 * 3;  // 3 floats (12 bytes)
+            case NxShaderDataType::FLOAT4:   return 4 * 4;  // 4 floats (16 bytes)
+            case NxShaderDataType::MAT3:     return 4 * 3 * 3;  // 3x3 matrix (36 bytes)
+            case NxShaderDataType::MAT4:     return 4 * 4 * 4;  // 4x4 matrix (64 bytes)
+            case NxShaderDataType::INT:      return 4;  // 1 int (4 bytes)
+            case NxShaderDataType::INT2:     return 4 * 2;  // 2 ints (8 bytes)
+            case NxShaderDataType::INT3:     return 4 * 3;  // 3 ints (12 bytes)
+            case NxShaderDataType::INT4:     return 4 * 4;  // 4 ints (16 bytes)
+            case NxShaderDataType::BOOL:     return 1;  // 1 byte (1 bool)
+            case NxShaderDataType::NONE:     return 0;  // No type, return 0
         }
         return 0; // Default case for undefined types
     }
 
     /**
-     * @struct BufferElements
+     * @struct NxBufferElements
      * @brief Represents an individual element in a buffer layout.
      *
      * Each buffer element specifies its name, type, size, and offset within a buffer.
@@ -101,15 +101,15 @@ namespace nexo::renderer {
      * Functions:
      * - @return getComponentCount() Retrieves the number of components (e.g., FLOAT3 = 3).
      */
-    struct BufferElements {
+    struct NxBufferElements {
         std::string name;
-        ShaderDataType type{};
+        NxShaderDataType type{};
         unsigned int size{};
         unsigned int offset{};
         bool normalized{};
 
-        BufferElements() = default;
-        BufferElements(const ShaderDataType Type, std::string name, const bool normalized = false)
+        NxBufferElements() = default;
+        NxBufferElements(const NxShaderDataType Type, std::string name, const bool normalized = false)
             : name(std::move(name)), type(Type), size(shaderDataTypeSize(type)), offset(0) , normalized(normalized)
         {
 
@@ -119,27 +119,27 @@ namespace nexo::renderer {
         {
             switch(type)
             {
-                case ShaderDataType::FLOAT:     return 1;
-                case ShaderDataType::FLOAT2:    return 2;
-                case ShaderDataType::FLOAT3:    return 3;
-                case ShaderDataType::FLOAT4:    return 4;
-                case ShaderDataType::INT:       return 1;
-                case ShaderDataType::INT2:      return 2;
-                case ShaderDataType::INT3:      return 3;
-                case ShaderDataType::INT4:      return 4;
-                case ShaderDataType::MAT3:      return 3 * 3;
-                case ShaderDataType::MAT4:      return 4 * 4;
-                case ShaderDataType::BOOL:      return 1;
-                default: return -1;
+                case NxShaderDataType::FLOAT:     return 1;
+                case NxShaderDataType::FLOAT2:    return 2;
+                case NxShaderDataType::FLOAT3:    return 3;
+                case NxShaderDataType::FLOAT4:    return 4;
+                case NxShaderDataType::INT:       return 1;
+                case NxShaderDataType::INT2:      return 2;
+                case NxShaderDataType::INT3:      return 3;
+                case NxShaderDataType::INT4:      return 4;
+                case NxShaderDataType::MAT3:      return 3 * 3;
+                case NxShaderDataType::MAT4:      return 4 * 4;
+                case NxShaderDataType::BOOL:      return 1;
+                default: return 0; // Undefined type, return 0
             }
         }
     };
 
     /**
-     * @class BufferLayout
+     * @class NxBufferLayout
      * @brief Defines the structure and layout of elements in a vertex buffer.
      *
-     * A BufferLayout is a collection of BufferElements, each specifying a data type,
+     * A NxBufferLayout is a collection of BufferElements, each specifying a data type,
      * size, and offset. The layout is essential for ensuring correct binding and
      * rendering of vertex attributes in a graphics pipeline.
      *
@@ -148,7 +148,7 @@ namespace nexo::renderer {
      * - @param _stride The total size (in bytes) of one vertex in the layout.
      *
      * Functions:
-     * - @constructor BufferLayout(const std::initializer_list<BufferElements> elements)
+     * - @constructor NxBufferLayout(const std::initializer_list<BufferElements> elements)
      *   Initializes the layout with a list of buffer elements and calculates offsets/stride.
      *
      * - @return getElements() Retrieves the list of BufferElements.
@@ -158,24 +158,24 @@ namespace nexo::renderer {
      * Iterators:
      * - Supports begin() and end() iterators for easy iteration over elements.
      */
-    class BufferLayout {
+    class NxBufferLayout {
         public:
-            BufferLayout() = default;
-            BufferLayout(const std::initializer_list<BufferElements> elements)
+            NxBufferLayout() = default;
+            NxBufferLayout(const std::initializer_list<NxBufferElements> elements)
                 : _elements(elements)
             {
                 calculateOffsetAndStride();
             };
 
-            [[nodiscard]] std::vector<BufferElements> getElements() const { return _elements; };
+            [[nodiscard]] std::vector<NxBufferElements> getElements() const { return _elements; };
             [[nodiscard]] unsigned int getStride() const { return _stride; };
 
-            std::vector<BufferElements>::iterator begin() { return _elements.begin(); };
-            std::vector<BufferElements>::iterator end() { return _elements.end(); };
-            [[nodiscard]] std::vector<BufferElements>::const_iterator begin() const { return _elements.begin(); };
-            [[nodiscard]] std::vector<BufferElements>::const_iterator end() const { return _elements.end(); };
+            std::vector<NxBufferElements>::iterator begin() { return _elements.begin(); };
+            std::vector<NxBufferElements>::iterator end() { return _elements.end(); };
+            [[nodiscard]] std::vector<NxBufferElements>::const_iterator begin() const { return _elements.begin(); };
+            [[nodiscard]] std::vector<NxBufferElements>::const_iterator end() const { return _elements.end(); };
         private:
-            std::vector<BufferElements> _elements;
+            std::vector<NxBufferElements> _elements;
             unsigned int _stride{};
 
             void calculateOffsetAndStride()
@@ -192,7 +192,7 @@ namespace nexo::renderer {
     };
 
     /**
-     * @class VertexBuffer
+     * @class NxVertexBuffer
      * @brief Abstract class representing a vertex buffer in the graphics pipeline.
      *
      * A vertex buffer is a GPU memory buffer that stores per-vertex attributes, such as
@@ -200,7 +200,7 @@ namespace nexo::renderer {
      * the interface for creating, binding, and managing vertex buffers, allowing for
      * implementation across various graphics APIs.
      */
-    class VertexBuffer {
+    class NxVertexBuffer {
         public:
             /**
              * @brief Destroys the vertex buffer.
@@ -211,7 +211,7 @@ namespace nexo::renderer {
              * Usage:
              * - Automatically called when a VertexBuffer object goes out of scope.
              */
-            virtual ~VertexBuffer() = default;
+            virtual ~NxVertexBuffer() = default;
 
             /**
              * @brief Binds the vertex buffer as the active buffer in the graphics pipeline.
@@ -220,7 +220,7 @@ namespace nexo::renderer {
              * the data stored in this buffer.
              *
              * Pure Virtual Function:
-             * - Must be implemented by platform-specific subclasses (e.g., OpenGLVertexBuffer).
+             * - Must be implemented by platform-specific subclasses (e.g., NxOpenGlVertexBuffer).
              */
             virtual void bind() const = 0;
 
@@ -231,7 +231,7 @@ namespace nexo::renderer {
              * on the buffer. This is optional but useful for debugging or ensuring clean state management.
              *
              * Pure Virtual Function:
-             * - Must be implemented by platform-specific subclasses (e.g., OpenGLVertexBuffer).
+             * - Must be implemented by platform-specific subclasses (e.g., NxOpenGlVertexBuffer).
              */
             virtual void unbind() const = 0;
 
@@ -241,12 +241,12 @@ namespace nexo::renderer {
              * The layout defines the structure of the data stored in the buffer (e.g., positions,
              * normals, colors) and how they are passed to the vertex shader.
              *
-             * @param layout The BufferLayout object defining the structure of the buffer data.
+             * @param layout The NxBufferLayout object defining the structure of the buffer data.
              *
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setLayout(const BufferLayout &layout) = 0;
+            virtual void setLayout(const NxBufferLayout &layout) = 0;
 
             /**
              * @brief Retrieves the layout of the vertex buffer.
@@ -254,12 +254,12 @@ namespace nexo::renderer {
              * Provides information about the data structure stored in the buffer, including
              * element types, sizes, and offsets.
              *
-             * @return The BufferLayout object associated with this vertex buffer.
+             * @return The NxBufferLayout object associated with this vertex buffer.
              *
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            [[nodiscard]] virtual BufferLayout getLayout() const = 0;
+            [[nodiscard]] virtual NxBufferLayout getLayout() const = 0;
 
             /**
              * @brief Uploads new data to the vertex buffer.
@@ -273,20 +273,20 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setData(void *data, unsigned int size) = 0;
+            virtual void setData(void *data, size_t size) = 0;
 
             [[nodiscard]] virtual unsigned int getId() const = 0;
     };
 
     /**
-     * @class IndexBuffer
+     * @class NxIndexBuffer
      * @brief Abstract class representing an index buffer in the graphics pipeline.
      *
      * An index buffer stores indices into a vertex buffer, allowing for efficient reuse
      * of vertex data. This class provides an abstract interface for creating, binding,
      * and managing index buffers, enabling compatibility with multiple graphics APIs.
      */
-    class IndexBuffer {
+    class NxIndexBuffer {
         public:
             /**
             * @brief Destroys the index buffer.
@@ -297,7 +297,7 @@ namespace nexo::renderer {
             * Usage:
             * - Automatically called when an IndexBuffer object goes out of scope.
             */
-            virtual ~IndexBuffer() = default;
+            virtual ~NxIndexBuffer() = default;
 
             /**
              * @brief Binds the index buffer as the active buffer in the graphics pipeline.
@@ -333,7 +333,7 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            virtual void setData(unsigned int *data, unsigned int size) = 0;
+            virtual void setData(unsigned int *data, size_t size) = 0;
 
             /**
              * @brief Retrieves the number of indices in the index buffer.
@@ -346,9 +346,9 @@ namespace nexo::renderer {
              * Pure Virtual Function:
              * - Must be implemented by platform-specific subclasses.
              */
-            [[nodiscard]] virtual unsigned int getCount() const = 0;
+            [[nodiscard]] virtual size_t getCount() const = 0;
 
-            virtual unsigned int getId() const = 0;
+            [[nodiscard]] virtual unsigned int getId() const = 0;
     };
 
     /**
@@ -363,9 +363,9 @@ namespace nexo::renderer {
      * @return A shared pointer to the created VertexBuffer instance.
      *
      * Throws:
-     * - UnknownGraphicsApi exception if no graphics API is defined.
+     * - NxUnknownGraphicsApi exception if no graphics API is defined.
      */
-    std::shared_ptr<VertexBuffer> createVertexBuffer(float *vertices, unsigned int size);
+    std::shared_ptr<NxVertexBuffer> createVertexBuffer(float *vertices, unsigned int size);
 
     /**
      * @function createVertexBuffer(unsigned int size)
@@ -377,9 +377,9 @@ namespace nexo::renderer {
      * @return A shared pointer to the created VertexBuffer instance.
      *
      * Throws:
-     * - UnknownGraphicsApi exception if no graphics API is defined.
+     * - NxUnknownGraphicsApi exception if no graphics API is defined.
      */
-    std::shared_ptr<VertexBuffer> createVertexBuffer(unsigned int size);
+    std::shared_ptr<NxVertexBuffer> createVertexBuffer(unsigned int size);
 
     /**
      * @function createIndexBuffer()
@@ -391,9 +391,9 @@ namespace nexo::renderer {
      * @return A shared pointer to the created IndexBuffer instance.
      *
      * Throws:
-     * - UnknownGraphicsApi exception if no graphics API is defined.
+     * - NxUnknownGraphicsApi exception if no graphics API is defined.
      */
-    std::shared_ptr<IndexBuffer> createIndexBuffer();
+    std::shared_ptr<NxIndexBuffer> createIndexBuffer();
 
 
 }

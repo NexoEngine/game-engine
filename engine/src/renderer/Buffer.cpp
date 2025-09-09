@@ -13,34 +13,38 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Buffer.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlBuffer.hpp"
 #endif
 
 
 namespace nexo::renderer {
 
-    std::shared_ptr<VertexBuffer> createVertexBuffer(float *vertices, unsigned int size)
+    std::shared_ptr<NxVertexBuffer> createVertexBuffer(float *vertices, unsigned int size)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlVertexBuffer>(vertices, size);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlVertexBuffer>(vertices, size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<VertexBuffer> createVertexBuffer(unsigned int size)
+    std::shared_ptr<NxVertexBuffer> createVertexBuffer(unsigned int size)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlVertexBuffer>(size);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlVertexBuffer>(size);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
-    std::shared_ptr<IndexBuffer> createIndexBuffer()
+    std::shared_ptr<NxIndexBuffer> createIndexBuffer()
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlIndexBuffer>();
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlIndexBuffer>();
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
+
 }

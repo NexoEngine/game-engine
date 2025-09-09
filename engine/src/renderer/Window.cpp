@@ -14,17 +14,19 @@
 
 #include "Window.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlWindow.hpp"
 #endif
 
 namespace nexo::renderer {
-    std::shared_ptr<Window> Window::create(int width, int height, const char *title)
+
+    std::shared_ptr<NxWindow> NxWindow::create(int width, int height, const std::string &title)
     {
-        #ifdef GRAPHICS_API_OPENGL
-            return std::make_shared<OpenGlWindow>(width, height, title);
+        #ifdef NX_GRAPHICS_API_OPENGL
+            return std::make_shared<NxOpenGlWindow>(width, height, title);
+        #else
+            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         #endif
-        THROW_EXCEPTION(UnknownGraphicsApi, "UNKNOWN");
     }
 
 }

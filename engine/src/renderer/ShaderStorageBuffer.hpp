@@ -17,17 +17,17 @@
 #include <memory>
 
 namespace nexo::renderer {
-	class ShaderStorageBuffer {
+	class NxShaderStorageBuffer {
 		public:
-			virtual ~ShaderStorageBuffer() = default;
+			virtual ~NxShaderStorageBuffer() = default;
 
-			static std::shared_ptr<ShaderStorageBuffer> create(unsigned int size);
+			static std::shared_ptr<NxShaderStorageBuffer> create(unsigned int size);
 
 			virtual void bind() const = 0;
 			virtual void bindBase(unsigned int bindingLocation) const = 0;
 			virtual void unbind() const = 0;
 
-			virtual void setData(void *data, unsigned int size) = 0;
+			virtual void setData(void *data, size_t size) = 0;
 			[[nodiscard]] virtual unsigned int getId() const = 0;
 	};
 }

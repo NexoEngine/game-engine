@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <memory>
 #include <functional>
+#include <utility>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -29,13 +30,15 @@ namespace nexo::renderer {
     using MouseClickCallback = std::function<void(int, int, int)>;
     using MouseScrollCallback = std::function<void(double, double)>;
     using MouseMoveCallback = std::function<void(double, double)>;
+    using FileDropCallback = std::function<void(int, const char**)>;
 
-    struct WindowProperty
+    struct NxWindowProperty
     {
         unsigned int width;
         unsigned int height;
-        const char *title;
-        bool vsync{};
+        std::string title;
+        bool vsync = true;
+        bool isDarkMode = false;
 
         ResizeCallback resizeCallback;
         CloseCallback closeCallback;
@@ -43,15 +46,16 @@ namespace nexo::renderer {
         MouseClickCallback mouseClickCallback;
         MouseScrollCallback mouseScrollCallback;
         MouseMoveCallback mouseMoveCallback;
+        FileDropCallback fileDropCallback;
 
-        WindowProperty(const unsigned int w, const unsigned h, const char * t) : width(w), height(h), title(t) {}
+        NxWindowProperty(const unsigned int w, const unsigned h, const std::string &t) : width(w), height(h), title(t) {}
     };
 
     /**
-    * @class Window
+    * @class NxWindow
     * @brief Abstract class for managing window operations in the rendering system.
     *
-    * The `Window` class provides an interface for creating, configuring, and
+    * The `NxWindow` class provides an interface for creating, configuring, and
     * managing a window. It includes support for events like resizing, closing,
     * keyboard input, and mouse interactions.
     *
@@ -60,14 +64,14 @@ namespace nexo::renderer {
     * - Handle window properties such as size, title, and VSync.
     * - Provide event handling through callbacks.
     *
-    * Derived classes (e.g., `OpenGlWindow`) implement platform-specific behavior
+    * Derived classes (e.g., `NxOpenGlWindow`) implement platform-specific behavior
     * for managing windows.
     */
-    class Window {
+    class NxWindow {
         public:
-            Window() = default;
+            NxWindow() = default;
 
-            virtual ~Window() = default;
+            virtual ~NxWindow() = default;
 
             virtual void init() = 0;
             virtual void shutdown() = 0;
@@ -79,6 +83,13 @@ namespace nexo::renderer {
             virtual void getDpiScale(float *x, float *y) const = 0;
 
             virtual void setWindowIcon(const std::filesystem::path& iconPath) = 0;
+
+            virtual void setTitle(const std::string& title) = 0;
+            [[nodiscard]] virtual const std::string& getTitle() const = 0;
+
+            virtual void setDarkMode(bool enabled) = 0;
+            [[nodiscard]] virtual bool isDarkMode() const = 0;
+
             virtual void setVsync(bool enabled) = 0;
             [[nodiscard]] virtual bool isVsync() const = 0;
 
@@ -92,14 +103,14 @@ namespace nexo::renderer {
             * @brief Factory function to create a platform-specific window.
             *
             * Depending on the graphics API (e.g., OpenGL), this function creates an
-            * instance of the corresponding `Window` implementation.
+            * instance of the corresponding `NxWindow` implementation.
             *
             * @param width Initial width of the window.
             * @param height Initial height of the window.
             * @param title Title of the window.
-            * @return A shared pointer to the created `Window` instance.
+            * @return A shared pointer to the created `NxWindow` instance.
             */
-            static std::shared_ptr<Window> create(int width = 1920, int height = 1080, const char *title = "Nexo window");
+            static std::shared_ptr<NxWindow> create(int width = 1920, int height = 1080, const std::string &title = "Nexo window");
 
             virtual void setErrorCallback(void *fctPtr) = 0;
             virtual void setResizeCallback(ResizeCallback callback) = 0;
@@ -108,6 +119,7 @@ namespace nexo::renderer {
             virtual void setMouseClickCallback(MouseClickCallback callback) = 0;
             virtual void setMouseScrollCallback(MouseScrollCallback callback) = 0;
             virtual void setMouseMoveCallback(MouseMoveCallback callback) = 0;
+            virtual void setFileDropCallback(FileDropCallback callback) = 0;
 
             // Linux specific methods
 #ifdef __linux__

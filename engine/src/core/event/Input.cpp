@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Input.hpp"
 #include "renderer/RendererExceptions.hpp"
-#ifdef GRAPHICS_API_OPENGL
+#ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/InputOpenGl.hpp"
 #endif
 
@@ -22,17 +22,16 @@ namespace nexo::event {
 
     std::shared_ptr<Input> Input::_instance = nullptr;
 
-    void Input::init(const std::shared_ptr<renderer::Window>& window)
+    void Input::init(const std::shared_ptr<renderer::NxWindow>& window)
     {
-        if (!_instance)
-        {
-            #ifdef GRAPHICS_API_OPENGL
-                _instance = std::make_shared<InputOpenGl>(window);
-                return;
-            #endif
-            THROW_EXCEPTION(renderer::UnknownGraphicsApi, "UNKNOWN");
-        }
-    }
+        if (_instance)
+            return;
 
+        #ifdef NX_GRAPHICS_API_OPENGL
+            _instance = std::make_shared<InputOpenGl>(window);
+        #else
+            THROW_EXCEPTION(renderer::NxUnknownGraphicsApi, "UNKNOWN");
+        #endif
+    }
 
 }
