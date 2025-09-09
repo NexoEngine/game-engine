@@ -308,13 +308,13 @@ namespace nexo::editor
         if (ImGui::Button("Add Physics Component"))
         {
             PhysicsBodyProperty::addPhysicsComponentToEntity(m_pendingPhysicsEntity, physicsType == 1);
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         ImGui::SameLine();
         if (ImGui::Button("Cancel"))
         {
-            PopupManager::closePopupInContext();
+            PopupManager::closePopup();
         }
 
         PopupManager::closePopup();
