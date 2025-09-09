@@ -142,136 +142,136 @@ namespace nexo::editor
         // }
 
         // Helper function to create and add an entity
-        // auto createAndAddEntity = [&](const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
-        //                               const glm::vec4& color, system::ShapeType shapeType, JPH::EMotionType motionType)
-        // {
-        //     ecs::Entity entity;
-        //     LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
-        //     switch (shapeType)
-        //     {
-        //         case system::ShapeType::Box:
-        //             entity = EntityFactory3D::createCube(pos, size, rotation, color);
-        //             break;
-        //         case system::ShapeType::Sphere:
-        //             entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
-        //             break;
-        //         case system::ShapeType::Cylinder:
-        //             entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
-        //             break;
-        //         case system::ShapeType::Tetrahedron:
-        //             entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
-        //             break;
-        //         case system::ShapeType::Pyramid:
-        //             entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
-        //             break;
-        //         default:
-        //             throw std::runtime_error("Unsupported shape type for entity creation.");
-        //     }
-        //     JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
-        //     if (bodyId.IsInvalid()) {
-        //         LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
-        //     }
-        //     scene.addEntity(entity);
-        //     return entity;
-        // };
-        //
-        // // Balls
-        //
-        // for (int i = 0; i < 50; ++i)
-        // {
-        //     float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
-        //     float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
-        //     glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
-        //     glm::vec4 color = {
-        //         1.0f, dis(gen), dis(gen), 1.0f
-        //     };
-        //     createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
-        //                        JPH::EMotionType::Dynamic);
-        // }
-        // lightsScene(m_sceneId);
-        //
-        // // 9mn
-        // assets::AssetImporter importer;
-        // std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-        // assets::ImporterFileInput fileInput9mn{path9mn};
-        // auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
-        //
-        // // Background
-        // createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        //
-        // // Funnel
-        // createAndAddEntity({-6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        // createAndAddEntity({6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        //
-        // // Spinner
-        // createAndAddEntity({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        //
-        // // Stairs
-        // std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
-        //     {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-        //     {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-        //     {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-        //     {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}
-        // };
-        // for (const auto& [pos, size, rotation, color] : stairs)
-        // {
-        //     createAndAddEntity(pos, size, rotation, color, system::ShapeType::Box, JPH::EMotionType::Static);
-        // }
-        //
-        // // Tunnel
-        // std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
-        //     {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
-        //     {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
-        //     {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
-        // };
-        // for (const auto& [pos, size, rotation] : tunnels)
-        // {
-        //     createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-        // }
-        //
-        // // Dominos
-        // createAndAddEntity({-9.0f, 44.0f, 0.0f}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        // createAndAddEntity({11.15f, 44.0f, 0.0f}, {15.5f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        //
-        // for (int i = 0; i < 24; ++i)
-        // {
-        //     if (i == 13) continue;
-        //     float x = -18.4f + static_cast<float>(i) * 1.6f;
-        //     glm::vec3 pos = {x, 45.5f, 0.0f};
-        //     float gradientFactor = static_cast<float>(i) / 24.0f;
-        //     glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-        //     createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box, JPH::EMotionType::Dynamic);
-        // }
-        //
-        // // Spinner
-        // createAndAddEntity({2.5f, 41.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
-        //                    system::ShapeType::Box, JPH::EMotionType::Static);
-        //
-        // // Fakir
-        // constexpr int totalRows = 20;
-        // constexpr float startX = -14.0f;
-        //
-        // for (int row = 0; row < totalRows; ++row)
-        // {
-        //     constexpr int cols = 10;
-        //     for (int col = 0; col < cols; ++col)
-        //     {
-        //         constexpr float startY = 14.0f;
-        //         constexpr float spacing = 3.0f;
-        //         float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-        //         glm::vec3 pos = {static_cast<float>(col) * spacing + startX + offsetX, startY + static_cast<float>(row) * 1.2f, 0.0f};
-        //         auto maxFactor = static_cast<float>(totalRows * cols);
-        //         float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
-        //         glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-        //         createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
-        //     }
-        // }
+        auto createAndAddEntity = [&](const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                      const glm::vec4& color, system::ShapeType shapeType, JPH::EMotionType motionType)
+        {
+            ecs::Entity entity;
+            LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
+            switch (shapeType)
+            {
+                case system::ShapeType::Box:
+                    entity = EntityFactory3D::createCube(pos, size, rotation, color);
+                    break;
+                case system::ShapeType::Sphere:
+                    entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
+                    break;
+                case system::ShapeType::Cylinder:
+                    entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
+                    break;
+                case system::ShapeType::Tetrahedron:
+                    entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
+                    break;
+                case system::ShapeType::Pyramid:
+                    entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
+                    break;
+                default:
+                    throw std::runtime_error("Unsupported shape type for entity creation.");
+            }
+            JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType, motionType);
+            if (bodyId.IsInvalid()) {
+                LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+            }
+            scene.addEntity(entity);
+            return entity;
+        };
+
+        // Balls
+
+        for (int i = 0; i < 50; ++i)
+        {
+            float x = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            float z = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            glm::vec3 pos = {x, 62.0f + static_cast<float>(i), z};
+            glm::vec4 color = {
+                1.0f, dis(gen), dis(gen), 1.0f
+            };
+            createAndAddEntity(pos, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+                               JPH::EMotionType::Dynamic);
+        }
+        lightsScene(m_sceneId);
+
+        // 9mn
+        assets::AssetImporter importer;
+        std::filesystem::path path9mn = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
+        assets::ImporterFileInput fileInput9mn{path9mn};
+        auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene/"), fileInput9mn);
+
+        // Background
+        createAndAddEntity({0.0f, 40.0f, -2.5f}, {44.0f, 80.0f, 0.5f}, {0, 0, 0}, {0.91f, 0.91f, 0.91f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Funnel
+        createAndAddEntity({-6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+        createAndAddEntity({6.0f, 70.0f, 0.0f}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Spinner
+        createAndAddEntity({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Stairs
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
+            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f,  0.0f,  20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}
+        };
+        for (const auto& [pos, size, rotation, color] : stairs)
+        {
+            createAndAddEntity(pos, size, rotation, color, system::ShapeType::Box, JPH::EMotionType::Static);
+        }
+
+        // Tunnel
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
+            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
+            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
+            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}
+        };
+        for (const auto& [pos, size, rotation] : tunnels)
+        {
+            createAndAddEntity(pos, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+        }
+
+        // Dominos
+        createAndAddEntity({-9.0f, 44.0f, 0.0f}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+        createAndAddEntity({11.15f, 44.0f, 0.0f}, {15.5f, 0.5f, 4.0f}, {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        for (int i = 0; i < 24; ++i)
+        {
+            if (i == 13) continue;
+            float x = -18.4f + static_cast<float>(i) * 1.6f;
+            glm::vec3 pos = {x, 45.5f, 0.0f};
+            float gradientFactor = static_cast<float>(i) / 24.0f;
+            glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+            createAndAddEntity(pos, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box, JPH::EMotionType::Dynamic);
+        }
+
+        // Spinner
+        createAndAddEntity({2.5f, 41.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 0}, {0.0f, 1.0f, 0.0f, 1.0f},
+                           system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Fakir
+        constexpr int totalRows = 20;
+        constexpr float startX = -14.0f;
+
+        for (int row = 0; row < totalRows; ++row)
+        {
+            constexpr int cols = 10;
+            for (int col = 0; col < cols; ++col)
+            {
+                constexpr float startY = 14.0f;
+                constexpr float spacing = 3.0f;
+                float offsetX = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+                glm::vec3 pos = {static_cast<float>(col) * spacing + startX + offsetX, startY + static_cast<float>(row) * 1.2f, 0.0f};
+                auto maxFactor = static_cast<float>(totalRows * cols);
+                float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
+                glm::vec4 color = mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+                createAndAddEntity(pos, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color, system::ShapeType::Cylinder, JPH::EMotionType::Static);
+            }
+        }
     }
 
     void EditorScene::setupWindow()
