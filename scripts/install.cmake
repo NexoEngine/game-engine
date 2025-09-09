@@ -105,3 +105,10 @@ install(DIRECTORY "${CMAKE_BINARY_DIR}/publish/" # source directory
         PATTERN "*.runtimeconfig.json" # select runtimeconfig.json files
         PATTERN "*.deps.json" # select deps.json files
 )
+
+# Install test files
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/tests/editor/"
+        DESTINATION tests/editor
+        FILES_MATCHING # install only matched files
+            PATTERN "*.test" # select header files
+)

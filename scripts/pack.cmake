@@ -19,8 +19,8 @@ project(nexo-pack)
 include("${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.cmake")
 
 # Set the version number
-set(NEXO_VERSION_MAJOR 1)
-set(NEXO_VERSION_MINOR 0)
+set(NEXO_VERSION_MAJOR 0)
+set(NEXO_VERSION_MINOR 2)
 set(NEXO_VERSION_PATCH 0)
 
 # Set the project name
