@@ -55,6 +55,10 @@ namespace nexo::system {
             auto &materialComponent    = coord->getComponent<components::MaterialComponent>(entitySpan[i]);
             auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex++];
             materialComponent.material = currentFrameMaterial;
+
+            if (videoComponent.currentFrameIndex >= videoComponent.nbFrame) {
+                videoComponent.currentFrameIndex = 0; // Loop back to the first frame
+            }
         }
     }
 } // namespace nexo::system
