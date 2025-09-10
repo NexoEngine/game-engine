@@ -331,7 +331,6 @@ namespace nexo {
 				m_lightSystem->update();
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
-        	    m_renderVideoSystem->update();
 				for (auto &camera : renderContext.cameras)
 				    camera.pipeline.execute();
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures
@@ -340,6 +339,7 @@ namespace nexo {
                 
                 if (isInPlayMode()) {
                     m_physicsSystem->update();
+                    m_renderVideoSystem->update();
                 }
 			}
 			if (m_SceneManager.getScene(sceneInfo.id).isActive())
