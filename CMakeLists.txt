@@ -17,13 +17,21 @@ set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})
     set(NEXO_COMPILER_FLAGS_DEBUG -g -Wmissing-field-initializers -Wall -Wextra -Wpedantic)
-    set(NEXO_COMPILER_FLAGS_RELEASE -O3)
+    set(NEXO_COMPILER_FLAGS_RELEASE -O3 -DNDEBUG)
     set(NEXO_COVERAGE_FLAGS -O0 --coverage)
+
+    set(NEXO_LINKER_FLAGS_ALL "")
+    set(NEXO_LINKER_FLAGS_DEBUG "")
+    set(NEXO_LINKER_FLAGS_RELEASE "-flto")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(NEXO_COMPILER_FLAGS_ALL /nologo /W4 /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor /utf-8)
     set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1)
-    set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor)
+    set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor /DNDEBUG /MD)
     set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
+
+    set(NEXO_LINKER_FLAGS_ALL "")
+    set(NEXO_LINKER_FLAGS_DEBUG "")
+    set(NEXO_LINKER_FLAGS_RELEASE "/LTCG")
 else()
     message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}, using default flags")
 endif()
@@ -32,6 +40,12 @@ add_compile_options(
         "${NEXO_COMPILER_FLAGS_ALL}"
         "$<$<CONFIG:Debug>:${NEXO_COMPILER_FLAGS_DEBUG}>"
         "$<$<CONFIG:Release>:${NEXO_COMPILER_FLAGS_RELEASE}>"
+)
+
+add_link_options(
+        "${NEXO_LINKER_FLAGS_ALL}"
+        "$<$<CONFIG:Debug>:${NEXO_LINKER_FLAGS_DEBUG}>"
+        "$<$<CONFIG:Release>:${NEXO_LINKER_FLAGS_RELEASE}>"
 )
 
 # Prevent Visual Studio (or other build tools) from creating per config sub-directories (e.g. Debug, Release)
