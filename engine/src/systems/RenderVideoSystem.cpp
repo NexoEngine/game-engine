@@ -17,6 +17,29 @@
 #include "components/Video.hpp"
 
 namespace nexo::system {
+    int RenderVideoSystem::updateVideoComponent(components::VideoComponent& videoComponent, ecs::Entity entity)
+    {
+        if (!coord->entityHasComponent<components::MaterialComponent>(entity) ||
+            videoComponent.path.empty()) {
+            return 1;
+        }
+        if (!videoComponent.isLoaded) {
+            if (!videoComponent.loadVideoFrames(videoComponent.path)) {
+                LOG_ONCE(NEXO_ERROR, "Failed to load video frames from path: {}", videoComponent.path);
+                return 1;
+            }
+            return 0;
+        }
+
+        videoComponent.updateFrame();
+
+        // update material to current frame
+        auto &materialComponent    = coord->getComponent<components::MaterialComponent>(entity);
+        auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex];
+        materialComponent.material = currentFrameMaterial;
+
+        return 0;
+    }
 
     void RenderVideoSystem::update()
     {
@@ -41,24 +64,16 @@ namespace nexo::system {
         const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         for (size_t i = 0; i < videoSpan.size(); ++i) {
-            auto &videoComponent = videoSpan[i];
-            if (!coord->entityHasComponent<components::MaterialComponent>(entitySpan[i]) ||
-                videoComponent.path.empty()) {
-                continue;
-            }
-            if (videoComponent.frames.empty() && !videoComponent.loadVideoFrames(videoComponent.path)) {
-                LOG_ONCE(NEXO_ERROR, "Failed to load video frames from path: {}", videoComponent.path);
-                continue;
-            }
+            updateVideoComponent(videoSpan[i], entitySpan[i]);
+        }
+    }
 
-            // update material to current frame
-            auto &materialComponent    = coord->getComponent<components::MaterialComponent>(entitySpan[i]);
-            auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex++];
-            materialComponent.material = currentFrameMaterial;
-
-            if (videoComponent.currentFrameIndex >= videoComponent.nbFrame) {
-                videoComponent.currentFrameIndex = 0; // Loop back to the first frame
-            }
+    void RenderVideoSystem::reset()
+    {
+        auto videoSpan                                = get<components::VideoComponent>();
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        for (size_t i = 0; i < videoSpan.size(); ++i) {
+            videoSpan[i].restartVideo();
         }
     }
 } // namespace nexo::system

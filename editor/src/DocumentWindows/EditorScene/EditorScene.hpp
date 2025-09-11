@@ -326,7 +326,8 @@ namespace nexo::editor {
         void updateWindowState();
 
         void handleTimecodeUpdate();
-        void startNextTimecode();
+        void skipVideosToPreviousKeyframe();
+        void skipVideosToNextKeyframe();
 
         /**
          * @brief Creates a new game window or focuses an existing one.
