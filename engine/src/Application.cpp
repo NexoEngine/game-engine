@@ -308,6 +308,7 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
+        static bool areVideoLoaded = false;
        	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (isInPlayMode()) {
@@ -331,6 +332,10 @@ namespace nexo {
 				m_lightSystem->update();
 				m_renderCommandSystem->update();
 				m_renderBillboardSystem->update();
+        	    if (!areVideoLoaded) {
+        	        m_renderVideoSystem->update();
+        	        areVideoLoaded = true;
+        	    }
 				for (auto &camera : renderContext.cameras)
 				    camera.pipeline.execute();
 				// We have to unbind after the whole pipeline since multiple passes can use the same textures
