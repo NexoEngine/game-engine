@@ -175,6 +175,14 @@ namespace nexo::editor {
                 .onPressed([this]{ this->selectAllCallback(); })
                 .build()
         );
+
+        m_globalState.registerCommand(
+            Command::create()
+                .description("Start next timecode")
+                .key("Space")
+                .onPressed([this]{ this->startNextTimecode(); })
+                .build()
+        );
     }
 
     void EditorScene::setupGizmoState()
@@ -263,6 +271,14 @@ namespace nexo::editor {
                         .onPressed([this]{ this->hideAllButSelectionCallback(); })
                         .build()
                 )
+                .build()
+        );
+
+        m_gizmoState.registerCommand(
+            Command::create()
+                .description("Start next timecode")
+                .key("Space")
+                .onPressed([this]{ this->startNextTimecode(); })
                 .build()
         );
     }
