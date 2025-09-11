@@ -132,6 +132,11 @@ namespace nexo::editor
             {1.0f, IM_COL32(50, 50, 100, 230)}
         };
 
+        std::vector<float> m_timecodeSeconds{5.0f, 8.0f, 5.0f, 10.0f};
+        int m_currentTimecodeIndex = 0;
+        bool m_isTimecodeActive = false;
+        float m_timecodeElapsed = 0.0f;
+
         /**
          * @brief Sets the main scene window's view size.
          *
@@ -315,6 +320,9 @@ namespace nexo::editor
         void selectModelChildren(const std::vector<ecs::Entity>& children, bool isCtrlPressed);
         void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
         void updateWindowState();
+ 
+        void handleTimecodeUpdate();
+        void startNextTimecode();
 
         /**
         * @brief Creates a new game window or focuses an existing one.
