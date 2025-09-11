@@ -47,6 +47,7 @@ set(SRCS
         editor/src/DocumentWindows/EditorScene/Shortcuts.cpp
         editor/src/DocumentWindows/EditorScene/Show.cpp
         editor/src/DocumentWindows/EditorScene/Shutdown.cpp
+        editor/src/DocumentWindows/EditorScene/Timecode.cpp
         editor/src/DocumentWindows/EditorScene/Toolbar.cpp
         editor/src/DocumentWindows/EditorScene/Update.cpp
         editor/src/DocumentWindows/EditorScene/DragDrop.cpp

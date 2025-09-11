@@ -191,6 +191,7 @@ namespace nexo::editor {
         sceneInfo.viewportBounds[1] = glm::vec2{m_viewportBounds[1].x, m_viewportBounds[1].y};
         runEngine(sceneInfo);
 
+        handleTimecodeUpdate();
 
         // Handle mouse clicks for selection
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsUsing() && m_focused)
