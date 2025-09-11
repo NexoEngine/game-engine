@@ -26,6 +26,8 @@ namespace nexo::system {
               ecs::NonOwned<ecs::Write<components::MaterialComponent>, ecs::Read<components::SceneTag>>,
               ecs::WriteSingleton<components::RenderContext>> {
        public:
+        static int updateVideoComponent(components::VideoComponent& videoComponent, ecs::Entity entity);
         void update();
+        void reset();
     };
 } // namespace nexo::system

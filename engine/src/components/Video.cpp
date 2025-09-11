@@ -38,10 +38,10 @@ namespace nexo::components {
 
         const unsigned int width  = static_cast<unsigned int>(tmp.cols);
         const unsigned int height = static_cast<unsigned int>(tmp.rows);
-        const size_t byteCount    = tmp.total() * tmp.elemSize();
+        //const size_t byteCount    = tmp.total() * tmp.elemSize();
 
-        std::vector<uint8_t> buffer(byteCount);
-        std::memcpy(buffer.data(), tmp.data, byteCount);
+        //std::vector<uint8_t> buffer(byteCount);
+        //std::memcpy(buffer.data(), tmp.data, byteCount);
 
         renderer::NxTextureFormat format;
         if (tmp.channels() == 1)
@@ -51,7 +51,7 @@ namespace nexo::components {
         else
             format = renderer::NxTextureFormat::RGBA8;
 
-        return std::make_unique<assets::Texture>(buffer.data(), width, height, format);
+        return std::make_unique<assets::Texture>(tmp.data, width, height, format);
     }
 
     bool VideoComponent::loadVideoFrames(const std::string &videoPath)
@@ -96,6 +96,91 @@ namespace nexo::components {
 
         path    = videoPath;
         nbFrame = frameCount;
+        isLoaded = true;
         return true;
+    }
+
+    void VideoComponent::updateFrame()
+    {
+        auto secondsPassed = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - lastFrameTime);
+
+        auto &currentKeyframe = keyframes[currentKeyframeIndex];
+        if (secondsPassed.count() >= (currentKeyframe.end - currentKeyframe.start)) {
+            switch (currentKeyframe.keyframeType) {
+                case KeyframeType::LOOP:
+                    lastFrameTime = std::chrono::high_resolution_clock::now();
+                    setCurrentFrame(static_cast<size_t>(currentKeyframe.start * frameRate));
+                    break;
+                case KeyframeType::TRANSITION:
+                    skipToNextKeyframe();
+                    break;
+                default:
+                    //lastFrameTime = std::chrono::high_resolution_clock::now();
+                    setCurrentFrame(static_cast<size_t>(currentKeyframe.end * frameRate));
+                    break;
+            }
+            return;
+        }
+
+        setCurrentFrame(static_cast<size_t>(secondsPassed.count() * frameRate + currentKeyframe.start * frameRate));
+    }
+
+    void VideoComponent::setCurrentKeyframe(size_t keyframeIndex)
+    {
+        if (keyframeIndex >= keyframes.size()) {
+            if (loopVideo) {
+                currentKeyframeIndex = 0;
+            } else {
+                currentKeyframeIndex = keyframes.size() - 1;
+            }
+            return;
+        }
+        currentKeyframeIndex = keyframeIndex;
+        auto &keyframe       = keyframes[currentKeyframeIndex];
+        currentFrameIndex   = static_cast<size_t>(keyframe.start * frameRate);
+        lastFrameTime       = std::chrono::high_resolution_clock::now();
+    }
+
+    void VideoComponent::setCurrentFrame(size_t frameIndex)
+    {
+        if (frameIndex >= nbFrame) {
+            if (loopVideo) {
+                currentFrameIndex = 0;
+            } else {
+                currentFrameIndex = nbFrame - 1;
+            }
+            return;
+        }
+        currentFrameIndex = frameIndex;
+    }
+
+    void VideoComponent::skipToNextKeyframe()
+    {
+        setCurrentKeyframe(currentKeyframeIndex + 1);
+    }
+
+    void VideoComponent::skipToPreviousKeyframe()
+    {
+        if (currentKeyframeIndex == 0) {
+            if (loopVideo)
+                setCurrentKeyframe(keyframes.size() - 1);
+            return;
+        }
+        auto &previousKeyframe = keyframes[currentKeyframeIndex - 1];
+        if (previousKeyframe.keyframeType == KeyframeType::TRANSITION) {
+            if (currentKeyframeIndex < 2) {
+                if (loopVideo)
+                    setCurrentKeyframe(keyframes.size() - 1);
+                return;
+            }
+            setCurrentKeyframe(currentKeyframeIndex - 2);
+            return;
+        }
+        setCurrentKeyframe(currentKeyframeIndex - 1);
+    }
+
+    void VideoComponent::restartVideo()
+    {
+        setCurrentKeyframe(0);
     }
 } // namespace nexo::components
