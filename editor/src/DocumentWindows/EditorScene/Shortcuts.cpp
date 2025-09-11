@@ -174,9 +174,16 @@ namespace nexo::editor {
 
         m_globalState.registerCommand(
             Command::create()
+                .description("Start previous timecode")
+                .key("Left")
+                .onPressed([this]{ this->skipVideosToPreviousKeyframe(); })
+                .build()
+        );
+        m_globalState.registerCommand(
+            Command::create()
                 .description("Start next timecode")
-                .key("Space")
-                .onPressed([this]{ this->startNextTimecode(); })
+                .key("Right")
+                .onPressed([this]{ this->skipVideosToNextKeyframe(); })
                 .build()
         );
     }
@@ -267,14 +274,6 @@ namespace nexo::editor {
                         .onPressed([this]{ this->hideAllButSelectionCallback(); })
                         .build()
                 )
-                .build()
-        );
-
-        m_gizmoState.registerCommand(
-            Command::create()
-                .description("Start next timecode")
-                .key("Space")
-                .onPressed([this]{ this->startNextTimecode(); })
                 .build()
         );
     }

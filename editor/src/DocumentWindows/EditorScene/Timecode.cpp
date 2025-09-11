@@ -40,16 +40,44 @@ namespace nexo::editor {
         }
     }
 
-    void EditorScene::startNextTimecode()
+    void EditorScene::skipVideosToPreviousKeyframe()
     {
-        if (m_timecodeSeconds.empty() || m_isTimecodeActive) {
-            return;
+        auto& app = getApp();
+        //app.setGameState(nexo::GameState::PLAY_MODE);
+        for (auto &entity : app.m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
+            if (!app.m_coordinator->entityHasComponent<components::SceneTag>(entity)) {
+                continue;
+            }
+            const auto &sceneTag = app.m_coordinator->getComponent<components::SceneTag>(entity);
+            if (sceneTag.id != static_cast<unsigned int>(m_sceneId)) {
+                continue;
+            }
+            auto &videoComponent = app.m_coordinator->getComponent<components::VideoComponent>(entity);
+            videoComponent.skipToPreviousKeyframe();
         }
+    }
 
-        m_isTimecodeActive = true;
-        m_timecodeElapsed = 0.0f;
+    void EditorScene::skipVideosToNextKeyframe()
+    {
+        // if (m_timecodeSeconds.empty() || m_isTimecodeActive) {
+        //     return;
+        // }
+        //
+        // m_isTimecodeActive = true;
+        // m_timecodeElapsed = 0.0f;
         
         auto& app = getApp();
-        app.setGameState(nexo::GameState::PLAY_MODE);
+        //app.setGameState(nexo::GameState::PLAY_MODE);
+        for (auto &entity : app.m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
+            if (!app.m_coordinator->entityHasComponent<components::SceneTag>(entity)) {
+                continue;
+            }
+            const auto &sceneTag = app.m_coordinator->getComponent<components::SceneTag>(entity);
+            if (sceneTag.id != static_cast<unsigned int>(m_sceneId)) {
+                continue;
+            }
+            auto &videoComponent = app.m_coordinator->getComponent<components::VideoComponent>(entity);
+            videoComponent.skipToNextKeyframe();
+        }
     }
 }

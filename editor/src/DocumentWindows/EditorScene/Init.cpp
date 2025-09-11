@@ -277,7 +277,19 @@ namespace nexo::editor
                                                             {3.0f, 3.0f, 3.0f},
                                                             {1.0f, 1.0f, 1.0f, 1.0f});
             components::VideoComponent videoComponent;
-            videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
+
+            videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/WarmUp.mp4").string();
+            videoComponent.keyframes = {
+                {0.0f, 0.1f, components::KeyframeType::NORMAL},
+                {0.0f, 1.953f, components::KeyframeType::TRANSITION},
+                {1.977f, 16.427f, components::KeyframeType::LOOP},
+                {16.466f, 17.021f, components::KeyframeType::TRANSITION},
+                {17.045, 37.747f, components::KeyframeType::LOOP},
+                {37.771f, 38.302f, components::KeyframeType::TRANSITION},
+                {38.326f, 82.762f, components::KeyframeType::LOOP},
+                {82.786f, 84.786f, components::KeyframeType::TRANSITION},
+                {84.810f, 86.810f, components::KeyframeType::NORMAL}
+            };
 
             Application::m_coordinator->addComponent(videoBillboard, videoComponent);
 
