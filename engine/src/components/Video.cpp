@@ -63,6 +63,7 @@ namespace nexo::components {
             return false;
         }
         int frameNumber = static_cast<int>(cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_COUNT)); // Get total
+        frameRate       = cap.get(cv::VideoCaptureProperties::CAP_PROP_FPS);                           // Get FPS
 
         cv::Mat frame;
         frames.reserve(frameNumber);
