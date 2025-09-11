@@ -22,23 +22,62 @@
 namespace nexo::editor {
     void AssetManagerWindow::setup()
     {
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
-            assets::ImporterFileInput fileInput{path};
-            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
-        }
+        // Internal resources
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");
             assets::ImporterFileInput fileInput{path};
             m_folderIcon = importer.importAsset<assets::Texture>(assets::AssetLocation("icon_folder@_internal"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logoNexo.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
+        }
+        // Models
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Avocado@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::SmilingFace@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Sword/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
+        }
+        // Textures
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/grass.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::grass@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/rock.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::rock@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/wood.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::wood@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/dirt.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::dirt@Textures"), fileInput);
         }
         // Register for file drop events
         Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);
