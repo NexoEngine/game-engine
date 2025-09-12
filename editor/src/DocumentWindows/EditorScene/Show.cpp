@@ -175,8 +175,10 @@ namespace nexo::editor
         m_isVisibleInDock = false;
         if (ImGui::Begin(sceneWindowName.c_str(), &m_opened,
                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
-                         ImGuiWindowFlags_NoScrollWithMouse))
+                         ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar))
         {
+            if (ImGui::IsKeyPressed(ImGuiKey_P))
+                showToolbar = !showToolbar;
             const std::string renderName = std::format("{}{}",
                                                        NEXO_WND_USTRID_DEFAULT_SCENE,
                                                        m_sceneId
@@ -200,7 +202,8 @@ namespace nexo::editor
             {
                 renderView();
                 renderGizmo();
-                renderToolbar();
+                if (showToolbar)
+                    renderToolbar();
             }
 
             if (m_popupManager.showPopup("Add new entity popup"))
