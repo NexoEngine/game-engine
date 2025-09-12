@@ -52,6 +52,8 @@ namespace nexo::editor {
          */
         void show() override;
 
+        bool showToolbar = false;
+
         /**
          * @brief Updates the scene by processing input events and rendering the current frame.
          *
@@ -322,7 +324,8 @@ namespace nexo::editor {
         void updateWindowState();
 
         void handleTimecodeUpdate();
-        void startNextTimecode();
+        void skipVideosToPreviousKeyframe();
+        void skipVideosToNextKeyframe();
 
         /**
          * @brief Creates a new game window or focuses an existing one.

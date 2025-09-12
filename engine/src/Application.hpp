@@ -247,7 +247,13 @@ namespace nexo {
 
             // Game state management
             GameState getGameState() const { return m_gameState; }
-            void setGameState(GameState state) { m_gameState = state; }
+            void setGameState(GameState state)
+            {
+                m_gameState = state;
+                if (state == GameState::PLAY_MODE) {
+                    m_renderVideoSystem->reset();
+                }
+            }
             bool isInPlayMode() const { return m_gameState == GameState::PLAY_MODE; }
             bool isInEditorMode() const { return m_gameState == GameState::EDITOR_MODE; }
 
