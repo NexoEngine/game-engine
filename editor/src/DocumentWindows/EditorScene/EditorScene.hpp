@@ -56,6 +56,8 @@ namespace nexo::editor {
          */
         void show() override;
 
+        bool showToolbar = false;
+
         /**
          * @brief Updates the scene by processing input events and rendering the current frame.
          *
