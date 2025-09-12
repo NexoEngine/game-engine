@@ -168,19 +168,7 @@ namespace nexo::editor {
     {
         auto& app = getApp();
 
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-        // Balls
-        for (int i = 0; i < 50; ++i) {
-            float x         = -3.0f + static_cast<float>(i % 5) * 1.5f;
-            float z         = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
-            glm::vec3 pos   = {x, 62.0f + static_cast<float>(i), z};
-            glm::vec4 color = {1.0f, dis(gen), dis(gen), 1.0f};
-            createEntityWithPhysic(pos + offset, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
-                                   JPH::EMotionType::Dynamic);
-        }
 
         // Background
         createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},

@@ -53,6 +53,7 @@ namespace nexo::editor {
         void show() override;
 
         bool showToolbar = false;
+        bool isPhysicsRunning = false;
 
         /**
          * @brief Updates the scene by processing input events and rendering the current frame.
@@ -336,6 +337,8 @@ namespace nexo::editor {
          * and focusing on the next frame.
          */
         void createOrFocusGameWindow();
+
+        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         void lightsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
         void physicScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;

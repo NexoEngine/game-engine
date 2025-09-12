@@ -186,6 +186,13 @@ namespace nexo::editor {
                 .onPressed([this]{ this->skipVideosToNextKeyframe(); })
                 .build()
         );
+        m_globalState.registerCommand(
+            Command::create()
+                .description("Spawn balls")
+                .key("L")
+                .onPressed([this]{ this->spawnBallsScene(glm::vec3{-60.0f, 0.0f, 0.0f}); })
+                .build()
+        );
     }
 
     void EditorScene::setupGizmoState()

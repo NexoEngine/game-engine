@@ -30,7 +30,8 @@ namespace nexo::editor {
     {
         // Create or focus the game window
         auto& editor = Editor::getInstance();
-        const std::string gameWindowName = std::format("Game View - {}{}{}", m_sceneUuid, NEXO_WND_USTRID_GAME_WINDOW, m_sceneId);
+        const std::string gameWindowName =
+            std::format("Game View - {}{}{}", m_sceneUuid, NEXO_WND_USTRID_GAME_WINDOW, m_sceneId);
 
         // Check if game window already exists
         if (const auto gameWindow = editor.getWindow<GameWindow>(gameWindowName).lock()) {
@@ -38,7 +39,7 @@ namespace nexo::editor {
             gameWindow->setOpened(true);
         } else {
             // Get current EditorScene window's dock ID for docking the game window
-            const std::string currentWindowName = m_windowName;
+            const std::string currentWindowName   = m_windowName;
             const ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(currentWindowName.c_str());
 
             if (currentImGuiWindow && currentImGuiWindow->DockId) {
@@ -56,14 +57,30 @@ namespace nexo::editor {
                     newGameWindow->setOpened(true);
 
                     // Schedule dock split for next frame
-                    m_shouldSplitDock = true;
+                    m_shouldSplitDock       = true;
                     m_gameWindowNameToSplit = gameWindowName;
 
                     // Also schedule focus for after the split
                     m_shouldFocusGameWindow = true;
-                    m_gameWindowToFocus = gameWindowName;
+                    m_gameWindowToFocus     = gameWindowName;
                 }
             }
+        }
+    }
+    void EditorScene::spawnBallsScene(const glm::vec3& offset) const
+    {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+        // Balls
+        for (int i = 0; i < 50; ++i) {
+            float x         = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            float z         = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            glm::vec3 pos   = {x, 62.0f + static_cast<float>(i), z};
+            glm::vec4 color = {1.0f, dis(gen), dis(gen), 1.0f};
+            createEntityWithPhysic(pos + offset, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+                                   JPH::EMotionType::Dynamic);
         }
     }
 
