@@ -26,10 +26,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest] # TODO: Add macos-latest later
+        os: [windows-latest, ubuntu-22.04] # TODO: Add macos-latest later
         compiler: [gcc, msvc] # TODO: add clang later
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: gcc
             version: 13
             generator: Ninja
@@ -38,7 +38,7 @@ jobs:
             version: 14
             generator: "Visual Studio 17 2022"
         exclude:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             compiler: msvc
           - os: windows-latest
             compiler: gcc
@@ -63,13 +63,13 @@ jobs:
           detached: true # Run in the background and wait for connection
 
       - name: Add Ubuntu toolchain repository
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'}}
+        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.compiler == 'gcc'}}
         run: |
           sudo add-apt-repository --yes --update ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update
 
       - name: Pre-install GCC with cache
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.compiler == 'gcc' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: cpp-13 g++-13 gcc-13 gcc-13-base libgcc-13-dev libhwasan0 \
@@ -103,7 +103,7 @@ jobs:
           toolset: ${{ matrix.version }}
 
       - name: Install required system dependencies for Ubuntu
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libxrandr-dev libx11-dev
@@ -127,7 +127,7 @@ jobs:
             git submodule update --init --recursive
 
       - name: Install sonar-scanner
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         uses: sonarsource/sonarcloud-github-c-cpp@v3
 
       - name: Install latest CMake and Ninja
@@ -201,14 +201,14 @@ jobs:
           working-directory: 'build'
 
       - name: Collect coverage into XML report for SonarCloud
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           pip install gcovr
           gcovr build --verbose --sonarqube -o coverage.xml --gcov-executable gcov-${{ matrix.version }}
           cat coverage.xml
 
       - name: Run sonar-scanner
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
@@ -250,7 +250,7 @@ jobs:
           cpack -G NSIS --verbose
 
       - name: Generate DEB installer
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         shell: bash
         run: |
           cd build
@@ -338,7 +338,7 @@ jobs:
 
   test-deb-installer:
     name: Test DEB installer
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       DOTNET_INSTALL_DIR: "./.dotnet"
     needs: build
@@ -347,7 +347,7 @@ jobs:
         id: download
         uses: actions/download-artifact@v4
         with:
-          pattern: 'nexo-engine-installer-gcc13-ubuntu-latest'
+          pattern: 'nexo-engine-installer-gcc13-ubuntu-22.04'
 
       - name: Install .NET SDK 9.0
         uses: actions/setup-dotnet@v4
@@ -360,7 +360,7 @@ jobs:
           sudo apt-get update
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-latest/*.deb
+          sudo apt-get -f install ${{steps.download.outputs.download-path}}/nexo-engine-installer-gcc13-ubuntu-22.04/*.deb
 
       - name: Write NEXO run script
         uses: "DamianReeves/write-file-action@master"
