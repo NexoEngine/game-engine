@@ -81,7 +81,11 @@ namespace Nexo
             
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreateSphereDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
-            
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 CreatePointLight(Vector3 position, Vector4 color, Single linear, Single quadratic);
+
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void CreateBodyFromShapeDelegate(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
             
@@ -122,6 +126,7 @@ namespace Nexo
             public CreatePyramidDelegate NxCreatePyramid;
             public CreateCylinderDelegate NxCreateCylinder;
             public CreateSphereDelegate NxCreateSphere;
+            public CreatePointLight NxCreatePointLight;
             public CreateBodyFromShapeDelegate NxCreateBodyFromShape;
             public ApplyForceDelegate NxApplyForce;
             public GetTransformDelegate NxGetTransform;
@@ -268,6 +273,19 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling CreateCube: {ex.Message}");
+                return UInt32.MaxValue;
+            }
+        }
+
+        public static UInt32 CreatePointLight(in Vector3 position, in Vector4 color, Single linear = 0.01f, Single quadratic = 0.0010f)
+        {
+            try
+            {
+                return s_callbacks.NxCreatePointLight.Invoke(position, color, linear, quadratic);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling CreatePointLight: {ex.Message}");
                 return UInt32.MaxValue;
             }
         }
