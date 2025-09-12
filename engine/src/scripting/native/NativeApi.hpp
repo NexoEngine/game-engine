@@ -100,6 +100,8 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) NxCreatePyramid(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
         NEXO_RET(ecs::Entity) NxCreateCylinder(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
         NEXO_RET(ecs::Entity) NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
+
+        NEXO_RET(ecs::Entity) NxCreatePointLight(Vector3 position, Vector4 color, float linear, float quadratic);
         
         // Physics functions
         NEXO_RET(void) NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
@@ -118,6 +120,8 @@ namespace nexo::scripting {
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4)> NxCreatePyramid{&scripting::NxCreatePyramid};
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateCylinder{&scripting::NxCreateCylinder};
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateSphere{&scripting::NxCreateSphere};
+
+        ApiCallback<ecs::Entity(Vector3, Vector4, float, float)> NxCreatePointLight{&scripting::NxCreatePointLight};
         
         // Physics callbacks
         ApiCallback<void(ecs::Entity, Vector3, Vector3, Vector3, UInt32, UInt32)> NxCreateBodyFromShape{&scripting::NxCreateBodyFromShape};

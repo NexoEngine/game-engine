@@ -38,6 +38,16 @@ public class CubeSystem : SystemBase
     }
 
     private readonly List<UInt32> _cubes = [];
+    private readonly List<UInt32> _lights = [];
+    private readonly List<Vector4> _colors = new(){
+         new Vector4(1.0f, 0.0f, 1.0f, 1.0f), // Magenta
+         new Vector4(0.0f, 0.0f, 1.0f, 1.0f), // Blue
+         new Vector4(1.0f, 0.5f, 0.0f, 1.0f), // Orange
+         new Vector4(0.0f, 1.0f, 0.0f, 1.0f), // Green
+         new Vector4(1.0f, 1.0f, 0.0f, 1.0f)  // Yellow
+     };
+    private static int _colorIndex = 0;
+    private static bool _spawnLightOrCube = true;
     
     protected override void OnInitialize(WorldState worldState)
     {
@@ -56,7 +66,7 @@ public class CubeSystem : SystemBase
         // Circling cube effect
         float speed = 1.0f;
         float radius = 7.0f;
-        Vector3 origin = new Vector3(0, 5, 0);
+        Vector3 origin = new Vector3(50, 5, 50);
         
         state.Angle += speed * deltaTime;
         if (state.Angle > MathF.PI * 2.0f)
@@ -83,6 +93,29 @@ public class CubeSystem : SystemBase
         
         transform.size.Z = startScale + ((MathF.Sin(state.BreathingPhase) * 0.5f + 0.5f) * (endScale - startScale));
     }
+
+    private void MoveLight(UInt32 lightId, Single deltaTime)
+    {
+        ref Transform transform = ref NativeInterop.GetComponent<Transform>(lightId);
+        ref CubeAnimationState state = ref NativeInterop.GetComponent<CubeAnimationState>(lightId);
+
+        // Circling light effect
+        float speed = 1.0f;
+        float radius = 7.0f;
+        Vector3 origin = new Vector3(0, 5, 0);
+
+        state.Angle += speed * deltaTime;
+        if (state.Angle > MathF.PI * 2.0f)
+        {
+            state.Angle -= MathF.PI * 2.0f;
+        }
+
+        transform.pos = origin + new Vector3(
+            MathF.Cos(state.Angle) * radius,
+            0,
+            MathF.Sin(state.Angle) * radius
+        );
+    }
     
     private void SpawnCube(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color)
     {
@@ -97,10 +130,25 @@ public class CubeSystem : SystemBase
         NativeInterop.AddComponent<TestComponent>(cubeId, ref testComponent);
         _cubes.Add(cubeId);
     }
+
+    private void SpawnLight(Vector3 position, Vector4 color)
+    {
+        var lightId = NativeInterop.CreatePointLight(position, color);
+        var state = new CubeAnimationState
+        {
+            Angle = Random.Shared.NextSingle() * MathF.PI * 2.0f,
+            BreathingPhase = Random.Shared.NextSingle() * MathF.PI * 2.0f
+        };
+        NativeInterop.AddComponent<CubeAnimationState>(lightId, ref state);
+        _lights.Add(lightId);
+    }
     
     protected override void OnUpdate(WorldState worldState)
     {
         Single deltaTime = (Single)worldState.Time.DeltaTime;
+
+        Byte maxCubes = 10;
+        Byte maxLights = 5;
         
         // If 2 seconds have passed since last spawn, spawn a new cube
         if (worldState.Time.TotalTime % 2.0 < deltaTime)
@@ -114,18 +162,39 @@ public class CubeSystem : SystemBase
                 Random.Shared.NextSingle(),
                 1.0f
             );
-            SpawnCube(position, size, rotation, color);
+
+            if (_spawnLightOrCube)
+            {
+                if (_lights.Count < maxLights)
+                {
+                    SpawnLight(position, _colors[_colorIndex]);
+                    _colorIndex = (_colorIndex + 1) % _colors.Count;
+                }
+            } else
+            {
+                if (_cubes.Count < maxCubes)
+                {
+                    SpawnCube(position, size, rotation, color);
+                }
+            }
+            Logger.Log(LogLevel.Info, $"Spawned new {(_spawnLightOrCube ? "light" : "cube")}, total cubes: {_cubes.Count}, total lights: {_lights.Count}");
+            _spawnLightOrCube ^= true;
         }
         
         foreach (var cubeId in _cubes)
         {
             MoveCube(cubeId, deltaTime);
         }
+        foreach (var lightId in _lights)
+        {
+            MoveLight(lightId, deltaTime);
+        }
     }
     
     protected override void OnShutdown(WorldState worldState)
     {
         _cubes.Clear();
+        _lights.Clear();
         Logger.Log(LogLevel.Info, $"Shutting down {Name} system");
     }
     

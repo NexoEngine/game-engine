@@ -15,13 +15,16 @@
 #include <iostream>
 
 #include "NativeApi.hpp"
+
+#include <LightFactory.hpp>
+
 #include "EntityFactory3D.hpp"
 #include "Logger.hpp"
 #include "Nexo.hpp"
-#include "components/Uuid.hpp"
 #include "components/PhysicsBodyComponent.hpp"
-#include "ui/Field.hpp"
+#include "components/Uuid.hpp"
 #include "systems/PhysicsSystem.hpp"
+#include "ui/Field.hpp"
 
 namespace nexo::scripting {
 
@@ -47,6 +50,14 @@ namespace nexo::scripting {
 
         void NxLog(UInt32 level, const char *message) {
             LOG(static_cast<LogLevel>(level), "[Scripting] {}", message);
+        }
+
+        ecs::Entity NxCreatePointLight(const Vector3 position, const Vector4 color, const float linear, const float quadratic)
+        {
+            auto& app = Application::getInstance();
+            const ecs::Entity pointLight = LightFactory::createPointLight(position, color, linear, quadratic);
+            app.getSceneManager().getScene(0).addEntity(pointLight);
+            return pointLight;
         }
 
         ecs::Entity NxCreateCube(const Vector3 position, const Vector3 size, const Vector3 rotation, const Vector4 color)
