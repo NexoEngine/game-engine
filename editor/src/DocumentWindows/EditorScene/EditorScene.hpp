@@ -65,6 +65,8 @@ namespace nexo::editor {
         bool showToolbar      = true;
         bool isPhysicsRunning = false;
 
+        bool showToolbar = false;
+
         /**
          * @brief Updates the scene by processing input events and rendering the current frame.
          *
