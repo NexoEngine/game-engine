@@ -95,7 +95,7 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened,
-                     ImGuiWindowFlags_MenuBar);
+                     ImGuiWindowFlags_NoTitleBar);
 
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
 

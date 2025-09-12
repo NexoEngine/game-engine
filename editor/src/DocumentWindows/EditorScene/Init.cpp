@@ -278,17 +278,32 @@ namespace nexo::editor
                                                             {1.0f, 1.0f, 1.0f, 1.0f});
             components::VideoComponent videoComponent;
 
-            videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/WarmUp.mp4").string();
+            videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/vfevr.mp4").string();
             videoComponent.keyframes = {
                 {0.0f, 0.1f, components::KeyframeType::NORMAL},
-                {0.0f, 1.953f, components::KeyframeType::TRANSITION},
-                {1.977f, 16.427f, components::KeyframeType::LOOP},
-                {16.466f, 17.021f, components::KeyframeType::TRANSITION},
-                {17.045, 37.747f, components::KeyframeType::LOOP},
-                {37.771f, 38.302f, components::KeyframeType::TRANSITION},
-                {38.326f, 82.762f, components::KeyframeType::LOOP},
-                {82.786f, 84.786f, components::KeyframeType::TRANSITION},
-                {84.810f, 86.810f, components::KeyframeType::NORMAL}
+                {0.1f, 1.25f, components::KeyframeType::TRANSITION},
+                {1.25f, 16.15f, components::KeyframeType::LOOP},
+                {16.15f, 17.0f, components::KeyframeType::TRANSITION},
+                {17.0f, 37.23f, components::KeyframeType::LOOP},
+                {37.23f, 38.07f, components::KeyframeType::TRANSITION},
+                {38.07f, 82.27f, components::KeyframeType::LOOP},
+                {82.27, 84.25f, components::KeyframeType::TRANSITION},
+                {84.25f, 85.0f, components::KeyframeType::LOOP},
+                {85.0f, 87.03f, components::KeyframeType::TRANSITION},
+                {87.03f, 95.18f, components::KeyframeType::LOOP},
+                {95.18f, 97.18f, components::KeyframeType::TRANSITION},
+                {97.18f, 99.17f, components::KeyframeType::TRANSITION},
+                {99.17f, 128.11f, components::KeyframeType::LOOP},
+                {128.11f, 130.08f, components::KeyframeType::TRANSITION},
+                {130.08f, 137.22f, components::KeyframeType::LOOP},
+                {137.22f, 139.16f, components::KeyframeType::TRANSITION},
+                {139.16f, 150.00f, components::KeyframeType::LOOP},
+                {150.00f, 152.13f, components::KeyframeType::TRANSITION},
+                {152.13f, 183.21f, components::KeyframeType::LOOP},
+                {183.21f, 185.26f, components::KeyframeType::TRANSITION},
+                {185.26f, 202.19f, components::KeyframeType::LOOP},
+                {202.19f, 204.25f, components::KeyframeType::TRANSITION},
+                {204.25f, 232.05f, components::KeyframeType::LOOP},
             };
 
             Application::m_coordinator->addComponent(videoBillboard, videoComponent);
