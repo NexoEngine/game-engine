@@ -311,6 +311,13 @@ namespace nexo::editor {
                              const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
 
         /**
+         * @brief Create entities with adapted physic component
+         */
+        void createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                    const glm::vec4& color, system::ShapeType shapeType,
+                                    JPH::EMotionType motionType) const;
+
+        /**
          * @brief Renders the toolbar overlay within the main scene view.
          *
          * This method uses ImGui to display a toolbar that includes buttons for switching between orthographic and
