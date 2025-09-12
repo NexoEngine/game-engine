@@ -16,19 +16,17 @@
 #include <imgui.h>
 #include <ImGuizmo.h>
 
+#include "../PopupManager.hpp"
 #include "ADocumentWindow.hpp"
 #include "Definitions.hpp"
-#include "inputs/WindowState.hpp"
-#include "core/scene/SceneManager.hpp"
-#include "../PopupManager.hpp"
-#include "ImNexo/Widgets.hpp"
 #include "DocumentWindows/AssetManager/AssetManagerWindow.hpp"
+#include "ImNexo/Widgets.hpp"
+#include "core/scene/SceneManager.hpp"
+#include "inputs/WindowState.hpp"
 
-namespace nexo::editor
-{
-    class EditorScene final : public ADocumentWindow
-    {
-    public:
+namespace nexo::editor {
+    class EditorScene final : public ADocumentWindow {
+       public:
         using ADocumentWindow::ADocumentWindow;
 
         /**
@@ -58,30 +56,34 @@ namespace nexo::editor
          * @brief Updates the scene by processing input events and rendering the current frame.
          *
          * This function handles key events and updates the scene by executing the rendering engine in framebuffer mode.
-         * It processes left mouse clicks when the scene view is focused and ImGuizmo is not active. The mouse position is
-         * adjusted relative to the viewport and its y-coordinate is flipped to match OpenGL's texture format. If the click
-         * falls within valid bounds and corresponds to a valid entity (pixel value not equal to -1), the entity is selected
-         * and the SceneViewManager is notified of the active scene; otherwise, any existing selection is cleared.
+         * It processes left mouse clicks when the scene view is focused and ImGuizmo is not active. The mouse position
+         * is adjusted relative to the viewport and its y-coordinate is flipped to match OpenGL's texture format. If the
+         * click falls within valid bounds and corresponds to a valid entity (pixel value not equal to -1), the entity
+         * is selected and the SceneViewManager is notified of the active scene; otherwise, any existing selection is
+         * cleared.
          *
          * The update is skipped entirely if the scene window is not open.
          */
         void update() override;
 
         /**
-      * @brief Retrieves the unique identifier of the scene.
-      *
-      * @return scene::SceneId The identifier of this scene.
-      */
-        [[nodiscard]] scene::SceneId getSceneId() const { return m_sceneId; };
+         * @brief Retrieves the unique identifier of the scene.
+         *
+         * @return scene::SceneId The identifier of this scene.
+         */
+        [[nodiscard]] scene::SceneId getSceneId() const
+        {
+            return m_sceneId;
+        };
 
         /**
-        * @brief Sets the active camera for this scene.
-        *
-        * Deactivates the current camera and switches to the specified camera entity.
-        * The previously active camera will have its render and active flags set to false.
-        *
-        * @param cameraId Entity ID of the camera to set as active.
-        */
+         * @brief Sets the active camera for this scene.
+         *
+         * Deactivates the current camera and switches to the specified camera entity.
+         * The previously active camera will have its render and active flags set to false.
+         *
+         * @param cameraId Entity ID of the camera to set as active.
+         */
         void setCamera(ecs::Entity cameraId);
 
         /**
@@ -90,19 +92,22 @@ namespace nexo::editor
          * When a scene is set as the default, it will be populated with
          * default entities (lights, basic geometry) during setup.
          */
-        void setDefault() { m_defaultScene = true; };
+        void setDefault()
+        {
+            m_defaultScene = true;
+        };
 
-    private:
+       private:
         bool m_defaultScene = false;
         ImVec2 m_viewportBounds[2];
         ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;
-        ImGuizmo::MODE m_currentGizmoMode = ImGuizmo::WORLD;
-        bool m_snapTranslateOn = false;
-        glm::vec3 m_snapTranslate = {10.0f, 10.0f, 10.0f};
-        bool m_snapRotateOn = false;
-        float m_angleSnap = 90.0f;
-        bool m_snapToGrid = false;
-        bool m_wireframeEnabled = false;
+        ImGuizmo::MODE m_currentGizmoMode           = ImGuizmo::WORLD;
+        bool m_snapTranslateOn                      = false;
+        glm::vec3 m_snapTranslate                   = {10.0f, 10.0f, 10.0f};
+        bool m_snapRotateOn                         = false;
+        float m_angleSnap                           = 90.0f;
+        bool m_snapToGrid                           = false;
+        bool m_wireframeEnabled                     = false;
 
         ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;
 
@@ -113,10 +118,8 @@ namespace nexo::editor
 
         PopupManager m_popupManager;
 
-        const std::vector<ImNexo::GradientStop> m_buttonGradient = {
-            {0.0f, IM_COL32(50, 50, 70, 230)},
-            {1.0f, IM_COL32(30, 30, 45, 230)}
-        };
+        const std::vector<ImNexo::GradientStop> m_buttonGradient = {{0.0f, IM_COL32(50, 50, 70, 230)},
+                                                                    {1.0f, IM_COL32(30, 30, 45, 230)}};
 
         // Game window focus scheduling
         bool m_shouldFocusGameWindow = false;
@@ -127,15 +130,13 @@ namespace nexo::editor
         std::string m_gameWindowNameToSplit;
 
         // Selected button gradient - lighter blue gradient
-        const std::vector<ImNexo::GradientStop> m_selectedGradient = {
-            {0.0f, IM_COL32(70, 70, 120, 230)},
-            {1.0f, IM_COL32(50, 50, 100, 230)}
-        };
+        const std::vector<ImNexo::GradientStop> m_selectedGradient = {{0.0f, IM_COL32(70, 70, 120, 230)},
+                                                                      {1.0f, IM_COL32(50, 50, 100, 230)}};
 
         std::vector<float> m_timecodeSeconds{5.0f, 8.0f, 5.0f, 10.0f};
         int m_currentTimecodeIndex = 0;
-        bool m_isTimecodeActive = false;
-        float m_timecodeElapsed = 0.0f;
+        bool m_isTimecodeActive    = false;
+        float m_timecodeElapsed    = 0.0f;
 
         /**
          * @brief Sets the main scene window's view size.
@@ -165,19 +166,27 @@ namespace nexo::editor
         void setupShortcuts();
 
         /**
-        * @brief Populates the scene with default entities.
-        *
-        * Creates standard light sources (ambient, directional, point, spot)
-        * and a simple ground plane in the scene.
-        */
+         * @brief Populates the scene with default entities.
+         *
+         * Creates standard light sources (ambient, directional, point, spot)
+         * and a simple ground plane in the scene.
+         */
         void loadDefaultEntities() const;
+
+        /**
+         * @brief Create entities with adapted physic component
+         */
+        void createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                    const glm::vec4& color, system::ShapeType shapeType,
+                                    JPH::EMotionType motionType) const;
 
         /**
          * @brief Renders the toolbar overlay within the main scene view.
          *
-         * This method uses ImGui to display a toolbar that includes buttons for switching between orthographic and perspective camera modes,
-         * a popup placeholder for adding primitive entities, and a draggable input for adjusting the target frames per second (FPS).
-         * The toolbar is positioned relative to the current view to align with the scene layout.
+         * This method uses ImGui to display a toolbar that includes buttons for switching between orthographic and
+         * perspective camera modes, a popup placeholder for adding primitive entities, and a draggable input for
+         * adjusting the target frames per second (FPS). The toolbar is positioned relative to the current view to align
+         * with the scene layout.
          */
         void renderToolbar();
 
@@ -210,11 +219,8 @@ namespace nexo::editor
          * @param inactiveGizmoMode Reference to store the inactive mode button properties
          * @return true if the button was clicked
          */
-        bool renderGizmoModeToolbarButton(
-            bool showGizmoModeMenu,
-            ImNexo::ButtonProps& activeGizmoMode,
-            ImNexo::ButtonProps& inactiveGizmoMode
-        );
+        bool renderGizmoModeToolbarButton(bool showGizmoModeMenu, ImNexo::ButtonProps& activeGizmoMode,
+                                          ImNexo::ButtonProps& inactiveGizmoMode);
 
         /**
          * @brief Renders the primitive creation dropdown menu.
@@ -263,13 +269,10 @@ namespace nexo::editor
          * @param rightClicked Optional pointer to track right-click events
          * @return true if the button was clicked
          */
-        static bool renderToolbarButton(
-            const std::string& uniqueId,
-            const std::string& icon,
-            const std::string& tooltip,
-            const std::vector<ImNexo::GradientStop>& gradientStop,
-            bool* rightClicked = nullptr
-        );
+        static bool renderToolbarButton(const std::string& uniqueId, const std::string& icon,
+                                        const std::string& tooltip,
+                                        const std::vector<ImNexo::GradientStop>& gradientStop,
+                                        bool* rightClicked = nullptr);
 
         ImGuizmo::OPERATION getLastGuizmoOperation();
 
@@ -288,11 +291,8 @@ namespace nexo::editor
         void setupGizmoContext(const components::CameraComponent& camera) const;
         float* getSnapSettingsForOperation(ImGuizmo::OPERATION operation);
         static void captureInitialTransformStates(const std::vector<int>& entities);
-        static void applyTransformToEntities(
-            ecs::Entity sourceEntity,
-            const glm::mat4& oldWorldMatrix,
-            const glm::mat4& newWorldMatrix,
-            const std::vector<int>& targetEntities) ;
+        static void applyTransformToEntities(ecs::Entity sourceEntity, const glm::mat4& oldWorldMatrix,
+                                             const glm::mat4& newWorldMatrix, const std::vector<int>& targetEntities);
         static void createTransformUndoActions(const std::vector<int>& entities);
         static bool s_wasUsingGizmo;
         static ImGuizmo::OPERATION s_lastOperation;
@@ -311,38 +311,35 @@ namespace nexo::editor
 
         void handleSelection();
         void handleDropTarget();
-        void handleDropModel(const AssetDragDropPayload &payload) const;
-        void handleDropTexture(const AssetDragDropPayload &payload) const;
-        void handleDropMaterial(const AssetDragDropPayload &payload) const;
-        int sampleEntityTexture(float mx, float my) const;
+        void handleDropModel(const AssetDragDropPayload& payload) const;
+        void handleDropTexture(const AssetDragDropPayload& payload) const;
+        void handleDropMaterial(const AssetDragDropPayload& payload) const;
+        [[nodiscard]] int sampleEntityTexture(float mx, float my) const;
         static ecs::Entity findRootParent(ecs::Entity entityId);
         void selectEntityHierarchy(ecs::Entity entityId, bool isCtrlPressed);
         void selectModelChildren(const std::vector<ecs::Entity>& children, bool isCtrlPressed);
         void updateSelection(int entityId, bool isShiftPressed, bool isCtrlPressed);
         void updateWindowState();
- 
+
         void handleTimecodeUpdate();
         void startNextTimecode();
 
         /**
-        * @brief Creates a new game window or focuses an existing one.
-        *
-        * Checks if a game window for the current scene already exists. If it does,
-        * makes it visible and focuses it. Otherwise, creates a new game window,
-        * configures it with the scene ID and UUID, and schedules it for docking
-        * and focusing on the next frame.
-        */
+         * @brief Creates a new game window or focuses an existing one.
+         *
+         * Checks if a game window for the current scene already exists. If it does,
+         * makes it visible and focuses it. Otherwise, creates a new game window,
+         * configures it with the scene ID and UUID, and schedules it for docking
+         * and focusing on the next frame.
+         */
         void createOrFocusGameWindow();
 
-        enum class EditorState
-        {
-            GLOBAL,
-            GIZMO,
-            GIZMO_TRANSLATE,
-            GIZMO_ROTATE,
-            GIZMO_SCALE,
-            NB_STATE
-        };
+        void lightsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void physicScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void videoScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void forestScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+
+        enum class EditorState { GLOBAL, GIZMO, GIZMO_TRANSLATE, GIZMO_ROTATE, GIZMO_SCALE, NB_STATE };
 
         WindowState m_globalState;
         WindowState m_gizmoState;
@@ -350,4 +347,4 @@ namespace nexo::editor
         WindowState m_gizmoRotateState;
         WindowState m_gizmoScaleState;
     };
-}
+} // namespace nexo::editor
