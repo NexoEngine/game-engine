@@ -46,9 +46,11 @@ namespace nexo::editor {
         framebufferSpecs.height      = static_cast<unsigned int>(m_contentSize.y);
         const auto renderTarget      = renderer::NxFramebuffer::create(framebufferSpecs);
         m_editorCamera               = static_cast<int>(
-            CameraFactory::createPerspectiveCamera({0.0f, 36.0f, 25.0f}, static_cast<unsigned int>(m_contentSize.x),
+            CameraFactory::createPerspectiveCamera({-14.51f, 7.41f, 2.46f}, static_cast<unsigned int>(m_contentSize.x),
                                                                  static_cast<unsigned int>(m_contentSize.y), renderTarget));
         auto& cameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
+        auto & transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(m_editorCamera);
+        transformComponent.quat = glm::quat(glm::radians(glm::vec3{-56.90f, 18.90f, 0.0f}));
         cameraComponent.render = true;
         auto maskPass          = std::make_shared<renderer::MaskPass>(static_cast<unsigned int>(m_contentSize.x),
                                                              static_cast<unsigned int>(m_contentSize.y));
