@@ -86,10 +86,10 @@ namespace nexo::editor {
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
             // loadDefaultEntities();
-            // physicScene(glm::vec3{40.0f, 0.0f, 0.0f});
-            lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            // forestScene({0.0f, 1.0f, 0.0f});
+            forestScene({100.0f, 1.0f, 0.0f});
         }
     }
 
