@@ -272,7 +272,7 @@ namespace nexo::editor {
         auto videoBillboard =
             EntityFactory3D::createBillboard({0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
         components::VideoComponent videoComponent;
-        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/WarmUp.mp4").string();
+        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
         videoComponent.keyframes = {
             {0.0f, 0.1f, components::KeyframeType::NORMAL},
             {0.1f, 1.25f, components::KeyframeType::TRANSITION},
