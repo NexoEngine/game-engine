@@ -106,83 +106,6 @@ namespace nexo::editor {
         }
     }
 
-    void EditorScene::createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
-                                             const glm::vec4& color, system::ShapeType shapeType,
-                                             const JPH::EMotionType motionType) const
-    {
-        auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-
-        ecs::Entity entity;
-        LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
-
-        using enum nexo::system::ShapeType;
-        switch (shapeType) {
-            case Box:
-                entity = EntityFactory3D::createCube(pos, size, rotation, color);
-            break;
-            case Sphere:
-                entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
-            break;
-            case Cylinder:
-                entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
-            break;
-            case Tetrahedron:
-                entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
-            break;
-            case Pyramid:
-                entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
-            break;
-            default:
-                THROW_EXCEPTION(UnsupportedEntityShapeType);
-        }
-
-        const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
-            entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType,
-            motionType);
-        if (bodyId.IsInvalid()) {
-            THROW_EXCEPTION(InvalidBodyId, entity);
-        }
-        scene.addEntity(entity);
-    }
-
-    void EditorScene::addModelToScene(const std::string& modelPath, const glm::vec3& position, const glm::vec3& scale,
-                                      const glm::vec3& rotation) const
-    {
-        auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
-
-        const assets::AssetLocation model(modelPath);
-        const auto modelAssetRef = catalog.getAsset(model).as<assets::Model>();
-        const ecs::Entity entity = EntityFactory3D::createModel(modelAssetRef, position, scale, rotation);
-
-        scene.addEntity(entity);
-    }
-
-    void EditorScene::setupWindow()
-    {
-        m_contentSize = ImVec2(1280, 720);
-    }
-
-    void EditorScene::setCamera(const ecs::Entity cameraId)
-    {
-        auto& oldCameraComponent =
-            Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
-        oldCameraComponent.active = false;
-        oldCameraComponent.render = false;
-        m_activeCamera            = static_cast<int>(cameraId);
-        auto& newCameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
-        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
-                                  static_cast<unsigned int>(m_contentSize.y));
-    }
-
-    void EditorScene::loadDefaultEntities()
-    {
-        // This function is empty because it is used to load default entities for testing purposes.
-        // Examples scenes are now in their own functions.
-    }
-
     void EditorScene::lightsScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
@@ -209,18 +132,16 @@ namespace nexo::editor {
             scene.addEntity(light);
         }
 
-        const auto base =
-            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {25.0f, 0.7f, 25.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
+        const auto base = EntityFactory3D::createCube( {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
+                                                 {25.0f, 0.7f, 25.0f}, {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
         scene.addEntity(base);
 
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
 
         const assets::AssetLocation rubixCubeModel("my_package::RubixCube@Models");
         const auto rubixCubeAssetRef = catalog.getAsset(rubixCubeModel).as<assets::Model>();
-        auto rubixCube =
-            EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
-                                         {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
+        auto rubixCube = EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
+                                                  {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
         scene.addEntity(rubixCube);
 
         const assets::AssetLocation planeModel("my_package::Plane@Models");
@@ -232,7 +153,7 @@ namespace nexo::editor {
         const assets::AssetLocation cupModel("my_package::Cup@Models");
         const auto cupAssetRef = catalog.getAsset(cupModel).as<assets::Model>();
         auto cup = EntityFactory3D::createModel(cupAssetRef, {7.0f + offset.x, 0.3f + offset.y, 1.6f + offset.z},
-                                                {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
+                                                  {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
         scene.addEntity(cup);
 
         const assets::AssetLocation earthModel("my_package::Earth@Models");
@@ -254,96 +175,15 @@ namespace nexo::editor {
         scene.addEntity(sword);
     }
 
-    void EditorScene::physicScene(const glm::vec3& offset) const
-    {
-        // Background
-        createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
-                               {0.91f, 0.91f, 0.91f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Funnel left and right
-        createEntityWithPhysic({-6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f},
-                               {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                               JPH::EMotionType::Static);
-        createEntityWithPhysic({6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f},
-                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Stairs right
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
-            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f, 0.0f, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}};
-        for (const auto& [pos, size, rotation, color] : stairs) {
-            createEntityWithPhysic(pos + offset, size, rotation, color, system::ShapeType::Box,
-                                   JPH::EMotionType::Static);
-        }
-
-        // Tunnel left
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
-            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
-            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
-            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}};
-        for (const auto& [pos, size, rotation] : tunnels) {
-            createEntityWithPhysic(pos + offset, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                                   JPH::EMotionType::Static);
-        }
-        // Dominos left and right
-        createEntityWithPhysic({-9.0f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f},
-                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-        createEntityWithPhysic({11.15f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {15.5f, 0.5f, 4.0f},
-                               {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                               JPH::EMotionType::Static);
-
-        for (int i = 0; i < 24; ++i) {
-            if (i == 13) continue;
-            const float x              = -18.4f + static_cast<float>(i) * 1.6f;
-            glm::vec3 pos              = {x, 45.5f, 0.0f};
-            const float gradientFactor = static_cast<float>(i) / 24.0f;
-            glm::vec4 color =
-                mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-            createEntityWithPhysic(pos + offset, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box,
-                                   JPH::EMotionType::Dynamic);
-        }
-
-        // Fakir
-        constexpr int totalRows = 20;
-        constexpr float startX  = -14.0f;
-
-        for (int row = 0; row < totalRows; ++row) {
-            constexpr int cols = 10;
-            for (int col = 0; col < cols; ++col) {
-                constexpr float startY     = 14.0f;
-                constexpr float spacing    = 3.0f;
-                const float offsetX        = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-                glm::vec3 pos              = {static_cast<float>(col) * spacing + startX + offsetX,
-                                              startY + static_cast<float>(row) * 1.2f, 0.0f};
-                constexpr auto maxFactor   = static_cast<float>(totalRows * cols);
-                const float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
-                glm::vec4 color =
-                    mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-                createEntityWithPhysic(pos + offset, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color,
-                                       system::ShapeType::Cylinder, JPH::EMotionType::Static);
-            }
-        }
-    }
-
     void EditorScene::videoScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        const auto videoBillboard = EntityFactory3D::createBillboard(
-            {0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
+        auto videoBillboard =
+            EntityFactory3D::createBillboard({0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
         components::VideoComponent videoComponent;
-        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
-        videoComponent.keyframes = {
-            {0.0f, 1.0f, components::KeyframeType::NORMAL},
-            {1.0f, 2.0f, components::KeyframeType::NORMAL},
-            {2.0f, 3.0f, components::KeyframeType::NORMAL},
-            {3.0f, 4.0f, components::KeyframeType::NORMAL},
-            {4.0f, 5.0f, components::KeyframeType::LOOP},
-            {5.0f, 6.0f, components::KeyframeType::NORMAL},
-        };
+        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
 
         Application::m_coordinator->addComponent(videoBillboard, videoComponent);
 
@@ -355,28 +195,101 @@ namespace nexo::editor {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        const auto floor = EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
+        auto floor = EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
                                                  {20.0f, 1.0f, 20.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
-        scene.addEntity(floor);
+        components::VideoComponent videoComponent;
+        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
 
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
         const assets::AssetLocation grassTexture("my_package::grass@Textures");
         const auto grassAssetRef = catalog.getAsset(grassTexture).as<assets::Texture>();
-        const auto& materialComp       = nexo::Application::m_coordinator->getComponent<components::MaterialComponent>(floor);
-        const auto materialAssetRef             = materialComp.material;
-        const auto materialAsset                = materialAssetRef.lock();
+        auto &materialComp = app.m_coordinator->getComponent<components::MaterialComponent>(floor);
+        const auto materialAssetRef = materialComp.material;
+        const auto materialAsset = materialAssetRef.lock();
         materialAsset->getData()->albedoTexture = grassAssetRef;
 
-        addModelToScene("my_package::Frog@Models", {0.0f + offset.x, 1.0f + offset.y, 0.0f + offset.z},
-                        {0.5f, 0.5f, 0.5f});
+        const assets::AssetLocation frogModel("my_package::Frog@Models");
+        const auto frogAssetRef = catalog.getAsset(frogModel).as<assets::Model>();
+        auto frog = EntityFactory3D::createModel(frogAssetRef, {0.0f + offset.x, 1.0f + offset.y, 0.0f + offset.z},
+                                                 {0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 0.0f});
 
-        addModelToScene("my_package::Tree@Models", {5.0f + offset.x, 0.5f + offset.y, -3.0f + offset.z},
-                        {2.44f, 2.44f, 2.44f});
+        const assets::AssetLocation treeModel("my_package::Tree@Models");
+        const auto treeAssetRef = catalog.getAsset(treeModel).as<assets::Model>();
+        auto tree = EntityFactory3D::createModel(treeAssetRef, {5.0f + offset.x, 0.5f + offset.y, -3.0f + offset.z},
+                                                 {2.44f, 2.44f, 2.44f}, {0.0f, 0.0f, 0.0f});
 
-        addModelToScene("my_package::Bench@Models", {-6.0f + offset.x, 2.0f + offset.y, -6.5f + offset.z});
+        const assets::AssetLocation benchModel("my_package::Bench@Models");
+        const auto benchAssetRef = catalog.getAsset(benchModel).as<assets::Model>();
+        auto bench = EntityFactory3D::createModel(benchAssetRef, {-6.0f + offset.x, 2.0f + offset.y, -6.5f + offset.z},
+                                                  {1.0f, 1.0f, 1.0f}, {0.0f, 180.0f, 0.0f});
 
-        addModelToScene("my_package::Log@Models", {-5.0f + offset.x, 0.5f + offset.y, 5.0f + offset.z},
-                        {2.3f, 2.3f, 2.3f});
+        const assets::AssetLocation logModel("my_package::Log@Models");
+        const auto logAssetRef = catalog.getAsset(logModel).as<assets::Model>();
+        auto log = EntityFactory3D::createModel(logAssetRef, {-5.0f + offset.x, 0.5f + offset.y, 5.0f + offset.z},
+                                                  {2.3f, 2.3f, 2.3f}, {0.0f, -40.0f, 0.0f});
+
+        scene.addEntity(floor);
+        scene.addEntity(frog);
+        scene.addEntity(tree);
+        scene.addEntity(bench);
+        scene.addEntity(log);
+    }
+
+    void EditorScene::createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                             const glm::vec4& color, system::ShapeType shapeType,
+                                             const JPH::EMotionType motionType) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+
+        ecs::Entity entity;
+        LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
+        switch (shapeType) {
+            case system::ShapeType::Box:
+                entity = EntityFactory3D::createCube(pos, size, rotation, color);
+                break;
+            case system::ShapeType::Sphere:
+                entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
+                break;
+            case system::ShapeType::Cylinder:
+                entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
+                break;
+            case system::ShapeType::Tetrahedron:
+                entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
+                break;
+            case system::ShapeType::Pyramid:
+                entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
+                break;
+            default:
+                throw std::runtime_error("Unsupported shape type for entity creation.");
+        }
+        const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
+            entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType,
+            motionType);
+        if (bodyId.IsInvalid()) {
+            LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+        }
+        scene.addEntity(entity);
+    }
+
+    void EditorScene::loadDefaultEntities() const
+    {}
+
+    void EditorScene::setupWindow()
+    {
+        m_contentSize = ImVec2(1280, 720);
+    }
+
+    void EditorScene::setCamera(const ecs::Entity cameraId)
+    {
+        auto& oldCameraComponent =
+            Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        oldCameraComponent.active = false;
+        oldCameraComponent.render = false;
+        m_activeCamera            = static_cast<int>(cameraId);
+        auto& newCameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
+                                  static_cast<unsigned int>(m_contentSize.y));
     }
 
 } // namespace nexo::editor

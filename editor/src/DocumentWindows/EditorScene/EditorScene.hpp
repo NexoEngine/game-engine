@@ -277,38 +277,11 @@ namespace nexo::editor {
         static void loadDefaultEntities();
 
         /**
-         * @brief Creates a physics-enabled entity in the scene.
-         *
-         * This method creates an entity with a mesh, material, transform, and physics components
-         * based on the provided parameters. The entity is added to the current scene and configured
-         * with the specified position, size, rotation, color, shape type, and motion type.
-         *
-         * @param pos The position of the entity in world space.
-         * @param size The size (scale) of the entity.
-         * @param rotation The rotation of the entity in Euler angles (degrees).
-         * @param color The color of the entity as a glm::vec4 (RGBA).
-         * @param shapeType The shape type for the physics collider (e.g., box, sphere).
-         * @param motionType The motion type for the physics body (e.g., static, dynamic).
+         * @brief Create entities with adapted physic component
          */
         void createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
                                     const glm::vec4& color, system::ShapeType shapeType,
                                     JPH::EMotionType motionType) const;
-
-        /**
-         * @brief Adds a 3D model to the scene at the specified position, scale, and rotation.
-         *
-         * This method creates an entity with a model component using the provided model path,
-         * and sets its transform based on the given position, scale, and rotation. The entity
-         * is then added to the current scene.
-         *
-         * @param modelPath The file path to the 3D model asset.
-         * @param position The position of the model in world space.
-         * @param scale The scale of the model.
-         * @param rotation The rotation of the model in Euler angles (degrees).
-         */
-        void addModelToScene(const std::string& modelPath, const glm::vec3& position,
-                             const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
-                             const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Renders the toolbar overlay within the main scene view.
@@ -673,16 +646,6 @@ namespace nexo::editor {
          * and focusing on the next frame.
          */
         void createOrFocusGameWindow();
-
-        /** @brief Spawns a scene with multiple balls for physics testing.
-         *
-         * Creates a grid of sphere entities with physics properties, arranged in
-         * a 5x5x5 formation. Each sphere is given a random color and positioned
-         * based on the provided offset.
-         *
-         * @param offset A glm::vec3 representing the positional offset to apply to all spheres.
-         */
-        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Creates a scene with multiple light sources.
