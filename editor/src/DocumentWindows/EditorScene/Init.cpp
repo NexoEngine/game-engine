@@ -272,32 +272,36 @@ namespace nexo::editor {
         auto videoBillboard =
             EntityFactory3D::createBillboard({0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
         components::VideoComponent videoComponent;
-        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
+        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/Warmup.mp4").string();
         videoComponent.keyframes = {
             {0.0f, 0.1f, components::KeyframeType::NORMAL},
-            {0.1f, 1.25f, components::KeyframeType::TRANSITION},
+            {0.01f, 1.25f, components::KeyframeType::TRANSITION},
             {1.25f, 16.15f, components::KeyframeType::LOOP},
-            {16.15f, 17.0f, components::KeyframeType::TRANSITION},
-            {17.0f, 37.23f, components::KeyframeType::LOOP},
+            {16.15f, 17.00f, components::KeyframeType::TRANSITION},
+            {17.00f, 37.23f, components::KeyframeType::LOOP},
             {37.23f, 38.07f, components::KeyframeType::TRANSITION},
             {38.07f, 82.27f, components::KeyframeType::LOOP},
-            {82.27, 84.25f, components::KeyframeType::TRANSITION},
-            {84.25f, 85.0f, components::KeyframeType::LOOP},
-            {85.0f, 87.03f, components::KeyframeType::TRANSITION},
-            {87.03f, 95.18f, components::KeyframeType::LOOP},
-            {95.18f, 97.18f, components::KeyframeType::TRANSITION},
-            {97.18f, 99.17f, components::KeyframeType::TRANSITION},
-            {99.17f, 128.11f, components::KeyframeType::LOOP},
-            {128.11f, 130.08f, components::KeyframeType::TRANSITION},
-            {130.08f, 137.22f, components::KeyframeType::LOOP},
-            {137.22f, 139.16f, components::KeyframeType::TRANSITION},
-            {139.16f, 150.00f, components::KeyframeType::LOOP},
-            {150.00f, 152.13f, components::KeyframeType::TRANSITION},
-            {152.13f, 183.21f, components::KeyframeType::LOOP},
-            {183.21f, 185.26f, components::KeyframeType::TRANSITION},
-            {185.26f, 202.19f, components::KeyframeType::LOOP},
-            {202.19f, 204.25f, components::KeyframeType::TRANSITION},
-            {204.25f, 232.05f, components::KeyframeType::LOOP},
+            {82.27f, 84.25f, components::KeyframeType::TRANSITION},
+            {84.25f, 85.00f, components::KeyframeType::NORMAL},
+            {85.00f, 87.03f, components::KeyframeType::TRANSITION},
+            {87.03f, 95.15f, components::KeyframeType::LOOP},
+            {95.15f, 97.15f, components::KeyframeType::TRANSITION},
+            {97.15f, 109.13f, components::KeyframeType::LOOP},
+            {109.13f, 111.07f, components::KeyframeType::TRANSITION},
+            {111.07f, 140.04f, components::KeyframeType::LOOP},
+            {138.07f, 140.04f, components::KeyframeType::TRANSITION},
+            {142.01f, 149.15f, components::KeyframeType::LOOP},
+            {149.15f, 151.09f, components::KeyframeType::TRANSITION},
+            {151.09f, 161.53f, components::KeyframeType::LOOP},
+            {161.53f, 164.06f, components::KeyframeType::TRANSITION},
+            {164.06f, 195.14f, components::KeyframeType::LOOP},
+            {195.14f, 197.19f, components::KeyframeType::TRANSITION},
+            {197.19f, 214.12f, components::KeyframeType::LOOP},
+            {214.12f, 216.18f, components::KeyframeType::TRANSITION},
+            {216.18f, 243.81f, components::KeyframeType::LOOP},
+            {243.81f, 245.81f, components::KeyframeType::TRANSITION},
+            {245.81f, 262.00f, components::KeyframeType::NORMAL},
+
         };
 
         Application::m_coordinator->addComponent(videoBillboard, videoComponent);
@@ -312,8 +316,6 @@ namespace nexo::editor {
 
         auto floor = EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
                                                  {20.0f, 1.0f, 20.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
-        components::VideoComponent videoComponent;
-        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
 
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
         const assets::AssetLocation grassTexture("my_package::grass@Textures");
