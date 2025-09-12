@@ -165,6 +165,7 @@ namespace nexo::editor {
                                           .onPressed([this] { this->selectAllCallback(); })
                                           .build());
 
+<<<<<<< HEAD
         // Video timecode navigation
         m_globalState.registerCommand(Command::create()
                                           .description("Start previous timecode")
@@ -185,6 +186,29 @@ namespace nexo::editor {
                                               this->spawnBallsScene(glm::vec3{-60.0f, 0.0f, 0.0f});
                                           })
                                           .build());
+=======
+        m_globalState.registerCommand(
+            Command::create()
+                .description("Start previous timecode")
+                .key("Left")
+                .onPressed([this]{ this->skipVideosToPreviousKeyframe(); })
+                .build()
+        );
+        m_globalState.registerCommand(
+            Command::create()
+                .description("Start next timecode")
+                .key("Right")
+                .onPressed([this]{ this->skipVideosToNextKeyframe(); })
+                .build()
+        );
+        m_globalState.registerCommand(
+            Command::create()
+                .description("Spawn balls")
+                .key("L")
+                .onPressed([this]{ this->spawnBallsScene(glm::vec3{-60.0f, 0.0f, 0.0f}); })
+                .build()
+        );
+>>>>>>> 48d37ed4 (feat(demo): physics ball spawn by pressing L)
     }
 
     void EditorScene::setupGizmoState()

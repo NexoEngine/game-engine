@@ -256,6 +256,13 @@ namespace nexo::editor {
 
     void EditorScene::physicScene(const glm::vec3& offset) const
     {
+<<<<<<< HEAD
+=======
+        auto& app = getApp();
+
+
+
+>>>>>>> 48d37ed4 (feat(demo): physics ball spawn by pressing L)
         // Background
         createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
                                {0.91f, 0.91f, 0.91f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);

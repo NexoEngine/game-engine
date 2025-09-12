@@ -692,6 +692,10 @@ namespace nexo::editor {
          *
          * @param offset Position offset to apply to all lights.
          */
+=======
+        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+
+>>>>>>> 48d37ed4 (feat(demo): physics ball spawn by pressing L)
         void lightsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
