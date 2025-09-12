@@ -66,7 +66,7 @@ public class CubeSystem : SystemBase
         // Circling cube effect
         float speed = 1.0f;
         float radius = 7.0f;
-        Vector3 origin = new Vector3(50, 5, 50);
+        Vector3 origin = new Vector3(50.0f, 5.0f, 0.0f);
         
         state.Angle += speed * deltaTime;
         if (state.Angle > MathF.PI * 2.0f)
@@ -102,7 +102,7 @@ public class CubeSystem : SystemBase
         // Circling light effect
         float speed = 1.0f;
         float radius = 7.0f;
-        Vector3 origin = new Vector3(0, 5, 0);
+        Vector3 origin = new Vector3(50.0f, 5.0f, 0.0f);
 
         state.Angle += speed * deltaTime;
         if (state.Angle > MathF.PI * 2.0f)
