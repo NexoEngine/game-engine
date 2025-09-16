@@ -60,7 +60,6 @@ namespace nexo::editor {
                     newGameWindow->setup();
                     newGameWindow->setOpened(true);
 
-<<<<<<< HEAD
                     // Split the dock and attach the new game window
                     const std::string editorWindowFullName = std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
                     m_windowRegistry.splitDockAndAttachWindow(
@@ -69,11 +68,6 @@ namespace nexo::editor {
                         ImGuiDir_Right,
                         0.5f
                     );
-=======
-                    // Schedule dock split for next frame
-                    m_shouldSplitDock       = true;
-                    m_gameWindowNameToSplit = gameWindowName;
->>>>>>> 2e6de346 (feat(demo): physics ball spawn by pressing L)
 
                     // Schedule focus for the new window
                     m_shouldFocusGameWindow = true;
@@ -560,11 +554,11 @@ namespace nexo::editor {
 
         auto& app = getApp();
         const bool isPlaying = app.getGameState() == nexo::GameState::PLAY_MODE;
-        
+
         const char* icon = isPlaying ? ICON_FA_STOP : ICON_FA_PLAY;
         const char* tooltip = isPlaying ? "Stop scene" : "Play scene";
         const auto& gradient = isPlaying ? m_selectedGradient : m_buttonGradient;
-        
+
         if (renderToolbarButton("play_stop", icon, tooltip, gradient))
         {
             if (isPlaying) {
