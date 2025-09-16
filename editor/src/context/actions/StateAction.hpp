@@ -13,10 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Action.hpp"
-
 #include <memory>
 #include <functional>
+#include "Action.hpp"
 
 namespace nexo::editor {
 
@@ -48,5 +47,4 @@ namespace nexo::editor {
             typename T::Memento m_beforeState;
             typename T::Memento m_afterState;
     };
-
 }

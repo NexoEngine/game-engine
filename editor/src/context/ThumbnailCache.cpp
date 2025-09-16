@@ -108,7 +108,8 @@ namespace nexo::editor {
         return createTextureThumbnail(textureRef, size);
     }
 
-    unsigned int ThumbnailCache::getModelThumbnail(const assets::AssetRef<assets::Model>& modelRef, const glm::vec2& size)
+    unsigned int ThumbnailCache::getModelThumbnail(const assets::AssetRef<assets::Model>& modelRef,
+                                                   const glm::vec2& size)
     {
         if (!modelRef.isValid()) return 0;
 
@@ -196,10 +197,10 @@ namespace nexo::editor {
         utils::ScenePreviewOut previewInfo;
 
         const ecs::Entity previewEntity =
-            EntityFactory3D::createModel(modelRef,                          // model
-                                         glm::vec3(0.0f, 0.0f, 0.0f),   // position
-                                         glm::vec3(1.0f),                // size
-                                         glm::vec3(0.0f, 0.0f, 0.0f)    // rotation - angled for better lighting
+            EntityFactory3D::createModel(modelRef,                    // model
+                                         glm::vec3(0.0f, 0.0f, 0.0f), // position
+                                         glm::vec3(1.0f),             // size
+                                         glm::vec3(0.0f, 0.0f, 0.0f)  // rotation - angled for better lighting
             );
 
         genScenePreview("Material_Thumbnail", size, previewEntity, previewInfo);

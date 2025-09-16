@@ -13,26 +13,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "actions/Action.hpp"
 #include <memory>
 #include <vector>
+#include "actions/Action.hpp"
 
 namespace nexo::editor {
 
     /**
-    * Groups multiple actions into a single undoable action
-    */
+     * Groups multiple actions into a single undoable action
+     */
     class ActionGroup final : public Action {
-        public:
-            ActionGroup() = default;
+       public:
+        ActionGroup() = default;
 
-            void addAction(std::unique_ptr<Action> action);
-            [[nodiscard]] bool hasActions() const;
-            void redo() override;
-            void undo() override;
+        void addAction(std::unique_ptr<Action> action);
+        [[nodiscard]] bool hasActions() const;
+        void redo() override;
+        void undo() override;
 
-        private:
-            std::vector<std::unique_ptr<Action>> actions;
+       private:
+        std::vector<std::unique_ptr<Action>> actions;
     };
 
-}
+} // namespace nexo::editor

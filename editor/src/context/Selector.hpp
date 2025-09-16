@@ -15,10 +15,10 @@
 
 #include "ecs/Coordinator.hpp"
 
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <optional>
 
 namespace nexo::editor {
 
@@ -43,7 +43,7 @@ namespace nexo::editor {
      * entity UUID to UI handle mappings for consistent labeling in the interface.
      */
     class Selector {
-    public:
+       public:
         /**
          * @brief Gets the primary selected entity
          *
@@ -53,28 +53,28 @@ namespace nexo::editor {
          *
          * @return int The entity ID of the primary selection, or -1 if no entity is selected
          */
-        int getPrimaryEntity() const;
+        [[nodiscard]] int getPrimaryEntity() const;
 
         /**
          * @brief Gets all selected entities
          *
          * @return const std::vector<int>& A reference to the vector of all selected entity IDs
          */
-        const std::vector<int>& getSelectedEntities() const;
+        [[nodiscard]] const std::vector<int>& getSelectedEntities() const;
 
         /**
          * @brief Gets the UUID of the primary entity
          *
          * @return const std::string& The UUID of the primary entity
          */
-        const std::string& getPrimaryUuid() const;
+        [[nodiscard]] const std::string& getPrimaryUuid() const;
 
         /**
          * @brief Gets all selected entity UUIDs
          *
          * @return std::vector<std::string> Vector containing UUIDs of all selected entities
          */
-        std::vector<std::string> getSelectedUuids() const;
+        [[nodiscard]] std::vector<std::string> getSelectedUuids() const;
 
         /**
          * @brief Selects a single entity, replacing the current selection
@@ -128,7 +128,7 @@ namespace nexo::editor {
          *
          * @return int The entity ID of the selected scene, or -1 if no scene is selected
          */
-        int getSelectedScene() const;
+        [[nodiscard]] int getSelectedScene() const;
 
         /**
          * @brief Clears the current entity selection
@@ -142,7 +142,7 @@ namespace nexo::editor {
          * @return true If the entity is selected
          * @return false If the entity is not selected
          */
-        bool isEntitySelected(int entity) const;
+        [[nodiscard]] bool isEntitySelected(int entity) const;
 
         /**
          * @brief Checks if any entity is currently selected
@@ -150,16 +150,16 @@ namespace nexo::editor {
          * @return true If at least one entity is selected
          * @return false If no entities are selected
          */
-        bool hasSelection() const;
+        [[nodiscard]] bool hasSelection() const;
 
         /**
          * @brief Gets the primary selection type
          *
          * @return SelectionType The type of the primary selected entity
          */
-        SelectionType getPrimarySelectionType() const;
+        [[nodiscard]] SelectionType getPrimarySelectionType() const;
 
-        SelectionType getSelectionType(int entity) const;
+        [[nodiscard]] SelectionType getSelectionType(int entity) const;
 
         /**
          * @brief Sets the selection type (only applied to subsequent selections)
@@ -188,32 +188,35 @@ namespace nexo::editor {
          */
         void setUiHandle(const std::string& uuid, std::string_view handle);
 
-        static Selector& get() {
+        static Selector& get()
+        {
             static Selector instance;
             return instance;
         }
 
-    private:
+       private:
         // Selection data
         struct SelectionData {
             int entityId;
             std::string uuid;
             SelectionType type;
         };
-        std::vector<SelectionData> m_selectedEntities;  // Ordered list of selected entities
-        std::unordered_set<int> m_selectedEntityIds;    // Set for quick lookups
+        std::vector<SelectionData> m_selectedEntities; // Ordered list of selected entities
+        std::unordered_set<int> m_selectedEntityIds;   // Set for quick lookups
 
-        int m_selectedScene = -1;
+        int m_selectedScene                  = -1;
         SelectionType m_defaultSelectionType = SelectionType::ENTITY;
 
         struct TransparentHasher {
             using is_transparent = void; // Marks this hasher as transparent for heterogeneous lookup
 
-            size_t operator()(std::string_view key) const noexcept {
+            size_t operator()(std::string_view key) const noexcept
+            {
                 return std::hash<std::string_view>{}(key);
             }
 
-            size_t operator()(const std::string& key) const noexcept {
+            size_t operator()(const std::string& key) const noexcept
+            {
                 return std::hash<std::string>{}(key);
             }
         };
@@ -223,4 +226,4 @@ namespace nexo::editor {
         static void addSelectedTag(int entity);
         static void removeSelectedTag(int entity);
     };
-}
+} // namespace nexo::editor

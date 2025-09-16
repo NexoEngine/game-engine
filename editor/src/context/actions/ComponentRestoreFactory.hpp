@@ -13,15 +13,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <any>
+#include <memory>
 #include "Action.hpp"
 #include "ecs/Definitions.hpp"
-#include <memory>
-#include <any>
-#include <typeindex>
 
 namespace nexo::editor {
     class ComponentRestoreFactory {
-        public:
-            static std::unique_ptr<Action> createRestoreComponent(ecs::Entity entity, const std::any& typeIndex);
+       public:
+        static std::unique_ptr<Action> createRestoreComponent(ecs::Entity entity, const std::any& typeIndex);
     };
-}
+} // namespace nexo::editor

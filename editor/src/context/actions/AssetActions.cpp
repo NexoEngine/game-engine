@@ -13,24 +13,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetActions.hpp"
+#include <utility>
 #include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor {
 
-    AssetMoveAction::AssetMoveAction(assets::AssetID assetId,
-                                   const std::string& fromPath,
-                                   const std::string& toPath)
-        : m_assetId(assetId), m_fromPath(fromPath), m_toPath(toPath) {}
+    AssetMoveAction::AssetMoveAction(const assets::AssetID assetId, std::string fromPath, std::string toPath)
+        : m_assetId(assetId), m_fromPath(std::move(fromPath)), m_toPath(std::move(toPath))
+    {}
 
     void AssetMoveAction::redo()
     {
-        auto& catalog = assets::AssetCatalog::getInstance();
+        const auto& catalog = assets::AssetCatalog::getInstance();
         catalog.moveAsset(m_assetId, m_toPath);
     }
 
     void AssetMoveAction::undo()
     {
-        auto& catalog = assets::AssetCatalog::getInstance();
+        const auto& catalog = assets::AssetCatalog::getInstance();
         catalog.moveAsset(m_assetId, m_fromPath);
     }
 

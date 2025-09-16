@@ -19,20 +19,18 @@ namespace nexo::editor {
 
     void EntityCreationAction::redo()
     {
-        const auto &coordinator = Application::m_coordinator;
-        m_entityId = coordinator->createEntity();
+        const auto& coordinator = Application::m_coordinator;
+        m_entityId              = coordinator->createEntity();
 
-        for (const auto &action : m_componentRestoreActions)
-            action->undo();
+        for (const auto& action : m_componentRestoreActions) action->undo();
     }
 
     void EntityCreationAction::undo()
     {
-        const auto &coordinator = Application::m_coordinator;
+        const auto& coordinator                          = Application::m_coordinator;
         const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
-        for (const auto &typeIndex : componentsTypeIndex) {
-            if (!coordinator->supportsMementoPattern(typeIndex))
-                continue;
+        for (const auto& typeIndex : componentsTypeIndex) {
+            if (!coordinator->supportsMementoPattern(typeIndex)) continue;
             m_componentRestoreActions.push_back(ComponentRestoreFactory::createRestoreComponent(m_entityId, typeIndex));
         }
         coordinator->destroyEntity(m_entityId);
@@ -40,19 +38,17 @@ namespace nexo::editor {
 
     EntityDeletionAction::EntityDeletionAction(const ecs::Entity entityId) : m_entityId(entityId)
     {
-        const auto &coordinator = Application::m_coordinator;
+        const auto& coordinator                          = Application::m_coordinator;
         const std::vector<std::any>& componentsTypeIndex = coordinator->getAllComponents(m_entityId);
-        for (const auto &typeIndex : componentsTypeIndex) {
-             if (!coordinator->supportsMementoPattern(typeIndex))
-                continue;
+        for (const auto& typeIndex : componentsTypeIndex) {
+            if (!coordinator->supportsMementoPattern(typeIndex)) continue;
             auto typeId = std::type_index(typeIndex.type());
             if (typeId == typeid(components::ParentComponent)) {
                 auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(entityId);
                 if (parentOpt.has_value()) {
                     ecs::Entity oldParent = parentOpt->get().parent;
                     m_componentRestoreActions.push_back(
-                        std::make_unique<EntityParentChangeAction>(entityId, oldParent, ecs::INVALID_ENTITY)
-                    );
+                        std::make_unique<EntityParentChangeAction>(entityId, oldParent, ecs::INVALID_ENTITY));
                 }
                 continue;
             }
@@ -64,10 +60,10 @@ namespace nexo::editor {
     {
         // Simply destroy the entity
         const auto& coordinator = Application::m_coordinator;
-        auto parentOpt = coordinator->tryGetComponent<components::ParentComponent>(m_entityId);
+        auto parentOpt          = coordinator->tryGetComponent<components::ParentComponent>(m_entityId);
         if (parentOpt.has_value()) {
-            ecs::Entity oldParent = parentOpt->get().parent;
-            auto parentTransformOpt = coordinator->tryGetComponent<components::TransformComponent>(oldParent);
+            const ecs::Entity oldParent   = parentOpt->get().parent;
+            const auto parentTransformOpt = coordinator->tryGetComponent<components::TransformComponent>(oldParent);
             if (parentTransformOpt.has_value()) {
                 parentTransformOpt->get().removeChild(m_entityId);
             }
@@ -78,9 +74,8 @@ namespace nexo::editor {
     void EntityDeletionAction::undo()
     {
         const auto& coordinator = Application::m_coordinator;
-        m_entityId = coordinator->createEntity();
-        for (const auto &action : m_componentRestoreActions)
-            action->undo();
+        m_entityId              = coordinator->createEntity();
+        for (const auto& action : m_componentRestoreActions) action->undo();
     }
 
     void EntityParentChangeAction::redo()
@@ -162,12 +157,11 @@ namespace nexo::editor {
         }
     }
 
-    EntityHierarchyDeletionAction::EntityHierarchyDeletionAction(ecs::Entity rootEntity)
-    : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
+    EntityHierarchyDeletionAction::EntityHierarchyDeletionAction(const ecs::Entity rootEntity)
+        : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
     {
         std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
-
-            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            const auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
             if (transformOpt) {
                 for (const auto& child : transformOpt->get().children) {
                     collectActions(child);
@@ -176,7 +170,7 @@ namespace nexo::editor {
                 }
             }
 
-            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            const auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
             if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
                 ecs::Entity parent = parentOpt->get().parent;
                 m_parentRelations.emplace_back(entity, parent);
@@ -188,19 +182,21 @@ namespace nexo::editor {
         collectActions(rootEntity);
     }
 
-    void EntityHierarchyDeletionAction::redo() {
+    void EntityHierarchyDeletionAction::redo()
+    {
         m_group->redo();
     }
 
-    void EntityHierarchyDeletionAction::undo() {
+    void EntityHierarchyDeletionAction::undo()
+    {
         m_group->undo();
     }
 
-    EntityHierarchyCreationAction::EntityHierarchyCreationAction(ecs::Entity rootEntity)
+    EntityHierarchyCreationAction::EntityHierarchyCreationAction(const ecs::Entity rootEntity)
         : m_root(rootEntity), m_group(std::make_unique<ActionGroup>())
     {
         std::function<void(ecs::Entity)> collectActions = [&](ecs::Entity entity) {
-            auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
+            const auto transformOpt = Application::m_coordinator->tryGetComponent<components::TransformComponent>(entity);
             if (transformOpt) {
                 for (const auto& child : transformOpt->get().children) {
                     collectActions(child);
@@ -209,7 +205,7 @@ namespace nexo::editor {
                 }
             }
 
-            auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
+            const auto parentOpt = Application::m_coordinator->tryGetComponent<components::ParentComponent>(entity);
             if (parentOpt && parentOpt->get().parent != ecs::INVALID_ENTITY) {
                 ecs::Entity parent = parentOpt->get().parent;
                 m_parentRelations.emplace_back(entity, parent);
@@ -222,20 +218,19 @@ namespace nexo::editor {
 
         for (const auto& [child, parent] : m_parentRelations) {
             if (parent != ecs::INVALID_ENTITY) {
-                m_group->addAction(std::make_unique<EntityParentChangeAction>(
-                    child, ecs::INVALID_ENTITY, parent));
+                m_group->addAction(std::make_unique<EntityParentChangeAction>(child, ecs::INVALID_ENTITY, parent));
             }
         }
     }
 
-    void EntityHierarchyCreationAction::redo() {
+    void EntityHierarchyCreationAction::redo()
+    {
         m_group->redo();
     }
 
-    void EntityHierarchyCreationAction::undo() {
+    void EntityHierarchyCreationAction::undo()
+    {
         m_group->undo();
     }
 
-
-
-}
+} // namespace nexo::editor

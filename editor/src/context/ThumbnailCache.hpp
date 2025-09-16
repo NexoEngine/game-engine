@@ -108,7 +108,7 @@ namespace nexo::editor {
          * @param assetId UUID of the asset.
          * @return True if a thumbnail is cached, false otherwise.
          */
-        bool hasThumbnail(const boost::uuids::uuid& assetId) const;
+        [[nodiscard]] bool hasThumbnail(const boost::uuids::uuid& assetId) const;
 
        private:
         ThumbnailCache() = default;
