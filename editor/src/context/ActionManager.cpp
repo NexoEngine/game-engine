@@ -74,4 +74,4 @@ namespace nexo::editor {
     {
         return history.getUndoStackSize();
     }
-}
+} // namespace nexo::editor

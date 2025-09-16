@@ -34,13 +34,11 @@ namespace nexo::editor {
 
     void ActionGroup::redo()
     {
-        for (const auto &action : actions)
-            action->redo();
+        for (const auto &action : actions) action->redo();
     }
 
     void ActionGroup::undo()
     {
-        for (const auto &action : std::ranges::reverse_view(actions))
-            action->undo();
+        for (const auto &action : std::ranges::reverse_view(actions)) action->undo();
     }
-}
+} // namespace nexo::editor
