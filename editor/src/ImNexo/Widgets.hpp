@@ -19,32 +19,26 @@
 
 #include <imgui.h>
 #include <string>
-#include "EntityFactory3D.hpp"
 #include "Components.hpp"
 #include "DocumentWindows/PopupManager.hpp"
+#include "EntityFactory3D.hpp"
 
 namespace ImNexo {
-
     /**
-    * @brief Draws a color editor with a button and an optional inline color picker.
-    *
-    * Displays a custom color button (with a cog icon for picker settings) and, if enabled,
-    * an inline color picker. The function returns true if the color was modified.
-    *
-    * @param label A unique label identifier for the widget.
-    * @param selectedEntityColor Pointer to the glm::vec4 representing the current color.
-    * @param colorPickerMode Pointer to the ImGuiColorEditFlags for the picker mode.
-    * @param showPicker Pointer to a boolean that determines if the inline color picker is visible.
-    * @param colorButtonFlags Optional flags for the color button (default is none).
-    * @return true if the color was modified; false otherwise.
-    */
-    bool ColorEditor(
-        const std::string &label,
-        glm::vec4 *selectedEntityColor,
-        ImGuiColorEditFlags *colorPickerMode,
-        bool *showPicker,
-        ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None
-    );
+     * @brief Draws a color editor with a button and an optional inline color picker.
+     *
+     * Displays a custom color button (with a cog icon for picker settings) and, if enabled,
+     * an inline color picker. The function returns true if the color was modified.
+     *
+     * @param label A unique label identifier for the widget.
+     * @param selectedEntityColor Pointer to the glm::vec4 representing the current color.
+     * @param colorPickerMode Pointer to the ImGuiColorEditFlags for the picker mode.
+     * @param showPicker Pointer to a boolean that determines if the inline color picker is visible.
+     * @param colorButtonFlags Optional flags for the color button (default is none).
+     * @return true if the color was modified; false otherwise.
+     */
+    bool ColorEditor(const std::string &label, glm::vec4 *selectedEntityColor, ImGuiColorEditFlags *colorPickerMode,
+                     bool *showPicker, ImGuiColorEditFlags colorButtonFlags = ImGuiColorEditFlags_None);
 
     /**
      * @brief Configuration properties for a button in a dropdown menu.
@@ -54,29 +48,27 @@ namespace ImNexo {
      * icons, callbacks for different mouse actions, tooltips, and custom styling.
      */
     struct ButtonProps {
-        std::string uniqueId;       ///< Unique identifier for ImGui tracking
-        std::string icon;           ///< Icon to display on the button (typically FontAwesome)
-        std::function<void()> onClick = nullptr;      ///< Callback executed when button is left-clicked
+        std::string uniqueId;                         ///< Unique identifier for ImGui tracking
+        std::string icon;                             ///< Icon to display on the button (typically FontAwesome)
+        std::function<void()> onClick      = nullptr; ///< Callback executed when button is left-clicked
         std::function<void()> onRightClick = nullptr; ///< Callback executed when button is right-clicked
-        std::string tooltip;   ///< Tooltip text displayed when hovering
+        std::string tooltip;                          ///< Tooltip text displayed when hovering
 
         /**
-        * @brief Gradient colors for button styling
-        *
-        * Default gradient uses a dark blue theme that matches the editor's style.
-        * Override this with custom colors to create visually distinct buttons.
-        */
-        std::vector<GradientStop> buttonGradient = {
-            {0.0f, IM_COL32(50, 50, 70, 230)},
-            {1.0f, IM_COL32(30, 30, 45, 230)}
-        };
+         * @brief Gradient colors for button styling
+         *
+         * Default gradient uses a dark blue theme that matches the editor's style.
+         * Override this with custom colors to create visually distinct buttons.
+         */
+        std::vector<GradientStop> buttonGradient = {{0.0f, IM_COL32(50, 50, 70, 230)},
+                                                    {1.0f, IM_COL32(30, 30, 45, 230)}};
     };
 
     enum class DropdownOrientation {
-        DOWN,   // Dropdown appears below the button
-        UP,     // Dropdown appears above the button
-        RIGHT,  // Dropdown appears to the right of the button
-        LEFT    // Dropdown appears to the left of the button
+        DOWN,  // Dropdown appears below the button
+        UP,    // Dropdown appears above the button
+        RIGHT, // Dropdown appears to the right of the button
+        LEFT   // Dropdown appears to the left of the button
     };
 
     /**
@@ -92,15 +84,32 @@ namespace ImNexo {
      * @param closure Reference to a boolean flag controlling dropdown visibility; set to false to close
      * @param orientation Direction the dropdown should expand (DOWN, UP, LEFT, RIGHT)
      */
-    void ButtonDropDown(
-        const ImVec2& buttonPos,
-        ImVec2 buttonSize,
-        const std::vector<ButtonProps> &buttonProps,
-        bool &closure,
-        DropdownOrientation orientation = DropdownOrientation::DOWN
-    );
+    void ButtonDropDown(const ImVec2 &buttonPos, ImVec2 buttonSize, const std::vector<ButtonProps> &buttonProps,
+                        bool &closure, DropdownOrientation orientation = DropdownOrientation::DOWN);
 
-    void PrimitiveSubMenu(int sceneId, nexo::editor::PopupManager &popupManager);
+    /**
+     * @brief Renders a popup for creating a primitive entity in the editor scene.
+     *
+     * This function displays a popup window that allows the user to create a 3D primitive
+     * (e.g., sphere or cylinder) with configurable parameters such as the number of segments
+     * or subdivisions. The user can adjust these parameters using a slider and create the
+     * primitive by clicking the "Create" button.
+     *
+     * @param sceneId The ID of the scene where the primitive will be created.
+     * @param primitive The type of primitive to create (e.g., SPHERE or CYLINDER).
+     */
     void PrimitiveCustomizationMenu(int sceneId, nexo::Primitives primitive);
 
-}
+    /**
+     * @brief Renders a popup menu for selecting and customizing 3D primitives.
+     *
+     * Displays a popup window that allows the user to choose between different 3D primitives
+     * (e.g., sphere or cylinder) and customize their parameters (like segments or subdivisions).
+     * The user can create the selected primitive in the specified scene by clicking the "Create" button.
+     *
+     * @param sceneId The ID of the scene where the primitive will be created.
+     * @param popupManager Reference to the PopupManager handling the popup state.
+     */
+    void PrimitiveSubMenu(int sceneId, nexo::editor::PopupManager &popupManager);
+
+} // namespace ImNexo
