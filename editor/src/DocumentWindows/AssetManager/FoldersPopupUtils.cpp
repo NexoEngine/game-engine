@@ -102,13 +102,13 @@ namespace nexo::editor {
         m_folderActionState.folderName.resize(strlen(m_folderActionState.folderName.c_str()));
         ImGui::Separator();
 
-        if (Button("Create", ImNexo::VALIDATION) && handleFolderCreation()) {
+        if (Button("Create", ImNexo::ButtonTypes::VALIDATION) && handleFolderCreation()) {
             m_folderActionState.reset();
             PopupManager::closePopup();
             isFocus = true;
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_folderActionState.reset();
             PopupManager::closePopup();
             isFocus = true;
@@ -137,7 +137,7 @@ namespace nexo::editor {
         // Draw the popup for deleting a folder
         ImGui::Text("Are you sure you want to delete %s?", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (Button("Delete", ImNexo::VALIDATION)) {
+        if (Button("Delete", ImNexo::ButtonTypes::VALIDATION)) {
             const std::vector<assets::GenericAssetRef> assets = m_folderManager.getFolderAssets(folderPath);
             if (!assets.empty()) {
                 m_popupManager.openPopup("Delete Not Empty Folder Popup");
@@ -152,7 +152,7 @@ namespace nexo::editor {
             }
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_folderActionState.reset();
             PopupManager::closePopup();
         }
@@ -173,7 +173,7 @@ namespace nexo::editor {
         // Draw the popup for deleting a folder that contains assets
         ImGui::Text("Are you sure you want to delete %s? It contains assets.", m_folderActionState.folderName.c_str());
         ImGui::Separator();
-        if (Button("Delete", ImNexo::VALIDATION) && m_folderManager.deleteFolder(folderPath)) {
+        if (Button("Delete", ImNexo::ButtonTypes::VALIDATION) && m_folderManager.deleteFolder(folderPath)) {
             m_folderActionState.reset();
             PopupManager::closePopup();
         } else {
@@ -181,7 +181,7 @@ namespace nexo::editor {
             m_folderActionState.errorMessage = "Failed to delete the folder";
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_folderActionState.reset();
             PopupManager::closePopup();
         }
@@ -281,14 +281,14 @@ namespace nexo::editor {
         ImGui::Separator();
 
         // Buttons for renaming or canceling the action
-        if (Button("Rename", ImNexo::VALIDATION) && handleFolderRenaming(newName)) {
+        if (Button("Rename", ImNexo::ButtonTypes::VALIDATION) && handleFolderRenaming(newName)) {
             m_folderActionState.reset();
             newName = "";
             PopupManager::closePopup();
             isFocus = true;
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_folderActionState.reset();
             newName = "";
             PopupManager::closePopup();
@@ -323,7 +323,7 @@ namespace nexo::editor {
                     m_folderManager.getChildCount(folderPath) + m_folderManager.getFolderAssets(folderPath).size());
         ImGui::Text("Size: %.2f Ko", FolderManager::getFolderSize(folderPath) / 1024.0);
         ImGui::Separator();
-        if (Button("Close", ImNexo::CANCEL)) {
+        if (Button("Close", ImNexo::ButtonTypes::CANCEL)) {
             m_folderActionState.reset();
             PopupManager::closePopup();
         }

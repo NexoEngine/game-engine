@@ -162,10 +162,10 @@ namespace ImNexo {
     {
         const bool clicked = Button(label, size, bg, bgHovered, bgActive, txtColor);
         switch (type) {
-            case VALIDATION: {
+            case ButtonTypes::VALIDATION: {
                 return clicked || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter);
             }
-            case CANCEL: {
+            case ButtonTypes::CANCEL: {
                 return clicked || ImGui::IsKeyPressed(ImGuiKey_Escape);
             }
             default: {
