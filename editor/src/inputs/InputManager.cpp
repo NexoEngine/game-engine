@@ -26,15 +26,9 @@ namespace nexo::editor {
         std::bitset<ImGuiKey_NamedKey_COUNT> repeatSignature;
         std::bitset<ImGuiKey_NamedKey_COUNT> currentlyHeldKeys;
 
-        static const std::set<ImGuiKey> excludedKeys = {
-            ImGuiKey_MouseLeft,
-            ImGuiKey_MouseRight,
-            ImGuiKey_MouseMiddle,
-            ImGuiKey_MouseX1,
-            ImGuiKey_MouseX2,
-            ImGuiKey_MouseWheelX,
-            ImGuiKey_MouseWheelY
-        };
+        static const std::set<ImGuiKey> excludedKeys = {ImGuiKey_MouseLeft,  ImGuiKey_MouseRight, ImGuiKey_MouseMiddle,
+                                                        ImGuiKey_MouseX1,    ImGuiKey_MouseX2,    ImGuiKey_MouseWheelX,
+                                                        ImGuiKey_MouseWheelY};
 
         // Track keys that were held down last frame
         static std::bitset<ImGuiKey_NamedKey_COUNT> lastFrameHeldKeys;
@@ -47,19 +41,16 @@ namespace nexo::editor {
 
         for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_COUNT + ImGuiKey_NamedKey_BEGIN - 5; key++) {
             constexpr float multiPressThreshold = 0.3f;
-            if (excludedKeys.contains(static_cast<ImGuiKey>(key)))
-                continue;
+            if (excludedKeys.contains(static_cast<ImGuiKey>(key))) continue;
 
             const auto imKey = static_cast<ImGuiKey>(key);
-            const auto idx = static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN);
-
-            const bool keyDown = ImGui::IsKeyDown(imKey);
+            const auto idx   = static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN);
 
             // Update currently held keys
-            if (keyDown) {
+            if (ImGui::IsKeyDown(imKey)) {
                 currentlyHeldKeys.set(idx);
 
-                if (!lastFrameHeldKeys[idx]) {  // Key was just pressed this frame
+                if (!lastFrameHeldKeys[idx]) { // Key was just pressed this frame
                     pressedSignature.set(idx);
 
                     // Handle multiple press detection
@@ -141,11 +132,10 @@ namespace nexo::editor {
         lastFrameHeldKeys = currentlyHeldKeys;
     }
 
-    void InputManager::processRepeatCommands(
-        const std::span<const Command>& commands,
-        const std::bitset<ImGuiKey_NamedKey_COUNT>& repeatSignature,
-        const std::bitset<ImGuiKey_NamedKey_COUNT>& currentlyHeldKeys
-    ) {
+    void InputManager::processRepeatCommands(const std::span<const Command>& commands,
+                                             const std::bitset<ImGuiKey_NamedKey_COUNT>& repeatSignature,
+                                             const std::bitset<ImGuiKey_NamedKey_COUNT>& currentlyHeldKeys)
+    {
         for (const auto& command : commands) {
             // If this is a non-modifier command that has a repeat key
             if (command.exactMatch(repeatSignature)) {
@@ -166,7 +156,7 @@ namespace nexo::editor {
                     }
 
                     // Also check deeper in the hierarchy
-                    const auto &remainingBits = repeatSignature;
+                    const auto& remainingBits = repeatSignature;
                     processRepeatCommands(command.getChildren(), remainingBits, currentlyHeldKeys);
                 }
                 // Standard partial match handling
@@ -194,22 +184,14 @@ namespace nexo::editor {
     {
         std::bitset<ImGuiKey_NamedKey_COUNT> pressedSignature;
 
-        static const std::set<ImGuiKey> excludedKeys = {
-            ImGuiKey_MouseLeft,
-            ImGuiKey_MouseRight,
-            ImGuiKey_MouseMiddle,
-            ImGuiKey_MouseX1,
-            ImGuiKey_MouseX2,
-            ImGuiKey_MouseWheelX,
-            ImGuiKey_MouseWheelY
-        };
+        static const std::set<ImGuiKey> excludedKeys = {ImGuiKey_MouseLeft,  ImGuiKey_MouseRight, ImGuiKey_MouseMiddle,
+                                                        ImGuiKey_MouseX1,    ImGuiKey_MouseX2,    ImGuiKey_MouseWheelX,
+                                                        ImGuiKey_MouseWheelY};
 
         // Get currently pressed keys
         for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_COUNT + ImGuiKey_NamedKey_BEGIN - 5; key++) {
-            if (excludedKeys.contains(static_cast<ImGuiKey>(key)))
-                continue;
-            if (ImGui::IsKeyDown(static_cast<ImGuiKey>(key)))
-            {
+            if (excludedKeys.contains(static_cast<ImGuiKey>(key))) continue;
+            if (ImGui::IsKeyDown(static_cast<ImGuiKey>(key))) {
                 pressedSignature.set(static_cast<size_t>(key - ImGuiKey_NamedKey_BEGIN));
             }
         }
@@ -219,10 +201,9 @@ namespace nexo::editor {
         return possibleCommands;
     }
 
-    void InputManager::collectPossibleCommands(
-        const std::span<const Command>& commands,
-        const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
-        std::vector<CommandInfo>& possibleCommands) const
+    void InputManager::collectPossibleCommands(const std::span<const Command>& commands,
+                                               const std::bitset<ImGuiKey_NamedKey_COUNT>& pressedSignature,
+                                               std::vector<CommandInfo>& possibleCommands)
     {
         for (const auto& command : commands) {
             // If no keys are pressed, show all possible command chains
@@ -254,7 +235,8 @@ namespace nexo::editor {
                     for (const auto& child : command.getChildren()) {
                         if (hasActivatedChildModifier) {
                             // Skip non-modifier children or modifiers that aren't pressed
-                            if (!child.isModifier() || (child.getSignature() & pressedSignature) != child.getSignature()) {
+                            if (!child.isModifier() ||
+                                (child.getSignature() & pressedSignature) != child.getSignature()) {
                                 continue;
                             }
 
@@ -267,10 +249,8 @@ namespace nexo::editor {
                             if (child.isModifier() && !child.getChildren().empty()) {
                                 // Build combinations for this child modifier
                                 for (const auto& grandchild : child.getChildren()) {
-                                    possibleCommands.emplace_back(
-                                        child.getKey() + "+" + grandchild.getKey(),
-                                        grandchild.getDescription()
-                                    );
+                                    possibleCommands.emplace_back(child.getKey() + "+" + grandchild.getKey(),
+                                                                  grandchild.getDescription());
                                 }
                             } else {
                                 // Child is not a modifier
@@ -286,7 +266,7 @@ namespace nexo::editor {
                 // Recursively check child commands if this is not an exact match
                 if (!command.getChildren().empty() && !command.exactMatch(pressedSignature)) {
                     auto remainingBits = pressedSignature ^ command.getSignature();
-                    if (remainingBits.any()) {  // Only recurse if there are remaining bits
+                    if (remainingBits.any()) { // Only recurse if there are remaining bits
                         collectPossibleCommands(command.getChildren(), remainingBits, possibleCommands);
                     }
                 }
@@ -295,12 +275,9 @@ namespace nexo::editor {
     }
 
     // Helper method to recursively build all possible command combinations
-    void InputManager::buildCommandCombinations(
-        const Command& command,
-        const std::string& prefix,
-        std::vector<CommandInfo>& combinations) const
+    void InputManager::buildCommandCombinations(const Command& command, const std::string& prefix,
+                                                std::vector<CommandInfo>& combinations)
     {
-
         std::string currentPrefix = prefix.empty() ? command.getKey() : prefix + "+" + command.getKey();
 
         // If this is a leaf command or not a modifier, add the combination
@@ -314,4 +291,4 @@ namespace nexo::editor {
             buildCommandCombinations(child, currentPrefix, combinations);
         }
     }
-}
+} // namespace nexo::editor
