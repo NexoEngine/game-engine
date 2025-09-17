@@ -12,21 +12,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "GameWindow.hpp"
 #include "Application.hpp"
-#include "ecs/Coordinator.hpp"
-#include "ecs/Definitions.hpp"
+#include "GameWindow.hpp"
+#include "Logger.hpp"
 #include "components/Camera.hpp"
 #include "core/scene/SceneManager.hpp"
-#include "Logger.hpp"
+#include "ecs/Coordinator.hpp"
+#include "ecs/Definitions.hpp"
 
-namespace nexo::editor
-{
+namespace nexo::editor {
 
     void GameWindow::update()
     {
-        if (!m_opened)
-        {
+        if (!m_opened) {
             // the window will just close
             return;
         }
@@ -34,26 +32,24 @@ namespace nexo::editor
         // When paused, we still render the scene but don't update game logic
         // TODO: When the engine supports pausing game systems, implement it here
         // For now, the pause state is tracked but doesn't affect the actual game update
-        
+
         // The actual scene update and rendering happens through the render systems
         // which are managed by the Application class
     }
 
     void GameWindow::shutdown()
     {
-        auto &coordinator = *Application::m_coordinator;
-        auto &app = getApp();
+        auto &coordinator  = *Application::m_coordinator;
+        auto &app          = getApp();
         auto &sceneManager = app.getSceneManager();
 
         // Clean up the game camera
-        if (m_gameCamera != ecs::INVALID_ENTITY)
-        {
+        if (m_gameCamera != ecs::INVALID_ENTITY) {
             // Try to get the camera component
             const auto cameraCompOpt = coordinator.tryGetComponent<components::CameraComponent>(m_gameCamera);
-            if (cameraCompOpt)
-            {
+            if (cameraCompOpt) {
                 // Disable rendering
-                auto &cameraComp = cameraCompOpt->get();
+                auto &cameraComp  = cameraCompOpt->get();
                 cameraComp.render = false;
                 cameraComp.active = false;
 
@@ -64,9 +60,7 @@ namespace nexo::editor
                 coordinator.destroyEntity(m_gameCamera);
 
                 LOG(NEXO_INFO, "Destroyed game camera entity {}", m_gameCamera);
-            }
-            else
-            {
+            } else {
                 // Camera was already destroyed
                 LOG(NEXO_WARN, "Failed to properly clean up game camera");
             }
@@ -75,4 +69,4 @@ namespace nexo::editor
         }
     }
 
-}
+} // namespace nexo::editor
