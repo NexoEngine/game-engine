@@ -21,41 +21,57 @@
 
 namespace nexo::editor {
 
-	class MaterialInspector final : public ADocumentWindow {
-		public:
-			using ADocumentWindow::ADocumentWindow;
-			void setup() override;
+    class MaterialInspector final : public ADocumentWindow {
+       public:
+        using ADocumentWindow::ADocumentWindow;
 
-			/**
-			 * @brief Displays the Material Inspector window.
-			 *
-			 * This method retrieves the selected entity and the inspector window, then renders the Material Inspector UI using ImGui.
-			 * It sets up appropriate window flags, performs a first-time docking setup when necessary, and delegates material
-			 * rendering to renderMaterialInspector() if the Material Inspector is visible.
-			 */
-			void show() override;
+        /**
+         * @brief Destructor for the MaterialInspector class.
+         *
+         * This destructor is defaulted, indicating that no special cleanup is required when an instance of
+         * MaterialInspector is destroyed.
+         */
+        void setup() override;
 
-			// No-op method in this class
-        	void shutdown() override;
+        /**
+         * @brief Displays the Material Inspector window.
+         *
+         * This method retrieves the selected entity and the inspector window, then renders the Material Inspector UI
+         * using ImGui. It sets up appropriate window flags, performs a first-time docking setup when necessary, and
+         * delegates material rendering to renderMaterialInspector() if the Material Inspector is visible.
+         */
+        void show() override;
 
-            // No-op method in this class
-         	void update() override;
+        /**
+         * @brief Shuts down the Material Inspector window.
+         *
+         * This method is currently a no-op in the MaterialInspector class, as there are no specific shutdown actions
+         * required for this window at this time.
+         */
+        void shutdown() override;
 
-		private:
+        /**
+         * @brief Updates the Material Inspector window.
+         *
+         * This method is currently a no-op in the MaterialInspector class, as there are no specific update actions
+         * required for this window at this time.
+         */
+        void update() override;
 
-			/**
-			 * @brief Renders the material inspector for the selected entity.
-			 *
-			 * When a valid entity is provided (i.e., `selectedEntity` is not -1) and differs from the current entity,
-			 * this method marks the material as modified and regenerates a scene preview. If the material has been modified,
-			 * it updates the preview by running a framebuffer render pass, displays the resulting image using ImGui,
-			 * and processes potential material changes through the inspector widget.
-			 *
-			 * @throw BackendRendererApiFatalFailure Thrown if the framebuffer fails to initialize.
-			 */
-			void renderMaterialInspector();
+       private:
+        /**
+         * @brief Renders the material inspector for the selected entity.
+         *
+         * When a valid entity is provided (i.e., `selectedEntity` is not -1) and differs from the current entity,
+         * this method marks the material as modified and regenerates a scene preview. If the material has been
+         * modified, it updates the preview by running a framebuffer render pass, displays the resulting image using
+         * ImGui, and processes potential material changes through the inspector widget.
+         *
+         * @throw BackendRendererApiFatalFailure Thrown if the framebuffer fails to initialize.
+         */
+        void renderMaterialInspector();
 
-			bool m_materialModified = true;
-	};
+        bool m_materialModified = true;
+    };
 
-}
+} // namespace nexo::editor
