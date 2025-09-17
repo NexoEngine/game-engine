@@ -146,20 +146,12 @@ namespace nexo::editor {
              .tooltip = "Create Cube"},
             {.uniqueId = "sphere_primitive",
              .icon     = ICON_FA_CIRCLE,
-             .onClick =
-                 [this]() {
-                     // ImNexo::PrimitiveCustomizationMenu(this->m_sceneId, SPHERE);
-                     this->m_popupManager.openPopup("Sphere creation popup");
-                 },
-             .tooltip = "Create Sphere"},
+             .onClick  = [this]() { this->m_popupManager.openPopup("Sphere creation popup"); },
+             .tooltip  = "Create Sphere"},
             {.uniqueId = "cylinder_primitive",
              .icon     = ICON_FA_PLUS,
-             .onClick =
-                 [this]() {
-                     // ImNexo::PrimitiveCustomizationMenu(this->m_sceneId, CYLINDER);
-                     this->m_popupManager.openPopup("Cylinder creation popup");
-                 },
-             .tooltip = "Create Cylinder"},
+             .onClick  = [this]() { this->m_popupManager.openPopup("Cylinder creation popup"); },
+             .tooltip  = "Create Cylinder"},
             {.uniqueId = "pyramid_primitive",
              .icon     = ICON_FA_PLUS,
              .onClick =
@@ -367,7 +359,6 @@ namespace nexo::editor {
 
         // -------------------------------- BUTTONS -------------------------------
         // -------- Add primitve button --------
-        // This can open a submenu, see at the end
         ImVec2 addPrimButtonPos       = ImGui::GetCursorScreenPos();
         static bool showPrimitiveMenu = false;
         bool addPrimitiveClicked      = renderToolbarButton("add_primitive", ICON_FA_PLUS_SQUARE, "Add primitive",
@@ -398,22 +389,24 @@ namespace nexo::editor {
                                                          gizmoScaleButtonProps, gizmoUniversalButtonProps};
 
         ImNexo::ButtonProps activeOp;
+        auto eraseGizmoButton = [&](const std::string& id, const ImNexo::ButtonProps& prop) {
+            activeOp = prop;
+            std::erase_if(gizmoButtons, [&](const auto& p) { return p.uniqueId == id; });
+        };
+
+        using enum ImGuizmo::OPERATION;
         switch (m_currentGizmoOperation) {
-            case ImGuizmo::OPERATION::TRANSLATE:
-                activeOp = gizmoTranslateButtonProps;
-                std::erase_if(gizmoButtons, [](const auto& prop) { return prop.uniqueId == "translate"; });
+            case TRANSLATE:
+                eraseGizmoButton("translate", gizmoTranslateButtonProps);
                 break;
-            case ImGuizmo::OPERATION::ROTATE:
-                activeOp = gizmoRotateButtonProps;
-                std::erase_if(gizmoButtons, [](const auto& prop) { return prop.uniqueId == "rotate"; });
+            case ROTATE:
+                eraseGizmoButton("rotate", gizmoRotateButtonProps);
                 break;
-            case ImGuizmo::OPERATION::SCALE:
-                activeOp = gizmoScaleButtonProps;
-                std::erase_if(gizmoButtons, [](const auto& prop) { return prop.uniqueId == "scale"; });
+            case SCALE:
+                eraseGizmoButton("scale", gizmoScaleButtonProps);
                 break;
-            case ImGuizmo::OPERATION::UNIVERSAL:
-                activeOp = gizmoUniversalButtonProps;
-                std::erase_if(gizmoButtons, [](const auto& prop) { return prop.uniqueId == "universal"; });
+            case UNIVERSAL:
+                eraseGizmoButton("universal", gizmoUniversalButtonProps);
                 break;
             default:
                 break;
@@ -439,7 +432,6 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Toggle snap button --------
-        // This can open a submenu, see at the end
         ImVec2 toggleSnapPos           = ImGui::GetCursorScreenPos();
         static bool showSnapToggleMenu = false;
         bool snapOn                    = m_snapRotateOn || m_snapTranslateOn;
@@ -463,8 +455,6 @@ namespace nexo::editor {
         ImGui::SameLine();
 
         // -------- Snap to grid button --------
-        // NOTE: This seems complicated to implement using ImGuizmo, we leave it for now but I don't know if it will be
-        // implemented
         if (renderToolbarButton("snap_to_grid", ICON_FA_TH,
                                 "Enable snapping to grid\n(only horizontal translation and scaling)",
                                 m_snapToGrid ? m_selectedGradient : m_buttonGradient)) {
@@ -489,11 +479,7 @@ namespace nexo::editor {
         const auto& gradient = isPlaying ? m_selectedGradient : m_buttonGradient;
 
         if (renderToolbarButton("play_stop", icon, tooltip, gradient)) {
-            if (isPlaying) {
-                app.setGameState(nexo::GameState::EDITOR_MODE);
-            } else {
-                app.setGameState(nexo::GameState::PLAY_MODE);
-            }
+            app.setGameState(isPlaying ? nexo::GameState::EDITOR_MODE : nexo::GameState::PLAY_MODE);
         }
 
         ImGui::PopStyleVar();
@@ -501,33 +487,18 @@ namespace nexo::editor {
         ImGui::PopStyleColor();
 
         // -------------------------------- SUB-MENUS -------------------------------
-        // -------- Primitives sub-menus --------
-        if (showPrimitiveMenu) {
-            renderPrimitiveSubMenu(addPrimButtonPos, buttonSize, showPrimitiveMenu);
-        }
+        if (showPrimitiveMenu) renderPrimitiveSubMenu(addPrimButtonPos, buttonSize, showPrimitiveMenu);
 
-        // -------- Gizmo operation sub-menu --------
-        if (showGizmoOpMenu) {
-            ImNexo::ButtonDropDown(changeGizmoOpPos, buttonSize, gizmoButtons, showGizmoOpMenu);
-        }
+        if (showGizmoOpMenu) ImNexo::ButtonDropDown(changeGizmoOpPos, buttonSize, gizmoButtons, showGizmoOpMenu);
 
-        // -------- Gizmo mode sub-menu --------
-        if (showGizmoModeMenu) {
+        if (showGizmoModeMenu)
             ImNexo::ButtonDropDown(changeGizmoModePos, buttonSize, {inactiveGizmoMode}, showGizmoModeMenu);
-        }
 
-        // -------- Snap sub-menu --------
-        if (showSnapToggleMenu) {
-            renderSnapSubMenu(toggleSnapPos, buttonSize, showSnapToggleMenu);
-        }
+        if (showSnapToggleMenu) renderSnapSubMenu(toggleSnapPos, buttonSize, showSnapToggleMenu);
 
-        // -------- Snap settings popup --------
         snapSettingsPopup();
-
-        // -------- Grid settings popup --------
         gridSettingsPopup();
 
-        // IMPORTANT: Restore original cursor position so we don't affect layout
         ImGui::SetCursorPos(originalCursorPos);
     }
 } // namespace nexo::editor

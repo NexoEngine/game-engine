@@ -148,16 +148,17 @@ namespace nexo::editor {
                 m_entityHovered     = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
+                using enum assets::AssetType;
                 switch (payload.type) {
-                    case assets::AssetType::MODEL:
+                    case MODEL:
                         handleDropModel(payload);
-                        break;
-                    case assets::AssetType::TEXTURE:
+                    break;
+                    case TEXTURE:
                         handleDropTexture(payload);
-                        break;
-                    case assets::AssetType::MATERIAL:
+                    break;
+                    case MATERIAL:
                         handleDropMaterial(payload);
-                        break;
+                    break;
                     default:
                         break;
                 }
