@@ -16,19 +16,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "InspectorWindow.hpp"
-#include "../EntityProperties/RenderProperty.hpp"
-#include "../EntityProperties/TransformProperty.hpp"
 #include "../EntityProperties/AmbientLightProperty.hpp"
-#include "../EntityProperties/DirectionalLightProperty.hpp"
-#include "../EntityProperties/PointLightProperty.hpp"
-#include "../EntityProperties/SpotLightProperty.hpp"
-#include "../EntityProperties/CameraProperty.hpp"
 #include "../EntityProperties/CameraController.hpp"
+#include "../EntityProperties/CameraProperty.hpp"
 #include "../EntityProperties/CameraTarget.hpp"
-#include "DocumentWindows/EntityProperties/TypeErasedProperty.hpp"
+#include "../EntityProperties/DirectionalLightProperty.hpp"
 #include "../EntityProperties/MaterialProperty.hpp"
 #include "../EntityProperties/PhysicsBodyProperty.hpp"
+#include "../EntityProperties/PointLightProperty.hpp"
+#include "../EntityProperties/RenderProperty.hpp"
+#include "../EntityProperties/SpotLightProperty.hpp"
+#include "../EntityProperties/TransformProperty.hpp"
+#include "DocumentWindows/EntityProperties/TypeErasedProperty.hpp"
+#include "InspectorWindow.hpp"
 #include "components/Camera.hpp"
 #include "components/MaterialComponent.hpp"
 #include "components/PhysicsBodyComponent.hpp"
@@ -55,7 +55,7 @@ namespace nexo::editor {
     void InspectorWindow::registerTypeErasedProperties()
     {
         // Register TypeErased components
-        const auto& coordinator = Application::m_coordinator;
+        const auto& coordinator           = Application::m_coordinator;
         const auto& componentDescriptions = coordinator->getComponentDescriptions();
 
         for (const auto& [componentType, description] : componentDescriptions) {
@@ -63,4 +63,4 @@ namespace nexo::editor {
         }
     }
 
-}
+} // namespace nexo::editor
