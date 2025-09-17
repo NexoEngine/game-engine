@@ -16,21 +16,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Exception.hpp"
-#include "TestWindow.hpp"
-#include "Path.hpp"
 #include "Error.hpp"
+#include "Exception.hpp"
+#include "Path.hpp"
+#include "TestWindow.hpp"
 #include "exceptions/Exceptions.hpp"
 
 #include <fstream>
 #include <tinyfiledialogs.h>
 
 #ifdef __linux__
-  #include <sys/utsname.h>
+    #include <sys/utsname.h>
 #endif
 
 #ifdef NX_GRAPHICS_API_OPENGL
-  #include <glad/glad.h>
+    #include <glad/glad.h>
 #endif
 
 namespace nexo::editor {
@@ -60,8 +60,7 @@ namespace nexo::editor {
         return "macOS";
 #elif defined(__linux__)
         utsname info{};
-        if (uname(&info) == 0)
-            return std::string(info.sysname) + " " + info.release;
+        if (uname(&info) == 0) return std::string(info.sysname) + " " + info.release;
         return "Linux";
 #else
         return "Unknown OS";
@@ -80,10 +79,8 @@ namespace nexo::editor {
                 if (pos != std::string::npos) {
                     std::string model = line.substr(pos + 1);
                     // trim leading spaces
-                    model.erase(
-                        model.begin(),
-                        std::ranges::find_if(model, [](const unsigned char ch) { return !std::isspace(ch); })
-                    );
+                    model.erase(model.begin(),
+                                std::ranges::find_if(model, [](const unsigned char ch) { return !std::isspace(ch); }));
                     return model;
                 }
             }
@@ -91,18 +88,18 @@ namespace nexo::editor {
         return "Unknown CPU";
 #elif defined(_WIN32) && defined(_M_X64)
         // Using __cpuid to get CPU brand string
-        int cpuInfo[4] = {0};
-        char brand[0x40] = { 0 };
+        int cpuInfo[4]   = {0};
+        char brand[0x40] = {0};
         __cpuid(cpuInfo, 0x80000000);
         unsigned int maxId = cpuInfo[0];
         if (maxId >= 0x80000004) {
-            __cpuid((int*)cpuInfo, 0x80000002);
+            __cpuid((int *)cpuInfo, 0x80000002);
             memcpy(brand, cpuInfo, sizeof(cpuInfo));
-            __cpuid((int*)cpuInfo, 0x80000003);
+            __cpuid((int *)cpuInfo, 0x80000003);
             memcpy(brand + 16, cpuInfo, sizeof(cpuInfo));
-            __cpuid((int*)cpuInfo, 0x80000004);
+            __cpuid((int *)cpuInfo, 0x80000004);
             memcpy(brand + 32, cpuInfo, sizeof(cpuInfo));
-            return std::string(brand);
+            return {brand};
         }
         return "Unknown CPU";
 #else
@@ -114,9 +111,9 @@ namespace nexo::editor {
     static std::string getGraphicsInfo()
     {
 #ifdef NX_GRAPHICS_API_OPENGL
-        const auto vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        const auto renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        const auto version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+        const auto vendor   = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+        const auto renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+        const auto version  = reinterpret_cast<const char *>(glGetString(GL_VERSION));
         return std::string("OpenGL: ") + vendor + " - " + renderer + " (" + version + ")";
 #else
         return "Graphics info not available";
@@ -135,48 +132,44 @@ namespace nexo::editor {
 
     static constexpr std::string testResultToString(const TestResult r)
     {
-        switch (r)
-        {
-            case TestResult::PASSED:    return "PASSED";
-            case TestResult::FAILED:    return "FAILED";
-            case TestResult::SKIPPED:   return "SKIPPED";
-            default:                    return "NOT_TESTED";
+        switch (r) {
+            case TestResult::PASSED:
+                return "PASSED";
+            case TestResult::FAILED:
+                return "FAILED";
+            case TestResult::SKIPPED:
+                return "SKIPPED";
+            default:
+                return "NOT_TESTED";
         }
     }
 
-    static void writeTestCaseReport(std::ofstream& out, const TestCase& tc)
+    static void writeTestCaseReport(std::ofstream &out, const TestCase &tc)
     {
         out << std::format("- {} : {}\n", tc.name, testResultToString(tc.result));
-        if (tc.result == TestResult::SKIPPED)
-            out << std::format("  Reason: {}\n", tc.skippedMessage);
+        if (tc.result == TestResult::SKIPPED) out << std::format("  Reason: {}\n", tc.skippedMessage);
     }
 
     static std::filesystem::path getTestReportFilePath()
     {
         const auto now_tp = floor<std::chrono::seconds>(std::chrono::system_clock::now());
         std::chrono::zoned_time local_zoned{std::chrono::current_zone(), now_tp};
-        std::string ts = std::format("{:%Y%m%d}", local_zoned);
+        std::string ts             = std::format("{:%Y%m%d}", local_zoned);
         const std::string filename = std::format("EditorTestResults_{}", ts);
 
-        // Tiny file dialog to get path
-        // patterns
-        const char *patterns[] = {"*.report"};
-        const char *chosenPathStr = tinyfd_saveFileDialog(
-            "Save Test Report",
-            filename.c_str(),
-            1,
-            patterns,
-            "Text files (*.report)"
-        );
+        // Tiny file dialog to get path patterns
+        constexpr std::array patterns = {"*.report"};
+        const char *chosenPathStr =
+            tinyfd_saveFileDialog("Save Test Report", filename.c_str(), 1, patterns.data(), "Text files (*.report)");
         if (!chosenPathStr) {
-            return std::filesystem::path(); // User cancelled
+            return {}; // User cancelled
         }
         const std::filesystem::path chosenPath = chosenPathStr;
         std::filesystem::create_directories(chosenPath.parent_path());
         return chosenPath;
     }
 
-    void TestWindow::writeTestReport()
+    void TestWindow::writeTestReport() const
     {
         const auto filePath = getTestReportFilePath();
 
@@ -190,17 +183,14 @@ namespace nexo::editor {
             THROW_EXCEPTION(FileWriteException, filePath.string(), nexo::strerror(errno));
         }
 
-
         writeEnvironmentReport(out);
 
         for (const auto &section : m_testSections) {
             out << std::format("# {}\n", section.name);
-            for (const auto &tc : section.testCases)
-                writeTestCaseReport(out, tc);
+            for (const auto &tc : section.testCases) writeTestCaseReport(out, tc);
             for (const auto &sub : section.subSections) {
                 out << std::format("## {}\n", sub.name);
-                for (auto &tc : sub.testCases)
-                    writeTestCaseReport(out, tc);
+                for (auto &tc : sub.testCases) writeTestCaseReport(out, tc);
             }
         }
     }
@@ -210,4 +200,4 @@ namespace nexo::editor {
         writeTestReport();
     }
 
-}
+} // namespace nexo::editor
