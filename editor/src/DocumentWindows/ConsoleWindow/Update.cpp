@@ -17,6 +17,6 @@
 namespace nexo::editor {
     void ConsoleWindow::update()
     {
-    	//No need to update anything
+        // No need to update anything
     }
-}
+} // namespace nexo::editor

@@ -162,7 +162,7 @@ namespace nexo::editor {
         void deleteUsedAssetPopup();
         void assetDetailsPopup();
 
-        template <typename T>
+        template<typename T>
         static void drawErrorMessageInPopup(T& actionState);
 
         // menu management
@@ -179,9 +179,9 @@ namespace nexo::editor {
         // drag and drop management
         void handleDroppedFiles();
         static void handleAssetDrag(const assets::GenericAssetRef& asset);
-        void handleFolderDrag(const std::string& folderPath, const std::string& folderName);
+        void handleFolderDrag(const std::string& folderPath, const std::string& folderName) const;
         void handleAssetDrop(const std::string& path);
-        void handleFolderDrop(const std::string& folderPath, const std::string &folderName);
+        void handleFolderDrop(const std::string& folderPath);
         void importDroppedFile(const std::string& filePath) const;
 
         std::set<unsigned int> m_selectedAssets;        // Set of selected asset indices
@@ -191,9 +191,9 @@ namespace nexo::editor {
 
         assets::AssetType m_selectedType = assets::AssetType::UNKNOWN; // Default selected asset type
 
-        std::set<std::string> m_selectedFolders; // Set of selected folder paths
-        std::string m_currentFolder;             // Currently selected folder
-        std::string m_hoveredFolder;             // Currently hovered folder
+        std::set<std::string, std::less<>> m_selectedFolders; // Set of selected folder paths
+        std::string m_currentFolder;                          // Currently selected folder
+        std::string m_hoveredFolder;                          // Currently hovered folder
         std::string m_searchBuffer;
 
         PopupManager m_popupManager;

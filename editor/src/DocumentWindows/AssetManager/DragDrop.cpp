@@ -34,11 +34,11 @@ namespace nexo::editor {
         }
     }
 
-    void AssetManagerWindow::handleFolderDrop(const std::string& folderPath, const std::string &folderName)
+    void AssetManagerWindow::handleFolderDrop(const std::string& folderPath)
     {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_DRAG")) {
-                const auto data        = static_cast<const FolderDragDropPayload*>(payload->Data);
+                const auto data = static_cast<const FolderDragDropPayload*>(payload->Data);
                 m_folderManager.moveFolder(data->path, folderPath);
                 m_selectedFolders.clear();
             }
@@ -69,7 +69,7 @@ namespace nexo::editor {
         }
     }
 
-    void AssetManagerWindow::handleFolderDrag(const std::string& folderPath, const std::string& folderName)
+    void AssetManagerWindow::handleFolderDrag(const std::string& folderPath, const std::string& folderName) const
     {
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
             FolderDragDropPayload payload;
@@ -79,11 +79,9 @@ namespace nexo::editor {
             payload.name[sizeof(payload.name) - 1] = '\0';
 
             ImGui::SetDragDropPayload("FOLDER_DRAG", &payload, sizeof(payload));
-            // ImTextureID textureID = ThumbnailCache::getInstance().getThumbnail(asset);
-            // if (textureID) ImGui::Image(textureID, {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
             const ImTextureID folderIconTexture = getIconTexture(m_folderIcon);
             if (folderIconTexture) {
-                ImGui::Image(folderIconTexture, {64, 64}, ImVec2(0, 1), ImVec2(0, 1));                           // White tint for default color
+                ImGui::Image(folderIconTexture, {64, 64}, ImVec2(0, 1), ImVec2(0, 1)); // White tint for default color
             }
             ImGui::EndDragDropSource();
         }
@@ -134,7 +132,7 @@ namespace nexo::editor {
             if (const auto assetRef = importer.importAssetAuto(location, fileInput); !assetRef)
                 LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
         } catch (const std::exception& e) {
-            LOG(NEXO_ERROR, "Exception while importing {}: {}", location.getPath().data(), e.what());
+            THROW_EXCEPTION(AssetImportException, location.getPath(), e.what());
         }
     }
 } // namespace nexo::editor

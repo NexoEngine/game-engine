@@ -27,17 +27,25 @@ namespace nexo::editor {
      */
     std::string verbosityToString(const loguru::Verbosity level)
     {
-        switch (level)
-        {
-            case loguru::Verbosity_FATAL: return "[FATAL]";
-            case loguru::Verbosity_ERROR: return "[ERROR]";
-            case loguru::Verbosity_WARNING: return "[WARNING]";
-            case loguru::Verbosity_INFO: return "[INFO]";
-            case loguru::Verbosity_INVALID: return "[INVALID]";
-            case loguru::Verbosity_1: return "[USER]";
-            case loguru::Verbosity_2: return "[DEBUG]";
-            case loguru::Verbosity_3: return "[DEV]";
-            default: return "[UNKNOWN]";
+        switch (level) {
+            case loguru::Verbosity_FATAL:
+                return "[FATAL]";
+            case loguru::Verbosity_ERROR:
+                return "[ERROR]";
+            case loguru::Verbosity_WARNING:
+                return "[WARNING]";
+            case loguru::Verbosity_INFO:
+                return "[INFO]";
+            case loguru::Verbosity_INVALID:
+                return "[INVALID]";
+            case loguru::Verbosity_1:
+                return "[USER]";
+            case loguru::Verbosity_2:
+                return "[DEBUG]";
+            case loguru::Verbosity_3:
+                return "[DEV]";
+            default:
+                return "[UNKNOWN]";
         }
     }
 
@@ -52,16 +60,23 @@ namespace nexo::editor {
      */
     loguru::Verbosity nexoLevelToLoguruLevel(const LogLevel level)
     {
-        switch (level)
-        {
-            case LogLevel::FATAL: return loguru::Verbosity_FATAL;
-            case LogLevel::ERR: return loguru::Verbosity_ERROR;
-            case LogLevel::WARN: return loguru::Verbosity_WARNING;
-            case LogLevel::INFO: return loguru::Verbosity_INFO;
-            case LogLevel::USER: return loguru::Verbosity_1;
-            case LogLevel::DEBUG: return loguru::Verbosity_2;
-            case LogLevel::DEV: return loguru::Verbosity_3;
-            default: return loguru::Verbosity_INVALID;
+        switch (level) {
+            case LogLevel::FATAL:
+                return loguru::Verbosity_FATAL;
+            case LogLevel::ERR:
+                return loguru::Verbosity_ERROR;
+            case LogLevel::WARN:
+                return loguru::Verbosity_WARNING;
+            case LogLevel::INFO:
+                return loguru::Verbosity_INFO;
+            case LogLevel::USER:
+                return loguru::Verbosity_1;
+            case LogLevel::DEBUG:
+                return loguru::Verbosity_2;
+            case LogLevel::DEV:
+                return loguru::Verbosity_3;
+            default:
+                return loguru::Verbosity_INVALID;
         }
     }
 
@@ -82,22 +97,28 @@ namespace nexo::editor {
     {
         ImVec4 color;
 
-        switch (level)
-        {
+        switch (level) {
             case loguru::Verbosity_FATAL: // Red
-            case loguru::Verbosity_ERROR: color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+            case loguru::Verbosity_ERROR:
+                color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
                 break; // Red
-            case loguru::Verbosity_WARNING: color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+            case loguru::Verbosity_WARNING:
+                color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
                 break; // Yellow
-            case loguru::Verbosity_INFO: color = ImVec4(0.0f, 0.5f, 1.0f, 1.0f);
+            case loguru::Verbosity_INFO:
+                color = ImVec4(0.0f, 0.5f, 1.0f, 1.0f);
                 break; // Blue
-            case loguru::Verbosity_1: color = ImVec4(0.09f, 0.67f, 0.14f, 1.0f); // User
-                break; // Green
-            case loguru::Verbosity_2: color = ImVec4(0.898f, 0.0f, 1.0f, 1.0f); // Debug
-                break; // Pink
-            case loguru::Verbosity_3: color = ImVec4(0.388f, 0.055f, 0.851f, 1.0f); // Dev
-                break; // Purple
-            default: color = ImVec4(1, 1, 1, 1); // White
+            case loguru::Verbosity_1:
+                color = ImVec4(0.09f, 0.67f, 0.14f, 1.0f); // User
+                break;                                     // Green
+            case loguru::Verbosity_2:
+                color = ImVec4(0.898f, 0.0f, 1.0f, 1.0f); // Debug
+                break;                                    // Pink
+            case loguru::Verbosity_3:
+                color = ImVec4(0.388f, 0.055f, 0.851f, 1.0f); // Dev
+                break;                                        // Purple
+            default:
+                color = ImVec4(1, 1, 1, 1); // White
         }
         return color;
     }
@@ -108,10 +129,10 @@ namespace nexo::editor {
 
         // Truncate to seconds precision
         const auto now = floor<seconds>(system_clock::now());
-        const zoned_time local_zoned{ current_zone(), now };
+        const zoned_time local_zoned{current_zone(), now};
 
         auto local_time = local_zoned.get_local_time();
-        std::string ts = std::format("{:%Y%m%d_%H%M%S}", local_time);
+        std::string ts  = std::format("{:%Y%m%d_%H%M%S}", local_time);
         return std::format("../logs/NEXO-{}.log", ts);
     }
-}
+} // namespace nexo::editor
