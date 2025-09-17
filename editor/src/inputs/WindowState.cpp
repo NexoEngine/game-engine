@@ -34,4 +34,4 @@ namespace nexo::editor {
     {
         return {m_commands.data(), m_commands.size()};
     }
-}
+} // namespace nexo::editor
