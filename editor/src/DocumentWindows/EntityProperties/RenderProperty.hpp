@@ -29,6 +29,7 @@ namespace nexo::editor {
     static_assert(static_cast<int>(components::PrimitiveType::_COUNT) == std::size(PrimitiveTypeNames),
                   "PrimitiveTypeNames array size must match PrimitiveType enum size");
 
+
     class RenderProperty final : public AEntityProperty {
        public:
         using AEntityProperty::AEntityProperty;

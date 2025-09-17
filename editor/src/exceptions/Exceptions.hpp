@@ -280,5 +280,8 @@ namespace nexo::editor {
         {}
     };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f1f62dbc (fix(demo/scenes): clean files + code style + sonar errors + documentation + clang tidy errors and warnings in editor/src/DocumentWindows/EditorScene and editor/src/DocumentWindows/EntityProperties)
 } // namespace nexo::editor
