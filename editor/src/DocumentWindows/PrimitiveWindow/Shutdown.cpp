@@ -14,10 +14,9 @@
 
 #include "PrimitiveWindow.hpp"
 
-namespace nexo::editor
-{
+namespace nexo::editor {
     void PrimitiveWindow::shutdown()
     {
         // No need to delete anything since the destructor of the framebuffer will handle it
     }
-}
+} // namespace nexo::editor

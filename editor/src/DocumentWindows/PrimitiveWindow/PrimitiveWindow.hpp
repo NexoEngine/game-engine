@@ -6,7 +6,7 @@
 //  zzz    zzzzzzz   zzzz              zzzz  zzzz      zzzz        zzzz
 //  zzz     zzzzzz   zzzzzzzzzzzzz   zzzz      zzzz      zzzzz  zzzzz
 //
-//  Author:      Marie Giacomel
+//  Author:      Marie GIACOMEL
 //  Date:        06/06/2025
 //  Description: Header file for the primitive customization window
 //
@@ -16,11 +16,9 @@
 #include "ADocumentWindow.hpp"
 #include "EntityFactory3D.hpp"
 
-namespace nexo::editor
-{
-    class PrimitiveWindow final : public ADocumentWindow
-    {
-    public:
+namespace nexo::editor {
+    class PrimitiveWindow final : public ADocumentWindow {
+       public:
         using ADocumentWindow::ADocumentWindow;
         void setup() override;
 
@@ -42,7 +40,7 @@ namespace nexo::editor
             m_selectedPrimitive = primitive;
         }
 
-    private:
+       private:
         /**
          * @brief Renders the primitive customization window for the selected primitive.
          *
@@ -54,4 +52,4 @@ namespace nexo::editor
 
         Primitives m_selectedPrimitive = CUBE; // Default primitive type
     };
-}
+} // namespace nexo::editor
