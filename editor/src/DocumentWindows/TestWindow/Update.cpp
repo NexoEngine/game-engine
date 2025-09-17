@@ -21,4 +21,4 @@ namespace nexo::editor {
         // Nothing to do in the update
     }
 
-}
+} // namespace nexo::editor
