@@ -26,6 +26,17 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Parses a bullet point line to extract the test case name.
+     *
+     * This function checks if the provided line starts with a bullet point
+     * indicator (a hyphen followed by a space) and extracts the text following
+     * it as the test case name. If the line does not conform to this format,
+     * an empty string is returned.
+     *
+     * @param line The line of text to parse.
+     * @return The extracted test case name, or an empty string if the format is invalid.
+     */
     static std::string parseBullet(const std::string &line)
     {
         if (line.size() >= 2 && line[0] == '-' && std::isspace(line[1])) return line.substr(2);
