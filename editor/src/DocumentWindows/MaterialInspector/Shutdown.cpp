@@ -17,8 +17,8 @@
 namespace nexo::editor {
 
     void MaterialInspector::shutdown()
-	{
-		// No need to delete anything since the destructor of the framebuffer will handle it
-	}
+    {
+        // No need to delete anything since the destructor of the framebuffer will handle it
+    }
 
-}
+} // namespace nexo::editor

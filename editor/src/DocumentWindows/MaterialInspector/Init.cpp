@@ -17,8 +17,8 @@
 namespace nexo::editor {
 
     void MaterialInspector::setup()
-	{
-		// No need to setup anything
-	}
+    {
+        // No need to set up anything
+    }
 
-}
+} // namespace nexo::editor
