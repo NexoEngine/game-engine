@@ -20,17 +20,13 @@ namespace nexo::editor {
     {
         auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
 
-        if (cameraComponent.m_renderTarget)
-        {
+        if (cameraComponent.m_renderTarget) {
             ImGui::BeginTooltip();
-            constexpr float previewSize = 200.0f;
-            cameraComponent.render = true;
+            constexpr float previewSize  = 200.0f;
+            cameraComponent.render       = true;
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
-            ImNexo::Image(
-                static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                ImVec2(previewSize, previewSize)
-            );
+            ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)), ImVec2(previewSize, previewSize));
 
             ImGui::EndTooltip();
         }
@@ -45,9 +41,10 @@ namespace nexo::editor {
                 cameraHoveredLastFrame = true;
             } else if (cameraHoveredLastFrame) {
                 cameraHoveredLastFrame = false;
-                auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
+                auto &cameraComponent =
+                    Application::m_coordinator->getComponent<components::CameraComponent>(obj.data.entity);
                 cameraComponent.render = false;
             }
         }
     }
-}
+} // namespace nexo::editor

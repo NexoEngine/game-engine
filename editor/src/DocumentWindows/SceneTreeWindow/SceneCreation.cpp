@@ -12,17 +12,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <imgui_internal.h>
 #include "SceneTreeWindow.hpp"
 #include "utils/Config.hpp"
-#include <imgui_internal.h>
 
 namespace nexo::editor {
 
-    bool SceneTreeWindow::setupNewDockSpaceNode(const std::string &floatingWindowName, const std::string &newSceneName) const
+    bool SceneTreeWindow::setupNewDockSpaceNode(const std::string &floatingWindowName,
+                                                const std::string &newSceneName) const
     {
-        const ImGuiWindow* floatingWindow = ImGui::FindWindowByName(floatingWindowName.c_str());
-        if (!floatingWindow)
-            return false;
+        const ImGuiWindow *floatingWindow = ImGui::FindWindowByName(floatingWindowName.c_str());
+        if (!floatingWindow) return false;
 
         // Create a new docking node
         const auto newDockId = ImGui::GetID("##DockNode");
@@ -32,7 +32,7 @@ namespace nexo::editor {
         ImGui::DockBuilderAddNode(newDockId, ImGuiDockNodeFlags_None);
 
         // Set node size and position based on the floating window
-        const ImVec2 windowPos = floatingWindow->Pos;
+        const ImVec2 windowPos  = floatingWindow->Pos;
         const ImVec2 windowSize = floatingWindow->Size;
         ImGui::DockBuilderSetNodeSize(newDockId, windowSize);
         ImGui::DockBuilderSetNodePos(newDockId, windowPos);
@@ -65,9 +65,9 @@ namespace nexo::editor {
             const std::vector<std::string> &editorSceneInConfig = findAllEditorScenes();
             if (!editorSceneInConfig.empty()) {
                 const auto dockId = m_windowRegistry.getDockId(editorSceneInConfig[0]);
-                if (!dockId.has_value())
-                    return false;
-                m_windowRegistry.setDockId(std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()), *dockId);
+                if (!dockId.has_value()) return false;
+                m_windowRegistry.setDockId(std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()),
+                                           *dockId);
                 return true;
             }
             // If nothing is present in config file, simply let it float
@@ -75,14 +75,16 @@ namespace nexo::editor {
         }
 
         // Else we retrieve the first active editor scene
-        const std::string windowName = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, currentEditorSceneWindow[0]->getSceneId());
+        const std::string windowName =
+            std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, currentEditorSceneWindow[0]->getSceneId());
         const auto dockId = m_windowRegistry.getDockId(windowName);
         // If we dont find the dockId, it means the scene is floating, so we create a new dock space node
         if (!dockId.has_value()) {
-            setupNewDockSpaceNode(windowName, std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()));
+            setupNewDockSpaceNode(windowName,
+                                  std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()));
             return true;
         }
         m_windowRegistry.setDockId(std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()), *dockId);
         return true;
     }
-}
+} // namespace nexo::editor

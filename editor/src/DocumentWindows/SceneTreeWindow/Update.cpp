@@ -13,19 +13,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneTreeWindow.hpp"
-#include "components/StaticMesh.hpp"
 #include "components/Name.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Uuid.hpp"
 
 namespace nexo::editor {
 
-    void SceneTreeWindow::generateHierarchicalNodes(std::map<scene::SceneId, SceneObject> &scenes)
+    void SceneTreeWindow::generateHierarchicalNodes(std::map<scene::SceneId, SceneObject>& scenes)
     {
         // Find all root entities
-        const std::vector<ecs::Entity> rootEntities = Application::m_coordinator->getAllEntitiesWith<
-            components::RootComponent,
-            components::TransformComponent,
-            components::SceneTag>();
+        const std::vector<ecs::Entity> rootEntities =
+            Application::m_coordinator
+                ->getAllEntitiesWith<components::RootComponent, components::TransformComponent, components::SceneTag>();
 
         // Set to track entities that have been processed
         std::unordered_set<ecs::Entity> processedEntities;
@@ -35,8 +34,7 @@ namespace nexo::editor {
             const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(rootEntity);
             if (auto it = scenes.find(sceneTag.id); it != scenes.end()) {
                 SceneObject rootNode = createEntityNode(it->second.data.sceneProperties.sceneId,
-                                                      it->second.data.sceneProperties.windowId,
-                                                      rootEntity);
+                                                        it->second.data.sceneProperties.windowId, rootEntity);
                 processedEntities.insert(rootEntity);
                 buildChildNodesForEntity(rootEntity, rootNode, processedEntities);
                 it->second.children.push_back(rootNode);
@@ -45,21 +43,16 @@ namespace nexo::editor {
 
         // Find standalone entities (those with no parent but without RootComponent)
         const std::vector<ecs::Entity> standaloneEntities = Application::m_coordinator->getAllEntitiesWith<
-            components::StaticMeshComponent,
-            components::TransformComponent,
-            components::SceneTag,
-            ecs::Exclude<components::ParentComponent>,
-            ecs::Exclude<components::RootComponent>>();
+            components::StaticMeshComponent, components::TransformComponent, components::SceneTag,
+            ecs::Exclude<components::ParentComponent>, ecs::Exclude<components::RootComponent>>();
 
         for (const ecs::Entity entity : standaloneEntities) {
-            if (processedEntities.contains(entity))
-                continue; // Skip if already processed
+            if (processedEntities.contains(entity)) continue; // Skip if already processed
 
             const auto& sceneTag = Application::m_coordinator->getComponent<components::SceneTag>(entity);
             if (auto it = scenes.find(sceneTag.id); it != scenes.end()) {
                 SceneObject entityNode = createEntityNode(it->second.data.sceneProperties.sceneId,
-                                                       it->second.data.sceneProperties.windowId,
-                                                       entity);
+                                                          it->second.data.sceneProperties.windowId, entity);
                 processedEntities.insert(entity);
                 buildChildNodesForEntity(entity, entityNode, processedEntities);
                 it->second.children.push_back(entityNode);
@@ -67,24 +60,18 @@ namespace nexo::editor {
         }
     }
 
-    void SceneTreeWindow::buildChildNodesForEntity(
-        const ecs::Entity parentEntity,
-        SceneObject& parentNode,
-        std::unordered_set<ecs::Entity>& processedEntities)
+    void SceneTreeWindow::buildChildNodesForEntity(const ecs::Entity parentEntity, SceneObject& parentNode,
+                                                   std::unordered_set<ecs::Entity>& processedEntities)
     {
         const auto& transform = Application::m_coordinator->getComponent<components::TransformComponent>(parentEntity);
 
         for (const auto childEntity : transform.children) {
-            if (childEntity == ecs::INVALID_ENTITY)
-                continue;
+            if (childEntity == ecs::INVALID_ENTITY) continue;
             // Skip if already processed
-            if (processedEntities.contains(childEntity))
-                continue;
+            if (processedEntities.contains(childEntity)) continue;
 
-            SceneObject childNode = createEntityNode(
-                parentNode.data.sceneProperties.sceneId,
-                parentNode.data.sceneProperties.windowId,
-                childEntity);
+            SceneObject childNode = createEntityNode(parentNode.data.sceneProperties.sceneId,
+                                                     parentNode.data.sceneProperties.windowId, childEntity);
 
             processedEntities.insert(childEntity);
             buildChildNodesForEntity(childEntity, childNode, processedEntities);
@@ -92,7 +79,8 @@ namespace nexo::editor {
         }
     }
 
-    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity)
+    SceneObject SceneTreeWindow::createEntityNode(const scene::SceneId sceneId, const WindowId uiId,
+                                                  const ecs::Entity entity)
     {
         const SceneProperties scene{sceneId, uiId};
         const EntityProperties data{scene, entity};
@@ -123,7 +111,7 @@ namespace nexo::editor {
         std::string uuid;
         if (Application::m_coordinator->entityHasComponent<components::UuidComponent>(entity)) {
             const auto& uuidComponent = Application::m_coordinator->getComponent<components::UuidComponent>(entity);
-            uuid = uuidComponent.uuid;
+            uuid                      = uuidComponent.uuid;
         }
 
         // Create UI name with appropriate icon
@@ -142,63 +130,55 @@ namespace nexo::editor {
         return node;
     }
 
-
     void SceneTreeWindow::update()
     {
-        root_.uiName = "Scene Tree";
+        root_.uiName      = "Scene Tree";
         root_.data.entity = ecs::INVALID_ENTITY;
-        root_.type = SelectionType::NONE;
+        root_.type        = SelectionType::NONE;
         root_.children.clear();
         m_nbPointLights = 0;
-        m_nbDirLights = 0;
-        m_nbSpotLights = 0;
+        m_nbDirLights   = 0;
+        m_nbSpotLights  = 0;
 
         if (m_resetExpandState) {
-            m_forceExpandAll = false;
+            m_forceExpandAll   = false;
             m_forceCollapseAll = false;
             m_resetExpandState = false;
         }
 
         // Retrieves the scenes that are displayed on the GUI
-        const auto &scenes = m_windowRegistry.getWindows<EditorScene>();
+        const auto& scenes = m_windowRegistry.getWindows<EditorScene>();
         std::map<scene::SceneId, SceneObject> sceneNodes;
-        for (const auto &scene : scenes)
-        {
+        for (const auto& scene : scenes) {
             sceneNodes[scene->getSceneId()] = newSceneNode(scene->getWindowName(), scene->getSceneId(), windowId);
         }
 
         generateNodes<components::AmbientLightComponent, components::SceneTag>(
-            sceneNodes,
-            [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes, [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
                 return newAmbientLightNode(sceneId, uiId, entity);
             });
         generateNodes<components::DirectionalLightComponent, components::SceneTag>(
-            sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes, [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
                 return newDirectionalLightNode(sceneId, uiId, entity);
             });
         generateNodes<components::PointLightComponent, components::SceneTag>(
-            sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes, [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
                 return newPointLightNode(sceneId, uiId, entity);
             });
         generateNodes<components::SpotLightComponent, components::SceneTag>(
-            sceneNodes,
-            [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes, [this](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
                 return newSpotLightNode(sceneId, uiId, entity);
             });
 
         generateNodes<components::CameraComponent, components::SceneTag, ecs::Exclude<components::EditorCameraTag>>(
-            sceneNodes,
-            [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
+            sceneNodes, [](const scene::SceneId sceneId, const WindowId uiId, const ecs::Entity entity) {
                 return newCameraNode(sceneId, uiId, entity);
             });
 
         generateHierarchicalNodes(sceneNodes);
 
-        for (const auto &sceneNode: sceneNodes | std::views::values)
-        {
+        for (const auto& sceneNode : sceneNodes | std::views::values) {
             root_.children.push_back(sceneNode);
         }
     }
-}
+} // namespace nexo::editor

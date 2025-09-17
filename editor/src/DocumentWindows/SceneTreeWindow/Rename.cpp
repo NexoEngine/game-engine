@@ -29,26 +29,23 @@ namespace nexo::editor {
         *(result.out) = '\0';
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); // Remove border
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f); // No rounding
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);   // No rounding
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
         if (ImGui::InputText("##Rename", buffer, sizeof(buffer),
-                             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
-        {
-            obj.uiName = ObjectTypeToIcon.at(obj.type) + std::string(buffer);
+                             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll)) {
+            obj.uiName     = ObjectTypeToIcon.at(obj.type) + std::string(buffer);
             auto &selector = Selector::get();
             selector.setUiHandle(obj.uuid, obj.uiName);
-            if (obj.type == SelectionType::SCENE)
-            {
+            if (obj.type == SelectionType::SCENE) {
                 auto &app = getApp();
                 app.getSceneManager().getScene(obj.data.sceneProperties.sceneId).setName(obj.uiName);
             }
             m_renameTarget.reset();
         }
-        if (ImGui::IsKeyPressed(ImGuiKey_Escape))
-            m_renameTarget.reset();
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape)) m_renameTarget.reset();
         ImGui::PopStyleVar(3);
         ImGui::EndGroup();
     }
 
-}
+} // namespace nexo::editor
