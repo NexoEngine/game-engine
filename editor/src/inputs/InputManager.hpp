@@ -76,7 +76,7 @@ namespace nexo::editor {
          * in the provided WindowState. It returns a list of commands that can be activated based on
          * the currently pressed keys, including handling modifier keys and nested command structures.
          */
-        [[nodiscard]] std::vector<CommandInfo> getPossibleCommands(const WindowState& windowState) const;
+        [[nodiscard]] static std::vector<CommandInfo> getPossibleCommands(const WindowState& windowState);
 
         /** @brief Retrieves all possible commands regardless of current key state.
          * @param windowState The current state of the window, including available commands.
@@ -86,7 +86,7 @@ namespace nexo::editor {
          * WindowState, without filtering based on the current key state. It is useful for displaying
          * all commands to the user, such as in a help menu or command palette.
          */
-        [[nodiscard]] std::vector<CommandInfo> getAllPossibleCommands(const WindowState& windowState) const;
+        [[nodiscard]] static std::vector<CommandInfo> getAllPossibleCommands(const WindowState& windowState);
 
        private:
         // Current and previous key states for detecting changes
