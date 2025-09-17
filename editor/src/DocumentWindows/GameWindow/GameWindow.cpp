@@ -10,7 +10,7 @@
 // ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀
 // ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀
 //
-//  Author:      Cardonne
+//  Author:      Jean CARDONNE
 //  Date:        2025-06-24
 //  Description: Main implementation file for GameWindow
 //
@@ -25,9 +25,9 @@ namespace nexo::editor {
         m_sceneId = sceneId;
     }
 
-    void GameWindow::setSceneUuid(const std::string& sceneUuid)
+    void GameWindow::setSceneUuid(const std::string_view sceneUuid)
     {
         m_sceneUuid = sceneUuid;
     }
 
-}
+} // namespace nexo::editor
