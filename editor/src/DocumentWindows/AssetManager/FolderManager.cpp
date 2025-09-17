@@ -40,7 +40,6 @@ namespace nexo::editor {
     {
         clear();
         std::unordered_set<std::string> allPaths;
-
         for (const auto& ref : assets::AssetCatalog::getInstance().getAssets()) {
             if (const auto assetData = ref.lock()) {
                 const std::string& folderPath = assetData->getMetadata().location.getPath();
@@ -276,7 +275,7 @@ namespace nexo::editor {
 
     /**
      * @brief Moves a folder to a new parent folder and updates all its children paths accordingly.
-     * 
+     *
      * @param currentFolderPath The current path of the folder to move.
      * @param path The new parent path where the folder will be moved.
      * @return `true` if the folder was successfully moved, `false` otherwise.
@@ -294,6 +293,7 @@ namespace nexo::editor {
 
         if (exists(newFolderPath)) return false;
 
+        // get all children paths that need to be updated
         std::vector<std::string> toUpdate = {};
         for (const auto& key : m_children | std::views::keys) {
             if (key.starts_with(currentFolderPath)) {
@@ -303,12 +303,13 @@ namespace nexo::editor {
                 for (auto& child : m_children[newKey]) {
                     if (child.starts_with(key)) {
                         const std::string newChildPath = newKey + child.substr(key.size());
-                        child = newChildPath;
+                        child                          = newChildPath;
                     }
                 }
             }
         }
 
+        // remove from parent's children list
         std::erase(m_children[parentPath], currentFolderPath);
         m_children[path].push_back(newFolderPath);
 
@@ -327,6 +328,7 @@ namespace nexo::editor {
             }
         }
 
+        // update path in children
         for (const auto& oldPath : toUpdate) {
             m_children.erase(oldPath);
         }
@@ -339,19 +341,20 @@ namespace nexo::editor {
             if (pathToRemove.empty()) {
                 m_pathToName[newFolderPath] = folderName;
                 if (!key.empty() && key.find(currentFolderPath) != std::string::npos) {
-                    const std::string newKey = path.empty() ? key : path + "/" + key;
+                    const std::string newKey = path.empty() ? key : std::format("%s/%s", path, key);
                     toUpdate.push_back(key);
                     m_pathToName[newKey] = m_pathToName[key];
                 }
             }
             if (!key.empty() && !pathToRemove.empty() && key.find(currentFolderPath) != std::string::npos) {
-                const std::string newKey = path.empty() ? key.substr(pathToRemove.size()) :
-                                                          path + "/" + key.substr(pathToRemove.size());
+                const std::string newKey =
+                    path.empty() ? key.substr(pathToRemove.size()) : path + "/" + key.substr(pathToRemove.size());
                 toUpdate.push_back(key);
                 m_pathToName[newKey] = m_pathToName[key];
             }
         }
 
+        // clean up old paths
         for (const auto& oldPath : toUpdate) {
             m_pathToName.erase(oldPath);
         }
@@ -406,25 +409,15 @@ namespace nexo::editor {
      */
     float FolderManager::getFolderSize(const std::string& folderPath)
     {
-        namespace fs    = std::filesystem;
-        float totalSize = 0.0f;
-        try {
-            for (const auto& entry : fs::recursive_directory_iterator(folderPath)) {
-                if (is_regular_file(entry.path())) {
-                    totalSize += static_cast<float>(fs::file_size(entry.path()));
-                }
-            }
-        } catch (const std::exception&) {
-            return 0.0f;
-        }
-        return totalSize / (1024.0f * 1024.0f); // Return size in Mo
+        // TODO: implement this function properly
+        return 0.0f;
     }
 
     /**
      * @brief Clears all folder data and resets the folder manager to its initial state.
      *
      * This method removes all entries from the internal maps `m_pathToName` and `m_children`,
-     * effectively clearing the folder hierarchy. After clearing, it reinitializes the root
+     * effectively clearing the folder hierarchy. After clearing, it reinitialized the root
      * folder with the name "Assets" and an empty list of children.
      */
     void FolderManager::clear()

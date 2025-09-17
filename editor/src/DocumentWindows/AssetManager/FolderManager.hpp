@@ -45,7 +45,7 @@ namespace nexo::editor {
 
         bool renameFolder(const std::string& folderPath, const std::string& newName);
 
-        bool moveFolder(const std::string& currentFolderPath, const std::string &path);
+        bool moveFolder(const std::string& currentFolderPath, const std::string& path);
 
         [[nodiscard]] std::vector<std::string> getAllPaths() const;
 
