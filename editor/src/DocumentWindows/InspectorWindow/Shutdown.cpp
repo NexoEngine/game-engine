@@ -20,5 +20,4 @@ namespace nexo::editor {
     {
         // Nothing to clear for now
     }
-
-}
+} // namespace nexo::editor
