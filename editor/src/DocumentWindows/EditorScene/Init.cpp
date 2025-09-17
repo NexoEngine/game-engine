@@ -52,14 +52,15 @@ namespace nexo::editor {
         m_editorCamera               = static_cast<int>(
             CameraFactory::createPerspectiveCamera({-14.51f, 7.41f, 2.46f}, static_cast<unsigned int>(m_contentSize.x),
                                                                  static_cast<unsigned int>(m_contentSize.y), renderTarget));
-        auto& cameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
-        auto & transformComponent = Application::m_coordinator->getComponent<components::TransformComponent>(m_editorCamera);
+        auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
+        auto& transformComponent =
+            Application::m_coordinator->getComponent<components::TransformComponent>(m_editorCamera);
         transformComponent.quat = glm::quat(glm::radians(glm::vec3{-56.90f, 18.90f, 0.0f}));
-        cameraComponent.render = true;
-        auto maskPass          = std::make_shared<renderer::MaskPass>(static_cast<unsigned int>(m_contentSize.x),
+        cameraComponent.render  = true;
+        auto maskPass           = std::make_shared<renderer::MaskPass>(static_cast<unsigned int>(m_contentSize.x),
                                                              static_cast<unsigned int>(m_contentSize.y));
-        auto outlinePass       = std::make_shared<renderer::OutlinePass>();
-        auto gridPass          = std::make_shared<renderer::GridPass>();
+        auto outlinePass        = std::make_shared<renderer::OutlinePass>();
+        auto gridPass           = std::make_shared<renderer::GridPass>();
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
         const renderer::PassId maskId    = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
@@ -77,6 +78,8 @@ namespace nexo::editor {
 
         // Set the final output pass explicitly
         cameraComponent.pipeline.setFinalOutputPass(gridId);
+
+        // Add editor camera to the scene
         app.getSceneManager().getScene(m_sceneId).addEntity(static_cast<ecs::Entity>(m_editorCamera));
         const components::PerspectiveCameraController controller;
         Application::m_coordinator->addComponent<components::PerspectiveCameraController>(
@@ -93,11 +96,68 @@ namespace nexo::editor {
         if (m_defaultScene) {
             // loadDefaultEntities();
             physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
             videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
+            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
             forestScene({100.0f, 1.0f, 0.0f});
         }
     }
+
+    void EditorScene::createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
+                                             const glm::vec4& color, system::ShapeType shapeType,
+                                             const JPH::EMotionType motionType) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+
+        ecs::Entity entity;
+        LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
+        switch (shapeType) {
+            case system::ShapeType::Box:
+                entity = EntityFactory3D::createCube(pos, size, rotation, color);
+                break;
+            case system::ShapeType::Sphere:
+                entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
+                break;
+            case system::ShapeType::Cylinder:
+                entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
+                break;
+            case system::ShapeType::Tetrahedron:
+                entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
+                break;
+            case system::ShapeType::Pyramid:
+                entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
+                break;
+            default:
+                throw std::runtime_error("Unsupported shape type for entity creation.");
+        }
+        const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
+            entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType,
+            motionType);
+        if (bodyId.IsInvalid()) {
+            LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
+        }
+        scene.addEntity(entity);
+    }
+
+    void EditorScene::setupWindow()
+    {
+        m_contentSize = ImVec2(1280, 720);
+    }
+
+    void EditorScene::setCamera(const ecs::Entity cameraId)
+    {
+        auto& oldCameraComponent =
+            Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
+        oldCameraComponent.active = false;
+        oldCameraComponent.render = false;
+        m_activeCamera            = static_cast<int>(cameraId);
+        auto& newCameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
+        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
+                                  static_cast<unsigned int>(m_contentSize.y));
+    }
+
+    void EditorScene::loadDefaultEntities()
+    {}
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
     {
@@ -125,16 +185,18 @@ namespace nexo::editor {
             scene.addEntity(light);
         }
 
-        const auto base = EntityFactory3D::createCube( {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
-                                                 {25.0f, 0.7f, 25.0f}, {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
+        const auto base =
+            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {25.0f, 0.7f, 25.0f},
+                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
         scene.addEntity(base);
 
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
 
         const assets::AssetLocation rubixCubeModel("my_package::RubixCube@Models");
         const auto rubixCubeAssetRef = catalog.getAsset(rubixCubeModel).as<assets::Model>();
-        auto rubixCube = EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
-                                                  {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
+        auto rubixCube =
+            EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
+                                         {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
         scene.addEntity(rubixCube);
 
         const assets::AssetLocation planeModel("my_package::Plane@Models");
@@ -146,7 +208,7 @@ namespace nexo::editor {
         const assets::AssetLocation cupModel("my_package::Cup@Models");
         const auto cupAssetRef = catalog.getAsset(cupModel).as<assets::Model>();
         auto cup = EntityFactory3D::createModel(cupAssetRef, {7.0f + offset.x, 0.3f + offset.y, 1.6f + offset.z},
-                                                  {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
+                                                {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
         scene.addEntity(cup);
 
         const assets::AssetLocation earthModel("my_package::Earth@Models");
@@ -170,26 +232,18 @@ namespace nexo::editor {
 
     void EditorScene::physicScene(const glm::vec3& offset) const
     {
-        auto& app = getApp();
-
-
-
         // Background
         createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
                                {0.91f, 0.91f, 0.91f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
 
-        // Funnel
+        // Funnel left and right
         createEntityWithPhysic({-6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f},
                                {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
                                JPH::EMotionType::Static);
         createEntityWithPhysic({6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f},
                                {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
 
-        // Spinner
-        // createEntityWithPhysic({0.0f, 65.0f, 0.0f}, {0.5f, 3.0f, 4.0f}, {0, 0, 5.0f}, {0.0f, 1.0f, 0.0f, 1.0f},
-        //                        system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Stairs
+        // Stairs right
         std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
             {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
             {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
@@ -200,12 +254,7 @@ namespace nexo::editor {
                                    JPH::EMotionType::Static);
         }
 
-        //////////////////////////////// Video scene //////////////////////////////////
-            auto videoBillboard = EntityFactory3D::createBillboard({0.0f, 5.0f, 1.0f},
-                                                            {3.0f, 3.0f, 3.0f},
-                                                            {1.0f, 1.0f, 1.0f, 1.0f});
-            components::VideoComponent videoComponent;
-        // Tunnel
+        // Tunnel left
         std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
             {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
             {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
@@ -214,7 +263,7 @@ namespace nexo::editor {
             createEntityWithPhysic(pos + offset, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
                                    JPH::EMotionType::Static);
         }
-        // Dominos
+        // Dominos left and right
         createEntityWithPhysic({-9.0f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f},
                                {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
         createEntityWithPhysic({11.15f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {15.5f, 0.5f, 4.0f},
@@ -223,18 +272,14 @@ namespace nexo::editor {
 
         for (int i = 0; i < 24; ++i) {
             if (i == 13) continue;
-            float x              = -18.4f + static_cast<float>(i) * 1.6f;
-            glm::vec3 pos        = {x, 45.5f, 0.0f};
-            float gradientFactor = static_cast<float>(i) / 24.0f;
+            const float x              = -18.4f + static_cast<float>(i) * 1.6f;
+            glm::vec3 pos              = {x, 45.5f, 0.0f};
+            const float gradientFactor = static_cast<float>(i) / 24.0f;
             glm::vec4 color =
                 mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
             createEntityWithPhysic(pos + offset, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box,
                                    JPH::EMotionType::Dynamic);
         }
-
-        // Spinner
-        createEntityWithPhysic({2.5f + offset.x, 41.0f + offset.y, 0.0f + offset.z}, {0.5f, 3.0f, 4.0f}, {0, 0, 0},
-                               {0.0f, 1.0f, 0.0f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
 
         // Fakir
         constexpr int totalRows = 20;
@@ -243,13 +288,13 @@ namespace nexo::editor {
         for (int row = 0; row < totalRows; ++row) {
             constexpr int cols = 10;
             for (int col = 0; col < cols; ++col) {
-                constexpr float startY  = 14.0f;
-                constexpr float spacing = 3.0f;
-                float offsetX           = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-                glm::vec3 pos           = {static_cast<float>(col) * spacing + startX + offsetX,
-                                           startY + static_cast<float>(row) * 1.2f, 0.0f};
-                auto maxFactor          = static_cast<float>(totalRows * cols);
-                float gradientFactor    = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
+                constexpr float startY     = 14.0f;
+                constexpr float spacing    = 3.0f;
+                const float offsetX        = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+                glm::vec3 pos              = {static_cast<float>(col) * spacing + startX + offsetX,
+                                              startY + static_cast<float>(row) * 1.2f, 0.0f};
+                constexpr auto maxFactor   = static_cast<float>(totalRows * cols);
+                const float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
                 glm::vec4 color =
                     mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
                 createEntityWithPhysic(pos + offset, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color,
@@ -263,10 +308,10 @@ namespace nexo::editor {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        auto videoBillboard =
-            EntityFactory3D::createBillboard({0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
+        const auto videoBillboard = EntityFactory3D::createBillboard(
+            {0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
         components::VideoComponent videoComponent;
-        videoComponent.path = nexo::Path::resolvePathRelativeToExe("../resources/videos/Warmup.mp4").string();
+        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/_Warmup.mp4").string();
         videoComponent.keyframes = {
             {0.0f, 0.1f, components::KeyframeType::NORMAL},
             {0.01f, 1.25f, components::KeyframeType::TRANSITION},
@@ -314,9 +359,9 @@ namespace nexo::editor {
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
         const assets::AssetLocation grassTexture("my_package::grass@Textures");
         const auto grassAssetRef = catalog.getAsset(grassTexture).as<assets::Texture>();
-        auto &materialComp = app.m_coordinator->getComponent<components::MaterialComponent>(floor);
-        const auto materialAssetRef = materialComp.material;
-        const auto materialAsset = materialAssetRef.lock();
+        auto& materialComp       = nexo::Application::m_coordinator->getComponent<components::MaterialComponent>(floor);
+        const auto materialAssetRef             = materialComp.material;
+        const auto materialAsset                = materialAssetRef.lock();
         materialAsset->getData()->albedoTexture = grassAssetRef;
 
         const assets::AssetLocation frogModel("my_package::Frog@Models");
@@ -337,7 +382,7 @@ namespace nexo::editor {
         const assets::AssetLocation logModel("my_package::Log@Models");
         const auto logAssetRef = catalog.getAsset(logModel).as<assets::Model>();
         auto log = EntityFactory3D::createModel(logAssetRef, {-5.0f + offset.x, 0.5f + offset.y, 5.0f + offset.z},
-                                                  {2.3f, 2.3f, 2.3f}, {0.0f, -40.0f, 0.0f});
+                                                {2.3f, 2.3f, 2.3f}, {0.0f, -40.0f, 0.0f});
 
         scene.addEntity(floor);
         scene.addEntity(frog);
@@ -346,60 +391,4 @@ namespace nexo::editor {
         scene.addEntity(log);
     }
 
-    void EditorScene::createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
-                                             const glm::vec4& color, system::ShapeType shapeType,
-                                             const JPH::EMotionType motionType) const
-    {
-        auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-
-        ecs::Entity entity;
-        LOG(NEXO_DEV, "Creating entity of type: {}", static_cast<int>(shapeType));
-        switch (shapeType) {
-            case system::ShapeType::Box:
-                entity = EntityFactory3D::createCube(pos, size, rotation, color);
-                break;
-            case system::ShapeType::Sphere:
-                entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
-                break;
-            case system::ShapeType::Cylinder:
-                entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
-                break;
-            case system::ShapeType::Tetrahedron:
-                entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
-                break;
-            case system::ShapeType::Pyramid:
-                entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
-                break;
-            default:
-                throw std::runtime_error("Unsupported shape type for entity creation.");
-        }
-        const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
-            entity, Application::m_coordinator->getComponent<components::TransformComponent>(entity), shapeType,
-            motionType);
-        if (bodyId.IsInvalid()) {
-            LOG(NEXO_ERROR, "Failed to create physics body for entity {}", entity);
-        }
-        scene.addEntity(entity);
-    }
-
-    void EditorScene::loadDefaultEntities() const
-    {}
-
-    void EditorScene::setupWindow()
-    {
-        m_contentSize = ImVec2(1280, 720);
-    }
-
-    void EditorScene::setCamera(const ecs::Entity cameraId)
-    {
-        auto& oldCameraComponent =
-            Application::m_coordinator->getComponent<components::CameraComponent>(m_activeCamera);
-        oldCameraComponent.active = false;
-        oldCameraComponent.render = false;
-        m_activeCamera            = static_cast<int>(cameraId);
-        auto& newCameraComponent  = Application::m_coordinator->getComponent<components::CameraComponent>(cameraId);
-        newCameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
-                                  static_cast<unsigned int>(m_contentSize.y));
-    }
 } // namespace nexo::editor

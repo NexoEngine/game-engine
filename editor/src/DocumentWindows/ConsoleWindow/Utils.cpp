@@ -127,6 +127,15 @@ namespace nexo::editor {
         return color;
     }
 
+    /**
+     * @brief Generates a log file path based on the current date and time.
+     *
+     * This function constructs a file path for storing log files, incorporating the current
+     * date and time to ensure uniqueness and organization. The generated path follows the format:
+     * "../logs/NEXO-YYYYmmdd_HHMMSS.log", where "YYYYmmdd_HHMMSS" represents the timestamp.
+     *
+     * @return A string representing the generated log file path.
+     */
     std::string generateLogFilePath()
     {
         using namespace std::chrono;
