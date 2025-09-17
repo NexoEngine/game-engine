@@ -22,7 +22,7 @@ namespace nexo::editor {
 
     void ConsoleWindow::shutdown()
     {
-    	clearLog();
+        clearLog();
     }
 
-}
+} // namespace nexo::editor

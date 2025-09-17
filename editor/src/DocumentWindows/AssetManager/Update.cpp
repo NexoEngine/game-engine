@@ -31,4 +31,4 @@ namespace nexo::editor {
         // Nothing to do for now
     }
 
-}
+} // namespace nexo::editor

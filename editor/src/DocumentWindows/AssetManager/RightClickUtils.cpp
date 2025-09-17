@@ -61,5 +61,4 @@ namespace nexo::editor {
             m_popupManager.openPopup("Right click on Asset");
         }
     }
-
 } // namespace nexo::editor

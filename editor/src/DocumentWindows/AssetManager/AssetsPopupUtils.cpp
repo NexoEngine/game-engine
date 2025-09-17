@@ -134,7 +134,7 @@ namespace nexo::editor {
         // Input text for the new asset name
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
         static std::string newName;
-        std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
+        std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         if (newName.empty()) {
             newName = assetName;
         }

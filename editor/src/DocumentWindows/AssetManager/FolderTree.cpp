@@ -52,9 +52,11 @@ namespace nexo::editor {
         ImGuiTreeNodeFlags rootFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         if (!ImGui::TreeNodeEx(ICON_FA_STAR " Favorites", rootFlags)) return;
 
-        static constexpr FavoriteItem favorites[]{{ICON_FA_ADJUST, "Materials", assets::AssetType::MATERIAL},
-                                                  {ICON_FA_CUBE, "Models", assets::AssetType::MODEL},
-                                                  {ICON_FA_SQUARE, "Textures", assets::AssetType::TEXTURE}};
+        static constexpr std::array<FavoriteItem, 3> favorites{{
+            {ICON_FA_ADJUST, "Materials", assets::AssetType::MATERIAL},
+            {ICON_FA_CUBE, "Models", assets::AssetType::MODEL},
+            {ICON_FA_SQUARE, "Textures", assets::AssetType::TEXTURE}
+        }};
 
         for (const auto& fav : favorites) {
             const bool isSelected = (fav.type == selectedType);
@@ -86,6 +88,16 @@ namespace nexo::editor {
         PopupManager::endPopup();
     }
 
+    /**
+     * @brief Recursively draws a folder tree item and its children.
+     *
+     * This method handles the rendering of a single folder item in the tree,
+     * including its icon, name, selection state, and context menu on right-click.
+     * It also recursively draws any child folders.
+     *
+     * @param name The display name of the folder.
+     * @param path The full path of the folder.
+     */
     void AssetManagerWindow::drawFolderTreeItem(const std::string& name, const std::string& path)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -99,7 +111,7 @@ namespace nexo::editor {
         ImGui::PopStyleColor();
         ImGui::SameLine();
 
-        bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
+        const bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
 
         if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && !ImGui::IsItemToggledOpen()) m_currentFolder = path;
         if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {

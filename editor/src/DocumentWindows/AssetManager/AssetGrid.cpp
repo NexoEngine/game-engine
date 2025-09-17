@@ -54,7 +54,7 @@ namespace nexo::editor {
     }
 
     static void drawAssetThumbnail(const assets::GenericAssetRef& asset, const LayoutSettings& layout,
-                                   const AssetLayoutParams& params, const bool isSelected)
+                                   const AssetLayoutParams& params)
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -129,7 +129,7 @@ namespace nexo::editor {
             ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const AssetLayoutParams assetLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
 
-        drawAssetThumbnail(asset, m_layout, assetLayoutParams, isSelected);
+        drawAssetThumbnail(asset, m_layout, assetLayoutParams);
         drawAssetTitle(assetData, assetLayoutParams);
 
         ImGui::Selectable("###asset", isSelected,
@@ -141,7 +141,7 @@ namespace nexo::editor {
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal |
                                  ImGuiHoveredFlags_NoSharedDelay)) {
-            ImGui::SetTooltip(assetData->getMetadata().location.getName().c_str());
+            ImGui::SetTooltip("%s", assetData->getMetadata().location.getName().c_str());
         }
         if (ImGui::IsItemHovered()) {
             // Handle on hover and selection
@@ -195,20 +195,16 @@ namespace nexo::editor {
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        constexpr ImU32 titleBgColor = IM_COL32(0, 0, 0, 0);
-        const float titleAreaHeight  = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
+        constexpr ImU32 titleBgColor   = IM_COL32(0, 0, 0, 0);
+        const float titleAreaHeight    = params.itemSize.y * (1.0f - GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const float titlePadding       = std::max(2.0f, titleAreaHeight * 0.1f);
         const float availableTextWidth = params.itemSize.x - (titlePadding * 2);
 
         drawList->AddRectFilled(ImVec2(params.itemPos.x, params.thumbnailEnd.y),
                                 ImVec2(params.itemEnd.x, params.itemEnd.y), titleBgColor);
 
-        const ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
-        // const float textY     = params.thumbnailEnd.y + ((titleAreaHeight - textSize.y) * 0.5f);
-        // const float textX     = params.itemPos.x + (params.itemSize.x - textSize.x) * 0.5f;
-
-        const ImVec2 fullTextSize   = ImGui::CalcTextSize(folderName.c_str());
-        std::string displayText     = folderName;
+        const ImVec2 fullTextSize = ImGui::CalcTextSize(folderName.c_str());
+        std::string displayText   = folderName;
 
         // Crop text if it's too wide
         if (fullTextSize.x > availableTextWidth) cropText(folderName, displayText, availableTextWidth);
@@ -224,8 +220,8 @@ namespace nexo::editor {
                                         const ImVec2& itemPos, const ImVec2& itemSize)
     {
         const bool isSelected = m_selectedFolders.contains(folderPath);
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
-        const auto itemEnd   = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
+        ImDrawList* drawList  = ImGui::GetWindowDrawList();
+        const auto itemEnd    = ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y);
         const auto thumbnailEnd =
             ImVec2(itemPos.x + itemSize.x, itemPos.y + itemSize.y * GridLayoutSizes::THUMBNAIL_HEIGHT_RATIO);
         const AssetLayoutParams folderLayoutParams{itemPos, itemSize, itemEnd, thumbnailEnd};
@@ -243,7 +239,7 @@ namespace nexo::editor {
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayNormal |
                                  ImGuiHoveredFlags_NoSharedDelay)) {
-            ImGui::SetTooltip(folderName.c_str());
+            ImGui::SetTooltip("%s", folderName.c_str());
         }
         if (ImGui::IsItemHovered()) {
             // Handle on hover and selection
@@ -277,7 +273,7 @@ namespace nexo::editor {
 
         handleAssetDrop(folderPath);
         handleFolderDrag(folderPath, folderName);
-        handleFolderDrop(folderPath, folderName);
+        handleFolderDrop(folderPath);
 
         constexpr ImU32 bgColor = IM_COL32(0, 0, 0, 0);
         drawList->AddRectFilled(itemPos, itemEnd, bgColor, GridLayoutSizes::CORNER_RADIUS);
