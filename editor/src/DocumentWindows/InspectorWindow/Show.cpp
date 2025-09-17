@@ -16,27 +16,26 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "IconsFontAwesome.h"
+#include "ImNexo/Components.hpp"
 #include "InspectorWindow.hpp"
 #include "context/Selector.hpp"
-#include "ImNexo/Components.hpp"
-#include "IconsFontAwesome.h"
 
 namespace nexo::editor {
 
     void InspectorWindow::showSceneProperties(const scene::SceneId sceneId)
     {
-        auto &app = getApp();
-        auto &selector = Selector::get();
+        auto &app                    = getApp();
+        auto &selector               = Selector::get();
         scene::SceneManager &manager = app.getSceneManager();
-        scene::Scene &scene = manager.getScene(sceneId);
-        std::string uiHandle = selector.getUiHandle(scene.getUuid(), "");
+        scene::Scene &scene          = manager.getScene(sceneId);
+        std::string uiHandle         = selector.getUiHandle(scene.getUuid(), "");
 
         // Remove the icon prefix
         if (const size_t spacePos = uiHandle.find(' '); spacePos != std::string::npos)
             uiHandle = uiHandle.substr(spacePos + 1);
 
-        if (ImNexo::Header("##SceneNode", uiHandle))
-        {
+        if (ImNexo::Header("##SceneNode", uiHandle)) {
             ImGui::Spacing();
             ImGui::Columns(2, "sceneProps");
             ImGui::SetColumnWidth(0, 80);
@@ -62,11 +61,9 @@ namespace nexo::editor {
 
     void InspectorWindow::showEntityProperties(const ecs::Entity entity)
     {
-        const std::vector<ecs::ComponentType>& componentsType = Application::getAllEntityComponentTypes(entity);
-        for (auto& type : componentsType)
-        {
-            if (m_entityProperties.contains(type))
-            {
+        const std::vector<ecs::ComponentType> &componentsType = Application::getAllEntityComponentTypes(entity);
+        for (auto &type : componentsType) {
+            if (m_entityProperties.contains(type)) {
                 m_entityProperties[type]->show(entity);
             }
         }
@@ -81,15 +78,14 @@ namespace nexo::editor {
         if (selector.getPrimarySelectionType() == SelectionType::SCENE) {
             // Scene selection stays the same - only show the selected scene
             showSceneProperties(selector.getSelectedScene());
-        }
-        else if (selector.hasSelection()) {
+        } else if (selector.hasSelection()) {
             const ecs::Entity primaryEntity = selector.getPrimaryEntity();
 
-            const auto& selectedEntities = selector.getSelectedEntities();
+            const auto &selectedEntities = selector.getSelectedEntities();
             if (selectedEntities.size() > 1) {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
                 ImGui::TextWrapped("%zu entities selected. Displaying properties for the primary entity.",
-                                  selectedEntities.size());
+                                   selectedEntities.size());
                 ImGui::PopStyleColor();
                 ImGui::Separator();
             }
@@ -99,5 +95,4 @@ namespace nexo::editor {
 
         ImGui::End();
     }
-
-}
+} // namespace nexo::editor
