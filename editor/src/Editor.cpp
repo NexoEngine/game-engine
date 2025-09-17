@@ -15,21 +15,21 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "ADocumentWindow.hpp"
 
-#include "utils/Config.hpp"
-#include "Nexo.hpp"
+#include "DocumentWindows/TestWindow/TestWindow.hpp"
 #include "Editor.hpp"
-#include "Logger.hpp"
-#include "Path.hpp"
-#include "backends/ImGuiBackend.hpp"
 #include "IconsFontAwesome.h"
 #include "ImNexo/Elements.hpp"
+#include "Logger.hpp"
+#include "Nexo.hpp"
+#include "Path.hpp"
+#include "backends/ImGuiBackend.hpp"
 #include "context/ActionManager.hpp"
-#include "DocumentWindows/TestWindow/TestWindow.hpp"
+#include "utils/Config.hpp"
 
-#include <imgui_internal.h>
-#include "imgui.h"
 #include <ImGuizmo.h>
 #include <algorithm>
+#include <imgui_internal.h>
+#include "imgui.h"
 
 #include "DocumentWindows/EditorScene/EditorScene.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
@@ -38,7 +38,7 @@ namespace nexo::editor {
 
     void Editor::shutdown() const
     {
-        const Application& app = Application::getInstance();
+        const Application &app = Application::getInstance();
 
         app.shutdownScripting();
         LOG(NEXO_INFO, "Closing editor");
@@ -47,10 +47,10 @@ namespace nexo::editor {
         ImGuiBackend::shutdown();
     }
 
-    void Editor::setupEngine() const
+    void Editor::setupEngine()
     {
         auto const &app = Application::getInstance();
-        auto &window = app.getWindow();
+        auto &window    = app.getWindow();
 
 #ifdef __linux__
     #ifndef WAYLAND_APP_ID
@@ -69,17 +69,16 @@ namespace nexo::editor {
         ImGui::CreateContext();
         ImGuiBackend::init(window);
 
-        ImGuiIO &io = ImGui::GetIO();
-        static const std::string iniFilePath = Path::resolvePathRelativeToExe(
-            "../config/default-layout.ini").string();
-        io.IniFilename = iniFilePath.c_str();
+        ImGuiIO &io                          = ImGui::GetIO();
+        static const std::string iniFilePath = Path::resolvePathRelativeToExe("../config/default-layout.ini").string();
+        io.IniFilename                       = iniFilePath.c_str();
 
         ImGui::StyleColorsDark();
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::Enable(true);
     }
 
-    void Editor::setupStyle() const
+    void Editor::setupStyle()
     {
         ImGui::Spectrum::StyleColorsSpectrum();
 
@@ -88,10 +87,8 @@ namespace nexo::editor {
         float scaleFactorX = 0.0f;
         float scaleFactorY = 0.0f;
         getApp().getWindow()->getDpiScale(&scaleFactorX, &scaleFactorY);
-        getApp().getWindow()->setWindowIcon(Path::resolvePathRelativeToExe(
-            "../resources/nexo.png"));
-        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
-        {
+        getApp().getWindow()->setWindowIcon(Path::resolvePathRelativeToExe("../resources/nexo.png"));
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
             LOG(NEXO_WARN,
                 "Scale factor is greater than 1.0, if you have any issue try adjusting the system's scale factor");
             LOG(NEXO_INFO, "DPI scale: x: {}, y: {}", scaleFactorX, scaleFactorY);
@@ -99,25 +96,25 @@ namespace nexo::editor {
 
         LOG(NEXO_INFO, "ImGui version: {}", IMGUI_VERSION);
 
-        ImGuiIO &io = ImGui::GetIO();
-        io.DisplaySize = ImVec2(static_cast<float>(getApp().getWindow()->getWidth()),
-                                static_cast<float>(getApp().getWindow()->getHeight()));
+        ImGuiIO &io                = ImGui::GetIO();
+        io.DisplaySize             = ImVec2(static_cast<float>(getApp().getWindow()->getWidth()),
+                                            static_cast<float>(getApp().getWindow()->getHeight()));
         io.DisplayFramebufferScale = ImVec2(scaleFactorX, scaleFactorY); // Apply the DPI scale to ImGui rendering
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-
-        ImGuiStyle *style = &ImGui::GetStyle();
+        ImGuiStyle *style                 = &ImGui::GetStyle();
         style->CircleTessellationMaxError = 0.10f;
-        style->WindowRounding = 10.0f;
-        style->ChildRounding = 6.0f;
-        style->PopupRounding = 4.0f;
-        style->WindowMenuButtonPosition = ImGuiDir_Right;
+        style->WindowRounding             = 10.0f;
+        style->ChildRounding              = 6.0f;
+        style->PopupRounding              = 4.0f;
+        style->WindowMenuButtonPosition   = ImGuiDir_Right;
         style->ScaleAllSizes(std::max(scaleFactorX, scaleFactorY));
 
         // Setup NEXO Color Scheme
-        ImVec4* colors = style->Colors;
-        constexpr auto colWindowBg                  = ImVec4(0.02f, 0.02f, 0.04f, 0.59f); // Every color above it will depend on it because of the alpha
+        ImVec4 *colors = style->Colors;
+        constexpr auto colWindowBg =
+            ImVec4(0.02f, 0.02f, 0.04f, 0.59f); // Every color above it will depend on it because of the alpha
         constexpr auto colTitleBg                   = ImVec4(0.00f, 0.00f, 0.00f, 0.28f);
         constexpr auto colTitleBgActive             = ImVec4(0.00f, 0.00f, 0.00f, 0.31f);
         constexpr auto colTabSelectedOverline       = ImVec4(0.30f, 0.12f, 0.45f, 0.85f);
@@ -132,46 +129,46 @@ namespace nexo::editor {
         constexpr auto colTabHovered        = ImVec4(0.33f, 0.25f, 0.40f, colWindowBg.w - colTitleBg.w);
 
         // Depending definitions
-        colors[ImGuiCol_WindowBg]               = colWindowBg;
-        colors[ImGuiCol_TitleBg]                = colTitleBg;
-        colors[ImGuiCol_TitleBgActive]          = colTitleBgActive;
-        colors[ImGuiCol_TitleBgCollapsed]       = colTitleBg;
-        colors[ImGuiCol_Tab]                    = colTab;
-        colors[ImGuiCol_TabSelected]            = colTabSelected;
-        colors[ImGuiCol_TabDimmed]              = colTabDimmed;
-        colors[ImGuiCol_TabDimmedSelected]      = colTabDimmedSelected;
-        colors[ImGuiCol_TabSelectedOverline]    = colTabSelectedOverline;
-        colors[ImGuiCol_TabDimmedSelectedOverline]  = colTabDimmedSelectedOverline;
-        colors[ImGuiCol_TabHovered]             = colTabHovered;
+        colors[ImGuiCol_WindowBg]                  = colWindowBg;
+        colors[ImGuiCol_TitleBg]                   = colTitleBg;
+        colors[ImGuiCol_TitleBgActive]             = colTitleBgActive;
+        colors[ImGuiCol_TitleBgCollapsed]          = colTitleBg;
+        colors[ImGuiCol_Tab]                       = colTab;
+        colors[ImGuiCol_TabSelected]               = colTabSelected;
+        colors[ImGuiCol_TabDimmed]                 = colTabDimmed;
+        colors[ImGuiCol_TabDimmedSelected]         = colTabDimmedSelected;
+        colors[ImGuiCol_TabSelectedOverline]       = colTabSelectedOverline;
+        colors[ImGuiCol_TabDimmedSelectedOverline] = colTabDimmedSelectedOverline;
+        colors[ImGuiCol_TabHovered]                = colTabHovered;
 
         // Static definitions
         const ImVec4 whiteText = colors[ImGuiCol_Text];
 
-        colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.08f, 0.25f, 0.19f);
-        colors[ImGuiCol_TableRowBg]             = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
-        colors[ImGuiCol_FrameBg]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
-        colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.59f, 0.73f, 0.81f, 0.15f);
-        colors[ImGuiCol_MenuBarBg]              = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);
-        colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.20f, 0.20f, 0.34f);
-        colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.30f, 0.30f, 0.30f, 0.69f);
-        colors[ImGuiCol_TextTab]                = whiteText;
-        colors[ImGuiCol_TextTabDimmed]          = whiteText;
-        colors[ImGuiCol_TextTabHovered]         = whiteText;
-        colors[ImGuiCol_TextTabSelected]        = whiteText;
-        colors[ImGuiCol_TextTabDimmedSelected]  = whiteText;
-        colors[ImGuiCol_Header]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
-        colors[ImGuiCol_HeaderHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
-        colors[ImGuiCol_HeaderActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
-        colors[ImGuiCol_Button]                 = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
-        colors[ImGuiCol_ButtonHovered]          = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
-        colors[ImGuiCol_ButtonActive]           = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
-        colors[ImGuiCol_PopupBg]                = ImVec4(0.05f * 1.5f, 0.09f * 1.15f, 0.13f * 1.25, 1.0f);
+        colors[ImGuiCol_Border]                = ImVec4(0.08f, 0.08f, 0.25f, 0.19f);
+        colors[ImGuiCol_TableRowBg]            = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBg]               = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.59f, 0.73f, 0.81f, 0.15f);
+        colors[ImGuiCol_MenuBarBg]             = ImVec4(0.58f, 0.14f, 0.14f, 0.10f);
+        colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.20f, 0.20f, 0.20f, 0.34f);
+        colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.30f, 0.30f, 0.30f, 0.69f);
+        colors[ImGuiCol_TextTab]               = whiteText;
+        colors[ImGuiCol_TextTabDimmed]         = whiteText;
+        colors[ImGuiCol_TextTabHovered]        = whiteText;
+        colors[ImGuiCol_TextTabSelected]       = whiteText;
+        colors[ImGuiCol_TextTabDimmedSelected] = whiteText;
+        colors[ImGuiCol_Header]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_HeaderHovered]         = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_HeaderActive]          = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_Button]                = ImVec4(0.49f, 0.63f, 0.71f, 0.15f);
+        colors[ImGuiCol_ButtonHovered]         = ImVec4(0.49f, 0.63f, 0.71f, 0.30f);
+        colors[ImGuiCol_ButtonActive]          = ImVec4(0.49f, 0.63f, 0.71f, 0.45f);
+        colors[ImGuiCol_PopupBg]               = ImVec4(0.05f * 1.5f, 0.09f * 1.15f, 0.13f * 1.25, 1.0f);
 
         // Optionally, you might want to adjust the text color if needed:
         setupFonts(scaleFactorX, scaleFactorY);
     }
 
-    void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY) const
+    void Editor::setupFonts(const float scaleFactorX, const float scaleFactorY)
     {
         ImFontConfig fontConfig;
         fontConfig.OversampleH = 3; // Horizontal oversampling
@@ -182,17 +179,15 @@ namespace nexo::editor {
         io.Fonts->AddFontDefault();
 
         float fontSize = 18.0f;
-        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f)
-        {
+        if (scaleFactorX > 1.0f || scaleFactorY > 1.0f) {
             fontSize = std::ceil(fontSize * std::max(scaleFactorX, scaleFactorY));
             LOG(NEXO_WARN, "Font size adjusted to {}", fontSize);
         }
         const float iconFontSize = fontSize * 2.0f / 3.0f;
 
-        static const std::string sourceSansPath = Path::resolvePathRelativeToExe(
-            "../resources/fonts/SourceSans3-Regular.ttf").string();
-        ImFont *font = io.Fonts->AddFontFromFileTTF(sourceSansPath.c_str(), fontSize,
-                                                    &fontConfig);
+        static const std::string sourceSansPath =
+            Path::resolvePathRelativeToExe("../resources/fonts/SourceSans3-Regular.ttf").string();
+        ImFont *font = io.Fonts->AddFontFromFileTTF(sourceSansPath.c_str(), fontSize, &fontConfig);
         LOG(NEXO_DEBUG, "Font path: {}", sourceSansPath);
         IM_ASSERT(font != nullptr);
         io.FontDefault = font;
@@ -200,22 +195,20 @@ namespace nexo::editor {
         ImGuiBackend::initFontAtlas();
 
         ImFontConfig fontawesome_config;
-        fontawesome_config.MergeMode = true; // Merge fontawesome with the default font
-        fontawesome_config.OversampleH = 3; // Horizontal oversampling
-        fontawesome_config.OversampleV = 3; // Vertical oversampling
-        //fontawesome_config.GlyphMinAdvanceX = 7.0f; // Use if you want to make the icon monospaced
-        //fontawesome_config.GlyphMaxAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        fontawesome_config.MergeMode   = true; // Merge fontawesome with the default font
+        fontawesome_config.OversampleH = 3;    // Horizontal oversampling
+        fontawesome_config.OversampleV = 3;    // Vertical oversampling
+        // fontawesome_config.GlyphMinAdvanceX = 7.0f; // Use if you want to make the icon monospaced
+        // fontawesome_config.GlyphMaxAdvanceX = 7.0f; // Use if you want to make the icon monospaced
         fontawesome_config.PixelSnapH = true; // Snap to pixel grid, useful for pixel-perfect rendering
-        //fontawesome_config.GlyphExtraSpacing = ImVec2(0.0f, 0.0f); // Adds space between icon and text
+        // fontawesome_config.GlyphExtraSpacing = ImVec2(0.0f, 0.0f); // Adds space between icon and text
 
         fontawesome_config.GlyphMinAdvanceX = iconFontSize; // Make the icons monospaced and aligned
         fontawesome_config.GlyphMaxAdvanceX = iconFontSize; // Make the icons monospaced and aligned
 
-
-
-        static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-        static const std::string fontawesomePath = Path::resolvePathRelativeToExe(
-            "../resources/fonts/fontawesome4.ttf").string();
+        static constexpr ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+        static const std::string fontawesomePath =
+            Path::resolvePathRelativeToExe("../resources/fonts/fontawesome4.ttf").string();
         io.Fonts->AddFontFromFileTTF(fontawesomePath.c_str(), iconFontSize, &fontawesome_config, icon_ranges);
 
         LOG(NEXO_DEBUG, "Fonts initialized");
@@ -223,14 +216,16 @@ namespace nexo::editor {
 
     void Editor::init() const
     {
-		setupEngine();
-		setupStyle();
-		m_windowRegistry.setup();
+        setupEngine();
+        setupStyle();
+        m_windowRegistry.setup();
 
-        const Application& app = Application::getInstance();
-        app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be created in the editor window
+        const Application &app = Application::getInstance();
+        app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
+                             // created in the editor window
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
-            inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow constructor, but we need the scripting to init
+            inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow
+                                                             // constructor, but we need the scripting to init
     }
 
     bool Editor::isOpen() const
@@ -240,12 +235,9 @@ namespace nexo::editor {
 
     void Editor::drawMenuBar()
     {
-        if (ImGui::BeginMainMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Exit"))
-                    m_quit = true;
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Exit")) m_quit = true;
 
                 ImGui::EndMenu();
             }
@@ -255,8 +247,8 @@ namespace nexo::editor {
 
     void Editor::buildDockspace()
     {
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        const ImGuiID dockspaceID = viewport->ID;
+        const ImGuiViewport *viewport     = ImGui::GetMainViewport();
+        const ImGuiID dockspaceID         = viewport->ID;
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
@@ -298,7 +290,8 @@ namespace nexo::editor {
 
             // ─────────────────────────────────────────────
             // Dock the windows into their corresponding nodes.
-            const std::string defaultSceneUniqueStrId = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0); // for the default scene
+            const std::string defaultSceneUniqueStrId =
+                std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0); // for the default scene
             ImGui::DockBuilderDockWindow(defaultSceneUniqueStrId.c_str(), mainSceneTop);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_CONSOLE, consoleNode);
             ImGui::DockBuilderDockWindow(NEXO_WND_USTRID_SCENE_TREE, sceneTreeNode);
@@ -316,10 +309,9 @@ namespace nexo::editor {
 
             // Finish building the dock layout.
             ImGui::DockBuilderFinish(dockspaceID);
-        }
-        else if (!dockingRegistryFilled) {
+        } else if (!dockingRegistryFilled) {
             setAllWindowDockIDsFromConfig(m_windowRegistry);
-         	dockingRegistryFilled = true;
+            dockingRegistryFilled = true;
         }
 
         // Render the dockspace
@@ -328,19 +320,15 @@ namespace nexo::editor {
 
     void Editor::handleGlobalCommands()
     {
-        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
-        {
-            if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
-            {
+        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z)) {
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
                 ActionManager::get().redo();
-            }
-            else
-            {
+            } else {
                 ActionManager::get().undo();
             }
         }
-        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyDown(ImGuiKey_LeftShift) && ImGui::IsKeyPressed(ImGuiKey_T))
-        {
+        if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyDown(ImGuiKey_LeftShift) &&
+            ImGui::IsKeyPressed(ImGuiKey_T)) {
             if (const auto testWindow = getWindow<TestWindow>(NEXO_WND_USTRID_TEST).lock()) {
                 testWindow->setOpened(true);
             } else {
@@ -350,41 +338,33 @@ namespace nexo::editor {
         }
     }
 
-    std::vector<CommandInfo> Editor::handleFocusedWindowCommands()
+    std::vector<CommandInfo> Editor::handleFocusedWindowCommands() const
     {
         std::vector<CommandInfo> possibleCommands;
         static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
         static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
 
         auto focusedWindow = m_windowRegistry.getFocusedWindow();
-        if (focusedWindow)
-        {
+        if (focusedWindow) {
             const WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
-            m_inputManager.processInputs(currentState);
-            possibleCommands = m_inputManager.getPossibleCommands(currentState);
+            nexo::editor::InputManager::processInputs(currentState);
+            possibleCommands = nexo::editor::InputManager::getPossibleCommands(currentState);
 
             // Update the last valid commands if we have any
-            if (!possibleCommands.empty())
-            {
+            if (!possibleCommands.empty()) {
                 constexpr float commandPersistTime = 2.0f;
-                lastValidCommands = possibleCommands;
-                commandDisplayTimer = commandPersistTime; // Reset timer
-            }
-            else if (commandDisplayTimer > 0.0f)
-            {
+                lastValidCommands                  = possibleCommands;
+                commandDisplayTimer                = commandPersistTime; // Reset timer
+            } else if (commandDisplayTimer > 0.0f) {
                 // Use the last valid commands if timer is still active
                 possibleCommands = lastValidCommands;
                 commandDisplayTimer -= ImGui::GetIO().DeltaTime;
-            }
-            else if (lastValidCommands.empty())
-            {
+            } else if (lastValidCommands.empty()) {
                 // Fallback: If we've never had commands, grab all possible commands from the window
                 // This is a more complex operation but ensures we always have something to show
-                possibleCommands = m_inputManager.getAllPossibleCommands(currentState);
+                possibleCommands  = nexo::editor::InputManager::getAllPossibleCommands(currentState);
                 lastValidCommands = possibleCommands;
-            }
-            else
-            {
+            } else {
                 // Use the last valid set of commands
                 possibleCommands = lastValidCommands;
             }
@@ -392,7 +372,7 @@ namespace nexo::editor {
         return possibleCommands;
     }
 
-    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands) const
+    void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands)
     {
         constexpr float bottomBarHeight = 38.0f;
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
@@ -404,24 +384,17 @@ namespace nexo::editor {
         ImGui::SetNextWindowViewport(viewport->ID);
 
         ImGuiWindowFlags bottomBarFlags =
-            ImGuiWindowFlags_NoDecoration |
-            ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoNav |
-            ImGuiWindowFlags_NoDocking |
-            ImGuiWindowFlags_NoFocusOnAppearing |
-            ImGuiWindowFlags_NoInputs |
-            ImGuiWindowFlags_NoBackground;
+            ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
 
-        if (ImGui::Begin(NEXO_WND_USTRID_BOTTOM_BAR, nullptr, bottomBarFlags))
-        {
+        if (ImGui::Begin(NEXO_WND_USTRID_BOTTOM_BAR, nullptr, bottomBarFlags)) {
             constexpr float textScaleFactor = 0.90f; // 15% larger text
             ImGui::SetWindowFontScale(textScaleFactor);
             // Vertically center the content
             const float windowHeight = ImGui::GetWindowHeight();
-            const float textHeight = ImGui::GetTextLineHeight();
-            const float paddingY = (windowHeight - textHeight) * 0.5f;
+            const float textHeight   = ImGui::GetTextLineHeight();
+            const float paddingY     = (windowHeight - textHeight) * 0.5f;
 
             // Apply the vertical padding
             ImGui::SetCursorPosY(paddingY);
@@ -429,51 +402,42 @@ namespace nexo::editor {
             // Start with a small horizontal padding
             ImGui::SetCursorPosX(10.0f);
 
-            if (!possibleCommands.empty())
-            {
-                ImDrawList* drawList = ImGui::GetWindowDrawList();
+            if (!possibleCommands.empty()) {
+                ImDrawList *drawList = ImGui::GetWindowDrawList();
 
                 // Use horizontal layout for commands, left-aligned
-                for (const auto& cmd : possibleCommands)
-                {
+                for (const auto &cmd : possibleCommands) {
                     // Calculate text sizes for proper positioning and border sizing
-                    ImVec2 keySize = ImGui::CalcTextSize(cmd.key.c_str());
+                    ImVec2 keySize   = ImGui::CalcTextSize(cmd.key.c_str());
                     ImVec2 colonSize = ImGui::CalcTextSize(":");
-                    ImVec2 descSize = ImGui::CalcTextSize(cmd.description.c_str());
+                    ImVec2 descSize  = ImGui::CalcTextSize(cmd.description.c_str());
 
                     // Position of the start of this command
                     const ImVec2 commandStart = ImGui::GetCursorScreenPos();
 
                     // Total size of command group with padding
-                    const float commandWidth = keySize.x + colonSize.x + 5.0f + descSize.x;
+                    const float commandWidth  = keySize.x + colonSize.x + 5.0f + descSize.x;
                     const float commandHeight = std::max(keySize.y, std::max(colonSize.y, descSize.y));
 
                     // Add padding around the entire command
-                    constexpr float borderPadding = 6.0f;
+                    constexpr float borderPadding      = 6.0f;
                     constexpr float borderCornerRadius = 3.0f;
 
                     // Draw the gradient border rectangle
                     const auto rectMin = ImVec2(commandStart.x - borderPadding, commandStart.y - borderPadding);
                     const auto rectMax = ImVec2(commandStart.x + commandWidth + borderPadding,
-                                           commandStart.y + commandHeight + borderPadding);
+                                                commandStart.y + commandHeight + borderPadding);
 
                     // Draw gradient border rectangle
-                    drawList->AddRect(
-                        rectMin,
-                        rectMax,
-                        IM_COL32(58, 124, 161, 200),  // Gradient start color
-                        borderCornerRadius,
-                        0,
-                        1.5f  // Border thickness
+                    drawList->AddRect(rectMin, rectMax, IM_COL32(58, 124, 161, 200), // Gradient start color
+                                      borderCornerRadius, 0,
+                                      1.5f // Border thickness
                     );
 
                     // Dark inner background
-                    drawList->AddRectFilled(
-                        ImVec2(rectMin.x + 1, rectMin.y + 1),
-                        ImVec2(rectMax.x - 1, rectMax.y - 1),
-                        IM_COL32(10, 11, 25, 200),  // Dark inner background
-                        borderCornerRadius - 0.5f
-                    );
+                    drawList->AddRectFilled(ImVec2(rectMin.x + 1, rectMin.y + 1), ImVec2(rectMax.x - 1, rectMax.y - 1),
+                                            IM_COL32(10, 11, 25, 200), // Dark inner background
+                                            borderCornerRadius - 0.5f);
 
                     // Draw the command components
                     const std::string &key = cmd.key + ":";
@@ -493,41 +457,37 @@ namespace nexo::editor {
         ImGui::PopStyleColor(2); // Pop both text and bg colors
     }
 
-    void Editor::drawBackground() const
+    void Editor::drawBackground()
     {
         const auto viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::Begin("Background", nullptr,
-                        ImGuiWindowFlags_NoDecoration |
-                        ImGuiWindowFlags_NoInputs |
-                        ImGuiWindowFlags_NoFocusOnAppearing |
-                        ImGuiWindowFlags_NoBringToFrontOnFocus |
-                        ImGuiWindowFlags_NoMove |
-                        ImGuiWindowFlags_NoResize |
-                        ImGuiWindowFlags_NoSavedSettings |
-                        ImGuiWindowFlags_NoScrollbar |
-                        ImGuiWindowFlags_NoBackground);
+                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing |
+                         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar |
+                         ImGuiWindowFlags_NoBackground);
 
         const std::vector<ImNexo::GradientStop> stops = {
-            { 0.06f, IM_COL32(58, 124, 161, 255) },
-            {0.26f, IM_COL32(88, 87, 154, 255) },
-            { 0.50f, IM_COL32(88, 87, 154, 255) },
-            {0.73f, IM_COL32(58, 124, 161, 255) },
+            {0.06f, IM_COL32(58, 124, 161, 255)},
+            {0.26f, IM_COL32(88, 87, 154, 255)},
+            {0.50f, IM_COL32(88, 87, 154, 255)},
+            {0.73f, IM_COL32(58, 124, 161, 255)},
         };
 
         constexpr float angle = 148;
 
         ImNexo::RectFilledLinearGradient(viewport->Pos,
-                ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y), angle, stops);
+                                         ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
+                                         angle, stops);
 
         ImGui::End();
     }
 
     void Editor::render()
     {
-    	getApp().beginFrame();
+        getApp().beginFrame();
 
         ImGuiBackend::begin();
 
@@ -552,7 +512,7 @@ namespace nexo::editor {
 
     void Editor::update() const
     {
-    	m_windowRegistry.update();
+        m_windowRegistry.update();
         getApp().endFrame();
     }
-}
+} // namespace nexo::editor

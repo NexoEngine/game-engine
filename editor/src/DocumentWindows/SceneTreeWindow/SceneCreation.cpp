@@ -78,10 +78,12 @@ namespace nexo::editor {
         const std::string windowName =
             std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, currentEditorSceneWindow[0]->getSceneId());
         const auto dockId = m_windowRegistry.getDockId(windowName);
-        // If we dont find the dockId, it means the scene is floating, so we create a new dock space node
+        // If we don't find the dockId, it means the scene is floating, so we create a new dock space node
         if (!dockId.has_value()) {
-            setupNewDockSpaceNode(windowName,
-                                  std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()));
+            if (!setupNewDockSpaceNode(windowName,
+                                       std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()))) {
+                return false;
+            }
             return true;
         }
         m_windowRegistry.setDockId(std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, newScene->getSceneId()), *dockId);
