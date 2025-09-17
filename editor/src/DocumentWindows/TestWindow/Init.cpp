@@ -25,4 +25,4 @@ namespace nexo::editor {
         parseTestFolder();
     }
 
-}
+} // namespace nexo::editor
