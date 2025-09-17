@@ -277,7 +277,18 @@ namespace nexo::editor {
         static void loadDefaultEntities();
 
         /**
-         * @brief Create entities with adapted physic component
+         * @brief Creates a physics-enabled entity in the scene.
+         *
+         * This method creates an entity with a mesh, material, transform, and physics components
+         * based on the provided parameters. The entity is added to the current scene and configured
+         * with the specified position, size, rotation, color, shape type, and motion type.
+         *
+         * @param pos The position of the entity in world space.
+         * @param size The size (scale) of the entity.
+         * @param rotation The rotation of the entity in Euler angles (degrees).
+         * @param color The color of the entity as a glm::vec4 (RGBA).
+         * @param shapeType The shape type for the physics collider (e.g., box, sphere).
+         * @param motionType The motion type for the physics body (e.g., static, dynamic).
          */
         void createEntityWithPhysic(const glm::vec3& pos, const glm::vec3& size, const glm::vec3& rotation,
                                     const glm::vec4& color, system::ShapeType shapeType,
