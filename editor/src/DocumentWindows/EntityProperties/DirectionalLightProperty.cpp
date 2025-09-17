@@ -15,8 +15,8 @@
 #include "DirectionalLightProperty.hpp"
 #include "ImNexo/EntityProperties.hpp"
 #include "ImNexo/ImNexo.hpp"
-#include "components/Light.hpp"
 #include "ImNexo/Widgets.hpp"
+#include "components/Light.hpp"
 #include "context/ActionManager.hpp"
 
 namespace nexo::editor {
@@ -26,8 +26,7 @@ namespace nexo::editor {
         auto& directionalComponent = Application::getEntityComponent<components::DirectionalLightComponent>(entity);
         static components::DirectionalLightComponent::Memento beforeState;
 
-        if (ImNexo::Header("##DirectionalNode", "Directional light"))
-        {
+        if (ImNexo::Header("##DirectionalNode", "Directional light")) {
             const auto directionalComponentCopy = directionalComponent;
             ImNexo::resetItemStates();
             ImNexo::DirectionalLight(directionalComponent);
@@ -35,11 +34,12 @@ namespace nexo::editor {
                 beforeState = directionalComponentCopy.save();
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = directionalComponent.save();
-                auto action = std::make_unique<ComponentChangeAction<components::DirectionalLightComponent>>(entity, beforeState, afterState);
+                auto action     = std::make_unique<ComponentChangeAction<components::DirectionalLightComponent>>(
+                    entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
                 beforeState = components::DirectionalLightComponent::Memento{};
             }
             ImGui::TreePop();
         }
     }
-}
+} // namespace nexo::editor

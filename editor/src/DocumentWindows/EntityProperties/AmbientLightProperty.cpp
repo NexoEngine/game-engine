@@ -13,13 +13,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AmbientLightProperty.hpp"
-#include "components/Light.hpp"
-#include "ImNexo/Widgets.hpp"
-#include "context/actions/EntityActions.hpp"
-#include "context/ActionManager.hpp"
+#include <imgui.h>
 #include "ImNexo/EntityProperties.hpp"
 #include "ImNexo/ImNexo.hpp"
-#include <imgui.h>
+#include "ImNexo/Widgets.hpp"
+#include "components/Light.hpp"
+#include "context/ActionManager.hpp"
+#include "context/actions/EntityActions.hpp"
 
 namespace nexo::editor {
 
@@ -28,8 +28,7 @@ namespace nexo::editor {
         auto& ambientComponent = Application::getEntityComponent<components::AmbientLightComponent>(entity);
         static components::AmbientLightComponent::Memento beforeState;
 
-        if (ImNexo::Header("##AmbientNode", "Ambient light"))
-        {
+        if (ImNexo::Header("##AmbientNode", "Ambient light")) {
             const auto ambientComponentCopy = ambientComponent;
             ImNexo::resetItemStates();
             ImNexo::Ambient(ambientComponent);
@@ -37,7 +36,8 @@ namespace nexo::editor {
                 beforeState = ambientComponentCopy.save();
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = ambientComponent.save();
-                auto action = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(entity, beforeState, afterState);
+                auto action     = std::make_unique<ComponentChangeAction<components::AmbientLightComponent>>(
+                    entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
                 beforeState = components::AmbientLightComponent::Memento{};
             }
@@ -45,4 +45,4 @@ namespace nexo::editor {
             ImGui::TreePop();
         }
     }
-}
+} // namespace nexo::editor

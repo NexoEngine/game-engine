@@ -20,27 +20,34 @@
 
 namespace nexo::editor {
     class TypeErasedProperty final : public AEntityProperty {
-        public:
-        	TypeErasedProperty(InspectorWindow &inspector, const ecs::ComponentType componentType, const std::shared_ptr<ecs::ComponentDescription>& description)
-                : AEntityProperty(inspector)
-                , m_componentType(componentType), m_description(description)
-            {
-            }
+       public:
+        /**
+         * @brief Constructs a TypeErasedProperty for displaying and editing properties of a specific component type.
+         *
+         * @param inspector Reference to the InspectorWindow managing this property.
+         * @param componentType The type identifier of the component whose properties will be displayed.
+         * @param description Shared pointer to the ComponentDescription containing metadata about the component's
+         * fields.
+         */
+        TypeErasedProperty(InspectorWindow& inspector, const ecs::ComponentType componentType,
+                           const std::shared_ptr<ecs::ComponentDescription>& description)
+            : AEntityProperty(inspector), m_componentType(componentType), m_description(description)
+        {}
 
-            /**
-             * @brief Displays and edits the properties of an entity component using an ImGui interface.
-             *
-             * Retrieves the component data for the given entity based on the stored component type,
-             * and renders editable fields according to the component description metadata.
-             * Supports various field types including primitives and vector types.
-             *
-             * @param entity The entity whose component properties are rendered.
-             */
-            void show(ecs::Entity entity) override;
+        /**
+         * @brief Displays and edits the properties of an entity component using an ImGui interface.
+         *
+         * Retrieves the component data for the given entity based on the stored component type,
+         * and renders editable fields according to the component description metadata.
+         * Supports various field types including primitives and vector types.
+         *
+         * @param entity The entity whose component properties are rendered.
+         */
+        void show(ecs::Entity entity) override;
 
-        private:
-            const ecs::ComponentType m_componentType; // Type of the component being displayed
-            const std::shared_ptr<ecs::ComponentDescription> m_description; // Description of the component being displayed
+       private:
+        const ecs::ComponentType m_componentType;                       // Type of the component being displayed
+        const std::shared_ptr<ecs::ComponentDescription> m_description; // Description of the component being displayed
     };
 
-}
+} // namespace nexo::editor

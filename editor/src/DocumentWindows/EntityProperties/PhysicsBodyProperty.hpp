@@ -21,34 +21,42 @@
 namespace nexo::editor {
 
     class PhysicsBodyProperty final : public AEntityProperty {
-        public:
-            explicit PhysicsBodyProperty(InspectorWindow &inspector)
-                : AEntityProperty(inspector)
-            {
-            }
+       public:
+        explicit PhysicsBodyProperty(InspectorWindow &inspector) : AEntityProperty(inspector)
+        {}
 
-            /**
-             * @brief Displays and edits the physics body properties with proper Jolt synchronization.
-             *
-             * Shows the physics body type (Static/Dynamic) and handles the recreation
-             * of the physics body in Jolt when properties are modified.
-             *
-             * @param entity The entity whose physics body properties are rendered.
-             */
-            void show(ecs::Entity entity) override;
+        /**
+         * @brief Displays and edits the physics body properties with proper Jolt synchronization.
+         *
+         * Shows the physics body type (Static/Dynamic) and handles the recreation
+         * of the physics body in Jolt when properties are modified.
+         *
+         * @param entity The entity whose physics body properties are rendered.
+         */
+        void show(ecs::Entity entity) override;
 
-            static void addPhysicsComponentToEntity(ecs::Entity entity, bool isDynamic);
+        /**
+         * @brief Adds a physics component to the specified entity.
+         *
+         * Creates and attaches a PhysicsBodyComponent to the entity, initializing it
+         * as either static or dynamic based on the provided flag. This function also
+         * ensures that the physics body is properly created in the Jolt Physics engine.
+         *
+         * @param entity The entity to which the physics component will be added.
+         * @param isDynamic If true, creates a dynamic body; otherwise, creates a static body.
+         */
+        static void addPhysicsComponentToEntity(ecs::Entity entity, bool isDynamic);
 
-        private:
-            /**
-             * @brief Recreates the physics body in Jolt with new properties.
-             * 
-             * Properly removes the old body and creates a new one with updated settings.
-             * 
-             * @param entity The entity whose physics body needs recreation
-             * @param newType The new physics body type
-             */
-            void recreatePhysicsBody(ecs::Entity entity, components::PhysicsBodyComponent::Type newType);
+       private:
+        /**
+         * @brief Recreates the physics body in Jolt with new properties.
+         *
+         * Properly removes the old body and creates a new one with updated settings.
+         *
+         * @param entity The entity whose physics body needs recreation
+         * @param newType The new physics body type
+         */
+        static void recreatePhysicsBody(ecs::Entity entity, components::PhysicsBodyComponent::Type newType);
     };
 
-}
+} // namespace nexo::editor

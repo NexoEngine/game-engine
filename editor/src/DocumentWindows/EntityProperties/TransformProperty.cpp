@@ -14,10 +14,10 @@
 
 #include <imgui.h>
 
-#include "TransformProperty.hpp"
 #include "ImNexo/Elements.hpp"
 #include "ImNexo/EntityProperties.hpp"
 #include "ImNexo/ImNexo.hpp"
+#include "TransformProperty.hpp"
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
 #include "context/ActionManager.hpp"
@@ -33,8 +33,7 @@ namespace nexo::editor {
         static glm::vec3 lastDisplayedEuler(0.0f);
         static components::TransformComponent::Memento beforeState;
 
-        if (ImNexo::Header("##TransformNode", "Transform Component"))
-        {
+        if (ImNexo::Header("##TransformNode", "Transform Component")) {
             const auto transformComponentCopy = transformComponent;
             ImNexo::resetItemStates();
             ImNexo::Transform(transformComponent, lastDisplayedEuler);
@@ -42,10 +41,11 @@ namespace nexo::editor {
                 beforeState = transformComponentCopy.save();
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = transformComponent.save();
-                auto action = std::make_unique<ComponentChangeAction<components::TransformComponent>>(entity, beforeState, afterState);
+                auto action     = std::make_unique<ComponentChangeAction<components::TransformComponent>>(
+                    entity, beforeState, afterState);
                 ActionManager::get().recordAction(std::move(action));
             }
             ImGui::TreePop();
         }
     }
-}
+} // namespace nexo::editor
