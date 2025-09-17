@@ -25,4 +25,4 @@ namespace nexo::editor {
         setupShortcuts();
     }
 
-}
+} // namespace nexo::editor
