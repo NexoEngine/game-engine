@@ -20,9 +20,46 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Converts a loguru::Verbosity level to its string representation.
+     *
+     * This function takes a loguru::Verbosity level and returns a human-readable string
+     * that represents the verbosity level for display purposes.
+     *
+     * @param level The loguru::Verbosity level to convert.
+     * @return A string representing the verbosity level.
+     */
     std::string verbosityToString(loguru::Verbosity level);
+
+    /**
+     * @brief Converts a custom LogLevel to a loguru::Verbosity level.
+     *
+     * Maps the provided LogLevel to the corresponding loguru::Verbosity level for consistent logging.
+     *
+     * @param level The custom LogLevel to convert.
+     * @return The equivalent loguru::Verbosity level.
+     */
     loguru::Verbosity nexoLevelToLoguruLevel(LogLevel level);
+
+    /**
+     * @brief Retrieves the color associated with a specific log verbosity level.
+     *
+     * This function returns an ImVec4 color that corresponds to the given loguru::Verbosity level,
+     * allowing for visual differentiation of log messages based on their severity.
+     *
+     * @param level The loguru::Verbosity level for which to get the color.
+     * @return An ImVec4 representing the color associated with the verbosity level.
+     */
     ImVec4 getVerbosityColor(loguru::Verbosity level);
+
+    /**
+     * @brief Generates a log file path based on the current date and time.
+     *
+     * This function constructs a file path for storing log files, incorporating the current
+     * date and time to ensure uniqueness and organization.
+     *
+     * @return A string representing the generated log file path.
+     */
     std::string generateLogFilePath();
 
     constexpr auto LOGURU_CALLBACK_NAME = "GEE";
@@ -35,8 +72,8 @@ namespace nexo::editor {
      */
     struct LogMessage {
         loguru::Verbosity verbosity{}; ///< The verbosity level of the log message
-        std::string message;         ///< The content of the log message
-        std::string prefix;          ///< Optional prefix for the log message
+        std::string message;           ///< The content of the log message
+        std::string prefix;            ///< Optional prefix for the log message
     };
 
     /**
@@ -104,7 +141,7 @@ namespace nexo::editor {
         void update() override;
 
         /**
-         * @brief Executes a command entered in the console.
+         * @brief Executes a command that is entered in the console.
          *
          * Processes the given command line, adds it to the command history,
          * and displays it in the log.
