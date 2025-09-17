@@ -209,8 +209,8 @@ namespace ImNexo {
             ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##Lock", ImGuiTableColumnFlags_WidthStretch);
             glm::vec2 viewPort = {cameraComponent.width, cameraComponent.height};
-            constexpr std::vector<ImU32> badgeColors;
-            constexpr std::vector<ImU32> textBadgeColors;
+            const std::vector<ImU32> badgeColors;
+            const std::vector<ImU32> textBadgeColors;
 
             const bool disabled = !cameraComponent.viewportLocked;
             if (disabled) ImGui::BeginDisabled();
