@@ -20,17 +20,25 @@
 #include <string>
 
 namespace nexo::editor::utils {
-	/**
-	* @brief Removes the icon prefix from a string.
-	*
-	* This function assumes that an icon is prefixed to the string followed by a space.
-	* It searches for the first space in the string and returns the substring following that space.
-	* If no space is found, the original string is returned unchanged.
-	*
-	* @param str The input string that may contain an icon prefix.
-	* @return std::string The string with the icon prefix removed.
-	*/
-	std::string removeIconPrefix(const std::string &str);
+    /**
+     * @brief Removes the icon prefix from a string.
+     *
+     * This function assumes that an icon is prefixed to the string followed by a space.
+     * It searches for the first space in the string and returns the substring following that space.
+     * If no space is found, the original string is returned unchanged.
+     *
+     * @param str The input string that may contain an icon prefix.
+     * @return std::string The string with the icon prefix removed.
+     */
+    std::string removeIconPrefix(const std::string &str);
 
-	void trim(std::string &s);
-}
+    /**
+     * @brief Trims leading and trailing whitespace from a string in place.
+     *
+     * This function modifies the input string by removing any whitespace characters
+     * (spaces, tabs, newlines, etc.) from the beginning and end of the string.
+     *
+     * @param s The string to be trimmed. It will be modified directly.
+     */
+    void trim(std::string &s);
+} // namespace nexo::editor::utils

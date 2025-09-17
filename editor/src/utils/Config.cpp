@@ -20,16 +20,14 @@
 #include "Path.hpp"
 
 #include <fstream>
-#include <string>
-#include <regex>
 #include <iostream>
+#include <regex>
+#include <string>
 
 namespace nexo::editor {
-
     ImGuiID findWindowDockIDFromConfig(const std::string& windowName)
     {
-        std::string configPath = Path::resolvePathRelativeToExe(
-            "../config/default-layout.ini").string();
+        std::string configPath = Path::resolvePathRelativeToExe("../config/default-layout.ini").string();
         std::ifstream configFile(configPath);
         if (!configFile.is_open()) {
             std::cout << "Could not open config file: " << configPath << std::endl;
@@ -38,7 +36,7 @@ namespace nexo::editor {
 
         std::string line;
         bool inWindowSection = false;
-        ImGuiID dockId = 0;
+        ImGuiID dockId       = 0;
 
         std::string windowHeader = "[Window][" + windowName + "]";
 
@@ -51,8 +49,7 @@ namespace nexo::editor {
 
             if (inWindowSection) {
                 // If we hit a new section, stop searching
-                if (!line.empty() && line[0] == '[')
-                    break;
+                if (!line.empty() && line[0] == '[') break;
 
                 std::regex dockIdRegex("DockId=(0x[0-9a-fA-F]+)");
 
@@ -72,8 +69,7 @@ namespace nexo::editor {
 
     std::vector<std::string> findAllEditorScenes()
     {
-        std::string configPath = Path::resolvePathRelativeToExe(
-            "../config/default-layout.ini").string();
+        std::string configPath = Path::resolvePathRelativeToExe("../config/default-layout.ini").string();
         std::ifstream configFile(configPath);
 
         std::vector<std::string> sceneWindows;
@@ -100,8 +96,7 @@ namespace nexo::editor {
 
     void setAllWindowDockIDsFromConfig(WindowRegistry& registry)
     {
-        std::string configPath = Path::resolvePathRelativeToExe(
-            "../config/default-layout.ini").string();
+        std::string configPath = Path::resolvePathRelativeToExe("../config/default-layout.ini").string();
         std::ifstream configFile(configPath);
 
         if (!configFile.is_open()) {
@@ -112,7 +107,7 @@ namespace nexo::editor {
         std::string line;
         std::string currentWindowName;
         bool inWindowSection = false;
-        bool isHashedWindow = false;
+        bool isHashedWindow  = false;
 
         std::regex windowHeaderRegex(R"(\[Window\]\[(.+)\])");
         std::regex dockIdRegex("DockId=(0x[0-9a-fA-F]+)");
@@ -122,7 +117,7 @@ namespace nexo::editor {
             std::smatch windowMatch;
             if (std::regex_search(line, windowMatch, windowHeaderRegex) && windowMatch.size() > 1) {
                 currentWindowName = windowMatch[1].str();
-                inWindowSection = true;
+                inWindowSection   = true;
 
                 // Check if the window name starts with ###
                 isHashedWindow = currentWindowName.starts_with("###");
@@ -135,32 +130,32 @@ namespace nexo::editor {
                 // If we hit a new section, reset state
                 if (!line.empty() && line[0] == '[') {
                     inWindowSection = false;
-                    isHashedWindow = false;
+                    isHashedWindow  = false;
                     continue;
                 }
 
                 std::smatch dockMatch;
                 if (std::regex_search(line, dockMatch, dockIdRegex) && dockMatch.size() > 1) {
                     std::string hexDockId = dockMatch[1];
-                    ImGuiID dockId = 0;
+                    ImGuiID dockId        = 0;
                     std::stringstream ss;
                     ss << std::hex << hexDockId;
                     ss >> dockId;
 
                     // Set the dock ID for this window in the registry
                     if (dockId != 0) {
-                        std::cout << "Setting dock id " << dockId << " for hashed window "
-                                  << currentWindowName << std::endl;
+                        std::cout << "Setting dock id " << dockId << " for hashed window " << currentWindowName
+                                  << std::endl;
                         registry.setDockId(currentWindowName, dockId);
                     }
                 }
             } else if (inWindowSection && !line.empty() && line[0] == '[') {
                 // Reset state when we hit a new section
                 inWindowSection = false;
-                isHashedWindow = false;
+                isHashedWindow  = false;
             }
         }
 
         configFile.close();
     }
-}
+} // namespace nexo::editor

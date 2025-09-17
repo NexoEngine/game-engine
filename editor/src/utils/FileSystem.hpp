@@ -43,4 +43,4 @@ namespace nexo::editor::utils {
      *       security implications if folderPath contains untrusted input.
      */
     void openFolder(const std::string &folderPath);
-}
+} // namespace nexo::editor::utils
