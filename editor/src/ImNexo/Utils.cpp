@@ -31,14 +31,15 @@ namespace ImNexo::utils {
         const unsigned char r1 = (colB >> 16) & 0xFF;
         const unsigned char g1 = (colB >> 8) & 0xFF;
         const unsigned char b1 = colB & 0xFF;
-        const auto a = static_cast<unsigned char>(static_cast<float>(a0) + t * static_cast<float>(a1 - a0));
-        const auto r = static_cast<unsigned char>(static_cast<float>(r0) + t * static_cast<float>(r1 - r0));
-        const auto g = static_cast<unsigned char>(static_cast<float>(g0) + t * static_cast<float>(g1 - g0));
-        const auto b = static_cast<unsigned char>(static_cast<float>(b0) + t * static_cast<float>(b1 - b0));
+        const auto a           = static_cast<unsigned char>(static_cast<float>(a0) + t * static_cast<float>(a1 - a0));
+        const auto r           = static_cast<unsigned char>(static_cast<float>(r0) + t * static_cast<float>(r1 - r0));
+        const auto g           = static_cast<unsigned char>(static_cast<float>(g0) + t * static_cast<float>(g1 - g0));
+        const auto b           = static_cast<unsigned char>(static_cast<float>(b0) + t * static_cast<float>(b1 - b0));
         return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
     }
 
-    void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, const float offset, std::vector<ImVec2>& outPoly)
+    void clipPolygonWithLine(const std::vector<ImVec2>& poly, const ImVec2& normal, const float offset,
+                             std::vector<ImVec2>& outPoly)
     {
         outPoly.clear();
         const auto count = poly.size();
@@ -46,10 +47,9 @@ namespace ImNexo::utils {
         for (size_t i = 0; i < count; i++) {
             const ImVec2& a = poly[i];
             const ImVec2& b = poly[(i + 1) % count];
-            const float da = ImDot(a, normal) - offset;
-            const float db = ImDot(b, normal) - offset;
-            if (da >= 0)
-                outPoly.push_back(a);
+            const float da  = ImDot(a, normal) - offset;
+            const float db  = ImDot(b, normal) - offset;
+            if (da >= 0) outPoly.push_back(a);
             // if the edge spans the boundary, compute intersection
             if ((da >= 0 && db < 0) || (da < 0 && db >= 0)) {
                 const float t = da / (da - db);
@@ -63,8 +63,7 @@ namespace ImNexo::utils {
 
     void fillConvexPolygon(ImDrawList* drawList, const std::vector<ImVec2>& poly, const std::vector<ImU32>& polyColors)
     {
-        if (poly.size() < 3)
-            return;
+        if (poly.size() < 3) return;
         const auto count = static_cast<int>(poly.size());
         drawList->PrimReserve((count - 2) * 3, count);
         // Use the first vertex as pivot.
@@ -96,14 +95,11 @@ namespace ImNexo::utils {
     }
 
     /**
-    * @brief Positions text centered within a rectangle
-    */
+     * @brief Positions text centered within a rectangle
+     */
     ImVec2 calculateCenteredTextPosition(const std::string& text, const ImVec2& p_min, const ImVec2& p_max)
     {
         const ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
-        return {
-            p_min.x + (p_max.x - p_min.x - textSize.x) * 0.5f,
-            p_min.y + (p_max.y - p_min.y - textSize.y) * 0.5f
-        };
+        return {p_min.x + (p_max.x - p_min.x - textSize.x) * 0.5f, p_min.y + (p_max.y - p_min.y - textSize.y) * 0.5f};
     }
-}
+} // namespace ImNexo::utils

@@ -24,6 +24,12 @@ namespace ImNexo {
         return g_isItemActive;
     }
 
+    /**
+     * @brief Reset the active state of the last item.
+     *
+     * This function resets the internal state to indicate that the last item is no longer active.
+     * It should be called at the end of each frame to clear the active state for the next frame.
+     */
     static void resetItemActiveState()
     {
         g_isItemActive = false;
@@ -39,6 +45,13 @@ namespace ImNexo {
         return g_isItemActivated;
     }
 
+    /**
+     * @brief Reset the activated state of the last item.
+     *
+     * This function resets the internal state to indicate that the last item is no longer
+     * considered activated. It should be called at the end of each frame to clear the
+     * activated state for the next frame.
+     */
     static void resetItemActivatedState()
     {
         g_isItemActivated = false;
@@ -54,6 +67,13 @@ namespace ImNexo {
         return g_isItemDeactivated;
     }
 
+    /**
+     * @brief Reset the deactivated state of the last item.
+     *
+     * This function resets the internal state to indicate that the last item is no longer
+     * considered deactivated. It should be called at the end of each frame to clear the
+     * deactivated state for the next frame.
+     */
     static void resetItemDeactivatedState()
     {
         g_isItemDeactivated = false;
@@ -71,4 +91,4 @@ namespace ImNexo {
         resetItemDeactivatedState();
     }
 
-}
+} // namespace ImNexo
