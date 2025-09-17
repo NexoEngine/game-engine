@@ -40,7 +40,7 @@ namespace nexo::editor {
         ImGui::Begin(windowTitle.c_str(), &m_opened, ImGuiWindowFlags_NoCollapse);
 
         // Call beginRender to handle docking and state tracking
-        beginRender("###GameWindow" + std::to_string(m_sceneId));
+        beginRender(std::format("###GameWindow%s", std::to_string(m_sceneId)));
 
         // Render the viewport first
         renderViewport();
