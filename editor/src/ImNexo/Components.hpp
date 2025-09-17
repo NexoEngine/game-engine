@@ -8,22 +8,22 @@
 //
 //  Author:      Mehdy MORVAN
 //  Date:        17/02/2025
-//  Description: Header file for the utilitary ImGui functions
+//  Description: Header file for the utility ImGui functions
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <filesystem>
+#include <functional>
 #include <imgui.h>
 #include <string>
 #include <vector>
-#include <functional>
 
-#include "ecs/Coordinator.hpp"
-#include "renderer/Texture.hpp"
 #include "Elements.hpp"
 #include "Guard.hpp"
 #include "ImNexo.hpp"
+#include "ecs/Coordinator.hpp"
+#include "renderer/Texture.hpp"
 
 namespace ImNexo {
 
@@ -39,33 +39,36 @@ namespace ImNexo {
      * @param itemSize The size dimensions of the button
      * @return true if the button was clicked, false otherwise
      */
-	bool ButtonWithIconAndText(const std::string &uniqueId, const std::string &icon, const std::string &label, const ImVec2 &itemSize);
+    bool ButtonWithIconAndText(const std::string &uniqueId, const std::string &icon, const std::string &label,
+                               const ImVec2 &itemSize);
 
     /**
-    * @brief Draws a color button with a border.
-    *
-    * Displays a color button with the provided label and size. Optionally toggles a clicked state.
-    *
-    * @param label The label for the color button.
-    * @param size The size of the button.
-    * @param color The color to display.
-    * @param clicked Optional pointer to a boolean that is toggled when the button is clicked.
-    * @param flags Additional color edit flags.
-    */
-	void ColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked = nullptr, ImGuiColorEditFlags flags = ImGuiColorEditFlags_None);
+     * @brief Draws a color button with a border.
+     *
+     * Displays a color button with the provided label and size. Optionally toggles a clicked state.
+     *
+     * @param label The label for the color button.
+     * @param size The size of the button.
+     * @param color The color to display.
+     * @param clicked Optional pointer to a boolean that is toggled when the button is clicked.
+     * @param flags Additional color edit flags.
+     */
+    void ColorButton(const std::string &label, ImVec2 size, ImVec4 color, bool *clicked = nullptr,
+                     ImGuiColorEditFlags flags = ImGuiColorEditFlags_None);
 
     /**
-    * @brief Draws a texture button that displays a texture preview.
-    *
-    * When pressed, opens a file dialog to select a new texture. If a path was
-    * selected, it is set in `outPath` and the function returns true.
-    *
-    * @param[in] label A unique label identifier for the button.
-    * @param[in] texture A shared pointer to the renderer::NxTexture2D that holds the texture.
-    * @param[out] outPath The path to the selected texture.
-    * @return true if a texture path was set; false otherwise.
-    */
-	bool TextureButton(const std::string &label, const std::shared_ptr<nexo::renderer::NxTexture2D>& texture, std::filesystem::path& outPath);
+     * @brief Draws a texture button that displays a texture preview.
+     *
+     * When pressed, opens a file dialog to select a new texture. If a path was
+     * selected, it is set in `outPath` and the function returns true.
+     *
+     * @param[in] label A unique label identifier for the button.
+     * @param[in] texture A shared pointer to the renderer::NxTexture2D that holds the texture.
+     * @param[out] outPath The path to the selected texture.
+     * @return true if a texture path was set; false otherwise.
+     */
+    bool TextureButton(const std::string &label, const std::shared_ptr<nexo::renderer::NxTexture2D> &texture,
+                       std::filesystem::path &outPath);
 
     /**
      * @brief Creates a customizable gradient button with a centered icon.
@@ -84,18 +87,13 @@ namespace ImNexo {
      * @param iconColor Color of the icon
      * @return true if the button was clicked, false otherwise
      */
-    bool IconGradientButton(const std::string& uniqueId, const std::string& icon,
-		const ImVec2& size = ImVec2(40, 40),
-        const std::vector<GradientStop>& gradientStops = {
-            {0.0f, IM_COL32(60, 60, 80, 255)},
-            {1.0f, IM_COL32(30, 30, 40, 255)}
-        },
-        float gradientAngle = 45.0f,
-        ImU32 borderColor = IM_COL32(100, 100, 120, 255),
-        ImU32 borderColorHovered = IM_COL32(150, 150, 200, 255),
-        ImU32 borderColorActive = IM_COL32(200, 200, 255, 255),
-        ImU32 iconColor = IM_COL32(255, 255, 255, 255)
-	);
+    bool IconGradientButton(const std::string &uniqueId, const std::string &icon, const ImVec2 &size = ImVec2(40, 40),
+                            const std::vector<GradientStop> &gradientStops = {{0.0f, IM_COL32(60, 60, 80, 255)},
+                                                                              {1.0f, IM_COL32(30, 30, 40, 255)}},
+                            float gradientAngle = 45.0f, ImU32 borderColor = IM_COL32(100, 100, 120, 255),
+                            ImU32 borderColorHovered = IM_COL32(150, 150, 200, 255),
+                            ImU32 borderColorActive  = IM_COL32(200, 200, 255, 255),
+                            ImU32 iconColor          = IM_COL32(255, 255, 255, 255));
 
     /**
      * @brief Displays a dropdown to select an entity from a list.
@@ -109,192 +107,164 @@ namespace ImNexo {
      * @param getNameFunc Function that converts an entity ID to a displayable name string
      * @return true if an entity was selected (value changed), false otherwise
      */
-     template<typename GetNameFunc>
-     bool RowEntityDropdown(
-         const std::string& label,
-         nexo::ecs::Entity& targetEntity,
-         const std::vector<nexo::ecs::Entity>& entities,
-         GetNameFunc&& getNameFunc
-     )
-     {
-         ImGui::TableNextRow();
-         ImGui::TableNextColumn();
-         ImGui::AlignTextToFramePadding();
-         ImGui::TextUnformatted(label.c_str());
+    template<typename GetNameFunc>
+    bool RowEntityDropdown(const std::string &label, nexo::ecs::Entity &targetEntity,
+                           const std::vector<nexo::ecs::Entity> &entities, GetNameFunc &&getNameFunc)
+    {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(label.c_str());
 
-         ImGui::TableNextColumn();
-         IdGuard idGuard(label);
+        ImGui::TableNextColumn();
+        IdGuard idGuard(label);
 
-         bool changed = false;
+        bool changed = false;
 
-         // Build entity-name mapping
-         static std::vector<std::pair<nexo::ecs::Entity, std::string>> entityNamePairs;
-         static nexo::ecs::Entity lastTargetEntity = 0;
-         static std::vector<nexo::ecs::Entity> lastEntities;
+        // Build entity-name mapping
+        static std::vector<std::pair<nexo::ecs::Entity, std::string>> entityNamePairs;
+        static nexo::ecs::Entity lastTargetEntity = 0;
+        static std::vector<nexo::ecs::Entity> lastEntities;
 
-         // Only rebuild the mapping if entities list changed or target entity changed
-         bool needRebuild = lastTargetEntity != targetEntity || lastEntities.size() != entities.size();
+        // Only rebuild the mapping if entities list changed or target entity changed
+        bool needRebuild = lastTargetEntity != targetEntity || lastEntities.size() != entities.size();
 
-         if (!needRebuild) {
-             for (size_t i = 0; i < entities.size() && !needRebuild; i++) {
-                 needRebuild = lastEntities[i] != entities[i];
-             }
-         }
+        // if (!needRebuild) {
+            // for (size_t i = 0; i < entities.size() && !needRebuild; i++) {
+            //     needRebuild = lastEntities[i] != entities[i];
+            // }
+            for (size_t i = 0; i < entities.size() && !needRebuild; ++i) {
+                if (lastEntities[i] != entities[i]) {
+                    needRebuild = true;
+                    break;
+                }
+            }
+        // }
 
-         if (needRebuild) {
-             entityNamePairs.clear();
-             entityNamePairs.reserve(entities.size());
-             lastEntities = entities;
-             lastTargetEntity = targetEntity;
+        if (needRebuild) {
+            entityNamePairs.clear();
+            entityNamePairs.reserve(entities.size());
+            lastEntities     = entities;
+            lastTargetEntity = targetEntity;
 
-             for (nexo::ecs::Entity entity : entities) {
-                 std::string name = getNameFunc(entity);
-                 entityNamePairs.emplace_back(entity, name);
-             }
-         }
+            for (nexo::ecs::Entity entity : entities) {
+                std::string name = getNameFunc(entity);
+                entityNamePairs.emplace_back(entity, name);
+            }
+        }
 
-         // Find current index
-         int currentIndex = -1;
-         for (size_t i = 0; i < entityNamePairs.size(); i++) {
-             if (entityNamePairs[i].first == targetEntity) {
-                 currentIndex = static_cast<int>(i);
-                 break;
-             }
-         }
+        // Find current index
+        int currentIndex = -1;
+        for (size_t i = 0; i < entityNamePairs.size(); i++) {
+            if (entityNamePairs[i].first == targetEntity) {
+                currentIndex = static_cast<int>(i);
+                break;
+            }
+        }
 
-         // Add a "None" option if we want to allow null selection
-         const std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
+        // Add a "None" option if we want to allow null selection
+        const std::string currentItemName = currentIndex >= 0 ? entityNamePairs[currentIndex].second : "None";
 
-         // Draw the combo box
-         ImGui::SetNextItemWidth(-FLT_MIN); // Use all available width
-         if (ImGui::BeginCombo("##entity_dropdown", currentItemName.c_str()))
-         {
-             // Optional: Add a "None" option for clearing the target
-             if (ImGui::Selectable("None", targetEntity == nexo::ecs::MAX_ENTITIES)) {
-                 targetEntity = nexo::ecs::MAX_ENTITIES;
-                 changed = true;
-             }
+        // Draw the combo box
+        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available width
+        if (ImGui::BeginCombo("##entity_dropdown", currentItemName.c_str())) {
+            // Optional: Add a "None" option for clearing the target
+            if (ImGui::Selectable("None", targetEntity == nexo::ecs::MAX_ENTITIES)) {
+                targetEntity = nexo::ecs::MAX_ENTITIES;
+                changed      = true;
+            }
 
-             for (size_t i = 0; i < entityNamePairs.size(); i++)
-             {
-                 const bool isSelected = (currentIndex == static_cast<int>(i));
-                 if (ImGui::Selectable(entityNamePairs[i].second.c_str(), isSelected))
-                 {
-                     targetEntity = entityNamePairs[i].first;
-                     changed = true;
-                 }
+            for (size_t i = 0; i < entityNamePairs.size(); i++) {
+                const bool isSelected = (currentIndex == static_cast<int>(i));
+                if (ImGui::Selectable(entityNamePairs[i].second.c_str(), isSelected)) {
+                    targetEntity = entityNamePairs[i].first;
+                    changed      = true;
+                }
 
-                 if (isSelected)
-                     ImGui::SetItemDefaultFocus();
-             }
-             ImGui::EndCombo();
-         }
-         if (ImGui::IsItemActive())
-             setItemActive();
-         if (ImGui::IsItemActivated())
-             setItemActivated();
-         if (ImGui::IsItemDeactivated())
-             setItemDeactivated();
+                if (isSelected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        if (ImGui::IsItemActive()) setItemActive();
+        if (ImGui::IsItemActivated()) setItemActivated();
+        if (ImGui::IsItemDeactivated()) setItemDeactivated();
 
-         return changed;
-     }
-
-	/**
-    * @brief Draws a row with multiple channels (badge + slider pairs)
-    *
-    * This is a lower-level function used by the other drawRowDragFloatX functions.
-    *
-    * @param[in] channels The channel configuration to draw
-    * @return true if any value was changed, false otherwise
-    */
-	bool RowDragFloat(const Channels &channels);
+        return changed;
+    }
 
     /**
-    * @brief Draws a row with a single float value slider
-    *
-    * @param[in] uniqueLabel Unique label/ID for the component
-    * @param[in] badgeLabel Text for the badge (empty for no badge)
-    * @param[in,out] value Pointer to the float value to edit
-    * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
-    * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
-    * @param[in] speed Speed of value change during dragging (default: 0.3f)
-    * @return true if the value was changed, false otherwise
-    */
-	bool RowDragFloat1(
-		const char *uniqueLabel,
-		const std::string &badgeLabel,
-		float *value,
-		float minValue = -FLT_MAX,
-		float maxValue = FLT_MAX,
-		float speed = 0.3f
-	);
-
+     * @brief Draws a row with multiple channels (badge + slider pairs)
+     *
+     * This is a lower-level function used by the other drawRowDragFloatX functions.
+     *
+     * @param[in] channels The channel configuration to draw
+     * @return true if any value was changed, false otherwise
+     */
+    bool RowDragFloat(const Channels &channels);
 
     /**
-    * @brief Draws a row with two float value sliders (X and Y components)
-    *
-    * @param[in] uniqueLabel Unique label/ID for the component
-    * @param[in] badLabelX Text for the X component badge
-    * @param[in] badLabelY Text for the Y component badge
-    * @param[in,out] values Pointer to array of two float values to edit
-    * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
-    * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
-    * @param[in] speed Speed of value change during dragging (default: 0.3f)
-    * @param[in] badgeColor Optional custom colors for badges
-    * @param[in] textBadgeColor Optional custom text colors for badges
-    * @param[in] disabled If true, renders in an inactive/disabled state (default: false)
-    * @return true if any value was changed, false otherwise
-    */
-	bool RowDragFloat2(
-		const char *uniqueLabel,
-		const std::string &badLabelX,
-		const std::string &badLabelY,
-		float *values,
-		float minValue = -FLT_MAX,
-		float maxValue = FLT_MAX,
-		float speed = 0.3f,
-		std::vector<ImU32> badgeColor = {},
-		std::vector<ImU32> textBadgeColor = {},
-		bool disabled = false
-	);
+     * @brief Draws a row with a single float value slider
+     *
+     * @param[in] uniqueLabel Unique label/ID for the component
+     * @param[in] badgeLabel Text for the badge (empty for no badge)
+     * @param[in,out] value Pointer to the float value to edit
+     * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
+     * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
+     * @param[in] speed Speed of value change during dragging (default: 0.3f)
+     * @return true if the value was changed, false otherwise
+     */
+    bool RowDragFloat1(const char *uniqueLabel, const std::string &badgeLabel, float *value, float minValue = -FLT_MAX,
+                       float maxValue = FLT_MAX, float speed = 0.3f);
 
     /**
-    * @brief Draws a row with three float value sliders (X, Y, and Z components)
-    *
-    * @param[in] uniqueLabel Unique label/ID for the component
-    * @param[in] badLabelX Text for the X component badge
-    * @param[in] badLabelY Text for the Y component badge
-    * @param[in] badLabelZ Text for the Z component badge
-    * @param[in,out] values Pointer to array of three float values to edit
-    * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
-    * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
-    * @param[in] speed Speed of value change during dragging (default: 0.3f)
-    * @param[in] badgeColors Optional custom colors for badges
-    * @param[in] textBadgeColors Optional custom text colors for badges
-    * @return true if any value was changed, false otherwise
-    */
-	bool RowDragFloat3(
-		const char *uniqueLabel,
-		const std::string &badLabelX,
-		const std::string &badLabelY,
-		const std::string &badLabelZ,
-		float *values,
-		float minValue = -FLT_MAX,
-		float maxValue = FLT_MAX,
-		float speed = 0.3f,
-		std::vector<ImU32> badgeColors = {},
-		std::vector<ImU32> textBadgeColors = {}
-	);
+     * @brief Draws a row with two float value sliders (X and Y components)
+     *
+     * @param[in] uniqueLabel Unique label/ID for the component
+     * @param[in] badLabelX Text for the X component badge
+     * @param[in] badLabelY Text for the Y component badge
+     * @param[in,out] values Pointer to array of two float values to edit
+     * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
+     * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
+     * @param[in] speed Speed of value change during dragging (default: 0.3f)
+     * @param[in] badgeColor Optional custom colors for badges
+     * @param[in] textBadgeColor Optional custom text colors for badges
+     * @param[in] disabled If true, renders in an inactive/disabled state (default: false)
+     * @return true if any value was changed, false otherwise
+     */
+    bool RowDragFloat2(const char *uniqueLabel, const std::string &badLabelX, const std::string &badLabelY,
+                       float *values, float minValue = -FLT_MAX, float maxValue = FLT_MAX, float speed = 0.3f,
+                       std::vector<ImU32> badgeColor = {}, std::vector<ImU32> textBadgeColor = {},
+                       bool disabled = false);
 
     /**
-    * @brief Draws a toggle button with a separator and label
-    *
-    * Creates a collapsible section control with an arrow that toggles
-    * between expanded and collapsed states.
-    *
-    * @param[in] label The label to display
-    * @param[in,out] toggled Pointer to bool that tracks the toggle state
-    * @return true if the toggle state changed, false otherwise
-    */
-	bool ToggleButtonWithSeparator(const std::string &label, bool* toggled);
-}
+     * @brief Draws a row with three float value sliders (X, Y, and Z components)
+     *
+     * @param[in] uniqueLabel Unique label/ID for the component
+     * @param[in] badLabelX Text for the X component badge
+     * @param[in] badLabelY Text for the Y component badge
+     * @param[in] badLabelZ Text for the Z component badge
+     * @param[in,out] values Pointer to array of three float values to edit
+     * @param[in] minValue Minimum allowed value (default: -FLT_MAX)
+     * @param[in] maxValue Maximum allowed value (default: FLT_MAX)
+     * @param[in] speed Speed of value change during dragging (default: 0.3f)
+     * @param[in] badgeColors Optional custom colors for badges
+     * @param[in] textBadgeColors Optional custom text colors for badges
+     * @return true if any value was changed, false otherwise
+     */
+    bool RowDragFloat3(const char *uniqueLabel, const std::string &badLabelX, const std::string &badLabelY,
+                       const std::string &badLabelZ, float *values, float minValue = -FLT_MAX, float maxValue = FLT_MAX,
+                       float speed = 0.3f, std::vector<ImU32> badgeColors = {},
+                       std::vector<ImU32> textBadgeColors = {});
+
+    /**
+     * @brief Draws a toggle button with a separator and label
+     *
+     * Creates a collapsible section control with an arrow that toggles
+     * between expanded and collapsed states.
+     *
+     * @param[in] label The label to display
+     * @param[in,out] toggled Pointer to bool that tracks the toggle state
+     * @return true if the toggle state changed, false otherwise
+     */
+    bool ToggleButtonWithSeparator(const std::string &label, bool *toggled);
+} // namespace ImNexo

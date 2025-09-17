@@ -17,14 +17,14 @@
 
 namespace ImNexo {
     /**
-    * @brief Draws a material inspector widget for editing material properties.
-    *
-    * This function displays controls for shader selection, rendering mode, and textures/colors
-    * for material properties such as albedo and specular components.
-    *
-    * @param material Reference to the components::Material to be inspected and modified.
-    * @return true if any material property was modified; false otherwise.
-    */
+     * @brief Draws a material inspector widget for editing material properties.
+     *
+     * This function displays controls for shader selection, rendering mode, and textures/colors
+     * for material properties such as albedo and specular components.
+     *
+     * @param material Reference to the components::Material to be inspected and modified.
+     * @return true if any material property was modified; false otherwise.
+     */
     bool MaterialInspector(nexo::components::Material &material);
 
     /**
@@ -44,8 +44,7 @@ namespace ImNexo {
      * the dialog is otherwise closed, any temporary camera is deleted.
      *
      * @param sceneId The ID of the scene where the camera will be created
-     * @param sceneViewportSize The size of the scene viewport for proper camera aspect ratio
      * @return true if the dialog was closed (either by confirming or canceling), false if still open
      */
     bool CameraInspector(nexo::scene::SceneId sceneId);
-}
+} // namespace ImNexo

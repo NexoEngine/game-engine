@@ -18,7 +18,6 @@
 
 #include <algorithm>
 #include <imgui_internal.h>
-#include <math.h>
 #include <numbers>
 
 namespace ImNexo {
@@ -114,6 +113,20 @@ namespace ImNexo {
         }
     }
 
+    /**
+     * @brief Draws a button with custom style colors.
+     *
+     * Pushes custom style colors for the button and its states, draws the button,
+     * and then pops the style colors.
+     *
+     * @param label The button label.
+     * @param size The size of the button.
+     * @param bg The background color.
+     * @param bgHovered The background color when hovered.
+     * @param bgActive The background color when active.
+     * @param txtColor The text color.
+     * @return true if the button was clicked; false otherwise.
+     */
     bool Button(const std::string& label, const ImVec2& size, const ImU32 bg, const ImU32 bgHovered,
                 const ImU32 bgActive, const ImU32 txtColor)
     {
@@ -125,15 +138,30 @@ namespace ImNexo {
         return ImGui::Button(label.c_str(), size);
     }
 
+    /**
+     * @brief Draws a validation button with custom style colors.
+     *
+     * Pushes custom style colors for the button and its states, draws the button,
+     * and then pops the style colors.
+     *
+     * @param label The button label.
+     * @param type The type of the button (validation, cancel, or default).
+     * @param size The size of the button.
+     * @param bg The background color.
+     * @param bgHovered The background color when hovered.
+     * @param bgActive The background color when active.
+     * @param txtColor The text color.
+     * @return true if the button was clicked; false otherwise.
+     */
     bool Button(const std::string& label, const ButtonTypes type, const ImVec2& size, const ImU32 bg,
                 const ImU32 bgHovered, const ImU32 bgActive, const ImU32 txtColor)
     {
         const bool clicked = Button(label, size, bg, bgHovered, bgActive, txtColor);
         switch (type) {
-            case (VALIDATION): {
+            case VALIDATION: {
                 return clicked || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter);
             }
-            case (CANCEL): {
+            case CANCEL: {
                 return clicked || ImGui::IsKeyPressed(ImGuiKey_Escape);
             }
             default: {
@@ -142,6 +170,19 @@ namespace ImNexo {
         }
     }
 
+    /**
+     * @brief Draws a border around the last item.
+     *
+     * Uses the current item's rectangle and draws a border with specified colors
+     * for normal, hovered, and active states.
+     *
+     * @param borderColor The border color for normal state.
+     * @param borderColorHovered The border color when hovered.
+     * @param borderColorActive The border color when active.
+     * @param rounding The rounding of the border corners.
+     * @param flags Additional draw flags.
+     * @param thickness The thickness of the border.
+     */
     void ButtonBorder(const ImU32 borderColor, const ImU32 borderColorHovered, const ImU32 borderColorActive,
                       const float rounding, const ImDrawFlags flags, const float thickness)
     {
@@ -156,6 +197,23 @@ namespace ImNexo {
         ImGui::GetWindowDrawList()->AddRect(p_min, p_max, color, rounding, flags, thickness);
     }
 
+    /**
+     * @brief Draws a draggable float widget with custom styling.
+     *
+     * Pushes custom style colors for the drag float widget, draws it, and then pops the styles.
+     *
+     * @param label The label for the drag float.
+     * @param values Pointer to the float value.
+     * @param speed The speed of value change.
+     * @param min The minimum allowable value.
+     * @param max The maximum allowable value.
+     * @param format The display format.
+     * @param bg The background color.
+     * @param bgHovered The background color when hovered.
+     * @param bgActive The background color when active.
+     * @param textColor The text color.
+     * @return true if the value was changed; false otherwise.
+     */
     bool DragFloat(const std::string& label, float* values, const float speed, const float min, const float max,
                    const std::string& format, const ImU32 bg, const ImU32 bgHovered, const ImU32 bgActive,
                    const ImU32 textColor)
@@ -168,8 +226,14 @@ namespace ImNexo {
         return ImGui::DragFloat(label.c_str(), values, speed, min, max, format.c_str());
     }
 
+
     /**
-     * @brief Sanitizes gradient stops to ensure proper ordering and range
+     * @brief Sanitize and prepare gradient stops for rendering
+     * @param[in,out] stops Vector of gradient stops to sanitize
+     *
+     * This function ensures that the gradient stops are sorted by position,
+     * clamped to the range [0.0f, 1.0f], and that there are stops at both
+     * 0.0f and 1.0f if needed.
      */
     static void sanitizeGradientStops(std::vector<GradientStop>& stops)
     {
@@ -199,6 +263,14 @@ namespace ImNexo {
         }
     }
 
+    /**
+     * @brief Draws a rectangle filled with a linear gradient defined by color stops and angle
+     * @param[in] pMin Minimum bounds of the rectangle
+     * @param[in] pMax Maximum bounds of the rectangle
+     * @param[in] angle Angle of the gradient in degrees (0 = left to right, 90 = bottom to top)
+     * @param[in] stops Array of gradient color stops defining the gradient
+     * @param[in] drawList Optional ImDrawList to draw into (nullptr for current window's draw list)
+     */
     void RectFilledLinearGradient(const ImVec2& pMin, const ImVec2& pMax, float angle, std::vector<GradientStop> stops,
                                   ImDrawList* drawList)
     {
@@ -269,6 +341,13 @@ namespace ImNexo {
         }
     }
 
+    /**
+     * @brief Draws a collapsible header with centered text
+     *
+     * @param[in] label Unique label/ID for the header
+     * @param[in] headerText Text to display in the header
+     * @return true if the header is open/expanded, false otherwise
+     */
     bool Header(const std::string& label, const std::string_view headerText)
     {
         StyleVarGuard styleGuard(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 3.0f));
@@ -287,6 +366,10 @@ namespace ImNexo {
         return open;
     }
 
+    /**
+     * @brief Draws a row label in the current table column
+     * @param[in] rowLabel The label configuration to draw
+     */
     void RowLabel(const ChannelLabel& rowLabel)
     {
         ImGui::TableNextColumn();
@@ -294,7 +377,13 @@ namespace ImNexo {
         ImGui::TextUnformatted(rowLabel.label.c_str());
     }
 
-    // Helper method to draw arrow indicators
+    /**
+     * @brief Draws an arrow (right or down) at the specified position
+     * @param center Center position of the arrow
+     * @param isExpanded True for down arrow (expanded), false for right arrow (collapsed)
+     * @param color Color of the arrow
+     * @param size Size of the arrow
+     */
     void Arrow(const ImVec2& center, const bool isExpanded, const ImU32 color, const float size)
     {
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -312,6 +401,15 @@ namespace ImNexo {
         }
     }
 
+    /**
+     * @brief Draws a horizontal separator with centered text
+     * @param text The text to display in the center of the separator
+     * @param textPadding Padding between the text and the separator lines
+     * @param leftSpacing Fraction of space allocated to the left line (0.0 to 1.0)
+     * @param thickness Thickness of the separator lines
+     * @param lineColor Color of the separator lines
+     * @param textColor Color of the text
+     */
     void CustomSeparatorText(const std::string& text, const float textPadding, const float leftSpacing,
                              const float thickness, const ImU32 lineColor, const ImU32 textColor)
     {
@@ -342,12 +440,32 @@ namespace ImNexo {
         ImGui::Dummy(ImVec2(0, ImGui::GetTextLineHeight()));
     }
 
+    /**
+     * @brief Wrapper around ImGui::Image to provide a consistent interface
+     * @param user_texture_id The texture ID to display
+     * @param image_size Size of the image
+     * @param uv0 UV coordinate for the top-left corner
+     * @param uv1 UV coordinate for the bottom-right corner
+     * @param tint_col Tint color to apply to the image
+     * @param border_col Border color to apply around the image
+     */
     void Image(const ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& uv0, const ImVec2& uv1,
                const ImVec4& tint_col, const ImVec4& border_col)
     {
         ImGui::Image(user_texture_id, image_size, uv0, uv1, tint_col, border_col);
     }
 
+    /**
+     * @brief Wrapper around ImGui::ImageButton to provide a consistent interface
+     * @param str_id Unique string ID for the button
+     * @param user_texture_id The texture ID to display
+     * @param image_size Size of the image
+     * @param uv0 UV coordinate for the top-left corner
+     * @param uv1 UV coordinate for the bottom-right corner
+     * @param bg_col Background color of the button
+     * @param tint_col Tint color to apply to the image
+     * @return true if the button was clicked, false otherwise
+     */
     bool ImageButton(const char* str_id, ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& uv0,
                      const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col)
     {
