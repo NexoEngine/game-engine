@@ -287,6 +287,22 @@ namespace nexo::editor {
                                     JPH::EMotionType motionType) const;
 
         /**
+         * @brief Adds a 3D model to the scene at the specified position, scale, and rotation.
+         *
+         * This method creates an entity with a model component using the provided model path,
+         * and sets its transform based on the given position, scale, and rotation. The entity
+         * is then added to the current scene.
+         *
+         * @param modelPath The file path to the 3D model asset.
+         * @param position The position of the model in world space.
+         * @param scale The scale of the model.
+         * @param rotation The rotation of the model in Euler angles (degrees).
+         */
+        void addModelToScene(const std::string& modelPath, const glm::vec3& position,
+                                          const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
+                                          const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
+
+        /**
          * @brief Renders the toolbar overlay within the main scene view.
          *
          * This method uses ImGui to display a toolbar that includes buttons for switching between orthographic and

@@ -237,6 +237,7 @@ namespace ImNexo
             // Record the creation action for undo/redo functionality
             auto createAction = std::make_unique<nexo::editor::EntityCreationAction>(newPrimitive);
             nexo::editor::ActionManager::get().recordAction(std::move(createAction));
+            ImGui::CloseCurrentPopup();
         }
 
         // End the popup rendering

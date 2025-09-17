@@ -24,65 +24,69 @@
 #include "ImNexo/Elements.hpp"
 
 namespace nexo::editor {
-
-    void showField(const ecs::Field& field, void *data)
+    void showField(const ecs::Field &field, void *data)
     {
+        using enum ecs::FieldType;
         switch (field.type) {
-            case ecs::FieldType::Bool:
+            case Bool:
                 static_assert(sizeof(bool) == 1 && "Size of bool must be 1 byte");
                 ImGui::Checkbox(field.name.c_str(), static_cast<bool *>(data));
                 break;
-            case ecs::FieldType::Int8:
+            case Int8:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_S8, data);
                 break;
-            case ecs::FieldType::Int16:
+            case Int16:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_S16, data);
                 break;
-            case ecs::FieldType::Int32:
+            case Int32:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_S32, data);
                 break;
-            case ecs::FieldType::Int64:
+            case Int64:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_S64, data);
                 break;
-            case ecs::FieldType::UInt8:
+            case UInt8:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U8, data);
-                break;;
-            case ecs::FieldType::UInt16:
+                break;
+            case UInt16:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U16, data);
                 break;
-            case ecs::FieldType::UInt32:
+            case UInt32:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U32, data);
                 break;
-            case ecs::FieldType::UInt64:
+            case UInt64:
                 ImGui::InputScalar(field.name.c_str(), ImGuiDataType_U64, data);
                 break;
-            case ecs::FieldType::Float:
+            case Float:
                 ImGui::InputFloat(field.name.c_str(), static_cast<float *>(data));
                 break;
-            case ecs::FieldType::Double:
+            case Double:
                 ImGui::InputDouble(field.name.c_str(), static_cast<double *>(data));
                 break;
 
             // Widgets
-            case ecs::FieldType::Vector3:
-                if (ImGui::BeginTable("InspectorTransformTable", 4,
-                    ImGuiTableFlags_SizingStretchProp))
-                {
+            case Vector3:
+                if (ImGui::BeginTable("InspectorTransformTable", 4, ImGuiTableFlags_SizingStretchProp)) {
                     // Only the first column has a fixed width
-                    ImGui::TableSetupColumn("##Label", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                    ImGui::TableSetupColumn("##X", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                    ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
-                    ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                    ImGui::TableSetupColumn("##Label",
+                                            ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                    ImGui::TableSetupColumn("##X",
+                                            ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                    ImGui::TableSetupColumn("##Y",
+                                            ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
+                    ImGui::TableSetupColumn("##Z",
+                                            ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
                     ImNexo::RowDragFloat3(field.name.c_str(), "X", "Y", "Z", static_cast<float *>(data));
 
                     ImGui::EndTable();
                 }
                 break;
-            case ecs::FieldType::Vector4:
-                ImGui::Text("Cannot edit Vector4 for now"); // TODO: Implement Vector4 editing
+            case Vector4:
+                ImGui::Text("Cannot edit Vector4 for now");
+                // TODO: Implement Vector4 editing
                 break;
-            default: return;
+            default:
+                break;
         }
     }
 
@@ -93,7 +97,7 @@ namespace nexo::editor {
             return;
         }
 
-        const auto& coordinator = Application::m_coordinator;
+        const auto &coordinator = Application::m_coordinator;
 
         const auto componentData = static_cast<uint8_t *>(coordinator->tryGetComponentById(m_componentType, entity));
         if (!componentData) {
@@ -101,9 +105,8 @@ namespace nexo::editor {
             return;
         }
 
-        if (ImNexo::Header(std::format("##{}", m_description->name), m_description->name + " Component"))
-        {
-            for (const auto& field : m_description->fields) {
+        if (ImNexo::Header(std::format("##{}", m_description->name), m_description->name + " Component")) {
+            for (const auto &field : m_description->fields) {
                 // Move to pointer to next field data
                 const auto currentComponentData = componentData + field.offset;
                 // Show the field in the UI
@@ -112,9 +115,6 @@ namespace nexo::editor {
 
             ImGui::TreePop();
         }
-
-
     }
 
-
-}
+} // namespace nexo::editor

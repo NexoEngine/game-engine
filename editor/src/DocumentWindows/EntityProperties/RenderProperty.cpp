@@ -18,17 +18,17 @@
 
 #include <imgui.h>
 
-#include "RenderProperty.hpp"
 #include "Application.hpp"
 #include "Framebuffer.hpp"
-#include "components/Light.hpp"
-#include "context/actions/EntityActions.hpp"
-#include "utils/ScenePreview.hpp"
+#include "ImNexo/Components.hpp"
+#include "ImNexo/Elements.hpp"
+#include "RenderProperty.hpp"
 #include "components/Camera.hpp"
+#include "components/Light.hpp"
 #include "components/Render.hpp"
 #include "context/ActionManager.hpp"
-#include "ImNexo/Elements.hpp"
-#include "ImNexo/Components.hpp"
+#include "context/actions/EntityActions.hpp"
+#include "utils/ScenePreview.hpp"
 
 namespace nexo::editor {
 
@@ -46,19 +46,19 @@ namespace nexo::editor {
 
         const ImVec2 availSize = ImGui::GetContentRegionAvail();
         const float totalWidth = availSize.x;
-        float totalHeight = availSize.y - 40; // Reserve space for bottom buttons
+        float totalHeight      = availSize.y - 40; // Reserve space for bottom buttons
 
         // Define layout: 40% for inspector, 60% for preview
         const float inspectorWidth = totalWidth * 0.4f;
-        const float previewWidth = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
+        const float previewWidth   = totalWidth - inspectorWidth - 8; // Subtract spacing between panels
 
         static utils::ScenePreviewOut scenePreviewInfo;
-        if (!scenePreviewInfo.sceneGenerated)
-        {
+        if (!scenePreviewInfo.sceneGenerated) {
             utils::genScenePreview("New Material Preview", {previewWidth - 8, totalHeight}, entity, scenePreviewInfo);
-            auto &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
-            cameraComponent.clearColor =  {67.0f/255.0f, 65.0f/255.0f, 80.0f/255.0f, 111.0f/255.0f};
-            cameraComponent.render = true;
+            auto &cameraComponent =
+                Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
+            cameraComponent.clearColor = {67.0f / 255.0f, 65.0f / 255.0f, 80.0f / 255.0f, 111.0f / 255.0f};
+            cameraComponent.render     = true;
         }
 
         ImGui::Columns(2, "MaterialPreviewColumns", false);
@@ -81,18 +81,19 @@ namespace nexo::editor {
             auto &app = getApp();
             const Application::SceneInfo sceneInfo{scenePreviewInfo.sceneId, nexo::RenderingType::FRAMEBUFFER};
             app.run(sceneInfo);
-            auto const &cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
+            auto const &cameraComponent =
+                Application::m_coordinator->getComponent<components::CameraComponent>(scenePreviewInfo.cameraId);
             const unsigned int textureId = cameraComponent.m_renderTarget->getColorAttachmentId(0);
 
-            const float aspectRatio = static_cast<float>(cameraComponent.width) /
-                                      static_cast<float>(cameraComponent.height);
+            const float aspectRatio =
+                static_cast<float>(cameraComponent.width) / static_cast<float>(cameraComponent.height);
 
             const float displayHeight = totalHeight - 20;
-            const float displayWidth = displayHeight * aspectRatio;
+            const float displayWidth  = displayHeight * aspectRatio;
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 4, ImGui::GetCursorPosY() + 4));
             ImNexo::Image(static_cast<ImTextureID>(static_cast<intptr_t>(textureId)),
-                        ImVec2(displayWidth, displayHeight));
+                          ImVec2(displayWidth, displayHeight));
 
             ImGui::EndChild();
         }
@@ -103,13 +104,11 @@ namespace nexo::editor {
         // Bottom buttons - centered
         constexpr float buttonWidth = 120.0f;
 
-        if (ImNexo::Button("OK", ImVec2(buttonWidth, 0)))
-        {
+        if (ImNexo::Button("OK", ImVec2(buttonWidth, 0))) {
             // TODO: Insert logic to create the new material
 
             // Clean up preview scene
-            if (scenePreviewInfo.sceneGenerated)
-            {
+            if (scenePreviewInfo.sceneGenerated) {
                 auto &app = getApp();
                 app.getSceneManager().deleteScene(scenePreviewInfo.sceneId);
                 scenePreviewInfo.sceneGenerated = false;
@@ -118,10 +117,8 @@ namespace nexo::editor {
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0)))
-        {
-            if (scenePreviewInfo.sceneGenerated)
-            {
+        if (ImNexo::Button("Cancel", ImVec2(buttonWidth, 0))) {
+            if (scenePreviewInfo.sceneGenerated) {
                 auto &app = getApp();
                 app.getSceneManager().deleteScene(scenePreviewInfo.sceneId);
                 scenePreviewInfo.sceneGenerated = false;
@@ -137,18 +134,18 @@ namespace nexo::editor {
             Application::m_coordinator->entityHasComponent<components::PointLightComponent>(entity) ||
             Application::m_coordinator->entityHasComponent<components::SpotLightComponent>(entity))
             return;
-        auto& renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
+        auto &renderComponent = Application::getEntityComponent<components::RenderComponent>(entity);
 
-        if (ImNexo::Header("##RenderNode", "Render Component"))
-        {
+        if (ImNexo::Header("##RenderNode", "Render Component")) {
             ImGui::Text("Hide");
             ImGui::SameLine(0, 12);
             bool hidden = !renderComponent.isRendered;
             if (ImGui::Checkbox("##HideCheckBox", &hidden)) {
-                auto beforeState = renderComponent.save();
+                auto beforeState           = renderComponent.save();
                 renderComponent.isRendered = !hidden;
-                auto afterState = renderComponent.save();
-                auto action = std::make_unique<ComponentChangeAction<components::RenderComponent>>(entity, beforeState, afterState);
+                auto afterState            = renderComponent.save();
+                auto action = std::make_unique<ComponentChangeAction<components::RenderComponent>>(entity, beforeState,
+                                                                                                   afterState);
                 ActionManager::get().recordAction(std::move(action));
             }
 
@@ -162,4 +159,4 @@ namespace nexo::editor {
             ImGui::TreePop();
         }
     }
-}
+} // namespace nexo::editor

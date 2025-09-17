@@ -19,6 +19,7 @@
 #pragma once
 
 #include "Exception.hpp"
+#include "ecs/Entity.hpp" // to not remove
 
 #include <format>
 #include <source_location>
@@ -209,11 +210,73 @@ namespace nexo::editor {
         {}
     };
 
+    /**
+     * @brief Exception class for asset import errors.
+     *
+     * This exception is thrown when an error occurs during the import of an asset.
+     * It includes the asset path and a specific error message to provide context about the failure.
+     */
     class AssetImportException final : public Exception {
        public:
         explicit AssetImportException(const std::string &assetPath, const std::string &message,
                                       const std::source_location &loc = std::source_location::current())
             : Exception(std::format("Exception while importing {}: {}", assetPath, message), loc)
+        {}
+    };
+
+    /**
+     * @brief Exception class for unsupported entity shape types.
+     *
+     * This exception is thrown when an unsupported shape type is used for entity creation.
+     * It provides a default error message indicating the issue.
+     */
+    class UnsupportedEntityShapeType final : public Exception {
+       public:
+        explicit UnsupportedEntityShapeType(const std::source_location &loc = std::source_location::current())
+            : Exception("Unsupported shape type for entity creation.", loc)
+        {}
+    };
+
+    /**
+     * @brief Exception class for invalid physics body IDs.
+     *
+     * This exception is thrown when an invalid body ID is encountered during physics body creation.
+     * It provides a default error message indicating the issue.
+     */
+    class InvalidBodyId final : public Exception {
+       public:
+        explicit InvalidBodyId(const ecs::Entity entity,
+                               const std::source_location &loc = std::source_location::current())
+            : Exception(std::format("Failed to create physics body for entity {}", entity), loc)
+        {}
+    };
+
+    /**
+     * @brief Exception class for physics body creation errors.
+     *
+     * This exception is thrown when an error occurs during the creation of a physics body for an entity.
+     * It includes the entity ID and a specific error message to provide context about the failure.
+     */
+    class PhysicBodyCreationException final : public Exception {
+       public:
+        explicit PhysicBodyCreationException(const ecs::Entity entity, const std::string &message,
+                                             const std::source_location &loc = std::source_location::current())
+            : Exception(std::format("Exception during physics body recreation for entity {}: {}", entity, message), loc)
+        {}
+    };
+
+    /**
+     * @brief Exception class for physics component creation errors.
+     *
+     * This exception is thrown when an error occurs during the creation of a physics component for an entity.
+     * It includes the entity ID and a specific error message to provide context about the failure.
+     */
+    class PhysicComponentCreationException final : public Exception {
+       public:
+        explicit PhysicComponentCreationException(const ecs::Entity entity, const std::string &message,
+                                                  const std::source_location &loc = std::source_location::current())
+            : Exception(std::format("Exception during physics component creation for entity {}: {}", entity, message),
+                        loc)
         {}
     };
 
