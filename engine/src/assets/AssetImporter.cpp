@@ -26,6 +26,7 @@
 #include "Assets/Texture/TextureImporter.hpp"
 
 #include <boost/uuid/random_generator.hpp>
+#include <filesystem>
 
 namespace nexo::assets {
     AssetImporter::AssetImporter()
@@ -87,6 +88,18 @@ namespace nexo::assets {
             asset->m_metadata.id = boost::uuids::random_generator()();
         if (asset->m_metadata.location == AssetLocation("default"))
             asset->m_metadata.location = location;
+
+        // Populate file size from filesystem
+        try {
+            std::filesystem::path filePath = asset->m_metadata.location.getPath();
+            if (std::filesystem::exists(filePath)) {
+                asset->m_metadata.fileSize = std::filesystem::file_size(filePath);
+            }
+        } catch (const std::filesystem::filesystem_error& e) {
+            // Keep default size of 0 if file access fails
+            NEXO_LOG_ERROR("AssetImporter", "Failed to get file size for {}: {}",
+                          asset->m_metadata.location.getPath(), e.what());
+        }
 
         return AssetCatalog::getInstance().registerAsset(location, std::move(asset));
     }
