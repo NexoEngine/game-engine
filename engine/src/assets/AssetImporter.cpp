@@ -27,6 +27,7 @@
 
 #include <boost/uuid/random_generator.hpp>
 #include <filesystem>
+#include <Logger.hpp>
 
 namespace nexo::assets {
     AssetImporter::AssetImporter()
@@ -97,8 +98,8 @@ namespace nexo::assets {
             }
         } catch (const std::filesystem::filesystem_error& e) {
             // Keep default size of 0 if file access fails
-            NEXO_LOG_ERROR("AssetImporter", "Failed to get file size for {}: {}",
-                          asset->m_metadata.location.getPath(), e.what());
+            LOG(NEXO_ERROR, "Failed to get file size for {}: {}",
+                asset->m_metadata.location.getPath(), e.what());
         }
 
         return AssetCatalog::getInstance().registerAsset(location, std::move(asset));
