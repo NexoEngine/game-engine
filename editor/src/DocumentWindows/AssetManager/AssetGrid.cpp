@@ -311,9 +311,16 @@ namespace nexo::editor {
 
         const ImVec2 startPos                               = ImGui::GetCursorScreenPos();
         const auto subfolders                               = m_folderManager.getChildren(m_currentFolder);
-        const std::vector<assets::GenericAssetRef> filtered = getFilteredAsset(m_currentFolder, m_selectedType);
+
+        // Use new search-aware filtering
+        const std::vector<assets::GenericAssetRef> filtered = getFilteredAssets();
+
         if (filtered.empty() && subfolders.empty()) {
-            ImGui::Text("This folder is empty.");
+            if (!m_searchBuffer.empty()) {
+                ImGui::Text("No assets found matching your search.");
+            } else {
+                ImGui::Text("This folder is empty.");
+            }
             return;
         }
 

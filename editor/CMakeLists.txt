@@ -64,6 +64,7 @@ set(SRCS
         editor/src/DocumentWindows/AssetManager/RightClickUtils.cpp
         editor/src/DocumentWindows/AssetManager/FoldersPopupUtils.cpp
         editor/src/DocumentWindows/AssetManager/AssetsPopupUtils.cpp
+        editor/src/DocumentWindows/AssetManager/SearchBar.cpp
         editor/src/DocumentWindows/ConsoleWindow/Init.cpp
         editor/src/DocumentWindows/ConsoleWindow/Log.cpp
         editor/src/DocumentWindows/ConsoleWindow/Show.cpp
