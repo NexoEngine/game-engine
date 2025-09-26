@@ -26,6 +26,7 @@ namespace nexo::assets {
         bool convertToSRGB   = true;
         bool flipVertically  = true;
 
+        /** @brief Texture format options */
         enum class Format {
             Preserve, // Keep original format
             RGB,      // Convert to RGB

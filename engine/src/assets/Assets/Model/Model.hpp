@@ -41,10 +41,10 @@ namespace nexo::assets {
      * @brief Represents a 3D model asset.
      */
     class Model final : public Asset<MeshNode, AssetType::MODEL> {
-        public:
-            Model() = default;
+       public:
+        Model() = default;
 
-            ~Model() override = default;
+        ~Model() override = default;
     };
 
-}
+} // namespace nexo::assets
