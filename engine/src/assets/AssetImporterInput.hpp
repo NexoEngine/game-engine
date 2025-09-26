@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <filesystem>
 #include <variant>
 #include <vector>
-#include <filesystem>
 
 namespace nexo::assets {
 
@@ -27,8 +27,8 @@ namespace nexo::assets {
 
     // Import from memory buffer, importer should read from the buffer
     struct ImporterMemoryInput {
-        std::vector<uint8_t> memoryData;          //< Memory buffer
-        std::string formatHint; //< For format detection with memory sources (can be ARGB8888, .obj, etc.)
+        std::vector<uint8_t> memoryData; //< Memory buffer
+        std::string formatHint;          //< For format detection with memory sources (can be ARGB8888, .obj, etc.)
     };
 
     using ImporterInputVariant = std::variant<ImporterFileInput, ImporterMemoryInput>;

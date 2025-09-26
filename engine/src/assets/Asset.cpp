@@ -14,6 +14,4 @@
 
 #include "Asset.hpp"
 
-namespace nexo::assets {
-
-} // namespace nexo::assets
+namespace nexo::assets {} // namespace nexo::assets

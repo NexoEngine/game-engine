@@ -21,7 +21,7 @@ namespace nexo::assets {
         m_mainAsset = std::move(asset);
     }
 
-    const std::unique_ptr<IAsset>&  AssetImporterContext::getMainAsset() const
+    const std::unique_ptr<IAsset>& AssetImporterContext::getMainAsset() const
     {
         return m_mainAsset;
     }
@@ -30,7 +30,6 @@ namespace nexo::assets {
     {
         return std::move(m_mainAsset);
     }
-
 
     void AssetImporterContext::addDependency(const GenericAssetRef& dependency)
     {

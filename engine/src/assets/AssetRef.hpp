@@ -26,17 +26,17 @@ namespace nexo::assets {
 
     enum class AssetType;
 
-    template <typename TAssetData, AssetType TAssetType>
+    template<typename TAssetData, AssetType TAssetType>
     class Asset;
 
-    template <typename TAsset>
+    template<typename TAsset>
     class AssetRef;
 
     /**
      * @brief A non-templated asset reference for generic asset storage
      */
     class GenericAssetRef {
-    public:
+       public:
         /**
          * @brief Default constructor creates a null reference
          */
@@ -46,29 +46,35 @@ namespace nexo::assets {
          * @brief Construct from a shared_ptr to an asset
          * @param ptr The shared pointer to the asset
          */
-        explicit GenericAssetRef(const std::shared_ptr<IAsset>& ptr) : m_weakPtr(ptr) {}
+        explicit GenericAssetRef(const std::shared_ptr<IAsset>& ptr) : m_weakPtr(ptr)
+        {}
 
         /**
          * @brief Check if the reference is valid
          * @return true if valid, false if expired
          */
-        [[nodiscard]] bool isValid() const noexcept {
+        [[nodiscard]] bool isValid() const noexcept
+        {
             return !m_weakPtr.expired();
         }
 
-        [[nodiscard]] bool operator==(const GenericAssetRef& other) const noexcept {
+        [[nodiscard]] bool operator==(const GenericAssetRef& other) const noexcept
+        {
             return m_weakPtr.lock() == other.m_weakPtr.lock();
         }
 
-        [[nodiscard]] bool operator!=(const GenericAssetRef& other) const noexcept {
+        [[nodiscard]] bool operator!=(const GenericAssetRef& other) const noexcept
+        {
             return !(*this == other);
         }
 
-        [[nodiscard]] bool operator==(const std::nullptr_t) const noexcept {
+        [[nodiscard]] bool operator==(const std::nullptr_t) const noexcept
+        {
             return !isValid();
         }
 
-        [[nodiscard]] bool operator!=(const std::nullptr_t) const noexcept {
+        [[nodiscard]] bool operator!=(const std::nullptr_t) const noexcept
+        {
             return isValid();
         }
 
@@ -77,7 +83,8 @@ namespace nexo::assets {
          * @return A shared_ptr to the asset, or nullptr if expired
          */
         // ReSharper disable once CppHiddenFunction
-        [[nodiscard]] std::shared_ptr<IAsset> lock() const noexcept {
+        [[nodiscard]] std::shared_ptr<IAsset> lock() const noexcept
+        {
             return m_weakPtr.lock();
         }
 
@@ -87,13 +94,14 @@ namespace nexo::assets {
          * @return A typed AssetRef
          */
         template<typename TAsset>
-        [[nodiscard]] class AssetRef<TAsset> as() const;  // Implemented below after AssetRef definition
+        [[nodiscard]] class AssetRef<TAsset> as() const; // Implemented below after AssetRef definition
 
         /**
          * @brief Boolean conversion operator
          * @return true if the reference is valid, false otherwise
          */
-        explicit operator bool() const noexcept {
+        explicit operator bool() const noexcept
+        {
             return isValid();
         }
 
@@ -101,14 +109,16 @@ namespace nexo::assets {
          * @brief Creates a null asset reference
          * @return An empty GenericAssetRef instance
          */
-        [[nodiscard]] static GenericAssetRef null() {
+        [[nodiscard]] static GenericAssetRef null()
+        {
             return {};
         }
 
         /**
          * @brief Requests the AssetCatalog to load the asset
          */
-        void load() const {
+        void load() const
+        {
             if (auto ptr = lock()) {
                 // TODO: Implement reloadAsset in AssetCatalog
                 // Example: AssetCatalog::getInstance().reloadAsset(ptr);
@@ -119,7 +129,8 @@ namespace nexo::assets {
         /**
          * @brief Requests the AssetCatalog to unload the asset but maintain the reference
          */
-        void unload() const {
+        void unload() const
+        {
             if (auto ptr = lock()) {
                 // TODO: Implement unloadAsset in AssetCatalog
                 // Example: AssetCatalog::getInstance().unloadAsset(ptr);
@@ -127,15 +138,14 @@ namespace nexo::assets {
             }
         }
 
-
         // Standard copy/move operations
-        GenericAssetRef(const GenericAssetRef&) = default;
-        GenericAssetRef& operator=(const GenericAssetRef&) = default;
-        GenericAssetRef(GenericAssetRef&&) noexcept = default;
+        GenericAssetRef(const GenericAssetRef&)                = default;
+        GenericAssetRef& operator=(const GenericAssetRef&)     = default;
+        GenericAssetRef(GenericAssetRef&&) noexcept            = default;
         GenericAssetRef& operator=(GenericAssetRef&&) noexcept = default;
-        virtual ~GenericAssetRef() = default;
+        virtual ~GenericAssetRef()                             = default;
 
-    protected:
+       protected:
         std::weak_ptr<IAsset> m_weakPtr;
     };
 
@@ -149,7 +159,7 @@ namespace nexo::assets {
      */
     template<typename TAsset>
     class AssetRef final : public GenericAssetRef {
-    public:
+       public:
         /**
          * @brief Default constructor creates a null reference
          */
@@ -159,10 +169,11 @@ namespace nexo::assets {
          * @brief Constructs an AssetRef with the given shared_ptr to asset
          * @param assetPtr Shared pointer to the asset
          */
-        explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr)
-            : GenericAssetRef(assetPtr) {}
+        explicit AssetRef(const std::shared_ptr<TAsset>& assetPtr) : GenericAssetRef(assetPtr)
+        {}
 
-        explicit(false) AssetRef(std::nullptr_t) : GenericAssetRef(nullptr) {}
+        explicit(false) AssetRef(std::nullptr_t) : GenericAssetRef(nullptr)
+        {}
 
         /**
          * @brief Locks the asset reference, providing safe access
@@ -175,7 +186,8 @@ namespace nexo::assets {
          * @brief Checks if the asset is fully loaded
          * @return true if the asset is loaded, false otherwise
          */
-        [[nodiscard]] bool isLoaded() const {
+        [[nodiscard]] bool isLoaded() const
+        {
             if (auto ptr = lock()) {
                 return ptr->isLoaded(); // Assumes TAsset has isLoaded() method
             }
@@ -186,13 +198,15 @@ namespace nexo::assets {
          * @brief Creates a null asset reference
          * @return An empty AssetRef instance
          */
-        [[nodiscard]] static AssetRef<TAsset> null() {
+        [[nodiscard]] static AssetRef<TAsset> null()
+        {
             return AssetRef<TAsset>();
         }
     };
 
     template<typename TAsset>
-    AssetRef<TAsset> GenericAssetRef::as() const {
+    AssetRef<TAsset> GenericAssetRef::as() const
+    {
         const auto ptr = m_weakPtr.lock();
         if (!ptr) {
             return AssetRef<TAsset>::null();
