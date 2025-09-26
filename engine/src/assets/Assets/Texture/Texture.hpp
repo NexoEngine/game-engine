@@ -20,6 +20,8 @@
 
 #include "assets/Asset.hpp"
 
+#include <Texture.hpp>
+
 namespace nexo::assets {
 
     struct TextureData {

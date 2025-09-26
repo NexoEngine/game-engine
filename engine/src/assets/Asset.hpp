@@ -229,7 +229,9 @@ namespace nexo::assets {
     concept IsAsset =
         requires {
             typename T::AssetDataType;
-            { T::TYPE } -> std::convertible_to<AssetType>;
+            {
+                T::TYPE
+            } -> std::convertible_to<AssetType>;
         } && std::derived_from<T, Asset<typename T::AssetDataType, T::TYPE>> &&
         std::is_base_of_v<Asset<typename T::AssetDataType, T::TYPE>, T> && std::is_base_of_v<IAsset, T>;
 
