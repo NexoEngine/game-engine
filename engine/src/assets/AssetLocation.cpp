@@ -21,14 +21,11 @@
 
 namespace nexo::assets {
 
-    void AssetLocation::setLocation(
-        const AssetName& name,
-        const std::string& path,
-        const std::optional<std::reference_wrapper<const AssetPackName>>& packName
-    )
+    void AssetLocation::setLocation(const AssetName& name, const std::string& path,
+                                    const std::optional<std::reference_wrapper<const AssetPackName>>& packName)
     {
-        _name = name;
-        _path = normalizePathAndRemovePrefixSlash(path);
+        _name     = name;
+        _path     = normalizePathAndRemovePrefixSlash(path);
         _packName = packName;
     }
 } // namespace nexo::assets
