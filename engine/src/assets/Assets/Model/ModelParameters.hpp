@@ -32,9 +32,7 @@ namespace nexo::assets {
     struct ModelImportParameters {
         std::vector<TextureImportParameters> textureParameters;
 
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportParameters,
-            textureParameters
-        )
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportParameters, textureParameters)
     };
 
     /**
@@ -45,46 +43,29 @@ namespace nexo::assets {
         bool calculateTangentSpace = false;
         bool joinIdenticalVertices = true;
         bool generateSmoothNormals = false;
-        bool optimizeMeshes = true;
-        int maxBones = 60;
+        bool optimizeMeshes        = true;
+        int maxBones               = 60;
 
         // Scene options
         bool importAnimations = true;
-        bool importMaterials = true;
-        bool importTextures = true;
-        float globalScale = 1.0f;
+        bool importMaterials  = true;
+        bool importTextures   = true;
+        float globalScale     = 1.0f;
 
         // Texture options
-        enum class TextureQuality {
-            LOW = 0,
-            MEDIUM = 1,
-            HIGH = 2
-        };
+        enum class TextureQuality { LOW = 0, MEDIUM = 1, HIGH = 2 };
         TextureQuality textureQuality = TextureQuality::MEDIUM;
-        bool convertToUncompressed = false;
+        bool convertToUncompressed    = false;
 
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportPostProcessParameters,
-            calculateTangentSpace,
-            joinIdenticalVertices,
-            generateSmoothNormals,
-            optimizeMeshes,
-            maxBones,
-            importAnimations,
-            importMaterials,
-            importTextures,
-            globalScale,
-            textureQuality,
-            convertToUncompressed
-        )
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(ModelImportPostProcessParameters, calculateTangentSpace, joinIdenticalVertices,
+                                       generateSmoothNormals, optimizeMeshes, maxBones, importAnimations,
+                                       importMaterials, importTextures, globalScale, textureQuality,
+                                       convertToUncompressed)
     };
 
     NLOHMANN_JSON_SERIALIZE_ENUM(ModelImportPostProcessParameters::TextureQuality,
-        {
-            {ModelImportPostProcessParameters::TextureQuality::LOW, "LOW"},
-            {ModelImportPostProcessParameters::TextureQuality::MEDIUM, "MEDIUM"},
-            {ModelImportPostProcessParameters::TextureQuality::HIGH, "HIGH"}
-        }
-    );
-
+                                 {{ModelImportPostProcessParameters::TextureQuality::LOW, "LOW"},
+                                  {ModelImportPostProcessParameters::TextureQuality::MEDIUM, "MEDIUM"},
+                                  {ModelImportPostProcessParameters::TextureQuality::HIGH, "HIGH"}});
 
 } // namespace nexo::assets

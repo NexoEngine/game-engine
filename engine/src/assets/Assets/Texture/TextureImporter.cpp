@@ -19,10 +19,10 @@
 #include "TextureImporter.hpp"
 
 #include <array>
+#include <boost/uuid/random_generator.hpp>
 #include <stb_image.h>
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
-#include <boost/uuid/random_generator.hpp>
 
 namespace nexo::assets {
 
@@ -38,7 +38,8 @@ namespace nexo::assets {
 
     void TextureImporter::importImpl(AssetImporterContext& ctx)
     {
-        // TODO: we need to import textures independently from graphics API back end renderer::NxTexture2D::create implementation
+        // TODO: we need to import textures independently from graphics API back end renderer::NxTexture2D::create
+        // implementation
         auto asset = std::make_unique<Texture>();
         std::shared_ptr<renderer::NxTexture2D> rendererTexture;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
@@ -47,7 +48,7 @@ namespace nexo::assets {
             const auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
             rendererTexture = renderer::NxTexture2D::create(data.data(), static_cast<unsigned int>(data.size()));
         }
-        auto assetData = std::make_unique<TextureData>();
+        auto assetData     = std::make_unique<TextureData>();
         assetData->texture = rendererTexture;
 
         asset->m_metadata.id = boost::uuids::random_generator()();
@@ -61,14 +62,15 @@ namespace nexo::assets {
         if (input.formatHint == "ARGB8888") { // Special case for ARGB8888 format (from assimp model textures)
             return true;
         }
-        const int ok = stbi_info_from_memory(input.memoryData.data(), static_cast<int>(input.memoryData.size()), nullptr, nullptr, nullptr);
-        return ok;
+        const int infoResult = stbi_info_from_memory(input.memoryData.data(), static_cast<int>(input.memoryData.size()),
+                                             nullptr, nullptr, nullptr);
+        return infoResult;
     }
 
     bool TextureImporter::canReadFile(const ImporterFileInput& input)
     {
-        const int ok = stbi_info(input.filePath.string().c_str(), nullptr, nullptr, nullptr);
-        return ok;
+        const int infoResult = stbi_info(input.filePath.string().c_str(), nullptr, nullptr, nullptr);
+        return infoResult;
     }
 
 } // namespace nexo::assets
