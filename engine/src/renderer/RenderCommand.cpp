@@ -23,14 +23,13 @@
 
 namespace nexo::renderer {
 
-    #ifdef NX_GRAPHICS_API_OPENGL
-        NxRendererApi *NxRenderCommand::_rendererApi = new NxOpenGlRendererApi;
-    #endif
+#ifdef NX_GRAPHICS_API_OPENGL
+    NxRendererApi *NxRenderCommand::_rendererApi = new NxOpenGlRendererApi;
+#endif
 
     void NxRenderCommand::init()
     {
-        if (!_rendererApi)
-            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+        if (!_rendererApi) THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
         _rendererApi->init();
     }
-}
+} // namespace nexo::renderer
