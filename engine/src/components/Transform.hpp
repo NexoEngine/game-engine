@@ -54,4 +54,4 @@ namespace nexo::components {
 
         std::vector<ecs::Entity> children{};
     };
-}
+} // namespace nexo::components

@@ -36,12 +36,12 @@ namespace nexo::components {
 
         if (!tmp.isContinuous()) tmp = tmp.clone();
 
-        const unsigned int width  = static_cast<unsigned int>(tmp.cols);
-        const unsigned int height = static_cast<unsigned int>(tmp.rows);
-        //const size_t byteCount    = tmp.total() * tmp.elemSize();
+        const auto width  = static_cast<unsigned int>(tmp.cols);
+        const auto height = static_cast<unsigned int>(tmp.rows);
+        // const size_t byteCount    = tmp.total() * tmp.elemSize();
 
-        //std::vector<uint8_t> buffer(byteCount);
-        //std::memcpy(buffer.data(), tmp.data, byteCount);
+        // std::vector<uint8_t> buffer(byteCount);
+        // std::memcpy(buffer.data(), tmp.data, byteCount);
 
         renderer::NxTextureFormat format;
         if (tmp.channels() == 1)
@@ -94,15 +94,16 @@ namespace nexo::components {
 
         cap.release();
 
-        path    = videoPath;
-        nbFrame = frameCount;
+        path     = videoPath;
+        nbFrame  = frameCount;
         isLoaded = true;
         return true;
     }
 
     void VideoComponent::updateFrame()
     {
-        auto secondsPassed = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - lastFrameTime);
+        auto secondsPassed = std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now() - lastFrameTime);
 
         auto &currentKeyframe = keyframes[currentKeyframeIndex];
         if (secondsPassed.count() >= (currentKeyframe.end - currentKeyframe.start)) {
@@ -115,7 +116,7 @@ namespace nexo::components {
                     skipToNextKeyframe();
                     break;
                 default:
-                    //lastFrameTime = std::chrono::high_resolution_clock::now();
+                    // lastFrameTime = std::chrono::high_resolution_clock::now();
                     setCurrentFrame(static_cast<size_t>(currentKeyframe.end * frameRate));
                     break;
             }
@@ -137,8 +138,8 @@ namespace nexo::components {
         }
         currentKeyframeIndex = keyframeIndex;
         auto &keyframe       = keyframes[currentKeyframeIndex];
-        currentFrameIndex   = static_cast<size_t>(keyframe.start * frameRate);
-        lastFrameTime       = std::chrono::high_resolution_clock::now();
+        currentFrameIndex    = static_cast<size_t>(keyframe.start * frameRate);
+        lastFrameTime        = std::chrono::high_resolution_clock::now();
     }
 
     void VideoComponent::setCurrentFrame(size_t frameIndex)
@@ -162,15 +163,13 @@ namespace nexo::components {
     void VideoComponent::skipToPreviousKeyframe()
     {
         if (currentKeyframeIndex == 0) {
-            if (loopVideo)
-                setCurrentKeyframe(keyframes.size() - 1);
+            if (loopVideo) setCurrentKeyframe(keyframes.size() - 1);
             return;
         }
         auto &previousKeyframe = keyframes[currentKeyframeIndex - 1];
         if (previousKeyframe.keyframeType == KeyframeType::TRANSITION) {
             if (currentKeyframeIndex < 2) {
-                if (loopVideo)
-                    setCurrentKeyframe(keyframes.size() - 1);
+                if (loopVideo) setCurrentKeyframe(keyframes.size() - 1);
                 return;
             }
             setCurrentKeyframe(currentKeyframeIndex - 2);

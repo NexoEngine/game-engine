@@ -37,4 +37,4 @@ namespace nexo::components {
             return {name};
         }
     };
-}
+} // namespace nexo::components
