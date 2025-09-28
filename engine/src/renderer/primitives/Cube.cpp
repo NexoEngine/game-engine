@@ -70,7 +70,7 @@ namespace nexo::renderer
 
         std::ranges::copy(verts, vertices.begin());
 
-        glm::vec2 texturesCoord[] = {
+        constexpr std::array<glm::vec2, 36> texturesCoord = {
             glm::vec2(1, 1), glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 1), glm::vec2(0, 0), glm::vec2(1, 0),
             glm::vec2(1, 1), glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 1), glm::vec2(0, 0), glm::vec2(1, 0),
             glm::vec2(1, 1), glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 1), glm::vec2(0, 0), glm::vec2(1, 0),

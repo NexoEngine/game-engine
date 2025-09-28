@@ -12,20 +12,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "renderer/Renderer3D.hpp"
 #include <cmath>
+#include "renderer/Renderer3D.hpp"
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+    #define M_PI 3.14159265358979323846
 #endif
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
-#include <map>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <map>
 
-namespace nexo::renderer
-{
+namespace nexo::renderer {
     constexpr float CYLINDER_HEIGHT = 1.0f; // Height of the cylinder should be 1.0f
 
     static std::vector<glm::vec3> generateCylinderVertices(const unsigned int nbSegment)
@@ -34,39 +33,90 @@ namespace nexo::renderer
         vertices.reserve(nbSegment * 4); // Reserve memory for all vertices (2 caps + 2 sides)
 
         unsigned int i = 0;
-        for (unsigned int k = nbSegment - 1; i < nbSegment; ++i, --k)
-        {
+        for (unsigned int k = nbSegment - 1; i < nbSegment; ++i, --k) {
             const float angle = static_cast<float>(k) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
-            const float x = std::cos(angle);
-            const float z = std::sin(angle);
+            const float x     = std::cos(angle);
+            const float z     = std::sin(angle);
 
             vertices.emplace_back(x, CYLINDER_HEIGHT, z);
         }
-        for (unsigned int k = nbSegment - 1; i < nbSegment * 2; ++i, --k)
-        {
+        for (unsigned int k = nbSegment - 1; i < nbSegment * 2; ++i, --k) {
             const float angle = static_cast<float>(k) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
-            const float x = std::cos(angle);
-            const float z = std::sin(angle);
+            const float x     = std::cos(angle);
+            const float z     = std::sin(angle);
 
             vertices.emplace_back(x, -CYLINDER_HEIGHT, z);
         }
-        for (int k = 0; i < nbSegment * 3; ++i, ++k)
-        {
+        for (int k = 0; i < nbSegment * 3; ++i, ++k) {
             const float angle = static_cast<float>(k) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
-            const float x = std::cos(angle);
-            const float z = std::sin(angle);
+            const float x     = std::cos(angle);
+            const float z     = std::sin(angle);
 
             vertices.emplace_back(x, CYLINDER_HEIGHT, z);
         }
-        for (int k = 0; i < nbSegment * 4; ++i, ++k)
-        {
+        for (int k = 0; i < nbSegment * 4; ++i, ++k) {
             const float angle = static_cast<float>(k) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
-            const float x = std::cos(angle);
-            const float z = std::sin(angle);
+            const float x     = std::cos(angle);
+            const float z     = std::sin(angle);
 
             vertices.emplace_back(x, -CYLINDER_HEIGHT, z);
         }
         return vertices;
+    }
+
+    /**
+     * @brief Generates indices for the caps of a cylinder mesh using recursion.
+     *
+     * This function is a helper function that recursively calculates the indices required to form
+     * the top and bottom caps of a cylinder mesh. It divides the cap into triangles based on the
+     * number of edges and ensures proper tessellation.
+     *
+     * @param indices A reference to the vector where the generated indices will be stored.
+     * @param transformer An offset applied to the indices to account for the starting position of the cap vertices.
+     * Different for top and bottom caps.
+     * @param nbSegment The number of segments (or divisions) around the cylinder's circumference.
+     * @param start The starting index for the current section of the cap being processed.
+     * @param nbEdge The number of edges in the current section of the cap being processed.
+     * @param clockwise A boolean indicating the winding order of the triangles. If true, triangles are wound clockwise;
+     */
+    static void capIndicesRec(std::vector<unsigned int>& indices, const int transformer, const unsigned int nbSegment,
+                              const unsigned int start, const unsigned int nbEdge, const bool clockwise = true)
+    {
+        assert(nbEdge > 0 && "Number of edges must be greater than 0");
+        // Calculate the step size for dividing the cap into triangles
+        // Base case: If the step size is 1, form a single triangle
+        if (const auto step = static_cast<unsigned int>(std::ceil(static_cast<double>(nbEdge) / 3.0)); step == 1) {
+            const unsigned int tmp = start + 2 < nbSegment ? start + 2 : 0;
+            indices.push_back(start + transformer);
+            indices.push_back(clockwise ? tmp + transformer : start + 1 + transformer);
+            indices.push_back(clockwise ? start + 1 + transformer : tmp + transformer);
+        } else {
+            // Recursive case: Divide the cap into smaller sections
+            capIndicesRec(indices, transformer, nbSegment, start, step + 1, clockwise);
+
+            if (start + 2 * step < start + nbEdge - 1) {
+                unsigned int tmp = 0;
+                if (start + 2 * step < start + nbEdge - 1) {
+                    tmp = start + nbEdge - 1;
+                    capIndicesRec(indices, transformer, nbSegment, start + step, tmp - (start + step) + 1, clockwise);
+                } else if (start + 2 * step < nbSegment) {
+                    tmp = start + 2 * step;
+                    capIndicesRec(indices, transformer, nbSegment, start + step, step + 1, clockwise);
+                }
+                tmp = tmp > nbSegment - 1 ? 0 : tmp;
+                indices.push_back(start + transformer);
+                indices.push_back(clockwise ? tmp + transformer : start + step + transformer);
+                indices.push_back(clockwise ? start + step + transformer : tmp + transformer);
+            } else {
+                const unsigned int tmp = start + nbEdge - 1 < nbSegment ? start + nbEdge - 1 : 0;
+                indices.push_back(start + transformer);
+                indices.push_back(clockwise ? tmp + transformer : start + step + transformer);
+                indices.push_back(clockwise ? start + step + transformer : tmp + transformer);
+                if (start + nbEdge - 1 - (start + step) > 1) {
+                    capIndicesRec(indices, transformer, nbSegment, start + step, step + 1, clockwise);
+                }
+            }
+        }
     }
 
     /**
@@ -76,72 +126,33 @@ namespace nexo::renderer
      * It uses a recursive approach to divide the cap into triangles, ensuring proper tessellation.
      *
      * @param indices A reference to the vector where the generated indices will be stored.
-     * @param transformer An offset applied to the indices to account for the starting position of the cap vertices. Different for top and bottom caps.
-     * @param nbSegment The number of segments (or divisions) around the cylinder's circumference. (ex 3 for triangle, more if there is sub triangles.
+     * @param transformer An offset applied to the indices to account for the starting position of the cap vertices.
+     * Different for top and bottom caps.
+     * @param nbSegment The number of segments (or divisions) around the cylinder's circumference. (ex 3 for triangles,
+     * more if there is sub triangles)
+     * @param clockwise A boolean indicating the winding order of the triangles. If true, triangles are wound clockwise;
      */
-    static void capIndices(std::vector<unsigned int>& indices, const int transformer, const unsigned int nbSegment)
+    static void capIndices(std::vector<unsigned int>& indices, const int transformer, const unsigned int nbSegment, const bool clockwise = true)
     {
-        std::function<void(unsigned int, unsigned int)> capIndicesRec;
-
-        capIndicesRec = [&indices, &transformer, &capIndicesRec, &nbSegment](const unsigned int start, const unsigned int nbEdge)
-        {
-            assert(nbEdge > 0 && "Number of edges must be greater than 0");
-            // Calculate the step size for dividing the cap into triangles
-            // Base case: If the step size is 1, form a single triangle
-            if (const auto step = static_cast<unsigned int>(std::ceil(static_cast<double>(nbEdge) / 3.0)); step == 1) {
-                const unsigned int tmp = start + 2 < nbSegment ? start + 2 : 0;
-                indices.push_back(start + transformer);
-                indices.push_back(tmp + transformer);
-                indices.push_back(start + 1 + transformer);
-            } else {
-                // Recursive case: Divide the cap into smaller sections
-                capIndicesRec(start, step + 1);
-
-                if (start + 2 * step < start + nbEdge - 1) {
-                    unsigned int tmp = 0;
-                    if (start + 2 * step < start + nbEdge - 1) {
-                        tmp = start + nbEdge - 1;
-                        capIndicesRec(start + step, tmp - (start + step) + 1);
-                    }
-                    else if (start + 2 * step < nbSegment) {
-                        tmp = start + 2 * step;
-                        capIndicesRec(start + step, step + 1);
-                    }
-                    tmp = tmp > nbSegment - 1 ? 0 : tmp;
-                    indices.push_back(start + transformer);
-                    indices.push_back(tmp + transformer);
-                    indices.push_back(start + step + transformer);
-                } else {
-                    const unsigned int tmp = start + nbEdge - 1 < nbSegment ? start + nbEdge - 1 : 0;
-                    indices.push_back(start + transformer);
-                    indices.push_back(tmp + transformer);
-                    indices.push_back(start + step + transformer);
-                    if (start + nbEdge - 1 - (start + step) > 1) {
-                        capIndicesRec(start + step, step + 1);
-                    }
-                }
-            }
-        };
-
         // Initial setup: Define the starting point and step size
         constexpr unsigned int start = 0;
-        const auto step = static_cast<unsigned int>(ceil(static_cast<double>(nbSegment) / 3.0));
+        const auto step              = static_cast<unsigned int>(ceil(static_cast<double>(nbSegment) / 3.0));
 
         // Add the first triangle to the indices
         indices.push_back(start + transformer);
-        indices.push_back(start + 2 * step + transformer);
-        indices.push_back(start + step + transformer);
+        indices.push_back(clockwise ? start + 2 * step + transformer : start + step + transformer);
+        indices.push_back(clockwise ? start + step + transformer : start + 2 * step + transformer);
 
         // Generate additional triangles: at least for 2 subsections if nbSegment > 3
-        if (nbSegment > 3)
-        {
-            capIndicesRec(start, step + 1);
-            capIndicesRec(start + step, step + 1);
+        if (nbSegment > 3) {
+            capIndicesRec(indices, transformer, nbSegment, start, step + 1, clockwise);
+            capIndicesRec(indices, transformer, nbSegment, start + step, step + 1, clockwise);
         }
 
         // Generate additional triangles: add 3td subsections if nbSegment > 5
-        if (nbSegment > 5)
-            capIndicesRec(start + 2 * step, nbSegment - 2 * step + 1);
+        if (nbSegment > 5) {
+            capIndicesRec(indices, transformer, nbSegment, start + 2 * step, nbSegment - 2 * step + 1, clockwise);
+        }
     }
 
     /**
@@ -163,8 +174,7 @@ namespace nexo::renderer
 
         // Generate indices for the side faces of the cylinder
         unsigned int i = 0;
-        for (; i < nbSegment - 1; ++i)
-        {
+        for (; i < nbSegment - 1; ++i) {
             // Create two triangles for each segment
             indices.push_back(i);
             indices.push_back(i + nbSegment);
@@ -185,7 +195,7 @@ namespace nexo::renderer
 
         // Generate indices for the top and bottom caps of the cylinder
         capIndices(indices, static_cast<int>(nbSegment * 2), nbSegment);
-        capIndices(indices, static_cast<int>(nbSegment * 3), nbSegment);
+        capIndices(indices, static_cast<int>(nbSegment * 3), nbSegment, false);
 
         return indices;
     }
@@ -207,28 +217,24 @@ namespace nexo::renderer
         texCoords.reserve(nbSegment * 4); // Reserve memory for all texture coordinates (one for each vertex)
 
         // Generate texture coordinates for cylinder sides
-        for (unsigned int i = 0; i < nbSegment; ++i)
-        {
+        for (unsigned int i = 0; i < nbSegment; ++i) {
             const float u = static_cast<float>(i) / static_cast<float>(nbSegment);
             texCoords.emplace_back(u, 1.0f); // Top edge
         }
-        for (unsigned int i = 0; i < nbSegment; ++i)
-        {
+        for (unsigned int i = 0; i < nbSegment; ++i) {
             const float u = static_cast<float>(i) / static_cast<float>(nbSegment);
             texCoords.emplace_back(u, 0.0f); // Bottom edge
         }
         // Cap vertices use radial UV mapping
-        for (unsigned int i = 0; i < nbSegment * 2; ++i)
-        {
-            const float angle = static_cast<float>(i % nbSegment) / static_cast<float>(nbSegment) * 2.0f * static_cast<
-                float>(M_PI);
+        for (unsigned int i = 0; i < nbSegment * 2; ++i) {
+            const float angle =
+                static_cast<float>(i % nbSegment) / static_cast<float>(nbSegment) * 2.0f * static_cast<float>(M_PI);
             const float u = (std::cos(angle) + 1.0f) * 0.5f;
             const float v = (std::sin(angle) + 1.0f) * 0.5f;
             texCoords.emplace_back(u, v);
         }
         return texCoords;
     }
-
 
     /**
      * @brief Generates normal vectors for a cylinder mesh.
@@ -250,28 +256,24 @@ namespace nexo::renderer
         unsigned int i = 0;
 
         // Generate normals for the top cap of the cylinder
-        for (; i < nbSegment * 1; ++i)
-        {
+        for (; i < nbSegment * 1; ++i) {
             const glm::vec3 vector1 = vertices[i] - glm::vec3(0, 1, 0);
             normals.emplace_back(vector1);
         }
 
         // Generate normals for the bottom cap of the cylinder
-        for (; i < nbSegment * 2; ++i)
-        {
+        for (; i < nbSegment * 2; ++i) {
             const glm::vec3 vector2 = vertices[i] - glm::vec3(0, -1, 0);
             normals.emplace_back(vector2);
         }
 
         // Generate normals for the side faces of the cylinder (top half)
-        for (; i < nbSegment * 3; ++i)
-        {
+        for (; i < nbSegment * 3; ++i) {
             normals.emplace_back(0, 1, 0);
         }
 
         // Generate normals for the side faces of the cylinder (bottom half)
-        for (; i < nbSegment * 4; ++i)
-        {
+        for (; i < nbSegment * 4; ++i) {
             normals.emplace_back(0, -1, 0);
         }
 
@@ -292,8 +294,7 @@ namespace nexo::renderer
     std::shared_ptr<NxVertexArray> NxRenderer3D::getCylinderVAO(unsigned int nbSegment)
     {
         // Ensure the number of segments is at least 3, defaulting to 8 if not.
-        if (nbSegment < 3)
-        {
+        if (nbSegment < 3) {
             LOG(NEXO_WARN, "Cylinder segments must be at least 3, using default value of 8.");
             nbSegment = 8;
         }
@@ -302,43 +303,41 @@ namespace nexo::renderer
         static std::map<unsigned int, std::shared_ptr<NxVertexArray>> cylinderVaoMap;
 
         // If a VAO for the given segment count already exists, return it.
-        if (cylinderVaoMap.contains(nbSegment))
-            return cylinderVaoMap[nbSegment];
+        if (cylinderVaoMap.contains(nbSegment)) return cylinderVaoMap[nbSegment];
 
         // Calculate the total number of vertices for the cylinder.
         const unsigned int nbVerticesCylinder = nbSegment * 4;
 
         // Create a new VAO and vertex buffer for the cylinder.
         cylinderVaoMap[nbSegment] = createVertexArray();
-        const auto vertexBuffer = createVertexBuffer(nbVerticesCylinder * sizeof(NxVertex));
+        const auto vertexBuffer   = createVertexBuffer(nbVerticesCylinder * sizeof(NxVertex));
 
         // Define the layout of the vertex buffer.
         const NxBufferLayout cylinderVertexBufferLayout = {
-            {NxShaderDataType::FLOAT3, "aPos"}, // Position attribute
-            {NxShaderDataType::FLOAT2, "aTexCoord"}, // Texture coordinate attribute
-            {NxShaderDataType::FLOAT3, "aNormal"}, // Normal vector attribute
-            {NxShaderDataType::FLOAT3, "aTangent"}, // Tangent vector attribute
+            {NxShaderDataType::FLOAT3, "aPos"},       // Position attribute
+            {NxShaderDataType::FLOAT2, "aTexCoord"},  // Texture coordinate attribute
+            {NxShaderDataType::FLOAT3, "aNormal"},    // Normal vector attribute
+            {NxShaderDataType::FLOAT3, "aTangent"},   // Tangent vector attribute
             {NxShaderDataType::FLOAT3, "aBiTangent"}, // Bi tangent vector attribute
-            {NxShaderDataType::INT, "aEntityID"} // Entity ID attribute
+            {NxShaderDataType::INT, "aEntityID"}      // Entity ID attribute
         };
         vertexBuffer->setLayout(cylinderVertexBufferLayout);
 
         // Generate the vertex data for the cylinder.
-        const std::vector<glm::vec3> vertices = generateCylinderVertices(nbSegment);
+        const std::vector<glm::vec3> vertices  = generateCylinderVertices(nbSegment);
         const std::vector<glm::vec2> texCoords = generateTextureCoords(nbSegment);
-        const std::vector<glm::vec3> normals = generateNormals(vertices, nbSegment);
-        std::vector<unsigned int> indices = generateCylinderIndices(nbSegment);
+        const std::vector<glm::vec3> normals   = generateNormals(vertices, nbSegment);
+        std::vector<unsigned int> indices      = generateCylinderIndices(nbSegment);
 
         // Populate the vertex buffer with the generated data.
         std::vector<NxVertex> vertexData(nbVerticesCylinder);
-        for (unsigned int i = 0; i < nbVerticesCylinder; ++i)
-        {
-            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
-            vertexData[i].texCoord = texCoords[i];
-            vertexData[i].normal = normals[i];
-            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+        for (unsigned int i = 0; i < nbVerticesCylinder; ++i) {
+            vertexData[i].position  = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord  = texCoords[i];
+            vertexData[i].normal    = normals[i];
+            vertexData[i].tangent   = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
             vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
-            vertexData[i].entityID = 0; // Default entity ID
+            vertexData[i].entityID  = 0;                           // Default entity ID
         }
         vertexBuffer->setData(vertexData.data(), vertexData.size() * sizeof(NxVertex));
         cylinderVaoMap[nbSegment]->addVertexBuffer(vertexBuffer);
@@ -351,4 +350,4 @@ namespace nexo::renderer
         // Return the newly created VAO.
         return cylinderVaoMap[nbSegment];
     }
-}
+} // namespace nexo::renderer
