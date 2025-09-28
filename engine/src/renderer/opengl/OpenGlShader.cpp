@@ -107,8 +107,10 @@ namespace nexo::renderer {
 
             shaderSources[shaderTypeFromString(type)] =
                 (pos == std::string::npos) ? src.substr(nextLinePos) : src.substr(nextLinePos, pos - nextLinePos);
-            currentLine += std::count(src.begin() + nextLinePos,
-                                      src.begin() + (pos == std::string::npos ? src.size() : pos), '\n');
+            currentLine += std::count(src.begin() + static_cast<std::string_view::difference_type>(nextLinePos),
+                                      src.begin() + static_cast<std::string_view::difference_type>(
+                                                        pos == std::string::npos ? src.size() : pos),
+                                      '\n');
         }
 
         return shaderSources;

@@ -25,11 +25,11 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxFramebuffer> NxFramebuffer::create(const NxFramebufferSpecs &specs)
     {
-        #ifdef NX_GRAPHICS_API_OPENGL
-            return std::make_shared<NxOpenGlFramebuffer>(specs);
-        #else
-            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-        #endif
+#ifdef NX_GRAPHICS_API_OPENGL
+        return std::make_shared<NxOpenGlFramebuffer>(specs);
+#else
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+#endif
     }
 
-}
+} // namespace nexo::renderer

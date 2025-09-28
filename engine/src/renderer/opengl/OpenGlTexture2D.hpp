@@ -122,12 +122,12 @@ namespace nexo::renderer {
          *
          * Example:
          * ```cpp
-         * std::vector<uint8_t> imageData = ...; // Load image data into a buffer
+         * // Load image data into a buffer
+         * std::vector<uint8_t> imageData = ...;
          * auto texture = std::make_shared<NxOpenGlTexture2D>(imageData.data(), imageData.size());
          * ```
          */
         NxOpenGlTexture2D(const uint8_t *buffer, unsigned int len);
-
 
         [[nodiscard]] unsigned int getWidth() const override
         {
@@ -148,7 +148,7 @@ namespace nexo::renderer {
          */
         [[nodiscard]] unsigned int getMaxTextureSize() const override;
 
-     /**
+        /**
          * @brief Retrieves the OpenGL texture ID.
          *
          * Returns the unique identifier assigned to this texture by OpenGL. This ID
