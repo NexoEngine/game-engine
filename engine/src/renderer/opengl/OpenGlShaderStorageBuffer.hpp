@@ -16,20 +16,52 @@
 #include "renderer/ShaderStorageBuffer.hpp"
 
 namespace nexo::renderer {
-	class NxOpenGlShaderStorageBuffer final : public NxShaderStorageBuffer {
-	public:
-		explicit NxOpenGlShaderStorageBuffer(unsigned int size);
-		~NxOpenGlShaderStorageBuffer() override = default;
+    class NxOpenGlShaderStorageBuffer final : public NxShaderStorageBuffer {
+       public:
+        /**
+         * @brief Constructs an OpenGL Shader Storage Buffer Object (SSBO) with the specified size.
+         * @param size The size in bytes of the buffer to allocate.
+         */
+        explicit NxOpenGlShaderStorageBuffer(unsigned int size);
 
-		void bind() const override;
-		void bindBase(unsigned int bindingLocation) const override;
-		void unbind() const override;
+        /**
+         * @brief Destructor for the OpenGL SSBO.
+         */
+        ~NxOpenGlShaderStorageBuffer() override = default;
 
-		void setData(void* data, size_t size) override;
+        /**
+         * @brief Binds the SSBO to the current OpenGL context.
+         */
+        void bind() const override;
 
-		[[nodiscard]] unsigned int getId() const override { return m_id; };
+        /**
+         * @brief Binds the SSBO to a specific binding location.
+         * @param bindingLocation The binding point index.
+         */
+        void bindBase(unsigned int bindingLocation) const override;
 
-	private:
-		unsigned int m_id{};
-	};
-}
+        /**
+         * @brief Unbinds the SSBO from the current OpenGL context.
+         */
+        void unbind() const override;
+
+        /**
+         * @brief Sets the data of the SSBO.
+         * @param data Pointer to the data to upload.
+         * @param size Size in bytes of the data.
+         */
+        void setData(void* data, size_t size) override;
+
+        /**
+         * @brief Returns the OpenGL buffer object ID.
+         * @return The OpenGL buffer ID.
+         */
+        [[nodiscard]] unsigned int getId() const override
+        {
+            return m_id;
+        };
+
+       private:
+        unsigned int m_id{};
+    };
+} // namespace nexo::renderer

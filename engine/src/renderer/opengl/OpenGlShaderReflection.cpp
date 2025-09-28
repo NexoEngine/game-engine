@@ -13,8 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlShaderReflection.hpp"
-#include "Logger.hpp"
 #include <glad/glad.h>
+#include "Logger.hpp"
 
 namespace nexo::renderer {
 
@@ -42,14 +42,14 @@ namespace nexo::renderer {
             int nameLength;
             glGetActiveUniform(programId, i, maxNameLength, &nameLength, &info.size, &info.type, nameBuffer.data());
 
-            info.name = std::string(nameBuffer.data(), nameLength);
+            info.name     = std::string(nameBuffer.data(), nameLength);
             info.location = glGetUniformLocation(programId, info.name.c_str());
 
             // Store the uniform with original name
             uniforms[info.name] = info;
 
             // For array uniforms, also store the base name (without [0])
-            std::string baseName = info.name;
+            std::string baseName    = info.name;
             const size_t bracketPos = baseName.find('[');
             if (bracketPos != std::string::npos) {
                 baseName = baseName.substr(0, bracketPos);
@@ -58,8 +58,8 @@ namespace nexo::renderer {
                 if (!uniforms.contains(baseName)) {
                     // For arrays, the base name location is the same as the first element
                     UniformInfo baseInfo = info;
-                    baseInfo.name = baseName;
-                    uniforms[baseName] = baseInfo;
+                    baseInfo.name        = baseName;
+                    uniforms[baseName]   = baseInfo;
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace nexo::renderer {
             int nameLength;
             glGetActiveAttrib(programId, i, maxNameLength, &nameLength, &info.size, &info.type, nameBuffer.data());
 
-            info.name = std::string(nameBuffer.data(), nameLength);
+            info.name     = std::string(nameBuffer.data(), nameLength);
             info.location = glGetAttribLocation(programId, info.name.c_str());
 
             attributes[info.location] = info;
@@ -105,4 +105,4 @@ namespace nexo::renderer {
         return required;
     }
 
-}
+} // namespace nexo::renderer
