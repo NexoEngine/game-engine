@@ -25,8 +25,8 @@ namespace nexo::ecs {
      * @brief Access type for components in systems
      */
     enum class AccessType {
-        Read,  ///< Read-only access
-        Write  ///< Read-write access
+        Read, ///< Read-only access
+        Write ///< Read-write access
     };
 
     /**
@@ -37,7 +37,7 @@ namespace nexo::ecs {
      */
     template<typename T, AccessType Access>
     struct ComponentAccess {
-        using ComponentType = T;
+        using ComponentType                    = T;
         static constexpr AccessType accessType = Access;
     };
 
@@ -58,7 +58,7 @@ namespace nexo::ecs {
      */
     template<typename T>
     struct ReadSingleton {
-        using ComponentType = T;
+        using ComponentType                    = T;
         static constexpr AccessType accessType = AccessType::Read;
     };
 
@@ -67,7 +67,7 @@ namespace nexo::ecs {
      */
     template<typename T>
     struct WriteSingleton {
-        using ComponentType = T;
+        using ComponentType                    = T;
         static constexpr AccessType accessType = AccessType::Write;
     };
 
@@ -122,11 +122,8 @@ namespace nexo::ecs {
     template<typename Tuple, typename Func>
     void tuple_for_each(Tuple&& tuple, Func&& func)
     {
-        tuple_for_each_impl(
-            std::forward<Tuple>(tuple),
-            std::forward<Func>(func),
-            std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{}
-        );
+        tuple_for_each_impl(std::forward<Tuple>(tuple), std::forward<Func>(func),
+                            std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
     }
 
     /**
@@ -152,4 +149,4 @@ namespace nexo::ecs {
      */
     template<typename T>
     struct IsSingleton : std::bool_constant<IsReadSingleton<T>::value || IsWriteSingleton<T>::value> {};
-}
+} // namespace nexo::ecs
