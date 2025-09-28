@@ -18,10 +18,10 @@
 #include "Exception.hpp"
 #include "Logger.hpp"
 
-#include <vector>
-#include <span>
 #include <algorithm>
 #include <cstring>
+#include <span>
+#include <vector>
 
 namespace nexo::ecs {
     /**
@@ -32,10 +32,10 @@ namespace nexo::ecs {
      * allowing type-erased storage and manipulation of components.
      *
      * @note This class is not thread-safe. Access to a ComponentArray should be
-     *       synchronized externally when used in multi-threaded contexts.
+     *       synchronized externally when used in multithreaded contexts.
      */
     class IComponentArray {
-    public:
+       public:
         virtual ~IComponentArray() = default;
 
         /**
@@ -101,7 +101,7 @@ namespace nexo::ecs {
          * @pre The entity must be a valid entity ID
          * @pre componentData must point to valid memory of component's size
          */
-        virtual void insertRaw(Entity entity, const void *componentData) = 0;
+        virtual void insertRaw(Entity entity, const void* componentData) = 0;
 
         /**
          * @brief Removes the component for the given entity.
@@ -124,8 +124,8 @@ namespace nexo::ecs {
     };
 
 #if defined(_MSC_VER)
-    #pragma warning(push) // ComponentArray
-    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+    #pragma warning(push)           // ComponentArray
+    #pragma warning(disable : 4324) // disable msvc warning for added padding bytes because of alignas(64)
 #endif
 
     /**
@@ -140,12 +140,12 @@ namespace nexo::ecs {
      * @tparam capacity Initial capacity for the sparse array
      *
      * @note This class is not thread-safe. Access should be synchronized externally when
-     *       used in multi-threaded contexts.
+     *       used in multithreaded contexts.
      */
     template<typename T, size_t capacity = 1024>
-    requires (capacity >= 1)
+        requires(capacity >= 1)
     class alignas(64) ComponentArray final : public IComponentArray {
-    public:
+       public:
         /**
          * @brief Type alias for the component type
          */
@@ -171,15 +171,13 @@ namespace nexo::ecs {
 
         [[nodiscard]] void* getRawComponent(Entity entity) override
         {
-            if (!hasComponent(entity))
-                return nullptr;
+            if (!hasComponent(entity)) return nullptr;
             return &m_componentArray[m_sparse[entity]];
         }
 
         [[nodiscard]] const void* getRawComponent(const Entity entity) const override
         {
-            if (!hasComponent(entity))
-                return nullptr;
+            if (!hasComponent(entity)) return nullptr;
             return &m_componentArray[m_sparse[entity]];
         }
 
@@ -204,8 +202,7 @@ namespace nexo::ecs {
          */
         void insert(Entity entity, T component)
         {
-            if (entity >= MAX_ENTITIES)
-                THROW_EXCEPTION(OutOfRange, entity);
+            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
 
             // Ensure m_sparse can hold this entity index.
             ensureSparseCapacity(entity);
@@ -216,7 +213,7 @@ namespace nexo::ecs {
             }
 
             const size_t newIndex = m_size;
-            m_sparse[entity] = newIndex;
+            m_sparse[entity]      = newIndex;
             m_dense.push_back(entity);
             m_componentArray.push_back(component);
 
@@ -233,10 +230,9 @@ namespace nexo::ecs {
          * @pre The entity must be a valid entity ID
          * @pre componentData must point to valid memory of component's size
          */
-        void insertRaw(Entity entity, const void *componentData) override
+        void insertRaw(Entity entity, const void* componentData) override
         {
-            if (entity >= MAX_ENTITIES)
-                THROW_EXCEPTION(OutOfRange, entity);
+            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
 
             ensureSparseCapacity(entity);
 
@@ -246,17 +242,19 @@ namespace nexo::ecs {
             }
 
             const size_t newIndex = m_size;
-            m_sparse[entity] = newIndex;
+            m_sparse[entity]      = newIndex;
             m_dense.push_back(entity);
 
             // allocate new component in the array
             m_componentArray.emplace_back();
-            // copy the raw data into the new component, if it is trivially copyable, use memcpy, otherwise use placement new
+            // copy the raw data into the new component, if it is trivially copyable, use memcpy, otherwise use
+            // placement new
             if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&m_componentArray[newIndex], componentData, sizeof(T));
                 ++m_size;
             } else {
-                THROW_EXCEPTION(InternalError, "Component type is not trivially copyable, raw insertion is not supported");
+                THROW_EXCEPTION(InternalError,
+                                "Component type is not trivially copyable, raw insertion is not supported");
             }
         }
 
@@ -273,8 +271,7 @@ namespace nexo::ecs {
          */
         void remove(const Entity entity) override
         {
-            if (!hasComponent(entity))
-                THROW_EXCEPTION(ComponentNotFound, entity);
+            if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
             size_t indexToRemove = m_sparse[entity];
 
@@ -285,7 +282,7 @@ namespace nexo::ecs {
                 if (indexToRemove != groupLastIndex) {
                     std::swap(m_componentArray[indexToRemove], m_componentArray[groupLastIndex]);
                     std::swap(m_dense[indexToRemove], m_dense[groupLastIndex]);
-                    m_sparse[m_dense[indexToRemove]] = indexToRemove;
+                    m_sparse[m_dense[indexToRemove]]  = indexToRemove;
                     m_sparse[m_dense[groupLastIndex]] = groupLastIndex;
                 }
                 --m_groupSize;
@@ -318,8 +315,7 @@ namespace nexo::ecs {
          */
         [[nodiscard]] T& get(const Entity entity)
         {
-            if (!hasComponent(entity))
-                THROW_EXCEPTION(ComponentNotFound, entity);
+            if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
             return m_componentArray[m_sparse[entity]];
         }
 
@@ -334,15 +330,13 @@ namespace nexo::ecs {
          */
         [[nodiscard]] const T& get(const Entity entity) const
         {
-            if (!hasComponent(entity))
-                THROW_EXCEPTION(ComponentNotFound, entity);
+            if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
             return m_componentArray[m_sparse[entity]];
         }
 
         void duplicateComponent(const Entity sourceEntity, const Entity destEntity) override
         {
-            if (!hasComponent(sourceEntity))
-                THROW_EXCEPTION(ComponentNotFound, sourceEntity);
+            if (!hasComponent(sourceEntity)) THROW_EXCEPTION(ComponentNotFound, sourceEntity);
 
             insert(destEntity, get(sourceEntity));
         }
@@ -365,8 +359,7 @@ namespace nexo::ecs {
          */
         void entityDestroyed(const Entity entity) override
         {
-            if (hasComponent(entity))
-                remove(entity);
+            if (hasComponent(entity)) remove(entity);
         }
 
         /**
@@ -390,8 +383,7 @@ namespace nexo::ecs {
          */
         [[nodiscard]] Entity getEntityAtIndex(const size_t index) const
         {
-            if (index >= m_size)
-                THROW_EXCEPTION(OutOfRange, index);
+            if (index >= m_size) THROW_EXCEPTION(OutOfRange, index);
             return m_dense[index];
         }
 
@@ -438,17 +430,15 @@ namespace nexo::ecs {
          */
         void addToGroup(const Entity entity)
         {
-            if (!hasComponent(entity))
-                THROW_EXCEPTION(ComponentNotFound, entity);
+            if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
             size_t index = m_sparse[entity];
-            if (index < m_groupSize)
-                return;
+            if (index < m_groupSize) return;
             // Swap with the element at the group boundary.
             if (index != m_groupSize) {
                 std::swap(m_componentArray[index], m_componentArray[m_groupSize]);
                 std::swap(m_dense[index], m_dense[m_groupSize]);
-                m_sparse[m_dense[index]] = index;
+                m_sparse[m_dense[index]]       = index;
                 m_sparse[m_dense[m_groupSize]] = m_groupSize;
             }
             ++m_groupSize;
@@ -467,17 +457,15 @@ namespace nexo::ecs {
          */
         void removeFromGroup(const Entity entity)
         {
-            if (!hasComponent(entity))
-                THROW_EXCEPTION(ComponentNotFound, entity);
+            if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
             size_t index = m_sparse[entity];
-            if (index >= m_groupSize)
-                return;
+            if (index >= m_groupSize) return;
             --m_groupSize;
             if (index != m_groupSize) {
                 std::swap(m_componentArray[index], m_componentArray[m_groupSize]);
                 std::swap(m_dense[index], m_dense[m_groupSize]);
-                m_sparse[m_dense[index]] = index;
+                m_sparse[m_dense[index]]       = index;
                 m_sparse[m_dense[m_groupSize]] = m_groupSize;
             }
         }
@@ -494,11 +482,10 @@ namespace nexo::ecs {
          */
         void forceSetComponentAt(size_t index, const Entity entity, T component)
         {
-            if (index >= m_size)
-                THROW_EXCEPTION(OutOfRange, index);
+            if (index >= m_size) THROW_EXCEPTION(OutOfRange, index);
 
-            m_sparse[entity] = index;
-            m_dense[index] = entity;
+            m_sparse[entity]        = index;
+            m_dense[index]          = entity;
             m_componentArray[index] = std::move(component);
         }
 
@@ -568,12 +555,11 @@ namespace nexo::ecs {
          */
         [[nodiscard]] size_t memoryUsage() const
         {
-            return sizeof(T) * m_componentArray.capacity()
-                            + sizeof(size_t) * m_sparse.capacity()
-                            + sizeof(Entity) * m_dense.capacity();
+            return sizeof(T) * m_componentArray.capacity() + sizeof(size_t) * m_sparse.capacity() +
+                   sizeof(Entity) * m_dense.capacity();
         }
 
-    private:
+       private:
         // Dense storage for components.
         std::vector<T> m_componentArray;
         // Sparse mapping: maps entity ID to index in the dense arrays.
@@ -594,10 +580,8 @@ namespace nexo::ecs {
         {
             if (entity >= m_sparse.size()) {
                 size_t newSize = m_sparse.size();
-                if (newSize == 0)
-                    newSize = capacity;
-                while (entity >= newSize)
-                    newSize *= 2;
+                if (newSize == 0) newSize = capacity;
+                while (entity >= newSize) newSize *= 2;
                 m_sparse.resize(newSize, INVALID_ENTITY);
             }
         }
@@ -613,8 +597,7 @@ namespace nexo::ecs {
             if (m_size < m_componentArray.capacity() / 4 && m_componentArray.capacity() > capacity * 2) {
                 // Only shrink if vectors are significantly oversized to avoid frequent reallocations
                 size_t newCapacity = std::max(m_size * 2, capacity);
-                if (newCapacity < capacity)
-                    newCapacity = capacity;
+                if (newCapacity < capacity) newCapacity = capacity;
 
                 m_componentArray.shrink_to_fit();
                 m_dense.shrink_to_fit();
@@ -626,15 +609,14 @@ namespace nexo::ecs {
         }
     };
 
-
 #if defined(_MSC_VER)
     #pragma warning(pop) // ComponentArray
 
-    #pragma warning(push) // TypeErasedComponentArray
-    #pragma warning(disable: 4324) // disable msvc warning for added padding bytes because of alignas(64)
+    #pragma warning(push)           // TypeErasedComponentArray
+    #pragma warning(disable : 4324) // disable msvc warning for added padding bytes because of alignas(64)
 #endif
 
-        /**
+    /**
      * @class TypeErasedComponentArray
      * @brief A type-erased component array that can store components of any size.
      *
@@ -643,7 +625,7 @@ namespace nexo::ecs {
      * each component.
      */
     class alignas(64) TypeErasedComponentArray final : public IComponentArray {
-    public:
+       public:
         /**
          * @brief Constructs a new type-erased component array
          * @param componentSize Size of each component in bytes
@@ -676,24 +658,68 @@ namespace nexo::ecs {
          */
         void remove(Entity entity) override;
 
+        /**
+         * @brief Checks if an entity has a component in this array
+         * @param entity The entity to check
+         * @return true if the entity has a component, false otherwise
+         */
         [[nodiscard]] bool hasComponent(Entity entity) const override;
 
+        /**
+         * @brief Removes the component from an entity when it's destroyed
+         * @param entity The entity being destroyed
+         */
         void entityDestroyed(Entity entity) override;
 
+        /**
+         * @brief Duplicates the component from sourceEntity to destEntity
+         * @param sourceEntity The entity to copy the component from
+         * @param destEntity The entity to copy the component to
+         */
         void duplicateComponent(Entity sourceEntity, Entity destEntity) override;
 
+        /**
+         * @brief Gets the size of each component in bytes
+         * @return Size of individual component in bytes
+         */
         [[nodiscard]] size_t getComponentSize() const override;
 
+        /**
+         * @brief Gets the total number of components in the array
+         * @return The number of active components
+         */
         [[nodiscard]] size_t size() const override;
 
+        /**
+         * @brief Gets raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Raw pointer to component data, or nullptr if not found
+         */
         [[nodiscard]] void* getRawComponent(Entity entity) override;
 
+        /**
+         * @brief Gets const raw pointer to component data for an entity
+         * @param entity The entity to get the component from
+         * @return Const raw pointer to component data, or nullptr if not found
+         */
         [[nodiscard]] const void* getRawComponent(Entity entity) const override;
 
+        /**
+         * @brief Gets raw pointer to all component data
+         * @return Raw pointer to contiguous component data
+         */
         [[nodiscard]] void* getRawData() override;
 
+        /**
+         * @brief Gets const raw pointer to all component data
+         * @return Const raw pointer to contiguous component data
+         */
         [[nodiscard]] const void* getRawData() const override;
 
+        /**
+         * @brief Gets a const span view of all entities with this component
+         * @return Const span of entity IDs
+         */
         [[nodiscard]] std::span<const Entity> entities() const override;
 
         /**
@@ -727,7 +753,7 @@ namespace nexo::ecs {
          */
         [[nodiscard]] size_t memoryUsage() const;
 
-    private:
+       private:
         // Component data storage
         std::vector<std::byte> m_componentData;
         // Sparse mapping: maps entity ID to index in the dense arrays
@@ -743,10 +769,24 @@ namespace nexo::ecs {
         // Group size for component grouping
         size_t m_groupSize = 0;
 
+        /**
+         * @brief Ensures m_sparse is large enough to index 'entity'
+         * @param entity The entity to ensure capacity for
+         */
         void ensureSparseCapacity(Entity entity);
 
+        /**
+         * @brief Swaps components at two indices in the dense array
+         * @param index1 The first index
+         * @param index2 The second index
+         */
         void swapComponents(size_t index1, size_t index2);
 
+        /** @brief Shrinks vectors if they're significantly larger than needed
+         *
+         * Reduces memory usage by shrinking the dense vectors when size
+         * is less than half of their capacity.
+         */
         void shrinkIfNeeded();
     };
 
@@ -754,4 +794,4 @@ namespace nexo::ecs {
     #pragma warning(pop) // TypeErasedComponentArray
 #endif
 
-}
+} // namespace nexo::ecs

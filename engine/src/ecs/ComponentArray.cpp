@@ -16,7 +16,8 @@
 
 namespace nexo::ecs {
 
-    TypeErasedComponentArray::TypeErasedComponentArray(const size_t componentSize, const size_t initialCapacity): m_componentSize(componentSize), m_capacity(initialCapacity)
+    TypeErasedComponentArray::TypeErasedComponentArray(const size_t componentSize, const size_t initialCapacity)
+        : m_componentSize(componentSize), m_capacity(initialCapacity)
     {
         if (componentSize == 0) {
             throw std::invalid_argument("Component size cannot be zero");
@@ -34,8 +35,7 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::insertRaw(Entity entity, const void* componentData)
     {
-        if (entity >= MAX_ENTITIES)
-            THROW_EXCEPTION(OutOfRange, entity);
+        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
 
         ensureSparseCapacity(entity);
 
@@ -55,16 +55,14 @@ namespace nexo::ecs {
         }
 
         // Copy component data
-        std::memcpy(m_componentData.data() + newIndex * m_componentSize,
-                    componentData, m_componentSize);
+        std::memcpy(m_componentData.data() + newIndex * m_componentSize, componentData, m_componentSize);
 
         ++m_size;
     }
 
     void TypeErasedComponentArray::remove(const Entity entity)
     {
-        if (!hasComponent(entity))
-            THROW_EXCEPTION(ComponentNotFound, entity);
+        if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
         size_t indexToRemove = m_sparse[entity];
 
@@ -103,14 +101,12 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::entityDestroyed(const Entity entity)
     {
-        if (hasComponent(entity))
-            remove(entity);
+        if (hasComponent(entity)) remove(entity);
     }
 
     void TypeErasedComponentArray::duplicateComponent(const Entity sourceEntity, const Entity destEntity)
     {
-        if (!hasComponent(sourceEntity))
-            THROW_EXCEPTION(ComponentNotFound, sourceEntity);
+        if (!hasComponent(sourceEntity)) THROW_EXCEPTION(ComponentNotFound, sourceEntity);
 
         const void* sourceData = getRawComponent(sourceEntity);
         insert(destEntity, sourceData);
@@ -128,15 +124,13 @@ namespace nexo::ecs {
 
     void* TypeErasedComponentArray::getRawComponent(const Entity entity)
     {
-        if (!hasComponent(entity))
-            return nullptr;
+        if (!hasComponent(entity)) return nullptr;
         return m_componentData.data() + m_sparse[entity] * m_componentSize;
     }
 
     const void* TypeErasedComponentArray::getRawComponent(const Entity entity) const
     {
-        if (!hasComponent(entity))
-            return nullptr;
+        if (!hasComponent(entity)) return nullptr;
         return m_componentData.data() + m_sparse[entity] * m_componentSize;
     }
 
@@ -157,19 +151,16 @@ namespace nexo::ecs {
 
     Entity TypeErasedComponentArray::getEntityAtIndex(const size_t index) const
     {
-        if (index >= m_size)
-            THROW_EXCEPTION(OutOfRange, index);
+        if (index >= m_size) THROW_EXCEPTION(OutOfRange, index);
         return m_dense[index];
     }
 
     void TypeErasedComponentArray::addToGroup(const Entity entity)
     {
-        if (!hasComponent(entity))
-            THROW_EXCEPTION(ComponentNotFound, entity);
+        if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
         const size_t index = m_sparse[entity];
-        if (index < m_groupSize)
-            return;
+        if (index < m_groupSize) return;
 
         if (index != m_groupSize) {
             swapComponents(index, m_groupSize);
@@ -182,12 +173,10 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::removeFromGroup(const Entity entity)
     {
-        if (!hasComponent(entity))
-            THROW_EXCEPTION(ComponentNotFound, entity);
+        if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
 
         const size_t index = m_sparse[entity];
-        if (index >= m_groupSize)
-            return;
+        if (index >= m_groupSize) return;
 
         --m_groupSize;
         if (index != m_groupSize) {
@@ -205,19 +194,15 @@ namespace nexo::ecs {
 
     size_t TypeErasedComponentArray::memoryUsage() const
     {
-        return m_componentData.capacity()
-               + sizeof(size_t) * m_sparse.capacity()
-               + sizeof(Entity) * m_dense.capacity();
+        return m_componentData.capacity() + sizeof(size_t) * m_sparse.capacity() + sizeof(Entity) * m_dense.capacity();
     }
 
     void TypeErasedComponentArray::ensureSparseCapacity(const Entity entity)
     {
         if (entity >= m_sparse.size()) {
             size_t newSize = m_sparse.size();
-            if (newSize == 0)
-                newSize = m_capacity;
-            while (entity >= newSize)
-                newSize *= 2;
+            if (newSize == 0) newSize = m_capacity;
+            while (entity >= newSize) newSize *= 2;
             m_sparse.resize(newSize, INVALID_ENTITY);
         }
     }
@@ -240,8 +225,7 @@ namespace nexo::ecs {
     {
         if (m_size < m_componentData.capacity() / 4 && m_componentData.capacity() > m_capacity * m_componentSize * 2) {
             size_t newCapacity = std::max(m_size * 2, m_capacity) * m_componentSize;
-            if (newCapacity < m_capacity * m_componentSize)
-                newCapacity = m_capacity * m_componentSize;
+            if (newCapacity < m_capacity * m_componentSize) newCapacity = m_capacity * m_componentSize;
 
             m_componentData.shrink_to_fit();
             m_dense.shrink_to_fit();

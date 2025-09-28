@@ -24,10 +24,10 @@
 namespace nexo::ecs {
 
     struct Field {
-        std::string name;   // Pointer to the name of the field
-        FieldType type;     // Type of the field (e.g., Int, Float, String, etc.)
-        uint64_t size;      // Size of the field in bytes
-        uint64_t offset;    // Offset of the field in the component
+        std::string name; // Pointer to the name of the field
+        FieldType type;   // Type of the field (e.g., Int, Float, String, etc.)
+        uint64_t size;    // Size of the field in bytes
+        uint64_t offset;  // Offset of the field in the component
     };
 
 } // namespace nexo::ecs

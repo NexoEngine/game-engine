@@ -47,7 +47,6 @@ namespace nexo::system {
         if (renderContext.sceneRendered == -1) return;
 
         const auto sceneRendered  = static_cast<unsigned int>(renderContext.sceneRendered);
-        const SceneType sceneType = renderContext.sceneType;
 
         const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
             [](const components::SceneTag &tag) { return tag.id; });
