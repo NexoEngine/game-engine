@@ -30,8 +30,7 @@ namespace nexo::renderer {
         // Bind VAO for mesh, or use full-screen quad
         if (type == CommandType::MESH && vao && currentVAO != vao->getId()) {
             vao->bind();
-            for (const auto &vbo : vao->getVertexBuffers())
-                vbo->bind();
+            for (const auto& vbo : vao->getVertexBuffers()) vbo->bind();
             currentVAO = vao->getId();
         } else if (type == CommandType::FULL_SCREEN) {
             auto quad = getFullscreenQuad();
@@ -42,7 +41,7 @@ namespace nexo::renderer {
         // Set uniforms
         if (shader) {
             for (auto const& [name, val] : uniforms) {
-                std::visit([&](auto&& v){ shader->setUniform(name, v); }, val);
+                std::visit([&](auto&& v) { shader->setUniform(name, v); }, val);
             }
         }
 
@@ -52,4 +51,4 @@ namespace nexo::renderer {
             NxRenderCommand::drawUnIndexed(6);
         }
     }
-}
+} // namespace nexo::renderer

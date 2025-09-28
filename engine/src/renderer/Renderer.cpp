@@ -28,4 +28,4 @@ namespace nexo::renderer {
     {
         NxRenderCommand::setViewport(0, 0, width, height);
     }
-}
+} // namespace nexo::renderer

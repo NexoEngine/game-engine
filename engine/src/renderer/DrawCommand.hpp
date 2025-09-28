@@ -18,29 +18,33 @@
 #include "VertexArray.hpp"
 
 namespace nexo::renderer {
-
-    // Function to get the quad, initializing it on first use
+    /**
+     * @brief Retrieves a shared pointer to a fullscreen quad vertex array.
+     *
+     * This function initializes a fullscreen quad vertex array on its first invocation,
+     * creating a simple 2-triangle quad that covers the normalized device coordinates (NDC)
+     * from -1 to 1. The quad is defined with position and texture coordinate attributes.
+     *
+     * @return A shared pointer to the NxVertexArray representing the fullscreen quad.
+     *
+     * Example usage:
+     * ```cpp
+     * auto fullscreenQuad = getFullscreenQuad();
+     * fullscreenQuad->bind();
+     * ```
+     */
     inline std::shared_ptr<NxVertexArray> getFullscreenQuad()
     {
         static std::shared_ptr<NxVertexArray> s_fullscreenQuad = nullptr;
         if (!s_fullscreenQuad) {
             // Create a simple 2-triangle quad covering NDC [-1..1]
-            s_fullscreenQuad = createVertexArray();
-            static float quadVertices[] = {
-                // positions   // tex coords
-                -1.0f,  1.0f,  0.0f, 1.0f,
-                -1.0f, -1.0f,  0.0f, 0.0f,
-                 1.0f, -1.0f,  1.0f, 0.0f,
-                -1.0f,  1.0f,  0.0f, 1.0f,
-                 1.0f, -1.0f,  1.0f, 0.0f,
-                 1.0f,  1.0f,  1.0f, 1.0f
-            };
-            const auto vb = createVertexBuffer(sizeof(quadVertices));
+            s_fullscreenQuad            = createVertexArray();
+            static float quadVertices[] = {// positions   // tex coords
+                                           -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
+                                           -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f};
+            const auto vb               = createVertexBuffer(sizeof(quadVertices));
             vb->setData(quadVertices, sizeof(quadVertices));
-            vb->setLayout({
-                {NxShaderDataType::FLOAT2, "aPosition"},
-                {NxShaderDataType::FLOAT2, "aTexCoord"}
-            });
+            vb->setLayout({{NxShaderDataType::FLOAT2, "aPosition"}, {NxShaderDataType::FLOAT2, "aTexCoord"}});
             s_fullscreenQuad->addVertexBuffer(vb);
         }
         return s_fullscreenQuad;
@@ -59,8 +63,18 @@ namespace nexo::renderer {
         std::unordered_map<std::string, UniformValue> uniforms;
 
         uint32_t filterMask = 0xFFFFFFFF;
-        bool isOpaque = true;
+        bool isOpaque       = true;
 
+        /**
+         * @brief Executes the draw command.
+         *
+         * This method binds the necessary shader and vertex array object (VAO),
+         * sets the required uniforms, and issues the appropriate draw call based
+         * on the command type (mesh or fullscreen).
+         *
+         * It optimizes state changes by tracking the currently bound shader and VAO,
+         * only rebinding them if they differ from the last used ones.
+         */
         void execute() const;
     };
-}
+} // namespace nexo::renderer

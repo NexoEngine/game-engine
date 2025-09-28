@@ -14,13 +14,16 @@
 
 #include "UniformCache.hpp"
 
+#include <ranges>
+
 namespace nexo::renderer {
 
     void UniformCache::setFloat(const std::string& name, float value)
     {
         const auto it = m_values.find(name);
-        if (it == m_values.end() || !std::holds_alternative<float>(it->second) || std::get<float>(it->second) != value) {
-            m_values[name] = value;
+        if (it == m_values.end() || !std::holds_alternative<float>(it->second) ||
+            std::get<float>(it->second) != value) {
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -28,8 +31,9 @@ namespace nexo::renderer {
     void UniformCache::setFloat2(const std::string& name, const glm::vec2& value)
     {
         const auto it = m_values.find(name);
-        if (it == m_values.end() || !std::holds_alternative<glm::vec2>(it->second) || std::get<glm::vec2>(it->second) != value) {
-            m_values[name] = value;
+        if (it == m_values.end() || !std::holds_alternative<glm::vec2>(it->second) ||
+            std::get<glm::vec2>(it->second) != value) {
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -37,8 +41,9 @@ namespace nexo::renderer {
     void UniformCache::setFloat3(const std::string& name, const glm::vec3& value)
     {
         const auto it = m_values.find(name);
-        if (it == m_values.end() || !std::holds_alternative<glm::vec3>(it->second) || std::get<glm::vec3>(it->second) != value) {
-            m_values[name] = value;
+        if (it == m_values.end() || !std::holds_alternative<glm::vec3>(it->second) ||
+            std::get<glm::vec3>(it->second) != value) {
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -46,8 +51,9 @@ namespace nexo::renderer {
     void UniformCache::setFloat4(const std::string& name, const glm::vec4& value)
     {
         const auto it = m_values.find(name);
-        if (it == m_values.end() || !std::holds_alternative<glm::vec4>(it->second) || std::get<glm::vec4>(it->second) != value) {
-            m_values[name] = value;
+        if (it == m_values.end() || !std::holds_alternative<glm::vec4>(it->second) ||
+            std::get<glm::vec4>(it->second) != value) {
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -56,7 +62,7 @@ namespace nexo::renderer {
     {
         const auto it = m_values.find(name);
         if (it == m_values.end() || !std::holds_alternative<int>(it->second) || std::get<int>(it->second) != value) {
-            m_values[name] = value;
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -65,7 +71,7 @@ namespace nexo::renderer {
     {
         const auto it = m_values.find(name);
         if (it == m_values.end() || !std::holds_alternative<bool>(it->second) || std::get<bool>(it->second) != value) {
-            m_values[name] = value;
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -73,8 +79,9 @@ namespace nexo::renderer {
     void UniformCache::setMatrix(const std::string& name, const glm::mat4& value)
     {
         const auto it = m_values.find(name);
-        if (it == m_values.end() || !std::holds_alternative<glm::mat4>(it->second) || std::get<glm::mat4>(it->second) != value) {
-            m_values[name] = value;
+        if (it == m_values.end() || !std::holds_alternative<glm::mat4>(it->second) ||
+            std::get<glm::mat4>(it->second) != value) {
+            m_values[name]     = value;
             m_dirtyFlags[name] = true;
         }
     }
@@ -103,8 +110,8 @@ namespace nexo::renderer {
 
     void UniformCache::clearAllDirtyFlags()
     {
-        for (auto& [name, dirty] : m_dirtyFlags) {
+        for (auto& dirty : m_dirtyFlags | std::views::values) {
             dirty = false;
         }
     }
-}
+} // namespace nexo::renderer

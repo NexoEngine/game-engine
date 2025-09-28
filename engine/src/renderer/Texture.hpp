@@ -20,37 +20,109 @@
 namespace nexo::renderer {
 
     /**
-    * @class NxTexture
-    * @brief Abstract base class for representing textures in a rendering system.
-    *
-    * The `Texture` class provides a common interface for managing texture resources
-    * in a rendering API. It defines the basic operations for texture creation, data management,
-    * and binding/unbinding to the graphics pipeline.
-    *
-    * Responsibilities:
-    * - Retrieve texture properties (e.g., width, height, ID).
-    * - Manage texture data.
-    * - Bind and unbind textures to specific texture slots.
-    *
-    * Derived classes (e.g., `NxOpenGlTexture2D`) implement platform-specific behavior for
-    * managing textures in different rendering backends.
-    */
+     * @class NxTexture
+     * @brief Abstract base class for representing textures in a rendering system.
+     *
+     * The `Texture` class provides a common interface for managing texture resources
+     * in a rendering API. It defines the basic operations for texture creation, data management,
+     * and binding/unbinding to the graphics pipeline.
+     *
+     * Responsibilities:
+     * - Retrieve texture properties (e.g., width, height, ID).
+     * - Manage texture data.
+     * - Bind and unbind textures to specific texture slots.
+     *
+     * Derived classes (e.g., `NxOpenGlTexture2D`) implement platform-specific behavior for
+     * managing textures in different rendering backends.
+     */
     class NxTexture {
-        public:
-            virtual ~NxTexture() = default;
+       public:
+        virtual ~NxTexture() = default;
 
-            [[nodiscard]] virtual unsigned int getWidth() const = 0;
-            [[nodiscard]] virtual unsigned int getHeight() const = 0;
-            [[nodiscard]] virtual unsigned int getMaxTextureSize() const = 0;
+        /**
+         * @brief Gets the width of the texture in pixels.
+         * @return The width of the texture.
+         */
+        [[nodiscard]] virtual unsigned int getWidth() const = 0;
 
-            [[nodiscard]] virtual unsigned int getId() const = 0;
+        /**
+         * @brief Gets the height of the texture in pixels.
+         * @return The height of the texture.
+         */
+        [[nodiscard]] virtual unsigned int getHeight() const = 0;
 
-            virtual void bind(unsigned int slot = 0) const = 0;
-            virtual void unbind(unsigned int slot = 0) const = 0;
+        /**
+         * @brief Gets the maximum supported texture size.
+         * @return The maximum size (width or height) in pixels that a texture can have.
+         * @note This value is typically hardware-dependent and may vary across different graphics cards.
+         */
+        [[nodiscard]] virtual unsigned int getMaxTextureSize() const = 0;
+        /**
+         * @brief Retrieves the unique identifier of the texture.
+         *
+         * This ID is typically assigned by the graphics API (e.g., OpenGL, DirectX)
+         * when the texture is created and is used for binding and managing the texture
+         * within the rendering pipeline.
+         *
+         * @return The unique identifier of the texture as an unsigned integer.
+         */
+        [[nodiscard]] virtual unsigned int getId() const = 0;
 
-            virtual void setData(void *data, size_t size) = 0;
+        /**
+         * @brief Binds the texture to a specified texture slot.
+         *
+         * This method binds the texture to the specified texture slot, making it active for
+         * subsequent rendering operations. If no slot is specified, it defaults to slot 0.
+         *
+         * @param slot The texture slot to bind the texture to (default is 0).
+         *
+         * Throws:
+         * - Implementation-specific exceptions if binding fails.
+         *
+         * Notes:
+         * - The actual implementation of this method is platform-specific and should be
+         *   provided by derived classes.
+         */
+        virtual void bind(unsigned int slot = 0) const = 0;
 
-            bool operator==(const NxTexture &other) const { return this->getId() == other.getId(); };
+        /**
+         * @brief Unbinds the texture from a specified texture slot.
+         *
+         * This method unbinds the texture from the specified texture slot, effectively
+         * detaching it from the graphics pipeline. If no slot is specified, it defaults
+         * to slot 0.
+         *
+         * @param slot The texture slot to unbind the texture from (default is 0).
+         *
+         * Notes:
+         * - The actual implementation of this method is platform-specific and should be
+         *   provided by derived classes.
+         */
+        virtual void unbind(unsigned int slot = 0) const = 0;
+
+        /**
+         * @brief Sets the texture data from a raw data buffer.
+         *
+         * This method updates the texture's pixel data using the provided raw data buffer.
+         * The size parameter specifies the size of the data in bytes. The data format and
+         * layout must match the texture's internal format.
+         *
+         * @param data Pointer to the raw pixel data buffer.
+         * @param size Size of the data buffer in bytes.
+         *
+         * Throws:
+         * - Implementation-specific exceptions if setting the data fails.
+         *
+         * Notes:
+         * - The actual implementation of this method is platform-specific and should be
+         *   provided by derived classes.
+         */
+        virtual void setData(void *data, size_t size) = 0;
+
+        bool operator==(const NxTexture &other) const
+        {
+            return this->getId() == other.getId();
+        };
     };
 
     /**
@@ -71,10 +143,10 @@ namespace nexo::renderer {
     enum class NxTextureFormat {
         INVALID = 0, // Invalid texture format, used for error reporting
 
-        R8 = 1,      // 1 channel RED, 8 bits per channel
-        RG8,         // 2 channels RED GREEN, 8 bits per channel
-        RGB8,        // 3 channels RED GREEN BLUE, 8 bits per channel
-        RGBA8,       // 4 channels RED GREEN BLUE ALPHA, 8 bits per channel
+        R8 = 1, // 1 channel RED, 8 bits per channel
+        RG8,    // 2 channels RED GREEN, 8 bits per channel
+        RGB8,   // 3 channels RED GREEN BLUE, 8 bits per channel
+        RGBA8,  // 4 channels RED GREEN BLUE ALPHA, 8 bits per channel
 
         _NB_FORMATS_ // Number of texture formats, used for array sizing
     };
@@ -91,11 +163,16 @@ namespace nexo::renderer {
     [[nodiscard]] constexpr std::string_view NxTextureFormatToString(const NxTextureFormat format)
     {
         switch (format) {
-            case NxTextureFormat::R8:    return "R8";
-            case NxTextureFormat::RG8:   return "RG8";
-            case NxTextureFormat::RGB8:  return "RGB8";
-            case NxTextureFormat::RGBA8: return "RGBA8";
-            default: return "INVALID";
+            case NxTextureFormat::R8:
+                return "R8";
+            case NxTextureFormat::RG8:
+                return "RG8";
+            case NxTextureFormat::RGB8:
+                return "RGB8";
+            case NxTextureFormat::RGBA8:
+                return "RGBA8";
+            default:
+                return "INVALID";
         }
     }
 
@@ -123,91 +200,91 @@ namespace nexo::renderer {
      */
     void NxTextureFormatConvertArgb8ToRgba8(uint8_t *bytes, size_t size);
 
-    class NxTexture2D :  public NxTexture {
-        public:
-            /**
-             * @brief Creates a blank 2D texture with the specified dimensions.
-             *
-             * Allocates a texture resource with the given width and height. The texture
-             * will have no initial data and can be updated later with `setData`.
-             *
-             * @param width The width of the texture in pixels.
-             * @param height The height of the texture in pixels.
-             * @return A shared pointer to the created `NxTexture2D` instance.
-             *
-             * Example:
-             * ```cpp
-             * auto blankTexture = NxTexture2D::create(512, 512);
-             * ```
-             */
-            static std::shared_ptr<NxTexture2D> create(unsigned int width, unsigned int height);
+    class NxTexture2D : public NxTexture {
+       public:
+        /**
+         * @brief Creates a blank 2D texture with the specified dimensions.
+         *
+         * Allocates a texture resource with the given width and height. The texture
+         * will have no initial data and can be updated later with `setData`.
+         *
+         * @param width The width of the texture in pixels.
+         * @param height The height of the texture in pixels.
+         * @return A shared pointer to the created `NxTexture2D` instance.
+         *
+         * Example:
+         * ```cpp
+         * auto blankTexture = NxTexture2D::create(512, 512);
+         * ```
+         */
+        static std::shared_ptr<NxTexture2D> create(unsigned int width, unsigned int height);
 
+        /**
+         * @brief Creates a 2D texture from raw pixel data in memory.
+         *
+         * Creates a texture from a raw pixel buffer with the specified dimensions and format.
+         * This is useful when you have direct access to pixel data that wasn't loaded through
+         * compressed images files or when you want to create textures from procedurally generated data.
+         *
+         * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
+         *        in a format that matches the specified NxTextureFormat. The data consists
+         *        of height scanlines of width pixels, with each pixel consisting of N components
+         *        (where N depends on the format). The first pixel pointed to is bottom-left-most
+         *        in the image. There is no padding between image scanlines or between pixels.
+         *        Each component is an 8-bit unsigned value (uint8_t).
+         * @param width The width of the texture in pixels.
+         * @param height The height of the texture in pixels.
+         * @param format The format of the pixel data, which determines the number of components
+         *        per pixel.
+         * @return A shared pointer to the created NxTexture2D instance.
+         *
+         * Example:
+         * ```cpp
+         * // Create a 128x128 RGBA texture with custom data (4 components (RGBA))
+         * std::vector<uint8_t> pixelData(128 * 128 * 4);
+         * // Fill pixelData with your custom values...
+         * auto texture = NxTexture2D::create(pixelData.data(), 128, 128, NxTextureFormat::RGBA8);
+         * ```
+         */
+        static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int width, unsigned int height,
+                                                   NxTextureFormat format);
 
-            /**
-             * @brief Creates a 2D texture from raw pixel data in memory.
-             *
-             * Creates a texture from a raw pixel buffer with the specified dimensions and format.
-             * This is useful when you have direct access to pixel data that wasn't loaded through
-             * compressed images files or when you want to create textures from procedurally generated data.
-             *
-             * @param buffer Pointer to the raw pixel data. The buffer should contain pixel data
-             *        in a format that matches the specified NxTextureFormat. The data consists
-             *        of height scanlines of width pixels, with each pixel consisting of N components
-             *        (where N depends on the format). The first pixel pointed to is bottom-left-most
-             *        in the image. There is no padding between image scanlines or between pixels.
-             *        Each component is an 8-bit unsigned value (uint8_t).
-             * @param width The width of the texture in pixels.
-             * @param height The height of the texture in pixels.
-             * @param format The format of the pixel data, which determines the number of components
-             *        per pixel.
-             * @return A shared pointer to the created NxTexture2D instance.
-             *
-             * Example:
-             * ```cpp
-             * // Create a 128x128 RGBA texture with custom data (4 components (RGBA))
-             * std::vector<uint8_t> pixelData(128 * 128 * 4);
-             * // Fill pixelData with your custom values...
-             * auto texture = NxTexture2D::create(pixelData.data(), 128, 128, NxTextureFormat::RGBA8);
-             * ```
-             */
-            static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int width, unsigned int height, NxTextureFormat format);
+        /**
+         * @brief Creates a 2D texture from file in memory.
+         *
+         * Loads the texture data from the specified memory buffer. The buffer must contain
+         * image data in a supported format (e.g., PNG, JPG). The texture will be ready
+         * for rendering after creation.
+         *
+         * @param buffer The memory buffer containing the texture image data.
+         * @param len The length of the memory buffer in bytes.
+         * @return A shared pointer to the created `NxTexture2D` instance.
+         *
+         * Example:
+         * ```cpp
+         * // Load image data into a buffer
+         * std::vector<uint8_t> imageData = ...;
+         * auto texture = NxTexture2D::create(imageData.data(), imageData.size());
+         * ```
+         */
+        static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int len);
 
-            /**
-             * @brief Creates a 2D texture from file in memory.
-             *
-             * Loads the texture data from the specified memory buffer. The buffer must contain
-             * image data in a supported format (e.g., PNG, JPG). The texture will be ready
-             * for rendering after creation.
-             *
-             * @param buffer The memory buffer containing the texture image data.
-             * @param len The length of the memory buffer in bytes.
-             * @return A shared pointer to the created `NxTexture2D` instance.
-             *
-             * Example:
-             * ```cpp
-             * // Load image data into a buffer
-             * std::vector<uint8_t> imageData = ...;
-             * auto texture = NxTexture2D::create(imageData.data(), imageData.size());
-             * ```
-             */
-            static std::shared_ptr<NxTexture2D> create(const uint8_t* buffer, unsigned int len);
-
-            /**
-            * @brief Creates a 2D texture from an image file.
-            *
-            * Loads the texture data from the specified file path. The file must contain
-            * image data in a supported format (e.g., PNG, JPG). The texture will be ready
-            * for rendering after creation.
-            *
-            * @param path The file path to the texture image.
-            * @return A shared pointer to the created `NxTexture2D` instance.
-            *
-            * Example:
-            * ```cpp
-            * auto texture = NxTexture2D::create("assets/textures/brick_wall.png");
-            * ```
-            */
-            static std::shared_ptr<NxTexture2D> create(const std::string &path);
+        /**
+         * @brief Creates a 2D texture from an image file.
+         *
+         * Loads the texture data from the specified file path. The file must contain
+         * image data in a supported format (e.g., PNG, JPG). The texture will be ready
+         * for rendering after creation.
+         *
+         * @param path The file path to the texture image.
+         * @return A shared pointer to the created `NxTexture2D` instance.
+         *
+         * Example:
+         * ```cpp
+         * auto texture = NxTexture2D::create("assets/textures/brick_wall.png");
+         * ```
+         */
+        static std::shared_ptr<NxTexture2D> create(const std::string &path);
     };
 
-}
+} // namespace nexo::renderer

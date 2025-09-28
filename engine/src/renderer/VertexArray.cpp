@@ -21,11 +21,11 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxVertexArray> createVertexArray()
     {
-        #ifdef NX_GRAPHICS_API_OPENGL
-            return std::make_shared<NxOpenGlVertexArray>();
-        #else
-            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-        #endif
+#ifdef NX_GRAPHICS_API_OPENGL
+        return std::make_shared<NxOpenGlVertexArray>();
+#else
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+#endif
     }
 
-}
+} // namespace nexo::renderer

@@ -21,7 +21,7 @@ namespace nexo::renderer {
     ShaderLibrary::ShaderLibrary()
     {
         // Helper lambda to safely load a shader with proper error handling
-        auto safeLoadShader = [this](const std::string& name, const std::string& relativePath) {
+        auto safeLoadShader = [this](const std::string &name, const std::string &relativePath) {
             try {
                 // Resolve the absolute path
                 const std::filesystem::path absPath = Path::resolvePathRelativeToExe(relativePath);
@@ -36,7 +36,7 @@ namespace nexo::renderer {
                 load(name, absPath.string());
                 LOG(NEXO_INFO, "Shader '{}' loaded successfully", name);
                 return true;
-            } catch (const std::exception& e) {
+            } catch (const std::exception &e) {
                 LOG(NEXO_ERROR, "Failed to load shader '{}': {}", name, e.what());
                 return false;
             } catch (...) {
@@ -57,7 +57,7 @@ namespace nexo::renderer {
     void ShaderLibrary::add(const std::shared_ptr<NxShader> &shader)
     {
         const std::string &name = shader->getName();
-        m_shaders[name] = shader;
+        m_shaders[name]         = shader;
     }
 
     void ShaderLibrary::add(const std::string &name, const std::shared_ptr<NxShader> &shader)
@@ -79,7 +79,8 @@ namespace nexo::renderer {
         return shader;
     }
 
-    std::shared_ptr<NxShader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<NxShader> ShaderLibrary::load(const std::string &name, const std::string &vertexSource,
+                                                  const std::string &fragmentSource)
     {
         auto shader = NxShader::create(name, vertexSource, fragmentSource);
         add(shader);
@@ -88,11 +89,10 @@ namespace nexo::renderer {
 
     std::shared_ptr<NxShader> ShaderLibrary::get(const std::string &name) const
     {
-        if (!m_shaders.contains(name))
-        {
+        if (!m_shaders.contains(name)) {
             LOG(NEXO_WARN, "ShaderLibrary::get: shader {} not found", name);
             return nullptr;
         }
         return m_shaders.at(name);
     }
-}
+} // namespace nexo::renderer

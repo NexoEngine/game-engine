@@ -12,10 +12,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #include "Shader.hpp"
-#include "Attributes.hpp"
-#include "renderer/RendererExceptions.hpp"
-#include "Logger.hpp"
 #include <variant>
+#include "Attributes.hpp"
+#include "Logger.hpp"
+#include "renderer/RendererExceptions.hpp"
 #ifdef NX_GRAPHICS_API_OPENGL
     #include "opengl/OpenGlShader.hpp"
 #endif
@@ -24,48 +24,47 @@
 
 namespace nexo::renderer {
 
-    std::shared_ptr<NxShader> NxShader::create(const std::string &path)
+    std::shared_ptr<NxShader> NxShader::create(const std::string& path)
     {
-        #ifdef NX_GRAPHICS_API_OPENGL
-            return std::make_shared<NxOpenGlShader>(path);
-        #else
-            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-        #endif
+#ifdef NX_GRAPHICS_API_OPENGL
+        return std::make_shared<NxOpenGlShader>(path);
+#else
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+#endif
     }
 
-    std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string &vertexSource, const std::string &fragmentSource)
+    std::shared_ptr<NxShader> NxShader::create(const std::string& name, const std::string& vertexSource,
+                                               const std::string& fragmentSource)
     {
-        #ifdef NX_GRAPHICS_API_OPENGL
-            return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
-        #else
-            THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
-        #endif
+#ifdef NX_GRAPHICS_API_OPENGL
+        return std::make_shared<NxOpenGlShader>(name, vertexSource, fragmentSource);
+#else
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+#endif
     }
 
-    std::string NxShader::readFile(const std::string &filepath)
+    std::string NxShader::readFile(const std::string& filepath)
     {
         std::string result;
-        if (std::ifstream in(filepath, std::ios::in | std::ios::binary); in)
-        {
+        if (std::ifstream in(filepath, std::ios::in | std::ios::binary); in) {
             in.seekg(0, std::ios::end);
             result.resize(in.tellg());
             in.seekg(0, std::ios::beg);
-            in.read(&result[0], result.size());
+            in.read(&result[0], static_cast<std::streamsize>(result.size()));
             in.close();
             return result;
         }
         THROW_EXCEPTION(NxFileNotFoundException, filepath);
     }
 
-    void NxShader::addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer> &buffer)
+    void NxShader::addStorageBuffer(const std::shared_ptr<NxShaderStorageBuffer>& buffer)
     {
         m_storageBuffers.push_back(buffer);
     }
 
-    void NxShader::setStorageBufferData(const size_t index, void* data, const size_t size)
+    void NxShader::setStorageBufferData(const size_t index, void* data, const size_t size) const
     {
-        if (index >= m_storageBuffers.size())
-            THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
+        if (index >= m_storageBuffers.size()) THROW_EXCEPTION(NxOutOfRangeException, index, m_storageBuffers.size());
         m_storageBuffers[index]->setData(data, size);
     }
 
@@ -74,8 +73,7 @@ namespace nexo::renderer {
         // Use uniform cache to avoid redundant state changes
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<float>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<float>(*optionalValue) &&
                 std::get<float>(*optionalValue) == value) {
                 return true; // Value hasn't changed, skip the update
             }
@@ -89,8 +87,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<glm::vec2>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<glm::vec2>(*optionalValue) &&
                 std::get<glm::vec2>(*optionalValue) == values) {
                 return true;
             }
@@ -104,8 +101,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<glm::vec3>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<glm::vec3>(*optionalValue) &&
                 std::get<glm::vec3>(*optionalValue) == values) {
                 return true;
             }
@@ -119,8 +115,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<glm::vec4>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<glm::vec4>(*optionalValue) &&
                 std::get<glm::vec4>(*optionalValue) == values) {
                 return true;
             }
@@ -134,8 +129,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<glm::mat4>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<glm::mat4>(*optionalValue) &&
                 std::get<glm::mat4>(*optionalValue) == matrix) {
                 return true;
             }
@@ -149,8 +143,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<bool>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<bool>(*optionalValue) &&
                 std::get<bool>(*optionalValue) == value) {
                 return true;
             }
@@ -164,8 +157,7 @@ namespace nexo::renderer {
     {
         if (!m_uniformCache.isDirty(name)) {
             const auto optionalValue = m_uniformCache.getValue(name);
-            if (optionalValue.has_value() &&
-                std::holds_alternative<int>(*optionalValue) &&
+            if (optionalValue.has_value() && std::holds_alternative<int>(*optionalValue) &&
                 std::get<int>(*optionalValue) == value) {
                 return true;
             }
@@ -175,37 +167,37 @@ namespace nexo::renderer {
         return false;
     }
 
-    bool NxShader::setUniformIntArray(
-        [[maybe_unused]] const std::string& name,
-        [[maybe_unused]] const int* values,
-        [[maybe_unused]] unsigned int count
-    ) const {
+    bool NxShader::setUniformIntArray([[maybe_unused]] const std::string& name, [[maybe_unused]] const int* values,
+                                      [[maybe_unused]] unsigned int count) const
+    {
         // Arrays are more complex for caching, so we'll always update them
         // In a real implementation, you might want to cache arrays too
         return false;
     }
 
-    bool NxShader::setUniform(const std::string &name, UniformValue value) const
+    bool NxShader::setUniform(const std::string& name, UniformValue value) const
     {
-        return std::visit([this, &name]<typename T>(T&& arg) -> bool {
-            using DecayedT = std::decay_t<T>;
-            if constexpr (std::is_same_v<DecayedT, float>)
-                return setUniformFloat(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, glm::vec2>)
-                return setUniformFloat2(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, glm::vec3>)
-                return setUniformFloat3(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, glm::vec4>)
-                return setUniformFloat4(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, int>)
-                return setUniformInt(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, bool>)
-                return setUniformBool(name, std::forward<T>(arg));
-            else if constexpr (std::is_same_v<DecayedT, glm::mat4>)
-                return setUniformMatrix(name, std::forward<T>(arg));
-            else
-                return false;
-        }, value);
+        return std::visit(
+            [this, &name]<typename T>(T&& arg) -> bool {
+                using DecayedT = std::decay_t<T>;
+                if constexpr (std::is_same_v<DecayedT, float>)
+                    return setUniformFloat(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, glm::vec2>)
+                    return setUniformFloat2(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, glm::vec3>)
+                    return setUniformFloat3(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, glm::vec4>)
+                    return setUniformFloat4(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, int>)
+                    return setUniformInt(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, bool>)
+                    return setUniformBool(name, std::forward<T>(arg));
+                else if constexpr (std::is_same_v<DecayedT, glm::mat4>)
+                    return setUniformMatrix(name, std::forward<T>(arg));
+                else
+                    return false;
+            },
+            value);
     }
 
     bool NxShader::hasUniform(const std::string& name) const
@@ -223,8 +215,8 @@ namespace nexo::renderer {
         return attributes.compatibleWith(m_requiredAttributes);
     }
 
-    void NxShader::resetCache()
+    void NxShader::resetCache() const
     {
         m_uniformCache.clearAllDirtyFlags();
     }
-}
+} // namespace nexo::renderer
