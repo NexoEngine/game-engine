@@ -234,6 +234,7 @@ namespace nexo::renderer {
         }
 
 
+
        private:
         std::vector<NxBufferElements> _elements;
         unsigned int _stride{};
