@@ -17,12 +17,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "core/event/Input.hpp"
 #include "Logger.hpp"
+#include "core/event/Input.hpp"
 
 namespace nexo::event {
     class InputOpenGl final : public Input {
-        public:
+       public:
         explicit InputOpenGl(const std::shared_ptr<renderer::NxWindow>& window) : Input(window)
         {
             LOG(NEXO_DEV, "Opengl input handler initialized");
@@ -37,4 +37,4 @@ namespace nexo::event {
 
         [[nodiscard]] glm::vec2 getMousePosition() const override;
     };
-}
+} // namespace nexo::event

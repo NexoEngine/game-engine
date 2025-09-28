@@ -25,20 +25,20 @@
 #include "components/Uuid.hpp"
 
 namespace nexo::scene {
-	Scene::Scene(std::string sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator, const bool editorOnly) : m_sceneName(std::move(sceneName)), m_coordinator(coordinator), isEditor(editorOnly)
-	{
-		m_uuid = components::genUuid();
-	}
+    Scene::Scene(std::string sceneName, const std::shared_ptr<ecs::Coordinator> &coordinator, const bool editorOnly)
+        : m_sceneName(std::move(sceneName)), m_coordinator(coordinator), isEditor(editorOnly)
+    {
+        m_uuid = components::genUuid();
+    }
 
-	Scene::~Scene()
-	{
-		for (const ecs::Entity entity : m_entities)
-		{
-			m_coordinator->destroyEntity(entity);
-		}
-	}
+    Scene::~Scene()
+    {
+        for (const ecs::Entity entity : m_entities) {
+            m_coordinator->destroyEntity(entity);
+        }
+    }
 
-	void Scene::addEntity(const ecs::Entity entity)
+    void Scene::addEntity(const ecs::Entity entity)
     {
         const components::SceneTag tag{m_id, true, true};
         m_coordinator->addComponent<components::SceneTag>(entity, tag);
@@ -48,15 +48,13 @@ namespace nexo::scene {
         if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
             const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
 
-            for (const auto &childEntity : transform.children)
-                addChildEntityToScene(childEntity);
+            for (const auto &childEntity : transform.children) addChildEntityToScene(childEntity);
         }
     }
 
     void Scene::addChildEntityToScene(const ecs::Entity entity)
     {
-        if (m_entities.contains(entity))
-            return;
+        if (m_entities.contains(entity)) return;
 
         // Add scene tag to this child entity
         const components::SceneTag tag{m_id, true, true};
@@ -67,36 +65,31 @@ namespace nexo::scene {
         if (m_coordinator->entityHasComponent<components::TransformComponent>(entity)) {
             const auto &transform = m_coordinator->getComponent<components::TransformComponent>(entity);
 
-            for (const auto &childEntity : transform.children)
-                addChildEntityToScene(childEntity);
+            for (const auto &childEntity : transform.children) addChildEntityToScene(childEntity);
         }
     }
 
-	void Scene::removeEntity(const ecs::Entity entity)
-	{
-		m_coordinator->removeComponent<components::SceneTag>(entity);
-		m_entities.erase(entity);
-	}
+    void Scene::removeEntity(const ecs::Entity entity)
+    {
+        m_coordinator->removeComponent<components::SceneTag>(entity);
+        m_entities.erase(entity);
+    }
 
-	void Scene::setActiveStatus(const bool active)
-	{
-		m_active = active;
-		for (const ecs::Entity entity : m_entities)
-		{
-			auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
-			if (tag)
-				tag->get().isActive = active;
-		}
-	}
+    void Scene::setActiveStatus(const bool active)
+    {
+        m_active = active;
+        for (const ecs::Entity entity : m_entities) {
+            auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+            if (tag) tag->get().isActive = active;
+        }
+    }
 
-	void Scene::setRenderStatus(const bool rendered)
-	{
-		m_rendered = rendered;
-		for (const ecs::Entity entity : m_entities)
-		{
-			auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
-			if (tag)
-				tag->get().isRendered = rendered;
-		}
-	}
-}
+    void Scene::setRenderStatus(const bool rendered)
+    {
+        m_rendered = rendered;
+        for (const ecs::Entity entity : m_entities) {
+            auto tag = m_coordinator->tryGetComponent<components::SceneTag>(entity);
+            if (tag) tag->get().isRendered = rendered;
+        }
+    }
+} // namespace nexo::scene
