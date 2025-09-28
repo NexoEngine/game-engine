@@ -24,9 +24,9 @@ namespace nexo::ecs {
 
     void Coordinator::init()
     {
-        m_componentManager = std::make_shared<ComponentManager>();
-        m_entityManager = std::make_shared<EntityManager>();
-        m_systemManager = std::make_shared<SystemManager>();
+        m_componentManager          = std::make_shared<ComponentManager>();
+        m_entityManager             = std::make_shared<EntityManager>();
+        m_systemManager             = std::make_shared<SystemManager>();
         m_singletonComponentManager = std::make_shared<SingletonComponentManager>();
 
         System::coord = std::shared_ptr<Coordinator>(this, [](const Coordinator*) {});
@@ -69,8 +69,7 @@ namespace nexo::ecs {
         std::vector<std::type_index> typeIndices;
         typeIndices.reserve(types.size());
 
-        for (const auto& type : types)
-        {
+        for (const auto& type : types) {
             typeIndices.push_back(m_typeIDtoTypeIndex.at(type));
         }
 
@@ -97,9 +96,9 @@ namespace nexo::ecs {
 
     Entity Coordinator::duplicateEntity(const Entity sourceEntity) const
     {
-        const Entity newEntity = createEntity();
+        const Entity newEntity    = createEntity();
         const Signature signature = m_entityManager->getSignature(sourceEntity);
-        Signature destSignature = m_entityManager->getSignature(newEntity);
+        Signature destSignature   = m_entityManager->getSignature(newEntity);
         for (ComponentType type = 0; type < MAX_COMPONENT_TYPE; ++type) {
             if (signature.test(type) && m_typeIDtoTypeIndex.contains(type)) {
                 const Signature previousSignature = destSignature;
@@ -115,31 +114,28 @@ namespace nexo::ecs {
     bool Coordinator::supportsMementoPattern(const std::any& component) const
     {
         const auto typeId = std::type_index(component.type());
-        const auto it = m_supportsMementoPattern.find(typeId);
+        const auto it     = m_supportsMementoPattern.find(typeId);
         return (it != m_supportsMementoPattern.end()) && it->second;
     }
 
     std::any Coordinator::saveComponent(const std::any& component) const
     {
         const auto typeId = std::type_index(component.type());
-        const auto it = m_saveComponentFunctions.find(typeId);
-        if (it != m_saveComponentFunctions.end())
-            return it->second(component);
+        const auto it     = m_saveComponentFunctions.find(typeId);
+        if (it != m_saveComponentFunctions.end()) return it->second(component);
         return {};
     }
 
     std::any Coordinator::restoreComponent(const std::any& memento, const std::type_index& componentType) const
     {
         const auto it = m_restoreComponentFunctions.find(componentType);
-        if (it != m_restoreComponentFunctions.end())
-            return it->second(memento);
+        if (it != m_restoreComponentFunctions.end()) return it->second(memento);
         return {};
     }
 
     void Coordinator::addComponentAny(const Entity entity, const std::type_index& typeIndex, const std::any& component)
     {
         const auto it = m_addComponentFunctions.find(typeIndex);
-        if (it != m_addComponentFunctions.end())
-            it->second(entity, component);
+        if (it != m_addComponentFunctions.end()) it->second(entity, component);
     }
-}
+} // namespace nexo::ecs

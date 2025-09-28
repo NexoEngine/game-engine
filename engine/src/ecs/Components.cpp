@@ -22,14 +22,12 @@ namespace nexo::ecs {
 
     void ComponentManager::entityDestroyed(const Entity entity, const Signature &entitySignature)
     {
-        for (const auto &group: m_groupRegistry | std::views::values) {
-            if ((entitySignature & group->allSignature()) == group->allSignature())
-                group->removeFromGroup(entity);
+        for (const auto &group : m_groupRegistry | std::views::values) {
+            if ((entitySignature & group->allSignature()) == group->allSignature()) group->removeFromGroup(entity);
         }
-        for (const auto& componentArray : m_componentArrays) {
-            if (componentArray)
-                componentArray->entityDestroyed(entity);
+        for (const auto &componentArray : m_componentArrays) {
+            if (componentArray) componentArray->entityDestroyed(entity);
         }
     }
 
-}
+} // namespace nexo::ecs
