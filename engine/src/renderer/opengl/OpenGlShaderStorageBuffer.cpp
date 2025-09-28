@@ -16,37 +16,37 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <glad/glad.h>
 #include "OpenGlShaderStorageBuffer.hpp"
+#include <glad/glad.h>
 
 namespace nexo::renderer {
-	NxOpenGlShaderStorageBuffer::NxOpenGlShaderStorageBuffer(const unsigned int size)
-	{
-		glCreateBuffers(1, &m_id);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	}
+    NxOpenGlShaderStorageBuffer::NxOpenGlShaderStorageBuffer(const unsigned int size)
+    {
+        glCreateBuffers(1, &m_id);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
 
-	void NxOpenGlShaderStorageBuffer::bind() const
-	{
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
-	}
+    void NxOpenGlShaderStorageBuffer::bind() const
+    {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
+    }
 
-	void NxOpenGlShaderStorageBuffer::bindBase(const unsigned int bindingLocation) const
-	{
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingLocation, m_id);
-	}
+    void NxOpenGlShaderStorageBuffer::bindBase(const unsigned int bindingLocation) const
+    {
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingLocation, m_id);
+    }
 
-	void NxOpenGlShaderStorageBuffer::unbind() const
-	{
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	}
+    void NxOpenGlShaderStorageBuffer::unbind() const
+    {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
 
-	void NxOpenGlShaderStorageBuffer::setData(void* data, size_t size)
-	{
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	}
-}
+    void NxOpenGlShaderStorageBuffer::setData(void* data, size_t size)
+    {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
+} // namespace nexo::renderer
