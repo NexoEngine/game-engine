@@ -26,4 +26,4 @@ namespace nexo::components {
     struct ModelComponent {
         assets::AssetRef<assets::Model> model;
     };
-}
+} // namespace nexo::components

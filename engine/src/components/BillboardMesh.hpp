@@ -19,8 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "VertexArray.hpp"
 #include <glm/glm.hpp>
+#include "VertexArray.hpp"
 
 namespace nexo::components {
     enum class BillboardType {
@@ -31,7 +31,7 @@ namespace nexo::components {
 
     struct BillboardComponent {
         BillboardType type = BillboardType::FULL;
-        glm::vec3 axis = {0.0f, 1.0f, 0.0f}; // For AXIS_CUSTOM type
+        glm::vec3 axis     = {0.0f, 1.0f, 0.0f}; // For AXIS_CUSTOM type
         std::shared_ptr<renderer::NxVertexArray> vao;
     };
-}
+} // namespace nexo::components

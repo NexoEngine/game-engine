@@ -17,29 +17,30 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <string>
 #include <random>
+#include <string>
 
 namespace nexo::components {
-	//TODO: Implement a safer uuid generator
-	inline std::string genUuid()
-	{
-		static std::random_device dev;
-		static std::mt19937 rng(dev());
+    // TODO: Implement a safer uuid generator
+    inline std::string genUuid()
+    {
+        static std::random_device dev;
+        static std::mt19937 rng(dev());
 
-		std::uniform_int_distribution dist(0, 15);
+        std::uniform_int_distribution dist(0, 15);
 
-		constexpr bool dash[] = { false, false, false, false, true, false, true, false, true, false, true, false, false, false, false, false };
+        constexpr bool dash[] = {false, false, false, false, true,  false, true,  false,
+                                 true,  false, true,  false, false, false, false, false};
 
-		std::string res;
-		for (const bool i : dash) {
-			const auto v = "0123456789abcdef";
-			if (i) res += "-";
-			res += v[dist(rng)];
-			res += v[dist(rng)];
-		}
-		return res;
-	}
+        std::string res;
+        for (const bool i : dash) {
+            const auto v = "0123456789abcdef";
+            if (i) res += "-";
+            res += v[dist(rng)];
+            res += v[dist(rng)];
+        }
+        return res;
+    }
 
     struct UuidComponent {
         struct Memento {
@@ -58,4 +59,4 @@ namespace nexo::components {
 
         std::string uuid = genUuid();
     };
-}
+} // namespace nexo::components

@@ -17,9 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "ecs/Definitions.hpp"
 #include "assets/AssetRef.hpp"
 #include "assets/Assets/Model/Model.hpp"
+#include "ecs/Definitions.hpp"
 
 namespace nexo::components {
 
@@ -54,8 +54,8 @@ namespace nexo::components {
 
         void restore(const Memento& memento)
         {
-            name = memento.name;
-            modelRef = memento.model;
+            name       = memento.name;
+            modelRef   = memento.model;
             childCount = memento.childCount;
         }
 
@@ -65,4 +65,4 @@ namespace nexo::components {
         }
     };
 
-}
+} // namespace nexo::components

@@ -17,14 +17,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <array>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-#include <array>
 
 #include "ecs/Definitions.hpp"
 
 constexpr unsigned int MAX_POINT_LIGHTS = 10;
-constexpr unsigned int MAX_SPOT_LIGHTS = 10;
+constexpr unsigned int MAX_SPOT_LIGHTS  = 10;
 
 namespace nexo::components {
 
@@ -44,15 +44,13 @@ namespace nexo::components {
         {
             return {color};
         }
-
-
     };
 
     struct DirectionalLightComponent {
-    	DirectionalLightComponent() = default;
-        explicit DirectionalLightComponent(const glm::vec3 &lightDirection,
-                                  		   const glm::vec3 &lightColor = {1.0f, 1.0f, 1.0f}) :
-        	direction(lightDirection), color(lightColor) {};
+        DirectionalLightComponent() = default;
+        explicit DirectionalLightComponent(const glm::vec3& lightDirection,
+                                           const glm::vec3& lightColor = {1.0f, 1.0f, 1.0f})
+            : direction(lightDirection), color(lightColor){};
 
         glm::vec3 direction{};
         glm::vec3 color{};
@@ -65,7 +63,7 @@ namespace nexo::components {
         void restore(const Memento& memento)
         {
             direction = memento.direction;
-            color = memento.color;
+            color     = memento.color;
         }
 
         [[nodiscard]] Memento save() const
@@ -79,7 +77,7 @@ namespace nexo::components {
         float linear{};
         float quadratic{};
         float maxDistance = 50.0f;
-        float constant = 1.0f;
+        float constant    = 1.0f;
 
         struct Memento {
             glm::vec3 color{};
@@ -91,11 +89,11 @@ namespace nexo::components {
 
         void restore(const Memento& memento)
         {
-            color = memento.color;
-            linear = memento.linear;
-            quadratic = memento.quadratic;
+            color       = memento.color;
+            linear      = memento.linear;
+            quadratic   = memento.quadratic;
             maxDistance = memento.maxDistance;
-            constant = memento.constant;
+            constant    = memento.constant;
         }
 
         [[nodiscard]] Memento save() const
@@ -112,7 +110,7 @@ namespace nexo::components {
         float linear{};
         float quadratic{};
         float maxDistance = 325.0f;
-        float constant = 1.0f;
+        float constant    = 1.0f;
 
         struct Memento {
             glm::vec3 direction{};
@@ -127,14 +125,14 @@ namespace nexo::components {
 
         void restore(const Memento& memento)
         {
-            direction = memento.direction;
-            color = memento.color;
-            cutOff = memento.cutOff;
+            direction   = memento.direction;
+            color       = memento.color;
+            cutOff      = memento.cutOff;
             outerCutoff = memento.outerCutoff;
-            linear = memento.linear;
-            quadratic = memento.quadratic;
+            linear      = memento.linear;
+            quadratic   = memento.quadratic;
             maxDistance = memento.maxDistance;
-            constant = memento.constant;
+            constant    = memento.constant;
         }
 
         [[nodiscard]] Memento save() const
@@ -151,4 +149,4 @@ namespace nexo::components {
         unsigned int spotLightCount = 0;
         DirectionalLightComponent dirLight;
     };
-}
+} // namespace nexo::components
