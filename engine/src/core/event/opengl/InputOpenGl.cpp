@@ -48,4 +48,4 @@ namespace nexo::event {
         return {static_cast<float>(xpos), static_cast<float>(ypos)};
     }
 
-}
+} // namespace nexo::event

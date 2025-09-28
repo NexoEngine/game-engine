@@ -19,8 +19,7 @@ namespace nexo::event {
     void SignalHandler::signalHandler(const int signal)
     {
         emitEventToAll<EventAnySignal>(signal);
-        switch (signal)
-        {
+        switch (signal) {
             case SIGTERM:
                 emitEventToAll<EventSignalTerminate>();
                 break;
@@ -39,10 +38,9 @@ namespace nexo::event {
     }
 
     template<typename EventType, typename... Args>
-    void SignalHandler::emitEventToAll(Args &&... args)
+    void SignalHandler::emitEventToAll(Args &&...args)
     {
-        for (const auto &eventManager: getInstance()->m_eventManagers)
-        {
+        for (const auto &eventManager : getInstance()->m_eventManagers) {
             eventManager->emitEvent<EventType>(std::forward<Args>(args)...);
         }
     }
@@ -59,8 +57,7 @@ namespace nexo::event {
 
     std::shared_ptr<SignalHandler> SignalHandler::getInstance()
     {
-        if (!s_instance)
-            s_instance = std::make_shared<SignalHandler>();
+        if (!s_instance) s_instance = std::make_shared<SignalHandler>();
         return s_instance;
     }
 

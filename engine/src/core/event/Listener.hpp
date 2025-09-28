@@ -22,20 +22,24 @@ namespace nexo::event {
 
 namespace nexo::event {
 
-	/**
-	* @brief Base class for all event listeners.
-	*
-	* BaseListener provides a common interface for all listener objects, storing a name for identification.
-	*/
+    /**
+     * @brief Base class for all event listeners.
+     *
+     * BaseListener provides a common interface for all listener objects, storing a name for identification.
+     */
     class BaseListener {
-        public:
-            BaseListener() = default;
-            explicit BaseListener(std::string name) : m_name(std::move(name)) {};
-            virtual ~BaseListener() = default;
+       public:
+        BaseListener() = default;
+        explicit BaseListener(std::string name) : m_name(std::move(name)){};
+        virtual ~BaseListener() = default;
 
-            [[nodiscard]] std::string getListenerName() const {return m_name; };
-        private:
-            std::string m_name;
+        [[nodiscard]] std::string getListenerName() const
+        {
+            return m_name;
+        };
+
+       private:
+        std::string m_name;
     };
 
     /**
@@ -48,17 +52,17 @@ namespace nexo::event {
      */
     template<class T>
     class Listener {
-        public:
-            virtual ~Listener() = default;
+       public:
+        virtual ~Listener() = default;
 
-            /**
-             * @brief Handles an event of type T.
-             *
-             * This method should be overridden by derived classes to process events of the specified type.
-             *
-             * @param event The event to handle.
-             */
-            virtual void handleEvent(T &event) = 0;
+        /**
+         * @brief Handles an event of type T.
+         *
+         * This method should be overridden by derived classes to process events of the specified type.
+         *
+         * @param event The event to handle.
+         */
+        virtual void handleEvent(T &event) = 0;
     };
 
     /**
@@ -71,7 +75,7 @@ namespace nexo::event {
      */
     template<typename... EventTypes>
     class Listens : public BaseListener, public Listener<EventTypes>... {
-        public:
-            explicit Listens(const std::string &name = "") : BaseListener(name) {};
+       public:
+        explicit Listens(const std::string &name = "") : BaseListener(name){};
     };
-}
+} // namespace nexo::event

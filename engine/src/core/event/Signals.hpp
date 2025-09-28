@@ -15,7 +15,6 @@
 #pragma once
 
 #include <csignal>
-#include <cstring>
 
 namespace nexo::utils {
 
@@ -23,13 +22,20 @@ namespace nexo::utils {
     constexpr const char *strsignal(const int signal)
     {
         switch (signal) {
-            case SIGABRT: return "SIGABRT";
-            case SIGFPE: return "SIGFPE";
-            case SIGILL: return "SIGILL";
-            case SIGINT: return "SIGINT";
-            case SIGSEGV: return "SIGSEGV";
-            case SIGTERM: return "SIGTERM";
-            default: return "UNKNOWN";
+            case SIGABRT:
+                return "SIGABRT";
+            case SIGFPE:
+                return "SIGFPE";
+            case SIGILL:
+                return "SIGILL";
+            case SIGINT:
+                return "SIGINT";
+            case SIGSEGV:
+                return "SIGSEGV";
+            case SIGTERM:
+                return "SIGTERM";
+            default:
+                return "UNKNOWN";
         }
     }
 #else
@@ -39,4 +45,4 @@ namespace nexo::utils {
     }
 #endif
 
-}
+} // namespace nexo::utils
