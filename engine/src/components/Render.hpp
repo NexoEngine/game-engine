@@ -13,19 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-namespace nexo::components
-{
-    enum class PrimitiveType
-    {
-        UNKNOWN,
-        CUBE,
-        MESH,
-        BILLBOARD,
-        _COUNT
-    };
+namespace nexo::components {
+    enum class PrimitiveType { UNKNOWN, CUBE, MESH, BILLBOARD, _COUNT };
 
     struct RenderComponent {
-        bool isRendered = true;
+        bool isRendered    = true;
         PrimitiveType type = PrimitiveType::MESH;
 
         RenderComponent() = default;
@@ -38,15 +30,12 @@ namespace nexo::components
         void restore(const Memento &memento)
         {
             isRendered = memento.isRendered;
-            type = memento.type;
+            type       = memento.type;
         }
 
         [[nodiscard]] Memento save() const
         {
-            return {
-                isRendered,
-                type
-            };
+            return {isRendered, type};
         }
     };
-}
+} // namespace nexo::components

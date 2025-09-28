@@ -20,22 +20,24 @@
 namespace nexo::components {
     struct PhysicsBodyComponent {
         enum class Type { Static, Dynamic };
-        
+
         struct Memento {
-            JPH::BodyID bodyID;
-            Type type;
+            JPH::BodyID bodyID{};
+            Type type{Type::Static};
         };
 
-        void restore(const Memento &memento) {
+        void restore(const Memento &memento)
+        {
             bodyID = memento.bodyID;
-            type = memento.type;
+            type   = memento.type;
         }
-        
-        [[nodiscard]] Memento save() const {
+
+        [[nodiscard]] Memento save() const
+        {
             return Memento{bodyID, type};
         }
 
         JPH::BodyID bodyID;
         Type type{};
     };
-}
+} // namespace nexo::components

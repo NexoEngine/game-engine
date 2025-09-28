@@ -21,22 +21,22 @@
 namespace nexo::components {
 
     struct Material {
-        glm::vec4 albedoColor = glm::vec4(1.0f);
+        glm::vec4 albedoColor   = glm::vec4(1.0f);
         glm::vec4 specularColor = glm::vec4(1.0f);
         glm::vec3 emissiveColor = glm::vec3(0.0f);
 
         bool isOpaque = true;
 
-        float roughness = 0.0f;  // 0 = smooth, 1 = rough
-        float metallic = 0.0f;   // 0 = non-metal, 1 = fully metallic
-        float opacity = 1.0f;    // 1 = opaque, 0 = fully transparent
+        float roughness = 0.0f; // 0 = smooth, 1 = rough
+        float metallic  = 0.0f; // 0 = non-metal, 1 = fully metallic
+        float opacity   = 1.0f; // 1 = opaque, 0 = fully transparent
 
         assets::AssetRef<assets::Texture> albedoTexture = nullptr;
-        assets::AssetRef<assets::Texture> normalMap = nullptr;
-        assets::AssetRef<assets::Texture> metallicMap = nullptr;
-        assets::AssetRef<assets::Texture> roughnessMap = nullptr;
-        assets::AssetRef<assets::Texture> emissiveMap = nullptr;
+        assets::AssetRef<assets::Texture> normalMap     = nullptr;
+        assets::AssetRef<assets::Texture> metallicMap   = nullptr;
+        assets::AssetRef<assets::Texture> roughnessMap  = nullptr;
+        assets::AssetRef<assets::Texture> emissiveMap   = nullptr;
 
         std::string shader = "Phong";
     };
-}
+} // namespace nexo::components

@@ -38,4 +38,4 @@ namespace nexo::components {
         }
     };
 
-}
+} // namespace nexo::components

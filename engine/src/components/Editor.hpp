@@ -15,4 +15,4 @@
 
 namespace nexo::components {
     struct SelectedTag {};
-}
+} // namespace nexo::components

@@ -13,21 +13,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Transform.hpp"
 #include "core/event/Input.hpp"
-#include "renderer/Framebuffer.hpp"
 #include "ecs/Definitions.hpp"
+#include "renderer/Framebuffer.hpp"
 #include "renderer/RenderPipeline.hpp"
-#include <glm/glm.hpp>
 
 namespace nexo::components {
 
-	enum class CameraType {
-		PERSPECTIVE,
-		ORTHOGRAPHIC
-	};
+    enum class CameraType { PERSPECTIVE, ORTHOGRAPHIC };
 
-	/**
+    /**
      * @brief Represents the camera component.
      *
      * Contains settings for viewport dimensions, field-of-view,
@@ -35,20 +32,21 @@ namespace nexo::components {
      * Also stores the render target and flags for active state and resizing.
      */
     struct CameraComponent {
-        unsigned int width;                 ///< Width of the camera's viewport.
-        unsigned int height;                ///< Height of the camera's viewport.
-        bool viewportLocked = false;        ///< If true, the viewport dimensions are locked.
-        float fov = 45.0f;                  ///< Field of view (in degrees) for perspective cameras.
-        float nearPlane = 0.1f;             ///< Near clipping plane distance.
-        float farPlane = 1000.0f;           ///< Far clipping plane distance.
-        CameraType type = CameraType::PERSPECTIVE;  ///< The type of the camera (perspective or orthographic).
+        unsigned int width;                            ///< Width of the camera's viewport.
+        unsigned int height;                           ///< Height of the camera's viewport.
+        bool viewportLocked = false;                   ///< If true, the viewport dimensions are locked.
+        float fov           = 45.0f;                   ///< Field of view (in degrees) for perspective cameras.
+        float nearPlane     = 0.1f;                    ///< Near clipping plane distance.
+        float farPlane      = 1000.0f;                 ///< Far clipping plane distance.
+        CameraType type     = CameraType::PERSPECTIVE; ///< The type of the camera (perspective or orthographic).
 
-        glm::vec4 clearColor = {37.0f/255.0f, 35.0f/255.0f, 50.0f/255.0f, 111.0f/255.0f};  ///< Background clear color.
+        glm::vec4 clearColor = {37.0f / 255.0f, 35.0f / 255.0f, 50.0f / 255.0f,
+                                111.0f / 255.0f}; ///< Background clear color.
 
-        bool active = true;                 ///< Indicates if the camera is active.
-        bool render = false;                ///< Indicates if the camera has to be rendered.
-        bool main = true;                   ///< Indicates if the camera is the main camera.
-        bool resizing = false;              ///< Internal flag indicating if the camera is resizing.
+        bool active   = true;  ///< Indicates if the camera is active.
+        bool render   = false; ///< Indicates if the camera has to be rendered.
+        bool main     = true;  ///< Indicates if the camera is the main camera.
+        bool resizing = false; ///< Internal flag indicating if the camera is resizing.
 
         std::shared_ptr<renderer::NxFramebuffer> m_renderTarget = nullptr; ///< The render target framebuffer.
 
@@ -73,7 +71,7 @@ namespace nexo::components {
          * @param transf The transform component of the camera.
          * @return glm::mat4 The view matrix.
          */
-        [[nodiscard]] glm::mat4 getViewMatrix(const TransformComponent &transf) const;
+        [[nodiscard]] static glm::mat4 getViewMatrix(const TransformComponent& transf) ;
 
         /**
          * @brief Resizes the camera's viewport.
@@ -111,12 +109,15 @@ namespace nexo::components {
      * yaw, and pitch.
      */
     struct PerspectiveCameraController {
-        PerspectiveCameraController() { lastMousePosition = event::getMousePosition(); }
+        PerspectiveCameraController()
+        {
+            lastMousePosition = event::getMousePosition();
+        }
 
         glm::vec2 lastMousePosition{};  ///< Last recorded mouse position.
-        float mouseSensitivity = 0.1f;///< Sensitivity factor for mouse movement.
-        float translationSpeed = 5.0f; ///< Camera speed
-        bool wasMouseReleased = true;
+        float mouseSensitivity  = 0.1f; ///< Sensitivity factor for mouse movement.
+        float translationSpeed  = 5.0f; ///< Camera speed
+        bool wasMouseReleased   = true;
         bool wasActiveLastFrame = true;
 
         struct Memento {
@@ -132,10 +133,7 @@ namespace nexo::components {
 
         [[nodiscard]] Memento save() const
         {
-            return {
-                mouseSensitivity,
-                translationSpeed
-            };
+            return {mouseSensitivity, translationSpeed};
         }
     };
 
@@ -145,10 +143,10 @@ namespace nexo::components {
      * This component allows the camera to orbit around a target entity based on mouse input.
      */
     struct PerspectiveCameraTarget {
-        glm::vec2 lastMousePosition = event::getMousePosition();  ///< Last recorded mouse position.
-        float mouseSensitivity = 0.1f;                            ///< Sensitivity factor for mouse movement.
-        float distance = 5.0f;                                    ///< Distance from the camera to the target entity.
-        ecs::Entity targetEntity;                                 ///< The target entity the camera is focusing on.
+        glm::vec2 lastMousePosition = event::getMousePosition(); ///< Last recorded mouse position.
+        float mouseSensitivity      = 0.1f;                      ///< Sensitivity factor for mouse movement.
+        float distance              = 5.0f;                      ///< Distance from the camera to the target entity.
+        ecs::Entity targetEntity;                                ///< The target entity the camera is focusing on.
 
         struct Memento {
             float mouseSensitivity;
@@ -159,17 +157,13 @@ namespace nexo::components {
         void restore(const Memento& memento)
         {
             mouseSensitivity = memento.mouseSensitivity;
-            distance = memento.distance;
-            targetEntity = memento.targetEntity;
+            distance         = memento.distance;
+            targetEntity     = memento.targetEntity;
         }
 
         [[nodiscard]] Memento save() const
         {
-            return {
-                mouseSensitivity,
-                distance,
-                targetEntity
-            };
+            return {mouseSensitivity, distance, targetEntity};
         }
     };
 
@@ -180,10 +174,10 @@ namespace nexo::components {
      * and the render target used for rendering.
      */
     struct CameraContext {
-        glm::mat4 viewProjectionMatrix;                      ///< Combined view and projection matrix.
-        glm::vec3 cameraPosition;                            ///< The position of the camera.
-        glm::vec4 clearColor;                                ///< Clear color used for rendering.
+        glm::mat4 viewProjectionMatrix;                        ///< Combined view and projection matrix.
+        glm::vec3 cameraPosition;                              ///< The position of the camera.
+        glm::vec4 clearColor;                                  ///< Clear color used for rendering.
         std::shared_ptr<renderer::NxFramebuffer> renderTarget; ///< The render target framebuffer.
         renderer::RenderPipeline pipeline;
     };
-}
+} // namespace nexo::components

@@ -19,12 +19,12 @@
 namespace nexo::components {
     void TransformComponent::restore(const TransformComponent::Memento &memento)
     {
-        pos = memento.position;
-        quat = memento.rotation;
-        size = memento.scale;
+        pos         = memento.position;
+        quat        = memento.rotation;
+        size        = memento.scale;
         localMatrix = memento.localMatrix;
         localCenter = memento.localCenter;
-        children = memento.children;
+        children    = memento.children;
     }
 
     [[nodiscard]] TransformComponent::Memento TransformComponent::save() const
@@ -34,8 +34,7 @@ namespace nexo::components {
 
     void TransformComponent::addChild(const ecs::Entity childEntity)
     {
-        if (std::ranges::find(children, childEntity) != children.end())
-            return;
+        if (std::ranges::find(children, childEntity) != children.end()) return;
         children.push_back(childEntity);
     }
 
@@ -43,4 +42,4 @@ namespace nexo::components {
     {
         children.erase(std::ranges::remove(children, childEntity).begin(), children.end());
     }
-}
+} // namespace nexo::components

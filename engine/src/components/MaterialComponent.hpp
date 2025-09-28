@@ -32,4 +32,4 @@ namespace nexo::components {
             return {material};
         }
     };
-}
+} // namespace nexo::components
