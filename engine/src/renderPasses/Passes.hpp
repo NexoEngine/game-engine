@@ -21,11 +21,5 @@
 #include "RenderPass.hpp"
 
 namespace nexo::renderer {
-    enum Passes : PassId {
-        FORWARD,
-        GRID,
-        MASK,
-        OUTLINE,
-        NB_PASSES
-    };
+    enum Passes : PassId { FORWARD, GRID, MASK, OUTLINE, NB_PASSES };
 }

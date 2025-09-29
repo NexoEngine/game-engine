@@ -18,15 +18,17 @@
 #pragma once
 
 #include "renderer/RenderPass.hpp"
-#include "renderer/Framebuffer.hpp"
 
 namespace nexo::renderer {
 
     class OutlinePass : public RenderPass {
-        public:
-            OutlinePass();
-            ~OutlinePass() override = default;
+       public:
+        OutlinePass();
+        ~OutlinePass() override = default;
 
-            void execute(RenderPipeline& pipeline) override;
+        /**
+         * @brief Executes the outline rendering pass.
+         */
+        void execute(RenderPipeline& pipeline) override;
     };
-}
+} // namespace nexo::renderer
