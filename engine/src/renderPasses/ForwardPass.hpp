@@ -17,16 +17,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "renderer/Framebuffer.hpp"
 #include "renderer/RenderPass.hpp"
 
 namespace nexo::renderer {
 
     class ForwardPass : public RenderPass {
-        public:
-            ForwardPass();
-            ~ForwardPass() override = default;
+       public:
+        ForwardPass();
+        ~ForwardPass() override = default;
 
-            void execute(RenderPipeline& pipeline) override;
+        /**
+         * @brief Executes the forward rendering pass.
+         */
+        void execute(RenderPipeline& pipeline) override;
     };
-}
+} // namespace nexo::renderer

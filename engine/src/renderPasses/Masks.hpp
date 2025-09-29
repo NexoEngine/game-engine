@@ -20,8 +20,8 @@
 #include <cstdint>
 
 namespace nexo::renderer {
-    constexpr uint32_t F_FORWARD_PASS  = 1 << 0;
-    constexpr uint32_t F_OUTLINE_MASK  = 1 << 1;
-    constexpr uint32_t F_OUTLINE_PASS  = 1 << 2;
-    constexpr uint32_t F_GRID_PASS  = 1 << 3;
-}
+    constexpr uint32_t F_FORWARD_PASS = 1 << 0;
+    constexpr uint32_t F_OUTLINE_MASK = 1 << 1;
+    constexpr uint32_t F_OUTLINE_PASS = 1 << 2;
+    constexpr uint32_t F_GRID_PASS    = 1 << 3;
+} // namespace nexo::renderer
