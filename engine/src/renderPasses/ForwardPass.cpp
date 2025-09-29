@@ -15,33 +15,28 @@
 #include "ForwardPass.hpp"
 #include "DrawCommand.hpp"
 #include "Framebuffer.hpp"
+#include "Passes.hpp"
 #include "RenderCommand.hpp"
 #include "renderPasses/Masks.hpp"
 #include "renderer/RenderPipeline.hpp"
 #include "renderer/Renderer3D.hpp"
-#include "Passes.hpp"
-
-#include <glad/glad.h>
 
 namespace nexo::renderer {
     ForwardPass::ForwardPass() : RenderPass(Passes::FORWARD, "Forward Pass")
-    {
+    {}
 
-    }
-
-    void ForwardPass::execute(RenderPipeline& pipeline)
+    void ForwardPass::execute(RenderPipeline &pipeline)
     {
         const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
         renderTarget->bind();
-       	NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
-       	NxRenderCommand::clear();
+        NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
+        NxRenderCommand::clear();
         renderTarget->clearAttachment<int>(1, -1);
         NxRenderer3D::get().bindTextures();
         const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_FORWARD_PASS)
-                cmd.execute();
+            if (cmd.filterMask & F_FORWARD_PASS) cmd.execute();
         }
         renderTarget->unbind();
     }
-}
+} // namespace nexo::renderer
