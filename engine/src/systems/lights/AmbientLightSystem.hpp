@@ -19,27 +19,35 @@
 
 namespace nexo::system {
 
-	/**
-	* @brief System responsible for updating ambient light data in the scene.
-	*
-	* This system identifies the first ambient light entity in the active scene and updates
-	* the RenderContext's global ambient light value with its ambient light component.
-	*
-	* @note Component Access Rights:
-	*  - READ access to components::AmbientLightComponent (owned)
-	*  - READ access to components::SceneTag (non-owned)
-	*  - WRITE access to components::RenderContext (singleton)
-	*
-	* @note The system uses scene partitioning to only process ambient light entities
-	* belonging to the currently active scene (identified by RenderContext.sceneRendered).
-	*/
-	class AmbientLightSystem final : public ecs::GroupSystem<
-		ecs::Owned<
-			ecs::Read<components::AmbientLightComponent>>,
-        ecs::NonOwned<
-        	ecs::Read<components::SceneTag>>,
-    	ecs::WriteSingleton<components::RenderContext>> {
-			public:
-				void update();
-	};
-}
+    /**
+     * @brief System responsible for updating ambient light data in the scene.
+     *
+     * This system identifies the first ambient light entity in the active scene and updates
+     * the RenderContext's global ambient light value with its ambient light component.
+     *
+     * @note Component Access Rights:
+     *  - READ access to components::AmbientLightComponent (owned)
+     *  - READ access to components::SceneTag (non-owned)
+     *  - WRITE access to components::RenderContext (singleton)
+     *
+     * @note The system uses scene partitioning to only process ambient light entities
+     * belonging to the currently active scene (identified by RenderContext.sceneRendered).
+     */
+    class AmbientLightSystem final : public ecs::GroupSystem<ecs::Owned<ecs::Read<components::AmbientLightComponent>>,
+                                                             ecs::NonOwned<ecs::Read<components::SceneTag>>,
+                                                             ecs::WriteSingleton<components::RenderContext>> {
+       public:
+        /**
+         * @brief Updates the RenderContext with the ambient light from the active scene.
+         *
+         * This method retrieves the currently active scene from the RenderContext singleton.
+         * It then partitions entities by their SceneTag to find those belonging to the active scene.
+         * If an ambient light entity is found, its color is used to update the RenderContext's
+         * ambient light value. If multiple ambient lights are found, a warning is logged and
+         * only the first one is used.
+         *
+         * If no ambient light is found for the active scene, a warning is logged.
+         */
+        void update();
+    };
+} // namespace nexo::system
