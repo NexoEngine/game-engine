@@ -15,6 +15,7 @@
 #pragma once
 
 #include <csignal>
+#include <cstring> # needed for linux
 
 namespace nexo::utils {
 
