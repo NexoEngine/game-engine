@@ -26,7 +26,24 @@ namespace nexo::system {
               ecs::NonOwned<ecs::Write<components::MaterialComponent>, ecs::Read<components::SceneTag>>,
               ecs::WriteSingleton<components::RenderContext>> {
        public:
+        /**
+         * @brief Updates the rendering of videos in the active scene.
+         * This method retrieves the currently active scene from the RenderContext singleton.
+         * It then partitions entities by their SceneTag to find those belonging to the active scene.
+         * For each video entity found, it updates the VideoComponent to advance frames and updates
+         * the associated MaterialComponent with the current video frame.
+         * If no video entities are found for the active scene, a warning is logged.
+         */
         static int updateVideoComponent(components::VideoComponent& videoComponent, ecs::Entity entity);
+
+        /**
+         * @brief Updates the rendering of videos in the active scene.
+         * This method retrieves the currently active scene from the RenderContext singleton.
+         * It then partitions entities by their SceneTag to find those belonging to the active scene.
+         * For each video entity found, it updates the VideoComponent to advance frames and updates
+         * the associated MaterialComponent with the current video frame.
+         * If no video entities are found for the active scene, a warning is logged.
+         */
         void update();
         void reset();
     };

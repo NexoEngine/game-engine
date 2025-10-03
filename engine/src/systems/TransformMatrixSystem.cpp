@@ -22,16 +22,14 @@ namespace nexo::system {
     void TransformMatrixSystem::update()
     {
         const auto &renderContext = getSingleton<components::RenderContext>();
-        if (renderContext.sceneRendered == -1)
-            return;
+        if (renderContext.sceneRendered == -1) return;
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         for (const ecs::Entity entity : entities) {
             auto &sceneTag = getComponent<components::SceneTag>(entity);
-			if (sceneTag.id != sceneRendered)
-				continue;
-            auto &transform = getComponent<components::TransformComponent>(entity);
+            if (sceneTag.id != sceneRendered) continue;
+            auto &transform       = getComponent<components::TransformComponent>(entity);
             transform.localMatrix = createTransformMatrix(transform);
             transform.worldMatrix = transform.localMatrix;
         }
@@ -39,8 +37,7 @@ namespace nexo::system {
 
     glm::mat4 TransformMatrixSystem::createTransformMatrix(const components::TransformComponent &transform)
     {
-        return glm::translate(glm::mat4(1.0f), transform.pos) *
-               glm::toMat4(transform.quat) *
+        return glm::translate(glm::mat4(1.0f), transform.pos) * glm::toMat4(transform.quat) *
                glm::scale(glm::mat4(1.0f), transform.size);
     }
-}
+} // namespace nexo::system

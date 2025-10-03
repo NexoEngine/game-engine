@@ -21,12 +21,12 @@ namespace nexo::system {
     ScriptingSystem::ScriptingSystem()
     {
         scripting::HostHandler::Parameters params;
-        params.errorCallback = [this](const scripting::HostString& message) {
+        params.errorCallback = [this](const scripting::HostString &message) {
             LOG(NEXO_ERROR, "Scripting host error: {}", message.to_utf8());
             m_latestScriptingError = message.to_utf8();
         };
 
-        scripting::HostHandler& host = scripting::HostHandler::getInstance();
+        scripting::HostHandler &host = scripting::HostHandler::getInstance();
 
         // Initialize the host
         if (host.initialize(params) != scripting::HostHandler::SUCCESS) {
@@ -37,7 +37,6 @@ namespace nexo::system {
 
     int ScriptingSystem::init()
     {
-
         const auto &scriptHost = scripting::HostHandler::getInstance();
 
         updateWorldState();
@@ -46,7 +45,8 @@ namespace nexo::system {
             return ret;
         }
         LOG(NEXO_INFO, "Scripting components initialized successfully");
-        if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
+        if (auto ret = scriptHost.getManagedApi().SystemBase.InitializeSystems(&m_worldState, sizeof(m_worldState));
+            ret != 0) {
             LOG(NEXO_ERROR, "Failed to initialize scripting systems, returned: {}", ret);
             return ret;
         }
@@ -64,7 +64,7 @@ namespace nexo::system {
     int ScriptingSystem::update()
     {
         const auto &scriptHost = scripting::HostHandler::getInstance();
-        const auto &api = scriptHost.getManagedApi();
+        const auto &api        = scriptHost.getManagedApi();
 
         updateWorldState();
         if (const auto ret = api.SystemBase.UpdateSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
@@ -78,7 +78,7 @@ namespace nexo::system {
     int ScriptingSystem::shutdown()
     {
         const auto &scriptHost = scripting::HostHandler::getInstance();
-        const auto &api = scriptHost.getManagedApi();
+        const auto &api        = scriptHost.getManagedApi();
 
         updateWorldState();
         if (auto ret = api.SystemBase.ShutdownSystems(&m_worldState, sizeof(m_worldState)); ret != 0) {
@@ -91,7 +91,7 @@ namespace nexo::system {
 
     void ScriptingSystem::updateWorldState()
     {
-        Application& app = Application::getInstance();
+        Application &app = Application::getInstance();
         m_worldState.update(app.getWorldState());
     }
 

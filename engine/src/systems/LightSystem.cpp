@@ -15,11 +15,11 @@
 #include "LightSystem.hpp"
 
 namespace nexo::system {
-	void LightSystem::update() const
-	{
-		m_ambientLightSystem->update();
-		m_directionalLightSystem->update();
-		m_pointLightSystem->update();
-		m_spotLightSystem->update();
-	}
-}
+    void LightSystem::update() const
+    {
+        m_ambientLightSystem->update();
+        m_directionalLightSystem->update();
+        m_pointLightSystem->update();
+        m_spotLightSystem->update();
+    }
+} // namespace nexo::system
