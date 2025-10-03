@@ -17,10 +17,9 @@
 #include "components/Video.hpp"
 
 namespace nexo::system {
-    int RenderVideoSystem::updateVideoComponent(components::VideoComponent& videoComponent, ecs::Entity entity)
+    int RenderVideoSystem::updateVideoComponent(components::VideoComponent &videoComponent, ecs::Entity entity)
     {
-        if (!coord->entityHasComponent<components::MaterialComponent>(entity) ||
-            videoComponent.path.empty()) {
+        if (!coord->entityHasComponent<components::MaterialComponent>(entity) || videoComponent.path.empty()) {
             return 1;
         }
         if (!videoComponent.isLoaded) {
@@ -46,7 +45,7 @@ namespace nexo::system {
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
-        const auto sceneRendered  = static_cast<unsigned int>(renderContext.sceneRendered);
+        const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
             [](const components::SceneTag &tag) { return tag.id; });
@@ -70,9 +69,8 @@ namespace nexo::system {
     void RenderVideoSystem::reset()
     {
         auto videoSpan                                = get<components::VideoComponent>();
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
-        for (size_t i = 0; i < videoSpan.size(); ++i) {
-            videoSpan[i].restartVideo();
+        for (auto & i : videoSpan) {
+            i.restartVideo();
         }
     }
 } // namespace nexo::system
