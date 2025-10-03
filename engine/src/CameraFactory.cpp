@@ -20,42 +20,43 @@
 
 #include <utility>
 #include "Application.hpp"
-#include "components/Transform.hpp"
 #include "components/Camera.hpp"
+#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "renderPasses/ForwardPass.hpp"
 
 namespace nexo {
-	ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width,
-       									               unsigned int height, std::shared_ptr<renderer::NxFramebuffer> renderTarget,
-                             				           const glm::vec4 &clearColor, float fov, float nearPlane, float farPlane)
-	{
-		components::TransformComponent transform{};
-		transform.pos = pos;
+    ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width, unsigned int height,
+                                                       std::shared_ptr<renderer::NxFramebuffer> renderTarget,
+                                                       const glm::vec4 &clearColor, float fov, float nearPlane,
+                                                       float farPlane)
+    {
+        components::TransformComponent transform{};
+        transform.pos = pos;
 
-		components::CameraComponent camera{};
-		camera.width = width;
-		camera.height = height;
-		camera.fov = fov;
-		camera.nearPlane = nearPlane;
-		camera.farPlane = farPlane;
-		camera.type = components::CameraType::PERSPECTIVE;
+        components::CameraComponent camera{};
+        camera.width     = width;
+        camera.height    = height;
+        camera.fov       = fov;
+        camera.nearPlane = nearPlane;
+        camera.farPlane  = farPlane;
+        camera.type      = components::CameraType::PERSPECTIVE;
 
-		auto forwardPass = std::make_shared<renderer::ForwardPass>();
-		renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
-		camera.pipeline.setFinalOutputPass(forwardPassId);
-		camera.pipeline.setCameraClearColor(clearColor);
-		if (renderTarget) {
-		    camera.m_renderTarget = std::move(renderTarget);
-			camera.pipeline.setRenderTarget(camera.m_renderTarget);
-		}
-		camera.clearColor = clearColor;
+        auto forwardPass               = std::make_shared<renderer::ForwardPass>();
+        renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
+        camera.pipeline.setFinalOutputPass(forwardPassId);
+        camera.pipeline.setCameraClearColor(clearColor);
+        if (renderTarget) {
+            camera.m_renderTarget = std::move(renderTarget);
+            camera.pipeline.setRenderTarget(camera.m_renderTarget);
+        }
+        camera.clearColor = clearColor;
 
-		ecs::Entity newCamera = Application::m_coordinator->createEntity();
-		Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
-		Application::m_coordinator->addComponent<components::CameraComponent>(newCamera, camera);
-		components::UuidComponent uuid;
+        ecs::Entity newCamera = Application::m_coordinator->createEntity();
+        Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
+        Application::m_coordinator->addComponent<components::CameraComponent>(newCamera, camera);
+        components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newCamera, uuid);
-		return newCamera;
-	}
-}
+        return newCamera;
+    }
+} // namespace nexo
