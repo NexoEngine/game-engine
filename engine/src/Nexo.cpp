@@ -15,10 +15,10 @@
 //  Description: Main source file for nexo
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 #include "Nexo.hpp"
 
 namespace nexo {
-
     Application &init()
     {
         Application &app = Application::getInstance();
@@ -38,4 +38,4 @@ namespace nexo {
         app.run(sceneInfo);
     }
 
-}
+} // namespace nexo

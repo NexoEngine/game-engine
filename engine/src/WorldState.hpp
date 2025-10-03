@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Application.hpp"
+// #include "Application.hpp"
 
 namespace nexo {
 
@@ -34,4 +34,4 @@ namespace nexo {
         } stats;
     };
 
-} // namespace nexo::scripting
+} // namespace nexo
