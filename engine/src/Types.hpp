@@ -14,13 +14,7 @@
 #pragma once
 
 namespace nexo {
-    enum class RenderingType {
-        WINDOW,
-        FRAMEBUFFER
-    };
+    enum class RenderingType { WINDOW, FRAMEBUFFER };
 
-    enum class SceneType {
-        EDITOR,
-        GAME
-    };
-}
+    enum class SceneType { EDITOR, GAME };
+} // namespace nexo

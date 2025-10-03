@@ -17,6 +17,8 @@
 #include "AEntityProperty.hpp"
 #include "DocumentWindows/PopupManager.hpp"
 
+#include <components/Render.hpp>
+
 namespace nexo::editor {
 
     constexpr std::array PrimitiveTypeNames = {"UNKNOWN", "CUBE", "MESH", "BILLBOARD"};

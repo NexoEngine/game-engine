@@ -13,51 +13,49 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EntityFactory3D.hpp"
+#include "Application.hpp"
 #include "Definitions.hpp"
 #include "Renderer3D.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "assets/AssetLocation.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Light.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
 #include "components/Render.hpp"
 #include "components/Render3D.hpp"
+#include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "components/StaticMesh.hpp"
-#include "components/MaterialComponent.hpp"
-#include "assets/AssetCatalog.hpp"
-#include "Application.hpp"
 #include "math/Matrix.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
 #include <filesystem>
+#include <glm/gtx/string_cast.hpp>
 
-namespace nexo
-{
+namespace nexo {
     ecs::Entity EntityFactory3D::createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::CubeMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
         components::UuidComponent uuid;
         components::RenderComponent renderComponent;
         renderComponent.isRendered = true;
-        renderComponent.type = components::PrimitiveType::CUBE;
+        renderComponent.type       = components::PrimitiveType::CUBE;
 
         const ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
@@ -74,7 +72,7 @@ namespace nexo
                                             const components::Material& material)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
@@ -82,15 +80,14 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CubeMat@_internal"),
-            std::make_unique<components::Material>(material));
+            assets::AssetLocation("_internal::CubeMat@_internal"), std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
         components::UuidComponent uuid;
         components::RenderComponent renderComponent;
         renderComponent.isRendered = true;
-        renderComponent.type = components::PrimitiveType::CUBE;
+        renderComponent.type       = components::PrimitiveType::CUBE;
 
         const ecs::Entity newCube = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newCube, transform);
@@ -105,14 +102,13 @@ namespace nexo
     ecs::Entity EntityFactory3D::createBillboard(const glm::vec3& pos, const glm::vec3& size, const glm::vec4& color)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::BillboardMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::BillboardMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -122,7 +118,7 @@ namespace nexo
         components::UuidComponent uuid;
         components::RenderComponent renderComponent;
         renderComponent.isRendered = true;
-        renderComponent.type = components::PrimitiveType::BILLBOARD;
+        renderComponent.type       = components::PrimitiveType::BILLBOARD;
 
         const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
@@ -138,7 +134,7 @@ namespace nexo
                                                  const components::Material& material)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
 
         components::BillboardComponent mesh;
@@ -153,7 +149,7 @@ namespace nexo
         components::UuidComponent uuid;
         components::RenderComponent renderComponent;
         renderComponent.isRendered = true;
-        renderComponent.type = components::PrimitiveType::BILLBOARD;
+        renderComponent.type       = components::PrimitiveType::BILLBOARD;
 
         const ecs::Entity newBillboard = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent(newBillboard, transform);
@@ -168,18 +164,17 @@ namespace nexo
     ecs::Entity EntityFactory3D::createTetrahedron(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::TetrahedronMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::TetrahedronMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -199,7 +194,7 @@ namespace nexo
                                                    const components::Material& material)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
@@ -226,18 +221,17 @@ namespace nexo
     ecs::Entity EntityFactory3D::createPyramid(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::PyramidMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::PyramidMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -256,7 +250,7 @@ namespace nexo
                                                const components::Material& material)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
@@ -264,8 +258,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::PyramidMat@_internal"),
-            std::make_unique<components::Material>(material));
+            assets::AssetLocation("_internal::PyramidMat@_internal"), std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -280,22 +273,21 @@ namespace nexo
         return newPyramid;
     }
 
-    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                                glm::vec4 color, unsigned int nbSegment)
+    ecs::Entity EntityFactory3D::createCylinder(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color,
+                                                unsigned int nbSegment)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::CylinderMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::CylinderMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -314,7 +306,7 @@ namespace nexo
                                                 const components::Material& material, unsigned int nbSegment)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
@@ -338,22 +330,21 @@ namespace nexo
         return newCylinder;
     }
 
-    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
-                                              glm::vec4 color, const unsigned int nbSubdivision)
+    ecs::Entity EntityFactory3D::createSphere(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, glm::vec4 color,
+                                              const unsigned int nbSubdivision)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
 
-        auto material = std::make_unique<components::Material>();
-        material->albedoColor = color;
+        auto material          = std::make_unique<components::Material>();
+        material->albedoColor  = color;
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::SphereMatFlatColor@_internal"),
-            std::move(material));
+            assets::AssetLocation("_internal::SphereMatFlatColor@_internal"), std::move(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -372,7 +363,7 @@ namespace nexo
                                               const components::Material& material, const unsigned int nbSubdivision)
     {
         components::TransformComponent transform{};
-        transform.pos = pos;
+        transform.pos  = pos;
         transform.size = size;
         transform.quat = glm::quat(glm::radians(rotation));
 
@@ -380,8 +371,7 @@ namespace nexo
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
-            assets::AssetLocation("_internal::SphereMat@_internal"),
-            std::make_unique<components::Material>(material));
+            assets::AssetLocation("_internal::SphereMat@_internal"), std::make_unique<components::Material>(material));
         components::MaterialComponent matComponent;
         matComponent.material = materialRef;
 
@@ -396,17 +386,16 @@ namespace nexo
         return newSphere;
     }
 
-    ecs::Entity EntityFactory3D::createModel(assets::AssetRef<assets::Model> model, glm::vec3 pos, glm::vec3 size,
+    ecs::Entity EntityFactory3D::createModel(const assets::AssetRef<assets::Model>& model, glm::vec3 pos, glm::vec3 size,
                                              glm::vec3 rotation)
     {
         auto modelAsset = model.lock();
-        if (!modelAsset || !modelAsset->getData())
-            return ecs::INVALID_ENTITY;
+        if (!modelAsset || !modelAsset->getData()) return ecs::INVALID_ENTITY;
 
         ecs::Entity rootEntity = Application::m_coordinator->createEntity();
 
         components::TransformComponent rootTransform;
-        rootTransform.pos = pos;
+        rootTransform.pos  = pos;
         rootTransform.size = size;
         rootTransform.quat = glm::quat(glm::radians(rotation));
 
@@ -423,10 +412,10 @@ namespace nexo
 
         // Process model nodes to create entity hierarchy
         const assets::MeshNode& rootNode = *modelAsset->getData();
-        int childCount = processModelNode(rootEntity, rootNode);
+        int childCount                   = processModelNode(rootEntity, rootNode);
 
         // Update child count in root component
-        auto &storedRoot = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
+        auto& storedRoot      = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
         storedRoot.childCount = childCount;
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent(rootEntity, uuid);
@@ -450,30 +439,26 @@ namespace nexo
         nexo::math::decomposeTransformQuat(node.transform, translation, rotation, scale);
 
         components::TransformComponent transform;
-        transform.pos = translation;
+        transform.pos  = translation;
         transform.size = scale;
         transform.quat = rotation;
         Application::m_coordinator->addComponent(nodeEntity, transform);
 
-        components::ParentComponent parentComponent;
+        components::ParentComponent parentComponent{};
         parentComponent.parent = parentEntity;
         Application::m_coordinator->addComponent(nodeEntity, parentComponent);
 
-        auto parentTransform = Application::m_coordinator->tryGetComponent<
-            components::TransformComponent>(parentEntity);
-        if (parentTransform)
-            parentTransform->get().children.push_back(nodeEntity);
+        auto parentTransform =
+            Application::m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
+        if (parentTransform) parentTransform->get().children.push_back(nodeEntity);
 
-
-        if (!node.name.empty())
-        {
+        if (!node.name.empty()) {
             components::NameComponent nameComponent;
             nameComponent.name = node.name;
             Application::m_coordinator->addComponent(nodeEntity, nameComponent);
         }
 
-        for (const auto& mesh : node.meshes)
-        {
+        for (const auto& mesh : node.meshes) {
             ecs::Entity meshEntity = Application::m_coordinator->createEntity();
             totalChildrenCreated++;
 
@@ -481,7 +466,7 @@ namespace nexo
             Application::m_coordinator->addComponent(meshEntity, meshUuid);
 
             components::TransformComponent meshTransform;
-            meshTransform.pos = glm::vec3(0.0f);
+            meshTransform.pos  = glm::vec3(0.0f);
             meshTransform.size = glm::vec3(1.0f);
             meshTransform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
             // Centroid
@@ -492,39 +477,35 @@ namespace nexo
 
             components::RenderComponent renderComponent;
             renderComponent.isRendered = true;
-            renderComponent.type = components::PrimitiveType::MESH;
+            renderComponent.type       = components::PrimitiveType::MESH;
 
             Application::m_coordinator->addComponent(meshEntity, meshTransform);
             Application::m_coordinator->addComponent(meshEntity, staticMesh);
             Application::m_coordinator->addComponent(meshEntity, renderComponent);
 
-            if (!mesh.name.empty())
-            {
+            if (!mesh.name.empty()) {
                 components::NameComponent nameComponent;
                 nameComponent.name = mesh.name;
                 Application::m_coordinator->addComponent(meshEntity, nameComponent);
             }
 
-            if (mesh.material)
-            {
+            if (mesh.material) {
                 components::MaterialComponent materialComponent;
                 materialComponent.material = mesh.material;
                 Application::m_coordinator->addComponent(meshEntity, materialComponent);
             }
 
-            components::ParentComponent meshParentComponent;
+            components::ParentComponent meshParentComponent{};
             meshParentComponent.parent = nodeEntity;
             Application::m_coordinator->addComponent(meshEntity, meshParentComponent);
 
-            auto nodeTransform = Application::m_coordinator->tryGetComponent<
-                components::TransformComponent>(nodeEntity);
-            if (nodeTransform)
-                nodeTransform->get().children.push_back(meshEntity);
+            auto nodeTransform =
+                Application::m_coordinator->tryGetComponent<components::TransformComponent>(nodeEntity);
+            if (nodeTransform) nodeTransform->get().children.push_back(meshEntity);
         }
 
-        for (const auto& childNode : node.children)
-            totalChildrenCreated += processModelNode(nodeEntity, childNode);
+        for (const auto& childNode : node.children) totalChildrenCreated += processModelNode(nodeEntity, childNode);
 
         return totalChildrenCreated;
     }
-}
+} // namespace nexo
