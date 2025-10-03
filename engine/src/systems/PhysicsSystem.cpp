@@ -62,7 +62,6 @@ namespace nexo::system {
             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
         const double delta = currentTime - m_lastPhysicsTime;
-
         if (delta < fixedTimestep)
             return;
 

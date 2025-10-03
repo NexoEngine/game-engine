@@ -18,9 +18,9 @@
 
 #include "TransformHierarchySystem.hpp"
 #include "components/Parent.hpp"
-#include "components/Transform.hpp"
-#include "components/SceneComponents.hpp"
 #include "components/RenderContext.hpp"
+#include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -28,30 +28,27 @@
 namespace nexo::system {
     void TransformHierarchySystem::update()
     {
-        const auto &renderContext = getSingleton<components::RenderContext>();
-        if (renderContext.sceneRendered == -1)
-            return;
+        const auto& renderContext = getSingleton<components::RenderContext>();
+        if (renderContext.sceneRendered == -1) return;
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
         const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
-            [](const components::SceneTag& tag) { return tag.id; }
-        );
-        const auto *partition = scenePartition.getPartition(sceneRendered);
+            [](const components::SceneTag& tag) { return tag.id; });
+        const auto* partition = scenePartition.getPartition(sceneRendered);
         if (!partition) {
             return;
         }
 
         const std::span<const ecs::Entity> entitySpan = m_group->entities();
-        const auto &transformComponentArray = get<components::TransformComponent>();
+        const auto& transformComponentArray           = get<components::TransformComponent>();
 
         // Process all root entities in the current scene
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             const ecs::Entity rootEntity = entitySpan[i];
-            if (!transformComponentArray->hasComponent(rootEntity))
-                continue;
+            if (!transformComponentArray->hasComponent(rootEntity)) continue;
 
-            auto& rootTransform = transformComponentArray->get(rootEntity);
+            auto& rootTransform       = transformComponentArray->get(rootEntity);
             glm::mat4 rootWorldMatrix = calculateLocalMatrix(rootTransform);
             rootTransform.worldMatrix = rootWorldMatrix;
             updateChildTransforms(transformComponentArray, rootTransform.children, rootWorldMatrix);
@@ -59,13 +56,11 @@ namespace nexo::system {
     }
 
     void TransformHierarchySystem::updateChildTransforms(
-        const std::shared_ptr<ecs::ComponentArray<components::TransformComponent>> &transformComponentArray,
-        const std::vector<ecs::Entity>& children,
-        const glm::mat4& parentWorldMatrix)
+        const std::shared_ptr<ecs::ComponentArray<components::TransformComponent>>& transformComponentArray,
+        const std::vector<ecs::Entity>& children, const glm::mat4& parentWorldMatrix)
     {
         for (const auto& childEntity : children) {
-            if (!transformComponentArray->hasComponent(childEntity))
-                continue;
+            if (!transformComponentArray->hasComponent(childEntity)) continue;
 
             auto& transform = transformComponentArray->get(childEntity);
 
@@ -77,10 +72,9 @@ namespace nexo::system {
         }
     }
 
-    glm::mat4 TransformHierarchySystem::calculateLocalMatrix(const components::TransformComponent& transform) const
+    glm::mat4 TransformHierarchySystem::calculateLocalMatrix(const components::TransformComponent& transform)
     {
-        return glm::translate(glm::mat4(1.0f), transform.pos) *
-               glm::toMat4(transform.quat) *
+        return glm::translate(glm::mat4(1.0f), transform.pos) * glm::toMat4(transform.quat) *
                glm::scale(glm::mat4(1.0f), transform.size);
     }
-}
+} // namespace nexo::system
