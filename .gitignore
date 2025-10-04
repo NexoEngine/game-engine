@@ -135,6 +135,7 @@ fabric.properties
 .cmake
 CMakeCache.txt
 cmake_install.cmake
+CMakeUserPresets.json
 
 B-CPP-500_rtype.pdf
 
