@@ -330,7 +330,7 @@ namespace nexo {
                 m_lightSystem->update();
                 m_renderCommandSystem->update();
                 m_renderBillboardSystem->update();
-                m_aabbdebugSystem->update();
+                //m_aabbdebugSystem->update();
                 if (!areVideoLoaded) {
                     m_renderVideoSystem->update();
                     areVideoLoaded = true;
