@@ -57,12 +57,11 @@ namespace nexo::math {
 
         const glm::vec3 t = { M[3][0], M[3][1], M[3][2] };
         // upper-left 3x3
-        const glm::mat3 L = glm::mat3(M);
+        const auto L = glm::mat3(M);
 
         // world center
         const glm::vec3 wc = L * lc + t;
-        // world half-extents = |L| * le
-        const glm::mat3 A  = glm::mat3( glm::abs(L[0][0]), glm::abs(L[0][1]), glm::abs(L[0][2]),
+        const auto A  = glm::mat3( glm::abs(L[0][0]), glm::abs(L[0][1]), glm::abs(L[0][2]),
                                         glm::abs(L[1][0]), glm::abs(L[1][1]), glm::abs(L[1][2]),
                                         glm::abs(L[2][0]), glm::abs(L[2][1]), glm::abs(L[2][2]) );
         const glm::vec3 we  = A * le;
