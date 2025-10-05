@@ -110,6 +110,8 @@ namespace nexo::renderer {
         void setDepthFunc(unsigned int func) override;
         void setDepthMask(bool enable) override;
 
+        void setLineWidth(float lineWidth) override;
+
         /**
          * @brief Renders indexed geometry using OpenGL.
          *
@@ -122,7 +124,7 @@ namespace nexo::renderer {
          * - NxGraphicsApiNotInitialized if OpenGL is not initialized.
          * - NxInvalidValue if the `vertexArray` is null.
          */
-        void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0) override;
+        void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0, CommandType primitiveType = CommandType::MESH) override;
 
         /**
          * @brief Renders non-indexed geometry using OpenGL.
