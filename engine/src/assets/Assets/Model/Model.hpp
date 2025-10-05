@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "math/Bounds.hpp"
 #include "VertexArray.hpp"
 #include "assets/Asset.hpp"
 #include "assets/Assets/Material/Material.hpp"
@@ -26,6 +27,9 @@ namespace nexo::assets {
         AssetRef<Material> material;
 
         glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+
+        math::AABB localBounds{};
+        math::BSphere localSphere{};
     };
 
     struct MeshNode {
@@ -33,6 +37,12 @@ namespace nexo::assets {
         glm::mat4 transform{};
         std::vector<Mesh> meshes;
         std::vector<MeshNode> children;
+
+        math::AABB localBounds{};
+        math::BSphere localSphere{};
+
+        math::AABB modelBounds{};
+        math::BSphere modelSphere{};
     };
 
     /**
@@ -45,6 +55,9 @@ namespace nexo::assets {
         Model() = default;
 
         ~Model() override = default;
+
+        math::AABB rootBounds{};
+        math::BSphere rootSphere{};
     };
 
 } // namespace nexo::assets

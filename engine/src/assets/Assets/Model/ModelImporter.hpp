@@ -109,7 +109,7 @@ namespace nexo::assets {
          * @param scene The Assimp scene containing the node.
          * @return A MeshNode representing the processed node and its children.
          */
-        MeshNode processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene);
+        MeshNode processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene, const glm::mat4& parentToRoot = glm::mat4(1.0f));
 
         /**
          * @brief Process an Assimp mesh and convert it to the engine's Mesh format.
