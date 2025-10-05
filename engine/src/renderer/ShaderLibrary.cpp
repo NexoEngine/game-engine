@@ -52,6 +52,7 @@ namespace nexo::renderer {
         safeLoadShader("Albedo unshaded transparent", "../resources/shaders/albedo_unshaded_transparent.glsl");
         safeLoadShader("Grid shader", "../resources/shaders/grid_shader.glsl");
         safeLoadShader("Flat color", "../resources/shaders/flat_color.glsl");
+        safeLoadShader("AABB Debug", "../resources/shaders/box_shader.glsl");
     }
 
     void ShaderLibrary::add(const std::shared_ptr<NxShader> &shader)
