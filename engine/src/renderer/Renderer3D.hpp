@@ -258,7 +258,7 @@ namespace nexo::renderer {
          */
         static std::shared_ptr<NxVertexArray> getCubeVAO();
 
-        /*
+        /**
          * @brief Returns a shared Vertex Array Object (VAO) for rendering a box (used for debugging AABB)
          * @return Shared pointer to a pre-configured box VAO
          */
