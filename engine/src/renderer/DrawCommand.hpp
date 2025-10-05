@@ -56,6 +56,7 @@ namespace nexo::renderer {
 
     enum class CommandType {
         MESH,
+        LINE,
         FULL_SCREEN,
     };
 
@@ -68,6 +69,8 @@ namespace nexo::renderer {
 
         uint32_t filterMask = 0xFFFFFFFF;
         bool isOpaque       = true;
+
+        float lineWidth = 1.5f;
 
         /**
          * @brief Executes the draw command.
