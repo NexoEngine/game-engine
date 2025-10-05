@@ -62,18 +62,28 @@ namespace nexo::system  {
         std::vector<renderer::DrawCommand> drawCommands;
         auto shader = renderer::ShaderLibrary::getInstance().get("AABB Debug");
         if (!shader) {
-            LOG(NEXO_ERROR, "Could not load AABB debug shader");
+            LOG_ONCE(NEXO_WARN, "Could not load AABB debug shader, skipping rendering");
             return;
         }
+        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Could not load AABB debug shader, skipping rendering"));
 
         for (const ecs::Entity entity : entities) {
             auto &sceneTag = getComponent<components::SceneTag>(entity);
             if (sceneTag.id != sceneRendered) continue;
             auto &rootComponent = getComponent<components::RootComponent>(entity);
-            auto &transform        = getComponent<components::TransformComponent>(entity);
-            if (auto model = rootComponent.modelRef.lock()) {
-                drawCommands.push_back(createDrawCommand(shader, model->rootBounds, transform));
+            auto &transform = getComponent<components::TransformComponent>(entity);
+            auto model = rootComponent.modelRef.lock();
+            if (!model) {
+                LOG_ONCE(NEXO_WARN, "Model for entity {} is not available (maybe not loaded ?)", entity);
+                continue;
             }
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("Model for entity {} is not available (maybe not loaded ?)", entity));
+            if (model->rootBounds.empty()) {
+                LOG_ONCE(NEXO_WARN, "AABB for entity {} does not seem to exist", entity);
+                continue;
+            }
+            Logger::resetOnce(NEXO_LOG_ONCE_KEY("AABB for entity {} does not seem to exist", entity));
+            drawCommands.push_back(createDrawCommand(shader, model->rootBounds, transform));
         }
 
         for (auto &camera : renderContext.cameras) {
