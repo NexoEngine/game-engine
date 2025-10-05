@@ -116,7 +116,7 @@ namespace nexo::renderer {
         if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (!vertexArray) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex array cannot be null");
         const size_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
-        const int glType = (primitiveType == CommandType::MESH) ? (GL_TRIANGLES) : (GL_LINES);
+        const int glType = (primitiveType == CommandType::MESH) ? GL_TRIANGLES : GL_LINES;
         glDrawElements(glType, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 

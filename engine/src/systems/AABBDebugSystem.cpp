@@ -27,7 +27,7 @@
 
 namespace nexo::system  {
 
-    static const glm::mat4 modelFromAABB(const math::AABB &box)
+    static glm::mat4 modelFromAABB(const math::AABB &box)
     {
         const glm::vec3 center = 0.5f * (box.min + box.max);
         const glm::vec3 extent = 0.5f * (box.max - box.min);
