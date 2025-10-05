@@ -21,6 +21,7 @@
 #include <memory>
 
 #include "VertexArray.hpp"
+#include "DrawCommand.hpp"
 
 namespace nexo::renderer {
 
@@ -153,6 +154,8 @@ namespace nexo::renderer {
          */
         virtual void setDepthMask(bool enable) = 0;
 
+        virtual void setLineWidth(float lineWidth) = 0;
+
         /**
          * @brief Issues a draw call for indexed geometry.
          *
@@ -164,7 +167,7 @@ namespace nexo::renderer {
          *
          * Must be implemented by subclasses.
          */
-        virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t count = 0) = 0;
+        virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t count = 0, CommandType primitiveType = CommandType::MESH) = 0;
 
         /**
          * @brief Draws geometry without using indices.
