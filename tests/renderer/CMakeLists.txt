@@ -25,6 +25,7 @@ include_directories("./engine/src/renderer")
 set(COMMON_SOURCES
         common/Exception.cpp
         common/math/Matrix.cpp
+        common/math/Bounds.cpp
         common/Path.cpp
 )
 
@@ -56,6 +57,7 @@ set(RENDERER_SOURCES
         engine/src/renderer/primitives/Pyramid.cpp
         engine/src/renderer/primitives/Cylinder.cpp
         engine/src/renderer/primitives/Sphere.cpp
+        engine/src/renderer/primitives/Box.cpp
 )
 
 add_executable(renderer_tests
