@@ -71,4 +71,20 @@ namespace nexo::math {
         out.max = wc + we;
         return out;
     }
+
+    static float maxAxisScale(const glm::mat4& M)
+    {
+        const float sx = glm::length(glm::vec3(M[0])); // column 0
+        const float sy = glm::length(glm::vec3(M[1])); // column 1
+        const float sz = glm::length(glm::vec3(M[2])); // column 2
+        return std::max(sx, std::max(sy, sz));
+    }
+
+    BSphere sphereTransform(const BSphere& s, const glm::mat4& M)
+    {
+        BSphere out;
+        out.c = glm::vec3(M * glm::vec4(s.c, 1.0f));
+        out.r = s.r * maxAxisScale(M); // conservative under non-uniform scale
+        return out;
+    }
 }
