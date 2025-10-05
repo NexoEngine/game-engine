@@ -34,40 +34,20 @@ namespace nexo::editor::utils {
     };
 
     /**
-     * @brief Computes an approximate bounding sphere radius for an object.
+     * @brief Generate a thumbnail preview scene for a single entity.
      *
-     * The radius is approximated by taking half the maximum dimension (x, y, or z)
-     * of the object's transform size.
+     * Creates a dedicated editor scene, duplicates the entity for isolation, spawns a camera
+     * that tightly frames the entity using a bounding-sphere fit, and sets up minimal lighting.
+     * Returns identifiers via the output struct for later rendering and resource management.
      *
-     * @param objectTransform The transform component of the object.
-     * @return float The computed bounding sphere radius.
-     */
-    float computeBoundingSphereRadius(const components::TransformComponent &objectTransform);
-
-    /**
-     * @brief Computes the half-angle of a spotlight based on an object's transform.
+     * @param uniqueSceneName A unique name for the preview scene (used for scene registry).
+     * @param previewSize     Preview resolution in pixels (x = width, y = height).
+     * @param entity          The source entity to be duplicated into the preview scene.
+     * @param out             [out] Filled with created scene/camera/entity IDs and a success flag.
+     * @param clearColor      Clear color used by the preview camera.
      *
-     * Uses the bounding sphere radius of the object and the distance between the object
-     * and the light position to compute the half-angle of the spotlight.
-     *
-     * @param objectTransform The transform component of the object.
-     * @param lightPosition The position of the light.
-     * @return float The computed half-angle in radians.
-     */
-    float computeSpotlightHalfAngle(const components::TransformComponent &objectTransform,
-                                    const glm::vec3 &lightPosition);
-
-    /**
-     * @brief Generates a scene preview.
-     *
-     * Creates an editor scene with a copy of the given entity, a preview camera, and some default lights.
-     * The generated scene's ID, camera entity, and entity copy are stored in @p out.
-     *
-     * @param uniqueSceneName A unique name for the preview scene.
-     * @param previewSize The size (width, height) of the preview.
-     * @param entity The entity to generate the preview from.
-     * @param out Output structure containing preview scene details.
-     * @param clearColor The clear color of the camera
+     * @note The duplicated entity avoids mutating original scene state during rendering.
+     * @warning Ensure scene lifecycle handles cleanup of the created entities/framebuffer as needed.
      */
     void genScenePreview(const std::string &uniqueSceneName, const glm::vec2 &previewSize, ecs::Entity entity,
                          ScenePreviewOut &out, const glm::vec4 &clearColor = {0.05f, 0.05f, 0.05f, 0.0f});
