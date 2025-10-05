@@ -15,12 +15,27 @@
 #include <Exception.hpp>
 #include <RendererExceptions.hpp>
 
+#include "DrawCommand.hpp"
 #include "Logger.hpp"
 #include "OpenGlRendererAPI.hpp"
 
 #include <glad/glad.h>
 
 namespace nexo::renderer {
+
+    static GLenum nexoPrimitiveTypeToGLType(CommandType type)
+    {
+        switch (type)
+        {
+            case CommandType::MESH:
+                return GL_TRIANGLES;
+            case CommandType::LINE:
+                return GL_LINES;
+            default:
+                THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Unsupported primitive type");
+        }
+        return 0;
+    }
 
     void NxOpenGlRendererApi::init()
     {
@@ -104,6 +119,7 @@ namespace nexo::renderer {
 
     void NxOpenGlRendererApi::setLineWidth(float lineWidth)
     {
+        if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         glLineWidth(lineWidth);
     }
 
@@ -112,7 +128,7 @@ namespace nexo::renderer {
         if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (!vertexArray) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex array cannot be null");
         const size_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
-        const int glType = (primitiveType == CommandType::MESH) ? GL_TRIANGLES : GL_LINES;
+        const GLenum glType = nexoPrimitiveTypeToGLType(primitiveType);
         glDrawElements(glType, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 
