@@ -28,7 +28,7 @@ namespace nexo::renderer {
         }
 
         // Bind VAO for mesh, or use full-screen quad
-        if (type == CommandType::MESH && vao && currentVAO != vao->getId()) {
+        if ((type == CommandType::MESH || type == CommandType::LINE) && vao && currentVAO != vao->getId()) {
             vao->bind();
             for (const auto& vbo : vao->getVertexBuffers()) vbo->bind();
             currentVAO = vao->getId();
@@ -49,6 +49,9 @@ namespace nexo::renderer {
             NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
         } else if (type == CommandType::FULL_SCREEN) {
             NxRenderCommand::drawUnIndexed(6);
+        } else if (type == CommandType::LINE) {
+            NxRenderCommand::setLineWidth(lineWidth);
+            NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount(), CommandType::LINE);
         }
     }
 } // namespace nexo::renderer
