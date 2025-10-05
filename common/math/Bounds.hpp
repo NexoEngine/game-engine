@@ -99,4 +99,6 @@ namespace nexo::math {
      * @return World-space AABB that encloses the transformed local box.
      */
     AABB aabbTransform(const AABB& local, const glm::mat4& M);
+
+    BSphere sphereTransform(const BSphere& s, const glm::mat4& M);
 }
