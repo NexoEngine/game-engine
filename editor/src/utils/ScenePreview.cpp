@@ -179,7 +179,7 @@ namespace nexo::editor::utils {
 
         const math::BSphere worldSphere = getWorldSphere(entityCopy);
 
-        const float aspect  = framebufferSpecs.width / float(std::max(1u, framebufferSpecs.height));
+        const float aspect  = static_cast<float>(framebufferSpecs.width) / float(std::max(1u, framebufferSpecs.height));
         glm::vec3 camPos;
         float farPlane;
         float nearPlane;
