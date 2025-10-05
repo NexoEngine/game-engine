@@ -14,6 +14,7 @@ set(COMMON_SOURCES
         common/math/Projection.cpp
         common/math/Matrix.cpp
         common/Path.cpp
+        common/math/Bounds.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
@@ -49,6 +50,7 @@ set(COMMON_SOURCES
         engine/src/renderer/primitives/Pyramid.cpp
         engine/src/renderer/primitives/Cylinder.cpp
         engine/src/renderer/primitives/Sphere.cpp
+        engine/src/renderer/primitives/Box.cpp
         engine/src/core/scene/Scene.cpp
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp
@@ -69,6 +71,7 @@ set(COMMON_SOURCES
         engine/src/systems/lights/SpotLightsSystem.cpp
         engine/src/systems/TransformHierarchySystem.cpp
         engine/src/systems/TransformMatrixSystem.cpp
+        engine/src/systems/AABBDebugSystem.cpp
         engine/src/renderPasses/ForwardPass.cpp
         engine/src/renderPasses/GridPass.cpp
         engine/src/renderPasses/MaskPass.cpp
