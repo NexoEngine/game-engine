@@ -39,6 +39,7 @@
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererExceptions.hpp"
 #include "scripting/native/Scripting.hpp"
+#include "systems/AABBDebugSystem.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
@@ -227,6 +228,7 @@ namespace nexo {
                                                               pointLightSystem, spotLightSystem);
 
         m_scriptingSystem = std::make_shared<system::ScriptingSystem>();
+        m_aabbdebugSystem = m_coordinator->registerQuerySystem<system::AABBDebugSystem>();
     }
 
     int Application::initScripting() const
@@ -328,6 +330,7 @@ namespace nexo {
                 m_lightSystem->update();
                 m_renderCommandSystem->update();
                 m_renderBillboardSystem->update();
+                m_aabbdebugSystem->update();
                 if (!areVideoLoaded) {
                     m_renderVideoSystem->update();
                     areVideoLoaded = true;
