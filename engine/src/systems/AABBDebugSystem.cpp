@@ -30,10 +30,9 @@ namespace nexo::system  {
     static const glm::mat4 modelFromAABB(const math::AABB &box)
     {
         const glm::vec3 center = 0.5f * (box.min + box.max);
-        const glm::vec3 extent = 0.5f * (box.max - box.min); // half-size on each axis
+        const glm::vec3 extent = 0.5f * (box.max - box.min);
         glm::mat4 M(1.0f);
         M = glm::translate(M, center);
-        // Our unit cube is in [-1,+1]; scaling by 'extent' maps edges exactly.
         return glm::scale(M, extent);
     }
 

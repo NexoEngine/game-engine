@@ -363,11 +363,7 @@ namespace nexo::assets {
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
             MeshNode child = processNode(ctx, node->mChildren[i], scene, nodeToRoot);
 
-            // model-space: child already returns modelBounds in root space → just union
             meshNode.modelBounds = math::aabbUnion(meshNode.modelBounds, child.modelBounds);
-
-            // local-space: optional — if you want node-local incl. children you’d have to inverse-transform
-            // children back, which is expensive; most engines keep localBounds = meshes-only (as we do).
             meshNode.children.emplace_back(std::move(child));
         }
         meshNode.modelSphere = math::sphereFromAABB(meshNode.modelBounds);
