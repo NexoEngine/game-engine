@@ -92,10 +92,13 @@ namespace nexo::assets {
 
         // Populate file size from filesystem
         try {
-            std::filesystem::path filePath = asset->m_metadata.location.getPath();
-            if (std::filesystem::exists(filePath)) {
-                asset->m_metadata.fileSize = std::filesystem::file_size(filePath);
+            if (std::holds_alternative<ImporterFileInput>(inputVariant)) {
+                const auto& fileInput = std::get<ImporterFileInput>(inputVariant);
+                if (std::filesystem::exists(fileInput.filePath)) {
+                    asset->m_metadata.fileSize = std::filesystem::file_size(fileInput.filePath);
+                }
             }
+            // For ImporterMemoryInput, keep fileSize = 0 (no file on disk)
         } catch (const std::filesystem::filesystem_error& e) {
             // Keep default size of 0 if file access fails
             LOG(NEXO_ERROR, "Failed to get file size for {}: {}",
