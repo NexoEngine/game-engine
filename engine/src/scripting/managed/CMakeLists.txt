@@ -18,8 +18,6 @@ cmake_minimum_required(VERSION 3.20)
 project(nexoManaged LANGUAGES NONE)
 
 # Define variables for configuration
-set(NEXO_MANAGED_OUTPUT_DIR ${CMAKE_BINARY_DIR})
-file(RELATIVE_PATH NEXO_MANAGED_OUTPUT_DIR_REL "${CMAKE_CURRENT_LIST_DIR}" "${NEXO_MANAGED_OUTPUT_DIR}")
 set(NEXO_FRAMEWORK "net9.0")
 
 set(SOURCES
@@ -63,21 +61,22 @@ else()
 endif()
 
 
-# Build step
+# Build step with OutputPath passed as parameter to support multi-config builds
 add_custom_target(nexoManaged ALL
                   COMMAND ${DOTNET_EXECUTABLE} build Nexo.csproj
                   ${ARCH_ARG}
                   -c $<CONFIG>                        # Matches Debug/Release configuration
+                  /p:OutputPath=${CMAKE_BINARY_DIR}/  # Pass OutputPath dynamically based on build directory
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}      # Working directory for the build
-                  COMMENT "Building .NET managed project (Nexo.csproj)..."
+                  COMMENT "Building .NET managed project (Nexo.csproj) for $<CONFIG> configuration..."
 )
 
 # Clean step
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
-    ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.dll
-    ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.pdb
-    ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.runtimeconfig.json
-    ${NEXO_MANAGED_OUTPUT_DIR}/Nexo.deps.json
+    ${CMAKE_BINARY_DIR}/Nexo.dll
+    ${CMAKE_BINARY_DIR}/Nexo.pdb
+    ${CMAKE_BINARY_DIR}/Nexo.runtimeconfig.json
+    ${CMAKE_BINARY_DIR}/Nexo.deps.json
     ${CMAKE_CURRENT_LIST_DIR}/obj
     ${CMAKE_CURRENT_LIST_DIR}/bin
 )

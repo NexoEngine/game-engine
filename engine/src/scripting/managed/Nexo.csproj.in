@@ -8,16 +8,13 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- OutputPath is passed via command line from CMake to support multi-config builds -->
   </PropertyGroup>
 
   <ItemGroup>
 	<Compile Include="@SOURCES@" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>@NEXO_MANAGED_OUTPUT_DIR_REL@</OutputPath>
-  </PropertyGroup>
 
 </Project>
