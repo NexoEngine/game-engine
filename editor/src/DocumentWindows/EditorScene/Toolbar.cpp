@@ -59,11 +59,16 @@ namespace nexo::editor {
                     newGameWindow->setup();
                     newGameWindow->setOpened(true);
 
-                    // Schedule dock split for next frame
-                    m_shouldSplitDock = true;
-                    m_gameWindowNameToSplit = gameWindowName;
+                    // Split the dock and attach the new game window
+                    const std::string editorWindowFullName = std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+                    m_windowRegistry.splitDockAndAttachWindow(
+                        editorWindowFullName,
+                        gameWindowName,
+                        ImGuiDir_Right,
+                        0.5f
+                    );
 
-                    // Also schedule focus for after the split
+                    // Schedule focus for the new window
                     m_shouldFocusGameWindow = true;
                     m_gameWindowToFocus = gameWindowName;
                 }

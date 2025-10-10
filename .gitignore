@@ -173,3 +173,9 @@ _CPack_Packages/
 
 myinstall/
 *.gcov
+
+.nexo/search_history.json
+
+.task/checksum/configure
+
+Taskfile.yml
