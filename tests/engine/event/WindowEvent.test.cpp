@@ -123,15 +123,15 @@ namespace nexo::event {
 
     TEST(WindowEventTest, MouseButtonStreamOperator) {
         std::ostringstream os;
-        os << LEFT;
+        os << MouseButton::LEFT;
         EXPECT_EQ(os.str(), "LEFT");
 
         os.str(""); os.clear();
-        os << RIGHT;
+        os << MouseButton::RIGHT;
         EXPECT_EQ(os.str(), "RIGHT");
 
         os.str(""); os.clear();
-        os << MIDDLE;
+        os << MouseButton::MIDDLE;
         EXPECT_EQ(os.str(), "MIDDLE");
     }
 }
